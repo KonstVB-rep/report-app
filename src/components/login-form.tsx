@@ -54,7 +54,7 @@ export function LoginForm({
   useEffect(() => {
 
     if(state && state?.error){
-      TOAST.SUCCESS(state.message)
+      TOAST.ERROR(state.message)
     }
 
     const isRedirected = document.cookie.includes("auth_redirected=true");
