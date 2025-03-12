@@ -41,7 +41,7 @@ export function LoginForm({
 
 
   const [state, formAction] = useActionState(login, undefined);
-  const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser(); // Zustand хук
+  const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const onSubmit = (formData: FormData) => {
@@ -50,7 +50,7 @@ export function LoginForm({
     formAction(formData);
   };
 
-  // Проверка состояния и куки
+
   useEffect(() => {
 
     if(state && state?.error){
@@ -60,23 +60,23 @@ export function LoginForm({
     const isRedirected = document.cookie.includes("auth_redirected=true");
 
     if (isRedirected) {
-      setIsAuth(false); // Очищаем состояние авторизации
+      setIsAuth(false); 
       document.cookie = "auth_redirected=; Max-Age=0; path=/"; // Удаляем флаг из куки
     } else if (state && state.data) {
       setAuthUser(state.data);
       setIsAuth(true);
     }
 
-    // Если пользователь авторизован, то нужно сделать редирект
+
     if (isAuth) {
       setShouldRedirect(true);
     }
   }, [state, setAuthUser, setIsAuth, isAuth]);
 
-  // Осуществляем редирект после того, как состояние обновится
+ 
   if (shouldRedirect) {
     redirect(`/dashboard/table/${authUser?.id}`);
-    return null; // Чтобы предотвратить дальнейший рендер
+    return null; 
   }
 
 

@@ -102,10 +102,10 @@ const EditProjectForm = ({
       new Promise((resolve, reject) => {
         mutate(data, {
           onSuccess: (data) => {
-            resolve(data); // Разрешаем промис при успехе
+            resolve(data); 
           },
           onError: (error) => {
-            reject(error); // Отклоняем промис при ошибке
+            reject(error); 
           },
         });
       }),
