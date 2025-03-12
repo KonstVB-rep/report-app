@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String          @id @default(cuid())
+  username                String
+  email                   String          @unique
+  phone                   String          @unique
+  user_password           String  
+  position                String
+  departmentId            Int
+  department              Department      @relation("DepartmentUsers", fields: [departmentId], references: [id])
+  role                    String
+  lastlogin               DateTime?
+  projects                Project[]
+  login                   UserLogin[]
+  permissions             UserPermission[]
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  directorOf              Department?     @relation("DepartmentDirector")  // Обратное отношение
+  @@index([departmentId])
+}
+
+model Department {
+  id                      Int             @id @default(autoincrement())
+  name                    DepartmentEnum  @unique
+  directorId              String?         @unique
+  director                User?           @relation("DepartmentDirector", fields: [directorId], references: [id])
+  users                   User[]          @relation("DepartmentUsers")
+}
+
+
+model Project {
+  id                      String @id @default(cuid())     // Уникальный идентификатор проекта
+  userId                  String                          // Идентификатор пользователя, которому принадлежит проект
+  equipment_type          String                          // Тип оборудования
+  dateRequest             DateTime                        // Дата запроса проекта
+  nameObject              String                          // Название объекта
+  direction               Direction                       // Направление проекта (ENUM)
+  deliveryType            Delivery                        // Тип поставки (ENUM)
+  contact                 String                          // Контактное лицо
+  phone                   String                          // Телефон
+  email                   String?                         // Электронная почта
+  amountCo                Decimal    @db.Decimal(15, 2)   // Сумма коммерческого предложения
+  delta                   Decimal    @db.Decimal(10, 2)   // Дельта
+  project_status          Status                          // Статус проекта (ENUM)
+  comments                String                          // Комментарии
+  lastDateConnection      DateTime                        // Дата последнего соединения
+  plannedDateConnection   DateTime                        // Запланированная дата соединения
+  createdAt               DateTime   @default(now())      // Дата и время создания
+  updatedAt               DateTime   @updatedAt           // Дата и время последнего обновления
+  user                    User       @relation(fields: [userId], references: [id]) // Связь с пользователем
+}
+
+model UserLogin {
+  id                      String @id @default(cuid())     // Уникальный идентификатор записи
+  userId                  String                          // ID пользователя, который вошел в систему
+  loginAt                 DateTime @default(now())        // Дата и время входа
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Связь с пользователем
+}
+
+
+model UserPermission{
+  id                      String @id @default(cuid())
+  userId                  String
+  permission              Permission
+  user                    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {   
+  DIRECTOR            // Администратор
+  EMPLOYEE 
+  ADMIN
+}
+
+// ENUM для прав доступа
+enum Permission {
+  VIEW_REPORTS       // Просмотр отчетов других менеджеров
+  EDIT_PROJECTS      // Редактирование проектов
+  DELETE_PROJECTS    // Удаление проектов
+  DOWNLOAD_REPORTS   // Скачать отчет
+  CREATE_USER
+  DELETE_USER
+  EDIT_USER
+}
+
+enum Direction {
+  PARKING     // Парковка
+  SKD         // СКД
+  GLK         // ГЛК
+  OTHER       // Иное
+  KATOK       // Каток
+  MUSEUM      // Музей
+  SPORT       // Спорткомплекс
+  FOK         // ФОК
+}
+
+enum Delivery {
+  COMPLEX          // Комплекс
+  WHOLESALE        // Розница
+  SUPPLY           // Поставка оборудования
+  WORK             // Работы
+}
+
+enum Status {
+  INVOICE_ISSUED   // Выставлен счет
+  DEAL_SUCCESSFUL  // Сделка успешна
+  ACTUAL           // Актуально
+  REJECT           // Отказ
+  PAID             // Оплачено
+  APPROVAL         // На согласовании
+}
+
+enum DepartmentEnum {
+  SALES
+  TECHNICAL
+}
+
+
+// model User {
+//   id             String          @id @default(cuid())
+//   username       String
+//   email          String          @unique
+//   user_password  String  
+//   position       String
+//   departmentId   Int
+//   department     Department      @relation("DepartmentUsers", fields: [departmentId], references: [id])
+//   role           String
+//   lastlogin      DateTime?
+//   projects       Project[]       // ✅ Связанные проекты
+//   login          UserLogin[]     // ✅ Связанные входы в систему
+//   permissions    UserPermission[] // ✅ Связанные разрешения
+//   createdAt      DateTime        @default(now())
+//   updatedAt      DateTime        @updatedAt
+//   directorOf     Department?     @relation("DepartmentDirector")  // Обратное отношение
+//   @@index([departmentId])
+// }
+
+// model Department {
+//   id          Int             @id @default(autoincrement())
+//   name        DepartmentEnum  @unique
+//   directorId  String?         @unique
+//   director    User?           @relation("DepartmentDirector", fields: [directorId], references: [id], onDelete: SetNull) // ✅ Если директор удален, просто обнуляем directorId
+//   users       User[]          @relation("DepartmentUsers")
+// }
+
+// model Project {
+//   id                      String  @id @default(cuid()) 
+//   userId                  String  
+//   equipment_type          String
+//   dateRequest             DateTime   
+//   nameObject              String     
+//   direction               Direction 
+//   deliveryType            Delivery  
+//   contact                 String    
+//   phone                   String    
+//   email                   String?    
+//   amountCo                Decimal    @db.Decimal(15, 2) 
+//   delta                   Decimal    @db.Decimal(10, 2) 
+//   project_status          Status    
+//   comments                String    
+//   lastDateConnection      DateTime  
+//   plannedDateConnection   DateTime  
+//   createdAt               DateTime   @default(now()) 
+//   updatedAt               DateTime   @updatedAt        
+//   user                    User       @relation(fields: [userId], references: [id], onDelete: Cascade) // ✅ Удаляем проект при удалении пользователя
+// }
+
+// model UserLogin {
+//   id      String  @id @default(cuid()) 
+//   userId  String  
+//   loginAt DateTime @default(now()) 
+//   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade) // ✅ Удаляем входы при удалении пользователя
+// }
+
+// model UserPermission {
+//   id         String @id @default(cuid())
+//   userId     String
+//   permission Permission
+//   user       User @relation(fields: [userId], references: [id], onDelete: Cascade) // ✅ Удаляем разрешения при удалении пользователя
+// }
+
+// enum Role {   
+//   DIRECTOR    
+//   EMPLOYEE 
+//   ADMIN
+// }
