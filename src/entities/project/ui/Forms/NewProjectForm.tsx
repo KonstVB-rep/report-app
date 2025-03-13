@@ -30,7 +30,8 @@ import {
   StatusLabels,
 } from "../../lib/constants";
 import PhoneInput from "@/shared/ui/PhoneInput";
-import NumberInput from "@/shared/ui/NumberInput";
+import InputNumber from "@/shared/ui/Inputs/InputNumber";
+import InputEmail from "@/shared/ui/Inputs/InputEmail";
 
 const NewProjectForm = ({
   setOpen,
@@ -49,6 +50,7 @@ const NewProjectForm = ({
 
       return createProject({
         ...data,
+        email: data.email || "",
         userId: authUser.id,
         deliveryType: data.deliveryType as Delivery,
         dateRequest: new Date(),
@@ -56,10 +58,12 @@ const NewProjectForm = ({
         lastDateConnection: new Date(data.lastDateConnection),
         plannedDateConnection: new Date(data.plannedDateConnection),
         direction: data.direction as Direction,
-        amountCo: parseFloat(
-          data.amountCo.replace(/\s/g, "").replace(",", ".")
-        ),
-        delta: parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")),
+        amountCo: data.amountCo
+          ? parseFloat(data.amountCo.replace(/\s/g, "").replace(",", "."))
+          : 0,
+        delta: data.delta
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", "."))
+          : 0,
       });
     },
 
@@ -70,7 +74,7 @@ const NewProjectForm = ({
         queryClient.invalidateQueries({
           queryKey: ["projects", authUser?.id],
           exact: true,
-        }); 
+        });
 
         queryClient.invalidateQueries({
           queryKey: ["all-projects", authUser?.departmentId],
@@ -106,7 +110,7 @@ const NewProjectForm = ({
             resolve(data);
           },
           onError: (error) => {
-            reject(error); 
+            reject(error);
           },
         });
       }),
@@ -140,7 +144,7 @@ const NewProjectForm = ({
                   </FormControl>
                   {form.formState.errors.nameObject?.message && (
                     <FormMessage>
-                     { form.formState.errors.nameObject?.message}
+                      {form.formState.errors.nameObject?.message}
                     </FormMessage>
                   )}
                 </FormItem>
@@ -207,7 +211,7 @@ const NewProjectForm = ({
                   </FormControl>
                   {form.formState.errors.equipment_type?.message && (
                     <FormMessage>
-                     { form.formState.errors.equipment_type?.message}
+                      {form.formState.errors.equipment_type?.message}
                     </FormMessage>
                   )}
                 </FormItem>
@@ -259,11 +263,7 @@ const NewProjectForm = ({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Email@mail.ru"
-                      type="email"
-                      {...field}
-                    />
+                    <InputEmail {...field} />
                   </FormControl>
                   {form.formState.errors.email?.message && (
                     <FormMessage>
@@ -282,19 +282,17 @@ const NewProjectForm = ({
                 <FormItem>
                   <FormLabel>Сумма КП</FormLabel>
                   <FormControl>
-                    <NumberInput
+                    <InputNumber
                       placeholder="Сумма КП"
                       {...field}
                       value={String(field.value || "")}
                     />
                   </FormControl>
-                  {
-                    form.formState.errors.amountCo?.message && (
-                      <FormMessage>
-                        {form.formState.errors.amountCo?.message}
-                      </FormMessage>
-                    )
-                  }
+                  {form.formState.errors.amountCo?.message && (
+                    <FormMessage>
+                      {form.formState.errors.amountCo?.message}
+                    </FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -305,19 +303,17 @@ const NewProjectForm = ({
                 <FormItem>
                   <FormLabel>Дельта</FormLabel>
                   <FormControl>
-                    <NumberInput
+                    <InputNumber
                       placeholder="Дельта"
                       {...field}
                       value={String(field.value || "")}
                     />
                   </FormControl>
-                  {
-                    form.formState.errors.delta?.message && (
-                      <FormMessage>
-                        {form.formState.errors.delta?.message}
-                      </FormMessage>
-                    )
-                  }
+                  {form.formState.errors.delta?.message && (
+                    <FormMessage>
+                      {form.formState.errors.delta?.message}
+                    </FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -338,13 +334,11 @@ const NewProjectForm = ({
                       {...field}
                     />
                   </FormControl>
-                  {
-                    form.formState.errors.project_status?.message && (
-                      <FormMessage>
-                        {form.formState.errors.project_status?.message}
-                      </FormMessage>
-                    )
-                  }
+                  {form.formState.errors.project_status?.message && (
+                    <FormMessage>
+                      {form.formState.errors.project_status?.message}
+                    </FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -354,14 +348,12 @@ const NewProjectForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="h-[19px]">Последний контакт</FormLabel>
-                  <CalendarComponent field={field} required={true}/>
-                  {
-                    form.formState.errors.lastDateConnection?.message && (
-                      <FormMessage>
-                        {form.formState.errors.lastDateConnection?.message}
-                      </FormMessage>
-                    )
-                  }
+                  <CalendarComponent field={field} required={true} />
+                  {form.formState.errors.lastDateConnection?.message && (
+                    <FormMessage>
+                      {form.formState.errors.lastDateConnection?.message}
+                    </FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -373,14 +365,12 @@ const NewProjectForm = ({
                   <FormLabel className="h-[19px]">
                     Планируемый контакт
                   </FormLabel>
-                  <CalendarComponent field={field} required={true}/>
-                  {
-                    form.formState.errors.plannedDateConnection?.message && (
-                      <FormMessage>
-                        {form.formState.errors.plannedDateConnection?.message}
-                      </FormMessage>
-                    )
-                  }
+                  <CalendarComponent field={field} required={true} />
+                  {form.formState.errors.plannedDateConnection?.message && (
+                    <FormMessage>
+                      {form.formState.errors.plannedDateConnection?.message}
+                    </FormMessage>
+                  )}
                 </FormItem>
               )}
             />
@@ -391,15 +381,17 @@ const NewProjectForm = ({
                 <FormItem>
                   <FormLabel>Примечание / Комментарии</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Примечание" required {...field} />
+                    <Textarea
+                      placeholder="Введите комментарии"
+                      required
+                      {...field}
+                    />
                   </FormControl>
-                  {
-                    form.formState.errors.comments?.message && (
-                      <FormMessage>
-                        {form.formState.errors.comments?.message}
-                      </FormMessage>
-                    )
-                  }
+                  {form.formState.errors.comments?.message && (
+                    <FormMessage>
+                      {form.formState.errors.comments?.message}
+                    </FormMessage>
+                  )}
                 </FormItem>
               )}
             />

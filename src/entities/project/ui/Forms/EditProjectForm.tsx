@@ -30,7 +30,8 @@ import {
 import { useGetProjectById } from "../../hooks";
 import PhoneInput from "@/shared/ui/PhoneInput";
 import { formatterCurrency } from "@/shared/lib/utils";
-import NumberInput from "@/shared/ui/NumberInput";
+import InputNumber from "@/shared/ui/Inputs/InputNumber";
+import InputEmail from "@/shared/ui/Inputs/InputEmail";
 
 const EditProjectForm = ({
   close,
@@ -75,6 +76,7 @@ const EditProjectForm = ({
       return updateProject({
         ...data,
         id: projectId,
+        email: data.email || "",
         dateRequest: new Date(),
         deliveryType: data.deliveryType as Delivery,
         project_status: data.project_status as Status,
@@ -82,10 +84,12 @@ const EditProjectForm = ({
         plannedDateConnection: new Date(data.plannedDateConnection),
         direction: data.direction as Direction,
         userId: authUser.id,
-        amountCo: parseFloat(
-          data.amountCo.replace(/\s/g, "").replace(",", ".")
-        ),
-        delta: parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")),
+        amountCo: data.amountCo
+          ? parseFloat(data.amountCo.replace(/\s/g, "").replace(",", "."))
+          : 0,
+        delta: data.delta
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", "."))
+          : 0,
       });
     },
     onSuccess: () => {
@@ -102,17 +106,17 @@ const EditProjectForm = ({
       new Promise((resolve, reject) => {
         mutate(data, {
           onSuccess: (data) => {
-            resolve(data); 
+            resolve(data);
           },
           onError: (error) => {
-            reject(error); 
+            reject(error);
           },
         });
       }),
       "Проект обновлен"
     );
   };
- 
+
   useEffect(() => {
     if (project) {
       form.reset({
@@ -274,11 +278,7 @@ const EditProjectForm = ({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Email@mail.ru"
-                      type="email"
-                      {...field}
-                    />
+                    <InputEmail {...field} />
                   </FormControl>
                   {form.formState.errors.email?.message && (
                     <FormMessage>
@@ -297,7 +297,7 @@ const EditProjectForm = ({
                 <FormItem>
                   <FormLabel>Сумма КП</FormLabel>
                   <FormControl>
-                    <NumberInput
+                    <InputNumber
                       placeholder="Дельта"
                       {...field}
                       value={String(field.value || "")}
@@ -318,7 +318,7 @@ const EditProjectForm = ({
                 <FormItem>
                   <FormLabel>Дельта</FormLabel>
                   <FormControl>
-                    <NumberInput
+                    <InputNumber
                       placeholder="Дельта"
                       {...field}
                       value={String(field.value || "")}
@@ -364,7 +364,7 @@ const EditProjectForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="h-[19px]">Последний контакт</FormLabel>
-                  <CalendarComponent field={field} required={true}/>
+                  <CalendarComponent field={field} required={true} />
                   {form.formState.errors.lastDateConnection?.message && (
                     <FormMessage>
                       {form.formState.errors.lastDateConnection?.message}
@@ -381,7 +381,7 @@ const EditProjectForm = ({
                   <FormLabel className="h-[19px]">
                     Планируемый контакт
                   </FormLabel>
-                  <CalendarComponent field={field} required={true}/>
+                  <CalendarComponent field={field} required={true} />
                   {form.formState.errors.plannedDateConnection?.message && (
                     <FormMessage>
                       {form.formState.errors.plannedDateConnection?.message}
@@ -397,7 +397,11 @@ const EditProjectForm = ({
                 <FormItem>
                   <FormLabel>Примечание / Комментарии</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Примечание" required {...field} />
+                    <Textarea
+                      placeholder="Введите комментарии"
+                      required
+                      {...field}
+                    />
                   </FormControl>
                   {form.formState.errors.comments?.message && (
                     <FormMessage>

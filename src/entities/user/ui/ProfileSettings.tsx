@@ -37,7 +37,7 @@ export function ProfileSettings({ user }: Props) {
         <PersonEdit />
         <Link
           href={`/dashboard/profile/${user.id}`}
-          className="btn_hover flex gap-2 items-center justify-start p-2 text-sm"
+          className="btn_hover"
         >
           <UserRound size="16" /> <span>Профиль</span>
         </Link>

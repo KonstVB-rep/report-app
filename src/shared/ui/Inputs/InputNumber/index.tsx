@@ -2,7 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import React, { type ForwardedRef } from "react";
 import { IMaskInput } from "react-imask";
 
-interface NumberInputProps
+interface InputNumberProps
   extends Omit<
     React.HTMLAttributes<HTMLInputElement>,
     "value" | "onChange" | "ref"
@@ -11,21 +11,21 @@ interface NumberInputProps
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
-  ref?: ForwardedRef<typeof IMaskInput>; 
+  ref?: ForwardedRef<typeof IMaskInput>;
 }
 
-const NumberInput = ({
+const InputNumber = ({
   className,
   placeholder,
   value,
   onChange,
   ref,
   ...props
-}: NumberInputProps) => {
+}: InputNumberProps) => {
   return (
     <IMaskInput
       {...props}
-      ref={ref} 
+      ref={ref}
       mask={Number}
       min={0}
       max={999999999999.99}
@@ -45,9 +45,5 @@ const NumberInput = ({
   );
 };
 
-NumberInput.displayName = "NumberInput";
-export default NumberInput;
-
-
-
-
+InputNumber.displayName = "InputNumber";
+export default InputNumber;

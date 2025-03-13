@@ -17,7 +17,7 @@ import { useState } from "react";
 
 export function LogoutDialog() {
     
-  const { setAuthUser, setIsAuth } = useStoreUser();
+  const { resetStore } = useStoreUser();
   const [loading, setLoading] = useState(false)
 
   const router = useRouter(); 
@@ -27,8 +27,7 @@ export function LogoutDialog() {
     try {
       await logout();
       router.push("/login");
-      setAuthUser(null);
-      setIsAuth(false);
+      resetStore()
     } catch (error) {
       console.error("Ошибка при выходе:", error);
     }finally{
@@ -41,7 +40,7 @@ export function LogoutDialog() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="flex gap-2 w-full items-center border border-solid border-transparent h-10 hover:border-muted-foreground focus-visible:border-muted-foreground"
+          className="btn_hover justify-center"
         >
           <LogOut /> Выход
         </Button>
