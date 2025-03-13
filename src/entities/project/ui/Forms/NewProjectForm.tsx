@@ -50,6 +50,7 @@ const NewProjectForm = ({
 
       return createProject({
         ...data,
+        email: data.email || "",
         userId: authUser.id,
         deliveryType: data.deliveryType as Delivery,
         dateRequest: new Date(),
@@ -57,10 +58,12 @@ const NewProjectForm = ({
         lastDateConnection: new Date(data.lastDateConnection),
         plannedDateConnection: new Date(data.plannedDateConnection),
         direction: data.direction as Direction,
-        amountCo: parseFloat(
-          data.amountCo.replace(/\s/g, "").replace(",", ".")
-        ),
-        delta: parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")),
+        amountCo: data.amountCo
+          ? parseFloat(data.amountCo.replace(/\s/g, "").replace(",", "."))
+          : 0,
+        delta: data.delta
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", "."))
+          : 0,
       });
     },
 
