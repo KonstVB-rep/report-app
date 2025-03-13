@@ -1,6 +1,6 @@
 "use client";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import ProtectedRoute from "@/feature/protected-route";
+import Protected from "@/feature/Protected";
 import Link from "next/link";
 
 import React from "react";
@@ -9,7 +9,7 @@ const SummaryTableLink = () => {
   const { authUser } = useStoreUser();
   if (!authUser) return null;
   return (
-    <ProtectedRoute>
+    <Protected>
       <Link
         href={`/dashboard/summary-table/${authUser.id}`}
         className="btn_hover border max-w-max"
@@ -17,7 +17,7 @@ const SummaryTableLink = () => {
       >
         Сводная таблица отчетов
       </Link>
-    </ProtectedRoute>
+    </Protected>
   );
 };
 

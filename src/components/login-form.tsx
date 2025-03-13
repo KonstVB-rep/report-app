@@ -18,9 +18,11 @@ import {
 } from "./ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/entities/user/ui/Toast";
+import InputEmail from "@/shared/ui/Inputs/InputEmail";
+import InputPassword from "@/shared/ui/Inputs/InputPassword";
 
 export const loginFormSchema = z.object({
   email: z.string().email(),
@@ -39,7 +41,6 @@ export function LoginForm({
     },
   });
 
-
   const [state, formAction] = useActionState(login, undefined);
   const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
   const [shouldRedirect, setShouldRedirect] = useState(false);
@@ -50,35 +51,29 @@ export function LoginForm({
     formAction(formData);
   };
 
-
   useEffect(() => {
-
-    if(state && state?.error){
-      TOAST.ERROR(state.message)
+    if (state && state?.error) {
+      TOAST.ERROR(state.message);
     }
 
     const isRedirected = document.cookie.includes("auth_redirected=true");
 
     if (isRedirected) {
-      setIsAuth(false); 
+      setIsAuth(false);
       document.cookie = "auth_redirected=; Max-Age=0; path=/"; // Удаляем флаг из куки
     } else if (state && state.data) {
       setAuthUser(state.data);
       setIsAuth(true);
     }
 
-
     if (isAuth) {
       setShouldRedirect(true);
     }
   }, [state, setAuthUser, setIsAuth, isAuth]);
 
- 
   if (shouldRedirect) {
     redirect(`/dashboard/table/${authUser?.id}`);
-    return null; 
   }
-
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -100,13 +95,7 @@ export function LoginForm({
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="m@example.com"
-                          type="email"
-                          className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
-                          required
-                          {...field}
-                        />
+                        <InputEmail {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -119,16 +108,7 @@ export function LoginForm({
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
-                          id="password"
-                          type="password"
-                          minLength={6}
-                          maxLength={30}
-                          placeholder="✱✱✱✱✱✱✱"
-                          required
-                          className="placeholder:text-xs"
-                          {...field}
-                        />
+                        <InputPassword {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

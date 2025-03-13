@@ -31,9 +31,9 @@ const DialogForm = ({
   const [open, setOpen] = React.useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="btn_hover flex items-center gap-2 border border-solid border-gray-500 rounded-md">
+      <DialogTrigger className="btn_hover">
         {icon}
-        <span>{textTrigger}</span>
+        <span className="whitespace-nowrap">{textTrigger}</span>
       </DialogTrigger>
       <DialogContent>
         <DialogClose className="absolute top-3 right-3 hover:bg-muted hover:rounded-full p-[2px]">
