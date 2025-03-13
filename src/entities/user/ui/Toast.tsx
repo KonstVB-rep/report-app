@@ -12,8 +12,8 @@ export const TOAST = {
         color: "oklch(0.577 0.245 27.325)",
         backgroundColor: "#azure",
         maxWidth: "fit-content",
+        minWidth: "12rem",
       },
-      className: "animate__fadeInDown",
     }),
   SUCCESS: (message: string) =>
     toast.success(message, {
@@ -26,8 +26,8 @@ export const TOAST = {
         color: "green",
         backgroundColor: "#azure",
         maxWidth: "fit-content",
+        minWidth: "12rem",
       },
-      className: "animate__fadeInDown",
     }),
   PROMISE: (promise: Promise<unknown>, messageSuccess: string) =>
     toast.promise(promise, {
@@ -38,17 +38,15 @@ export const TOAST = {
           border: "1px solid oklch(0.723 0.219 149.579)",
           borderRadius: "30px",
           color: "green",
-          backgroundColor: "#azure",
           maxWidth: "fit-content",
         },
       },
       error: (err) => ({
-        message: err.message,
+        message: err.message || "Произошла ошибка",
         style: {
           border: "1px solid oklch(0.577 0.245 27.325)",
           borderRadius: "30px",
           color: "oklch(0.577 0.245 27.325)",
-          backgroundColor: "#azure",
           maxWidth: "fit-content",
         },
       }),
