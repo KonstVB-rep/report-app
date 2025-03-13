@@ -241,7 +241,7 @@ export const deleteUser = async (
     const person = await prisma.user.findUnique({
       where: { id: deletedUserId },
     });
-    console.log(person,deletedUserId, "person")
+
     if (!person)
       return { error: true, message: "Пользователь не найден", data: null };
 

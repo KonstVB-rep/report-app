@@ -24,8 +24,8 @@ export type ProjectResponse = {
   delta: string;
   project_status: Status;
   comments: string;
-  lastDateConnection: Date;
-  plannedDateConnection: Date;
+  lastDateConnection: Date | null;
+  plannedDateConnection: Date | null;
 };
 
 export type Project = {
@@ -43,8 +43,8 @@ export type Project = {
   delta: number;
   project_status: Status;
   comments: string;
-  lastDateConnection: Date;
-  plannedDateConnection: Date;
+  lastDateConnection: Date | null;
+  plannedDateConnection: Date | null;
 };
 
 //  Для фронта, но не для Prisma
