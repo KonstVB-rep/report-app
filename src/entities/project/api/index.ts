@@ -1,5 +1,3 @@
-"use server";
-
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/db/prisma-client";
@@ -116,9 +114,8 @@ export const createProject = async (data: ProjectWithoutId) => {
     // }
 
     const safeAmountCo = isNaN(projectData.amountCo) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCo);
-      const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
+    const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
 
-    console.log("formatteProject", projectData);
 
     const newProject = await prisma.project.create({
       data: {
@@ -199,7 +196,7 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
       typeof error === "string"
         ? error
         : (error as Error).message || "Ошибка при обновлении проекта";
-    handleError(errorMessage);
+    return handleError(errorMessage);
   }
 };
 

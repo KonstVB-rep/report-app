@@ -76,6 +76,7 @@ const EditProjectForm = ({
       return updateProject({
         ...data,
         id: projectId,
+        email: data.email || "",
         dateRequest: new Date(),
         deliveryType: data.deliveryType as Delivery,
         project_status: data.project_status as Status,
@@ -83,10 +84,12 @@ const EditProjectForm = ({
         plannedDateConnection: new Date(data.plannedDateConnection),
         direction: data.direction as Direction,
         userId: authUser.id,
-        amountCo: parseFloat(
-          data.amountCo.replace(/\s/g, "").replace(",", ".")
-        ),
-        delta: parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")),
+        amountCo: data.amountCo
+          ? parseFloat(data.amountCo.replace(/\s/g, "").replace(",", "."))
+          : 0,
+        delta: data.delta
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", "."))
+          : 0,
       });
     },
     onSuccess: () => {
