@@ -40,7 +40,7 @@ export function NavUser() {
                 <span className="truncate font-semibold capitalize">
                   {authUser?.username}
                 </span>
-                <span className="truncate text-xs capitalize">
+                <span className="truncate text-xs">
                   {authUser?.email}
                 </span>
               </div>
