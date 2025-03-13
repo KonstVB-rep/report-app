@@ -1,3 +1,4 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
@@ -6,16 +7,14 @@ import React from "react";
 type InputPasswordProps = React.InputHTMLAttributes<HTMLInputElement>;
 const InputPassword = (props: InputPasswordProps) => {
   const [visible, setVisible] = React.useState(false);
+
   return (
     <div className="relative">
       <Input
         id="password"
         type={visible ? "text" : "password"}
-        minLength={6}
-        maxLength={30}
         placeholder="✱✱✱✱✱✱✱"
-        required
-        className="placeholder:text-xs w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+        className={`placeholder:text-xs w-full ${props.className}`}
         {...props}
       />
       <Button

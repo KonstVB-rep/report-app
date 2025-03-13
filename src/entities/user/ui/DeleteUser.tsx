@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,17 +10,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {  Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { deleteUser, getUser } from "../api";
 import { TOAST } from "./Toast";
+import { getQueryClient } from "@/app/provider/query-provider";
 
 export function DeleteUser() {
   const params = useParams();
   const userId = String(params.userId);
   const router = useRouter();
 
-  const {data} = useQuery({
+  const { data } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => {
       try {
@@ -31,15 +32,22 @@ export function DeleteUser() {
     },
     enabled: !!userId,
   });
+  const queryClient = getQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => deleteUser(userId),
     onSuccess: () => {
       router.push("/dashboard");
-      //   queryClient.invalidateQueries({
-      //     queryKey: ["users"],
-      //     exact: true,
-      //   })
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: ["user", userId],
+          exact: true,
+        });
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["depsWithEmp"],
+        exact: true,
+      });
     },
     onError: (error) => {
       TOAST.ERROR((error as Error).message);

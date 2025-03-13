@@ -1,3 +1,5 @@
+'use server'
+
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/db/prisma-client";
@@ -8,28 +10,17 @@ import { Project, ProjectResponse } from "../types";
 
 const requiredFields = [
   "nameObject",
-  "equipment_type",
   "direction",
   "comments",
   "contact",
   "project_status",
-  "phone",
-  "email",
-  "lastDateConnection",
-  "plannedDateConnection",
 ];
 
 type ProjectWithoutDateCreateAndUpdate = Omit<Project, "createdAt" | "updatedAt"> 
 
-// type ProjectWithoutDirection = Omit<Project, "direction"> & {
-//   direction: Direction;
-// };
-
 type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id"> & {
   direction: Direction;
 };
-
-// Получение данных из FormData
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
   const { userId } = await handleAuthorization();  
@@ -129,8 +120,8 @@ export const createProject = async (data: ProjectWithoutId) => {
 
     const formatteProject = {
       ...newProject,
-      amountCo: safeAmountCo.toString(),  // Преобразуем Decimal в строку
-      delta: safeDelta.toString(),  // Преобразуем Decimal в строку
+      amountCo: safeAmountCo.toString(),
+      delta: safeDelta.toString(),  
     };
 
       
@@ -256,8 +247,8 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
 
       const formattedProjects = projects.map(project => ({
         ...project,
-        amountCo: project.amountCo.toString(),  // Преобразуем Decimal в строку
-        delta: project.delta.toString(),  // Преобразуем Decimal в строку
+        amountCo: project.amountCo.toString(),
+        delta: project.delta.toString(), 
       }));
       
       return formattedProjects;
@@ -275,8 +266,8 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
 
     const formattedProjects = projects.map(project => ({
       ...project,
-      amountCo: project.amountCo.toString(),  // Преобразуем Decimal в строку
-      delta: project.delta.toString(),  // Преобразуем Decimal в строку
+      amountCo: project.amountCo.toString(), 
+      delta: project.delta.toString(), 
     }));
 
     return formattedProjects;
@@ -291,10 +282,6 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
 export const getAllProjectsByDepartment = async () => {
   try {
     const { user, userId} = await handleAuthorization();
-
-    // const userId = await requireAuth();
-
-    // const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
       return handleError("Пользователь не найден");
@@ -338,42 +325,3 @@ export const getAllProjectsByDepartment = async () => {
     return handleError(errorMessage);
   }
 };
-
-// export const getAllProjectsByDepartment = async () => {
-//   try {
-//     const { error, message, data } = await handleAuthorization();
-//     if (error) return { error, message, data: null };
-
-//     const { user, userId } = data!;
-//     // const userId = await requireAuth();
-
-//     // const user = await prisma.user.findUnique({ where: { id: userId } });
-
-//     // if (!user) {
-//     //   return handleError(true, "Пользователь не найден");
-//     // }
-
-//     const permissionError = await checkUserPermissionByRole(
-//       userId!,
-//       user.role,
-//       user.departmentId
-//     );
-
-//     if (permissionError) return permissionError;
-
-//     const projects = await prisma.project.findMany({
-//       where: { departmentId: user.departmentId },
-//     });
-
-//     return {
-//       data: projects,
-//       message: "Проекты успешно получены",
-//       error: false,
-//     };
-//   } catch (error) {
-//     console.error(error);
-//     const errorMessage =
-//       typeof error === "string" ? error : "Ошибка при получении проектов";
-//     return handleError(true, errorMessage);
-//   }
-// };

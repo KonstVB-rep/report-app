@@ -94,7 +94,11 @@ export function LoginForm({
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <InputEmail {...field} required/>
+                        <InputEmail
+                          {...field}
+                          required
+                          className="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -107,7 +111,13 @@ export function LoginForm({
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <InputPassword {...field} />
+                        <InputPassword
+                          {...field}
+                          minLength={6}
+                          maxLength={30}
+                          className="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                          required
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

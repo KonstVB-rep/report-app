@@ -7,8 +7,8 @@ export const ProjectFormSchema = z.object({
     message: "Введите название объекта",
   }),
   equipment_type: z.string({
-    message: "Выберите тип оборудования",
-  }),
+    message: "Укажите тип оборудования",
+  }).optional(),
   direction: z.enum(Object.values(Directions) as [string, ...string[]], {
     message: "Выберите направление",
   }),
@@ -16,27 +16,27 @@ export const ProjectFormSchema = z.object({
     message: "Выберите Тип поставки",
   }),
   contact: z.string(),
-  phone: z.string(),
-  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  email: z.string().email().or(z.literal("")), // ✅ Email необязателен
+
   amountCo: z.string().optional(),
   delta: z.string().optional(),
+
   project_status: z.enum(Object.values(Status) as [string, ...string[]], {
     message: "Выберите статус проекта",
   }),
   comments: z.string(),
+
   lastDateConnection: z.preprocess(
-    (val) => (val instanceof Date ? val.toISOString() : val),
-    z.string({
-      message: "Выберите дату",
-    })
+    (val) => (val instanceof Date ? val.toISOString() : val || ""), // Преобразуем undefined/null → ""
+    z.string()
   ),
   plannedDateConnection: z.preprocess(
-    (val) => (val instanceof Date ? val.toISOString() : val),
-    z.string({
-      message: "Выберите дату",})
+    (val) => (val instanceof Date ? val.toISOString() : val || ""),
+    z.string()
   ),
-})
-// .refine((data) => {
+});
+// refine((data) => {
 //   // Сравниваем lastDateConnection и plannedDateConnection
 //   const lastDate = new Date(data.lastDateConnection);
 //   const plannedDate = new Date(data.plannedDateConnection);

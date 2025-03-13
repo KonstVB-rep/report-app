@@ -15,25 +15,27 @@ import { useForm } from "react-hook-form";
 import SelectComponent from "@/shared/ui/SelectComponent";
 import { DepartmentsTitle, RolesUser } from "../model/objectTypes";
 import { createUser } from "../api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import { TOAST } from "./Toast";
 import { userFormSchema, userSchema } from "../model/schema";
 import PhoneInput from "@/shared/ui/PhoneInput";
+import { getQueryClient } from "@/app/provider/query-provider";
 
 const UserCreateForm = ({
   setOpen,
 }: {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const queryClient = useQueryClient();
+ 
+  const queryClient = getQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: userSchema) => createUser(data),
     onSuccess: () => {
       setOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ["users"],
+        queryKey: ["depsWithEmp"],
         exact: true,
       });
     },

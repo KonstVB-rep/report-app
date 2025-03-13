@@ -204,8 +204,13 @@ export const columnsData: ColumnDef<ProjectResponse, unknown>[] = [
     accessorKey: "lastDateConnection",
     header: "Дата последнего контакта",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date;
-      return date.toLocaleDateString("ru-RU");
+      const date = info.getValue() as Date | null;
+  
+      if (date) {
+        return date.toLocaleDateString("ru-RU");
+      } else {
+        return "Дата не указана";
+      }
     },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.lastDateConnection,
@@ -215,8 +220,13 @@ export const columnsData: ColumnDef<ProjectResponse, unknown>[] = [
     accessorKey: "plannedDateConnection",
     header: "Плановая дата контакта",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date;
-      return date.toLocaleDateString("ru-RU");
+      const date = info.getValue() as Date | null;
+  
+      if (date) {
+        return date.toLocaleDateString("ru-RU");
+      } else {
+        return "Дата не указана";
+      }
     },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.plannedDateConnection,

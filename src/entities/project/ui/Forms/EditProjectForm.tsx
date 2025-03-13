@@ -41,27 +41,24 @@ const EditProjectForm = ({
   projectId: string;
 }) => {
   const { authUser } = useStoreUser();
-  const { data: project } = useGetProjectById(projectId);
+  const { data } = useGetProjectById(projectId);
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues: {
-      nameObject: project?.nameObject || "",
-      equipment_type: project?.equipment_type || "",
-      direction: project?.direction ? String(project.direction) : "",
-      deliveryType: project?.deliveryType ? String(project.deliveryType) : "",
-      project_status: project?.project_status
-        ? String(project.project_status)
-        : "",
-      contact: project?.contact || "",
-      phone: project?.phone || "",
-      email: project?.email || "",
-      amountCo: project?.amountCo || "0",
-      delta: project?.delta || "0",
-      comments: project?.comments || "",
-      lastDateConnection: project?.lastDateConnection.toString() || undefined,
-      plannedDateConnection:
-        project?.plannedDateConnection.toString() || undefined,
+      nameObject: data?.nameObject || "",
+      equipment_type: data?.equipment_type || "",
+      direction: data?.direction ? String(data.direction) : "",
+      deliveryType: data?.deliveryType ? String(data.deliveryType) : "",
+      project_status: data?.project_status ? String(data.project_status) : "",
+      contact: data?.contact || "",
+      phone: data?.phone || "",
+      email: data?.email || "",
+      amountCo: data?.amountCo || "0",
+      delta: data?.delta || "0",
+      comments: data?.comments || "",
+      lastDateConnection: undefined,
+      plannedDateConnection: undefined,
     },
   });
 
@@ -77,11 +74,17 @@ const EditProjectForm = ({
         ...data,
         id: projectId,
         email: data.email || "",
+        phone: data.phone || "",
+        equipment_type: data.equipment_type || "",
         dateRequest: new Date(),
         deliveryType: data.deliveryType as Delivery,
         project_status: data.project_status as Status,
-        lastDateConnection: new Date(data.lastDateConnection),
-        plannedDateConnection: new Date(data.plannedDateConnection),
+        lastDateConnection: data.lastDateConnection
+          ? new Date(data.lastDateConnection)
+          : null,
+        plannedDateConnection: data.plannedDateConnection
+          ? new Date(data.plannedDateConnection)
+          : null,
         direction: data.direction as Direction,
         userId: authUser.id,
         amountCo: data.amountCo
@@ -118,20 +121,20 @@ const EditProjectForm = ({
   };
 
   useEffect(() => {
-    if (project) {
+    if (data) {
       form.reset({
-        ...project,
-        deliveryType: project.deliveryType as Delivery,
-        project_status: project.project_status as Status,
-        direction: project.direction as Direction,
-        lastDateConnection: project.lastDateConnection?.toISOString(), // Преобразуем Date в строку
-        plannedDateConnection: project.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
-        email: project.email ?? undefined, // Преобразуем null в undefined
-        amountCo: formatterCurrency.format(parseFloat(project.amountCo)),
-        delta: formatterCurrency.format(parseFloat(project.delta)),
+        ...data,
+        deliveryType: data.deliveryType as Delivery,
+        project_status: data.project_status as Status,
+        direction: data.direction as Direction,
+        lastDateConnection: data.lastDateConnection?.toISOString(), // Преобразуем Date в строку
+        plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
+        email: data.email ?? undefined, // Преобразуем null в undefined
+        amountCo: formatterCurrency.format(parseFloat(data.amountCo)),
+        delta: formatterCurrency.format(parseFloat(data.delta)),
       });
     }
-  }, [form, project]);
+  }, [form, data]);
 
   return (
     <Form {...form}>

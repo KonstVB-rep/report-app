@@ -21,13 +21,14 @@ import {
 
 import { userEditSchema, userFormEditSchema } from "../model/schema";
 import { TOAST } from "./Toast";
-import {  updateUser } from "../api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateUser } from "../api";
+import { useMutation } from "@tanstack/react-query";
 import { UserRequest, UserWithdepartmentName } from "../types";
 import useStoreUser from "../store/useStoreUser";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import PhoneInput from "@/shared/ui/PhoneInput";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
+import { getQueryClient } from "@/app/provider/query-provider";
 
 const UserEditForm = ({
   user,
@@ -36,7 +37,6 @@ const UserEditForm = ({
   user: UserWithdepartmentName | undefined;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-
   const { authUser } = useStoreUser();
 
   const form = useForm<userEditSchema>({
@@ -52,14 +52,20 @@ const UserEditForm = ({
     },
   });
 
-  const queryClient = useQueryClient();
+  const queryClient = getQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: userEditSchema) => updateUser(data as UserRequest),
     onSuccess: () => {
       setOpen(false);
+      if (user) {
+        queryClient.invalidateQueries({
+          queryKey: ["user", user.id],
+          exact: true,
+        });
+      }
       queryClient.invalidateQueries({
-        queryKey: ["users"],
+        queryKey: ["depsWithEmp"],
         exact: true,
       });
     },
@@ -70,10 +76,10 @@ const UserEditForm = ({
       new Promise((resolve, reject) => {
         mutate(data, {
           onSuccess: (data) => {
-            resolve(data); 
+            resolve(data);
           },
           onError: (error) => {
-            reject(error); 
+            reject(error);
           },
         });
       }),
@@ -96,7 +102,10 @@ const UserEditForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5 max-h-[85vh] overflow-y-auto p-1">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid gap-5 max-h-[85vh] overflow-y-auto p-1"
+      >
         <div>
           <FormField
             control={form.control}
@@ -112,15 +121,15 @@ const UserEditForm = ({
                     maxLength={50}
                     value={field.value}
                     onChange={field.onChange}
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full"
                     required
                   />
                 </FormControl>
-              {
-                form.formState.errors.username?.message && (
-                  <FormMessage>{form.formState.errors.username?.message}</FormMessage>
-                )
-              }
+                {form.formState.errors.username?.message && (
+                  <FormMessage>
+                    {form.formState.errors.username?.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
@@ -137,11 +146,11 @@ const UserEditForm = ({
                     {...field}
                   />
                 </FormControl>
-               {
-                form.formState.errors.phone?.message && (
-                  <FormMessage>{form.formState.errors.phone?.message}</FormMessage>
-                )
-              }
+                {form.formState.errors.phone?.message && (
+                  <FormMessage>
+                    {form.formState.errors.phone?.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
@@ -152,21 +161,13 @@ const UserEditForm = ({
               <FormItem>
                 <FormLabel>Пароль</FormLabel>
                 <FormControl>
-                  {/* <Input
-                    placeholder="Введите пароль для пользователя"
-                    type="password"
-                    {...field}
-                    minLength={6}
-                    maxLength={30}
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
-                  /> */}
-                  <InputPassword {...field} />
+                  <InputPassword {...field} required={false} />
                 </FormControl>
-                {
-                  form.formState.errors.user_password?.message && (
-                    <FormMessage>{form.formState.errors.user_password?.message}</FormMessage>
-                  )
-                }
+                {form.formState.errors.user_password?.message && (
+                  <FormMessage>
+                    {form.formState.errors.user_password?.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
@@ -184,15 +185,15 @@ const UserEditForm = ({
                     maxLength={60}
                     value={field.value}
                     onChange={field.onChange}
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full"
                     required
                   />
                 </FormControl>
-               {
-                form.formState.errors.position?.message && (
-                  <FormMessage>{form.formState.errors.position?.message}</FormMessage>
-                )
-               }
+                {form.formState.errors.position?.message && (
+                  <FormMessage>
+                    {form.formState.errors.position?.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
@@ -212,11 +213,11 @@ const UserEditForm = ({
                     required
                   />
                 </FormControl>
-                {
-                  form.formState.errors.department?.message && (
-                    <FormMessage>{form.formState.errors.department?.message}</FormMessage>
-                  )
-                }
+                {form.formState.errors.department?.message && (
+                  <FormMessage>
+                    {form.formState.errors.department?.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
@@ -241,11 +242,11 @@ const UserEditForm = ({
                     required
                   />
                 </FormControl>
-                {
-                  form.formState.errors.role?.message && (
-                    <FormMessage>{form.formState.errors.role?.message}</FormMessage>
-                  )
-                }
+                {form.formState.errors.role?.message && (
+                  <FormMessage>
+                    {form.formState.errors.role?.message}
+                  </FormMessage>
+                )}
               </FormItem>
             )}
           />
@@ -270,7 +271,7 @@ const UserEditForm = ({
             )}
           /> */}
         </div>
-        <SubmitFormButton title="Сохранить" isPending={isPending}/>
+        <SubmitFormButton title="Сохранить" isPending={isPending} />
       </form>
     </Form>
   );

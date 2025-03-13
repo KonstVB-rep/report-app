@@ -51,12 +51,18 @@ const NewProjectForm = ({
       return createProject({
         ...data,
         email: data.email || "",
+        phone: data.phone || "",
+        equipment_type: data.equipment_type || "",
         userId: authUser.id,
         deliveryType: data.deliveryType as Delivery,
         dateRequest: new Date(),
         project_status: data.project_status as Status,
-        lastDateConnection: new Date(data.lastDateConnection),
-        plannedDateConnection: new Date(data.plannedDateConnection),
+        lastDateConnection: data.lastDateConnection
+          ? new Date(data.lastDateConnection)
+          : null,
+        plannedDateConnection: data.plannedDateConnection
+          ? new Date(data.plannedDateConnection)
+          : null,
         direction: data.direction as Direction,
         amountCo: data.amountCo
           ? parseFloat(data.amountCo.replace(/\s/g, "").replace(",", "."))

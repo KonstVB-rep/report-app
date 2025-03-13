@@ -51,8 +51,8 @@ model Project {
   delta                   Decimal    @db.Decimal(10, 2)   // Дельта
   project_status          Status                          // Статус проекта (ENUM)
   comments                String                          // Комментарии
-  lastDateConnection      DateTime                        // Дата последнего соединения
-  plannedDateConnection   DateTime                        // Запланированная дата соединения
+  lastDateConnection      DateTime?                        // Дата последнего соединения
+  plannedDateConnection   DateTime?                        // Запланированная дата соединения
   createdAt               DateTime   @default(now())      // Дата и время создания
   updatedAt               DateTime   @updatedAt           // Дата и время последнего обновления
   user                    User       @relation(fields: [userId], references: [id]) // Связь с пользователем
