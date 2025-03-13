@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuSeparator,
+  // DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -20,7 +20,7 @@ import {
 import { LogoutDialog } from "./logout-dialog";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import Link from "next/link";
-import DropdownWrapper from "@/shared/ui/DropdownWrapper";
+// import DropdownWrapper from "@/shared/ui/DropdownWrapper";
 
 export function NavUser() {
   const { isMobile } = useSidebar();

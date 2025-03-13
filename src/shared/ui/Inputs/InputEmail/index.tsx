@@ -11,7 +11,6 @@ const InputEmail = (props: InputProps) => {
       placeholder="m@example.com"
       type="email"
       className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
-      required
     />
   );
 };

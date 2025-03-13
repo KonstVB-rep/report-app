@@ -1,4 +1,3 @@
-import React from 'react'
 import { RolesWithDefaultPermissions } from "@/entities/user/model/objectTypes";
 import { User } from "@/entities/user/types";
 

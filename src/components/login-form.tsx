@@ -2,7 +2,6 @@
 
 import { cn } from "@/shared/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { useActionState, useEffect, useState } from "react";
 import { login } from "@/feature/auth/login";
@@ -95,7 +94,7 @@ export function LoginForm({
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <InputEmail {...field} />
+                        <InputEmail {...field} required/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
