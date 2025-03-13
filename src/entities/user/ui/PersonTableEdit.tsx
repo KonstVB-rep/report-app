@@ -1,13 +1,13 @@
 "use client";
 
 import DialogEditUser from "@/entities/user/ui/DialogEditUser";
-import ProtectedRoute from "@/feature/protected-route";
+import Protected from "@/feature/Protected";
 
 const PersonEdit = () => {
   return (
-    <ProtectedRoute>
+    <Protected>
       <DialogEditUser />
-    </ProtectedRoute>
+    </Protected>
   );
 };
 

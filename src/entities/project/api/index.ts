@@ -4,7 +4,7 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/db/prisma-client";
 import { handleError } from "@/shared/api/handleError";
-import { Direction } from "@prisma/client";
+import { Direction, Prisma } from "@prisma/client";
 import { Project, ProjectResponse } from "../types";
 
 
@@ -97,6 +97,8 @@ export const createProject = async (data: ProjectWithoutId) => {
     }
     const userId = await checkAuthAndDataFill(data);
 
+    console.log("userId", userId);  
+
     const {
       ...projectData
     } = data;
@@ -113,24 +115,28 @@ export const createProject = async (data: ProjectWithoutId) => {
     //   };
     // }
 
-    // const amountCo = (amount_co as unknown as Decimal).toNumber ? (amount_co as Decimal).toNumber() : amount_co;
-    // const deltaValue = (delta as Decimal).toNumber ? (delta as Decimal).toNumber() : delta;
+    const safeAmountCo = isNaN(projectData.amountCo) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCo);
+      const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
+
+    console.log("formatteProject", projectData);
 
     const newProject = await prisma.project.create({
       data: {
         ...projectData,
         userId,
         dateRequest: new Date(),
+        amountCo: safeAmountCo,
+        delta: safeDelta,
       },
     });
 
     const formatteProject = {
       ...newProject,
-      amountCo: newProject.amountCo.toString(),  // Преобразуем Decimal в строку
-      delta: newProject.delta.toString(),  // Преобразуем Decimal в строку
+      amountCo: safeAmountCo.toString(),  // Преобразуем Decimal в строку
+      delta: safeDelta.toString(),  // Преобразуем Decimal в строку
     };
 
-
+      
     return formatteProject;
     
   } catch (error) {
@@ -162,14 +168,20 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
       return handleError("Недостаточно прав");
     }
 
+    const safeAmountCo = isNaN(projectData.amountCo) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCo);
+    const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
+
     const updatedProject = await prisma.project.update({
       where: { id: project.id },
       data: {
         ...projectData,
         userId,
         dateRequest: new Date(),
+        amountCo: safeAmountCo,
+        delta: safeDelta,
       },
     });
+    
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { createdAt, updatedAt, ...rest } = updatedProject;

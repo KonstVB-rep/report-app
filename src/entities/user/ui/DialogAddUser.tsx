@@ -2,7 +2,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { SquarePlus } from "lucide-react";
 import dynamic from "next/dynamic"; // Динамический импорт
-import ProtectedRoute from "@/feature/protected-route";
+import Protected from "@/feature/Protected";
 
 const DialogForm = dynamic(() => import("./DialogForm"), { ssr: false });
 const UserCreateForm = dynamic(() => import("./UserCreateForm"), {
@@ -11,7 +11,7 @@ const UserCreateForm = dynamic(() => import("./UserCreateForm"), {
 
 const DialogAddUser = () => {
   return (
-    <ProtectedRoute>
+    <Protected>
       <DialogForm
         icon={<SquarePlus size={16} />}
         renderItem={(setOpen: Dispatch<SetStateAction<boolean>>) => (
@@ -20,7 +20,7 @@ const DialogAddUser = () => {
         textTrigger="Добавить сотрудника"
         title={"Форма добавления сотрудника"}
       />
-    </ProtectedRoute>
+    </Protected>
   );
 };
 

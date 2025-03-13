@@ -2,7 +2,7 @@ import { getUser } from "@/entities/user/api";
 import { DepartmentsTitle, RolesUser } from "@/entities/user/model/objectTypes";
 import { DeleteUser } from "@/entities/user/ui/DeleteUser";
 import PersonEdit from "@/entities/user/ui/PersonTableEdit";
-import ProtectedRoute from "@/feature/protected-route";
+import Protected from "@/feature/Protected";
 import UserCard from "@/shared/ui/UserCard";
 import React from "react";
 
@@ -45,14 +45,14 @@ const ProfilePage = async ({
                 <span className="first-letter:capitalize">Должность:</span>{" "}
                 <span className="first-letter:capitalize">{user.position}</span>
               </p>
-              <ProtectedRoute>
+              <Protected>
                 <p className="p-2 border border-solid flex items-center justify-start rounded-md gap-4">
                   <span className="first-letter:capitalize">Роль:</span>{" "}
                   <span className="first-letter:capitalize">
                     {RolesUser[user.role as keyof typeof RolesUser]}
                   </span>
                 </p>
-              </ProtectedRoute>
+              </Protected>
             </div>
             <div className="grid gap-2">
               <p className="p-2 border border-solid flex items-center justify-start rounded-md gap-4">

@@ -30,7 +30,7 @@ const ContextRowTable = <T,>({
           <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
           <ContextMenuContent>
-            <ContextMenuItem onClick={() => setOpenModal("edit")}>
+            <ContextMenuItem onClick={() => setOpenModal("edit")} className="hover:border-muted-foreground focus-visible:border-muted-foreground">
               Редактировать
             </ContextMenuItem>
 

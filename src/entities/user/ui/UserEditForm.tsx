@@ -27,6 +27,7 @@ import { UserRequest, UserWithdepartmentName } from "../types";
 import useStoreUser from "../store/useStoreUser";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import PhoneInput from "@/shared/ui/PhoneInput";
+import InputPassword from "@/shared/ui/Inputs/InputPassword";
 
 const UserEditForm = ({
   user,
@@ -95,7 +96,7 @@ const UserEditForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5 max-h-[85vh] overflow-y-auto">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5 max-h-[85vh] overflow-y-auto p-1">
         <div>
           <FormField
             control={form.control}
@@ -151,16 +152,15 @@ const UserEditForm = ({
               <FormItem>
                 <FormLabel>Пароль</FormLabel>
                 <FormControl>
-                  <Input
+                  {/* <Input
                     placeholder="Введите пароль для пользователя"
                     type="password"
                     {...field}
                     minLength={6}
                     maxLength={30}
-                    value={field.value} 
-                    onChange={field.onChange} 
                     className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
-                  />
+                  /> */}
+                  <InputPassword {...field} />
                 </FormControl>
                 {
                   form.formState.errors.user_password?.message && (
