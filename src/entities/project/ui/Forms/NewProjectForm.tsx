@@ -66,13 +66,12 @@ const NewProjectForm = ({
     onSuccess: (data) => {
       if (data) {
         setOpen(false);
-        // Получаем userId из ответа от сервера. Убедись что `userId` есть в data
+
         queryClient.invalidateQueries({
           queryKey: ["projects", authUser?.id],
           exact: true,
-        }); // инвалидируем таблицу юзера
+        }); 
 
-        //инвалидируем общую таблицу.
         queryClient.invalidateQueries({
           queryKey: ["all-projects", authUser?.departmentId],
         });
@@ -83,17 +82,17 @@ const NewProjectForm = ({
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues: {
-      nameObject: "уууууууу",
-      equipment_type: "уууууууууууууууу",
+      nameObject: "",
+      equipment_type: "",
       direction: "",
       deliveryType: "",
-      contact: "уууууууууууууу",
-      phone: "+7 (926) 490-00-00",
-      email: "er@er.ru",
-      amountCo: "0",
-      delta: "0",
+      contact: "",
+      phone: "",
+      email: "",
+      amountCo: "",
+      delta: "",
       project_status: "",
-      comments: "dddddddddddddddddddd",
+      comments: "",
       lastDateConnection: undefined,
       plannedDateConnection: undefined,
     },
@@ -104,10 +103,10 @@ const NewProjectForm = ({
       new Promise((resolve, reject) => {
         mutate(data, {
           onSuccess: (data) => {
-            resolve(data); // Разрешаем промис при успехе
+            resolve(data);
           },
           onError: (error) => {
-            reject(error); // Отклоняем промис при ошибке
+            reject(error); 
           },
         });
       }),
@@ -125,7 +124,7 @@ const NewProjectForm = ({
           Форма добавления нового проекта
         </div>
         <div className="grid sm:grid-cols-2 gap-2 p-1">
-          <div className="grid auto-rows-fr">
+          <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
               name="nameObject"
@@ -275,7 +274,7 @@ const NewProjectForm = ({
               )}
             />
           </div>
-          <div className="grid auto-rows-fr">
+          <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
               name="amountCo"

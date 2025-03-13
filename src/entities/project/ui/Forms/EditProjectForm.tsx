@@ -102,10 +102,10 @@ const EditProjectForm = ({
       new Promise((resolve, reject) => {
         mutate(data, {
           onSuccess: (data) => {
-            resolve(data); // Разрешаем промис при успехе
+            resolve(data); 
           },
           onError: (error) => {
-            reject(error); // Отклоняем промис при ошибке
+            reject(error); 
           },
         });
       }),
@@ -139,7 +139,7 @@ const EditProjectForm = ({
           Форма редактирования проекта
         </div>
         <div className="grid sm:grid-cols-2 gap-2 p-1">
-          <div className="grid auto-rows-fr">
+          <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
               name="nameObject"
@@ -289,7 +289,7 @@ const EditProjectForm = ({
               )}
             />
           </div>
-          <div className="grid auto-rows-fr">
+          <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
               name="amountCo"
