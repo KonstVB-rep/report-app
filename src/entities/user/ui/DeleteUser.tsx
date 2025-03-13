@@ -59,7 +59,7 @@ export function DeleteUser() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="flex gap-2 items-center justify-start border-none h-10 w-full px-2"
+          className="flex gap-2 items-center justify-start border-none h-10 w-full px-2 hover:bg-red-600/70 hover:text-white focus-visible:bg-red-600/70 focus-visible:text-white"
         >
           <Trash /> Удалиить профиль
         </Button>

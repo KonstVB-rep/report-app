@@ -12,7 +12,7 @@ const SummaryTableLink = () => {
     <Protected>
       <Link
         href={`/dashboard/summary-table/${authUser.id}`}
-        className="btn_hover border max-w-max"
+        className="btn_hover border max-w-max text-sm"
         title="перейти на страницу сводной таблицы"
       >
         Сводная таблица отчетов

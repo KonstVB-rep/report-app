@@ -117,7 +117,7 @@ const FilterPopover = ({
             ))}
           </div>
           {filterValues.length > 0 && (
-            <Button onClick={handleClear} variant="outline" className="w-full">
+            <Button onClick={handleClear} variant="outline" className="w-full btn_hover text-xs">
               Очистить фильтр
             </Button>
           )}
