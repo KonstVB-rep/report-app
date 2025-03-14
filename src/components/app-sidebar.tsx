@@ -21,6 +21,7 @@ import { DepartmentListType, DepartmentTypeSidebar } from "@/entities/department
 import { TOAST } from "@/entities/user/ui/Toast";
 import Link from "next/link";
 
+
 const icons = {
   SALES: <BadgeRussianRuble />,
   TECHNICAL: <Wrench />,

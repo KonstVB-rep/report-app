@@ -26,7 +26,11 @@ import SelectColumns from "../SelectColumns";
 import { DateRange } from "react-day-picker";
 import DateRangeFilter from "../DateRangeFilter";
 import FilterPopover from "../FilterPopover";
-import { DeliveryLabels, DirectionLabels, StatusLabels } from "@/entities/project/lib/constants";
+import {
+  DeliveryLabels,
+  DirectionLabels,
+  StatusLabels,
+} from "@/entities/project/lib/constants";
 import MultiColumnFilter from "../MultiColumnFilter";
 import Link from "next/link";
 
@@ -131,7 +135,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
             "user",
             "lastDateConnection",
             "plannedDateConnection",
-            "project_status",
+            "projectStatus",
             "delta",
             "amounCo",
           ]}
@@ -139,7 +143,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
       </div>
       <div className="flex flex-wrap items-center justify-start gap-2 py-2 bg-background">
         <FilterPopover
-          columnId="project_status"
+          columnId="projectStatus"
           options={StatusLabels}
           label="Статус"
           columnFilters={columnFilters}
@@ -212,7 +216,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
         </Table>
       ) : (
         <h1 className="text-center text-xl py-2 px-4 bg-muted rounded-md">
-         Проекты не найдены
+          Проекты не найдены
         </h1>
       )}
     </div>

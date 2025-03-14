@@ -1,12 +1,12 @@
 "use client";
 
-import { columnsData } from "@/app/dashboard/table/[userId]/model/columns-data";
+import { columnsDataProject } from "@/app/dashboard/table/[userId]/model/columns-data-project";
 import { ProjectResponse,  } from "@/entities/project/types";
 import { ColumnDef } from "@tanstack/react-table";
 
 
-export const columnsDataSummary: ColumnDef<ProjectResponse, unknown>[] = [
-  ...columnsData,
+export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] = [
+  ...columnsDataProject,
   {
     id: "user",
     accessorKey: "user",

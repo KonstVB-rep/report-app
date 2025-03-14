@@ -15,8 +15,7 @@ export default function Error({
     if (error && !handleErrorRef.current) {
       TOAST.ERROR(error.message);
     }
-    // Log the error to an error reporting service
-    console.error(error);
+
     return () => {
       handleErrorRef.current = true;
     };

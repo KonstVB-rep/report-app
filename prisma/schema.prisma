@@ -19,12 +19,14 @@ model User {
   role                    String
   lastlogin               DateTime?
   projects                Project[]
+  retail                  Retail[]
   login                   UserLogin[]
   permissions             UserPermission[]
   createdAt               DateTime        @default(now())
   updatedAt               DateTime        @updatedAt
   directorOf              Department?     @relation("DepartmentDirector")  // Обратное отношение
   @@index([departmentId])
+  File File[]
 }
 
 model Department {
@@ -39,23 +41,52 @@ model Department {
 model Project {
   id                      String @id @default(cuid())     // Уникальный идентификатор проекта
   userId                  String                          // Идентификатор пользователя, которому принадлежит проект
-  equipment_type          String                          // Тип оборудования
-  dateRequest             DateTime                        // Дата запроса проекта
+  nameDeal               String                          // Название сделки
   nameObject              String                          // Название объекта
-  direction               Direction                       // Направление проекта (ENUM)
-  deliveryType            Delivery                        // Тип поставки (ENUM)
+  equipmentType          String                          // Тип оборудования
+  dateRequest             DateTime                        // Дата запроса проекта
+  direction               DirectionProject                // Направление проекта (ENUM)
+  deliveryType            DeliveryProject                 // Тип поставки (ENUM)
   contact                 String                          // Контактное лицо
+  additionalСontact      String                          // Дополнительный контакт
   phone                   String                          // Телефон
   email                   String?                         // Электронная почта
-  amountCo                Decimal    @db.Decimal(15, 2)   // Сумма коммерческого предложения
-  delta                   Decimal    @db.Decimal(10, 2)   // Дельта
-  project_status          Status                          // Статус проекта (ENUM)
+  amountCP                Decimal    @db.Decimal(15, 2)   // Сумма коммерческого предложения
+  amountWork              Decimal    @db.Decimal(15, 2)   // Сумма работ
+  amountPurchase          Decimal    @db.Decimal(15, 2)   // Сумма закупки
+  delta                   Decimal    @db.Decimal(15, 2)   // Дельта
+  projectStatus          StatusProject                   // Статус проекта (ENUM)
   comments                String                          // Комментарии
-  lastDateConnection      DateTime?                        // Дата последнего соединения
-  plannedDateConnection   DateTime?                        // Запланированная дата соединения
+  plannedDateConnection   DateTime?                        // Запланированная дата контакт
   createdAt               DateTime   @default(now())      // Дата и время создания
   updatedAt               DateTime   @updatedAt           // Дата и время последнего обновления
   user                    User       @relation(fields: [userId], references: [id]) // Связь с пользователем
+
+  files                   File[]     // Связь с файлами, прикрепленными к проекту
+}
+
+model Retail {
+  id                      String @id @default(cuid())     // Уникальный идентификатор проекта
+  userId                  String                          // Идентификатор пользователя, которому принадлежит проект
+  name_deal               String                          // Название сделки
+  // equipmentType          String                       // Тип оборудования
+  dateRequest             DateTime                        // Дата запроса проекта
+  nameObject              String                          // Название объекта
+  direction               DirectionRetail                 // Направление проекта (ENUM)
+  deliveryType            DeliveryRetail                  // Тип поставки (ENUM)
+  contact                 String                          // Контактное лицо
+  phone                   String                          // Телефон
+  email                   String?                         // Электронная почта
+  amountCP                Decimal    @db.Decimal(15, 2)   // Сумма коммерческого предложения
+  delta                   Decimal    @db.Decimal(10, 2)   // Дельта
+  projectStatus           StatusRetail                    // Статус проекта (ENUM)
+  comments                String                          // Комментарии
+  plannedDateConnection   DateTime?                       // Запланированная дата контакт
+  createdAt               DateTime   @default(now())      // Дата и время создания
+  updatedAt               DateTime   @updatedAt           // Дата и время последнего обновления
+  user                    User       @relation(fields: [userId], references: [id]) // Связь с пользователем
+
+  files                   File[]     // Связь с файлами, прикрепленными к розничным объектам
 }
 
 model UserLogin {
@@ -90,31 +121,69 @@ enum Permission {
   EDIT_USER
 }
 
-enum Direction {
-  PARKING     // Парковка
+enum DirectionProject {
+  PARKING     // Парковка/
+  GLK         // ГЛК/
   SKD         // СКД
-  GLK         // ГЛК
-  OTHER       // Иное
-  KATOK       // Каток
-  MUSEUM      // Музей
-  SPORT       // Спорткомплекс
-  FOK         // ФОК
+  KATOK       // Каток/
+  MUSEUM      // Музей/
+  SPORT       // Спорткомплекс/
+  FOK_BASIN   // ФОК/БАССЙЕН/
+  BPS         //БПС/
+  PPS         //ППС
+  PARK_ATTRACTION //парк/аттракцион
+  STADIUM_ARENA  //Стадион/Арена
 }
 
-enum Delivery {
+enum DirectionRetail {
+  PARKING_EQUIPMENT     //  Парковочное оборудование
+  SCUD         // СКУД
+  IDS_CONSUMABLES         // Идентификаторы и расходники
+  OTHER       // Иное
+}
+
+enum DeliveryProject {
+  COMPLEX          // Комплекс
+  WHOLESALE        // Розница
+  EQUIPMENT_SUUPLY // Поставка оборудования
+  WORK_SERVICES    // Работы и услуги
+  RENT              //Аренда
+  SOFTWARE_DELIVERY
+  OTHER             //иное
+}
+
+enum DeliveryRetail {
   COMPLEX          // Комплекс
   WHOLESALE        // Розница
   SUPPLY           // Поставка оборудования
   WORK             // Работы
 }
 
-enum Status {
+
+enum StatusProject {
   INVOICE_ISSUED   // Выставлен счет
-  DEAL_SUCCESSFUL  // Сделка успешна
   ACTUAL           // Актуально
-  REJECT           // Отказ
+  REJECT           // Не актуально / Отказ
   PAID             // Оплачено
+  APPROVAL         // Согласование договора
+  FIRST_CP_APPROVAL  //1-е КП на согласовании 
+  CONTRACT_ADVANCE_PAYMENT  //Договор / Авансирование
+  PROGRESS                   //Проект в работе / Закупка / Производство
+  DELIVERY_WORKS   //Поставка / Выполнение работ
+  SIGN_ACTS_PAYMENT //Подписание актов / Оплата
+  CLOSED            //Закрыт
+}
+
+
+enum StatusRetail {
+  FIRST_CP_APPROVAL  //1-е КП на согласовании
   APPROVAL         // На согласовании
+  ACTUAL           // Актуально
+  REJECT           // Не актуально / Отказ
+  INVOICE_ISSUED   // Выставлен счёт / Авансирование
+  PROGRESS          //Проект в работе / Закупка / Производство
+  PAID             // Оплачено
+  CLOSED          // Закрыт
 }
 
 enum DepartmentEnum {
@@ -122,6 +191,27 @@ enum DepartmentEnum {
   TECHNICAL
 }
 
+enum EquipmentTypeEnum {
+  BARRIER  //Шлагбаум
+  GUARD    // Ограждения
+  SAFETY_ISLAND //островок безопасности
+  ARROW    // Стрела шлагбаума
+}
+
+
+model File {
+  id        String   @id @default(uuid())           // Уникальный идентификатор
+  name      String                                   // Имя файла
+  type      String                                   // Тип файла
+  data      Bytes                                    // Бинарные данные файла
+  createdAt DateTime @default(now())                 // Дата создания
+  userId    String                                   // ID пользователя, который загрузил файл
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Связь с пользователем
+  projectId String?                                  // ID проекта, если файл привязан к проекту
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade) // Связь с проектом
+  retailId  String?                                  // ID розничного объекта, если файл привязан к Retail
+  retail    Retail?  @relation(fields: [retailId], references: [id], onDelete: Cascade)  // Связь с розничным объектом
+}
 
 // model User {
 //   id             String          @id @default(cuid())
@@ -153,7 +243,7 @@ enum DepartmentEnum {
 // model Project {
 //   id                      String  @id @default(cuid()) 
 //   userId                  String  
-//   equipment_type          String
+//   equipmentType          String
 //   dateRequest             DateTime   
 //   nameObject              String     
 //   direction               Direction 
@@ -161,9 +251,9 @@ enum DepartmentEnum {
 //   contact                 String    
 //   phone                   String    
 //   email                   String?    
-//   amountCo                Decimal    @db.Decimal(15, 2) 
+//   amountCP                Decimal    @db.Decimal(15, 2) 
 //   delta                   Decimal    @db.Decimal(10, 2) 
-//   project_status          Status    
+//   projectStatus          Status    
 //   comments                String    
 //   lastDateConnection      DateTime  
 //   plannedDateConnection   DateTime  

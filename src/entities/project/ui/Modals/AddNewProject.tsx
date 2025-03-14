@@ -21,7 +21,7 @@ const AddNewProject = () => {
         <DialogTrigger asChild>
           <Button variant="outline">
             <Plus />
-            <span>Добавить объект</span>
+            <span>Добавить сделку</span>
           </Button>
         </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]" showX={true}>

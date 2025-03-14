@@ -13,7 +13,7 @@ const requiredFields = [
   "direction",
   "comments",
   "contact",
-  "project_status",
+  "projectStatus",
 ];
 
 type ProjectWithoutDateCreateAndUpdate = Omit<Project, "createdAt" | "updatedAt"> 
@@ -70,7 +70,7 @@ export const getProjectById = async (projectId: string, idProjectOwner: string):
       return handleError("Проект не найден");
     }
 
-    const formattedProject = { ...project, amountCo: project.amountCo.toString(), delta: project.delta.toString() };
+    const formattedProject = { ...project, amountCP: project.amountCP.toString(), delta: project.delta.toString() };
     return formattedProject;
   } catch (error) {
     console.error(error);
@@ -104,7 +104,7 @@ export const createProject = async (data: ProjectWithoutId) => {
     //   };
     // }
 
-    const safeAmountCo = isNaN(projectData.amountCo) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCo);
+    const safeamountCP = isNaN(projectData.amountCP) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCP);
     const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
 
 
@@ -113,14 +113,14 @@ export const createProject = async (data: ProjectWithoutId) => {
         ...projectData,
         userId,
         dateRequest: new Date(),
-        amountCo: safeAmountCo,
+        amountCP: safeamountCP,
         delta: safeDelta,
       },
     });
 
     const formatteProject = {
       ...newProject,
-      amountCo: safeAmountCo.toString(),
+      amountCP: safeamountCP.toString(),
       delta: safeDelta.toString(),  
     };
 
@@ -152,7 +152,7 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
       return handleError("Недостаточно прав");
     }
 
-    const safeAmountCo = isNaN(projectData.amountCo) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCo);
+    const safeamountCP = isNaN(projectData.amountCP) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCP);
     const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
 
     const updatedProject = await prisma.project.update({
@@ -161,7 +161,7 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
         ...projectData,
         userId,
         dateRequest: new Date(),
-        amountCo: safeAmountCo,
+        amountCP: safeamountCP,
         delta: safeDelta,
       },
     });
@@ -172,7 +172,7 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
 
     const formatteProject = {
       ...rest,
-      amountCo: rest.amountCo.toString(),  // Преобразуем Decimal в строку
+      amountCP: rest.amountCP.toString(),  // Преобразуем Decimal в строку
       delta: rest.delta.toString(),  // Преобразуем Decimal в строку
     };
 
@@ -235,7 +235,7 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
 
       const formattedProjects = projects.map(project => ({
         ...project,
-        amountCo: project.amountCo.toString(),
+        amountCP: project.amountCP.toString(),
         delta: project.delta.toString(), 
       }));
       
@@ -254,7 +254,7 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
 
     const formattedProjects = projects.map(project => ({
       ...project,
-      amountCo: project.amountCo.toString(), 
+      amountCP: project.amountCP.toString(), 
       delta: project.delta.toString(), 
     }));
 
@@ -301,7 +301,7 @@ export const getAllProjectsByDepartment = async () => {
     const formattedProjects = projects.map(project => ({
       ...project,
       user: project.user.username,
-      amountCo: project.amountCo.toString(),  // Преобразуем Decimal в строку
+      amountCP: project.amountCP.toString(),  // Преобразуем Decimal в строку
       delta: project.delta.toString(),  // Преобразуем Decimal в строку
     }));
 

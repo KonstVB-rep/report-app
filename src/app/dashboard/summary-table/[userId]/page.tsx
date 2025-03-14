@@ -12,7 +12,7 @@ import ProjectTableTemplate from "@/entities/project/ui/ProjectTableTemplate";
 
 import { TOAST } from "@/entities/user/ui/Toast";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { columnsDataSummary } from "./model/summary-table-columns-data";
+import { columnsDataProjectSummary } from "./model/summary-table-columns-data";
 import { ProjectResponse } from "@/entities/project/types";
 
 const SummaryTable = () => {
@@ -40,7 +40,6 @@ const SummaryTable = () => {
     retry: 2,
   });
 
-
   if (isPending) return <Loading />;
 
   return (
@@ -54,8 +53,8 @@ const SummaryTable = () => {
       )}
       {AllProject && (
         <SummaryDataTable
-          columns={columnsDataSummary}
-          data={AllProject as ProjectResponse[]} 
+          columns={columnsDataProjectSummary}
+          data={AllProject as ProjectResponse[]}
         />
       )}
     </ProjectTableTemplate>

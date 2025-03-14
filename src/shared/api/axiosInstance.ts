@@ -7,7 +7,6 @@ const axiosInstance = axios.create({
   headers: {
     "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Content-Type": "application/json",
   },
   withCredentials: true,
 });

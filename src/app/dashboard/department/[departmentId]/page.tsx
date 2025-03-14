@@ -1,6 +1,7 @@
 import { getDepartmentName } from "@/entities/department/api";
 import UserDepartmentList from "@/entities/department/ui/UserDepartmentList";
 import { getAllUsersByDepartment } from "@/entities/user/api";
+import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 
 const DeparmentEmployees = async ({
   params,
@@ -24,14 +25,8 @@ const DeparmentEmployees = async ({
     );
   } catch (error) {
     console.error("Ошибка в DeparmentEmployees:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Неизвестная ошибка";
     return (
-      <section className="p-4">
-        <h1 className="text-center text-xl font-bold p-5 bg-muted rounded-md">
-          {errorMessage}
-        </h1>
-      </section>
+      <AccessDeniedMessage error={error} />
     );
   }
 };

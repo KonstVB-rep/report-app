@@ -1,16 +1,19 @@
 import { Delivery, Status } from "@prisma/client";
 import { z } from "zod";
-import { Directions } from "../types";
+import { DirectionProjects } from "../types";
 
 export const ProjectFormSchema = z.object({
+  nameDeal: z.string({
+    message: "Введите название сделки",
+  }),
   nameObject: z.string({
     message: "Введите название объекта",
   }),
-  equipment_type: z.string({
+  equipmentType: z.string({
     message: "Укажите тип оборудования",
   }).optional(),
   direction: z.enum(
-    Object.values(Directions).filter(Boolean) as [string, ...string[]],
+    Object.values(DirectionProjects).filter(Boolean) as [string, ...string[]],
     {
       message: "Выберите направление",
     }
@@ -21,19 +24,17 @@ export const ProjectFormSchema = z.object({
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")), // ✅ Email необязателен
+  additionalСontact: z.string().optional(),
 
-  amountCo: z.string().optional(),
+  amountCP: z.string().optional(),
+  amountWork: z.string().optional(),
+  amountPurchase: z.string().optional(),
   delta: z.string().optional(),
 
-  project_status: z.enum(Object.values(Status) as [string, ...string[]], {
+  projectStatus: z.enum(Object.values(Status) as [string, ...string[]], {
     message: "Выберите статус проекта",
   }),
   comments: z.string(),
-
-  lastDateConnection: z.preprocess(
-    (val) => (val instanceof Date ? val.toISOString() : val || ""), // Преобразуем undefined/null → ""
-    z.string()
-  ),
   plannedDateConnection: z.preprocess(
     (val) => (val instanceof Date ? val.toISOString() : val || ""),
     z.string()
@@ -51,4 +52,42 @@ export const ProjectFormSchema = z.object({
 //   path: ["lastDateConnection"], // Указываем поле, к которому относится ошибка
 // });
 
+export const RetailFormSchema = z.object({
+  nameDeal: z.string({
+    message: "Введите название сделки",
+  }),
+  nameObject: z.string({
+    message: "Введите название объекта",
+  }),
+  equipmentType: z.string({
+    message: "Укажите тип оборудования",
+  }).optional(),
+  direction: z.enum(
+    Object.values(DirectionProjects).filter(Boolean) as [string, ...string[]],
+    {
+      message: "Выберите направление",
+    }
+  ),
+  deliveryType: z.enum(Object.values(Delivery) as [string, ...string[]])
+  .or(z.literal(""))
+  .optional(),
+  contact: z.string(),
+  phone: z.string().optional(),
+  email: z.string().email().or(z.literal("")), // ✅ Email необязателен
+  additionalСontact: z.string().optional(),
+
+  amountCP: z.string().optional(),
+  delta: z.string().optional(),
+
+  projectStatus: z.enum(Object.values(Status) as [string, ...string[]], {
+    message: "Выберите статус проекта",
+  }),
+  comments: z.string(),
+  plannedDateConnection: z.preprocess(
+    (val) => (val instanceof Date ? val.toISOString() : val || ""),
+    z.string()
+  ),
+});
+
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;
+export type RetailSchema = z.infer<typeof RetailFormSchema>;
