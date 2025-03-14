@@ -72,7 +72,7 @@ export const getDepartmentName = async (id: number) => {
         id: +id
       },
     });
-
+    
     if (!department) {
       return "Отдел не найден";
     }

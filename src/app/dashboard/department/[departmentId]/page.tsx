@@ -28,10 +28,9 @@ const DeparmentEmployees = async ({
       error instanceof Error ? error.message : "Неизвестная ошибка";
     return (
       <section className="p-4">
-        <h1 className="text-center text-2xl font-bold p-4">
-          Отдел не найден
+        <h1 className="text-center text-xl font-bold p-5 bg-muted rounded-md">
+          {errorMessage}
         </h1>
-        <p>Ошибка загрузки данных: {errorMessage}</p>
       </section>
     );
   }

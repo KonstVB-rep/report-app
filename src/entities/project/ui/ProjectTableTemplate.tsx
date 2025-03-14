@@ -1,6 +1,5 @@
 import { getUser } from "@/entities/user/api";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
-import { TOAST } from "@/entities/user/ui/Toast";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -18,7 +17,6 @@ const ProjectTableTemplate = ({
   const {
     data: user,
     error,
-    isError,
     isPending: isPendingUser,
   } = useQuery({
     queryKey: ["user", userId],
@@ -26,18 +24,14 @@ const ProjectTableTemplate = ({
       try {
         return await getUser(userId as string);
       } catch (error) {
-        console.log(error, "errror");
-        if (!isError) {
-          TOAST.ERROR((error as Error).message);
-        }
-        throw error;
+        console.log(error);
+         throw error;
       }
     },
     enabled: !!userId,
     refetchOnWindowFocus: false,
     retry: 2,
   });
-  console.log("user", error);
 
   if (isPendingUser) return <ProjectsSkeleton />;
 

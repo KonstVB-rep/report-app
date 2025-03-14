@@ -330,14 +330,14 @@ export const updateUser = async (
 export const getAllUsersByDepartment = async (id: number): Promise<User[] | null> => {
   try {
     const data = await handleAuthorization();
-    const { user, userId } = data!;
+    const { user } = data!;
 
-    // Утверждаем, что user не может быть null
+  
     if (!user) {
       handleError("Пользователь не найден");
     }
 
-    await checkUserPermissionByRole(userId, user!.role, user!.departmentId);
+    // await checkUserPermissionByRole(userId, user!.role, user!.departmentId);
 
     const users = await prisma.user.findMany({
       where: { departmentId: Number(id) },
@@ -346,11 +346,7 @@ export const getAllUsersByDepartment = async (id: number): Promise<User[] | null
     return users;
   } catch (error) {
     console.error(error);
-    const errorMessage =
-      typeof error === "string"
-        ? error
-        :  "Ошибка при получении данных";
-    return handleError(errorMessage);
+    return handleError((error as Error).message);
   }
 };
 
