@@ -126,7 +126,7 @@ const UserEditForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.username?.message && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.username?.message}
                   </FormMessage>
                 )}
@@ -147,7 +147,7 @@ const UserEditForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.phone?.message && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.phone?.message}
                   </FormMessage>
                 )}
@@ -164,7 +164,7 @@ const UserEditForm = ({
                   <InputPassword {...field} required={false} />
                 </FormControl>
                 {form.formState.errors.user_password?.message && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.user_password?.message}
                   </FormMessage>
                 )}
@@ -190,7 +190,7 @@ const UserEditForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.position?.message && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.position?.message}
                   </FormMessage>
                 )}
@@ -214,7 +214,7 @@ const UserEditForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.department?.message && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.department?.message}
                   </FormMessage>
                 )}
@@ -243,7 +243,7 @@ const UserEditForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.role?.message && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.role?.message}
                   </FormMessage>
                 )}

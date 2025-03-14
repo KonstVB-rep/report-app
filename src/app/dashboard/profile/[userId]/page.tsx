@@ -13,7 +13,7 @@ import React from "react";
 const ProfilePage = () => {
   const { userId } = useParams();
 
-  const { data: user, isPending } = useQuery({
+  const { data: user, isPending, isError } = useQuery({
     queryKey: ["user", userId],
     queryFn: async () => {
       try {
@@ -29,30 +29,32 @@ const ProfilePage = () => {
     retry: 2,
   });
 
-  if (isPending)
+  console.log(user);
+
+  if (isPending && !isError)
     return (
-      <div className="flex gap-2 p-4 justify-start aspect-[16/8] max-w-fit">
-        <div className="w-[460px] min-w-[280px] h-full bg-muted animate-pulse rounde-md" />
-        <div className="w-[300px] min-w-[200px] h-full bg-muted animate-pulse rounde-md" />
+      <div className="flex gap-2 p-4 justify-start aspect-[16/8]">
+        <div className="w-full max-w-[260px] h-full bg-muted animate-pulse rounded-md" />
+        <div className="w-full max-w-[360px] h-full bg-muted animate-pulse rounded-md" />
       </div>
     );
 
-  if (!user) {
+  if (!user || isError) {
     return null;
   }
 
   return (
     <section className="p-4">
       <div className="flex gap-4">
-        <div className="flex gap-2 items-center p-2 rounded-md max-w-max border">
-          <div className="h-full flex flex-col justify-between">
+        <div className="grid gap-2 items-center p-2 rounded-md max-w-max border sm:grid-cols-[auto_1fr]">
+          <div className="@container h-full flex flex-col justify-between">
             <UserCard user={user} />
-            <div className="grid grid-cols-2 w-full gap-2 divide-solid p-4 bg-muted rounded-md">
+            <div className="grid @sm:grid-cols-2 w-full gap-2 divide-solid p-4 bg-muted rounded-md ">
               <PersonEdit />
               <DeleteUser />
             </div>
           </div>
-          <div className="grid gap-2 h-full text-sm">
+          <div className="grid gap-2 h-full text-sm w-full">
             <div className="grid gap-2">
               <p className="p-2 border border-solid flex items-center justify-start rounded-md gap-4">
                 <span className="first-letter:capitalize">Отдел:</span>{" "}
