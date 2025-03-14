@@ -18,6 +18,7 @@ const ProjectTableTemplate = ({
   const {
     data: user,
     error,
+    isError,
     isPending: isPendingUser,
   } = useQuery({
     queryKey: ["user", userId],
@@ -25,15 +26,18 @@ const ProjectTableTemplate = ({
       try {
         return await getUser(userId as string);
       } catch (error) {
-        console.log(error);
-        TOAST.ERROR((error as Error).message);
-        return null;
+        console.log(error, "errror");
+        if (!isError) {
+          TOAST.ERROR((error as Error).message);
+        }
+        throw error;
       }
     },
     enabled: !!userId,
     refetchOnWindowFocus: false,
     retry: 2,
   });
+  console.log("user", error);
 
   if (isPendingUser) return <ProjectsSkeleton />;
 

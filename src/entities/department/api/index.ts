@@ -80,6 +80,10 @@ export const getDepartmentName = async (id: number) => {
     return DepartmentsTitle[department.name];
   } catch (error) {
     console.error(error);
-    handleError("Ошибка сервера");
+    const errorMessage =
+      typeof error === "string"
+        ? error
+        :  "Ошибка при создании проекта";
+    handleError(errorMessage);
   }
 }

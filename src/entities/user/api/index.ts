@@ -180,8 +180,8 @@ export const getUser = async (
 
     return userWithDepartmentName;
   } catch (error) {
-    console.error("Ошибка в getUser:", error);
-    throw new Error("Ошибка при получении пользователя");
+    console.error(error);
+    return handleError((error as Error).message);
   }
 };
 
@@ -223,8 +223,8 @@ export const getUserShort = async (
 
     return userWithDepartmentName;
   } catch (error) {
-    console.error("Ошибка в getUser:", error);
-    throw new Error("Ошибка при получении пользователя");
+    console.error(error);
+    return handleError((error as Error).message);
   }
 };
 
@@ -323,7 +323,7 @@ export const updateUser = async (
     return updatedEmployee;
   } catch (error) {
     console.error(error);
-    return handleError("Ошибка при обновлении пользователя");
+    return handleError((error as Error).message);
   }
 };
 
@@ -346,7 +346,11 @@ export const getAllUsersByDepartment = async (id: number): Promise<User[] | null
     return users;
   } catch (error) {
     console.error(error);
-    throw new Error("Ошибка при получении данных");
+    const errorMessage =
+      typeof error === "string"
+        ? error
+        :  "Ошибка при получении данных";
+    return handleError(errorMessage);
   }
 };
 
@@ -376,6 +380,6 @@ export const getAllUsersByDepartmentNameAndId = async (id: number): Promise<Reco
     return transform;
   } catch (error) {
     console.error(error);
-    throw new Error("Ошибка при получении данных");
+    return handleError((error as Error).message);
   }
 };

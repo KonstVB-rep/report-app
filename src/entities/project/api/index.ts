@@ -74,7 +74,7 @@ export const getProjectById = async (projectId: string, idProjectOwner: string):
     return formattedProject;
   } catch (error) {
     console.error(error);
-    return handleError("Ошибка при получении проекта");
+    return handleError((error as Error).message);
   }
 };
 
@@ -129,11 +129,7 @@ export const createProject = async (data: ProjectWithoutId) => {
     
   } catch (error) {
     console.error(error);
-    const errorMessage =
-      typeof error === "string"
-        ? error
-        :  "Ошибка при создании проекта";
-    handleError(errorMessage);
+    return handleError((error as Error).message);
   }
 };
 
@@ -183,11 +179,7 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
     return formatteProject
   } catch (error) {
     console.error(error);
-    const errorMessage =
-      typeof error === "string"
-        ? error
-        : "Ошибка при обновлении проекта";
-    return handleError(errorMessage);
+    return handleError((error as Error).message);
   }
 };
 
@@ -223,11 +215,7 @@ export const deleteProject = async (
     return { data: null, message: "Проект удален", error: false };
   } catch (error) {
     console.error(error);
-    const errorMessage =
-      typeof error === "string"
-        ? error
-        :  "Ошибка при удалении проекта";
-    handleError(errorMessage);
+        return handleError((error as Error).message);
   }
 };
 
@@ -273,12 +261,8 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
     return formattedProjects;
   } catch (error) {
     console.error(error);
-    const errorMessage =
-      typeof error === "string"
-        ? error
-        :  "Ошибка при получении данных";
-    handleError(errorMessage);
-    return null
+     handleError((error as Error).message);
+     return null;
   }
 };
 
@@ -324,10 +308,6 @@ export const getAllProjectsByDepartment = async () => {
     return formattedProjects
   } catch (error) {
     console.error(error);
-    const errorMessage =
-      typeof error === "string"
-        ? error
-        :  "Ошибка при получении данных";
-    handleError(errorMessage);
+    return handleError((error as Error).message);
   }
 };
