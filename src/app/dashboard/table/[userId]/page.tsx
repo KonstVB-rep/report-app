@@ -20,12 +20,14 @@ const PersonTable = () => {
   const { authUser } = useStoreUser();
   const isPageAuthuser = userId === authUser?.id;
 
-  const { data: projects, isPending: isPendingProjects } = useQuery({
+  const { data: projects, isError,isPending: isPendingProjects } = useQuery({
     queryKey: ["projects", userId],
     queryFn: async () => {
       try {
         return await getProjectsUser(userId as string);
       } catch (error) {
+
+        if(!isError)
         TOAST.ERROR((error as Error).message);
         throw error;
       }
