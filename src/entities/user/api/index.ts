@@ -135,7 +135,7 @@ export const createUser = async (
     const errorMessage =
       typeof error === "string"
         ? error
-        : (error as Error).message || "Ошибка при создании пользователя";
+        :  "Ошибка при создании пользователя";
     handleError(errorMessage);
   }
 };
@@ -181,7 +181,7 @@ export const getUser = async (
     return userWithDepartmentName;
   } catch (error) {
     console.error("Ошибка в getUser:", error);
-    throw error;
+    throw new Error("Ошибка при получении пользователя");
   }
 };
 
@@ -224,7 +224,7 @@ export const getUserShort = async (
     return userWithDepartmentName;
   } catch (error) {
     console.error("Ошибка в getUser:", error);
-    throw error;
+    throw new Error("Ошибка при получении пользователя");
   }
 };
 

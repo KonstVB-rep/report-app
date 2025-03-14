@@ -27,7 +27,6 @@ const UserCreateForm = ({
 }: {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
- 
   const queryClient = getQueryClient();
 
   const { mutate, isPending } = useMutation({
@@ -93,7 +92,7 @@ const UserCreateForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.username && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.username.message}
                   </FormMessage>
                 )}
@@ -116,7 +115,7 @@ const UserCreateForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.email && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.email.message}
                   </FormMessage>
                 )}
@@ -138,7 +137,7 @@ const UserCreateForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.phone && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.phone.message}
                   </FormMessage>
                 )}
@@ -162,7 +161,7 @@ const UserCreateForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.user_password && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.user_password.message}
                   </FormMessage>
                 )}
@@ -186,7 +185,7 @@ const UserCreateForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.position && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.position.message}
                   </FormMessage>
                 )}
@@ -212,7 +211,7 @@ const UserCreateForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.department && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.department.message}
                   </FormMessage>
                 )}
@@ -238,7 +237,7 @@ const UserCreateForm = ({
                   />
                 </FormControl>
                 {form.formState.errors.role && (
-                  <FormMessage>
+                  <FormMessage className="text-red-500">
                     {form.formState.errors.role.message}
                   </FormMessage>
                 )}

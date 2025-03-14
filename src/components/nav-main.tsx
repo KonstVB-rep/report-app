@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Dot } from "lucide-react";
 
 import {
   Collapsible,
@@ -23,13 +23,14 @@ import { DepartmentListType } from "@/entities/department/types";
 import { useParams } from "next/navigation";
 
 
+
 export function NavMain({
   items,
 }: {
   items: DepartmentListType[]
 }) {
 
-  const { departmentId} = useParams();
+  const { departmentId, userId} = useParams();
 
 
   const render = (item: (typeof items)[number]) => {
@@ -71,7 +72,7 @@ export function NavMain({
                           >
                             <Link
                               href={user.url}
-                              className="flex flex-col gap-[2px]"
+                              className="relative group/item flex flex-col gap-[2px] hover:bg-transparent focus-visible:bg-transparent"
                             >
                               <span className="capitalize font-semibold">
                                 {user.username.split(" ").join(" ")}
@@ -79,6 +80,7 @@ export function NavMain({
                               <span className="text-xs text-zinc-500">
                                 {user.position}
                               </span>
+                              <Dot className={` !size-[12px] rounded-full absolute top-1/2 -translate-y-1/2 right-1 ${user.id === userId ? "text-green-600 bg-green-500" : " text-foreground bg-foreground scale-0 transition-all duration-150 opacity-0 group-hover/item:scale-100 group-hover/item:opacity-100 group-focus-visible:opacity-100 group-focus-visible:scale-100"}`}/>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>

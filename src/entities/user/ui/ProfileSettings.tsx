@@ -1,7 +1,5 @@
 "use client";
 
-//border border-muted rounded-md hover:bg-muted/50 dark:border-muted/50 dark:hover:bg-muted/30
-
 import { EllipsisVertical, UserRound } from "lucide-react";
 import React from "react";
 import { User } from "../types";
@@ -37,7 +35,7 @@ export function ProfileSettings({ user }: Props) {
         <PersonEdit />
         <Link
           href={`/dashboard/profile/${user.id}`}
-          className="btn_hover"
+          className="btn_hover text-sm"
         >
           <UserRound size="16" /> <span>Профиль</span>
         </Link>

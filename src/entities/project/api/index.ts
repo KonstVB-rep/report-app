@@ -132,7 +132,7 @@ export const createProject = async (data: ProjectWithoutId) => {
     const errorMessage =
       typeof error === "string"
         ? error
-        : (error as Error).message || "Ошибка при создании пользователя";
+        :  "Ошибка при создании проекта";
     handleError(errorMessage);
   }
 };
@@ -186,7 +186,7 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
     const errorMessage =
       typeof error === "string"
         ? error
-        : (error as Error).message || "Ошибка при обновлении проекта";
+        : "Ошибка при обновлении проекта";
     return handleError(errorMessage);
   }
 };
@@ -226,7 +226,7 @@ export const deleteProject = async (
     const errorMessage =
       typeof error === "string"
         ? error
-        : (error as Error).message || "Ошибка при удалении проекта";
+        :  "Ошибка при удалении проекта";
     handleError(errorMessage);
   }
 };
@@ -273,8 +273,12 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
     return formattedProjects;
   } catch (error) {
     console.error(error);
-    handleError(error instanceof Error ? error.message : "Ошибка при получении проектов");
-    return null;
+    const errorMessage =
+      typeof error === "string"
+        ? error
+        :  "Ошибка при получении данных";
+    handleError(errorMessage);
+    return null
   }
 };
 
@@ -321,7 +325,9 @@ export const getAllProjectsByDepartment = async () => {
   } catch (error) {
     console.error(error);
     const errorMessage =
-      typeof error === "string" ? error : "Ошибка при получении проектов";
-    return handleError(errorMessage);
+      typeof error === "string"
+        ? error
+        :  "Ошибка при получении данных";
+    handleError(errorMessage);
   }
 };

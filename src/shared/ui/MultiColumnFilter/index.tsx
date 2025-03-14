@@ -66,7 +66,7 @@ const MultiColumnFilter = <TData extends Record<string, unknown>, TValue = unkno
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild  className={`${
           selectedColumns.length > 0 ? "border-solid" : "border-dashed"
-        } border-muted-foreground`}>
+        } `}>
           <Button variant="outline" className="relative">
             <Filter className="mr-2 h-4 w-4" />
             <span>Поиск в колонках</span>
@@ -108,7 +108,7 @@ const MultiColumnFilter = <TData extends Record<string, unknown>, TValue = unkno
               <Button
                 onClick={handleClear}
                 variant="outline"
-                className="w-full"
+                className="w-full btn_hover text-xs"
               >
                 Очистить фильтр
               </Button>

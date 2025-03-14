@@ -9,12 +9,15 @@ export const ProjectFormSchema = z.object({
   equipment_type: z.string({
     message: "Укажите тип оборудования",
   }).optional(),
-  direction: z.enum(Object.values(Directions) as [string, ...string[]], {
-    message: "Выберите направление",
-  }),
-  deliveryType: z.enum(Object.values(Delivery) as [string, ...string[]], {
-    message: "Выберите Тип поставки",
-  }),
+  direction: z.enum(
+    Object.values(Directions).filter(Boolean) as [string, ...string[]],
+    {
+      message: "Выберите направление",
+    }
+  ),
+  deliveryType: z.enum(Object.values(Delivery) as [string, ...string[]])
+  .or(z.literal(""))
+  .optional(),
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")), // ✅ Email необязателен

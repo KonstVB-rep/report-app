@@ -56,7 +56,7 @@ export function NavUser() {
 
             <DropdownMenuGroup>
               <DropdownMenuItem className="h-10 p-0">
-                <Link href={`/dashboard/profile/${authUser?.id}`} className="btn_hover justify-center w-full">
+                <Link href={`/dashboard/profile/${authUser?.id}`} className="btn_hover justify-center w-full text-sm">
                   <BadgeCheck className="mr-2 h-4 w-4" />
                   <span>Профиль</span>
                 </Link>

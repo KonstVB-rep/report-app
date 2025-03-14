@@ -161,7 +161,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.nameObject?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       form.formState.errors.nameObject?.message
                     </FormMessage>
                   )}
@@ -186,7 +186,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.direction?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       form.formState.errors.direction?.message
                     </FormMessage>
                   )}
@@ -211,7 +211,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.deliveryType?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.deliveryType?.message}
                     </FormMessage>
                   )}
@@ -225,10 +225,10 @@ const EditProjectForm = ({
                 <FormItem>
                   <FormLabel>Тип оборудования</FormLabel>
                   <FormControl>
-                    <Input placeholder="Наименование" required {...field} />
+                    <Input placeholder="Наименование" {...field} />
                   </FormControl>
                   {form.formState.errors.equipment_type?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.equipment_type?.message}
                     </FormMessage>
                   )}
@@ -245,7 +245,7 @@ const EditProjectForm = ({
                     <Input placeholder="Имя контакта" required {...field} />
                   </FormControl>
                   {form.formState.errors.contact?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.contact?.message}
                     </FormMessage>
                   )}
@@ -267,7 +267,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.phone?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.phone?.message}
                     </FormMessage>
                   )}
@@ -284,7 +284,7 @@ const EditProjectForm = ({
                     <InputEmail {...field} />
                   </FormControl>
                   {form.formState.errors.email?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.email?.message}
                     </FormMessage>
                   )}
@@ -307,7 +307,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.amountCo?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.amountCo?.message}
                     </FormMessage>
                   )}
@@ -328,7 +328,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.delta?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.delta?.message}
                     </FormMessage>
                   )}
@@ -354,7 +354,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.project_status?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.project_status?.message}
                     </FormMessage>
                   )}
@@ -367,9 +367,9 @@ const EditProjectForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="h-[19px]">Последний контакт</FormLabel>
-                  <CalendarComponent field={field} required={true} />
+                  <CalendarComponent field={field} />
                   {form.formState.errors.lastDateConnection?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.lastDateConnection?.message}
                     </FormMessage>
                   )}
@@ -384,9 +384,9 @@ const EditProjectForm = ({
                   <FormLabel className="h-[19px]">
                     Планируемый контакт
                   </FormLabel>
-                  <CalendarComponent field={field} required={true} />
+                  <CalendarComponent field={field} />
                   {form.formState.errors.plannedDateConnection?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.plannedDateConnection?.message}
                     </FormMessage>
                   )}
@@ -407,7 +407,7 @@ const EditProjectForm = ({
                     />
                   </FormControl>
                   {form.formState.errors.comments?.message && (
-                    <FormMessage>
+                    <FormMessage className="text-red-500">
                       {form.formState.errors.comments?.message}
                     </FormMessage>
                   )}
