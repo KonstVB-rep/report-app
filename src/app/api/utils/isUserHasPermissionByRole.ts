@@ -1,5 +1,4 @@
-import prisma from "@/prisma/db/prisma-client";
-
+import prisma from "@/prisma/prisma-client";
 /*получаем текущего/делающего запрос пользователя*/
 
 export async function isUserHasPermissionByRole(

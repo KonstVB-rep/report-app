@@ -17,7 +17,7 @@ export type typeofDelivery = keyof typeof DeliveryProjectLabels;
 
 export type typeofStatus = keyof typeof StatusProjectLabels;
 
-export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
+export const columnsDataProject: ColumnDef<ProjectResponse , unknown>[] = [
   {
     id: "rowNumber",
     header: "№",
@@ -28,7 +28,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "dateRequest",
-    accessorKey: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const date = info.getValue() as Date;
@@ -67,16 +66,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     accessorFn: (row: ProjectResponse) => row.dateRequest,
   },
   {
-    id: "equipmentType",
-    accessorKey: "equipmentType",
-    header: "Тип оборудования/работ",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
-    enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.equipmentType,
-  },
-  {
     id: "nameDeal",
-    accessorKey: "nameDeal",
     header: "Название сделки",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
@@ -84,7 +74,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "nameObject",
-    accessorKey: "nameObject",
     header: "Название объекта",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
@@ -92,13 +81,13 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "direction",
-    accessorKey: "direction",
     header: "Направление",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofDirections;
       return <span>{DirectionProjectLabels[value]}</span>;
     },
     filterFn: (row, columnId, value) => {
+      console.log(value, "rrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
       const rowValue = row.getValue(columnId);
       if (Array.isArray(value)) {
         return value.some((direction) =>
@@ -108,11 +97,13 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return rowValue === value;
     },
     enableHiding: true,
+    meta: {
+      isMultiSelect: true,
+    },
     accessorFn: (row: ProjectResponse) => row.direction,
   },
   {
     id: "deliveryType",
-    accessorKey: "deliveryType",
     header: "Тип поставки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofDelivery;
@@ -132,7 +123,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "contact",
-    accessorKey: "contact",
     header: "Контактное лицо",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
@@ -152,7 +142,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "email",
-    accessorKey: "email",
     header: "Email",
     cell: (info: CellContext<ProjectResponse, unknown>) => (
       <span className="whitespace-nowrap">{info.getValue() as string}</span>
@@ -161,17 +150,15 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     accessorFn: (row: ProjectResponse) => row.email,
   },
   {
-    id: "additionalСontact",
-    accessorKey: "contact",
+    id: "additionalContact",
     header: "Дополнительный контакт",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.contact,
+    accessorFn: (row: ProjectResponse) => row.additionalContact,
   },
   {
     id: "amountCP",
-    accessorKey: "amountCP",
-    header: "Сумма",
+    header: "Сумма КП",
     cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
@@ -179,7 +166,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "amountWork",
-    accessorKey: "amountWork",
     header: "Сумма работ",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
@@ -187,7 +173,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "amountPurchase",
-    accessorKey: "amountPurchase",
     header: "Сумма закупки",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
@@ -195,7 +180,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "delta",
-    accessorKey: "delta",
     header: "Дельта",
     cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
@@ -204,7 +188,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "projectStatus",
-    accessorKey: "projectStatus",
     header: "Статус",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofStatus;
@@ -224,7 +207,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "comments",
-    accessorKey: "comments",
     header: "Комментарии",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(), //тег
     enableSorting: false,
@@ -233,7 +215,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "plannedDateConnection",
-    accessorKey: "plannedDateConnection",
     header: "Плановая дата контакта",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const date = info.getValue() as Date | null;

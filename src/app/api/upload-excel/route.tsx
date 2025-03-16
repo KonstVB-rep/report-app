@@ -2,7 +2,7 @@
 
 // import { NextResponse } from "next/server";
 
-// // import prisma from "@/prisma/db/prisma-client";
+// // import prisma from "@/prisma/prisma-client";
 // // import { Prisma } from "@prisma/client";
 
 // export async function POST(req: Request) {

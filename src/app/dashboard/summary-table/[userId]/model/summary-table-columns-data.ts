@@ -9,11 +9,11 @@ export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] = 
   ...columnsDataProject,
   {
     id: "user",
-    accessorKey: "user",
     header: "Менеджер проекта",
     cell: (info) =>  info.getValue(),
     enableHiding: true,
     filterFn:(row, columnId, filterValues) => {
+      console.log("filterValues", filterValues);
         if(!filterValues || filterValues.length === 0) {
             return true;
         }

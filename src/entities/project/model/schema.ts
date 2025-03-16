@@ -1,6 +1,6 @@
-import { Delivery, Status } from "@prisma/client";
+
 import { z } from "zod";
-import { DirectionProjects } from "../types";
+import { DeliveryProjects, DeliveryRetails, DirectionProjects, DirectionRetails, StatusProjects, StatusRetails } from "../types";
 
 export const ProjectFormSchema = z.object({
   nameDeal: z.string({
@@ -9,29 +9,27 @@ export const ProjectFormSchema = z.object({
   nameObject: z.string({
     message: "Введите название объекта",
   }),
-  equipmentType: z.string({
-    message: "Укажите тип оборудования",
-  }).optional(),
   direction: z.enum(
     Object.values(DirectionProjects).filter(Boolean) as [string, ...string[]],
     {
       message: "Выберите направление",
     }
   ),
-  deliveryType: z.enum(Object.values(Delivery) as [string, ...string[]])
-  .or(z.literal(""))
-  .optional(),
+  deliveryType: z
+    .enum(Object.values(DeliveryProjects) as [string, ...string[]])
+    .or(z.literal(""))
+    .optional(),
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")), // ✅ Email необязателен
-  additionalСontact: z.string().optional(),
+  additionalContact: z.string().optional(),
 
   amountCP: z.string().optional(),
   amountWork: z.string().optional(),
   amountPurchase: z.string().optional(),
   delta: z.string().optional(),
 
-  projectStatus: z.enum(Object.values(Status) as [string, ...string[]], {
+  projectStatus: z.enum(Object.values(StatusProjects) as [string, ...string[]], {
     message: "Выберите статус проекта",
   }),
   comments: z.string(),
@@ -59,29 +57,30 @@ export const RetailFormSchema = z.object({
   nameObject: z.string({
     message: "Введите название объекта",
   }),
-  equipmentType: z.string({
-    message: "Укажите тип оборудования",
-  }).optional(),
   direction: z.enum(
-    Object.values(DirectionProjects).filter(Boolean) as [string, ...string[]],
+    Object.values(DirectionRetails).filter(Boolean) as [string, ...string[]],
     {
       message: "Выберите направление",
     }
   ),
-  deliveryType: z.enum(Object.values(Delivery) as [string, ...string[]])
-  .or(z.literal(""))
-  .optional(),
+  deliveryType: z
+    .enum(Object.values(DeliveryRetails) as [string, ...string[]])
+    .or(z.literal(""))
+    .optional(),
   contact: z.string(),
   phone: z.string().optional(),
-  email: z.string().email().or(z.literal("")), // ✅ Email необязателен
-  additionalСontact: z.string().optional(),
+  email: z.string().email().or(z.literal("")),
+  additionalContact: z.string().optional(),
 
   amountCP: z.string().optional(),
   delta: z.string().optional(),
 
-  projectStatus: z.enum(Object.values(Status) as [string, ...string[]], {
-    message: "Выберите статус проекта",
-  }),
+  projectStatus: z.enum(
+    Object.values(StatusRetails) as [string, ...string[]],
+    {
+      message: "Выберите статус проекта",
+    }
+  ),
   comments: z.string(),
   plannedDateConnection: z.preprocess(
     (val) => (val instanceof Date ? val.toISOString() : val || ""),

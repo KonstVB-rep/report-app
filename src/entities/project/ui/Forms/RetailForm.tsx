@@ -1,35 +1,140 @@
+"use client";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import CalendarComponent from "@/shared/ui/Calendar";
-import InputEmail from "@/shared/ui/Inputs/InputEmail";
-import InputNumber from "@/shared/ui/Inputs/InputNumber";
-import PhoneInput from "@/shared/ui/PhoneInput";
 import SelectComponent from "@/shared/ui/SelectComponent";
-import React from "react";
-import { Form, UseFormReturn } from "react-hook-form";
+import CalendarComponent from "@/shared/ui/Calendar";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { TOAST } from "@/entities/user/ui/Toast";
+// import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
+import { RetailFormSchema, RetailSchema } from "../../model/schema";
+import { createProject } from "../../api";
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import {
-  DirectionProjectLabels,
-  DeliveryProjectLabels,
-  StatusProjectLabels,
+  DeliveryProject,
+  DirectionProject,
+  StatusProject,
+} from "@prisma/client";
+import {
+  DeliveryRetailLabels,
+  DirectionRetailLabels,
+  StatusRetailLabels,
 } from "../../lib/constants";
-import { Input } from "@/components/ui/input";
-import { RetailSchema } from "../../model/schema";
+import PhoneInput from "@/shared/ui/PhoneInput";
+import InputNumber from "@/shared/ui/Inputs/InputNumber";
+import InputEmail from "@/shared/ui/Inputs/InputEmail";
+import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 
 type RetailFormProps = {
-  form: UseFormReturn<RetailSchema>;
-  onSubmit: (data: RetailSchema) => void;
-  isPending: boolean;
+  setOpen: (value: boolean) => void;
 };
 
-const RetailForm = ({ form, onSubmit, isPending }: RetailFormProps) => {
+const RetailForm = ({ setOpen }: RetailFormProps) => {
+  const queryClient = useQueryClient();
+ 
+   const { authUser } = useStoreUser();
+ 
+   const { mutate, isPending } = useMutation({
+     mutationFn: (data: RetailSchema) => {
+
+       if (!authUser?.id) {
+         throw new Error("User ID is missing");
+       }
+ 
+       return createProject({
+         ...data,
+         email: data.email || "",
+         phone: data.phone || "",
+         additionalContact: data.additionalСontact || "",
+         userId: authUser.id,
+         deliveryType: data.deliveryType as DeliveryProject,
+         dateRequest: new Date(),
+         projectStatus: data.projectStatus as StatusProject,
+         plannedDateConnection: data.plannedDateConnection
+           ? new Date(data.plannedDateConnection)
+           : null,
+         direction: data.direction as DirectionProject,
+         amountCP: data.amountCP
+           ? parseFloat(
+               data.amountCP.replace(/\s/g, "").replace(",", ".")
+             ).toString()
+           : "0", // Преобразуем в строку
+         delta: data.delta
+           ? parseFloat(
+               data.delta.replace(/\s/g, "").replace(",", ".")
+             ).toString()
+           : "0", // Преобразуем в строку
+       });
+     },
+     onError: (error) => {
+       // Обработка ошибок
+       console.error("Ошибка при создании проекта:", error);
+       TOAST.ERROR("Ошибка при создании проекта");
+     },
+     onSuccess: (data) => {
+       if (data) {
+         setOpen(false);
+ 
+         queryClient.invalidateQueries({
+           queryKey: ["projects", authUser?.id],
+           exact: true,
+         });
+ 
+         queryClient.invalidateQueries({
+           queryKey: ["all-projects", authUser?.departmentId],
+         });
+       }
+     },
+   });
+ 
+   const form = useForm<RetailSchema>({
+     resolver: zodResolver(RetailFormSchema),
+     defaultValues: {
+       nameDeal: "",
+       nameObject: "",
+       direction: "",
+       deliveryType: "",
+       contact: "",
+       phone: "",
+       email: "",
+       additionalContact: "",
+       amountCP: "",
+       delta: "",
+       projectStatus: "",
+       comments: "",
+       plannedDateConnection: undefined,
+     },
+   });
+ 
+   const onSubmit = (data: RetailSchema) => {
+     TOAST.PROMISE(
+       new Promise((resolve, reject) => {
+         mutate(data, {
+           onSuccess: (data) => {
+             resolve(data);
+           },
+           onError: (error) => {
+             reject(error);
+           },
+         });
+       }),
+       "Проект создан"
+     );
+   };
+
   return (
     <Form {...form}>
       <form
@@ -71,7 +176,7 @@ const RetailForm = ({ form, onSubmit, isPending }: RetailFormProps) => {
                   <FormControl>
                     <SelectComponent
                       placeholder="Выберите направление"
-                      options={transformObjValueToArr(DirectionProjectLabels)}
+                      options={transformObjValueToArr(DirectionRetailLabels)}
                       onValueChange={(selected) =>
                         form.setValue("direction", selected)
                       }
@@ -96,7 +201,7 @@ const RetailForm = ({ form, onSubmit, isPending }: RetailFormProps) => {
                   <FormControl>
                     <SelectComponent
                       placeholder="Выберите тип поставки"
-                      options={transformObjValueToArr(DeliveryProjectLabels)}
+                      options={transformObjValueToArr(DeliveryRetailLabels)}
                       onValueChange={(selected) =>
                         form.setValue("deliveryType", selected)
                       }
@@ -106,23 +211,6 @@ const RetailForm = ({ form, onSubmit, isPending }: RetailFormProps) => {
                   {form.formState.errors.deliveryType?.message && (
                     <FormMessage className="text-red-500">
                       {form.formState.errors.deliveryType?.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="equipmentType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Тип оборудования</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Наименование" {...field} />
-                  </FormControl>
-                  {form.formState.errors.equipmentType?.message && (
-                    <FormMessage className="text-red-500">
-                      {form.formState.errors.equipmentType?.message}
                     </FormMessage>
                   )}
                 </FormItem>
@@ -184,6 +272,26 @@ const RetailForm = ({ form, onSubmit, isPending }: RetailFormProps) => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="additionalContact"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Дополнительный контакт</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Данные контактного лица"
+                      {...field}
+                    />
+                  </FormControl>
+                  {form.formState.errors.contact?.message && (
+                    <FormMessage className="text-red-500">
+                      form.formState.errors.contact?.message
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
           </div>
           <div className="flex flex-col gap-2">
             <FormField
@@ -237,7 +345,7 @@ const RetailForm = ({ form, onSubmit, isPending }: RetailFormProps) => {
                   <FormControl>
                     <SelectComponent
                       placeholder="Выберите статус КП"
-                      options={transformObjValueToArr(StatusProjectLabels)}
+                      options={transformObjValueToArr(StatusRetailLabels)}
                       onValueChange={(selected) =>
                         form.setValue("projectStatus", selected)
                       }

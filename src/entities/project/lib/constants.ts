@@ -75,7 +75,10 @@ export enum EquipmentTypeEnum {
 
 // Labels
 
-export const DirectionProjectLabels: Record<keyof typeof DirectionProject, string> = {
+export const DirectionProjectLabels: Record<
+  keyof typeof DirectionProject,
+  string
+> = {
   PARKING: "Парковка",
   GLK: "ГЛК",
   SKD: "СКД",
@@ -89,14 +92,20 @@ export const DirectionProjectLabels: Record<keyof typeof DirectionProject, strin
   STADIUM_ARENA: "Стадион/Арена",
 } as const;
 
-export const DirectionRetailLabels: Record<keyof typeof DirectionRetail, string> = {
+export const DirectionRetailLabels: Record<
+  keyof typeof DirectionRetail,
+  string
+> = {
   PARKING_EQUIPMENT: "Парковочное оборудование",
   SCUD: "СКУД",
   IDS_CONSUMABLES: "Идентификаторы и расходники",
   OTHER: "Иное",
 } as const;
 
-export const DeliveryProjectLabels: Record<keyof typeof DeliveryProject, string> = {
+export const DeliveryProjectLabels: Record<
+  keyof typeof DeliveryProject,
+  string
+> = {
   COMPLEX: "Комплекс",
   WHOLESALE: "Розница",
   EQUIPMENT_SUPPLY: "Поставка оборудования",
@@ -106,12 +115,13 @@ export const DeliveryProjectLabels: Record<keyof typeof DeliveryProject, string>
   OTHER: "Иное",
 } as const;
 
-export const DeliveryRetailLabels: Record<keyof typeof DeliveryRetail, string> = {
-  COMPLEX: "Комплекс",
-  WHOLESALE: "Розница",
-  SUPPLY: "Поставка оборудования",
-  WORK: "Работы",
-} as const;
+export const DeliveryRetailLabels: Record<keyof typeof DeliveryRetail, string> =
+  {
+    COMPLEX: "Комплекс",
+    WHOLESALE: "Розница",
+    SUPPLY: "Поставка оборудования",
+    WORK: "Работы",
+  } as const;
 
 export const StatusProjectLabels: Record<keyof typeof StatusProject, string> = {
   INVOICE_ISSUED: "Выставлен счет",
@@ -143,7 +153,10 @@ export const DepartmentLabels: Record<keyof typeof DepartmentEnum, string> = {
   TECHNICAL: "Технический отдел",
 } as const;
 
-export const EquipmentTypeLabels: Record<keyof typeof EquipmentTypeEnum, string> = {
+export const EquipmentTypeLabels: Record<
+  keyof typeof EquipmentTypeEnum,
+  string
+> = {
   BARRIER: "Шлагбаум",
   GUARD: "Ограждения",
   SAFETY_ISLAND: "Островок безопасности",

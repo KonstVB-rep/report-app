@@ -1,7 +1,7 @@
-import prisma from "@/prisma/db/prisma-client";
 import { User } from "@prisma/client";
 import { requireAuth } from "./requireAuth ";
 import { handleError } from "@/shared/api/handleError";
+import prisma from "@/prisma/prisma-client";
 
 interface Response<T> {
   error: boolean;
@@ -21,7 +21,10 @@ export const handleAuthorizationAction = async (): Promise<
   return { error: false, message: null, data: { user, userId } };
 };
 
-export const handleAuthorization = async (): Promise<{ user: User | null; userId: string }> => {
+export const handleAuthorization = async (): Promise<{
+  user: User | null;
+  userId: string;
+}> => {
   const userId = await requireAuth();
 
   if (!userId) {
@@ -36,4 +39,3 @@ export const handleAuthorization = async (): Promise<{ user: User | null; userId
 
   return { user, userId };
 };
-

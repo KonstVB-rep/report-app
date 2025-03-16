@@ -1,39 +1,35 @@
-'use server';
+"use server";
 
 import bcrypt from "bcrypt";
-import prisma from "@/prisma/db/prisma-client";
+
 import { generateTokens } from "@/feature/auth/lib/generateTokens";
+import prisma from "@/prisma/prisma-client";
 
- 
-export const login = async (
-  prevState: unknown,
-  formData: FormData
-) => {
+export const login = async (prevState: unknown, formData: FormData) => {
   try {
-
-    const password = formData.get('password') as string;
-    const email = formData.get('email') as string;
+    const password = formData.get("password") as string;
+    const email = formData.get("email") as string;
 
     if (!email || !password) {
       return {
         data: null,
-        message: 'Пожалуйста, заполните все поля',
-        error: true
-      }
+        message: "Пожалуйста, заполните все поля",
+        error: true,
+      };
     }
 
     const user = await prisma.user.findUnique({
       where: {
-        email: email
+        email: email,
       },
     });
 
     if (!user) {
       return {
         data: null,
-        message: 'Пользователь не найден',
+        message: "Пользователь не найден",
         error: true,
-      }
+      };
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.user_password);
@@ -41,16 +37,15 @@ export const login = async (
     if (!isPasswordValid) {
       return {
         data: null,
-        message: 'Неверные данные авторизации',
+        message: "Неверные данные авторизации",
         error: true,
-      }
+      };
     }
 
     const lastLoginDate = await prisma.userLogin.findFirst({
       where: { userId: user.id },
       orderBy: { loginAt: "desc" },
     });
-
 
     if (!lastLoginDate) {
       // Если записи нет, создаем новую
@@ -63,7 +58,7 @@ export const login = async (
     } else {
       // Если запись уже есть, обновляем `loginAt`
       await prisma.userLogin.update({
-        where: { id: lastLoginDate.id }, 
+        where: { id: lastLoginDate.id },
         data: { loginAt: new Date() },
       });
     }
@@ -71,16 +66,14 @@ export const login = async (
     await generateTokens(user.id);
 
     return {
-      data: {...user, lastlogin: lastLoginDate?.loginAt},
+      data: { ...user, lastlogin: lastLoginDate?.loginAt },
       message: "Авторизация прошла успешно",
     };
   } catch (error) {
-    console.log(error, 'error');
+    console.log(error, "error");
     return {
-      message: 'Ошибка авторизации',
+      message: "Ошибка авторизации",
       error: true,
     };
   }
 };
-
-

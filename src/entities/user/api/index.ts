@@ -1,13 +1,19 @@
 "use server";
 
-import prisma from "@/prisma/db/prisma-client";
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { findUserByEmail } from "@/app/api/utils/findUserByEmail";
 import bcrypt from "bcrypt";
-import { DepartmentEnum, Role, User } from "@prisma/client";
+
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
-import { DepartmentTypeName, UserRequest, UserResponse, UserWithdepartmentName } from "../types";
+import {
+  DepartmentTypeName,
+  UserRequest,
+  UserResponse,
+  UserWithdepartmentName,
+} from "../types";
+import { DepartmentEnum, Role, User } from "@prisma/client";
+import prisma from "@/prisma/prisma-client";
 
 type RequiredFields = keyof UserRequest;
 const requiredFields: RequiredFields[] = [
@@ -91,6 +97,7 @@ export const createUser = async (
     const newUser = await prisma.user.create({
       data: {
         ...userData,
+        role: userData.role as Role,
         departmentId: departmentTarget.id, // Указываем найденный departmentId
         username: userData.username!.toLowerCase().trim(),
         position: userData.position!.toLowerCase().trim(),
@@ -133,9 +140,7 @@ export const createUser = async (
   } catch (error) {
     console.error(error);
     const errorMessage =
-      typeof error === "string"
-        ? error
-        :  "Ошибка при создании пользователя";
+      typeof error === "string" ? error : "Ошибка при создании пользователя";
     handleError(errorMessage);
   }
 };
@@ -165,17 +170,17 @@ export const getUser = async (
 
     const lastSession = await prisma.userLogin.findFirst({
       where: { userId: targetUserId },
-      orderBy: { loginAt: "desc" }, 
+      orderBy: { loginAt: "desc" },
       select: { loginAt: true },
     });
 
-    if(lastSession) {
+    if (lastSession) {
       targetUser.lastlogin = lastSession?.loginAt;
     }
 
     const userWithDepartmentName = {
       ...targetUser,
-      departmentName: targetUser!.department?.name || null, 
+      departmentName: targetUser!.department?.name || null,
     };
 
     return userWithDepartmentName;
@@ -208,7 +213,6 @@ export const getUserShort = async (
         },
       },
     });
-    
 
     if (!targetUser) return handleError("Пользователь не найден");
 
@@ -218,7 +222,8 @@ export const getUserShort = async (
 
     const userWithDepartmentName = {
       ...targetUser,
-      departmentName: targetUser!.department?.name as DepartmentTypeName || null, 
+      departmentName:
+        (targetUser!.department?.name as DepartmentTypeName) || null,
     };
 
     return userWithDepartmentName;
@@ -227,7 +232,6 @@ export const getUserShort = async (
     return handleError((error as Error).message);
   }
 };
-
 
 export const deleteUser = async (
   deletedUserId: string
@@ -266,10 +270,10 @@ export const updateUser = async (
       requiredFieldsForEditForm
     );
 
-    const { user, userId } = await handleAuthorization();
+    // const { user, userId } = await handleAuthorization();
 
-    if (user)
-      await checkUserPermissionByRole(userId, user.role, user.departmentId);
+    // if (user)
+    //   await checkUserPermissionByRole(userId, user.role, user.departmentId);
 
     const person = await prisma.user.findUnique({
       where: { email: userData.email as string },
@@ -305,6 +309,7 @@ export const updateUser = async (
       where: { email: userData.email as string },
       data: {
         ...updatedData,
+        role: updatedData.role as Role,
         departmentId,
         username: updatedData.username!.toLowerCase().trim(),
         position: updatedData.position!.toLowerCase().trim(),
@@ -327,12 +332,13 @@ export const updateUser = async (
   }
 };
 
-export const getAllUsersByDepartment = async (id: number): Promise<User[] | null> => {
+export const getAllUsersByDepartment = async (
+  id: number
+): Promise<User[] | null> => {
   try {
     const data = await handleAuthorization();
     const { user } = data!;
 
-  
     if (!user) {
       handleError("Пользователь не найден");
     }
@@ -350,7 +356,9 @@ export const getAllUsersByDepartment = async (id: number): Promise<User[] | null
   }
 };
 
-export const getAllUsersByDepartmentNameAndId = async (id: number): Promise<Record<string, string> | null> => {
+export const getAllUsersByDepartmentNameAndId = async (
+  id: number
+): Promise<Record<string, string> | null> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -363,7 +371,8 @@ export const getAllUsersByDepartmentNameAndId = async (id: number): Promise<Reco
     await checkUserPermissionByRole(userId, user!.role, user!.departmentId);
 
     const users = await prisma.user.findMany({
-      where: { departmentId: Number(id) }, select: {
+      where: { departmentId: Number(id) },
+      select: {
         id: true,
         username: true,
       },
@@ -372,7 +381,7 @@ export const getAllUsersByDepartmentNameAndId = async (id: number): Promise<Reco
       acc[user.id] = user.username; // исправлено
       return acc;
     }, {} as Record<string, string>); // добавлен явный тип
-      
+
     return transform;
   } catch (error) {
     console.error(error);

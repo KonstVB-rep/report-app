@@ -1,10 +1,10 @@
-import { DeliveryProject, DirectionProject, StatusProject,DeliveryRetail,EquipmentTypeEnum, DirectionRetail, StatusRetail } from "@prisma/client";
+
+import { DealType, DeliveryProject, DeliveryRetail, DirectionProject, DirectionRetail, StatusProject, StatusRetail } from "@prisma/client";
+import { EquipmentTypeEnum } from "../lib/constants";
 
 export type DirectionType = DirectionProject;
 
-
-export type DeliveryType = DeliveryProject
-
+export type DeliveryType = DeliveryProject;
 
 export type StatusType = StatusProject;
 
@@ -13,23 +13,24 @@ export interface ProjectResponse {
   userId: string;
   nameDeal: string;
   nameObject: string;
-  equipmentType: string;
   dateRequest: Date;
   direction: DirectionProject;
   deliveryType: DeliveryProject;
   contact: string;
-  additionalСontact: string;
+  additionalContact: string;
   phone: string;
-  email?: string;
+  email: string | null;
   amountCP: string;
   amountWork: string;
   amountPurchase: string;
   delta: string;
   projectStatus: StatusProject;
   comments: string;
-  plannedDateConnection?: Date;
+  plannedDateConnection: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  type: DealType
+  [key: string]: unknown
 }
 
 export interface RetailResponse {
@@ -43,13 +44,15 @@ export interface RetailResponse {
   contact: string;
   phone: string;
   email?: string;
+  additionalContact: string;
   amountCP: string;
   delta: string;
   projectStatus: StatusRetail;
   comments: string;
-  plannedDateConnection?: Date;
+  plannedDateConnection?: Date | undefined;
   createdAt: Date;
   updatedAt: Date;
+  type: DealType
 }
 
 export const DirectionProjects = {
@@ -76,7 +79,7 @@ export const DirectionRetails = {
 export const DeliveryProjects = {
   COMPLEX: DeliveryProject.COMPLEX,
   WHOLESALE: DeliveryProject.WHOLESALE,
-  EQUIPMENT_SUPPLY: DeliveryProject.EQUIPMENT_SUUPLY,
+  EQUIPMENT_SUPPLY: DeliveryProject.EQUIPMENT_SUPPLY,
   WORK_SERVICES: DeliveryProject.WORK_SERVICES,
   RENT: DeliveryProject.RENT,
   SOFTWARE_DELIVERY: DeliveryProject.SOFTWARE_DELIVERY,

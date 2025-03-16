@@ -6,14 +6,13 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 import Loading from "./loading";
-
-import SummaryDataTable from "@/shared/ui/Table/SummaryDataTable";
 import ProjectTableTemplate from "@/entities/project/ui/ProjectTableTemplate";
 
 import { TOAST } from "@/entities/user/ui/Toast";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { columnsDataProjectSummary } from "./model/summary-table-columns-data";
 import { ProjectResponse } from "@/entities/project/types";
+import DataTable from "@/shared/ui/Table/DataTable";
 
 const SummaryTable = () => {
   const { userId } = useParams();
@@ -40,6 +39,10 @@ const SummaryTable = () => {
     retry: 2,
   });
 
+  const getRowLink = (row: ProjectResponse & { id: string }, type: string) => {
+    return `/dashboard/deal/${type}/${row.id}`;
+  };
+
   if (isPending) return <Loading />;
 
   return (
@@ -52,9 +55,10 @@ const SummaryTable = () => {
         </div>
       )}
       {AllProject && (
-        <SummaryDataTable
+        <DataTable
           columns={columnsDataProjectSummary}
-          data={AllProject as ProjectResponse[]}
+          data={(AllProject as ProjectResponse[]) ?? []}
+          getRowLink={getRowLink}
         />
       )}
     </ProjectTableTemplate>

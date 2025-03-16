@@ -13,11 +13,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // import { Textarea } from "@/components/ui/textarea";
 // import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import { Delivery, Direction, Status } from "@prisma/client";
+
 // import SelectComponent from "@/shared/ui/SelectComponent";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateProject } from "../../api";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
 // import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
@@ -32,7 +31,13 @@ import { useGetProjectById } from "../../hooks";
 import { formatterCurrency } from "@/shared/lib/utils";
 // import InputNumber from "@/shared/ui/Inputs/InputNumber";
 // import InputEmail from "@/shared/ui/Inputs/InputEmail";
-import ProjectForm from "./ProjectForm";
+import { updateProject } from "../../api";
+import {
+  DeliveryProject,
+  DirectionProject,
+  StatusProject,
+} from "@prisma/client";
+import ProjectFormBody from "./ProjectFormBody";
 
 const EditProjectForm = ({
   close,
@@ -47,15 +52,18 @@ const EditProjectForm = ({
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues: {
+      nameDeal: data?.nameDeal || "",
       nameObject: data?.nameObject || "",
-      equipmentType: data?.equipmentType || "",
       direction: data?.direction ? String(data.direction) : "",
       deliveryType: data?.deliveryType ? String(data.deliveryType) : "",
       projectStatus: data?.projectStatus ? String(data.projectStatus) : "",
       contact: data?.contact || "",
       phone: data?.phone || "",
       email: data?.email || "",
+      additionalContact: data?.additionalContact || "",
       amountCP: data?.amountCP || "0",
+      amountPurchase: data?.amountPurchase || "0",
+      amountWork: data?.amountWork || "0",
       delta: data?.delta || "0",
       comments: data?.comments || "",
       plannedDateConnection: undefined,
@@ -73,23 +81,38 @@ const EditProjectForm = ({
       return updateProject({
         ...data,
         id: projectId,
+        ...data,
         email: data.email || "",
         phone: data.phone || "",
-        equipmentType: data.equipmentType || "",
+        additionalContact: data.additionalContact || "",
+        userId: authUser.id,
+        deliveryType: data.deliveryType as DeliveryProject,
         dateRequest: new Date(),
-        deliveryType: data.deliveryType as Delivery,
-        projectStatus: data.projectStatus as Status,
+        projectStatus: data.projectStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
           : null,
-        direction: data.direction as Direction,
-        userId: authUser.id,
+        direction: data.direction as DirectionProject,
         amountCP: data.amountCP
-          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", "."))
-          : 0,
+          ? parseFloat(
+              data.amountCP.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0", // Преобразуем в строку
+        amountPurchase: data.amountPurchase
+          ? parseFloat(
+              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        amountWork: data.amountWork
+          ? parseFloat(
+              data.amountWork.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
         delta: data.delta
-          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", "."))
-          : 0,
+          ? parseFloat(
+              data.delta.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0", // Преобразуем в строку
       });
     },
     onSuccess: () => {
@@ -121,19 +144,24 @@ const EditProjectForm = ({
     if (data) {
       form.reset({
         ...data,
-        deliveryType: data.deliveryType as Delivery,
-        projectStatus: data.projectStatus as Status,
-        direction: data.direction as Direction,
+        deliveryType: data.deliveryType as DeliveryProject,
+        projectStatus: data.projectStatus as StatusProject,
+        direction: data.direction as DirectionProject,
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
         email: data.email ?? undefined, // Преобразуем null в undefined
         amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
+        amountPurchase: formatterCurrency.format(
+          parseFloat(data.amountPurchase)
+        ),
+        amountWork: formatterCurrency.format(parseFloat(data.amountWork)),
         delta: formatterCurrency.format(parseFloat(data.delta)),
       });
     }
   }, [form, data]);
 
   return (
-    <ProjectForm form={form} onSubmit={onSubmit} isPending={isPending} />
+    <ProjectFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
+    // <ProjectForm form={form} onSubmit={onSubmit} isPending={isPending} />
 
     // <Form {...form}>
     //   <form

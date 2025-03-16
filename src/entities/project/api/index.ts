@@ -1,12 +1,11 @@
-'use server'
+"use server";
 
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
-import prisma from "@/prisma/db/prisma-client";
 import { handleError } from "@/shared/api/handleError";
-import { Direction, Prisma } from "@prisma/client";
-import { Project, ProjectResponse } from "../types";
-
+import { DirectionProject, Prisma } from "@prisma/client";
+import { ProjectResponse } from "../types";
+import prisma from "@/prisma/prisma-client";
 
 const requiredFields = [
   "nameObject",
@@ -16,30 +15,36 @@ const requiredFields = [
   "projectStatus",
 ];
 
-type ProjectWithoutDateCreateAndUpdate = Omit<Project, "createdAt" | "updatedAt"> 
+type ProjectWithoutDateCreateAndUpdate = Omit<
+  ProjectResponse,
+  "createdAt" | "updatedAt"
+>;
 
 type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id"> & {
-  direction: Direction;
+  direction: DirectionProject;
 };
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
-  const { userId } = await handleAuthorization();  
+  const { userId } = await handleAuthorization();
 
   for (const field of requiredFields as (keyof ProjectWithoutId)[]) {
     if (!projectData[field]) {
       return handleError(`Отсутствует поле: ${field}`);
     }
   }
-
+  console.log(userId, "1111111111111111111111111");
   return userId;
 };
 
 /* Получить проект */
-export const getProjectById = async (projectId: string, idProjectOwner: string): Promise<ProjectResponse | null> => {
+export const getProjectById = async (
+  projectId: string,
+  idProjectOwner: string
+): Promise<ProjectResponse | null> => {
   try {
     const data = await handleAuthorization();
 
-    if(!data) return handleError("Ошибка авторизации");
+    if (!data) return handleError("Ошибка авторизации");
 
     const { user, userId } = data!;
 
@@ -63,14 +68,20 @@ export const getProjectById = async (projectId: string, idProjectOwner: string):
     }
 
     const project = await prisma.project.findUnique({
-      where: { id: projectId }
+      where: { id: projectId },
     });
 
     if (!project) {
       return handleError("Проект не найден");
     }
 
-    const formattedProject = { ...project, amountCP: project.amountCP.toString(), delta: project.delta.toString() };
+    const formattedProject = {
+      ...project,
+      amountCP: project.amountCP.toString(),
+      amountWork: project.amountWork.toString(),
+      amountPurchase: project.amountPurchase.toString(),
+      delta: project.delta.toString(),
+    };
     return formattedProject;
   } catch (error) {
     console.error(error);
@@ -79,18 +90,17 @@ export const getProjectById = async (projectId: string, idProjectOwner: string):
 };
 
 export const createProject = async (data: ProjectWithoutId) => {
+  console.log("data", data);
   try {
-
     if (!data) {
       return handleError("Ошибка: data не переданы в createProject");
     }
     const userId = await checkAuthAndDataFill(data);
 
-    console.log("userId", userId);  
+    console.log("userId", userId);
 
-    const {
-      ...projectData
-    } = data;
+    const { amountCP, amountPurchase, amountWork, delta, ...projectData } =
+      data;
 
     // const existingProject = await prisma.project.findUnique({
     //   where: { nameObject },
@@ -104,9 +114,38 @@ export const createProject = async (data: ProjectWithoutId) => {
     //   };
     // }
 
-    const safeamountCP = isNaN(projectData.amountCP) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCP);
-    const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
+    // const safeamountCP = isNaN(parseFloat(amountCP))
+    //   ? new Prisma.Decimal(0)
+    //   : new Prisma.Decimal(parseFloat(amountCP));
 
+    // const safeDelta = isNaN(parseFloat(delta))
+    //   ? new Prisma.Decimal(0)
+    //   : new Prisma.Decimal(parseFloat(delta));
+
+    // const safeamountWork = isNaN(parseFloat(amountWork))
+    //   ? new Prisma.Decimal(0)
+    //   : new Prisma.Decimal(parseFloat(amountWork));
+
+    // const safeamountPurchase = isNaN(parseFloat(amountPurchase))
+    //   ? new Prisma.Decimal(0)
+    //   : new Prisma.Decimal(parseFloat(amountPurchase));
+    const safeamountCP = new Prisma.Decimal(amountCP.toString());
+    const safeDelta = new Prisma.Decimal(delta.toString());
+    const safeamountWork = new Prisma.Decimal(amountWork.toString());
+    const safeamountPurchase = new Prisma.Decimal(amountPurchase.toString());
+
+    console.log(
+      {
+        ...projectData,
+        userId,
+        dateRequest: new Date(),
+        amountCP: safeamountCP,
+        delta: safeDelta,
+        amountWork: safeamountWork,
+        amountPurchase: safeamountPurchase,
+      },
+      "projectData"
+    );
 
     const newProject = await prisma.project.create({
       data: {
@@ -115,18 +154,20 @@ export const createProject = async (data: ProjectWithoutId) => {
         dateRequest: new Date(),
         amountCP: safeamountCP,
         delta: safeDelta,
+        amountWork: safeamountWork,
+        amountPurchase: safeamountPurchase,
       },
     });
 
     const formatteProject = {
       ...newProject,
       amountCP: safeamountCP.toString(),
-      delta: safeDelta.toString(),  
+      amountWork: safeamountWork.toString(),
+      amountPurchase: safeamountPurchase.toString(),
+      delta: safeDelta.toString(),
     };
 
-      
     return formatteProject;
-    
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -134,26 +175,37 @@ export const createProject = async (data: ProjectWithoutId) => {
 };
 
 /* Обновить проект */
-export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => {
+export const updateProject = async (
+  data: ProjectWithoutDateCreateAndUpdate
+) => {
   try {
     const userId = await checkAuthAndDataFill(data);
-    const {
-      id,
-      ...projectData
-    } = data;
+    const { id, ...projectData } = data;
 
     const project = await prisma.project.findUnique({ where: { id: id } });
 
     if (!project) {
-      return []
+      return [];
     }
 
     if (project.userId !== userId) {
       return handleError("Недостаточно прав");
     }
+    const safeamountCP = isNaN(parseFloat(projectData.amountCP))
+      ? new Prisma.Decimal(0)
+      : new Prisma.Decimal(parseFloat(projectData.amountCP));
 
-    const safeamountCP = isNaN(projectData.amountCP) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.amountCP);
-    const safeDelta = isNaN(projectData.delta) ? new Prisma.Decimal(0) : new Prisma.Decimal(projectData.delta);
+    const safeDelta = isNaN(parseFloat(projectData.delta))
+      ? new Prisma.Decimal(0)
+      : new Prisma.Decimal(parseFloat(projectData.delta));
+
+    const safeamountWork = isNaN(parseFloat(projectData.amountWork))
+      ? new Prisma.Decimal(0)
+      : new Prisma.Decimal(parseFloat(projectData.amountWork));
+
+    const safeamountPurchase = isNaN(parseFloat(projectData.amountPurchase))
+      ? new Prisma.Decimal(0)
+      : new Prisma.Decimal(parseFloat(projectData.amountPurchase));
 
     const updatedProject = await prisma.project.update({
       where: { id: project.id },
@@ -163,20 +215,23 @@ export const updateProject = async (data: ProjectWithoutDateCreateAndUpdate) => 
         dateRequest: new Date(),
         amountCP: safeamountCP,
         delta: safeDelta,
+        amountWork: safeamountWork,
+        amountPurchase: safeamountPurchase,
       },
     });
-    
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { createdAt, updatedAt, ...rest } = updatedProject;
 
     const formatteProject = {
       ...rest,
-      amountCP: rest.amountCP.toString(),  // Преобразуем Decimal в строку
-      delta: rest.delta.toString(),  // Преобразуем Decimal в строку
+      amountCP: rest.amountCP.toString(), // Преобразуем Decimal в строку
+      amountWork: rest.amountWork.toString(), // Преобразуем Decimal в строку
+      amountPurchase: rest.amountPurchase.toString(),
+      delta: rest.delta.toString(), // Преобразуем Decimal в строку
     };
 
-    return formatteProject
+    return formatteProject;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -215,11 +270,13 @@ export const deleteProject = async (
     return { data: null, message: "Проект удален", error: false };
   } catch (error) {
     console.error(error);
-        return handleError((error as Error).message);
+    return handleError((error as Error).message);
   }
 };
 
-export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectResponse[] | null> => {
+export const getProjectsUser = async (
+  idProjectOwner: string
+): Promise<ProjectResponse[] | null> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -233,12 +290,14 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
         where: { userId: idProjectOwner },
       });
 
-      const formattedProjects = projects.map(project => ({
+      const formattedProjects = projects.map((project) => ({
         ...project,
         amountCP: project.amountCP.toString(),
-        delta: project.delta.toString(), 
+        amountWork: project.amountWork.toString(),
+        amountPurchase: project.amountPurchase.toString(),
+        delta: project.delta.toString(),
       }));
-      
+
       return formattedProjects;
     }
 
@@ -252,24 +311,27 @@ export const getProjectsUser = async (idProjectOwner: string) : Promise<ProjectR
       return [];
     }
 
-    const formattedProjects = projects.map(project => ({
+    const formattedProjects = projects.map((project) => ({
       ...project,
-      amountCP: project.amountCP.toString(), 
-      delta: project.delta.toString(), 
+      amountCP: project.amountCP.toString(),
+      amountWork: project.amountWork.toString(),
+      amountPurchase: project.amountPurchase.toString(),
+      delta: project.delta.toString(),
     }));
 
     return formattedProjects;
   } catch (error) {
     console.error(error);
-     handleError((error as Error).message);
-     return null;
+    handleError((error as Error).message);
+    return null;
   }
 };
 
-
-export const getAllProjectsByDepartment = async () => {
+export const getAllProjectsByDepartment = async (): Promise<
+  ProjectResponse[]
+> => {
   try {
-    const { user, userId} = await handleAuthorization();
+    const { user, userId } = await handleAuthorization();
 
     if (!user) {
       return handleError("Пользователь не найден");
@@ -298,14 +360,16 @@ export const getAllProjectsByDepartment = async () => {
       },
     });
 
-    const formattedProjects = projects.map(project => ({
+    const formattedProjects = projects.map((project) => ({
       ...project,
       user: project.user.username,
-      amountCP: project.amountCP.toString(),  // Преобразуем Decimal в строку
-      delta: project.delta.toString(),  // Преобразуем Decimal в строку
+      amountCP: project.amountCP.toString(), // Преобразуем Decimal в строку
+      amountWork: project.amountWork.toString(), // Преобразуем Decimal в строку
+      amountPurchase: project.amountPurchase.toString(),
+      delta: project.delta.toString(), // Преобразуем Decimal в строку
     }));
 
-    return formattedProjects
+    return formattedProjects;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

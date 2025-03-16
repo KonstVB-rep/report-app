@@ -64,7 +64,7 @@ const MultiColumnFilter = <TData extends Record<string, unknown>, TValue = unkno
   return (
     <div className="flex gap-2">
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild  className={`${
+        <PopoverTrigger asChild  className={`border-muted-foreground ${
           selectedColumns.length > 0 ? "border-solid" : "border-dashed"
         } `}>
           <Button variant="outline" className="relative">

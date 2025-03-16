@@ -1,140 +1,36 @@
 "use client";
 import React, { Dispatch, SetStateAction } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-// import {
-//   Form,
-//   FormControl,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from "@/components/ui/form";
-// import { Input } from "@/components/ui/input";
-
-// import { Textarea } from "@/components/ui/textarea";
-// import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-// import SelectComponent from "@/shared/ui/SelectComponent";
-// import CalendarComponent from "@/shared/ui/Calendar";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { TOAST } from "@/entities/user/ui/Toast";
-// import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
-import { createProject } from "../../api";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { Delivery, Direction, Status } from "@prisma/client";
-// import {
-//   DeliveryProjectLabels,
-//   DirectionProjectLabels,
-//   StatusProjectLabels,
-// } from "../../lib/constants";
-// import PhoneInput from "@/shared/ui/PhoneInput";
-// import InputNumber from "@/shared/ui/Inputs/InputNumber";
-// import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import ProjectForm from "./ProjectForm";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const NewProjectForm = ({
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RetailForm from "./RetailForm";
+
+const NewDealForm = ({
   setOpen,
 }: {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const queryClient = useQueryClient();
 
-  const { authUser } = useStoreUser();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: ProjectSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      return createProject({
-        ...data,
-        email: data.email || "",
-        phone: data.phone || "",
-        equipmentType: data.equipmentType || "",
-        userId: authUser.id,
-        deliveryType: data.deliveryType as Delivery,
-        dateRequest: new Date(),
-        projectStatus: data.projectStatus as Status,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
-          : null,
-        direction: data.direction as Direction,
-        amountCP: data.amountCP
-          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", "."))
-          : 0,
-        delta: data.delta
-          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", "."))
-          : 0,
-      });
-    },
-
-    onSuccess: (data) => {
-      if (data) {
-        setOpen(false);
-
-        queryClient.invalidateQueries({
-          queryKey: ["projects", authUser?.id],
-          exact: true,
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: ["all-projects", authUser?.departmentId],
-        });
-      }
-    },
-  });
-
-  const form = useForm<ProjectSchema>({
-    resolver: zodResolver(ProjectFormSchema),
-    defaultValues: {
-      nameObject: "",
-      equipmentType: "",
-      direction: "",
-      deliveryType: "",
-      contact: "",
-      phone: "",
-      email: "",
-      amountCP: "",
-      delta: "",
-      projectStatus: "",
-      comments: "",
-      plannedDateConnection: undefined,
-    },
-  });
-
-  const onSubmit = (data: ProjectSchema) => {
-    TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data);
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
-      }),
-      "Проект создан"
-    );
-  };
 
   return (
-    <Tabs defaultValue="project" className="w-[400px]">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="project">Проект</TabsTrigger>
-        <TabsTrigger value="retail">Розница</TabsTrigger>
-      </TabsList>
-      <TabsContent value="project">
-      <ProjectForm form={form} onSubmit={onSubmit} isPending={isPending} />
-      </TabsContent>
-      <TabsContent value="retail">
-        
-      </TabsContent>
-    </Tabs>
+    <>
+      <h2 className="uppercase font-semibold text-center">
+        Форма добавления новой сделки
+      </h2>
+      <Tabs defaultValue="project">
+        <TabsList className="grid w-full grid-cols-2 mt-3 mb-6">
+          <TabsTrigger value="project">Проект</TabsTrigger>
+          <TabsTrigger value="retail">Розница</TabsTrigger>
+        </TabsList>
+        <TabsContent value="project">
+          <ProjectForm />
+        </TabsContent>
+        <TabsContent value="retail">
+          <RetailForm setOpen={setOpen} />
+        </TabsContent>
+      </Tabs>
+    </>
+
     // <Form {...form}>
     //   <form
     //     onSubmit={form.handleSubmit(onSubmit)}
@@ -210,23 +106,6 @@ const NewProjectForm = ({
     //               {form.formState.errors.deliveryType?.message && (
     //                 <FormMessage className="text-red-500">
     //                   {form.formState.errors.deliveryType?.message}
-    //                 </FormMessage>
-    //               )}
-    //             </FormItem>
-    //           )}
-    //         />
-    //         <FormField
-    //           control={form.control}
-    //           name="equipmentType"
-    //           render={({ field }) => (
-    //             <FormItem>
-    //               <FormLabel>Тип оборудования</FormLabel>
-    //               <FormControl>
-    //                 <Input placeholder="Наименование" {...field} />
-    //               </FormControl>
-    //               {form.formState.errors.equipmentType?.message && (
-    //                 <FormMessage className="text-red-500">
-    //                   {form.formState.errors.equipmentType?.message}
     //                 </FormMessage>
     //               )}
     //             </FormItem>
@@ -407,4 +286,4 @@ const NewProjectForm = ({
   );
 };
 
-export default NewProjectForm;
+export default NewDealForm;

@@ -1,12 +1,12 @@
-'use server'
+"use server";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
-import prisma from "@/prisma/db/prisma-client";
+
 import { handleError } from "@/shared/api/handleError";
 import { NextResponse } from "next/server";
 import { DepartmentTypeSidebar } from "../types";
 import { DepartmentsTitle } from "@/entities/user/model/objectTypes";
-
+import prisma from "@/prisma/prisma-client";
 
 // export const getDepatments = async () => {
 //   try {
@@ -22,9 +22,9 @@ import { DepartmentsTitle } from "@/entities/user/model/objectTypes";
 //   }
 // }
 
-
-
-export const getDepartmentsWithPersons = async ():Promise<DepartmentTypeSidebar[]>  => {
+export const getDepartmentsWithPersons = async (): Promise<
+  DepartmentTypeSidebar[]
+> => {
   try {
     const departments = await prisma.department.findMany({
       include: {
@@ -41,19 +41,17 @@ export const getDepartmentsWithPersons = async ():Promise<DepartmentTypeSidebar[
       },
     });
 
-    return departments as DepartmentTypeSidebar[]
+    return departments as DepartmentTypeSidebar[];
   } catch (error) {
     console.error("Ошибка при получении отделов:", error);
     return handleError("Ошибка при получении отделов");
   }
 };
 
-
-
 export const getDepatments = async () => {
   try {
     await handleAuthorization();
-  
+
     const departments = await prisma.department.findMany();
 
     return NextResponse.json(departments);
@@ -61,18 +59,18 @@ export const getDepatments = async () => {
     console.error(error);
     return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 });
   }
-}
+};
 
 export const getDepartmentName = async (id: number) => {
   try {
     await handleAuthorization();
-  
+
     const department = await prisma.department.findUnique({
       where: {
-        id: +id
+        id: +id,
       },
     });
-    
+
     if (!department) {
       return "Отдел не найден";
     }
@@ -81,9 +79,7 @@ export const getDepartmentName = async (id: number) => {
   } catch (error) {
     console.error(error);
     const errorMessage =
-      typeof error === "string"
-        ? error
-        :  "Ошибка при создании проекта";
+      typeof error === "string" ? error : "Ошибка при создании проекта";
     handleError(errorMessage);
   }
-}
+};

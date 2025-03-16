@@ -3,7 +3,7 @@
 import React, { RefObject } from "react";
 import { columnsDataProject } from "./model/columns-data-project";
 import DataTable from "@/shared/ui/Table/DataTable";
-import AddNewProject from "@/entities/project/ui/Modals/AddNewProject";
+import AddNewProject from "@/entities/project/ui/Modals/AddNewDeal";
 import { getProjectsUser } from "@/entities/project/api";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -44,8 +44,8 @@ const PersonTable = () => {
     projects
   ) as unknown as RefObject<HTMLDivElement>;
 
-  const getRowLink = (row: ProjectResponse & { id: string }) => {
-    return `/dashboard/projects/${row.id}`;
+const getRowLink = (row: ProjectResponse & { id: string }, type: string) => {
+    return `/dashboard/deal/${type}/${row.id}`;
   };
 
   if (isPendingProjects) return <Loading />;
