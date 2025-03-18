@@ -1,4 +1,5 @@
 "use client";
+import { PrismaPermissionsMap } from "@/entities/user/model/objectTypes";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import Protected from "@/feature/Protected";
 import Link from "next/link";
@@ -9,7 +10,7 @@ const SummaryTableLink = () => {
   const { authUser } = useStoreUser();
   if (!authUser) return null;
   return (
-    <Protected>
+    <Protected permissionOptional={[PrismaPermissionsMap.VIEW_UNION_REPORT]}>
       <Link
         href={`/dashboard/summary-table/${authUser.id}`}
         className="btn_hover max-w-max text-sm border-muted"

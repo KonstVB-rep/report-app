@@ -1,13 +1,6 @@
-import {
-  DirectionProjectLabels,
-  DirectionRetailLabels,
-  DeliveryProjectLabels,
-} from "@/entities/project/lib/constants";
-import { ColumnFiltersState, Table } from "@tanstack/react-table";
-import { table } from "console";
-import React from "react";
 
-import SelectColumns from "../../SelectColumns";
+import { ColumnFiltersState } from "@tanstack/react-table";
+import React from "react";
 import FilterPopover from "../FilterPopover";
 
 export type OptionGroup = {
@@ -27,6 +20,7 @@ const FilterPopoverGroup = ({
   columnFilters,
   setColumnFilters,
 }: FilterPopoverGroupProps) => {
+
   return (
     <div className="flex flex-wrap items-center justify-start gap-2 py-2 bg-background">
       {options.map((option) => (

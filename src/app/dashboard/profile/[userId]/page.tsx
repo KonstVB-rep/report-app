@@ -1,6 +1,6 @@
 "use client";
 import { getUser } from "@/entities/user/api";
-import { DepartmentsTitle, RolesUser } from "@/entities/user/model/objectTypes";
+import { DepartmentsTitle, PrismaPermissionsMap, RolesUser } from "@/entities/user/model/objectTypes";
 import { DeleteUser } from "@/entities/user/ui/DeleteUser";
 import PersonEdit from "@/entities/user/ui/PersonTableEdit";
 import Protected from "@/feature/Protected";
@@ -84,7 +84,7 @@ const ProfilePage = () => {
                 <span className="first-letter:capitalize">Должность:</span>{" "}
                 <span className="first-letter:capitalize">{user.position}</span>
               </p>
-              <Protected>
+              <Protected permissionOptional={[PrismaPermissionsMap.USER_MANAGEMENT]}>
                 <p className="p-2 border border-solid flex items-center justify-start rounded-md gap-4">
                   <span className="first-letter:capitalize">Роль:</span>{" "}
                   <span className="first-letter:capitalize">

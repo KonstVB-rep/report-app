@@ -15,27 +15,31 @@ import SelectColumns from "../SelectColumns";
 import { DateRange } from "react-day-picker";
 import DateRangeFilter from "../DateRangeFilter";
 import {
-  DeliveryProjectLabels,
-  DirectionProjectLabels,
-  StatusProjectLabels,
-} from "@/entities/project/lib/constants";
+  DealTypeLabels,
+  LABELS
+} from "@/entities/deal/lib/constants";
 import MultiColumnFilter from "../MultiColumnFilter";
 import TableComponent from "./TableComponent";
 import FilterPopoverGroup from "../Filters/FilterPopoverGroup";
 import FilterPopover from "../Filters/FilterPopover";
 import RenderFilterPopover from "../Filters/RenderFilterPopover";
 
+
 interface DataTableProps<TData, TValue = unknown> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   getRowLink?: (row: TData & { id: string }, type: string) => string;
+  type: keyof typeof DealTypeLabels;
+
 }
 
 const DataTable = <TData extends Record<string, unknown>, TValue>({
   columns,
   data,
   getRowLink,
+  type
 }: DataTableProps<TData, TValue>) => {
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -125,17 +129,17 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
             {
               label: "Статус",
               columnId: "projectStatus",
-              options: StatusProjectLabels,
+              options: LABELS[type].STATUS,
             },
             {
               label: "Направление",
               columnId: "direction",
-              options: DirectionProjectLabels,
+              options: LABELS[type].DIRECTION,
             },
             {
               label: "Тип поставки",
               columnId: "deliveryType",
-              options: DeliveryProjectLabels,
+              options: LABELS[type].DELIVERY,
             },
           ]}
           columnFilters={columnFilters}

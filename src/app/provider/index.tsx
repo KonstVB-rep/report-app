@@ -7,6 +7,7 @@ import QueryProvider from "./query-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 // import { ReactScan } from "../ReactScanComponent";
 
+
 const AppProvider = ({ children }: PropsWithChildren) => {
   return (
     <>
@@ -20,7 +21,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
         <QueryProvider>
           <ReactQueryDevtools />
           <Toaster position="top-center" />
-          {children}
+            {children}
         </QueryProvider>
       </ThemeProvider>
     </>

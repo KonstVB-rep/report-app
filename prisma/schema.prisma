@@ -31,6 +31,25 @@ model User {
   @@index([departmentId])
 }
 
+model UserPermission {
+  id            String         @id @default(cuid())
+  userId        String
+  permissionId  String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission    Permission     @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "UserPermission_userId_fkey")
+  @@index([permissionId], map: "UserPermission_permissionId_fkey")
+}
+
+model Permission {
+  id              String          @id @default(cuid())
+  name            PermissionEnum  @unique
+  description     String?
+  userPermissions UserPermission[] // Добавлена связь с UserPermission
+}
+
+
 model Department {
   id         Int            @id @default(autoincrement())
   name       DepartmentEnum @unique
@@ -102,15 +121,6 @@ model UserLogin {
   @@index([userId], map: "UserLogin_userId_fkey")
 }
 
-model UserPermission {
-  id         String     @id @default(cuid())
-  userId     String
-  permission Permission
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId], map: "UserPermission_userId_fkey")
-}
-
 model File {
   id        String   @id @default(uuid())
   name      String
@@ -129,14 +139,11 @@ model File {
   @@index([userId], map: "File_userId_fkey")
 }
 
-enum Permission {
-  VIEW_REPORTS
-  EDIT_PROJECTS
-  DELETE_PROJECTS
+enum PermissionEnum {
+  VIEW_USER_REPORT
+  VIEW_UNION_REPORT
   DOWNLOAD_REPORTS
-  CREATE_USER
-  DELETE_USER
-  EDIT_USER
+  USER_MANAGEMENT
 }
 
 enum DirectionProject {

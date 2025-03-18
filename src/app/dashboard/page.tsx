@@ -10,11 +10,14 @@ const TemplateDashboard = () => {
         <div className="min-h-[50vh] flex-1 rounded-xl bg-muted/50 md:min-h-min relative z-10" />
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min relative z-10" />
       </div>
-      <h1 className="text-2xl text-white text-center">
+      <div>
+      <h1 className="text-2xl text-white text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         Начните работу с боковой панели
       </h1>
+      </div>
     </div>
   );
 };
 
 export default TemplateDashboard;
+

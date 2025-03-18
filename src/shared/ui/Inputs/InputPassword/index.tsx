@@ -14,7 +14,7 @@ const InputPassword = (props: InputPasswordProps) => {
         id="password"
         type={visible ? "text" : "password"}
         placeholder="✱✱✱✱✱✱✱"
-        className={`placeholder:text-xs w-full ${props.className}`}
+        className={`placeholder:text-sm w-full ${props.className}`}
         {...props}
       />
       <Button

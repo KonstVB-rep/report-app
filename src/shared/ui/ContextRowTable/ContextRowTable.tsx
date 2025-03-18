@@ -7,10 +7,9 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
-import EditProject from "../../../entities/project/ui/Modals/EditProject";
-
-import DelProject from "../../../entities/project/ui/Modals/DelProject";
-import { Project } from "@/entities/project/types";
+import DelProject from "@/entities/deal/ui/Modals/DelProject";
+import EditProject from "@/entities/deal/ui/Modals/EditProject";
+import { Project } from "@prisma/client";
 
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;
@@ -22,7 +21,7 @@ const ContextRowTable = <T,>({
   rowData,
 }: ContextMenuTableProps<T>) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
-
+  
   return (
     <>
       <Dialog open={!!openModal} onOpenChange={() => setOpenModal(null)}>
@@ -44,12 +43,14 @@ const ContextRowTable = <T,>({
           <EditProject
             close={() => setOpenModal(null)}
             id={(rowData as Project).id}
+            type = {(rowData as Project).type}
           />
         )}
         {openModal === "delete" && (
           <DelProject
             close={() => setOpenModal(null)}
             id={(rowData as Project).id}
+            type = {(rowData as Project).type}
           />
         )}
       </Dialog>

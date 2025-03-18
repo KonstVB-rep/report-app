@@ -1,25 +1,12 @@
-import MultipleSelector, { Option } from "@/components/multi-selector";
-import { ProjectResponse } from "@/entities/project/types";
-import React from "react";
+"use client";
+import { ProjectResponse } from "@/entities/deal/types";
+import { useParams } from "next/navigation";
+import React, { useState } from "react";
 
 const DealType = {
   PROJECT: "Проект",
   RETAIL: "Розница",
 };
-
-const OPTIONS: Option[] = [
-  { label: 'nextjs', value: 'nextjs' },
-  { label: 'React', value: 'react' },
-  { label: 'Remix', value: 'remix' },
-  { label: 'Vite', value: 'vite' },
-  { label: 'Nuxt', value: 'nuxt' },
-  { label: 'Vue', value: 'vue' },
-  { label: 'Svelte', value: 'svelte' },
-  { label: 'Angular', value: 'angular' },
-  { label: 'Ember', value: 'ember', disable: true },
-  { label: 'Gatsby', value: 'gatsby', disable: true },
-  { label: 'Astro', value: 'astro' },
-];
 
 const project: ProjectResponse = {
   id: "cuid123456789",
@@ -51,12 +38,15 @@ const project: ProjectResponse = {
   }, // Упрощенная версия объекта User
 };
 
-const DealPageInfo = async ({
-  params,
-}: {
-  params: Promise<{ dealType: string; dealId: string }>;
-}) => {
-  const { dealType, dealId } = await params;
+// const DealPageInfo = async ({
+//   params,
+// }: {
+//   params: Promise<{ dealType: string; dealId: string }>;
+// })
+
+const DealPageInfo = () => {
+  const { dealType, dealId } = useParams();
+  const [selectedCities, setSelectedCities] = useState<[]>([]);
   console.log(dealType, dealId, "jjjjjjjjj");
   return (
     <div className="p-4">
@@ -89,16 +79,6 @@ const DealPageInfo = async ({
           <p> Дата создания: {project.createdAt.toLocaleDateString()}</p>
         </div>
       </div>
-      <MultipleSelector
-        defaultOptions={OPTIONS}
-        hidePlaceholderWhenSelected
-        placeholder="Select frameworks you like..."
-        emptyIndicator={
-          <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-            no results found.
-          </p>
-        }
-      />
     </div>
   );
 };

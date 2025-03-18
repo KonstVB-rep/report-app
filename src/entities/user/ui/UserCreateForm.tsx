@@ -21,6 +21,15 @@ import { TOAST } from "./Toast";
 import { userFormSchema, userSchema } from "../model/schema";
 import PhoneInput from "@/shared/ui/PhoneInput";
 import { getQueryClient } from "@/app/provider/query-provider";
+import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
+import {
+  DepartmentTypeName,
+  OPTIONS,
+  PermissionType,
+  RoleType,
+  UserRequest,
+} from "../types";
+import InputPassword from "@/shared/ui/Inputs/InputPassword";
 
 const UserCreateForm = ({
   setOpen,
@@ -30,7 +39,19 @@ const UserCreateForm = ({
   const queryClient = getQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: userSchema) => createUser(data),
+    mutationFn: (data: userSchema) => {
+      const user: UserRequest = {
+        username: data.username,
+        email: data.email,
+        phone: data.phone,
+        position: data.position,
+        user_password: data.user_password,
+        department: data.department as DepartmentTypeName,
+        role: data.role as RoleType,
+        permissions: data.permissions as PermissionType[],
+      };
+      return createUser(user);
+    },
     onSuccess: () => {
       setOpen(false);
       queryClient.invalidateQueries({
@@ -48,9 +69,12 @@ const UserCreateForm = ({
       position: "",
       department: undefined,
       role: undefined,
-      // permission: undefined,
+      permissions: [],
     },
   });
+
+  console.log(form.formState.errors, "ffffffffffffform");
+  console.log(OPTIONS);
 
   const onSubmit = (data: userSchema) => {
     TOAST.PROMISE(
@@ -151,9 +175,8 @@ const UserCreateForm = ({
               <FormItem>
                 <FormLabel>Пароль</FormLabel>
                 <FormControl>
-                  <Input
+                  <InputPassword
                     placeholder="Введите пароль для пользователя"
-                    type="password"
                     {...field}
                     minLength={6}
                     maxLength={30}
@@ -205,7 +228,10 @@ const UserCreateForm = ({
                     classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
                     value={field.value || ""}
                     onValueChange={(selected) =>
-                      form.setValue("department", selected)
+                      form.setValue(
+                        "department",
+                        selected as DepartmentTypeName
+                      )
                     }
                     required
                   />
@@ -230,9 +256,11 @@ const UserCreateForm = ({
                     options={Object.entries(RolesUser)}
                     classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
                     value={field.value || ""}
-                    onValueChange={(selected) =>
-                      form.setValue("role", selected)
-                    }
+                    onValueChange={(selected) => {
+                      console.log(selected, "selected");
+                      // Убедитесь, что selected передается в нужном формате
+                      form.setValue("role", selected);
+                    }}
                     required
                   />
                 </FormControl>
@@ -244,25 +272,40 @@ const UserCreateForm = ({
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="permission"
+            name="permissions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Роль</FormLabel>
+                <FormLabel>Разрешения/Права</FormLabel>
                 <FormControl>
-                  <SelectComponent
+                  {/* <SelectComponent
                     placeholder="Выберите права"
                     options={Object.entries(PermissionsUser)}
                     classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
                     {...field}
                     required
+                  /> */}
+                  <MultiSelectComponent
+                    options={OPTIONS}
+                    placeholder="Установите разрешения"
+                    {...field}
+                    onValueChange={(selected) => {
+                      console.log(selected);
+                      // const selectedList = selected.map((item) => item.value);
+                      // form.setValue("permissions", selectedList);
+
+                      form.setValue("permissions", selected);
+                    }}
+                    defaultValue={field.value}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.permissions?.message}
+                </FormMessage>
               </FormItem>
             )}
-          /> */}
+          />
         </div>
         <SubmitFormButton title="Добавить" isPending={isPending} />
       </form>

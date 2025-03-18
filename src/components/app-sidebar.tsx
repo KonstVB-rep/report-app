@@ -17,10 +17,12 @@ import { BadgeRussianRuble, Command, Wrench } from "lucide-react";
 import { getDepartmentsWithPersons } from "@/entities/department/api";
 import { useQuery } from "@tanstack/react-query";
 import { UserResponse } from "@/entities/user/types";
-import { DepartmentListType, DepartmentTypeSidebar } from "@/entities/department/types";
+import {
+  DepartmentListType,
+  DepartmentTypeSidebar,
+} from "@/entities/department/types";
 import { TOAST } from "@/entities/user/ui/Toast";
 import Link from "next/link";
-
 
 const icons = {
   SALES: <BadgeRussianRuble />,
@@ -76,7 +78,7 @@ export function AppSidebar() {
         departmentId: person.departmentId,
         username: person.username,
         position: person.position,
-        url: `/dashboard/table/${person.id}`,
+        url: `/dashboard/table/`,
       })),
     })
   );

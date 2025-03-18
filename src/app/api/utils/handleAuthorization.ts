@@ -1,7 +1,8 @@
-import { User } from "@prisma/client";
+
 import { requireAuth } from "./requireAuth ";
 import { handleError } from "@/shared/api/handleError";
 import prisma from "@/prisma/prisma-client";
+import { User } from "@/entities/user/types";
 
 interface Response<T> {
   error: boolean;

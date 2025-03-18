@@ -1,5 +1,5 @@
 import { RolesWithDefaultPermissions } from "@/entities/user/model/objectTypes";
-import { User } from "@/entities/user/types";
+import {  User } from "@/entities/user/types";
 
 export const checkUserPermission = (user: User | null) => {
 

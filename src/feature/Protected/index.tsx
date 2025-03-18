@@ -1,12 +1,40 @@
 "use client";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import React, { PropsWithChildren } from "react";
+import { PermissionType } from "@/entities/user/types";
 
-const Protected = ({ children }: PropsWithChildren) => {
-  const { hasPermission } = useStoreUser();
+type ProtectedProps = {
+  permissionOptional?: PermissionType[];
+  children: React.ReactNode;
+};
 
-  return <>{hasPermission ? <>{children}</> : <></>}</>;
+const Protected = ({ children, permissionOptional }: ProtectedProps) => {
+  const { hasPermission, authUser } = useStoreUser();
+  if (!authUser) return null;
+
+  const isExistPermission = () => {
+    return (
+      permissionOptional &&
+      permissionOptional.length > 0 &&
+      permissionOptional.every(
+        (p: PermissionType) =>
+          authUser.permissions &&
+          authUser.permissions.includes(p as PermissionType)
+      )
+    );
+  };
+
+  if (hasPermission) {
+    return children;
+  }
+
+console.log(authUser,isExistPermission(), 'ghhhhhhhhhhhhhhhhhhh')
+
+  if (isExistPermission()) {
+    return true;
+  }
+
+  return null;
 };
 
 export default Protected;

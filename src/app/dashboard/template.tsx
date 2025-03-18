@@ -4,8 +4,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { PropsWithChildren } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 
-
-
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
 
   return (
