@@ -1,15 +1,15 @@
 "use client";
 
-import { columnsDataProject } from "@/app/dashboard/table/[userId]/model/columns-data-project";
-import { ProjectResponse,  } from "@/entities/deal/types";
+import { columnsDataRetail } from "@/app/dashboard/table/[dealType]/[userId]/model/columns-data-retail";
+import { RetailResponse,  } from "@/entities/deal/types";
 import { ColumnDef } from "@tanstack/react-table";
 
 
-export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] = [
-  ...columnsDataProject,
+export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [
+  ...columnsDataRetail,
   {
     id: "user",
-    header: "Менеджер проекта",
+    header: "Менеджер",
     cell: (info) =>  info.getValue(),
     enableHiding: true,
     filterFn:(row, columnId, filterValues) => {
@@ -21,6 +21,6 @@ export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] = 
         const userIdOfProject = row.original.userId;
         return filterValues.includes(userIdOfProject);
     },
-    accessorFn: (row: ProjectResponse) => row.userId,
+    accessorFn: (row: RetailResponse) => row.userId,
   },
 ];

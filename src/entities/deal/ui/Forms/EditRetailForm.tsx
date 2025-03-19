@@ -4,29 +4,34 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
+import { RetailFormSchema, RetailSchema } from "../../model/schema";
 import { useGetRetailById } from "../../hooks";
 import { formatterCurrency } from "@/shared/lib/utils";
-import { updateProject } from "../../api";
+import { updateRetail } from "../../api";
 import {
+
   DeliveryProject,
+  DeliveryRetail,
   DirectionProject,
+  DirectionRetail,
   StatusProject,
+  StatusRetail,
 } from "@prisma/client";
-import ProjectFormBody from "./ProjectFormBody";
+import RetailFormBody from "./RetailFormBody";
 
 const EditRetailForm = ({
   close,
   dealId,
 }: {
-  close: Dispatch<SetStateAction<"add_project" | "edit_project" | null>>;
+  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
   dealId: string;
 }) => {
   const { authUser } = useStoreUser();
+
   const { data } = useGetRetailById(dealId);
 
-  const form = useForm<ProjectSchema>({
-    resolver: zodResolver(ProjectFormSchema),
+  const form = useForm<RetailSchema>({
+    resolver: zodResolver(RetailFormSchema),
     defaultValues: {
       nameDeal: data?.nameDeal || "",
       nameObject: data?.nameObject || "",
@@ -38,8 +43,6 @@ const EditRetailForm = ({
       email: data?.email || "",
       additionalContact: data?.additionalContact || "",
       amountCP: data?.amountCP || "0",
-      amountPurchase: data?.amountPurchase || "0",
-      amountWork: data?.amountWork || "0",
       delta: data?.delta || "0",
       comments: data?.comments || "",
       plannedDateConnection: undefined,
@@ -49,13 +52,12 @@ const EditRetailForm = ({
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: ProjectSchema) => {
+    mutationFn: (data: RetailSchema) => {
       if (!authUser?.id) {
         throw new Error("User ID is missing");
       }
 
-      return updateProject({
-        ...data,
+      return updateRetail({
         id: dealId,
         ...data,
         email: data.email || "",
@@ -74,16 +76,6 @@ const EditRetailForm = ({
               data.amountCP.replace(/\s/g, "").replace(",", ".")
             ).toString()
           : "0", // Преобразуем в строку
-        amountPurchase: data.amountPurchase
-          ? parseFloat(
-              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
-        amountWork: data.amountWork
-          ? parseFloat(
-              data.amountWork.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
         delta: data.delta
           ? parseFloat(
               data.delta.replace(/\s/g, "").replace(",", ".")
@@ -100,7 +92,7 @@ const EditRetailForm = ({
     },
   });
 
-  const onSubmit = (data: ProjectSchema) => {
+  const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(
       new Promise((resolve, reject) => {
         mutate(data, {
@@ -120,23 +112,19 @@ const EditRetailForm = ({
     if (data) {
       form.reset({
         ...data,
-        deliveryType: data.deliveryType as DeliveryProject,
-        projectStatus: data.projectStatus as StatusProject,
-        direction: data.direction as DirectionProject,
+        deliveryType: data.deliveryType as DeliveryRetail,
+        projectStatus: data.projectStatus as StatusRetail,
+        direction: data.direction as DirectionRetail,
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
         email: data.email ?? undefined, // Преобразуем null в undefined
         amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
-        amountPurchase: formatterCurrency.format(
-          parseFloat(data.amountPurchase)
-        ),
-        amountWork: formatterCurrency.format(parseFloat(data.amountWork)),
         delta: formatterCurrency.format(parseFloat(data.delta)),
       });
     }
   }, [form, data]);
 
   return (
-    <ProjectFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
+    <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
   );
 };
 

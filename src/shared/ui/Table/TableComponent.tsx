@@ -29,6 +29,8 @@ const TableComponent =  <T extends Record<string, unknown>>({ data, table ,getRo
     const rowLink = getRowLink
       ? getRowLink(row.original as T & { id: string }, row.original.type as string)
       : undefined;
+
+
     return row.getVisibleCells().map((cell) => (
       <TableCell key={cell.id} className="td border-r border-b min-w-12">
         {rowLink ? (

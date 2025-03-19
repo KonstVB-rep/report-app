@@ -28,9 +28,21 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { Separator } from "@radix-ui/react-separator";
+import { Fragment } from "react";
+
+const deals = [
+  {
+    id: "projects",
+    title: "Проекты",
+  },
+  {
+    id: "retails",
+    title: "Розница",
+  },
+];
 
 export function NavMain({ items }: { items: DepartmentListType[] }) {
-  const { departmentId, userId } = useParams();
+  const { departmentId, userId, dealType } = useParams();
 
   const render = (item: (typeof items)[number]) => {
     return (
@@ -78,7 +90,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                             tooltip={user.username}
                             className={`h-max items-start ${
                               user.id === userId &&
-                              "text-primary bg-sidebar-primary"
+                              "text-primary dark:bg-gray-700 bg-gray-300"
                             }`}
                           >
                             <Accordion
@@ -90,7 +102,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                 value="item-1"
                                 className="w-full border-none group/item"
                               >
-                                <AccordionTrigger className="w-full hover:no-underline py-1">
+                                <AccordionTrigger className="w-full hover:no-underline py-1 mr-[2px]">
                                   <div className="relative flex flex-col gap-[2px] hover:bg-transparent focus-visible:bg-transparent">
                                     <span className="capitalize font-semibold">
                                       {user.username.split(" ").join(" ")}
@@ -101,23 +113,29 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                   </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="w-full pt-1 pb-1 pr-1 grid gap-1">
-                                  <Link
-                                    href={`${user.url}projects/${user.id}`}
-                                    className="text-primary p-2 flex items-center gap-2 rounded-md hover:bg-muted hover:text-foreground transition-all duration-150 focus-visible:bg-muted focus-visible:text-foreground
-                                   "
-                                  >
-                                    <BookText size={12} />
-                                    Проекты
-                                  </Link>
-                                  <Separator className="my-[1px] bg-stone-600 h-[1px]" />
-                                  <Link
-                                    href={`${user.url}retails/${user.id}`}
-                                    className="text-primary p-2 flex gap-2 items-center rounded-md hover:bg-muted hover:text-foreground transition-all duration-150 focus-visible:bg-muted focus-visible:text-foreground
-                                   "
-                                  >
-                                    <BookText size={12} />
-                                    Розница
-                                  </Link>
+                                  {deals.map((deal, index) => {
+                                    return (
+                                      <Fragment key={deal.id}>
+                                        <Link
+                                          href={`${user.url}${deal.id}/${user.id}`}
+                                          className={`${
+                                            dealType !== deal.id &&
+                                            "dark:text-stone-400 text-primary"
+                                          } p-2 flex gap-2 items-center rounded-md hover:bg-muted hover:text-foreground transition-all duration-150 focus-visible:bg-muted focus-visible:text-foreground`}
+                                        >
+                                          <BookText
+                                            size={
+                                              dealType !== deal.id ? 12 : 16
+                                            }
+                                          />
+                                          {deal.title}
+                                        </Link>
+                                        {index < deals.length - 1 && (
+                                          <Separator className="my-[1px] bg-stone-600 h-[1px]" />
+                                        )}
+                                      </Fragment>
+                                    );
+                                  })}
                                 </AccordionContent>
                               </AccordionItem>
                             </Accordion>

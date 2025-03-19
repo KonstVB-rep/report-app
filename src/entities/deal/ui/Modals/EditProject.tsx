@@ -13,11 +13,9 @@ import EditProjectForm from "../Forms/EditProjectForm";
 const EditProject = ({
   close,
   id,
-  type,
 }: {
-  close: Dispatch<SetStateAction<"add_project" | "edit_project" | null>>;
+  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
   id: string;
-  type: string;
 }) => {
   return (
     <DialogContent className="sm:max-w-[825px] max-h-[85vh] overflow-y-auto" showX={true}>
@@ -25,7 +23,7 @@ const EditProject = ({
         <DialogTitle className="sr-only">Редактировать проект</DialogTitle>
         <DialogDescription></DialogDescription>
       </DialogHeader>
-      <EditProjectForm close={close} dealId={id} type={type} />
+      <EditProjectForm close={close} dealId={id} />
     </DialogContent>
   );
 };

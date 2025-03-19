@@ -71,7 +71,7 @@ export function LoginForm({
   }, [state, setAuthUser, setIsAuth, isAuth]);
 
   if (shouldRedirect) {
-    redirect(`/dashboard/table/${authUser?.id}`);
+    redirect(`/dashboard/table/project/${authUser?.id}`);
   }
 
   return (

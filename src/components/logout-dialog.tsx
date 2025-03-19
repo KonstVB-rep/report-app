@@ -40,7 +40,7 @@ export function LogoutDialog() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="btn_hover justify-center text-sm"
+          className="btn_hover justify-center text-sm w-full"
         >
           <LogOut /> Выход
         </Button>

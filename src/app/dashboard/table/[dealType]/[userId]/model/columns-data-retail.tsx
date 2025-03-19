@@ -72,7 +72,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     header: "Название сделки",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: RetailResponse) => row.nameObject,
+    accessorFn: (row: RetailResponse) => row.nameDeal,
   },
   {
     id: "nameObject",

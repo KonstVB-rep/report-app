@@ -1,39 +1,47 @@
+"use client";
+import React from "react";
 import {
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormReturn,
+} from "react-hook-form";
+import {
+  Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
-  Form,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import CalendarComponent from "@/shared/ui/Calendar";
-import InputEmail from "@/shared/ui/Inputs/InputEmail";
-import InputNumber from "@/shared/ui/Inputs/InputNumber";
-import PhoneInput from "@/shared/ui/PhoneInput";
 import SelectComponent from "@/shared/ui/SelectComponent";
-import React from "react";
+import CalendarComponent from "@/shared/ui/Calendar";
 import {
-  DirectionProjectLabels,
-  DeliveryProjectLabels,
-  StatusProjectLabels,
+  DeliveryRetailLabels,
+  DirectionRetailLabels,
+  StatusRetailLabels,
 } from "../../lib/constants";
-import { Input } from "@/components/ui/input";
-import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
+import PhoneInput from "@/shared/ui/PhoneInput";
+import InputNumber from "@/shared/ui/Inputs/InputNumber";
+import InputEmail from "@/shared/ui/Inputs/InputEmail";
+import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 
-type ProjectFormBodyProps<T extends FieldValues> = {
+type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
 };
 
-const ProjectFormBody = <T extends FieldValues>({
+const RetailFormBody = <T extends FieldValues>({
   form,
   onSubmit,
   isPending,
-}: ProjectFormBodyProps<T>) => {
+}: RetailFormBodyProps<T>) => {
+
   return (
     <Form {...form}>
       <form
@@ -41,33 +49,16 @@ const ProjectFormBody = <T extends FieldValues>({
         className="grid gap-10 max-h-[85vh] overflow-y-auto"
       >
         <div className="uppercase font-semibold text-center">
-          Форма добавления проекта
+          Форма добавления розничной сделки
         </div>
         <div className="grid sm:grid-cols-2 gap-2 p-1">
           <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
-              name={"nameDeal" as Path<T>}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Название объекта/Город</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Название сделки" required {...field} />
-                  </FormControl>
-                  {form.formState.errors.nameObject?.message && (
-                    <FormMessage className="text-red-500">
-                      {form.formState.errors.nameObject?.message as string}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name={"nameObject" as Path<T>}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Название объекта/Город</FormLabel>
+                  <FormLabel>Название объекта</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Название объекта/Контрагент"
@@ -92,7 +83,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   <FormControl>
                     <SelectComponent
                       placeholder="Выберите направление"
-                      options={transformObjValueToArr(DirectionProjectLabels)}
+                      options={transformObjValueToArr(DirectionRetailLabels)}
                       onValueChange={(selected) =>
                         form.setValue(
                           "direction" as Path<T>,
@@ -120,14 +111,13 @@ const ProjectFormBody = <T extends FieldValues>({
                   <FormControl>
                     <SelectComponent
                       placeholder="Выберите тип поставки"
-                      options={transformObjValueToArr(DeliveryProjectLabels)}
-                      onValueChange={(selected) => {
-                        console.log(selected, "selected");
-                        return form.setValue(
+                      options={transformObjValueToArr(DeliveryRetailLabels)}
+                      onValueChange={(selected) =>
+                        form.setValue(
                           "deliveryType" as Path<T>,
                           selected as PathValue<T, Path<T>>
-                        );
-                      }}
+                        )
+                      }
                       {...field}
                     />
                   </FormControl>
@@ -139,7 +129,6 @@ const ProjectFormBody = <T extends FieldValues>({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name={"contact" as Path<T>}
@@ -196,6 +185,8 @@ const ProjectFormBody = <T extends FieldValues>({
                 </FormItem>
               )}
             />
+          </div>
+          <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
               name={"additionalContact" as Path<T>}
@@ -213,8 +204,6 @@ const ProjectFormBody = <T extends FieldValues>({
                 </FormItem>
               )}
             />
-          </div>
-          <div className="flex flex-col gap-2">
             <FormField
               control={form.control}
               name={"amountCP" as Path<T>}
@@ -224,48 +213,6 @@ const ProjectFormBody = <T extends FieldValues>({
                   <FormControl>
                     <InputNumber
                       placeholder="Сумма КП"
-                      {...field}
-                      value={String(field.value || "")}
-                    />
-                  </FormControl>
-                  {form.formState.errors.amountCP?.message && (
-                    <FormMessage className="text-red-500">
-                      {form.formState.errors.amountCP?.message as string}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"amountWork" as Path<T>}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Сумма работ</FormLabel>
-                  <FormControl>
-                    <InputNumber
-                      placeholder="Сумма работ"
-                      {...field}
-                      value={String(field.value || "")}
-                    />
-                  </FormControl>
-                  {form.formState.errors.amountCP?.message && (
-                    <FormMessage className="text-red-500">
-                      {form.formState.errors.amountCP?.message as string}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name={"amountPurchase" as Path<T>}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Сумма закупки</FormLabel>
-                  <FormControl>
-                    <InputNumber
-                      placeholder="Сумма закупки"
                       {...field}
                       value={String(field.value || "")}
                     />
@@ -308,7 +255,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   <FormControl>
                     <SelectComponent
                       placeholder="Выберите статус КП"
-                      options={transformObjValueToArr(StatusProjectLabels)}
+                      options={transformObjValueToArr(StatusRetailLabels)}
                       onValueChange={(selected) =>
                         form.setValue(
                           "projectStatus" as Path<T>,
@@ -380,4 +327,4 @@ const ProjectFormBody = <T extends FieldValues>({
   );
 };
 
-export default ProjectFormBody;
+export default RetailFormBody;

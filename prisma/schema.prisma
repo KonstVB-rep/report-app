@@ -66,7 +66,7 @@ model Project {
   nameObject            String
   nameDeal              String
   direction             DirectionProject
-  deliveryType          DeliveryProject
+  deliveryType          DeliveryProject?
   contact               String
   phone                 String
   email                 String?
@@ -94,7 +94,7 @@ model Retail {
   dateRequest           DateTime
   nameObject            String
   direction             DirectionRetail
-  deliveryType          DeliveryRetail
+  deliveryType          DeliveryRetail?
   contact               String
   additionalContact     String
   phone                 String

@@ -1,8 +1,7 @@
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
 
-
-const PersonTable = async ({
+const PersonTablePage = async ({
   params,
 }: {
   params: Promise<{ dealType: string; userId: string }>;
@@ -19,4 +18,4 @@ const PersonTable = async ({
   }
 };
 
-export default PersonTable;
+export default PersonTablePage;

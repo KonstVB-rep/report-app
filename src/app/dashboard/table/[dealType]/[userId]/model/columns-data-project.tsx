@@ -70,7 +70,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     header: "Название сделки",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.nameObject,
+    accessorFn: (row: ProjectResponse) => row.nameDeal,
   },
   {
     id: "nameObject",
@@ -87,7 +87,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return <span>{DirectionProjectLabels[value]}</span>;
     },
     filterFn: (row, columnId, value) => {
-      console.log(value, "rrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
       const rowValue = row.getValue(columnId);
       if (Array.isArray(value)) {
         return value.some((direction) =>
@@ -169,14 +168,14 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     header: "Сумма работ",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.nameObject,
+    accessorFn: (row: ProjectResponse) => row.amountWork,
   },
   {
     id: "amountPurchase",
     header: "Сумма закупки",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.nameObject,
+    accessorFn: (row: ProjectResponse) => row.amountPurchase,
   },
   {
     id: "delta",

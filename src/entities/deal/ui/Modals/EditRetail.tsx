@@ -7,13 +7,13 @@ import {
 } from "@/components/ui/dialog";
 
 import React, { Dispatch, SetStateAction } from "react";
-import EditRetailForm from "../Forms/EdiRetailForm";
+import EditRetailForm from "../Forms/EditRetailForm";
 
-const EditProject = ({
+const EditRetail = ({
   close,
   id,
 }: {
-  close: Dispatch<SetStateAction<"add_project" | "edit_project" | null>>;
+  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
   id: string;
 }) => {
   return (
@@ -27,4 +27,4 @@ const EditProject = ({
   );
 };
 
-export default EditProject;
+export default EditRetail;

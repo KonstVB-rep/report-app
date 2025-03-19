@@ -60,7 +60,7 @@ export default async function middleware(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
-      maxAge: 60, 
+      maxAge: 24 * 60 * 60, 
     });
     console.log("Oбновилили access_token в cookies");
     // Если был редирект на /login, то перенаправим на /dashboard

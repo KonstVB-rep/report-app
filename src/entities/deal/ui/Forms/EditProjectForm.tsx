@@ -18,14 +18,12 @@ import ProjectFormBody from "./ProjectFormBody";
 const EditProjectForm = ({
   close,
   dealId,
-  type
 }: {
-  close: Dispatch<SetStateAction<"add_project" | "edit_project" | null>>;
+  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
   dealId: string;
-  type: string;
 }) => {
   const { authUser } = useStoreUser();
-  const { data } = useGetProjectById(dealId, type);
+  const { data } = useGetProjectById(dealId);
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
@@ -128,9 +126,7 @@ const EditProjectForm = ({
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
         email: data.email ?? undefined, // Преобразуем null в undefined
         amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
-        amountPurchase: formatterCurrency.format(
-          parseFloat(data.amountPurchase)
-        ),
+        amountPurchase:formatterCurrency.format(parseFloat(data.amountPurchase)),
         amountWork: formatterCurrency.format(parseFloat(data.amountWork)),
         delta: formatterCurrency.format(parseFloat(data.delta)),
       });

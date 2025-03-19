@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import { DeliveryProjects, DeliveryRetails, DirectionProjects, DirectionRetails, StatusProjects, StatusRetails } from "../types";
+import { DirectionProject, DeliveryProject, StatusProject, DirectionRetail, DeliveryRetail, StatusRetail } from "@prisma/client";
 
 export const ProjectFormSchema = z.object({
   nameDeal: z.string({
@@ -10,14 +10,13 @@ export const ProjectFormSchema = z.object({
     message: "Введите название объекта",
   }),
   direction: z.enum(
-    Object.values(DirectionProjects).filter(Boolean) as [string, ...string[]],
+    Object.values(DirectionProject).filter(Boolean) as [string, ...string[]],
     {
       message: "Выберите направление",
     }
   ),
   deliveryType: z
-    .enum(Object.values(DeliveryProjects) as [string, ...string[]])
-    .or(z.literal(""))
+    .enum(Object.values(DeliveryProject) as [string, ...string[]])
     .optional(),
   contact: z.string(),
   phone: z.string().optional(),
@@ -29,7 +28,7 @@ export const ProjectFormSchema = z.object({
   amountPurchase: z.string().optional(),
   delta: z.string().optional(),
 
-  projectStatus: z.enum(Object.values(StatusProjects) as [string, ...string[]], {
+  projectStatus: z.enum(Object.values(StatusProject) as [string, ...string[]], {
     message: "Выберите статус проекта",
   }),
   comments: z.string(),
@@ -58,15 +57,14 @@ export const RetailFormSchema = z.object({
     message: "Введите название объекта",
   }),
   direction: z.enum(
-    Object.values(DirectionRetails).filter(Boolean) as [string, ...string[]],
+    Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]],
     {
       message: "Выберите направление",
     }
   ),
   deliveryType: z
-    .enum(Object.values(DeliveryRetails) as [string, ...string[]])
-    .or(z.literal(""))
-    .optional(),
+  .enum(Object.values(DeliveryRetail) as [string, ...string[]])
+  .optional(),
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")),
@@ -76,7 +74,7 @@ export const RetailFormSchema = z.object({
   delta: z.string().optional(),
 
   projectStatus: z.enum(
-    Object.values(StatusRetails) as [string, ...string[]],
+    Object.values(StatusRetail) as [string, ...string[]],
     {
       message: "Выберите статус проекта",
     }

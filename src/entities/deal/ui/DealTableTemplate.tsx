@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
 import DealsSkeleton from "./DealsSkeleton";
-
+import LinkToUserTable from "./LinkToUserTable";
 
 const DealTableTemplate = ({
   children,
@@ -42,6 +42,7 @@ const DealTableTemplate = ({
         <div className="grid gap-2" ref={ref}>
           <div className="flex justify-between items-center">
             <ProfileSettings user={user} />
+            <LinkToUserTable />
           </div>
           {children}
         </div>

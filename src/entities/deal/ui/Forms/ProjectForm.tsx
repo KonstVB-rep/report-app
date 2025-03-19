@@ -33,14 +33,15 @@ const ProjectForm = () => {
       if (!authUser?.id) {
         throw new Error("User ID is missing");
       }
-
+      console.log("data", data);
       return createProject({
         ...data,
         email: data.email || "",
         phone: data.phone || "",
         additionalContact: data.additionalContact || "",
         userId: authUser.id,
-        deliveryType: data.deliveryType as DeliveryProject,
+        deliveryType:
+          data.deliveryType === "" ? null : data.deliveryType as DeliveryProject,
         dateRequest: new Date(),
         projectStatus: data.projectStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
@@ -71,7 +72,6 @@ const ProjectForm = () => {
     },
     onSuccess: (data) => {
       if (data) {
-        console.log("data", data);
         // setOpen(false);
         form.reset();
 
@@ -93,7 +93,7 @@ const ProjectForm = () => {
       nameObject: "ewwew",
       nameDeal: "wewewe",
       direction: "",
-      deliveryType: "",
+      deliveryType: undefined,
       contact: "dasdasd",
       phone: "",
       email: "",

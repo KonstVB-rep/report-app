@@ -7,9 +7,9 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
-import DelProject from "@/entities/deal/ui/Modals/DelProject";
-import EditProject from "@/entities/deal/ui/Modals/EditProject";
-import { Project } from "@prisma/client";
+import { Project, Retail } from "@prisma/client";
+import DelDeal from "@/entities/deal/ui/Modals/DelProject";
+import EditDealForm from "@/entities/deal/ui/Modals/EditDealForm";
 
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;
@@ -21,36 +21,39 @@ const ContextRowTable = <T,>({
   rowData,
 }: ContextMenuTableProps<T>) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
-  
+
   return (
     <>
       <Dialog open={!!openModal} onOpenChange={() => setOpenModal(null)}>
         <ContextMenu>
           <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
-          <ContextMenuContent>
-            <ContextMenuItem onClick={() => setOpenModal("edit")} className="hover:border-muted-foreground focus-visible:border-muted-foreground">
+          <ContextMenuContent className="grid gap-1">
+            <ContextMenuItem
+              onClick={() => setOpenModal("edit")}
+              className="btn_hover"
+            >
               Редактировать
             </ContextMenuItem>
 
-            <ContextMenuItem onClick={() => setOpenModal("delete")}>
+            <ContextMenuItem onClick={() => setOpenModal("delete")} className="btn_hover">
               Удалить
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
 
         {openModal === "edit" && (
-          <EditProject
+          <EditDealForm
             close={() => setOpenModal(null)}
-            id={(rowData as Project).id}
-            type = {(rowData as Project).type}
+            id={(rowData as Project | Retail).id}
+            type={(rowData as Project | Retail).type}
           />
         )}
         {openModal === "delete" && (
-          <DelProject
+          <DelDeal
             close={() => setOpenModal(null)}
-            id={(rowData as Project).id}
-            type = {(rowData as Project).type}
+            id={(rowData as Project | Retail).id}
+            type={(rowData as Project | Retail).type}
           />
         )}
       </Dialog>

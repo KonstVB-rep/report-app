@@ -3,12 +3,12 @@
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
-import { Prisma } from "@prisma/client";
+import { DealType, Prisma } from "@prisma/client";
 import { ProjectResponse, RetailResponse } from "../types";
 import prisma from "@/prisma/prisma-client";
 import { PrismaPermissionsMap } from "@/entities/user/model/objectTypes";
 
-import { DealType } from "../lib/constants";
+
 
 
 const requiredFields = [
@@ -187,28 +187,28 @@ export const createProject = async (data: ProjectWithoutId) => {
     //   };
     // }
 
-    const safeamountCP = new Prisma.Decimal(amountCP as string);
+    const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
-    const safeamountWork = new Prisma.Decimal(amountWork as string);
-    const safeamountPurchase = new Prisma.Decimal(amountPurchase as string);
+    const safeAmountWork = new Prisma.Decimal(amountWork as string);
+    const safeAmountPurchase = new Prisma.Decimal(amountPurchase as string);
 
     const newDeal = await prisma.project.create({
       data: {
         ...dealData as ProjectResponse,
         userId,
         dateRequest: new Date(),
-        amountCP: safeamountCP,
+        amountCP: safeAmountCP,
         delta: safeDelta,
-        amountWork: safeamountWork,
-        amountPurchase: safeamountPurchase,
+        amountWork: safeAmountWork,
+        amountPurchase: safeAmountPurchase,
       },
     });
 
     const formattedDeal = {
       ...newDeal,
-      amountCP: safeamountCP.toString(),
-      amountWork: safeamountWork.toString(),
-      amountPurchase: safeamountPurchase.toString(),
+      amountCP: safeAmountCP.toString(),
+      amountWork: safeAmountWork.toString(),
+      amountPurchase: safeAmountPurchase.toString(),
       delta: safeDelta.toString(),
     };
 
@@ -288,10 +288,10 @@ export const updateProject = async (
       return handleError("Недостаточно прав");
     }
 
-    const safeamountCP = new Prisma.Decimal(amountCP as string);
+    const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
-    const safeamountWork = new Prisma.Decimal(amountWork as string);
-    const safeamountPurchase = new Prisma.Decimal(amountPurchase as string);
+    const safeAmountWork = new Prisma.Decimal(amountWork as string);
+    const safeAmountPurchase = new Prisma.Decimal(amountPurchase as string);
 
     const updatedDeal = await prisma.project.update({
       where: { id: deal.id },
@@ -299,10 +299,10 @@ export const updateProject = async (
         ...dealData,
         userId,
         dateRequest: new Date(),
-        amountCP: safeamountCP,
+        amountCP: safeAmountCP,
         delta: safeDelta,
-        amountWork: safeamountWork,
-        amountPurchase: safeamountPurchase,
+        amountWork: safeAmountWork,
+        amountPurchase: safeAmountPurchase,
       },
     });
 
@@ -341,7 +341,7 @@ export const updateRetail = async (
       return handleError("Недостаточно прав");
     }
 
-    const safeamountCP = new Prisma.Decimal(amountCP as string);
+    const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
 
 
@@ -351,7 +351,7 @@ export const updateRetail = async (
         ...dealData as RetailResponse,
         userId,
         dateRequest: new Date(),
-        amountCP: safeamountCP,
+        amountCP: safeAmountCP,
         delta: safeDelta,
       },
     });
@@ -366,72 +366,6 @@ export const updateRetail = async (
     };
 
     return formattedDeal;
-  } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
-  }
-};
-
-
-
-/* Удалить проект */
-export const deleteProject = async (
-  dealId: string,
-  idDealOwner: string,
-  type: string
-) => {
-  try {
-    await handleAuthorization();
-
-    if (!dealId || !idDealOwner) {
-      return handleError("Недостаточно данных");
-    }
-
-    let deal;
-    let message;
-
-    switch (type) {
-      case DealType.PROJECT:
-        deal = await prisma.project.findUnique({
-          where: { id: dealId },
-          select: { userId: true },
-        });
-        message = "Проект успешно удален";
-        break;
-      case DealType.RETAIL:
-        deal = await prisma.retail.findUnique({
-          where: { id: dealId },
-          select: { userId: true },
-        });
-        message = "Розничная сделка успешно удалена";
-        break;
-      default:
-        return handleError("Неверный тип сделки");
-    }
-
-    if (!deal) {
-      return [];
-    }
-
-    if (deal.userId !== idDealOwner) {
-      return handleError("Недостаточно прав");
-    }
-
-    switch (type) {
-      case DealType.PROJECT:
-        await prisma.project.delete({
-          where: { id: dealId, userId: idDealOwner },
-        });
-        break;
-      case DealType.RETAIL:
-        await prisma.retail.delete({
-          where: { id: dealId, userId: idDealOwner },
-        });
-        break;
-    }
-
-    return { data: null, message, error: false };
-
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -600,7 +534,7 @@ export const getAllProjectsByDepartment = async (): Promise<
 };
 
 
-export const getAllRetailByDepartment = async (): Promise<
+export const getAllRetailsByDepartment = async (): Promise<
   RetailResponse[]
 > => {
   try {
@@ -646,3 +580,66 @@ export const getAllRetailByDepartment = async (): Promise<
   }
 };
 
+/* Удалить проект */
+export const deleteDeal = async (
+  dealId: string,
+  idDealOwner: string,
+  type: string
+) => {
+
+  try {
+    await handleAuthorization();
+
+    if (!dealId || !idDealOwner) {
+      return handleError("Недостаточно данных");
+    }
+
+    let deal;
+    let message;
+
+    switch (type) {
+      case DealType.PROJECT:
+        deal = await prisma.project.findUnique({
+          where: { id: dealId },
+          select: { userId: true },
+        });
+        message = "Проект успешно удален";
+        break;
+      case DealType.RETAIL:
+        deal = await prisma.retail.findUnique({
+          where: { id: dealId },
+          select: { userId: true },
+        });
+        message = "Розничная сделка успешно удалена";
+        break;
+      default:
+        return handleError("Неверный тип сделки");
+    }
+
+    if (!deal) {
+      return [];
+    }
+
+    if (deal.userId !== idDealOwner) {
+      return handleError("Недостаточно прав");
+    }
+    switch (type) {
+      case DealType.PROJECT:
+        await prisma.project.delete({
+          where: { id: dealId, userId: idDealOwner },
+        });
+        break;
+      case DealType.RETAIL:
+        await prisma.retail.delete({
+          where: { id: dealId, userId: idDealOwner },
+        });
+        break;
+    }
+
+    return { data: null, message, error: false };
+
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};

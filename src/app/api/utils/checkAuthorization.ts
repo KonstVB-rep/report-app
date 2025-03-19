@@ -7,13 +7,13 @@
 //   return null; // Если авторизация прошла успешно, возвращаем null
 // };
 
-export const checkAuthorization = async (userId: string | null) => {
-  if (!userId) {
-    return {
-      data: null,
-      message: "Пользователь не авторизован",
-      error: true,
-    }
-  }
-  return null; // Если авторизация прошла успешно, возвращаем null
-};
+// export const checkAuthorization = async (userId: string | null) => {
+//   if (!userId) {
+//     return {
+//       data: null,
+//       message: "Пользователь не авторизован",
+//       error: true,
+//     }
+//   }
+//   return null; // Если авторизация прошла успешно, возвращаем null
+// };
