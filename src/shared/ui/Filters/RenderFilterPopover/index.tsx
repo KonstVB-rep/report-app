@@ -4,7 +4,7 @@ import { TOAST } from "@/entities/user/ui/Toast";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
-const RenderFilterPopover = ({
+const RenderFilterPopover = React.memo(({
   renderFilter,
 }: {
   renderFilter: (
@@ -12,6 +12,8 @@ const RenderFilterPopover = ({
   ) => React.ReactNode;
 }) => {
   const { authUser } = useStoreUser();
+
+  console.log(authUser, "authUser")
 
   const { data: usersDepartment, isPending: isPendingUsersDepartment } =
     useQuery({
@@ -25,10 +27,13 @@ const RenderFilterPopover = ({
         } catch (error) {
           console.log(error);
           TOAST.ERROR("Произошла ошибка при получении пользователей");
+          throw error;
         }
       },
       enabled: !!authUser?.departmentId,
     });
+
+  console.log(isPendingUsersDepartment, usersDepartment);
 
   return (
     <div className="max-w-fit">
@@ -38,6 +43,8 @@ const RenderFilterPopover = ({
       {usersDepartment && renderFilter(usersDepartment)}
     </div>
   );
-};
+});
+
+RenderFilterPopover.displayName = "RenderFilterPopover";
 
 export default RenderFilterPopover;

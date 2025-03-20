@@ -2,33 +2,21 @@ import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TOAST } from "@/entities/user/ui/Toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { RetailFormSchema, RetailSchema } from "../../model/schema";
-import { useGetRetailById } from "../../hooks";
+import { useGetRetailById, useMutationUpdateRetail } from "../../hooks";
 import { formatterCurrency } from "@/shared/lib/utils";
-import { updateRetail } from "../../api";
-import {
-
-  DeliveryProject,
-  DeliveryRetail,
-  DirectionProject,
-  DirectionRetail,
-  StatusProject,
-  StatusRetail,
-} from "@prisma/client";
+import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
 import RetailFormBody from "./RetailFormBody";
+import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 
 const EditRetailForm = ({
   close,
   dealId,
 }: {
-  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
+  close: Dispatch<SetStateAction<void>>;
   dealId: string;
 }) => {
-  const { authUser } = useStoreUser();
-
-  const { data } = useGetRetailById(dealId);
+  const { data, isPending: isLoading } = useGetRetailById(dealId);
 
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema),
@@ -49,48 +37,7 @@ const EditRetailForm = ({
     },
   });
 
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: RetailSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      return updateRetail({
-        id: dealId,
-        ...data,
-        email: data.email || "",
-        phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
-        userId: authUser.id,
-        deliveryType: data.deliveryType as DeliveryProject,
-        dateRequest: new Date(),
-        projectStatus: data.projectStatus as StatusProject,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
-          : null,
-        direction: data.direction as DirectionProject,
-        amountCP: data.amountCP
-          ? parseFloat(
-              data.amountCP.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0", // Преобразуем в строку
-        delta: data.delta
-          ? parseFloat(
-              data.delta.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0", // Преобразуем в строку
-      });
-    },
-    onSuccess: () => {
-      close(null);
-      queryClient.invalidateQueries({
-        queryKey: ["projects", authUser?.id],
-        exact: true,
-      });
-    },
-  });
+  const { mutate, isPending } = useMutationUpdateRetail(dealId, close);
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(
@@ -122,6 +69,8 @@ const EditRetailForm = ({
       });
     }
   }, [form, data]);
+
+  if (isLoading) <FormEditSkeleton />;
 
   return (
     <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} />

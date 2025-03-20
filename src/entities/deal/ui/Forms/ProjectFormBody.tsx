@@ -50,13 +50,13 @@ const ProjectFormBody = <T extends FieldValues>({
               name={"nameDeal" as Path<T>}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Название объекта/Город</FormLabel>
+                  <FormLabel>Название сделки</FormLabel>
                   <FormControl>
-                    <Input placeholder="Название сделки" required {...field} />
+                    <Input placeholder="Название..." required {...field} />
                   </FormControl>
-                  {form.formState.errors.nameObject?.message && (
+                  {form.formState.errors.nameDeal?.message && (
                     <FormMessage className="text-red-500">
-                      {form.formState.errors.nameObject?.message as string}
+                      {form.formState.errors.nameDeal?.message as string}
                     </FormMessage>
                   )}
                 </FormItem>
@@ -70,7 +70,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   <FormLabel>Название объекта/Город</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Название объекта/Контрагент"
+                      placeholder="Название..."
                       required
                       {...field}
                     />
@@ -122,7 +122,6 @@ const ProjectFormBody = <T extends FieldValues>({
                       placeholder="Выберите тип поставки"
                       options={transformObjValueToArr(DeliveryProjectLabels)}
                       onValueChange={(selected) => {
-                        console.log(selected, "selected");
                         return form.setValue(
                           "deliveryType" as Path<T>,
                           selected as PathValue<T, Path<T>>
@@ -249,9 +248,9 @@ const ProjectFormBody = <T extends FieldValues>({
                       value={String(field.value || "")}
                     />
                   </FormControl>
-                  {form.formState.errors.amountCP?.message && (
+                  {form.formState.errors.amountWork?.message && (
                     <FormMessage className="text-red-500">
-                      {form.formState.errors.amountCP?.message as string}
+                      {form.formState.errors.amountWork?.message as string}
                     </FormMessage>
                   )}
                 </FormItem>
@@ -270,9 +269,9 @@ const ProjectFormBody = <T extends FieldValues>({
                       value={String(field.value || "")}
                     />
                   </FormControl>
-                  {form.formState.errors.amountCP?.message && (
+                  {form.formState.errors.amountPurchase?.message && (
                     <FormMessage className="text-red-500">
-                      {form.formState.errors.amountCP?.message as string}
+                      {form.formState.errors.amountPurchase?.message as string}
                     </FormMessage>
                   )}
                 </FormItem>

@@ -15,7 +15,7 @@ type FilterPopoverGroupProps = {
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
 };
 
-const FilterPopoverGroup = ({
+const FilterPopoverGroup = React.memo(({
   options,
   columnFilters,
   setColumnFilters,
@@ -35,6 +35,8 @@ const FilterPopoverGroup = ({
       ))}
     </div>
   );
-};
+});
+
+FilterPopoverGroup.displayName = "FilterPopoverGroup";
 
 export default FilterPopoverGroup;

@@ -13,7 +13,7 @@ import { User } from "../types";
 
 import Link from "next/link";
 import PersonEdit from "./PersonTableEdit";
-import HoverCardComponent from "@/shared/ui/HoverCardComponent";
+import HoverCardComponent from "@/shared/ui/HoverCard";
 
 type Props = {
   user: User;

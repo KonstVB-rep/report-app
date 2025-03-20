@@ -538,6 +538,7 @@ export const getAllUsersByDepartment = async (
 export const getAllUsersFromFilter = async (
   id: number
 ): Promise<Record<string, string> | null> => {
+
   try {
     const data = await handleAuthorization();
     const { user } = data!;
@@ -547,8 +548,7 @@ export const getAllUsersFromFilter = async (
       return handleError("Пользователь не найден");
     }
 
-    await checkUserPermissionByRole(user, [PrismaPermissionsMap
-.VIEW_UNION_REPORT]);
+    await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_UNION_REPORT]);
 
     const users = await prisma.user.findMany({
       where: { departmentId: Number(id) },
@@ -557,12 +557,12 @@ export const getAllUsersFromFilter = async (
         username: true,
       },
     });
-    const transform = users.reduce((acc, user) => {
+    const transformUsers = users.reduce((acc, user) => {
       acc[user.id] = user.username; 
       return acc;
     }, {} as Record<string, string>);
-
-    return transform;
+    console.log(transformUsers, "transformUsers")
+    return transformUsers;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

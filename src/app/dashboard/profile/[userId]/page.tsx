@@ -28,8 +28,6 @@ const ProfilePage = () => {
       }
     },
     enabled: !!userId,
-    refetchOnWindowFocus: false,
-    retry: 2,
   });
 
 

@@ -20,7 +20,7 @@ import {
 import { LogoutDialog } from "./logout-dialog";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import Link from "next/link";
-import HoverCardComponent from "@/shared/ui/HoverCardComponent";
+import HoverCardComponent from "@/shared/ui/HoverCard";
 // import DropdownWrapper from "@/shared/ui/DropdownWrapper";
 
 export function NavUser() {

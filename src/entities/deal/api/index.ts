@@ -70,7 +70,7 @@ export const getProjectById = async (
     const { user, userId } = data!;
 
     if (!dealId || !idDealOwner) {
-      return handleError("Недостаточно данных");
+      handleError("Недостаточно данных");
     }
 
     const userOwnerProject = await prisma.user.findUnique({

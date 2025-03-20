@@ -15,7 +15,7 @@ import {
 import { MoveUp, MoveDown, ArrowDownUp } from "lucide-react";
 import React, { ReactNode } from "react";
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
-import Link from "next/link";
+// import Link from "next/link";
 
 type TableComponentProps<T> = {
     table: ReturnType<typeof useReactTable<T>>;
@@ -23,23 +23,23 @@ type TableComponentProps<T> = {
     getRowLink?: (row: T & { id: string }, type: string) => string;
 };
 
-const TableComponent =  <T extends Record<string, unknown>>({ data, table ,getRowLink }: TableComponentProps<T>) => {
+const TableComponent =  <T extends Record<string, unknown>>({ data, table }: TableComponentProps<T>) => {
 
   const renderRowCells = (row: Row<T>) => {
-    const rowLink = getRowLink
-      ? getRowLink(row.original as T & { id: string }, row.original.type as string)
-      : undefined;
+    // const rowLink = getRowLink
+    //   ? getRowLink(row.original as T & { id: string }, row.original.type as string)
+    //   : undefined;
 
 
     return row.getVisibleCells().map((cell) => (
       <TableCell key={cell.id} className="td border-r border-b min-w-12">
-        {rowLink ? (
+        {/* {rowLink ? (
           <Link href={rowLink}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </Link>
-        ) : (
-          flexRender(cell.column.columnDef.cell, cell.getContext())
-        )}
+        ) : ( */}
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        {/* )} */}
       </TableCell>
     ));
   };
@@ -47,7 +47,7 @@ const TableComponent =  <T extends Record<string, unknown>>({ data, table ,getRo
   const renderRow = (row: Row<T>): ReactNode => {
     return (
       <ContextRowTable key={row.id} rowData={row.original}>
-        <TableRow className="cursor-pointer hover:bg-zinc-600 hover:text-white tr">
+        <TableRow className="hover:bg-zinc-600 hover:text-white tr">
           {renderRowCells(row)}
         </TableRow>
       </ContextRowTable>

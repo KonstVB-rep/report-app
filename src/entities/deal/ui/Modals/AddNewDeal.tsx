@@ -205,27 +205,43 @@ import { Plus } from "lucide-react";
 import React, { useState } from "react";
 
 import RetailForm from "../Forms/RetailForm";
+import ProjectForm from "../Forms/ProjectForm";
 
+type AddNewDealProps = {
+  type: string
+};
 
-const AddNewRetail = () => {
+const contentType: Record<string, { title: string; form: React.ReactNode }> = {
+  "projects": {
+    title: "Добавить проект",
+    form: <ProjectForm />
+  },
+  "retails": {
+    title: "Добавить cделку по рознице",
+    form: <RetailForm/>
+  },
+}
+
+const AddNewDeal = ({ type }: AddNewDealProps) => {
+
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus />
-          <span>Добавить сделку по рознице</span>
+          <span>{contentType[type].title}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]" showX={true}>
         <DialogHeader>
-          <DialogTitle></DialogTitle>
-          <DialogDescription></DialogDescription>
+          <DialogTitle />
+          <DialogDescription />
         </DialogHeader>
-        <RetailForm setOpen={setOpen}/>
+        {contentType[type].form}
       </DialogContent>
     </Dialog>
   );
 };
 
-export default AddNewRetail;
+export default AddNewDeal;

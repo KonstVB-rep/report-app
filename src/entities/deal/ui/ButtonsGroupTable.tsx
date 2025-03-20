@@ -2,13 +2,15 @@ import SummaryTableLink from "@/entities/department/ui/SummaryTableLink";
 import { DealType } from "@prisma/client";
 
 import React from "react";
-import AddNewProject from "./Modals/AddNewProject";
-import HoverCardComponent from "@/shared/ui/HoverCardComponent";
+import HoverCardComponent from "@/shared/ui/HoverCard";
+import { useParams } from "next/navigation";
+import AddNewDeal from "./Modals/AddNewDeal";
 
 const ButtonsGroupTable = () => {
+  const {dealType} = useParams()
   return (
     <div className="flex items-end justify-between">
-      <AddNewProject />
+      <AddNewDeal type={dealType as string} />
       {/* <UploadExcel/> */}
       <div className="flex gap-1">
         <HoverCardComponent title="Сводная таблица">

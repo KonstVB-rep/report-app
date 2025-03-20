@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
 import { Project, Retail } from "@prisma/client";
-import DelDeal from "@/entities/deal/ui/Modals/DelProject";
-import EditDealForm from "@/entities/deal/ui/Modals/EditDealForm";
+import Link from "next/link";
+import { FilePenLine, FileText, Trash2 } from "lucide-react";
+import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;
@@ -28,29 +30,43 @@ const ContextRowTable = <T,>({
         <ContextMenu>
           <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
-          <ContextMenuContent className="grid gap-1">
-            <ContextMenuItem
-              onClick={() => setOpenModal("edit")}
-              className="btn_hover"
-            >
-              Редактировать
+          <ContextMenuContent className="grid gap-1 bg-background">
+            <ContextMenuItem className="flex gap-2">
+              <FileText size="14"/>
+              <Link
+                href={`/dashboard/deal/${(
+                  rowData as Project | Retail
+                ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
+              >
+                Подробнее
+              </Link>
             </ContextMenuItem>
 
-            <ContextMenuItem onClick={() => setOpenModal("delete")} className="btn_hover">
-              Удалить
+            <ContextMenuItem
+              onClick={() => setOpenModal("edit")}
+              className="flex gap-2"
+            >
+              <FilePenLine size="14"/> Редактировать
+            </ContextMenuItem>
+
+            <ContextMenuItem
+              onClick={() => setOpenModal("delete")}
+              className="flex gap-2"
+            >
+              <Trash2 size="14"/> Удалить
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
 
         {openModal === "edit" && (
-          <EditDealForm
+          <EditDealContextMenu
             close={() => setOpenModal(null)}
             id={(rowData as Project | Retail).id}
             type={(rowData as Project | Retail).type}
           />
         )}
         {openModal === "delete" && (
-          <DelDeal
+          <DelDealContextMenu
             close={() => setOpenModal(null)}
             id={(rowData as Project | Retail).id}
             type={(rowData as Project | Retail).type}

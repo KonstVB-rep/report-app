@@ -8,7 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { UserWithdepartmentName } from "../types";
 
-
 const DialogForm = dynamic(() => import("./DialogForm"), { ssr: false });
 const UserEditForm = dynamic(() => import("./UserEditForm"), { ssr: false });
 
@@ -20,7 +19,7 @@ const DialogEditUser = () => {
     queryKey: ["user", userId],
     queryFn: async () => {
       try {
-        return await getUserShort(userId) as UserWithdepartmentName;
+        return (await getUserShort(userId)) as UserWithdepartmentName;
       } catch (error) {
         TOAST.ERROR((error as Error).message);
         throw error;
@@ -36,8 +35,8 @@ const DialogEditUser = () => {
       renderItem={(setOpen: Dispatch<SetStateAction<boolean>>) => (
         <UserEditForm setOpen={setOpen} user={data as UserWithdepartmentName} />
       )}
-      textTrigger="Редактировать сотрудника"
-      title={"Форма редактирования сотрудника"}
+      textTrigger="Редактировать пользователя"
+      title={"Форма редактирования пользователя"}
     />
   );
 };

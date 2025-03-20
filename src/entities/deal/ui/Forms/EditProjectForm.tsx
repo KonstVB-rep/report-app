@@ -2,28 +2,26 @@ import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TOAST } from "@/entities/user/ui/Toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
-import { useGetProjectById } from "../../hooks";
+import { useGetProjectById, useMutationUpdateProject } from "../../hooks";
 import { formatterCurrency } from "@/shared/lib/utils";
-import { updateProject } from "../../api";
 import {
   DeliveryProject,
   DirectionProject,
   StatusProject,
 } from "@prisma/client";
 import ProjectFormBody from "./ProjectFormBody";
+import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 
 const EditProjectForm = ({
   close,
   dealId,
 }: {
-  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
+  close: Dispatch<SetStateAction<void>>;
   dealId: string;
 }) => {
-  const { authUser } = useStoreUser();
-  const { data } = useGetProjectById(dealId);
+ 
+  const { data, isPending: isLoading } = useGetProjectById(dealId);
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
@@ -31,7 +29,7 @@ const EditProjectForm = ({
       nameDeal: data?.nameDeal || "",
       nameObject: data?.nameObject || "",
       direction: data?.direction ? String(data.direction) : "",
-      deliveryType: data?.deliveryType ? String(data.deliveryType) : "",
+      deliveryType: data?.deliveryType === null ? undefined : (data?.deliveryType as DeliveryProject),
       projectStatus: data?.projectStatus ? String(data.projectStatus) : "",
       contact: data?.contact || "",
       phone: data?.phone || "",
@@ -46,59 +44,8 @@ const EditProjectForm = ({
     },
   });
 
-  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutationUpdateProject(dealId, close);
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: ProjectSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      return updateProject({
-        ...data,
-        id: dealId,
-        ...data,
-        email: data.email || "",
-        phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
-        userId: authUser.id,
-        deliveryType: data.deliveryType as DeliveryProject,
-        dateRequest: new Date(),
-        projectStatus: data.projectStatus as StatusProject,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
-          : null,
-        direction: data.direction as DirectionProject,
-        amountCP: data.amountCP
-          ? parseFloat(
-              data.amountCP.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0", // Преобразуем в строку
-        amountPurchase: data.amountPurchase
-          ? parseFloat(
-              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
-        amountWork: data.amountWork
-          ? parseFloat(
-              data.amountWork.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
-        delta: data.delta
-          ? parseFloat(
-              data.delta.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0", // Преобразуем в строку
-      });
-    },
-    onSuccess: () => {
-      close(null);
-      queryClient.invalidateQueries({
-        queryKey: ["projects", authUser?.id],
-        exact: true,
-      });
-    },
-  });
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(
@@ -120,18 +67,22 @@ const EditProjectForm = ({
     if (data) {
       form.reset({
         ...data,
-        deliveryType: data.deliveryType as DeliveryProject,
+        deliveryType: data.deliveryType as DeliveryProject || undefined,
         projectStatus: data.projectStatus as StatusProject,
         direction: data.direction as DirectionProject,
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
         email: data.email ?? undefined, // Преобразуем null в undefined
         amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
-        amountPurchase:formatterCurrency.format(parseFloat(data.amountPurchase)),
+        amountPurchase: formatterCurrency.format(
+          parseFloat(data.amountPurchase)
+        ),
         amountWork: formatterCurrency.format(parseFloat(data.amountWork)),
         delta: formatterCurrency.format(parseFloat(data.delta)),
       });
     }
   }, [form, data]);
+
+  if (isLoading) return <FormEditSkeleton />;
 
   return (
     <ProjectFormBody form={form} onSubmit={onSubmit} isPending={isPending} />

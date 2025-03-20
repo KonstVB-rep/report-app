@@ -19,7 +19,7 @@ type Props = {
   label: string;
 };
 
-const FilterPopover = ({
+const FilterPopover = React.memo(({
   columnId,
   columnFilters,
   setColumnFilters,
@@ -125,6 +125,9 @@ const FilterPopover = ({
       </PopoverContent>
     </Popover>
   );
-};
+});
+
+FilterPopover.displayName = "FilterPopover";
+
 
 export default FilterPopover;

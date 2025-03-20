@@ -3,12 +3,12 @@ import React, { Dispatch, SetStateAction } from "react";
 import EditRetail from "./EditRetail";
 import EditProject from "./EditProject";
 
-const EditDealForm = ({
+const EditDealContextMenu = ({
   close,
   id,
   type,
 }: {
-  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
+  close: Dispatch<SetStateAction<void>>;
   id: string;
   type: DealType;
 }) => {
@@ -22,4 +22,4 @@ const EditDealForm = ({
   }
 };
 
-export default EditDealForm;
+export default EditDealContextMenu;

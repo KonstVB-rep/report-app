@@ -8,16 +8,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import React, { Dispatch, SetStateAction } from "react";
-import SubmitFormButton from "../../../../shared/ui/Buttons/SubmitFormButton";
+import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import { useDelDeal, useGetDealById } from "@/entities/deal/hooks";
 import { DealType } from "@prisma/client";
 
-const DelDeal = ({
+const DelDealContextMenu = ({
   close,
   id,
   type,
 }: {
-  close: Dispatch<SetStateAction<null>>;
+  close: Dispatch<SetStateAction<void>>;
   id: string;
   type: DealType;
 }) => {
@@ -28,7 +28,7 @@ const DelDeal = ({
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>Удалить проект</DialogTitle>
-        <DialogDescription></DialogDescription>
+        <DialogDescription/>
       </DialogHeader>
       <div className="grid gap-4 py-4">
         <p>Вы точно уверены что хотите удалить сделку</p>
@@ -54,4 +54,4 @@ const DelDeal = ({
   );
 };
 
-export default DelDeal;
+export default DelDealContextMenu;

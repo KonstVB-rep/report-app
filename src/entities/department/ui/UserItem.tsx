@@ -1,9 +1,10 @@
 import { User } from "@/entities/user/types";
+import TooltipComponent from "@/shared/ui/TooltipComponent";
 import { Mail, Phone, TableProperties } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-const UserItem = ({person}: {person: User}) => {
+const UserItem = ({ person }: { person: User }) => {
   return (
     <li key={person.id} className="grid grid-cols-3 gap-2">
       <Link
@@ -11,8 +12,12 @@ const UserItem = ({person}: {person: User}) => {
         className="flex flex-col items-center justify-center px-4 py-2 rounded-md border border-solid"
         title="Перейти в профиль"
       >
-        <span className="capitalize">{person.username.split(" ").join(" ")}</span>
-        <span className="first-letter:capitalize text-xs">{person.position}</span>
+        <span className="capitalize">
+          {person.username.split(" ").join(" ")}
+        </span>
+        <span className="first-letter:capitalize text-xs">
+          {person.position}
+        </span>
       </Link>
       <div className="grid grid-cols-3 gap-[2px] rounded-md overflow-hidden">
         <a
@@ -52,14 +57,27 @@ const UserItem = ({person}: {person: User}) => {
           </svg>
         </a>
       </div>
-      <Link
-        href={`/dashboard/table/${person.id}`}
-        className="border max-w-fit aspect-square flex items-center justify-center rounded-md hover:bg-muted-foreground/50"
-        title="Перейти к отчёту"
-        rel="noopener noreferrer"
-      >
-        <TableProperties />
-      </Link>
+
+      <div className="flex gap-2">
+        <TooltipComponent content="Перейти к проектам">
+          <Link
+            href={`/dashboard/table/projects/${person.id}`}
+            className="border max-w-fit aspect-square flex items-center justify-center rounded-md hover:bg-muted-foreground/50"
+            rel="noopener noreferrer"
+          >
+            <TableProperties />
+          </Link>
+        </TooltipComponent>
+        <TooltipComponent content="Перейти к розничным сделкам">
+          <Link
+            href={`/dashboard/table/retails/${person.id}`}
+            className="border max-w-fit aspect-square flex items-center justify-center rounded-md hover:bg-muted-foreground/50"
+            rel="noopener noreferrer"
+          >
+            <TableProperties />
+          </Link>
+        </TooltipComponent>
+      </div>
     </li>
   );
 };

@@ -13,7 +13,7 @@ const EditRetail = ({
   close,
   id,
 }: {
-  close: Dispatch<SetStateAction<"add_deal" | "edit_deal" | null>>;
+  close: Dispatch<SetStateAction<void>>;
   id: string;
 }) => {
   return (

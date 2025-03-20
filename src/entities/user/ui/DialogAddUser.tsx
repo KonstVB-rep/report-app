@@ -18,8 +18,8 @@ const DialogAddUser = () => {
         renderItem={(setOpen: Dispatch<SetStateAction<boolean>>) => (
           <UserCreateForm setOpen={setOpen} />
         )}
-        textTrigger="Добавить сотрудника"
-        title={"Форма добавления сотрудника"}
+        textTrigger="Добавить пользователя"
+        title={"Форма добавления пользователя"}
       />
     </Protected>
   );

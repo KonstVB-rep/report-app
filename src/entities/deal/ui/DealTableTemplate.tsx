@@ -1,10 +1,9 @@
-import { getUser } from "@/entities/user/api";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
 import DealsSkeleton from "./DealsSkeleton";
 import LinkToUserTable from "./LinkToUserTable";
+import { useGetUser } from "@/entities/user/hooks";
 
 const DealTableTemplate = ({
   children,
@@ -15,26 +14,9 @@ const DealTableTemplate = ({
 }) => {
   const { userId } = useParams();
 
-  const {
-    data: user,
-    error,
-    isPending: isPendingUser,
-  } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: async () => {
-      try {
-        return await getUser(userId as string);
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    },
-    enabled: !!userId,
-    refetchOnWindowFocus: false,
-    retry: 2,
-  });
+  const { data: user, error, isPending } = useGetUser(userId as string);
 
-  if (isPendingUser) return <DealsSkeleton />;
+  if (isPending) return <DealsSkeleton />;
 
   return (
     <section className="p-4 h-full">

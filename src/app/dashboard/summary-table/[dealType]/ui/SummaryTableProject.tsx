@@ -12,28 +12,6 @@ import { useGetAllDealsByDepartmentByType } from "@/entities/deal/hooks";
 const SummaryTableProject = () => {
   const { userId } = useParams();
 
-
-  // const {
-  //   data: dealsByType,
-  //   error,
-  //   isError,
-  //   // isPending,
-  // } = useQuery({
-  //   queryKey: ["all-projects", authUser?.departmentId],
-  //   queryFn: async () => {
-  //     try {
-  //       return await getAllProjectsByDepartment();
-  //     } catch (error) {
-  //       console.log(error);
-  //       TOAST.ERROR((error as Error).message);
-  //       throw error;
-  //     }
-  //   },
-  //   enabled: !!userId && !!authUser?.departmentId,
-  //   refetchOnWindowFocus: false,
-  //   retry: 2,
-  // });
-
   const {
     data: dealsByType,
     error,

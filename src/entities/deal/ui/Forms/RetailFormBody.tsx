@@ -53,15 +53,36 @@ const RetailFormBody = <T extends FieldValues>({
         </div>
         <div className="grid sm:grid-cols-2 gap-2 p-1">
           <div className="flex flex-col gap-2">
+          <FormField
+              control={form.control}
+              name={"nameDeal" as Path<T>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Название сделки</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Название..."
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  {form.formState.errors.nameDeal?.message && (
+                    <FormMessage className="text-red-500">
+                      {form.formState.errors.nameDeal?.message as string}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name={"nameObject" as Path<T>}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Название объекта</FormLabel>
+                  <FormLabel>Название объекта/Город</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Название объекта/Контрагент"
+                      placeholder="Название..."
                       required
                       {...field}
                     />
