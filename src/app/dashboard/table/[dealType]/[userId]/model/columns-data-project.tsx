@@ -108,14 +108,19 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       const value = info.getValue() as typeofDelivery;
       return <span>{DeliveryProjectLabels[value]}</span>;
     },
-    filterFn: (row, columnId, value) => {
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue || !Array.isArray(filterValue)) return true;
       const rowValue = row.getValue(columnId);
-      if (Array.isArray(value)) {
-        return value.some((direction) =>
-          (rowValue as typeofDirections).includes(direction)
+    
+      if (!rowValue) return false; // Проверяем, есть ли значение в ячейке
+    
+      if (Array.isArray(filterValue)) {
+        return filterValue.some((direction) =>
+          String(rowValue).includes(direction) // Приводим rowValue к строке, чтобы избежать ошибок
         );
       }
-      return rowValue === value;
+      
+      return rowValue === filterValue;
     },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.deliveryType,

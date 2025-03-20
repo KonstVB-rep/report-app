@@ -25,7 +25,7 @@ const ProjectItemInfo = () => {
         <NotFoundDeal/>
     );
   }
-  console.log(project, 'project')
+
   return (
     <section className="grid p-4">
       <div className="flex gap-2 justify-end">
