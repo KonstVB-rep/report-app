@@ -11,9 +11,9 @@ type Props = {
   type: DealType;
 };
 
-
 const SummaryTableLink = ({type} : Props) => {
   const { authUser } = useStoreUser();
+
   if (!authUser) return null;
 
   const name = {
@@ -23,7 +23,7 @@ const SummaryTableLink = ({type} : Props) => {
   return (
     <Protected permissionOptional={[PrismaPermissionsMap.VIEW_UNION_REPORT]}>
       <Link
-        href={`/dashboard/summary-table/${type}/${authUser.id}`}
+        href={`/dashboard/summary-table/${type.toLowerCase()}s/${authUser.id}`}
         className="btn_hover max-w-max text-sm border-muted min-w-full"
         title="перейти на страницу сводной таблицы"
       >

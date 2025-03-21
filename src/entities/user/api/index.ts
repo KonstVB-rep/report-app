@@ -561,7 +561,6 @@ export const getAllUsersFromFilter = async (
       acc[user.id] = user.username; 
       return acc;
     }, {} as Record<string, string>);
-    console.log(transformUsers, "transformUsers")
     return transformUsers;
   } catch (error) {
     console.error(error);

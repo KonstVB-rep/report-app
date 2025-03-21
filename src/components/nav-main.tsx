@@ -90,7 +90,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                             tooltip={user.username}
                             className={`h-max items-start ${
                               user.id === userId &&
-                              "text-primary dark:bg-gray-700 bg-gray-300"
+                              "text-primary dark:bg-zinc-700 bg-zinc-300"
                             }`}
                           >
                             <Accordion
@@ -119,13 +119,13 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                         <Link
                                           href={`${user.url}${deal.id}/${user.id}`}
                                           className={`${
-                                            dealType !== deal.id &&
+                                            (dealType !== deal.id || user.id !== userId) &&
                                             "dark:text-stone-400 text-primary"
                                           } p-2 flex gap-2 items-center rounded-md hover:bg-muted hover:text-foreground transition-all duration-150 focus-visible:bg-muted focus-visible:text-foreground`}
                                         >
                                           <BookText
                                             size={
-                                              dealType !== deal.id ? 12 : 16
+                                              (dealType !== deal.id || user.id !== userId) ? 12 : 16
                                             }
                                           />
                                           {deal.title}

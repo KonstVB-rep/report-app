@@ -4,6 +4,7 @@ import { useGetRetailById } from '../hooks';
 import { useParams } from 'next/navigation';
 import { DealTypeLabels, DeliveryProjectLabels, DirectionProjectLabels } from '../lib/constants';
 import NotFoundDeal from './NotFoundDeal';
+import Loading from '@/app/dashboard/summary-table/[dealType]/[userId]/loading';
 
 const RetailItemInfo = () => {
    const {dealId } = useParams();
@@ -11,7 +12,7 @@ const RetailItemInfo = () => {
    const {data: project,isLoading} = useGetRetailById(dealId as string, false);
  
    if (isLoading) {
-     return <div>Загрузка...</div>;
+     return <Loading/>;
    }
   if (!project) {
      return (

@@ -54,6 +54,7 @@ model Department {
   id         Int            @id @default(autoincrement())
   name       DepartmentEnum @unique
   directorId String?        @unique
+  description String        @unique
   director   User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
   users      User[]         @relation("DepartmentUsers")
 }

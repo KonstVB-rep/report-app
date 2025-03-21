@@ -10,20 +10,19 @@ export default async function middleware(request: NextRequest) {
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
 
-
-
   if(pathname === "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (pathname === "/login" || pathname === "/") {
+  if (pathname === "/login" || pathname === "/" || pathname === "/dashboard") {
     if (accessToken) {
       try {
         const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
         const { payload } = await jwtVerify(accessToken, secretKey); // Проверка токена
+        const userId = payload?.userId
         console.log('Decoded payload:', payload);
         console.log("Пользователь уже авторизован, редирект на /dashboard");
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        return NextResponse.redirect(new URL(`/dashboard/table/projects/${userId}`, request.url));
       } catch (error) {
         console.log("Access token недействителен, оставляем на /login", error);
       }

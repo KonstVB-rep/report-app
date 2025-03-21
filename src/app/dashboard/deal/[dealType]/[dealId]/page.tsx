@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import React from "react";
 
 const switchCase = (dealType: string) => {
-  console.log(dealType.toUpperCase() === DealType.RETAIL);
+
   switch (dealType.toUpperCase()) {
     case DealType.PROJECT:
       return <ProjectItemInfo />;

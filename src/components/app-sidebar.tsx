@@ -14,15 +14,13 @@ import {
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { BadgeRussianRuble, Command, Wrench } from "lucide-react";
-import { getDepartmentsWithPersons } from "@/entities/department/api";
-import { useQuery } from "@tanstack/react-query";
 import { UserResponse } from "@/entities/user/types";
 import {
+  DepartmentInfo,
   DepartmentListType,
-  DepartmentTypeSidebar,
 } from "@/entities/department/types";
-import { TOAST } from "@/entities/user/ui/Toast";
 import Link from "next/link";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 
 const icons = {
   SALES: <BadgeRussianRuble />,
@@ -30,44 +28,14 @@ const icons = {
 };
 
 export function AppSidebar() {
-  const {
-    data: departments,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["depsWithEmp"],
-    queryFn: async () => {
-      try {
-        return await getDepartmentsWithPersons();
-      } catch (error) {
-        TOAST.ERROR((error as Error).message);
-        throw error;
-      }
-    },
-  });
+  const {departments} = useStoreDepartment()
 
-  if (isLoading)
-    return (
-      <div className="grid content-start gap-2 p-4 min-w-64">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-10 w-full rounded-xl bg-muted/50 animate-pulse"
-          />
-        ))}
-      </div>
-    );
+  if(!departments){
+    return null
+  }
 
-  if (error)
-    return (
-      <div className="grid content-start gap-2 p-4 min-w-64">
-        <p>Не удалось получить данные</p>
-        <p>Попробуйте перезагрузить страницу</p>
-      </div>
-    );
-
-  const navMainItems = (departments as DepartmentTypeSidebar[]).map(
-    (dept: DepartmentTypeSidebar) => ({
+  const navMainItems = (departments as DepartmentInfo[]).map(
+    (dept: DepartmentInfo) => ({
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],

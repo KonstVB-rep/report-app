@@ -1,4 +1,5 @@
 const TemplateDashboard = () => {
+
   return (
     <div className="p-4 grid place-items-center h-full relative">
       <div className="flex flex-1 flex-col gap-4 p-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full blur-sm">

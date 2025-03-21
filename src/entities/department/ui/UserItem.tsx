@@ -1,10 +1,10 @@
-import { User } from "@/entities/user/types";
+import { UserResponse } from "@/entities/user/types";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 import { Mail, Phone, TableProperties } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-const UserItem = ({ person }: { person: User }) => {
+const UserItem = ({ person }: { person: UserResponse }) => {
   return (
     <li key={person.id} className="grid grid-cols-3 gap-2">
       <Link

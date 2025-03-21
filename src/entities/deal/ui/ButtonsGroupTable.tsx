@@ -1,10 +1,11 @@
-import SummaryTableLink from "@/entities/department/ui/SummaryTableLink";
+
 import { DealType } from "@prisma/client";
 
 import React from "react";
 import HoverCardComponent from "@/shared/ui/HoverCard";
 import { useParams } from "next/navigation";
 import AddNewDeal from "./Modals/AddNewDeal";
+import SummaryTableLink from "./SummaryTableLink";
 
 const ButtonsGroupTable = () => {
   const {dealType} = useParams()

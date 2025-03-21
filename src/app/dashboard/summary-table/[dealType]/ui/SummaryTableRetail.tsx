@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import { useParams } from "next/navigation";
@@ -12,18 +12,16 @@ import { useGetAllDealsByDepartmentByType } from "@/entities/deal/hooks";
 
 const SummaryTableRetail = () => {
   const { userId } = useParams();
- 
 
-const {
+  const {
     data: dealsByType,
     error,
     isError,
-  } = useGetAllDealsByDepartmentByType(userId as string, DealType.PROJECT);
+  } = useGetAllDealsByDepartmentByType(userId as string, DealType.RETAIL);
 
   const getRowLink = (row: RetailResponse & { id: string }, type: string) => {
     return `/dashboard/deal/${type.toLowerCase()}/${row.id}`;
   };
-
 
   return (
     <DealTableTemplate>
@@ -35,11 +33,14 @@ const {
         </div>
       )}
       {dealsByType && (
-        <DataTable
-          columns={columnsDataRetailSummary}
-          data={(dealsByType as RetailResponse[]) ?? []}
-          getRowLink={getRowLink} 
-          type={DealType.PROJECT}        />
+        <>
+          <DataTable
+            columns={columnsDataRetailSummary}
+            data={(dealsByType as RetailResponse[]) ?? []}
+            getRowLink={getRowLink}
+            type={DealType.PROJECT}
+          />
+        </>
       )}
     </DealTableTemplate>
   );

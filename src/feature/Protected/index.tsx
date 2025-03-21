@@ -1,15 +1,15 @@
 "use client";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { PermissionType } from "@/entities/user/types";
+import { PermissionEnum } from "@prisma/client";
 
 type ProtectedProps = {
-  permissionOptional?: PermissionType[];
+  permissionOptional?: PermissionEnum[];
   children: React.ReactNode;
 };
 
 const Protected = ({ children, permissionOptional }: ProtectedProps) => {
-  const { hasPermission, authUser } = useStoreUser();
+  const { hasPermissionByRole, authUser } = useStoreUser();
   if (!authUser) return null;
 
   const isExistPermission = () => {
@@ -17,21 +17,19 @@ const Protected = ({ children, permissionOptional }: ProtectedProps) => {
       permissionOptional &&
       permissionOptional.length > 0 &&
       permissionOptional.every(
-        (p: PermissionType) =>
+        (p: PermissionEnum) =>
           authUser.permissions &&
-          authUser.permissions.includes(p as PermissionType)
+          authUser.permissions.includes(p as PermissionEnum)
       )
     );
   };
 
-  if (hasPermission) {
+  if (hasPermissionByRole) {
     return children;
   }
 
-console.log(authUser,isExistPermission(), 'ghhhhhhhhhhhhhhhhhhh')
-
   if (isExistPermission()) {
-    return true;
+    return children;
   }
 
   return null;
