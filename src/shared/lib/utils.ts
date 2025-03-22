@@ -31,3 +31,5 @@ export function formatNumber(value: string): string {
   // Добавляем ",00" в конец
   return formattedWithSpaces + ",00";
 }
+
+

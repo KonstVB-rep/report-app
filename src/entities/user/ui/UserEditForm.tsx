@@ -65,7 +65,7 @@ const UserEditForm = ({
         });
       }
       queryClient.invalidateQueries({
-        queryKey: ["depsWithEmp"],
+        queryKey: ["depsWithUsers"],
         exact: true,
       });
     },

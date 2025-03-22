@@ -81,10 +81,10 @@ export function LoginForm({
       setDepartments(departmentData); 
       setShouldRedirect(true);
     }
-  }, [isAuth, departmentData]);
+  }, [isAuth, departmentData, setDepartments]);
 
   if (shouldRedirect) {
-    redirect(`/dashboard/table/projects/${authUser?.id}`);
+    redirect(`/table/projects/${authUser?.id}`);
   }
 
   return (

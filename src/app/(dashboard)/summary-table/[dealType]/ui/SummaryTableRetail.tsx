@@ -1,29 +1,27 @@
-'use client';
+"use client";
 
 import React from "react";
 import { useParams } from "next/navigation";
+
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
-import { ProjectResponse } from "@/entities/deal/types";
+import { RetailResponse } from "@/entities/deal/types";
 import DataTable from "@/shared/ui/Table/DataTable";
 import { DealType } from "@prisma/client";
-import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
+import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
 import { useGetAllDealsByDepartmentByType } from "@/entities/deal/hooks";
 
-const SummaryTableProject = () => {
+const SummaryTableRetail = () => {
   const { userId } = useParams();
 
   const {
     data: dealsByType,
     error,
     isError,
-    // isPending,
-  } = useGetAllDealsByDepartmentByType(userId as string, DealType.PROJECT);
+  } = useGetAllDealsByDepartmentByType(userId as string, DealType.RETAIL);
 
-  const getRowLink = (row: ProjectResponse & { id: string }, type: string) => {
-    return `/dashboard/deal/${type.toLowerCase()}/${row.id}`;
+  const getRowLink = (row: RetailResponse & { id: string }, type: string) => {
+    return `/deal/${type.toLowerCase()}/${row.id}`;
   };
-
-//   if (isPending) return <Loading />;
 
   return (
     <DealTableTemplate>
@@ -35,13 +33,17 @@ const SummaryTableProject = () => {
         </div>
       )}
       {dealsByType && (
-        <DataTable
-          columns={columnsDataProjectSummary}
-          data={(dealsByType as ProjectResponse[]) ?? []}
-          getRowLink={getRowLink} type={DealType.PROJECT}        />
+        <>
+          <DataTable
+            columns={columnsDataRetailSummary}
+            data={(dealsByType as RetailResponse[]) ?? []}
+            getRowLink={getRowLink}
+            type={DealType.PROJECT}
+          />
+        </>
       )}
     </DealTableTemplate>
   );
 };
 
-export default SummaryTableProject;
+export default SummaryTableRetail;

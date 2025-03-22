@@ -8,22 +8,22 @@ import { useParams, usePathname } from "next/navigation";
 const linksPersonTable = {
   retails: {
     title: "Проекты",
-    url: "/dashboard/table/projects",
+    url: "/table/projects",
   },
   projects: {
     title: "Розничные сделки",
-    url: "/dashboard/table/retails",
+    url: "/table/retails",
   },
 };
 
 const linksSummaryTable = {
   retails: {
     title: "Проекты",
-    url: "/dashboard/summary-table/projects",
+    url: "/summary-table/projects",
   },
   projects: {
     title: "Розничные сделки",
-    url: "/dashboard/summary-table/retails",
+    url: "/summary-table/retails",
   },
 };
 

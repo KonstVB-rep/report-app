@@ -3,13 +3,9 @@
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
-import { DealType, Prisma } from "@prisma/client";
+import { DealType, PermissionEnum, Prisma } from "@prisma/client";
 import { ProjectResponse, RetailResponse } from "../types";
 import prisma from "@/prisma/prisma-client";
-import { PrismaPermissionsMap } from "@/entities/user/model/objectTypes";
-
-
-
 
 const requiredFields = [
   "nameObject",
@@ -85,7 +81,7 @@ export const getProjectById = async (
     const isOwner = userId === idDealOwner;
 
     if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
     const project = await prisma.project.findUnique({
@@ -138,7 +134,7 @@ export const getRetailById = async (
     const isOwner = userId === idDealOwner;
 
     if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
     const retail = await prisma.retail.findUnique({
@@ -403,7 +399,7 @@ export const getProjectsUser = async (
       return formattedProjects;
     }
 
-    await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
 
     const deals = await prisma.project.findMany({
       where: { userId: idProjectOwner },
@@ -459,7 +455,7 @@ export const getRetailsUser = async (
       return formattedDeal;
     }
 
-    await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
 
     const retails = await prisma.retail.findMany({
       where: { userId: idDealOwner },
@@ -497,7 +493,7 @@ export const getAllProjectsByDepartment = async (): Promise<
 
     const permissionError = await checkUserPermissionByRole(
       user,
-      [PrismaPermissionsMap.VIEW_UNION_REPORT]
+      [PermissionEnum.VIEW_UNION_REPORT]
     );
 
     if (permissionError) return permissionError;
@@ -546,7 +542,7 @@ export const getAllRetailsByDepartment = async (): Promise<
 
     const permissionError = await checkUserPermissionByRole(
       user,
-      [PrismaPermissionsMap.VIEW_UNION_REPORT]
+      [PermissionEnum.VIEW_UNION_REPORT]
     );
 
     if (permissionError) return permissionError;

@@ -1,5 +1,5 @@
 // AppSidebar.tsx - Клиентский компонент
-"use client";
+// "use client";
 
 import * as React from "react";
 import {
@@ -20,15 +20,15 @@ import {
   DepartmentListType,
 } from "@/entities/department/types";
 import Link from "next/link";
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import { getDepartmentsWithUsers } from "@/entities/department/api";
 
 const icons = {
   SALES: <BadgeRussianRuble />,
   TECHNICAL: <Wrench />,
 };
 
-export function AppSidebar() {
-  const {departments} = useStoreDepartment()
+export async function AppSidebar() {
+  const departments = await getDepartmentsWithUsers()
 
   if(!departments){
     return null
@@ -39,14 +39,14 @@ export function AppSidebar() {
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],
-      url: `/dashboard/department/${dept.id}`,
+      url: `/department/${dept.id}`,
       directorId: dept.directorId,
       items: dept.users.map((person: Omit<UserResponse, "email" | "role">) => ({
         id: person.id,
         departmentId: person.departmentId,
         username: person.username,
         position: person.position,
-        url: `/dashboard/table/`,
+        url: `/table/`,
       })),
     })
   );

@@ -175,7 +175,7 @@ export const useGetAllDealsByDepartmentByType = (userId: string, type: DealType)
 };
 
 
-export const useGetRetailsUser = (userId: string) => {
+export const useGetRetailsUser = (userId: string | null) => {
 
   const { data, isError } = useQuery({
     queryKey: ["retails", userId],
@@ -193,7 +193,7 @@ export const useGetRetailsUser = (userId: string) => {
   return { data };
 };
 
-export const useGetProjectsUser = (userId: string) => {
+export const useGetProjectsUser = (userId: string | null) => {
   const { data, isError, ...restData } = useQuery({
     queryKey: ["projects", userId],
     queryFn: async () => {

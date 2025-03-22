@@ -43,6 +43,7 @@ const deals = [
 
 export function NavMain({ items }: { items: DepartmentListType[] }) {
   const { departmentId, userId, dealType } = useParams();
+  console.log(departmentId, userId, dealType)
 
   const render = (item: (typeof items)[number]) => {
     return (
@@ -155,7 +156,6 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
 
   return (
     <SidebarGroup className="grid gap-4 h-full grid-rows-[1fr_auto]">
-      {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu>{items.map(render)}</SidebarMenu>
       <DialogAddUser />
     </SidebarGroup>

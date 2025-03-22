@@ -1,11 +1,11 @@
 
 
-import { PrismaPermissionsMap } from "@/entities/user/model/objectTypes";
+
 import { isUserHasPermissionByRole } from "./isUserHasPermissionByRole";
-import { User } from "@/entities/user/types";
+import { PermissionType, User } from "@/entities/user/types";
 
 
-export const checkUserPermissionByRole = async (user: User, permission?: (keyof typeof PrismaPermissionsMap)[]) => {
+export const checkUserPermissionByRole = async (user: User, permission?: (PermissionType)[]) => {
 
   const hasUserPermission = await isUserHasPermissionByRole(user, permission);
   if (!hasUserPermission) {

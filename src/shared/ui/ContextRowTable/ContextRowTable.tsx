@@ -34,7 +34,7 @@ const ContextRowTable = <T,>({
             <ContextMenuItem className="flex gap-2">
               <FileText size="14"/>
               <Link
-                href={`/dashboard/deal/${(
+                href={`/deal/${(
                   rowData as Project | Retail
                 ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
               >

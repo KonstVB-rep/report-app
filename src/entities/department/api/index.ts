@@ -15,6 +15,19 @@ DepartmentInfo[]
       },
     });
 
+    console.log("Отделы с пользователями:", departments);
+
+    return departments as DepartmentInfo[];
+  } catch (error) {
+    console.error("Ошибка при получении отделов:", error);
+    return handleError("Ошибка при получении отделов");
+  }
+};
+
+
+export const getDepartments = async (): Promise<DepartmentInfo[]> => {
+  try {
+    const departments = await prisma.department.findMany();
     return departments as DepartmentInfo[];
   } catch (error) {
     console.error("Ошибка при получении отделов:", error);

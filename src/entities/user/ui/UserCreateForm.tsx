@@ -55,7 +55,7 @@ const UserCreateForm = ({
     onSuccess: () => {
       setOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ["depsWithEmp"],
+        queryKey: ["depsWithUsers"],
         exact: true,
       });
     },

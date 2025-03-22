@@ -14,15 +14,15 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (pathname === "/login" || pathname === "/" || pathname === "/dashboard") {
+  if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
         const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
         const { payload } = await jwtVerify(accessToken, secretKey); // Проверка токена
         const userId = payload?.userId
         console.log('Decoded payload:', payload);
-        console.log("Пользователь уже авторизован, редирект на /dashboard");
-        return NextResponse.redirect(new URL(`/dashboard/table/projects/${userId}`, request.url));
+        console.log("Пользователь уже авторизован, редирект на /");
+        return NextResponse.redirect(new URL(`/table/projects/${userId}`, request.url));
       } catch (error) {
         console.log("Access token недействителен, оставляем на /login", error);
       }
@@ -62,9 +62,9 @@ export default async function middleware(request: NextRequest) {
       maxAge: 24 * 60 * 60, 
     });
     console.log("Oбновилили access_token в cookies");
-    // Если был редирект на /login, то перенаправим на /dashboard
-    if (pathname === "/login" || pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    // Если был редирект на /login, то перенаправим на /
+    if (pathname === "/login") {
+      return NextResponse.redirect(new URL("/", request.url));
     }
 
     return NextResponse.next();
@@ -84,5 +84,5 @@ async function redirectToLogin(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*", "/login", "/"],
+  matcher: ["/profile/:path*", "/login", "/"],
 };

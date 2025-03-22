@@ -1,11 +1,12 @@
 "use client";
 import { getUser } from "@/entities/user/api";
-import { DepartmentsTitle, PrismaPermissionsMap, RolesUser } from "@/entities/user/model/objectTypes";
+import { DepartmentsTitle, RolesUser } from "@/entities/user/model/objectTypes";
 import { DeleteUser } from "@/entities/user/ui/DeleteUser";
 import PersonEdit from "@/entities/user/ui/PersonTableEdit";
-import Protected from "@/feature/Protected";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 import UserCard from "@/shared/ui/UserCard";
+import { PermissionEnum } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -30,7 +31,6 @@ const ProfilePage = () => {
     enabled: !!userId,
   });
 
-
   if (isPending)
     return (
       <div className="flex gap-2 p-4 justify-start aspect-[16/4]">
@@ -40,9 +40,7 @@ const ProfilePage = () => {
     );
 
   if (error) {
-    return (
-      <AccessDeniedMessage error={error} />
-    );
+    return <AccessDeniedMessage error={error} />;
   }
 
   if (!user) {
@@ -82,14 +80,14 @@ const ProfilePage = () => {
                 <span className="first-letter:capitalize">Должность:</span>{" "}
                 <span className="first-letter:capitalize">{user.position}</span>
               </p>
-              <Protected permissionOptional={[PrismaPermissionsMap.USER_MANAGEMENT]}>
+              <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
                 <p className="p-2 border border-solid flex items-center justify-start rounded-md gap-4">
                   <span className="first-letter:capitalize">Роль:</span>{" "}
                   <span className="first-letter:capitalize">
                     {RolesUser[user.role as keyof typeof RolesUser]}
                   </span>
                 </p>
-              </Protected>
+              </ProtectedByPermissions>
             </div>
             <div className="grid gap-2">
               <p className="p-2 border border-solid flex items-center justify-start rounded-md gap-4">

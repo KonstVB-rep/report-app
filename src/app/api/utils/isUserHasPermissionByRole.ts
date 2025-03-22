@@ -1,12 +1,12 @@
-import {  PrismaPermissionsMap } from "@/entities/user/model/objectTypes";
-import {  User } from "@/entities/user/types";
+import {  PermissionType, User } from "@/entities/user/types";
 import prisma from "@/prisma/prisma-client";
+import { PermissionEnum } from "@prisma/client";
 
 /*получаем текущего/делающего запрос пользователя*/
 
 export async function isUserHasPermissionByRole(
   user: User,
-  permission?: (keyof typeof PrismaPermissionsMap)[]
+  permission?: (keyof typeof PermissionEnum)[]
 ): Promise<boolean> {
   // Получаем информацию о департаменте по ID
   const department = await prisma.department.findUnique({
@@ -41,12 +41,12 @@ export async function isUserHasPermissionByRole(
   }
 
   const hasAllRequiredPermissions = permission?.every(
-    (reqPermission: keyof typeof PrismaPermissionsMap) => {
+    (reqPermission: PermissionType) => {
       return userWithPermissions?.permissions.some((p) => {
-        console.log(PrismaPermissionsMap[p.permission.name], "p.permission");
+        console.log(PermissionEnum[p.permission.name], "p.permission");
         console.log(reqPermission, "reqPermission");
 
-        return PrismaPermissionsMap[p.permission.name] === reqPermission;
+        return PermissionEnum[p.permission.name] === reqPermission;
       });
     }
   );

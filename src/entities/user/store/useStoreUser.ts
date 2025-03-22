@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import { checkUserPermission } from '@/feature/auth/lib/checkUserPermission';
 
 
+
 type State = {
     authUser: User | null,
     isAuth: boolean

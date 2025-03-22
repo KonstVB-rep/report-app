@@ -108,7 +108,6 @@ const FilterPopover = React.memo(({
                   id={id}
                   checked={filterValues.includes(id)}
                   onCheckedChange={() => handleChange(id)}
-                  // className="h-5 w-5 data-[state=checked]:bg-primary"
                 />
                 <label htmlFor={id} className="whitespace-nowrap cursor-pointer">
                   {label}

@@ -13,9 +13,9 @@ import {
   UserResponse,
   UserWithdepartmentName,
 } from "../types";
-import { DepartmentEnum, Role, User } from "@prisma/client";
+import { DepartmentEnum, PermissionEnum, Role, User } from "@prisma/client";
 import prisma from "@/prisma/prisma-client";
-import { PrismaPermissionsMap } from "../model/objectTypes";
+// import { PermissionEnum } from "../model/objectTypes";
 
 type RequiredFields = keyof UserRequest;
 const requiredFields: RequiredFields[] = [
@@ -71,7 +71,7 @@ export const checkFormData = async (
 
 //     const { user } = dataAuthUser!;
 //     if (user)
-//       await checkUserPermissionByRole(user, [PrismaPermissionsMap.USER_MANAGEMENT]);
+//       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
 
 //     const existingUser: User | null = await findUserByEmail(
 //       userData.email as string
@@ -178,7 +178,7 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
     const { user } = dataAuthUser!;
 
     if (user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.USER_MANAGEMENT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
     }
 
     const existingUser = await findUserByEmail(userData.email as string);
@@ -240,7 +240,7 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
 //     const { user } = await handleAuthorization();
 
 //     if (user)
-//       await checkUserPermissionByRole(user, [PrismaPermissionsMap
+//       await checkUserPermissionByRole(user, [PermissionEnum
 // .USER_MANAGEMENT]);
 
 //     const person = await prisma.user.findUnique({
@@ -319,7 +319,7 @@ export const updateUser = async (dataUser: UserRequest): Promise<UserResponse | 
     const { user } = await handleAuthorization();
 
     if (user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.USER_MANAGEMENT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
     }
 
     const person = await prisma.user.findUnique({ where: { email: userData.email as string } });
@@ -487,7 +487,7 @@ export const deleteUser = async (
     const { user } = await handleAuthorization();
 
     if (user)
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap
+      await checkUserPermissionByRole(user, [PermissionEnum
 .USER_MANAGEMENT]);
 
     const person = await prisma.user.findUnique({
@@ -548,7 +548,7 @@ export const getAllUsersFromFilter = async (
       return handleError("Пользователь не найден");
     }
 
-    await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_UNION_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_UNION_REPORT]);
 
     const users = await prisma.user.findMany({
       where: { departmentId: Number(id) },
