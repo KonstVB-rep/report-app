@@ -3,13 +3,9 @@
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
-import { DealType, Prisma } from "@prisma/client";
+import { DealType, PermissionEnum, Prisma } from "@prisma/client";
 import { ProjectResponse, RetailResponse } from "../types";
 import prisma from "@/prisma/prisma-client";
-import { PrismaPermissionsMap } from "@/entities/user/model/objectTypes";
-
-
-
 
 const requiredFields = [
   "nameObject",
@@ -33,8 +29,6 @@ type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
 
 type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 
-
-
 // const modelName = type.toLowerCase(); // Приводим к нижнему регистру, если нужно
 // const model = (prisma as PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>)[modelName];
 
@@ -43,7 +37,6 @@ type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 // }
 
 // const deal = await model.findUnique({ where: { id: projectId } });
-
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
   const { userId } = await handleAuthorization();
@@ -85,7 +78,7 @@ export const getProjectById = async (
     const isOwner = userId === idDealOwner;
 
     if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
     const project = await prisma.project.findUnique({
@@ -109,7 +102,6 @@ export const getProjectById = async (
     return handleError((error as Error).message);
   }
 };
-
 
 export const getRetailById = async (
   dealId: string,
@@ -138,7 +130,7 @@ export const getRetailById = async (
     const isOwner = userId === idDealOwner;
 
     if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
     const retail = await prisma.retail.findUnique({
@@ -156,7 +148,6 @@ export const getRetailById = async (
     };
 
     return formattedRetail;
-    
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -164,16 +155,13 @@ export const getRetailById = async (
 };
 
 export const createProject = async (data: ProjectWithoutId) => {
-
   try {
     if (!data) {
       return handleError("Ошибка: data не переданы в createProject");
     }
     const userId = await checkAuthAndDataFill(data);
 
-
-    const { amountCP, amountPurchase, amountWork, delta, ...dealData } =
-      data;
+    const { amountCP, amountPurchase, amountWork, delta, ...dealData } = data;
 
     // const existingProject = await prisma.project.findUnique({
     //   where: { nameObject },
@@ -194,7 +182,7 @@ export const createProject = async (data: ProjectWithoutId) => {
 
     const newDeal = await prisma.project.create({
       data: {
-        ...dealData as ProjectResponse,
+        ...(dealData as ProjectResponse),
         userId,
         dateRequest: new Date(),
         amountCP: safeAmountCP,
@@ -220,16 +208,13 @@ export const createProject = async (data: ProjectWithoutId) => {
 };
 
 export const createRetail = async (data: RetailWithoutId) => {
-
   try {
     if (!data) {
       return handleError("Ошибка: data не переданы в createProject");
     }
     const userId = await checkAuthAndDataFill(data);
 
-
-    const { amountCP, delta, ...dealData } =
-      data;
+    const { amountCP, delta, ...dealData } = data;
 
     // const existingProject = await prisma.project.findUnique({
     //   where: { nameObject },
@@ -246,10 +231,9 @@ export const createRetail = async (data: RetailWithoutId) => {
     const safeamountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
 
-
     const newDeal = await prisma.retail.create({
       data: {
-        ...dealData as RetailResponse,
+        ...(dealData as RetailResponse),
         userId,
         dateRequest: new Date(),
         amountCP: safeamountCP,
@@ -276,9 +260,12 @@ export const updateProject = async (
 ) => {
   try {
     const userId = await checkAuthAndDataFill(data);
-    const { id, amountCP, amountPurchase, amountWork, delta, ...dealData } = data;
+    const { id, amountCP, amountPurchase, amountWork, delta, ...dealData } =
+      data;
 
-    const deal = await prisma.project.findUnique({ where: { id: id as string } });
+    const deal = await prisma.project.findUnique({
+      where: { id: id as string },
+    });
 
     if (!deal) {
       return [];
@@ -324,14 +311,14 @@ export const updateProject = async (
   }
 };
 
-export const updateRetail = async (
-  data: RetailWithoutDateCreateAndUpdate
-) => {
+export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
   try {
     const userId = await checkAuthAndDataFill(data);
     const { id, amountCP, delta, ...dealData } = data;
 
-    const deal = await prisma.retail.findUnique({ where: { id: id as string } });
+    const deal = await prisma.retail.findUnique({
+      where: { id: id as string },
+    });
 
     if (!deal) {
       return [];
@@ -344,11 +331,10 @@ export const updateRetail = async (
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
 
-
     const updatedDeal = await prisma.retail.update({
       where: { id: deal.id },
       data: {
-        ...dealData as RetailResponse,
+        ...(dealData as RetailResponse),
         userId,
         dateRequest: new Date(),
         amountCP: safeAmountCP,
@@ -379,8 +365,8 @@ export const getProjectsUser = async (
     const data = await handleAuthorization();
     const { user, userId } = data!;
 
-    if(!user) {
-      return handleError("Пользователь не найден")
+    if (!user) {
+      return handleError("Пользователь не найден");
     }
 
     if (!idProjectOwner) {
@@ -403,7 +389,7 @@ export const getProjectsUser = async (
       return formattedProjects;
     }
 
-    await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
 
     const deals = await prisma.project.findMany({
       where: { userId: idProjectOwner },
@@ -429,7 +415,6 @@ export const getProjectsUser = async (
   }
 };
 
-
 export const getRetailsUser = async (
   idDealOwner: string
 ): Promise<RetailResponse[] | null> => {
@@ -437,8 +422,8 @@ export const getRetailsUser = async (
     const data = await handleAuthorization();
     const { user, userId } = data!;
 
-    if(!user) {
-      return handleError("Пользователь не найден")
+    if (!user) {
+      return handleError("Пользователь не найден");
     }
 
     if (!idDealOwner) {
@@ -459,7 +444,7 @@ export const getRetailsUser = async (
       return formattedDeal;
     }
 
-    await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_USER_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
 
     const retails = await prisma.retail.findMany({
       where: { userId: idDealOwner },
@@ -483,8 +468,6 @@ export const getRetailsUser = async (
   }
 };
 
-
-
 export const getAllProjectsByDepartment = async (): Promise<
   ProjectResponse[]
 > => {
@@ -495,10 +478,9 @@ export const getAllProjectsByDepartment = async (): Promise<
       return handleError("Пользователь не найден");
     }
 
-    const permissionError = await checkUserPermissionByRole(
-      user,
-      [PrismaPermissionsMap.VIEW_UNION_REPORT]
-    );
+    const permissionError = await checkUserPermissionByRole(user, [
+      PermissionEnum.VIEW_UNION_REPORT,
+    ]);
 
     if (permissionError) return permissionError;
 
@@ -533,7 +515,6 @@ export const getAllProjectsByDepartment = async (): Promise<
   }
 };
 
-
 export const getAllRetailsByDepartment = async (): Promise<
   RetailResponse[]
 > => {
@@ -544,10 +525,9 @@ export const getAllRetailsByDepartment = async (): Promise<
       return handleError("Пользователь не найден");
     }
 
-    const permissionError = await checkUserPermissionByRole(
-      user,
-      [PrismaPermissionsMap.VIEW_UNION_REPORT]
-    );
+    const permissionError = await checkUserPermissionByRole(user, [
+      PermissionEnum.VIEW_UNION_REPORT,
+    ]);
 
     if (permissionError) return permissionError;
 
@@ -586,7 +566,6 @@ export const deleteDeal = async (
   idDealOwner: string,
   type: string
 ) => {
-
   try {
     await handleAuthorization();
 
@@ -637,7 +616,6 @@ export const deleteDeal = async (
     }
 
     return { data: null, message, error: false };
-
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

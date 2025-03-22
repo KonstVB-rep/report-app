@@ -208,22 +208,21 @@ import RetailForm from "../Forms/RetailForm";
 import ProjectForm from "../Forms/ProjectForm";
 
 type AddNewDealProps = {
-  type: string
+  type: string;
 };
 
 const contentType: Record<string, { title: string; form: React.ReactNode }> = {
-  "projects": {
+  projects: {
     title: "Добавить проект",
-    form: <ProjectForm />
+    form: <ProjectForm />,
   },
-  "retails": {
+  retails: {
     title: "Добавить cделку по рознице",
-    form: <RetailForm/>
+    form: <RetailForm />,
   },
-}
+};
 
 const AddNewDeal = ({ type }: AddNewDealProps) => {
-
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>

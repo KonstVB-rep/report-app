@@ -19,18 +19,18 @@ const DealTableTemplate = ({
   if (isPending) return <DealsSkeleton />;
 
   return (
-    <section className="p-4 h-full">
+    <section className="h-full p-4">
       {user ? (
         <div className="grid gap-2" ref={ref}>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <ProfileSettings user={user} />
             <LinkToUserTable />
           </div>
           {children}
         </div>
       ) : (
-        <div className="grid place-items-center h-full">
-          <h1 className="text-xl text-center p-4 bg-muted rounded-md">
+        <div className="grid h-full place-items-center">
+          <h1 className="rounded-md bg-muted p-4 text-center text-xl">
             {error?.message}
           </h1>
         </div>

@@ -32,9 +32,9 @@ const ContextRowTable = <T,>({
 
           <ContextMenuContent className="grid gap-1 bg-background">
             <ContextMenuItem className="flex gap-2">
-              <FileText size="14"/>
+              <FileText size="14" />
               <Link
-                href={`/dashboard/deal/${(
+                href={`/deal/${(
                   rowData as Project | Retail
                 ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
               >
@@ -46,14 +46,14 @@ const ContextRowTable = <T,>({
               onClick={() => setOpenModal("edit")}
               className="flex gap-2"
             >
-              <FilePenLine size="14"/> Редактировать
+              <FilePenLine size="14" /> Редактировать
             </ContextMenuItem>
 
             <ContextMenuItem
               onClick={() => setOpenModal("delete")}
               className="flex gap-2"
             >
-              <Trash2 size="14"/> Удалить
+              <Trash2 size="14" /> Удалить
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>

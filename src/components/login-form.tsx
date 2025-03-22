@@ -46,9 +46,8 @@ export function LoginForm({
   const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  const { setDepartments } = useStoreDepartment()
-  const {data: departmentData } = useGetDepartmentsWithUsers();
-  
+  const { setDepartments } = useStoreDepartment();
+  const { data: departmentData } = useGetDepartmentsWithUsers();
 
   const onSubmit = (formData: FormData) => {
     const isValidData = loginFormSchema.parse(Object.fromEntries(formData));
@@ -78,13 +77,13 @@ export function LoginForm({
 
   useEffect(() => {
     if (isAuth && departmentData) {
-      setDepartments(departmentData); 
+      setDepartments(departmentData);
       setShouldRedirect(true);
     }
-  }, [isAuth, departmentData]);
+  }, [isAuth, departmentData, setDepartments]);
 
   if (shouldRedirect) {
-    redirect(`/dashboard/table/projects/${authUser?.id}`);
+    redirect(`/table/projects/${authUser?.id}`);
   }
 
   return (
@@ -110,7 +109,7 @@ export function LoginForm({
                         <InputEmail
                           {...field}
                           required
-                          className="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                          className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                         />
                       </FormControl>
                       <FormMessage />
@@ -128,7 +127,7 @@ export function LoginForm({
                           {...field}
                           minLength={6}
                           maxLength={30}
-                          className="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                          className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                           required
                         />
                       </FormControl>

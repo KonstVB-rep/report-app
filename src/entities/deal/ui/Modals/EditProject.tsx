@@ -6,7 +6,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-
 import React, { Dispatch, SetStateAction } from "react";
 import EditProjectForm from "../Forms/EditProjectForm";
 
@@ -18,7 +17,10 @@ const EditProject = ({
   id: string;
 }) => {
   return (
-    <DialogContent className="sm:max-w-[825px] max-h-[94vh] overflow-y-auto" showX={true}>
+    <DialogContent
+      className="max-h-[94vh] overflow-y-auto sm:max-w-[825px]"
+      showX={true}
+    >
       <DialogHeader>
         <DialogTitle className="sr-only">Редактировать проект</DialogTitle>
         <DialogDescription></DialogDescription>

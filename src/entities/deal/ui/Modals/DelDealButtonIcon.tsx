@@ -23,9 +23,9 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild onClick={() => setOpen(true)}>
-          <Button size="icon" variant={"destructive"} title="Удалить">
-            <Trash2 />
-          </Button>
+        <Button size="icon" variant={"destructive"} title="Удалить">
+          <Trash2 />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -34,7 +34,7 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <p>Вы точно уверены что хотите удалить сделку</p>
-          <p className="font-bold text-xl text-center py-2 px-4 bg-muted rounded-xl">
+          <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
             &quot;{deal?.nameObject}&quot;?
           </p>
           <p>Его нельзя будет восстановить!</p>

@@ -10,7 +10,7 @@ const UserDepartmentList = () => {
   const { departmentId } = useParams();
   const { departments } = useStoreDepartment();
 
-  if (!departmentId || !departments|| typeof departmentId !== "string") {
+  if (!departmentId || !departments || typeof departmentId !== "string") {
     return <p>Отдел не найден</p>;
   }
 
@@ -18,14 +18,14 @@ const UserDepartmentList = () => {
     (dept) => dept.id.toString() === departmentId
   );
 
-
   return (
     <>
-      <h1 className="text-center text-2xl font-bold p-4">
+      <h1 className="p-4 text-center text-2xl font-bold">
         {departments ? currentDepartment?.description : "Отдел не найден"}
       </h1>
-      {Array.isArray(currentDepartment?.users) && currentDepartment?.users.length > 0 ? (
-        <ul className="grid gap-2 pt-4 max-w-max">
+      {Array.isArray(currentDepartment?.users) &&
+      currentDepartment?.users.length > 0 ? (
+        <ul className="grid max-w-max gap-2 pt-4">
           {currentDepartment?.users.map((per: UserResponse) => (
             <UserItem key={per.id} person={per} />
           ))}

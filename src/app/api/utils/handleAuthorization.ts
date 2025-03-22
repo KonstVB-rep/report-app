@@ -1,4 +1,3 @@
-
 import { requireAuth } from "./requireAuth ";
 import { handleError } from "@/shared/api/handleError";
 import prisma from "@/prisma/prisma-client";

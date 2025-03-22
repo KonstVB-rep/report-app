@@ -22,6 +22,13 @@ export const login = async (prevState: unknown, formData: FormData) => {
       where: {
         email: email,
       },
+      include: {
+        permissions: {
+          select: {
+            permission: true,
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -66,7 +73,11 @@ export const login = async (prevState: unknown, formData: FormData) => {
     await generateTokens(user.id);
 
     return {
-      data: { ...user, lastlogin: lastLoginDate?.loginAt },
+      data: {
+        ...user,
+        permissions: user.permissions.map((p) => p.permission.name),
+        lastlogin: lastLoginDate?.loginAt,
+      },
       message: "Авторизация прошла успешно",
     };
   } catch (error) {

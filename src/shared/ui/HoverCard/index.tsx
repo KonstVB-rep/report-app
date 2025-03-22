@@ -17,16 +17,26 @@ type Props = {
   classname?: string;
 };
 
-const HoverCardComponent = ({ children, title,align = "center",sideOffset = 2,classname, ...props }: Props) => {
+const HoverCardComponent = ({
+  children,
+  title,
+  align = "center",
+  sideOffset = 2,
+  classname,
+  ...props
+}: Props) => {
   return (
-    <HoverCard openDelay={50} closeDelay={150} >
-      <HoverCardTrigger >
-        <Button variant="outline" className="first-letter:capitalize w-full h-auto items-center">
+    <HoverCard openDelay={50} closeDelay={150}>
+      <HoverCardTrigger>
+        <Button
+          variant="outline"
+          className="h-auto w-full items-center first-letter:capitalize"
+        >
           {title}
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
-        className={`p-1 grid gap-1 w-max ${classname}`}
+        className={`grid w-max gap-1 p-1 ${classname}`}
         align={align}
         sideOffset={sideOffset}
         {...props}

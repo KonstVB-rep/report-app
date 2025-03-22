@@ -3,7 +3,7 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import React from "react";
 import FilterPopover from "../FilterPopover";
 import { ColumnFiltersState } from "@tanstack/react-table";
-import Protected from "@/feature/Protected";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 import { PermissionEnum } from "@prisma/client";
 import { useParams, usePathname } from "next/navigation";
 
@@ -18,9 +18,11 @@ const FilterByUser = ({ columnFilters, setColumnFilters }: Props) => {
   const { authUser } = useStoreUser();
   const { deptsFormatted } = useStoreDepartment();
   const pathname = usePathname();
-  const {dealType} = useParams();
+  const { dealType } = useParams();
 
-  const hasTable = pathname.includes(`/summary-table/${dealType}/${authUser?.id}`);
+  const hasTable = pathname.includes(
+    `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
+  );
 
   const currentDepartment = deptsFormatted?.find(
     (dept) => dept.id === authUser?.departmentId
@@ -31,10 +33,10 @@ const FilterByUser = ({ columnFilters, setColumnFilters }: Props) => {
     {}
   ) as Record<string, string>;
 
-  if(!hasTable) return null;
+  if (!hasTable) return null;
 
   return (
-    <Protected permissionOptional={[PermissionEnum.VIEW_UNION_REPORT]}>
+    <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
       <FilterPopover
         columnId="user"
         options={usersDepartment}
@@ -42,7 +44,7 @@ const FilterByUser = ({ columnFilters, setColumnFilters }: Props) => {
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
       />
-    </Protected>
+    </ProtectedByPermissions>
   );
 };
 

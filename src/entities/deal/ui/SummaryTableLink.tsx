@@ -1,8 +1,8 @@
 "use client";
-import { PrismaPermissionsMap } from "@/entities/user/model/objectTypes";
+
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import Protected from "@/feature/Protected";
-import { DealType } from "@prisma/client";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import { DealType, PermissionEnum } from "@prisma/client";
 import Link from "next/link";
 
 import React from "react";
@@ -11,25 +11,27 @@ type Props = {
   type: DealType;
 };
 
-const SummaryTableLink = ({type} : Props) => {
+const SummaryTableLink = ({ type }: Props) => {
   const { authUser } = useStoreUser();
 
   if (!authUser) return null;
 
   const name = {
-    [DealType.PROJECT]: 'Проекты',
-    [DealType.RETAIL]: 'Розничные сделки',
-  }
+    [DealType.PROJECT]: "Проекты",
+    [DealType.RETAIL]: "Розничные сделки",
+  };
   return (
-    <Protected permissionOptional={[PrismaPermissionsMap.VIEW_UNION_REPORT]}>
+    <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
       <Link
-        href={`/dashboard/summary-table/${type.toLowerCase()}s/${authUser.id}`}
-        className="btn_hover max-w-max text-sm border-muted min-w-full"
+        href={`/summary-table/${authUser.departmentId}/${type.toLowerCase()}s/${authUser.id}`}
+        className="btn_hover min-w-full max-w-max border-muted text-sm"
         title="перейти на страницу сводной таблицы"
       >
-       <span className="first-letter:capitalize">{name[type as keyof typeof name] as string}</span>
+        <span className="first-letter:capitalize">
+          {name[type as keyof typeof name] as string}
+        </span>
       </Link>
-    </Protected>
+    </ProtectedByPermissions>
   );
 };
 

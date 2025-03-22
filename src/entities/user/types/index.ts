@@ -63,9 +63,10 @@ export const OPTIONS: Option[] = [
     label: PermissionUser.DOWNLOAD_REPORTS,
     value: PermissionEnum.DOWNLOAD_REPORTS,
   },
-  { label: PermissionUser.USER_MANAGEMENT, 
+  {
+    label: PermissionUser.USER_MANAGEMENT,
     value: PermissionEnum.USER_MANAGEMENT,
-  }
+  },
 ];
 
 export type PermissionType = keyof typeof Permission;

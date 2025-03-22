@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { FormControl } from "@/components/ui/form";
@@ -19,7 +19,10 @@ type CalendarComponentProps = {
   field: FieldValues;
 };
 
-const CalendarComponent = ({required = false, field }: CalendarComponentProps) => {
+const CalendarComponent = ({
+  required = false,
+  field,
+}: CalendarComponentProps) => {
   const selectedDate = field.value ? new Date(field.value) : undefined;
 
   return (
@@ -46,11 +49,9 @@ const CalendarComponent = ({required = false, field }: CalendarComponentProps) =
         <Calendar
           mode="single"
           selected={selectedDate}
-          onSelect={(date) =>
-            field.onChange(date ? date.toISOString() : "")
-          }
+          onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
           required={required}
-          // disabled={(date) => date.getTime() < new Date().setHours(0, 0, 0, 0)} 
+          // disabled={(date) => date.getTime() < new Date().setHours(0, 0, 0, 0)}
           locale={ru}
         />
       </PopoverContent>
@@ -59,4 +60,3 @@ const CalendarComponent = ({required = false, field }: CalendarComponentProps) =
 };
 
 export default CalendarComponent;
-

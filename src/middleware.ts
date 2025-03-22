@@ -10,19 +10,21 @@ export default async function middleware(request: NextRequest) {
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
 
-  if(pathname === "/") {
+  if (pathname === "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (pathname === "/login" || pathname === "/" || pathname === "/dashboard") {
+  if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
         const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
         const { payload } = await jwtVerify(accessToken, secretKey); // Проверка токена
-        const userId = payload?.userId
-        console.log('Decoded payload:', payload);
-        console.log("Пользователь уже авторизован, редирект на /dashboard");
-        return NextResponse.redirect(new URL(`/dashboard/table/projects/${userId}`, request.url));
+        const userId = payload?.userId;
+        console.log("Decoded payload:", payload);
+        console.log("Пользователь уже авторизован, редирект на /");
+        return NextResponse.redirect(
+          new URL(`/table/projects/${userId}`, request.url)
+        );
       } catch (error) {
         console.log("Access token недействителен, оставляем на /login", error);
       }
@@ -32,7 +34,6 @@ export default async function middleware(request: NextRequest) {
 
   // // Если есть accessToken, проверяем его
   if (accessToken) {
-   
     try {
       const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
       await jwtVerify(accessToken, secretKey); // Проверка токена
@@ -51,7 +52,8 @@ export default async function middleware(request: NextRequest) {
   // // Попробуем обновить токен
   try {
     const res = await axiosInstance.post("auth/refresh", {
-      refresh_token: refreshToken,});
+      refresh_token: refreshToken,
+    });
     const data = res.data; // Новый access_token
     console.log("Новый access token получен:", data.accessToken);
 
@@ -59,12 +61,12 @@ export default async function middleware(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
-      maxAge: 24 * 60 * 60, 
+      maxAge: 24 * 60 * 60,
     });
     console.log("Oбновилили access_token в cookies");
-    // Если был редирект на /login, то перенаправим на /dashboard
-    if (pathname === "/login" || pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    // Если был редирект на /login, то перенаправим на /
+    if (pathname === "/login") {
+      return NextResponse.redirect(new URL("/", request.url));
     }
 
     return NextResponse.next();
@@ -76,7 +78,6 @@ export default async function middleware(request: NextRequest) {
 
 // Удаляем токены и редиректим на логин
 async function redirectToLogin(request: NextRequest) {
-
   const cookiesStore = await cookies();
   cookiesStore.set("auth_redirected", "true", { maxAge: 60 });
 
@@ -84,5 +85,5 @@ async function redirectToLogin(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*", "/login", "/"],
+  matcher: ["/profile/:path*", "/login", "/"],
 };

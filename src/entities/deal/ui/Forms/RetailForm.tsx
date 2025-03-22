@@ -9,9 +9,7 @@ import { RetailFormSchema, RetailSchema } from "../../model/schema";
 import RetailFormBody from "./RetailFormBody";
 import { useCreateRetail } from "../../hooks";
 
-
 const RetailForm = () => {
-
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema),
     defaultValues: {
@@ -31,8 +29,7 @@ const RetailForm = () => {
     },
   });
 
-  const { mutate, isPending } = useCreateRetail(form)
-
+  const { mutate, isPending } = useCreateRetail(form);
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(
@@ -50,8 +47,9 @@ const RetailForm = () => {
     );
   };
 
-  return <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
-  
+  return (
+    <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
+  );
 };
 
 export default RetailForm;

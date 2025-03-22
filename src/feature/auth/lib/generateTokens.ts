@@ -10,7 +10,6 @@ if (!process.env.NODE_ENV) {
 }
 
 export const generateTokens = async (userId: string) => {
-
   // Генерация access token
   const accessToken = await new SignJWT({ userId })
     .setProtectedHeader({ alg: "HS256" })

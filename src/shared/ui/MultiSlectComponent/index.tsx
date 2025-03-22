@@ -28,6 +28,7 @@ const MultiSelectComponent = ({
   ...props
 }: MultiSelectComponentProps) => {
   return (
+     // @ts-expect-error: TypeScript does not infer the correct type for MultiSelect props
     <MultiSelect
       onValueChange={onValueChange}
       defaultValue={defaultValue}

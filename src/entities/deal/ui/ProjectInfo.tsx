@@ -14,21 +14,22 @@ import NotFoundDeal from "./NotFoundDeal";
 const ProjectItemInfo = () => {
   const { dealId } = useParams();
 
-  const { data: project, isLoading } = useGetProjectById(dealId as string, false);
+  const { data: project, isLoading } = useGetProjectById(
+    dealId as string,
+    false
+  );
 
   if (isLoading) {
     return <div>Загрузка...</div>;
   }
 
   if (!project) {
-    return (
-        <NotFoundDeal/>
-    );
+    return <NotFoundDeal />;
   }
 
   return (
     <section className="grid p-4">
-      <div className="flex gap-2 justify-end">
+      <div className="flex justify-end gap-2">
         {/* <TooltipComponent content="Редактировать">
           <Button size="icon" variant={"outline"}>
             <FilePenLine />
@@ -41,7 +42,6 @@ const ProjectItemInfo = () => {
         </TooltipComponent> */}
         <EditDealButtonIcon id={project.id} type={project.type} />
         <DelDealButtonIcon id={project.id} type={project.type} />
-
       </div>
       <div className="grid gap-2">
         <h1 className="text-2xl">Название сделки: {project?.nameDeal}</h1>
@@ -49,7 +49,7 @@ const ProjectItemInfo = () => {
         <p> Дата создания: {project.createdAt.toLocaleDateString()}</p>
       </div>
       <div className="grid-container gap-2 py-2">
-        <div className="border p-4 rounded-md">
+        <div className="rounded-md border p-4">
           <p>Дата запроса: {project?.dateRequest.toLocaleDateString()}</p>
           <p>Название сделки: {project?.nameDeal}</p>
           <p>
@@ -58,7 +58,7 @@ const ProjectItemInfo = () => {
               "Нет данных"}
           </p>
         </div>
-        <div className="border p-4 rounded-md">
+        <div className="rounded-md border p-4">
           <p>
             Направление:{" "}
             {DirectionProjectLabels[
@@ -72,7 +72,7 @@ const ProjectItemInfo = () => {
             ] || "Нет данных"}
           </p>
         </div>
-        <div className="border p-4 rounded-md">
+        <div className="rounded-md border p-4">
           <p>Дельта: {project.delta || "Нет данных"}</p>
           <p>Сумма КП: {project.amountCP || "Нет данных"} </p>
           <p>
@@ -83,10 +83,12 @@ const ProjectItemInfo = () => {
           </p>
           <p>
             Сумма работы:{" "}
-            {project.amountWork ? (project.amountWork as string) : "Нет данных"}{" "}
+            {project.amountWork
+              ? (project.amountWork as string)
+              : "Нет данных"}{" "}
           </p>
         </div>
-        <div className="border p-4 rounded-md">
+        <div className="rounded-md border p-4">
           <p>Контакт: {project.contact || "Нет данных"}</p>
           <p>Телефон: {project.phone || "Нет данных"}</p>
           <p>Email: {project.email || "Нет данных"}</p>
@@ -95,7 +97,7 @@ const ProjectItemInfo = () => {
           </p>
         </div>
       </div>
-      <div className="border p-4 rounded-md">
+      <div className="rounded-md border p-4">
         <p>Комментарии: {project.comments || "Нет данных"}</p>
       </div>
     </section>

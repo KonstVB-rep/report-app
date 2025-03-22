@@ -1,19 +1,19 @@
-import React from 'react'
+import React from "react";
 
 const DealsSkeleton = () => {
   return (
-    <section className="p-4 h-full">
-      <div className="grid gap-4 h-full content-start grid-rows-[auto_auto_1fr]">
-        <div className="flex justify-between items-center">
-          <div className="h-10 w-40 rounded-xl bg-muted/50 animate-pulse" />
+    <section className="h-full p-4">
+      <div className="grid h-full grid-rows-[auto_auto_1fr] content-start gap-4">
+        <div className="flex items-center justify-between">
+          <div className="h-10 w-40 animate-pulse rounded-xl bg-muted/50" />
         </div>
         <div>
-          <div className="h-10 w-40 rounded-xl bg-muted/50 animate-pulse" />
+          <div className="h-10 w-40 animate-pulse rounded-xl bg-muted/50" />
         </div>
-        <div className="w-full h-full max-h-[80vh] rounded-xl bg-muted/50 animate-pulse" />
+        <div className="h-full max-h-[80vh] w-full animate-pulse rounded-xl bg-muted/50" />
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default DealsSkeleton
+export default DealsSkeleton;

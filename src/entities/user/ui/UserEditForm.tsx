@@ -65,7 +65,7 @@ const UserEditForm = ({
         });
       }
       queryClient.invalidateQueries({
-        queryKey: ["depsWithEmp"],
+        queryKey: ["depsWithUsers"],
         exact: true,
       });
     },
@@ -104,7 +104,7 @@ const UserEditForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid gap-5 max-h-[85vh] overflow-y-auto p-1"
+        className="grid max-h-[85vh] gap-5 overflow-y-auto p-1"
       >
         <div>
           <FormField

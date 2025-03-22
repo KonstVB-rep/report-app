@@ -1,15 +1,42 @@
 import { getQueryClient } from "@/app/provider/query-provider";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createProject, createRetail, deleteDeal, getAllProjectsByDepartment, getAllRetailsByDepartment, getProjectById, getProjectsUser, getRetailById, getRetailsUser, updateProject, updateRetail } from "../api";
+import {
+  createProject,
+  createRetail,
+  deleteDeal,
+  getAllProjectsByDepartment,
+  getAllRetailsByDepartment,
+  getProjectById,
+  getProjectsUser,
+  getRetailById,
+  getRetailsUser,
+  updateProject,
+  updateRetail,
+} from "../api";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { Dispatch, SetStateAction } from "react";
 import { ProjectResponse, RetailResponse } from "../types";
-import { DealType, DeliveryProject, DeliveryRetail, DirectionProject, DirectionRetail, StatusProject, StatusRetail } from "@prisma/client";
+import {
+  DealType,
+  DeliveryProject,
+  DeliveryRetail,
+  DirectionProject,
+  DirectionRetail,
+  StatusProject,
+  StatusRetail,
+} from "@prisma/client";
 import { ProjectSchema, RetailSchema } from "../model/schema";
 import { UseFormReturn } from "react-hook-form";
+import {
+  getAllProjectsByDepartmentQuery,
+  getAllRetailsByDepartmentQuery,
+} from "../api/queryFn";
 
-export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: string) => {
+export const useDelDeal = (
+  closeModalFn: Dispatch<SetStateAction<void>>,
+  type: string
+) => {
   const queryClient = getQueryClient();
   const { authUser } = useStoreUser();
 
@@ -38,8 +65,7 @@ export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: s
   });
 };
 
-
-export const useGetProjectById = (id: string,useCache: boolean = true) => {
+export const useGetProjectById = (id: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
@@ -58,7 +84,7 @@ export const useGetProjectById = (id: string,useCache: boolean = true) => {
         }
         const project = await getProjectById(id, authUser.id);
 
-        return project ?? undefined; 
+        return project ?? undefined;
       } catch (error) {
         TOAST.ERROR((error as Error).message);
         throw error;
@@ -66,10 +92,9 @@ export const useGetProjectById = (id: string,useCache: boolean = true) => {
     },
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
     initialData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
-    staleTime: useCache ? 60 * 1000 : 0
+    staleTime: useCache ? 60 * 1000 : 0,
   });
 };
-
 
 export const useGetRetailById = (id: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
@@ -82,7 +107,7 @@ export const useGetRetailById = (id: string, useCache: boolean = true) => {
   const cachedDeal = cachedDeals?.find((p) => p.id === id);
 
   return useQuery<RetailResponse | undefined, Error>({
-    queryKey: ["retail", id], 
+    queryKey: ["retail", id],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
@@ -98,10 +123,9 @@ export const useGetRetailById = (id: string, useCache: boolean = true) => {
     },
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
     initialData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
-    staleTime: useCache ? 60 * 1000 : 0
+    staleTime: useCache ? 60 * 1000 : 0,
   });
 };
-
 
 export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
   id: string,
@@ -112,16 +136,21 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
 
   const queryKey = [type.toLowerCase(), id];
 
-  const cachedData = queryClient.getQueryData<Array<ProjectResponse | RetailResponse>>([
-    `${type.toLowerCase()}s`,
-    authUser?.id,
-  ]);
+  const cachedData = queryClient.getQueryData<
+    Array<ProjectResponse | RetailResponse>
+  >([`${type.toLowerCase()}s`, authUser?.id]);
   const cachedEntity = cachedData?.find((p) => p.id === id) as T | undefined;
 
   // Функции для запроса данных
   const fetchFunctions = {
-    [DealType.PROJECT]: getProjectById as (id: string, userId: string) => Promise<ProjectResponse>,
-    [DealType.RETAIL]: getRetailById as (id: string, userId: string) => Promise<RetailResponse>,
+    [DealType.PROJECT]: getProjectById as (
+      id: string,
+      userId: string
+    ) => Promise<ProjectResponse>,
+    [DealType.RETAIL]: getRetailById as (
+      id: string,
+      userId: string
+    ) => Promise<RetailResponse>,
   };
 
   const fetchFn = async (): Promise<T | undefined> => {
@@ -146,16 +175,26 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
   });
 };
 
-export const useGetAllDealsByDepartmentByType = (userId: string, type: DealType) => {
+export const useGetAllDealsByDepartmentByType = (
+  userId: string,
+  type: DealType
+) => {
   const { authUser } = useStoreUser();
 
   const queryKeys = {
-    [type]: [`all-${type.toLocaleLowerCase()}s-department`, authUser?.departmentId],
+    [type]: [
+      `all-${type.toLocaleLowerCase()}s-department`,
+      authUser?.departmentId,
+    ],
   };
 
   const fetchFunctions = {
-    [DealType.PROJECT]: getAllProjectsByDepartment as () => Promise<ProjectResponse[]>,
-    [DealType.RETAIL]: getAllRetailsByDepartment as () => Promise<RetailResponse[]>,
+    [DealType.PROJECT]: getAllProjectsByDepartment as () => Promise<
+      ProjectResponse[]
+    >,
+    [DealType.RETAIL]: getAllRetailsByDepartment as () => Promise<
+      RetailResponse[]
+    >,
   };
 
   return useQuery({
@@ -174,9 +213,29 @@ export const useGetAllDealsByDepartmentByType = (userId: string, type: DealType)
   });
 };
 
+export const useGetAllProjects = (userId: string | null) => {
+  const { authUser } = useStoreUser();
 
-export const useGetRetailsUser = (userId: string) => {
+  return useQuery({
+    queryKey: ["all-projects", authUser?.departmentId],
+    queryFn: getAllProjectsByDepartmentQuery,
+    enabled: !!userId && !!authUser?.departmentId,
+    retry: 2,
+  });
+};
 
+export const useGetAllRetails = (userId: string | null) => {
+  const { authUser } = useStoreUser();
+
+  return useQuery({
+    queryKey: ["all-retails", authUser?.departmentId],
+    queryFn: getAllRetailsByDepartmentQuery,
+    enabled: !!userId && !!authUser?.departmentId,
+    retry: 2,
+  });
+};
+
+export const useGetRetailsUser = (userId: string | null) => {
   const { data, isError } = useQuery({
     queryKey: ["retails", userId],
     queryFn: async () => {
@@ -193,7 +252,7 @@ export const useGetRetailsUser = (userId: string) => {
   return { data };
 };
 
-export const useGetProjectsUser = (userId: string) => {
+export const useGetProjectsUser = (userId: string | null) => {
   const { data, isError, ...restData } = useQuery({
     queryKey: ["projects", userId],
     queryFn: async () => {
@@ -210,13 +269,11 @@ export const useGetProjectsUser = (userId: string) => {
   return { data, ...restData };
 };
 
-
 export const useMutationUpdateProject = (dealId: string, close: () => void) => {
-    const queryClient = useQueryClient();
-    const { authUser } = useStoreUser();
+  const queryClient = useQueryClient();
+  const { authUser } = useStoreUser();
 
-
- return  useMutation({
+  return useMutation({
     mutationFn: (data: ProjectSchema) => {
       if (!authUser?.id) {
         throw new Error("User ID is missing");
@@ -237,16 +294,24 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
           : null,
         direction: data.direction as DirectionProject,
         amountCP: data.amountCP
-          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
+          ? parseFloat(
+              data.amountCP.replace(/\s/g, "").replace(",", ".")
+            ).toString()
           : "0",
         amountPurchase: data.amountPurchase
-          ? parseFloat(data.amountPurchase.replace(/\s/g, "").replace(",", ".")).toString()
+          ? parseFloat(
+              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
+            ).toString()
           : "0",
         amountWork: data.amountWork
-          ? parseFloat(data.amountWork.replace(/\s/g, "").replace(",", ".")).toString()
+          ? parseFloat(
+              data.amountWork.replace(/\s/g, "").replace(",", ".")
+            ).toString()
           : "0",
         delta: data.delta
-          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
+          ? parseFloat(
+              data.delta.replace(/\s/g, "").replace(",", ".")
+            ).toString()
           : "0",
       });
     },
@@ -256,38 +321,54 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
       await queryClient.cancelQueries({ queryKey: ["projects", authUser?.id] });
       await queryClient.cancelQueries({ queryKey: ["project", dealId] });
 
-      const previousDeals = queryClient.getQueryData<ProjectResponse[]>(["projects", authUser?.id]);
-      
-      const previousDeal = queryClient.getQueryData<ProjectResponse[]>(["project", dealId]);
+      const previousDeals = queryClient.getQueryData<ProjectResponse[]>([
+        "projects",
+        authUser?.id,
+      ]);
 
-      queryClient.setQueryData<ProjectResponse[]>(["projects", authUser?.id], (oldProjects) => {
-        if (!oldProjects) return oldProjects;
-        return oldProjects.map((p) => (p.id === dealId ? { 
-          ...p, 
-          ...newData,   
-          direction: newData.direction as DirectionProject,
-          projectStatus: newData.projectStatus as StatusProject,
-          deliveryType: newData.deliveryType as DeliveryProject,
-          plannedDateConnection: newData.plannedDateConnection
-          ? new Date(newData.plannedDateConnection)
-          : null,
-         } : p));
-      });
+      const previousDeal = queryClient.getQueryData<ProjectResponse[]>([
+        "project",
+        dealId,
+      ]);
 
-      queryClient.setQueryData<ProjectResponse>(["project", dealId], (oldProject) => {
-        if (!oldProject) return oldProject;
-        
-        return {
-          ...oldProject,
-          ...newData,
-          direction: newData.direction as DirectionProject,
-          projectStatus: newData.projectStatus as StatusProject,
-          deliveryType: newData.deliveryType as DeliveryProject,
-          plannedDateConnection: newData.plannedDateConnection
-          ? new Date(newData.plannedDateConnection)
-          : null,
-        };
-      });
+      queryClient.setQueryData<ProjectResponse[]>(
+        ["projects", authUser?.id],
+        (oldProjects) => {
+          if (!oldProjects) return oldProjects;
+          return oldProjects.map((p) =>
+            p.id === dealId
+              ? {
+                  ...p,
+                  ...newData,
+                  direction: newData.direction as DirectionProject,
+                  projectStatus: newData.projectStatus as StatusProject,
+                  deliveryType: newData.deliveryType as DeliveryProject,
+                  plannedDateConnection: newData.plannedDateConnection
+                    ? new Date(newData.plannedDateConnection)
+                    : null,
+                }
+              : p
+          );
+        }
+      );
+
+      queryClient.setQueryData<ProjectResponse>(
+        ["project", dealId],
+        (oldProject) => {
+          if (!oldProject) return oldProject;
+
+          return {
+            ...oldProject,
+            ...newData,
+            direction: newData.direction as DirectionProject,
+            projectStatus: newData.projectStatus as StatusProject,
+            deliveryType: newData.deliveryType as DeliveryProject,
+            plannedDateConnection: newData.plannedDateConnection
+              ? new Date(newData.plannedDateConnection)
+              : null,
+          };
+        }
+      );
 
       return { previousDeals, previousDeal };
     },
@@ -298,89 +379,116 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
         queryClient.setQueryData(["project", dealId], context.previousDeal);
       }
       if (context?.previousDeals) {
-        queryClient.setQueryData(["projects", authUser?.id], context.previousDeals);
+        queryClient.setQueryData(
+          ["projects", authUser?.id],
+          context.previousDeals
+        );
       }
     },
 
     // ✅ Если успех — обновляем кэш без лишнего запроса
     onSuccess: (updatedDeal) => {
-
       close();
 
-      queryClient.setQueryData(["projects", authUser?.id], (oldProjects: ProjectResponse[] | undefined) =>
-        oldProjects ? oldProjects.map((p) => (p.id === dealId ? updatedDeal : p)) : oldProjects
+      queryClient.setQueryData(
+        ["projects", authUser?.id],
+        (oldProjects: ProjectResponse[] | undefined) =>
+          oldProjects
+            ? oldProjects.map((p) => (p.id === dealId ? updatedDeal : p))
+            : oldProjects
       );
 
       queryClient.setQueryData(["project", dealId], updatedDeal);
 
       // 👇 Инвалидируем кэш, только если серверные данные могли измениться
-      queryClient.invalidateQueries({ queryKey: ["projects", authUser?.id], exact: true });
-      queryClient.invalidateQueries({ queryKey: ["project", dealId], exact: true });
+      queryClient.invalidateQueries({
+        queryKey: ["projects", authUser?.id],
+        exact: true,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["project", dealId],
+        exact: true,
+      });
     },
   });
 };
 
 export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
-    const queryClient = useQueryClient();
-    const { authUser } = useStoreUser();
-  
-    return useMutation({
-      mutationFn: (data: RetailSchema) => {
-        if (!authUser?.id) {
-          throw new Error("User ID is missing");
-        }
-  
-        return updateRetail({
-          id: dealId,
-          ...data,
-          email: data.email || "",
-          phone: data.phone || "",
-          additionalContact: data.additionalContact || "",
-          userId: authUser.id,
-          deliveryType: data.deliveryType as DeliveryRetail,
-          dateRequest: new Date(),
-          projectStatus: data.projectStatus as StatusRetail,
-          plannedDateConnection: data.plannedDateConnection
-            ? new Date(data.plannedDateConnection)
-            : null,
-          direction: data.direction as DirectionRetail,
-          amountCP: data.amountCP
-            ? parseFloat(
-                data.amountCP.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          delta: data.delta
-            ? parseFloat(
-                data.delta.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-        });
-      },
-      onMutate: async (newData) => {
-        await queryClient.cancelQueries({ queryKey: ["retails", authUser?.id] });
+  const queryClient = useQueryClient();
+  const { authUser } = useStoreUser();
+
+  return useMutation({
+    mutationFn: (data: RetailSchema) => {
+      if (!authUser?.id) {
+        throw new Error("User ID is missing");
+      }
+
+      return updateRetail({
+        id: dealId,
+        ...data,
+        email: data.email || "",
+        phone: data.phone || "",
+        additionalContact: data.additionalContact || "",
+        userId: authUser.id,
+        deliveryType: data.deliveryType as DeliveryRetail,
+        dateRequest: new Date(),
+        projectStatus: data.projectStatus as StatusRetail,
+        plannedDateConnection: data.plannedDateConnection
+          ? new Date(data.plannedDateConnection)
+          : null,
+        direction: data.direction as DirectionRetail,
+        amountCP: data.amountCP
+          ? parseFloat(
+              data.amountCP.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        delta: data.delta
+          ? parseFloat(
+              data.delta.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+      });
+    },
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ["retails", authUser?.id] });
       await queryClient.cancelQueries({ queryKey: ["retail", dealId] });
-  
-        const previousDeals = queryClient.getQueryData<RetailResponse[]>(["retails", authUser?.id]);
-        
-        const previousDeal = queryClient.getQueryData<RetailResponse[]>(["retail", dealId]);
-  
-        queryClient.setQueryData<RetailResponse[]>(["retails", authUser?.id], (oldProjects) => {
+
+      const previousDeals = queryClient.getQueryData<RetailResponse[]>([
+        "retails",
+        authUser?.id,
+      ]);
+
+      const previousDeal = queryClient.getQueryData<RetailResponse[]>([
+        "retail",
+        dealId,
+      ]);
+
+      queryClient.setQueryData<RetailResponse[]>(
+        ["retails", authUser?.id],
+        (oldProjects) => {
           if (!oldProjects) return oldProjects;
-          return oldProjects.map((p) => (p.id === dealId ? { 
-            ...p, 
-            ...newData,   
-            direction: newData.direction as DirectionRetail,
-            projectStatus: newData.projectStatus as StatusRetail,
-            deliveryType: newData.deliveryType as DeliveryRetail,
-            plannedDateConnection: newData.plannedDateConnection
-            ? new Date(newData.plannedDateConnection)
-            : null,
-           } : p));
-        });
-  
-        queryClient.setQueryData<RetailResponse>(["retail", dealId], (oldProject) => {
+          return oldProjects.map((p) =>
+            p.id === dealId
+              ? {
+                  ...p,
+                  ...newData,
+                  direction: newData.direction as DirectionRetail,
+                  projectStatus: newData.projectStatus as StatusRetail,
+                  deliveryType: newData.deliveryType as DeliveryRetail,
+                  plannedDateConnection: newData.plannedDateConnection
+                    ? new Date(newData.plannedDateConnection)
+                    : null,
+                }
+              : p
+          );
+        }
+      );
+
+      queryClient.setQueryData<RetailResponse>(
+        ["retail", dealId],
+        (oldProject) => {
           if (!oldProject) return oldProject;
-          
+
           return {
             ...oldProject,
             ...newData,
@@ -388,109 +496,123 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
             projectStatus: newData.projectStatus as StatusRetail,
             deliveryType: newData.deliveryType as DeliveryRetail,
             plannedDateConnection: newData.plannedDateConnection
-            ? new Date(newData.plannedDateConnection)
-            : null,
+              ? new Date(newData.plannedDateConnection)
+              : null,
           };
-        });
-  
-        return { previousDeals, previousDeal };
-      },
-      onError: (_error, _newData, context) => {
-        if (context?.previousDeal) {
-          queryClient.setQueryData(["retail", dealId], context.previousDeal);
         }
-        if (context?.previousDeals) {
-          queryClient.setQueryData(["retails", authUser?.id], context.previousDeals);
-        }
-      },
-  
-      // ✅ Если успех — обновляем кэш без лишнего запроса
-      onSuccess: (updatedDeal) => {
-        close();
-  
-        queryClient.setQueryData(["retails", authUser?.id], (oldProjects: RetailResponse[] | undefined) =>
-          oldProjects ? oldProjects.map((p) => (p.id === dealId ? updatedDeal : p)) : oldProjects
+      );
+
+      return { previousDeals, previousDeal };
+    },
+    onError: (_error, _newData, context) => {
+      if (context?.previousDeal) {
+        queryClient.setQueryData(["retail", dealId], context.previousDeal);
+      }
+      if (context?.previousDeals) {
+        queryClient.setQueryData(
+          ["retails", authUser?.id],
+          context.previousDeals
         );
-  
-        queryClient.setQueryData(["retail", dealId], updatedDeal);
-  
-        // 👇 Если серверные данные могли измениться, сбрасываем кэш
-        queryClient.invalidateQueries({ queryKey: ["retails", authUser?.id], exact: true });
-        queryClient.invalidateQueries({ queryKey: ["retail", dealId], exact: true });
-      },
-    });
-}
+      }
+    },
 
+    // ✅ Если успех — обновляем кэш без лишнего запроса
+    onSuccess: (updatedDeal) => {
+      close();
 
-export const useCreateProject = (form:UseFormReturn<ProjectSchema>) => {
-   const queryClient = useQueryClient();
-  
-    const { authUser } = useStoreUser();
-  
-    return useMutation({
-      mutationFn: (data: ProjectSchema) => {
-        if (!authUser?.id) {
-          throw new Error("User ID is missing");
-        }
+      queryClient.setQueryData(
+        ["retails", authUser?.id],
+        (oldProjects: RetailResponse[] | undefined) =>
+          oldProjects
+            ? oldProjects.map((p) => (p.id === dealId ? updatedDeal : p))
+            : oldProjects
+      );
 
-        return createProject({
-          ...data,
-          email: data.email || "",
-          phone: data.phone || "",
-          additionalContact: data.additionalContact || "",
-          userId: authUser.id,
-          deliveryType:
-            data.deliveryType === "" ? null : data.deliveryType as DeliveryProject,
-          dateRequest: new Date(),
-          projectStatus: data.projectStatus as StatusProject,
-          plannedDateConnection: data.plannedDateConnection
-            ? new Date(data.plannedDateConnection)
-            : null,
-          direction: data.direction as DirectionProject,
-          amountCP: data.amountCP
-            ? parseFloat(
-                data.amountCP.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0", // Преобразуем в строку
-          amountPurchase: data.amountPurchase
-            ? parseFloat(
-                data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          amountWork: data.amountWork
-            ? parseFloat(
-                data.amountWork.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          delta: data.delta
-            ? parseFloat(
-                data.delta.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0", // Преобразуем в строку
-        });
-      },
-      
-      onSuccess: (data) => {
-        if (data) {
-          // setOpen(false);
-          form.reset();
-  
-          queryClient.invalidateQueries({
-            queryKey: ["projects", authUser?.id],
-            exact: true,
-          });
-        }
-      },
-    });
-}
+      queryClient.setQueryData(["retail", dealId], updatedDeal);
 
+      // 👇 Если серверные данные могли измениться, сбрасываем кэш
+      queryClient.invalidateQueries({
+        queryKey: ["retails", authUser?.id],
+        exact: true,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["retail", dealId],
+        exact: true,
+      });
+    },
+  });
+};
 
-export const useCreateRetail = (form:UseFormReturn<RetailSchema>) => {
+export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
   const queryClient = useQueryClient();
-  
+
   const { authUser } = useStoreUser();
 
-  return  useMutation({
+  return useMutation({
+    mutationFn: (data: ProjectSchema) => {
+      if (!authUser?.id) {
+        throw new Error("User ID is missing");
+      }
+
+      return createProject({
+        ...data,
+        email: data.email || "",
+        phone: data.phone || "",
+        additionalContact: data.additionalContact || "",
+        userId: authUser.id,
+        deliveryType:
+          data.deliveryType === ""
+            ? null
+            : (data.deliveryType as DeliveryProject),
+        dateRequest: new Date(),
+        projectStatus: data.projectStatus as StatusProject,
+        plannedDateConnection: data.plannedDateConnection
+          ? new Date(data.plannedDateConnection)
+          : null,
+        direction: data.direction as DirectionProject,
+        amountCP: data.amountCP
+          ? parseFloat(
+              data.amountCP.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0", // Преобразуем в строку
+        amountPurchase: data.amountPurchase
+          ? parseFloat(
+              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        amountWork: data.amountWork
+          ? parseFloat(
+              data.amountWork.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        delta: data.delta
+          ? parseFloat(
+              data.delta.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0", // Преобразуем в строку
+      });
+    },
+
+    onSuccess: (data) => {
+      if (data) {
+        // setOpen(false);
+        form.reset();
+
+        queryClient.invalidateQueries({
+          queryKey: ["projects", authUser?.id],
+          exact: true,
+        });
+      }
+    },
+  });
+};
+
+export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
+  const queryClient = useQueryClient();
+
+  const { authUser } = useStoreUser();
+
+  return useMutation({
     mutationFn: (data: RetailSchema) => {
       if (!authUser?.id) {
         throw new Error("User ID is missing");
@@ -502,7 +624,10 @@ export const useCreateRetail = (form:UseFormReturn<RetailSchema>) => {
         phone: data.phone || "",
         additionalContact: data.additionalContact || "",
         userId: authUser.id,
-        deliveryType: data.deliveryType === "" ? null : data.deliveryType as DeliveryRetail,
+        deliveryType:
+          data.deliveryType === ""
+            ? null
+            : (data.deliveryType as DeliveryRetail),
         dateRequest: new Date(),
         projectStatus: data.projectStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
@@ -539,5 +664,4 @@ export const useCreateRetail = (form:UseFormReturn<RetailSchema>) => {
       }
     },
   });
-
-}
+};

@@ -36,12 +36,12 @@ const DialogForm = ({
         <span className="whitespace-nowrap">{textTrigger}</span>
       </DialogTrigger>
       <DialogContent>
-        <DialogClose className="absolute top-3 right-3 hover:bg-muted hover:rounded-full p-[2px]">
+        <DialogClose className="absolute right-3 top-3 p-[2px] hover:rounded-full hover:bg-muted">
           <X />
         </DialogClose>
         <DialogDescription className="sr-only">{title}</DialogDescription>
         <DialogHeader>
-          <DialogTitle className="text-sm uppercase text-center border-none">
+          <DialogTitle className="border-none text-center text-sm uppercase">
             {title}
           </DialogTitle>
         </DialogHeader>

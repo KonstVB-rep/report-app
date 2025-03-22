@@ -1,11 +1,11 @@
-import React from 'react'
+import React from "react";
 
 const loading = () => {
   return (
-    <div className="p-4 grid place-items-center h-full relative min-h-screen">
+    <div className="relative grid h-full min-h-screen place-items-center p-4">
       <span className="loader"></span>
     </div>
-  )
-}
+  );
+};
 
-export default loading
+export default loading;

@@ -1,4 +1,3 @@
-
 import { DealType } from "@prisma/client";
 
 import React from "react";
@@ -8,7 +7,7 @@ import AddNewDeal from "./Modals/AddNewDeal";
 import SummaryTableLink from "./SummaryTableLink";
 
 const ButtonsGroupTable = () => {
-  const {dealType} = useParams()
+  const { dealType } = useParams();
   return (
     <div className="flex items-end justify-between">
       <AddNewDeal type={dealType as string} />

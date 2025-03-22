@@ -3,7 +3,6 @@ import React from "react";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-
 const InputEmail = (props: InputProps) => {
   return (
     <Input

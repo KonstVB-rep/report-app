@@ -55,26 +55,23 @@ const UserCreateForm = ({
     onSuccess: () => {
       setOpen(false);
       queryClient.invalidateQueries({
-        queryKey: ["depsWithEmp"],
-        exact: true,
+        queryKey: ["depsWithUsers"],
       });
     },
   });
+
   const form = useForm<userSchema>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      user_password: "",
-      position: "",
+      username: "sssss",
+      email: "ssss@errr.ru",
+      user_password: "1234567",
+      position: "sdcsdcsdcsdcs",
       department: undefined,
       role: undefined,
       permissions: [],
     },
   });
-
-  console.log(form.formState.errors, "ffffffffffffform");
-  console.log(OPTIONS);
 
   const onSubmit = (data: userSchema) => {
     TOAST.PROMISE(
@@ -96,9 +93,9 @@ const UserCreateForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-8 max-h-[85vh] overflow-y-auto p-1"
+        className="flex max-h-[85vh] flex-col gap-8 overflow-y-auto p-1"
       >
-        <div>
+        <div className="grid gap-2">
           <FormField
             control={form.control}
             name="username"
@@ -111,7 +108,7 @@ const UserCreateForm = ({
                     {...field}
                     minLength={3}
                     maxLength={50}
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     required
                   />
                 </FormControl>
@@ -134,7 +131,7 @@ const UserCreateForm = ({
                     placeholder="Введите email пользователя"
                     {...field}
                     type="email"
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     required
                   />
                 </FormControl>
@@ -203,7 +200,7 @@ const UserCreateForm = ({
                     {...field}
                     minLength={3}
                     maxLength={30}
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     required
                   />
                 </FormControl>
@@ -279,13 +276,6 @@ const UserCreateForm = ({
               <FormItem>
                 <FormLabel>Разрешения/Права</FormLabel>
                 <FormControl>
-                  {/* <SelectComponent
-                    placeholder="Выберите права"
-                    options={Object.entries(PermissionsUser)}
-                    classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
-                    {...field}
-                    required
-                  /> */}
                   <MultiSelectComponent
                     options={OPTIONS}
                     placeholder="Установите разрешения"

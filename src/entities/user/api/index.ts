@@ -13,9 +13,9 @@ import {
   UserResponse,
   UserWithdepartmentName,
 } from "../types";
-import { DepartmentEnum, Role, User } from "@prisma/client";
+import { DepartmentEnum, PermissionEnum, Role, User } from "@prisma/client";
 import prisma from "@/prisma/prisma-client";
-import { PrismaPermissionsMap } from "../model/objectTypes";
+// import { PermissionEnum } from "../model/objectTypes";
 
 type RequiredFields = keyof UserRequest;
 const requiredFields: RequiredFields[] = [
@@ -71,7 +71,7 @@ export const checkFormData = async (
 
 //     const { user } = dataAuthUser!;
 //     if (user)
-//       await checkUserPermissionByRole(user, [PrismaPermissionsMap.USER_MANAGEMENT]);
+//       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
 
 //     const existingUser: User | null = await findUserByEmail(
 //       userData.email as string
@@ -159,7 +159,6 @@ export const checkFormData = async (
 //   }
 // };
 
-
 // export const generatePermission =async () => {
 //   await prisma.permission.createMany({
 //     data: [
@@ -171,14 +170,19 @@ export const checkFormData = async (
 //   });
 // }
 
-export const createUser = async (dataUser: UserRequest): Promise<UserResponse | undefined> => {
+export const createUser = async (
+  dataUser: UserRequest
+): Promise<UserResponse | undefined> => {
   try {
-    const { department, permissions, ...userData } = await checkFormData(dataUser, requiredFields);
+    const { department, permissions, ...userData } = await checkFormData(
+      dataUser,
+      requiredFields
+    );
     const dataAuthUser = await handleAuthorization();
     const { user } = dataAuthUser!;
 
     if (user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.USER_MANAGEMENT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
     }
 
     const existingUser = await findUserByEmail(userData.email as string);
@@ -186,10 +190,16 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
       throw new Error("Пользователь с таким email уже существует");
     }
 
-    const hashedPassword = await bcrypt.hash(userData.user_password!.trim(), 10);
-    const departmentTarget = await prisma.department.findUnique({ where: { name: department as DepartmentEnum } });
+    const hashedPassword = await bcrypt.hash(
+      userData.user_password!.trim(),
+      10
+    );
+    const departmentTarget = await prisma.department.findUnique({
+      where: { name: department as DepartmentEnum },
+    });
 
-    if (!departmentTarget) throw new Error(`Департамент ${department} не найден`);
+    if (!departmentTarget)
+      throw new Error(`Департамент ${department} не найден`);
 
     // Создание пользователя
     const newUser = await prisma.user.create({
@@ -201,8 +211,38 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
         position: userData.position!.toLowerCase().trim(),
         user_password: hashedPassword,
       },
-      select: { id: true, username: true, email: true, role: true, departmentId: true, position: true, phone: true },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        departmentId: true,
+        position: true,
+        phone: true,
+      },
     });
+
+    if (userData.role === Role.DIRECTOR) {
+      const existingDirector = await prisma.department.findUnique({
+        where: { id: departmentTarget.id },
+        select: { directorId: true },
+      });
+
+      if (existingDirector?.directorId) {
+        console.warn(
+          `Внимание: Департамент ${departmentTarget.name} уже имеет руководителя.`
+        );
+        return handleError(
+          `Департамент ${departmentTarget.name} уже имеет руководителя.`
+        );
+      }
+
+      // Обновляем департамент, чтобы назначить нового директора
+      await prisma.department.update({
+        where: { id: departmentTarget.id },
+        data: { directorId: newUser.id },
+      });
+    }
 
     // Добавление разрешений пользователю
     if (permissions && permissions.length > 0) {
@@ -211,7 +251,7 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
         select: { id: true, name: true },
       });
 
-      const userPermissions = permissionRecords.map(permission => ({
+      const userPermissions = permissionRecords.map((permission) => ({
         userId: newUser.id,
         permissionId: permission.id,
       }));
@@ -224,7 +264,9 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
     return newUser;
   } catch (error) {
     console.error(error);
-    handleError(typeof error === "string" ? error : "Ошибка при создании пользователя");
+    handleError(
+      typeof error === "string" ? error : "Ошибка при создании пользователя"
+    );
   }
 };
 
@@ -240,7 +282,7 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
 //     const { user } = await handleAuthorization();
 
 //     if (user)
-//       await checkUserPermissionByRole(user, [PrismaPermissionsMap
+//       await checkUserPermissionByRole(user, [PermissionEnum
 // .USER_MANAGEMENT]);
 
 //     const person = await prisma.user.findUnique({
@@ -312,23 +354,30 @@ export const createUser = async (dataUser: UserRequest): Promise<UserResponse | 
 //   }
 // };
 
-
-export const updateUser = async (dataUser: UserRequest): Promise<UserResponse | undefined> => {
+export const updateUser = async (
+  dataUser: UserRequest
+): Promise<UserResponse | undefined> => {
   try {
-    const { department, user_password, permissions, ...userData } = await checkFormData(dataUser, requiredFieldsForEditForm);
+    const { department, user_password, permissions, ...userData } =
+      await checkFormData(dataUser, requiredFieldsForEditForm);
     const { user } = await handleAuthorization();
 
     if (user) {
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap.USER_MANAGEMENT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
     }
 
-    const person = await prisma.user.findUnique({ where: { email: userData.email as string } });
+    const person = await prisma.user.findUnique({
+      where: { email: userData.email as string },
+    });
     if (!person) return handleError("Пользователь не найден");
 
     let departmentId = person.departmentId;
     if (department) {
-      const newDepartment = await prisma.department.findUnique({ where: { name: department as DepartmentEnum } });
-      if (!newDepartment) return handleError(`Департамент ${department} не найден`);
+      const newDepartment = await prisma.department.findUnique({
+        where: { name: department as DepartmentEnum },
+      });
+      if (!newDepartment)
+        return handleError(`Департамент ${department} не найден`);
       departmentId = newDepartment.id;
     }
 
@@ -347,7 +396,15 @@ export const updateUser = async (dataUser: UserRequest): Promise<UserResponse | 
         username: updatedData.username!.toLowerCase().trim(),
         position: updatedData.position!.toLowerCase().trim(),
       },
-      select: { id: true, username: true, email: true, role: true, departmentId: true, position: true, phone: true },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        departmentId: true,
+        position: true,
+        phone: true,
+      },
     });
 
     // Обновляем права пользователя
@@ -363,7 +420,7 @@ export const updateUser = async (dataUser: UserRequest): Promise<UserResponse | 
           select: { id: true, name: true },
         });
 
-        const userPermissions = permissionRecords.map(permission => ({
+        const userPermissions = permissionRecords.map((permission) => ({
           userId: updatedUser.id,
           permissionId: permission.id,
         }));
@@ -380,8 +437,6 @@ export const updateUser = async (dataUser: UserRequest): Promise<UserResponse | 
     return handleError((error as Error).message);
   }
 };
-
-
 
 export const getUser = async (
   targetUserId: string
@@ -423,11 +478,13 @@ export const getUser = async (
       targetUser.lastlogin = lastSession?.loginAt;
     }
 
-    const userPermissions = targetUser.permissions.map((p) => p.permission.name);
+    const userPermissions = targetUser.permissions.map(
+      (p) => p.permission.name
+    );
     const userWithDepartmentNameWithPermissions = {
       ...targetUser,
       departmentName: targetUser!.department?.name || null,
-      permissions: userPermissions, 
+      permissions: userPermissions,
     };
 
     return userWithDepartmentNameWithPermissions;
@@ -487,8 +544,7 @@ export const deleteUser = async (
     const { user } = await handleAuthorization();
 
     if (user)
-      await checkUserPermissionByRole(user, [PrismaPermissionsMap
-.USER_MANAGEMENT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
 
     const person = await prisma.user.findUnique({
       where: { id: deletedUserId },
@@ -508,8 +564,6 @@ export const deleteUser = async (
     };
   }
 };
-
-
 
 export const getAllUsersByDepartment = async (
   id: number
@@ -538,7 +592,6 @@ export const getAllUsersByDepartment = async (
 export const getAllUsersFromFilter = async (
   id: number
 ): Promise<Record<string, string> | null> => {
-
   try {
     const data = await handleAuthorization();
     const { user } = data!;
@@ -548,7 +601,7 @@ export const getAllUsersFromFilter = async (
       return handleError("Пользователь не найден");
     }
 
-    await checkUserPermissionByRole(user, [PrismaPermissionsMap.VIEW_UNION_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_UNION_REPORT]);
 
     const users = await prisma.user.findMany({
       where: { departmentId: Number(id) },
@@ -557,10 +610,13 @@ export const getAllUsersFromFilter = async (
         username: true,
       },
     });
-    const transformUsers = users.reduce((acc, user) => {
-      acc[user.id] = user.username; 
-      return acc;
-    }, {} as Record<string, string>);
+    const transformUsers = users.reduce(
+      (acc, user) => {
+        acc[user.id] = user.username;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
     return transformUsers;
   } catch (error) {
     console.error(error);

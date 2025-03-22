@@ -1,14 +1,15 @@
 "use client";
 
 import DialogEditUser from "@/entities/user/ui/DialogEditUser";
-import Protected from "@/feature/Protected";
-import { PrismaPermissionsMap } from "../model/objectTypes";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+
+import { PermissionEnum } from "@prisma/client";
 
 const PersonEdit = () => {
   return (
-    <Protected permissionOptional={[PrismaPermissionsMap.USER_MANAGEMENT]}>
+    <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
       <DialogEditUser />
-    </Protected>
+    </ProtectedByPermissions>
   );
 };
 

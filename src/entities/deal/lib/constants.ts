@@ -36,12 +36,10 @@ export enum DeliveryRetail {
   WORK = "Работы",
 }
 
-
 export enum DealType {
   PROJECT = "Проект",
   RETAIL = "Розница",
 }
-
 
 export enum StatusProject {
   INVOICE_ISSUED = "Выставлен счет",
@@ -149,7 +147,6 @@ export const DealTypeLabels: Record<keyof typeof DealType, string> = {
   RETAIL: "Розница",
 } as const;
 
-
 export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
   APPROVAL: "На согласовании",
@@ -176,13 +173,12 @@ export const EquipmentTypeLabels: Record<
   ARROW: "Стрела шлагбаума",
 } as const;
 
-
 export const LABELS = {
   RETAIL: {
     DIRECTION: DirectionRetailLabels,
     DELIVERY: DeliveryRetailLabels,
     STATUS: StatusRetailLabels,
-    },
+  },
   PROJECT: {
     DIRECTION: DirectionProjectLabels,
     DELIVERY: DeliveryProjectLabels,

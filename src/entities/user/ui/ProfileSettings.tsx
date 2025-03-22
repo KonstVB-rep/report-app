@@ -23,17 +23,14 @@ export function ProfileSettings({ user }: Props) {
   return (
     <HoverCardComponent
       title={
-        <span className="flex gap-2 capitalize w-full items-center">
+        <span className="flex w-full items-center gap-2 capitalize">
           <EllipsisVertical className="mr-2 h-4 w-4" />
           {user.username.split(" ").join(" ")}
         </span>
       }
     >
       <PersonEdit />
-      <Link
-        href={`/dashboard/profile/${user.id}`}
-        className="btn_hover text-sm"
-      >
+      <Link href={`/profile/${user.id}`} className="btn_hover text-sm">
         <UserRound size="16" /> <span>Профиль</span>
       </Link>
     </HoverCardComponent>

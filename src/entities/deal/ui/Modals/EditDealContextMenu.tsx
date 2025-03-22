@@ -16,7 +16,7 @@ const EditDealContextMenu = ({
     case DealType.PROJECT:
       return <EditProject close={close} id={id} />;
     case DealType.RETAIL:
-      return <EditRetail close={close} id={id}/>;
+      return <EditRetail close={close} id={id} />;
     default:
       return null;
   }

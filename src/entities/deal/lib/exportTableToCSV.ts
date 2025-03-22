@@ -25,7 +25,7 @@ export function exportTableToCSV<TData>(
      * @default false
      */
     onlySelected?: boolean;
-  } = {},
+  } = {}
 ): void {
   const {
     filename = "table",
@@ -36,9 +36,8 @@ export function exportTableToCSV<TData>(
   // Retrieve headers (column names)
   const headers = table
     .getAllLeafColumns()
-    .map((column) => column.columnDef.header as string)
-    // .filter((id) => !excludeColumns.includes(id));
-
+    .map((column) => column.columnDef.header as string);
+  // .filter((id) => !excludeColumns.includes(id));
 
   // Build CSV content
   const csvContent = [
@@ -55,7 +54,7 @@ export function exportTableToCSV<TData>(
             ? `"${cellValue.replace(/"/g, '""')}"`
             : cellValue;
         })
-        .join(","),
+        .join(",")
     ),
   ].join("\n");
   console.log(table.getFilteredSelectedRowModel().rows, "csvContent1");

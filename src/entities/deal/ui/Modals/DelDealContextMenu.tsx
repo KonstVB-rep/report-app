@@ -28,11 +28,11 @@ const DelDealContextMenu = ({
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>Удалить проект</DialogTitle>
-        <DialogDescription/>
+        <DialogDescription />
       </DialogHeader>
       <div className="grid gap-4 py-4">
         <p>Вы точно уверены что хотите удалить сделку</p>
-        <p className="font-bold text-xl text-center py-2 px-4 bg-muted rounded-xl">
+        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
           &quot;{deal?.nameObject}&quot;?
         </p>
         <p>Его нельзя будет восстановить!</p>

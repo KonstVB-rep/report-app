@@ -1,11 +1,6 @@
 "use client";
 import React from "react";
-import {
-  FieldValues,
-  Path,
-  PathValue,
-  UseFormReturn,
-} from "react-hook-form";
+import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -41,30 +36,25 @@ const RetailFormBody = <T extends FieldValues>({
   onSubmit,
   isPending,
 }: RetailFormBodyProps<T>) => {
-
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid gap-10 max-h-[85vh] overflow-y-auto"
+        className="grid max-h-[85vh] gap-10 overflow-y-auto"
       >
-        <div className="uppercase font-semibold text-center">
+        <div className="text-center font-semibold uppercase">
           Форма добавления розничной сделки
         </div>
-        <div className="grid sm:grid-cols-2 gap-2 p-1">
+        <div className="grid gap-2 p-1 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
-          <FormField
+            <FormField
               control={form.control}
               name={"nameDeal" as Path<T>}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Название сделки</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Название..."
-                      required
-                      {...field}
-                    />
+                    <Input placeholder="Название..." required {...field} />
                   </FormControl>
                   {form.formState.errors.nameDeal?.message && (
                     <FormMessage className="text-red-500">
@@ -81,11 +71,7 @@ const RetailFormBody = <T extends FieldValues>({
                 <FormItem>
                   <FormLabel>Название объекта/Город</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Название..."
-                      required
-                      {...field}
-                    />
+                    <Input placeholder="Название..." required {...field} />
                   </FormControl>
                   {form.formState.errors.nameObject?.message && (
                     <FormMessage className="text-red-500">
@@ -341,7 +327,7 @@ const RetailFormBody = <T extends FieldValues>({
         <SubmitFormButton
           title="Сохранить"
           isPending={isPending}
-          className="w-max ml-auto"
+          className="ml-auto w-max"
         />
       </form>
     </Form>

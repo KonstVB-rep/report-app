@@ -1,6 +1,12 @@
-
 import { z } from "zod";
-import { DirectionProject, DeliveryProject, StatusProject, DirectionRetail, DeliveryRetail, StatusRetail } from "@prisma/client";
+import {
+  DirectionProject,
+  DeliveryProject,
+  StatusProject,
+  DirectionRetail,
+  DeliveryRetail,
+  StatusRetail,
+} from "@prisma/client";
 
 export const ProjectFormSchema = z.object({
   nameDeal: z.string({
@@ -63,8 +69,8 @@ export const RetailFormSchema = z.object({
     }
   ),
   deliveryType: z
-  .enum(Object.values(DeliveryRetail) as [string, ...string[]])
-  .optional(),
+    .enum(Object.values(DeliveryRetail) as [string, ...string[]])
+    .optional(),
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")),
@@ -73,12 +79,9 @@ export const RetailFormSchema = z.object({
   amountCP: z.string().optional(),
   delta: z.string().optional(),
 
-  projectStatus: z.enum(
-    Object.values(StatusRetail) as [string, ...string[]],
-    {
-      message: "Выберите статус проекта",
-    }
-  ),
+  projectStatus: z.enum(Object.values(StatusRetail) as [string, ...string[]], {
+    message: "Выберите статус проекта",
+  }),
   comments: z.string(),
   plannedDateConnection: z.preprocess(
     (val) => (val instanceof Date ? val.toISOString() : val || ""),

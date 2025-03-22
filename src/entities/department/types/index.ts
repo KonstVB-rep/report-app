@@ -1,4 +1,3 @@
-
 import { UserResponse } from "@/entities/user/types";
 import type { DepartmentEnum } from "@prisma/client";
 import { ReactNode } from "react";
@@ -11,14 +10,13 @@ export type DepartmentInfo = {
   users: UserResponse[];
 };
 
-
-export type DepartmentUserItem ={
-    id: string;
-    departmentId: number;
-    username: string;
-    position: string;
-    url: string;
-}
+export type DepartmentUserItem = {
+  id: string;
+  departmentId: number;
+  username: string;
+  position: string;
+  url: string;
+};
 
 export type DepartmentListType = {
   id: number;
@@ -28,4 +26,3 @@ export type DepartmentListType = {
   directorId: string;
   items: DepartmentUserItem[];
 };
-

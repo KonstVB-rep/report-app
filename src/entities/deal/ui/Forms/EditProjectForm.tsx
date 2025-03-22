@@ -20,7 +20,6 @@ const EditProjectForm = ({
   close: Dispatch<SetStateAction<void>>;
   dealId: string;
 }) => {
- 
   const { data, isPending: isLoading } = useGetProjectById(dealId);
 
   const form = useForm<ProjectSchema>({
@@ -29,7 +28,10 @@ const EditProjectForm = ({
       nameDeal: data?.nameDeal || "",
       nameObject: data?.nameObject || "",
       direction: data?.direction ? String(data.direction) : "",
-      deliveryType: data?.deliveryType === null ? undefined : (data?.deliveryType as DeliveryProject),
+      deliveryType:
+        data?.deliveryType === null
+          ? undefined
+          : (data?.deliveryType as DeliveryProject),
       projectStatus: data?.projectStatus ? String(data.projectStatus) : "",
       contact: data?.contact || "",
       phone: data?.phone || "",
@@ -45,7 +47,6 @@ const EditProjectForm = ({
   });
 
   const { mutate, isPending } = useMutationUpdateProject(dealId, close);
-
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(
@@ -67,7 +68,7 @@ const EditProjectForm = ({
     if (data) {
       form.reset({
         ...data,
-        deliveryType: data.deliveryType as DeliveryProject || undefined,
+        deliveryType: (data.deliveryType as DeliveryProject) || undefined,
         projectStatus: data.projectStatus as StatusProject,
         direction: data.direction as DirectionProject,
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
