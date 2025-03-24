@@ -1,5 +1,5 @@
 "use client";
-import { useGetRetailsUser } from "@/entities/deal/hooks";
+import { useGetRetailsUser } from "@/entities/deal/hooks/query";
 import { RetailResponse } from "@/entities/deal/types";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataRetail } from "../[userId]/model/columns-data-retail";

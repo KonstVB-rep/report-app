@@ -12,7 +12,7 @@ import { MoveUp, MoveDown, ArrowDownUp } from "lucide-react";
 import React, { ReactNode } from "react";
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import { useParams } from "next/navigation";
-import { useGetProjectsUser } from "@/entities/deal/hooks";
+import { useGetProjectsUser } from "@/entities/deal/hooks/query";
 import { PermissionEnum } from "@prisma/client";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 

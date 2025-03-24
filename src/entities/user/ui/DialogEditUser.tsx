@@ -4,7 +4,7 @@ import { UserPen } from "lucide-react";
 import dynamic from "next/dynamic"; // Динамический импорт
 import { useParams } from "next/navigation";
 import { UserWithdepartmentName } from "../types";
-import { useGetUserShortInfo } from "../hooks";
+import { useGetUserShortInfo } from "../hooks/query";
 
 const DialogForm = dynamic(() => import("./DialogForm"), { ssr: false });
 const UserEditForm = dynamic(() => import("./UserEditForm"), { ssr: false });

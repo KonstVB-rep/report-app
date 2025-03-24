@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
 import ProjectFormBody from "./ProjectFormBody";
-import { useCreateProject } from "../../hooks";
+import { useCreateProject } from "../../hooks/mutate";
 
 const ProjectForm = () => {
   const form = useForm<ProjectSchema>({

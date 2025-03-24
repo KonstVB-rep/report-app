@@ -8,7 +8,7 @@ import UserCard from "@/shared/ui/UserCard";
 import { PermissionEnum } from "@prisma/client";
 import { useParams } from "next/navigation";
 import React from "react";
-import { useGetUser } from "@/entities/user/hooks";
+import { useGetUser } from "@/entities/user/hooks/query";
 
 const ProfilePage = () => {
   const { userId } = useParams();

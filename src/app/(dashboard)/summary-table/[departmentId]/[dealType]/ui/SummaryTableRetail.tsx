@@ -7,7 +7,7 @@ import { RetailResponse } from "@/entities/deal/types";
 import DataTable from "@/shared/ui/Table/DataTable";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
-import { useGetAllRetails } from "@/entities/deal/hooks";
+import { useGetAllRetails } from "@/entities/deal/hooks/query";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 
 const SummaryTableRetail = ({ userId }: { userId: string }) => {

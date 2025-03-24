@@ -1,7 +1,7 @@
 import { useParams } from "next/navigation";
 import React from "react";
 import DealsSkeleton from "./DealsSkeleton";
-import { useGetUser } from "@/entities/user/hooks";
+import { useGetUser } from "@/entities/user/hooks/query";
 
 const DealTableTemplate = ({
   children,

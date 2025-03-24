@@ -9,41 +9,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useMutation } from "@tanstack/react-query";
 import { Trash } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { deleteUser } from "../api";
-import { TOAST } from "./Toast";
-import { getQueryClient } from "@/app/provider/query-provider";
-import { useGetUser } from "../hooks";
+import { useParams } from "next/navigation";
+import { useGetUser } from "../hooks/query";
+import { useDeleteUser } from "../hooks/mutate";
 
 const DialogDeleteUser = () => {
   const params = useParams();
   const userId = String(params.userId);
-  const router = useRouter();
 
   const { data } = useGetUser(userId);
-  const queryClient = getQueryClient();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: () => deleteUser(userId),
-    onSuccess: () => {
-      router.push("/");
-      if (userId) {
-        queryClient.invalidateQueries({
-          queryKey: ["user", userId],
-          exact: true,
-        });
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-        exact: true,
-      });
-    },
-    onError: (error) => {
-      TOAST.ERROR((error as Error).message);
-    },
-  });
+  const { mutate, isPending } = useDeleteUser(userId)
 
   return (
     <Dialog>

@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { RetailFormSchema, RetailSchema } from "../../model/schema";
-import { useGetRetailById, useMutationUpdateRetail } from "../../hooks";
+import { useGetRetailById } from "../../hooks/query";
 import { formatterCurrency } from "@/shared/lib/utils";
 import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
 import RetailFormBody from "./RetailFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
+import { useMutationUpdateRetail } from "../../hooks/mutate";
 
 const EditRetailForm = ({
   close,

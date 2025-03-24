@@ -6,7 +6,7 @@ import { ProjectResponse } from "@/entities/deal/types";
 import DataTable from "@/shared/ui/Table/DataTable";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
-import { useGetAllProjects } from "@/entities/deal/hooks";
+import { useGetAllProjects } from "@/entities/deal/hooks/query";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 
 const SummaryTableProject = ({ userId }: { userId: string }) => {

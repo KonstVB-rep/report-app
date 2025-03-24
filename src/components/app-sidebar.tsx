@@ -68,12 +68,12 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" variant="outline" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
                   <Image
                     src="/logo.png"
                     alt="logo"
-                    width={20}
-                    height={20}
+                    width={16}
+                    height={16}
                     className="dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)] drop-shadow-[0_0px_8px_rgba(255,255,255,1)]"
                   />
                 </div>

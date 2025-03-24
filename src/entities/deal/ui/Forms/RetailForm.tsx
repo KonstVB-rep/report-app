@@ -7,7 +7,7 @@ import { TOAST } from "@/entities/user/ui/Toast";
 import { RetailFormSchema, RetailSchema } from "../../model/schema";
 
 import RetailFormBody from "./RetailFormBody";
-import { useCreateRetail } from "../../hooks";
+import { useCreateRetail } from "../../hooks/mutate";
 
 const RetailForm = () => {
   const form = useForm<RetailSchema>({

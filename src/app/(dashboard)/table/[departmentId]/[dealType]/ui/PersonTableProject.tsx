@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetProjectsUser } from "@/entities/deal/hooks";
+import { useGetProjectsUser } from "@/entities/deal/hooks/query";
 import { ProjectResponse } from "@/entities/deal/types";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataProject } from "../[userId]/model/columns-data-project";

@@ -4,15 +4,15 @@ import HoverCardComponent from "@/shared/ui/HoverCard";
 import SummaryTableLink from "./SummaryTableLink";
 import LinkToUserTable from "./LinkToUserTable";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
-import { useGetUser } from "@/entities/user/hooks";
+import { useGetUser } from "@/entities/user/hooks/query";
 import { useParams } from "next/navigation";
 
 const ButtonsGroupTable = () => {
-   const { userId } = useParams();
-  
+  const { userId } = useParams();
+
   const { data: user } = useGetUser(userId as string);
 
-  if(!user) return null
+  if (!user) return null;
 
   return (
     <div className="flex items-center justify-between gap-2">

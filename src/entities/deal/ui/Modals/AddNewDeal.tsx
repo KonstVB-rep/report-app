@@ -227,13 +227,13 @@ const AddNewDeal = ({ type }: AddNewDealProps) => {
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <TooltipComponent content={contentType[type].title}>
+      <TooltipComponent content={contentType[type].title}>
+        <DialogTrigger asChild>
           <Button variant="outline">
             <Plus />
           </Button>
-        </TooltipComponent>
-      </DialogTrigger>
+        </DialogTrigger>
+      </TooltipComponent>
       <DialogContent className="sm:max-w-[825px]" showX={true}>
         <DialogHeader>
           <DialogTitle />

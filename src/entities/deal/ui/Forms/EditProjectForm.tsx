@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
-import { useGetProjectById, useMutationUpdateProject } from "../../hooks";
+import { useGetProjectById } from "../../hooks/query";
 import { formatterCurrency } from "@/shared/lib/utils";
 import {
   DeliveryProject,
@@ -12,6 +12,7 @@ import {
 } from "@prisma/client";
 import ProjectFormBody from "./ProjectFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
+import { useMutationUpdateProject } from "../../hooks/mutate";
 
 const EditProjectForm = ({
   close,

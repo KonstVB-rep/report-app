@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import React from "react";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import { useDelDeal, useGetDealById } from "@/entities/deal/hooks";
+import { useGetDealById } from "@/entities/deal/hooks/query";
 import { DealType } from "@prisma/client";
 import { Trash2 } from "lucide-react";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
+import { useDelDeal } from "../../hooks/mutate";
 
 const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const { data: deal } = useGetDealById(id, type);

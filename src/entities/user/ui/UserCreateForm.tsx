@@ -14,51 +14,25 @@ import React, { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import SelectComponent from "@/shared/ui/SelectComponent";
 import { DepartmentsTitle, RolesUser } from "../model/objectTypes";
-import { createUser } from "../api";
-import { useMutation } from "@tanstack/react-query";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import { TOAST } from "./Toast";
 import { userFormSchema, userSchema } from "../model/schema";
 import PhoneInput from "@/shared/ui/PhoneInput";
-import { getQueryClient } from "@/app/provider/query-provider";
 import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
 import {
   DepartmentTypeName,
   OPTIONS,
-  PermissionType,
-  RoleType,
-  UserRequest,
 } from "../types";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
+import { useCreateUser } from "../hooks/mutate";
 
 const UserCreateForm = ({
   setOpen,
 }: {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const queryClient = getQueryClient();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: userSchema) => {
-      const user: UserRequest = {
-        username: data.username,
-        email: data.email,
-        phone: data.phone,
-        position: data.position,
-        user_password: data.user_password,
-        department: data.department as DepartmentTypeName,
-        role: data.role as RoleType,
-        permissions: data.permissions as PermissionType[],
-      };
-      return createUser(user);
-    },
-    onSuccess: () => {
-      setOpen(false);
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-      });
-    },
-  });
+  const { mutate, isPending } = useCreateUser(setOpen)
 
   const form = useForm<userSchema>({
     resolver: zodResolver(userFormSchema),
