@@ -69,7 +69,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
         userId: authUser.id,
         deliveryType: data.deliveryType as DeliveryProject,
         dateRequest: new Date(),
-        projectStatus: data.projectStatus as StatusProject,
+        dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
           : null,
@@ -122,7 +122,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
                   ...p,
                   ...newData,
                   direction: newData.direction as DirectionProject,
-                  projectStatus: newData.projectStatus as StatusProject,
+                  dealStatus: newData.dealStatus as StatusProject,
                   deliveryType: newData.deliveryType as DeliveryProject,
                   plannedDateConnection: newData.plannedDateConnection
                     ? new Date(newData.plannedDateConnection)
@@ -142,7 +142,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
             ...oldProject,
             ...newData,
             direction: newData.direction as DirectionProject,
-            projectStatus: newData.projectStatus as StatusProject,
+            dealStatus: newData.dealStatus as StatusProject,
             deliveryType: newData.deliveryType as DeliveryProject,
             plannedDateConnection: newData.plannedDateConnection
               ? new Date(newData.plannedDateConnection)
@@ -212,7 +212,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
         userId: authUser.id,
         deliveryType: data.deliveryType as DeliveryRetail,
         dateRequest: new Date(),
-        projectStatus: data.projectStatus as StatusRetail,
+        dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
           : null,
@@ -253,7 +253,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
                   ...p,
                   ...newData,
                   direction: newData.direction as DirectionRetail,
-                  projectStatus: newData.projectStatus as StatusRetail,
+                  dealStatus: newData.dealStatus as StatusRetail,
                   deliveryType: newData.deliveryType as DeliveryRetail,
                   plannedDateConnection: newData.plannedDateConnection
                     ? new Date(newData.plannedDateConnection)
@@ -273,7 +273,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
             ...oldProject,
             ...newData,
             direction: newData.direction as DirectionRetail,
-            projectStatus: newData.projectStatus as StatusRetail,
+            dealStatus: newData.dealStatus as StatusRetail,
             deliveryType: newData.deliveryType as DeliveryRetail,
             plannedDateConnection: newData.plannedDateConnection
               ? new Date(newData.plannedDateConnection)
@@ -343,7 +343,7 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
             ? null
             : (data.deliveryType as DeliveryProject),
         dateRequest: new Date(),
-        projectStatus: data.projectStatus as StatusProject,
+        dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
           : null,
@@ -406,7 +406,7 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
             ? null
             : (data.deliveryType as DeliveryRetail),
         dateRequest: new Date(),
-        projectStatus: data.projectStatus as StatusRetail,
+        dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
           : null,

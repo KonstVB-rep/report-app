@@ -34,7 +34,7 @@ export const ProjectFormSchema = z.object({
   amountPurchase: z.string().optional(),
   delta: z.string().optional(),
 
-  projectStatus: z.enum(Object.values(StatusProject) as [string, ...string[]], {
+  dealStatus: z.enum(Object.values(StatusProject) as [string, ...string[]], {
     message: "Выберите статус проекта",
   }),
   comments: z.string(),
@@ -79,7 +79,7 @@ export const RetailFormSchema = z.object({
   amountCP: z.string().optional(),
   delta: z.string().optional(),
 
-  projectStatus: z.enum(Object.values(StatusRetail) as [string, ...string[]], {
+  dealStatus: z.enum(Object.values(StatusRetail) as [string, ...string[]], {
     message: "Выберите статус проекта",
   }),
   comments: z.string(),

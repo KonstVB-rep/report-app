@@ -201,8 +201,6 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     router.replace(`${pathname}?${queryParams.toString()}`);
   }, [columnFilters, columnVisibility, pathname, router, searchParams]);
 
-  console.log(openFilters, "openFilters");
-
   return (
     <div className="relative flex max-h-[80vh] w-full flex-col overflow-auto rounded-lg border bg-background p-2">
       <div className="flex items-center justify-between gap-2">
@@ -222,7 +220,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
               <Button
                 variant={"destructive"}
                 size={"icon"}
-                className="transition-transform duration-150 active:scale-95 w-[50px]"
+                className="w-[50px] transition-transform duration-150 active:scale-95"
                 onClick={() => {
                   setColumnFilters([]);
                   setColumnVisibility({});
@@ -268,7 +266,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
                 options={[
                   {
                     label: "Статус",
-                    columnId: "projectStatus",
+                    columnId: "dealStatus",
                     options: LABELS[type].STATUS,
                   },
                   {

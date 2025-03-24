@@ -6,6 +6,7 @@ import {
   DealTypeLabels,
   DeliveryRetailLabels,
   DirectionRetailLabels,
+  StatusRetailLabels,
 } from "../lib/constants";
 import NotFoundDeal from "./NotFoundDeal";
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
@@ -42,7 +43,7 @@ const RetailItemInfo = () => {
         <div>
           <div className="text-2xl first-letter:capitalize">
             <p>Статус</p>
-            <p>{deal.projectStatus}</p>
+            <p>{StatusRetailLabels[deal?.dealStatus as keyof typeof StatusRetailLabels] || "Нет данных"}</p>
           </div>
         </div>
       </div>

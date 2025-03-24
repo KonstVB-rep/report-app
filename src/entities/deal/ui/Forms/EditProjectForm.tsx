@@ -33,7 +33,7 @@ const EditProjectForm = ({
         data?.deliveryType === null
           ? undefined
           : (data?.deliveryType as DeliveryProject),
-      projectStatus: data?.projectStatus ? String(data.projectStatus) : "",
+      dealStatus: data?.dealStatus ? String(data.dealStatus) : "",
       contact: data?.contact || "",
       phone: data?.phone || "",
       email: data?.email || "",
@@ -70,7 +70,7 @@ const EditProjectForm = ({
       form.reset({
         ...data,
         deliveryType: (data.deliveryType as DeliveryProject) || undefined,
-        projectStatus: data.projectStatus as StatusProject,
+        dealStatus: data.dealStatus as StatusProject,
         direction: data.direction as DirectionProject,
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
         email: data.email ?? undefined, // Преобразуем null в undefined

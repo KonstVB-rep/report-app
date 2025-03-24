@@ -50,7 +50,7 @@
 //         userId: authUser.id,
 //         deliveryType: data.deliveryType as DeliveryProject,
 //         dateRequest: new Date(),
-//         projectStatus: data.projectStatus as StatusProject,
+//         dealStatus: data.dealStatus as StatusProject,
 //         plannedDateConnection: data.plannedDateConnection
 //           ? new Date(data.plannedDateConnection)
 //           : null,
@@ -108,7 +108,7 @@
 //       amountWork: "",
 //       amountPurchase: "",
 //       delta: "",
-//       projectStatus: "",
+//       dealStatus: "",
 //       comments: "",
 //       plannedDateConnection: undefined,
 //     },
@@ -128,7 +128,7 @@
 //       equipmentType: "",
 //       amountCP: "",
 //       delta: "",
-//       projectStatus: "",
+//       dealStatus: "",
 //       comments: "",
 //       plannedDateConnection: undefined,
 //     },

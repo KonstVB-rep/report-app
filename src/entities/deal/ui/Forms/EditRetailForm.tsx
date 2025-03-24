@@ -26,7 +26,7 @@ const EditRetailForm = ({
       nameObject: data?.nameObject || "",
       direction: data?.direction ? String(data.direction) : "",
       deliveryType: data?.deliveryType ? String(data.deliveryType) : "",
-      projectStatus: data?.projectStatus ? String(data.projectStatus) : "",
+      dealStatus: data?.dealStatus ? String(data.dealStatus) : "",
       contact: data?.contact || "",
       phone: data?.phone || "",
       email: data?.email || "",
@@ -61,7 +61,7 @@ const EditRetailForm = ({
       form.reset({
         ...data,
         deliveryType: data.deliveryType as DeliveryRetail,
-        projectStatus: data.projectStatus as StatusRetail,
+        dealStatus: data.dealStatus as StatusRetail,
         direction: data.direction as DirectionRetail,
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
         email: data.email ?? undefined, // Преобразуем null в undefined

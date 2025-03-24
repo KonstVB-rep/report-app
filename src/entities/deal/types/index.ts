@@ -32,7 +32,7 @@ export interface ProjectResponse {
   amountWork: string;
   amountPurchase: string;
   delta: string;
-  projectStatus: StatusProject;
+  dealStatus: StatusProject;
   comments: string;
   plannedDateConnection: Date | null;
   createdAt: Date;
@@ -55,7 +55,7 @@ export interface RetailResponse {
   additionalContact: string;
   amountCP: string;
   delta: string;
-  projectStatus: StatusRetail;
+  dealStatus: StatusRetail;
   comments: string;
   plannedDateConnection?: Date | null;
   createdAt: Date;

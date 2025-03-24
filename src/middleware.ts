@@ -85,5 +85,7 @@ async function redirectToLogin(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile/:path*", "/login", "/"],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+  ],
 };

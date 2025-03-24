@@ -227,7 +227,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     accessorFn: (row: ProjectResponse) => row.delta,
   },
   {
-    id: "projectStatus",
+    id: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofStatus;
@@ -245,7 +245,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       }
       return rowValue === value;
     },
-    accessorFn: (row: ProjectResponse) => row.projectStatus,
+    accessorFn: (row: ProjectResponse) => row.dealStatus,
   },
   {
     id: "comments",

@@ -24,7 +24,7 @@ const ProjectForm = () => {
       amountWork: "",
       amountPurchase: "",
       delta: "",
-      projectStatus: "",
+      dealStatus: "",
       comments: "sdasdasd",
       plannedDateConnection: undefined,
     },

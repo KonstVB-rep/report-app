@@ -23,7 +23,7 @@ const RetailForm = () => {
       additionalContact: "",
       amountCP: "",
       delta: "",
-      projectStatus: "",
+      dealStatus: "",
       comments: "",
       plannedDateConnection: undefined,
     },

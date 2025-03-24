@@ -179,8 +179,8 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorFn: (row: RetailResponse) => row.delta,
   },
   {
-    id: "projectStatus",
-    accessorKey: "projectStatus",
+    id: "dealStatus",
+    accessorKey: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<RetailResponse, unknown>) => {
       const value = info.getValue() as typeofStatus;
@@ -198,7 +198,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       }
       return rowValue === value;
     },
-    accessorFn: (row: RetailResponse) => row.projectStatus,
+    accessorFn: (row: RetailResponse) => row.dealStatus,
   },
   {
     id: "comments",

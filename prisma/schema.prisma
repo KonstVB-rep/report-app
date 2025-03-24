@@ -80,7 +80,7 @@ model Project {
   amountCP              Decimal          @db.Decimal(15, 2)
   amountPurchase        Decimal          @db.Decimal(15, 2)
   amountWork            Decimal          @db.Decimal(15, 2)
-  projectStatus         StatusProject
+  dealStatus            StatusProject
   files                 File[]
   user                  User             @relation(fields: [userId], references: [id])
 
@@ -102,7 +102,7 @@ model Retail {
   email                 String?
   amountCP              Decimal          @db.Decimal(15, 2)
   delta                 Decimal          @db.Decimal(15, 2)
-  projectStatus         StatusRetail
+  dealStatus            StatusRetail
   comments              String
   plannedDateConnection DateTime?
   createdAt             DateTime         @default(now())

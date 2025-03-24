@@ -255,7 +255,7 @@ const RetailFormBody = <T extends FieldValues>({
             />
             <FormField
               control={form.control}
-              name={"projectStatus" as Path<T>}
+              name={"dealStatus" as Path<T>}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Статус КП</FormLabel>
@@ -265,7 +265,7 @@ const RetailFormBody = <T extends FieldValues>({
                       options={transformObjValueToArr(StatusRetailLabels)}
                       onValueChange={(selected) =>
                         form.setValue(
-                          "projectStatus" as Path<T>,
+                          "dealStatus" as Path<T>,
                           selected as PathValue<T, Path<T>>
                         )
                       }
@@ -273,9 +273,9 @@ const RetailFormBody = <T extends FieldValues>({
                       {...field}
                     />
                   </FormControl>
-                  {form.formState.errors.projectStatus?.message && (
+                  {form.formState.errors.dealStatus?.message && (
                     <FormMessage className="text-red-500">
-                      {form.formState.errors.projectStatus?.message as string}
+                      {form.formState.errors.dealStatus?.message as string}
                     </FormMessage>
                   )}
                 </FormItem>

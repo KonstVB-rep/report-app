@@ -19,13 +19,36 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `UserPermission` (
+    `id` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `permissionId` VARCHAR(191) NOT NULL,
+
+    INDEX `UserPermission_userId_fkey`(`userId`),
+    INDEX `UserPermission_permissionId_fkey`(`permissionId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Permission` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` ENUM('VIEW_USER_REPORT', 'VIEW_UNION_REPORT', 'DOWNLOAD_REPORTS', 'USER_MANAGEMENT') NOT NULL,
+    `description` VARCHAR(191) NULL,
+
+    UNIQUE INDEX `Permission_name_key`(`name`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Department` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` ENUM('SALES', 'TECHNICAL') NOT NULL,
     `directorId` VARCHAR(191) NULL,
+    `description` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `Department_name_key`(`name`),
     UNIQUE INDEX `Department_directorId_key`(`directorId`),
+    UNIQUE INDEX `Department_description_key`(`description`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -38,7 +61,7 @@ CREATE TABLE `Project` (
     `nameObject` VARCHAR(191) NOT NULL,
     `nameDeal` VARCHAR(191) NOT NULL,
     `direction` ENUM('PARKING', 'GLK', 'SKD', 'KATOK', 'MUSEUM', 'SPORT', 'FOK_BASIN', 'BPS', 'PPS', 'PARK_ATTRACTION', 'STADIUM_ARENA') NOT NULL,
-    `deliveryType` ENUM('COMPLEX', 'WHOLESALE', 'EQUIPMENT_SUPPLY', 'WORK_SERVICES', 'RENT', 'SOFTWARE_DELIVERY', 'OTHER') NOT NULL,
+    `deliveryType` ENUM('COMPLEX', 'WHOLESALE', 'EQUIPMENT_SUPPLY', 'WORK_SERVICES', 'RENT', 'SOFTWARE_DELIVERY', 'OTHER') NULL,
     `contact` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NULL,
@@ -51,7 +74,7 @@ CREATE TABLE `Project` (
     `amountCP` DECIMAL(15, 2) NOT NULL,
     `amountPurchase` DECIMAL(15, 2) NOT NULL,
     `amountWork` DECIMAL(15, 2) NOT NULL,
-    `projectStatus` ENUM('INVOICE_ISSUED', 'ACTUAL', 'REJECT', 'PAID', 'APPROVAL', 'FIRST_CP_APPROVAL', 'CONTRACT_ADVANCE_PAYMENT', 'PROGRESS', 'DELIVERY_WORKS', 'SIGN_ACTS_PAYMENT', 'CLOSED') NOT NULL,
+    `dealStatus` ENUM('INVOICE_ISSUED', 'ACTUAL', 'REJECT', 'PAID', 'APPROVAL', 'FIRST_CP_APPROVAL', 'CONTRACT_ADVANCE_PAYMENT', 'PROGRESS', 'DELIVERY_WORKS', 'SIGN_ACTS_PAYMENT', 'CLOSED') NOT NULL,
 
     INDEX `Project_userId_fkey`(`userId`),
     PRIMARY KEY (`id`)
@@ -66,14 +89,14 @@ CREATE TABLE `Retail` (
     `dateRequest` DATETIME(3) NOT NULL,
     `nameObject` VARCHAR(191) NOT NULL,
     `direction` ENUM('PARKING_EQUIPMENT', 'SCUD', 'IDS_CONSUMABLES', 'OTHER') NOT NULL,
-    `deliveryType` ENUM('COMPLEX', 'WHOLESALE', 'SUPPLY', 'WORK') NOT NULL,
+    `deliveryType` ENUM('COMPLEX', 'WHOLESALE', 'SUPPLY', 'WORK') NULL,
     `contact` VARCHAR(191) NOT NULL,
     `additionalContact` VARCHAR(191) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NULL,
     `amountCP` DECIMAL(15, 2) NOT NULL,
     `delta` DECIMAL(15, 2) NOT NULL,
-    `projectStatus` ENUM('FIRST_CP_APPROVAL', 'APPROVAL', 'ACTUAL', 'REJECT', 'INVOICE_ISSUED', 'PROGRESS', 'PAID', 'CLOSED') NOT NULL,
+    `dealStatus` ENUM('FIRST_CP_APPROVAL', 'APPROVAL', 'ACTUAL', 'REJECT', 'INVOICE_ISSUED', 'PROGRESS', 'PAID', 'CLOSED') NOT NULL,
     `comments` VARCHAR(191) NOT NULL,
     `plannedDateConnection` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -90,16 +113,6 @@ CREATE TABLE `UserLogin` (
     `loginAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     INDEX `UserLogin_userId_fkey`(`userId`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `UserPermission` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `permission` ENUM('VIEW_USER_REPORT', 'VIEW_UNION_REPORT', 'DOWNLOAD_REPORTS', 'USER_MANAGEMENT') NOT NULL,
-
-    INDEX `UserPermission_userId_fkey`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -124,6 +137,12 @@ CREATE TABLE `File` (
 ALTER TABLE `User` ADD CONSTRAINT `User_departmentId_fkey` FOREIGN KEY (`departmentId`) REFERENCES `Department`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `UserPermission` ADD CONSTRAINT `UserPermission_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `UserPermission` ADD CONSTRAINT `UserPermission_permissionId_fkey` FOREIGN KEY (`permissionId`) REFERENCES `Permission`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Department` ADD CONSTRAINT `Department_directorId_fkey` FOREIGN KEY (`directorId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -134,9 +153,6 @@ ALTER TABLE `Retail` ADD CONSTRAINT `Retail_userId_fkey` FOREIGN KEY (`userId`) 
 
 -- AddForeignKey
 ALTER TABLE `UserLogin` ADD CONSTRAINT `UserLogin_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `UserPermission` ADD CONSTRAINT `UserPermission_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `File` ADD CONSTRAINT `File_projectId_fkey` FOREIGN KEY (`projectId`) REFERENCES `Project`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

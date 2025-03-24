@@ -12,7 +12,7 @@ const requiredFields = [
   "direction",
   "comments",
   "contact",
-  "projectStatus",
+  "dealStatus",
 ];
 
 type ProjectWithoutDateCreateAndUpdate = Omit<
