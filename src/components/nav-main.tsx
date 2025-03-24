@@ -28,7 +28,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { Separator } from "@radix-ui/react-separator";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 const deals = [
   {
@@ -45,22 +45,34 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
   const { departmentId, userId, dealType } = useParams();
   const pathname = usePathname();
 
+  const [open, setOpen] = useState(true); // Устанавливаем начальное значение true, чтобы меню было открыто
+
+  const handleToggle = () => {
+    setOpen((prev) => !prev);
+  };
+
   const render = (item: (typeof items)[number]) => {
     return (
-      <Collapsible key={item?.id || item.title} asChild>
+      <Collapsible
+        key={item?.id || item.title}
+        asChild
+        open={open}
+        onOpenChange={handleToggle}
+      >
         <SidebarMenuItem>
           <SidebarMenuButton
             asChild
             tooltip={item.title}
-            className={`h-max ${
+            onClick={handleToggle}
+            className={`h-max border-2 ${
               item.id === Number(departmentId) &&
-              "bg-secondary-foreground text-secondary"
+              " border-blue-600 text-primary dark:text-stone-400"
             }`}
           >
             <Link
               href={item.url}
-              className={`${!item.icon && "grid gap-[2px]"} !w-[calc(100%-3rem)]}`}
-              // style={{ width: "calc(100% - 28px)" }}
+              className={`${!item.icon && "grid gap-[2px]"}}`}
+              style={{ width: "calc(100% - 45px)" }}
             >
               {item?.icon ?? null}
               <span>
@@ -70,19 +82,19 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
           </SidebarMenuButton>
           {item.items?.length ? (
             <>
-              <CollapsibleTrigger asChild>
+              <CollapsibleTrigger asChild className="!h-[38px] !w-[38px] !top-[1.25px] !border-[1px] border-stone-400">
                 <SidebarMenuAction className="h-[24px] w-[24px] border-2 data-[state=open]:rotate-90">
                   <ChevronRight
                     className={`h-max ${
                       item.id === Number(departmentId) &&
-                      "bg-secondary-foreground text-secondary"
+                      "!h-full !w-full p-[6px] text-primary dark:text-stone-400"
                     } rounded-sm`}
                   />
                   <span className="sr-only">Toggle</span>
                 </SidebarMenuAction>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <SidebarMenuSub className="mr-auto pr-1">
+                <SidebarMenuSub className="mr-auto pr-1 mt-2">
                   {item.items.map((user) => {
                     return (
                       <Collapsible key={user?.id} asChild>
@@ -92,7 +104,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                             tooltip={user.username}
                             className={`h-max items-start ${
                               user.id === userId &&
-                              "bg-zinc-300 text-primary dark:bg-zinc-700"
+                              "bg-zinc-300 text-primary dark:bg-background"
                             }`}
                           >
                             <Accordion
@@ -105,7 +117,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                 className="group/item w-full border-none"
                               >
                                 <AccordionTrigger className="mr-[2px] w-full py-1 hover:no-underline">
-                                  <div className="relative flex flex-col gap-[2px] hover:bg-transparent focus-visible:bg-transparent">
+                                  <div className="relative flex flex-col gap-[2px]">
                                     <span className="font-semibold capitalize">
                                       {user.username.split(" ").join(" ")}
                                     </span>
@@ -120,13 +132,16 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                       <Fragment key={deal.id}>
                                         <Link
                                           href={`${user.url}${deal.id}/${user.id}`}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                          }}
                                           className={`${
                                             (dealType !== deal.id ||
                                               user.id !== userId) &&
                                             "text-primary dark:text-stone-400"
                                           } relative flex items-center gap-2 overflow-hidden rounded-md p-1 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground`}
                                         >
-                                          <p className="relative z-[1] flex h-full w-full gap-2 rounded-sm bg-zinc-300 p-2 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground dark:bg-zinc-700">
+                                          <p className="relative z-[1] flex h-full w-full items-center gap-2 rounded-sm p-2 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground">
                                             {" "}
                                             <BookText
                                               size={
@@ -140,7 +155,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                           </p>
                                           {dealType === deal.id &&
                                             user.id === userId && (
-                                              <div className="absolute right-0 top-1/2 h-full w-1 -translate-y-1/2 rounded-md bg-chart-2" />
+                                              <div className="absolute right-0 top-1/2 h-full w-1 -translate-y-1/2 rounded-md bg-blue-600" />
                                             )}
                                         </Link>
                                         <Separator className="my-[1px] h-[1px] bg-stone-600" />
@@ -148,17 +163,22 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                     );
                                   })}
                                   <Link
-                                    href={`/profile/${user.id}`}
+                                    href={`/profile/${user.departmentId}/${user.id}`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                    }}
                                     className={`${
-                                      (pathname !== `/profile/${user.id}` ||
+                                      (pathname !==
+                                        `/profile/${user.departmentId}/${user.id}` ||
                                         user.id !== userId) &&
                                       "text-primary dark:text-stone-400"
                                     } relative flex items-center gap-2 overflow-hidden rounded-md p-1 text-foreground transition-all duration-150 hover:bg-muted focus-visible:bg-muted focus-visible:text-foreground`}
                                   >
-                                    <p className="relative z-[1] flex h-full w-full gap-2 rounded-sm bg-zinc-300 p-2 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground dark:bg-zinc-700">
+                                    <p className="relative z-[1] flex h-full w-full items-center gap-2 rounded-sm p-2 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground">
                                       <UserRound
                                         size={
-                                          pathname !== `/profile/${user.id}` ||
+                                          pathname !==
+                                            `/profile/${user.departmentId}/${user.id}` ||
                                           user.id !== userId
                                             ? 12
                                             : 16
@@ -166,9 +186,10 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                       />{" "}
                                       <span>Профиль</span>
                                     </p>
-                                    {pathname === `/profile/${user.id}` &&
+                                    {pathname ===
+                                      `/profile/${user.departmentId}/${user.id}` &&
                                       user.id === userId && (
-                                        <div className="absolute right-0 top-1/2 h-full w-1 -translate-y-1/2 rounded-md bg-chart-2" />
+                                        <div className="absolute right-0 top-1/2 h-full w-1 -translate-y-1/2 rounded-md bg-blue-600" />
                                       )}
                                   </Link>
                                 </AccordionContent>

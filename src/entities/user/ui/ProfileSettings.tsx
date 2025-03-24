@@ -30,7 +30,10 @@ export function ProfileSettings({ user }: Props) {
       }
     >
       <PersonEdit />
-      <Link href={`/profile/${user.id}`} className="btn_hover text-sm">
+      <Link
+        href={`/profile/${user.departmentId}/${user.id}`}
+        className="btn_hover text-sm"
+      >
         <UserRound size="16" /> <span>Профиль</span>
       </Link>
     </HoverCardComponent>

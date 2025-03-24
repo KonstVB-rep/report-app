@@ -16,6 +16,8 @@ export function NavUser() {
 
   const { authUser } = useStoreUser();
 
+  
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -38,7 +40,7 @@ export function NavUser() {
         >
           <div className="grid min-w-40 gap-1">
             <Link
-              href={`/profile/${authUser?.id}`}
+              href={`/profile/${authUser?.departmentId}/${authUser?.id}`}
               className="btn_hover w-full justify-center text-sm"
             >
               <BadgeCheck className="mr-2 h-4 w-4" />
