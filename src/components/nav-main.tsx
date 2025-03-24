@@ -131,7 +131,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
                                     return (
                                       <Fragment key={deal.id}>
                                         <Link
-                                          href={`${user.url}${deal.id}/${user.id}`}
+                                          href={`${user.url}/${deal.id}/${user.id}`}
                                           onClick={(e) => {
                                             e.stopPropagation();
                                           }}

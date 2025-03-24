@@ -14,6 +14,7 @@ import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import { useDelDeal, useGetDealById } from "@/entities/deal/hooks";
 import { DealType } from "@prisma/client";
 import { Trash2 } from "lucide-react";
+import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const { data: deal } = useGetDealById(id, type);
@@ -22,11 +23,13 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild onClick={() => setOpen(true)}>
-        <Button size="icon" variant={"destructive"} title="Удалить">
-          <Trash2 />
-        </Button>
-      </DialogTrigger>
+      <TooltipComponent content="Удалить">
+        <DialogTrigger asChild onClick={() => setOpen(true)}>
+          <Button size="icon" variant={"destructive"}>
+            <Trash2 />
+          </Button>
+        </DialogTrigger>
+      </TooltipComponent>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Удалить проект</DialogTitle>

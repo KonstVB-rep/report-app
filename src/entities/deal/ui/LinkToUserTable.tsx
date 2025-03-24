@@ -6,15 +6,17 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { DealsUnionType } from "../types";
 
-const linksPersonTable = {
-  retails: {
+const linksPersonTable = (
+  deptId: string | number
+): Record<DealsUnionType, { title: string; url: string }> => {
+ return { retails: {
     title: "Проекты",
-    url: "/table/projects",
+    url: `/table/${deptId}/projects`,
   },
   projects: {
     title: "Розничные сделки",
-    url: "/table/retails",
-  },
+    url: `/table/${deptId}/retails`,
+  },}
 };
 
 const linksSummaryTable = (
@@ -33,7 +35,7 @@ const linksSummaryTable = (
 };
 
 const LinkToUserTable = () => {
-  const { dealType, userId } = useParams();
+  const { dealType, userId, departmentId } = useParams();
   const { authUser } = useStoreUser();
   const pathname = usePathname();
 
@@ -41,8 +43,10 @@ const LinkToUserTable = () => {
     return null;
   }
 
-  const hasTable = pathname.includes(`/table/${dealType}/${userId}`)
-    ? linksPersonTable[dealType as keyof typeof linksPersonTable]
+  const tableLinks = linksPersonTable(departmentId as string);
+
+  const hasTable = pathname.includes(`/table/${departmentId}/${dealType}/${userId}`)
+    ? tableLinks[dealType as DealsUnionType]
     : false;
 
   const summaryTableLinks = linksSummaryTable(authUser.departmentId);

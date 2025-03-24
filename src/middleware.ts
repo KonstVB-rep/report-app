@@ -20,10 +20,11 @@ export default async function middleware(request: NextRequest) {
         const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
         const { payload } = await jwtVerify(accessToken, secretKey); // Проверка токена
         const userId = payload?.userId;
+        const deratmentId = payload?.deratmentId;
         console.log("Decoded payload:", payload);
         console.log("Пользователь уже авторизован, редирект на /");
         return NextResponse.redirect(
-          new URL(`/table/projects/${userId}`, request.url)
+          new URL(`/table/${deratmentId}/projects/${userId}`, request.url)
         );
       } catch (error) {
         console.log("Access token недействителен, оставляем на /login", error);
@@ -42,7 +43,6 @@ export default async function middleware(request: NextRequest) {
       console.log("Access token истёк, пробуем обновить...", error);
     }
   }
-  // console.log(pathname, "pathname");
   // // Если нет refreshToken, редирект на логин
   if (!refreshToken) {
     console.log("Нет refresh token, редирект на логин");

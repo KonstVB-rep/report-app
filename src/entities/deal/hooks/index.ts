@@ -49,7 +49,6 @@ export const useDelDeal = (
     },
     onSuccess: () => {
       closeModalFn();
-      TOAST.SUCCESS("Сделка успешно удалена");
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, authUser?.id],
         exact: true,

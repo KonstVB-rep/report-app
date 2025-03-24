@@ -9,15 +9,15 @@ if (!process.env.NODE_ENV) {
   throw new Error("NEXT_PUBLIC_NODE_ENV is not defined");
 }
 
-export const generateTokens = async (userId: string) => {
+export const generateTokens = async (userId: string, deratmentId: string | number) => {
   // Генерация access token
-  const accessToken = await new SignJWT({ userId })
+  const accessToken = await new SignJWT({ userId, deratmentId })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("1d") // 1 день
     .sign(new TextEncoder().encode(process.env.JWT_SECRET_KEY)); // Подпись токена с секретом
 
   // Генерация refresh token
-  const refreshToken = await new SignJWT({ userId })
+  const refreshToken = await new SignJWT({ userId, deratmentId })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d") // 7 дней
     .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)); // Подпись токена с секретом

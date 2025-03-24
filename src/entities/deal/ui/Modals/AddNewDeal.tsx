@@ -206,6 +206,7 @@ import React, { useState } from "react";
 
 import RetailForm from "../Forms/RetailForm";
 import ProjectForm from "../Forms/ProjectForm";
+import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 type AddNewDealProps = {
   type: string;
@@ -227,10 +228,11 @@ const AddNewDeal = ({ type }: AddNewDealProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus />
-          <span>{contentType[type].title}</span>
-        </Button>
+        <TooltipComponent content={contentType[type].title}>
+          <Button variant="outline">
+            <Plus />
+          </Button>
+        </TooltipComponent>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]" showX={true}>
         <DialogHeader>

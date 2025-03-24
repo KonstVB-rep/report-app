@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Генерируем новые токены
-    const { accessToken } = await generateTokens(payload.userId as string);
+    const { accessToken } = await generateTokens(payload.userId as string, payload.deratmentId as string | number);
 
     // Возвращаем новый access token
     return NextResponse.json({ accessToken });

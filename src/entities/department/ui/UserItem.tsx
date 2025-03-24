@@ -27,7 +27,7 @@ const UserItem = ({ person }: { person: UserResponse }) => {
       <div className="flex gap-2">
         <TooltipComponent content="Перейти к проектам">
           <Link
-            href={`/table/projects/${person.id}`}
+            href={`/table/${person.departmentId}/projects/${person.id}`}
             className="flex aspect-square max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
             rel="noopener noreferrer"
           >
@@ -36,7 +36,7 @@ const UserItem = ({ person }: { person: UserResponse }) => {
         </TooltipComponent>
         <TooltipComponent content="Перейти к розничным сделкам">
           <Link
-            href={`/table/retails/${person.id}`}
+            href={`/table/${person.departmentId}/retails/${person.id}`}
             className="flex aspect-square max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
             rel="noopener noreferrer"
           >

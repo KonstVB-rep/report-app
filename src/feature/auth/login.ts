@@ -70,7 +70,7 @@ export const login = async (prevState: unknown, formData: FormData) => {
       });
     }
 
-    await generateTokens(user.id);
+    await generateTokens(user.id, user.departmentId);
 
     return {
       data: {

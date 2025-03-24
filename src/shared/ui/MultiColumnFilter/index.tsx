@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // // // import React, { useState, useEffect } from "react";
 // // // import { ColumnDef, ColumnFiltersState, Table } from "@tanstack/react-table";
 // // // import DebouncedInput from "../DebouncedInput";
@@ -281,7 +280,7 @@
 // // };
 
 // // export default MultiColumnFilter;
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 import DebouncedInput from "../DebouncedInput";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -294,26 +293,16 @@ import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const parseParams = (str: string, includedColumns: string[]) => {
-  if (!str) return { columns: [], value: "" };
-  const strSplit = str.split("&");
-  const filterStrSplit = strSplit.filter((item) => {
-    const filter = item.split("=")[0];
-    return includedColumns.includes(filter);
-  });
-  return {
-    columns: filterStrSplit.map((item) => item.split("=")[0]),
-    value: filterStrSplit[0]?.split("=")[1] || "",
-  };
-};
-
 interface MultiColumnFilterProps<
   TData extends Record<string, unknown>,
   TValue = unknown,
 > {
   columns: ColumnDef<TData, TValue>[];
   includedColumns: string[];
-  columnFilters: ColumnFiltersState;
+  selectedColumns: string[];
+  setSelectedColumns: React.Dispatch<React.SetStateAction<string[]>>;
+  filterValueSearchByCol: string;
+  setFilterValueSearchByCol: React.Dispatch<React.SetStateAction<string>>;
   setColumnFilters: (
     callback: (prev: ColumnFiltersState) => ColumnFiltersState
   ) => void;
@@ -325,76 +314,69 @@ const MultiColumnFilter = <
 >({
   columns,
   includedColumns = [],
-  columnFilters,
+  selectedColumns,
+  setSelectedColumns,
+  filterValueSearchByCol,
+  setFilterValueSearchByCol,
   setColumnFilters,
 }: MultiColumnFilterProps<TData, TValue>) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [selectedColumns, setSelectedColumns] = useState<string[]>(
-    () =>
-      parseParams(decodeURIComponent(searchParams.toString()), includedColumns)
-        .columns
-  );
-  const [filterValue, setFilterValue] = useState<string>(
-    () =>
-      parseParams(decodeURIComponent(searchParams.toString()), includedColumns)
-        .value
-  );
-
-  // Обновление фильтров и URL
   useEffect(() => {
-    const newFilters: ColumnFiltersState = selectedColumns
-      .filter((columnId) => filterValue) // Применяем фильтр только если есть значение
-      .map((columnId) => ({ id: columnId, value: filterValue }));
-
-    const combinedFilters = [
-      ...columnFilters.filter((item) => !selectedColumns.includes(item.id)),
-      ...newFilters,
-    ];
-
-    // Обновляем фильтры только если они изменились
-    setColumnFilters((prevFilters) => {
-      const prevFiltersString = JSON.stringify(prevFilters);
-      const combinedFiltersString = JSON.stringify(combinedFilters);
-      if (prevFiltersString !== combinedFiltersString) {
-        return combinedFilters;
-      }
-      return prevFilters;
-    });
-
-    // Обновление URL с новыми параметрами
     const newParams = new URLSearchParams(searchParams.toString());
-    includedColumns.forEach((col) => {
-      if (selectedColumns.includes(col) && filterValue) {
-        // Только если есть значение
-        newParams.set(col, filterValue); // Добавляем параметр для фильтра
+  
+    // Формируем строку с фильтрами
+    if (selectedColumns.length > 0 && filterValueSearchByCol) {
+      // Получаем текущие фильтры
+      const existingFilters = newParams.get("filters");
+  
+      // Если фильтры есть
+      if (existingFilters) {
+        const filterArray = existingFilters.split("&");
+        let filterUpdated = false;
+  
+        const updatedFilters = filterArray.map((filter) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const [key, value] = filter.split("=");
+  
+          // Если фильтр для этого столбца, обновляем его
+          if (selectedColumns.includes(key)) {
+            filterUpdated = true; // Фильтр обновлен
+            return `${key}="${encodeURIComponent(filterValueSearchByCol)}"`;
+          }
+  
+          // Если фильтр для другого столбца, оставляем без изменений
+          return filter;
+        });
+  
+        // Если фильтра для этого столбца не было, добавляем новый
+        if (!filterUpdated) {
+          updatedFilters.push(`${selectedColumns[0]}="${encodeURIComponent(filterValueSearchByCol)}"`);
+        }
+  
+        // Преобразуем обновленные фильтры обратно в строку
+        newParams.set("filters", updatedFilters.join("&"));
       } else {
-        newParams.delete(col); // Убираем фильтры, если колонка снята
+        // Если фильтров нет, просто добавляем их
+        newParams.set("filters", `${selectedColumns[0]}="${encodeURIComponent(filterValueSearchByCol)}"`);
       }
-    });
-
+    }
+  
     const newUrl = `${pathname}?${newParams.toString()}`;
     const currentUrl = `${pathname}?${searchParams.toString()}`;
-
+  
+    // Обновляем URL, если он изменился
     if (newUrl !== currentUrl) {
       router.replace(newUrl);
     }
-  }, [
-    selectedColumns,
-    filterValue,
-    columnFilters,
-    setColumnFilters,
-    includedColumns,
-    searchParams,
-    pathname,
-    router,
-  ]);
+  }, [selectedColumns, filterValueSearchByCol, pathname, router, searchParams]);
+  
 
   const handleClear = () => {
     setSelectedColumns([]);
-    setFilterValue("");
+    setFilterValueSearchByCol("");
 
     // Убираем все фильтры из columnFilters
     setColumnFilters((prevFilters) =>
@@ -407,11 +389,18 @@ const MultiColumnFilter = <
   );
 
   const handleCheckboxChange = (columnId: string) => {
-    setSelectedColumns((prev) =>
+    setSelectedColumns((prev: string[]) =>
       prev.includes(columnId)
         ? prev.filter((id) => id !== columnId)
         : [...prev, columnId]
     );
+
+    // Добавляем фильтр или удаляем его
+    if (selectedColumns.includes(columnId)) {
+      setColumnFilters((prevFilters) =>
+        prevFilters.filter((filter) => filter.id !== columnId)
+      );
+    }
   };
 
   return (
@@ -435,8 +424,8 @@ const MultiColumnFilter = <
           <div className="grid gap-4">
             <DebouncedInput
               type="text"
-              value={filterValue}
-              onChange={(value: string) => setFilterValue(value)}
+              value={filterValueSearchByCol}
+              onChange={(value: string) => setFilterValueSearchByCol(value)}
               placeholder="Поиск..."
               className="w-36 rounded border shadow"
             />

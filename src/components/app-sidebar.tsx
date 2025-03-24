@@ -29,7 +29,12 @@ const icons = {
 };
 
 export function AppSidebar() {
-  const { data: departments } = useGetDepartmentsWithUsers();
+  const { data: departments , isPending } = useGetDepartmentsWithUsers();
+
+
+  if (isPending) {
+    return <div className="hidden md:block top-[--header-height] !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-muted/50"/>;  
+  }
 
   if (!departments) {
     return null;
@@ -47,7 +52,7 @@ export function AppSidebar() {
         departmentId: person.departmentId,
         username: person.username,
         position: person.position,
-        url: `/table/`,
+        url: `/table/${person.departmentId}`,
       })),
     })
   );

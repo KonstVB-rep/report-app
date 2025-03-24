@@ -1,6 +1,6 @@
 "use client";
 
-import { columnsDataProject } from "@/app/(dashboard)/table/[dealType]/[userId]/model/columns-data-project";
+import { columnsDataProject } from "@/app/(dashboard)/table/[departmentId]/[dealType]/[userId]/model/columns-data-project";
 import { ProjectResponse } from "@/entities/deal/types";
 import { ColumnDef } from "@tanstack/react-table";
 

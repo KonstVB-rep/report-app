@@ -1,8 +1,6 @@
-import ProfileSettings from "@/entities/user/ui/ProfileSettings";
 import { useParams } from "next/navigation";
 import React from "react";
 import DealsSkeleton from "./DealsSkeleton";
-import LinkToUserTable from "./LinkToUserTable";
 import { useGetUser } from "@/entities/user/hooks";
 
 const DealTableTemplate = ({
@@ -22,10 +20,6 @@ const DealTableTemplate = ({
     <section className="h-full p-4">
       {user ? (
         <div className="grid gap-2" ref={ref}>
-          <div className="flex items-center justify-between">
-            <ProfileSettings user={user} />
-            <LinkToUserTable />
-          </div>
           {children}
         </div>
       ) : (

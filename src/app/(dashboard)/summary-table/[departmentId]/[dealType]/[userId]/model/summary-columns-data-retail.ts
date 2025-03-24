@@ -1,6 +1,6 @@
 "use client";
 
-import { columnsDataRetail } from "@/app/(dashboard)/table/[dealType]/[userId]/model/columns-data-retail";
+import { columnsDataRetail } from "@/app/(dashboard)/table/[departmentId]/[dealType]/[userId]/model/columns-data-retail";
 import { RetailResponse } from "@/entities/deal/types";
 import { ColumnDef } from "@tanstack/react-table";
 
