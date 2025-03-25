@@ -21,7 +21,6 @@ export enum DirectionRetail {
 
 export enum DeliveryProject {
   COMPLEX = "Комплекс",
-  WHOLESALE = "Розница",
   EQUIPMENT_SUPPLY = "Поставка оборудования",
   WORK_SERVICES = "Работы и услуги",
   RENT = "Аренда",
@@ -30,9 +29,8 @@ export enum DeliveryProject {
 }
 
 export enum DeliveryRetail {
-  COMPLEX = "Комплекс",
-  WHOLESALE = "Розница",
   SUPPLY = "Поставка оборудования",
+  EXPENDABLE_MATERIALS = "Расходные материалы",
   WORK = "Работы",
 }
 
@@ -112,7 +110,6 @@ export const DeliveryProjectLabels: Record<
   string
 > = {
   COMPLEX: "Комплекс",
-  WHOLESALE: "Розница",
   EQUIPMENT_SUPPLY: "Поставка оборудования",
   WORK_SERVICES: "Работы и услуги",
   RENT: "Аренда",
@@ -122,8 +119,7 @@ export const DeliveryProjectLabels: Record<
 
 export const DeliveryRetailLabels: Record<keyof typeof DeliveryRetail, string> =
   {
-    COMPLEX: "Комплекс",
-    WHOLESALE: "Розница",
+    EXPENDABLE_MATERIALS: "Расходные материалы",
     SUPPLY: "Поставка оборудования",
     WORK: "Работы",
   } as const;

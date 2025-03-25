@@ -170,7 +170,6 @@ enum DirectionRetail {
 
 enum DeliveryProject {
   COMPLEX
-  WHOLESALE
   EQUIPMENT_SUPPLY 
   WORK_SERVICES
   RENT
@@ -179,8 +178,7 @@ enum DeliveryProject {
 }
 
 enum DeliveryRetail {
-  COMPLEX
-  WHOLESALE
+  EXPENDABLE_MATERIALS 
   SUPPLY
   WORK
 }
