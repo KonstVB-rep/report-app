@@ -12,11 +12,11 @@ const ProjectForm = () => {
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues: {
-      nameObject: "ewwew",
-      nameDeal: "wewewe",
+      nameObject: "",
+      nameDeal: "",
       direction: "",
       deliveryType: undefined,
-      contact: "dasdasd",
+      contact: "",
       phone: "",
       email: "",
       additionalContact: "",
@@ -25,7 +25,7 @@ const ProjectForm = () => {
       amountPurchase: "",
       delta: "",
       dealStatus: "",
-      comments: "sdasdasd",
+      comments: "",
       plannedDateConnection: undefined,
     },
   });

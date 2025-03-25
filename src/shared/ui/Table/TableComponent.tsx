@@ -139,7 +139,7 @@ const TableComponent = <T extends Record<string, unknown>>({
           />
         ))
       ) : (
-        <h1 className="rounded-md bg-muted px-4 py-2 text-center text-xl">
+        <h1 className="rounded-md bg-muted px-4 py-2 text-center text-xl my-2">
           Проекты не найдены
         </h1>
       )}

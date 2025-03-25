@@ -37,10 +37,10 @@ const UserCreateForm = ({
   const form = useForm<userSchema>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
-      username: "sssss",
-      email: "ssss@errr.ru",
-      user_password: "1234567",
-      position: "sdcsdcsdcsdcs",
+      username: "",
+      email: "",
+      user_password: "",
+      position: "",
       department: undefined,
       role: undefined,
       permissions: [],

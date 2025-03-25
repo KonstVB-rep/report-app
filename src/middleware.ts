@@ -85,7 +85,5 @@ async function redirectToLogin(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
-  ],
+    matcher: ["/(dashboard | table | profile | login | summary-table | deal)/:path*", "/"],
 };
