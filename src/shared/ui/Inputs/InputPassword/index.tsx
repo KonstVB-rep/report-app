@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react";
@@ -14,13 +14,13 @@ const InputPassword = (props: InputPasswordProps) => {
         id="password"
         type={visible ? "text" : "password"}
         placeholder="✱✱✱✱✱✱✱"
-        className={`placeholder:text-xs w-full ${props.className}`}
+        className={`w-full placeholder:text-sm ${props.className}`}
         {...props}
       />
       <Button
         variant="ghost"
         onClick={() => setVisible(!visible)}
-        className="absolute h-8 w-8 top-1/2 -translate-y-1/2 bottom-[2px] right-1 rounded-full"
+        className="absolute bottom-[2px] right-1 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full"
         size={"icon"}
         type="button"
       >

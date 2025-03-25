@@ -14,31 +14,23 @@ import React, { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import SelectComponent from "@/shared/ui/SelectComponent";
 import { DepartmentsTitle, RolesUser } from "../model/objectTypes";
-import { createUser } from "../api";
-import { useMutation } from "@tanstack/react-query";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import { TOAST } from "./Toast";
 import { userFormSchema, userSchema } from "../model/schema";
 import PhoneInput from "@/shared/ui/PhoneInput";
-import { getQueryClient } from "@/app/provider/query-provider";
+import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
+import { DepartmentTypeName, OPTIONS } from "../types";
+import InputPassword from "@/shared/ui/Inputs/InputPassword";
+import { useCreateUser } from "../hooks/mutate";
 
 const UserCreateForm = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setOpen,
 }: {
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const queryClient = getQueryClient();
+  const { mutate, isPending } = useCreateUser();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: userSchema) => createUser(data),
-    onSuccess: () => {
-      setOpen(false);
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithEmp"],
-        exact: true,
-      });
-    },
-  });
   const form = useForm<userSchema>({
     resolver: zodResolver(userFormSchema),
     defaultValues: {
@@ -48,33 +40,40 @@ const UserCreateForm = ({
       position: "",
       department: undefined,
       role: undefined,
-      // permission: undefined,
+      permissions: [],
     },
   });
 
   const onSubmit = (data: userSchema) => {
-    TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data); // Разрешаем промис при успехе
-          },
-          onError: (error) => {
-            reject(error); // Отклоняем промис при ошибке
-          },
-        });
-      }),
-      "Пользователь сохранен"
-    );
+    try {
+      TOAST.PROMISE(
+        new Promise((resolve, reject) => {
+          mutate(data, {
+            onSuccess: (data) => {
+              resolve(data);
+            },
+            onError: (error) => {
+              reject(error);
+            },
+          });
+        }),
+        "Пользователь сохранен"
+      );
+      form.reset();
+      form.setValue("phone", "");
+    } catch (error) {
+      console.error("Error creating user:", error);
+      TOAST.ERROR("Ошибка при создании пользователя");
+    }
   };
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-8 max-h-[85vh] overflow-y-auto p-1"
+        className="flex max-h-[85vh] flex-col gap-8 overflow-y-auto p-1"
       >
-        <div>
+        <div className="grid gap-2">
           <FormField
             control={form.control}
             name="username"
@@ -87,7 +86,7 @@ const UserCreateForm = ({
                     {...field}
                     minLength={3}
                     maxLength={50}
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     required
                   />
                 </FormControl>
@@ -110,7 +109,7 @@ const UserCreateForm = ({
                     placeholder="Введите email пользователя"
                     {...field}
                     type="email"
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     required
                   />
                 </FormControl>
@@ -151,9 +150,8 @@ const UserCreateForm = ({
               <FormItem>
                 <FormLabel>Пароль</FormLabel>
                 <FormControl>
-                  <Input
+                  <InputPassword
                     placeholder="Введите пароль для пользователя"
-                    type="password"
                     {...field}
                     minLength={6}
                     maxLength={30}
@@ -180,7 +178,7 @@ const UserCreateForm = ({
                     {...field}
                     minLength={3}
                     maxLength={30}
-                    className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="w-full valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     required
                   />
                 </FormControl>
@@ -205,7 +203,10 @@ const UserCreateForm = ({
                     classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
                     value={field.value || ""}
                     onValueChange={(selected) =>
-                      form.setValue("department", selected)
+                      form.setValue(
+                        "department",
+                        selected as DepartmentTypeName
+                      )
                     }
                     required
                   />
@@ -230,9 +231,9 @@ const UserCreateForm = ({
                     options={Object.entries(RolesUser)}
                     classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
                     value={field.value || ""}
-                    onValueChange={(selected) =>
-                      form.setValue("role", selected)
-                    }
+                    onValueChange={(selected) => {
+                      form.setValue("role", selected);
+                    }}
                     required
                   />
                 </FormControl>
@@ -244,25 +245,33 @@ const UserCreateForm = ({
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="permission"
+            name="permissions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Роль</FormLabel>
+                <FormLabel>Разрешения/Права</FormLabel>
                 <FormControl>
-                  <SelectComponent
-                    placeholder="Выберите права"
-                    options={Object.entries(PermissionsUser)}
-                    classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                  <MultiSelectComponent
+                    options={OPTIONS}
+                    placeholder="Установите разрешения"
                     {...field}
-                    required
+                    onValueChange={(selected) => {
+                      console.log(selected);
+                      // const selectedList = selected.map((item) => item.value);
+                      // form.setValue("permissions", selectedList);
+
+                      form.setValue("permissions", selected);
+                    }}
+                    defaultValue={field.value}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.permissions?.message}
+                </FormMessage>
               </FormItem>
             )}
-          /> */}
+          />
         </div>
         <SubmitFormButton title="Добавить" isPending={isPending} />
       </form>

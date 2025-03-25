@@ -22,10 +22,12 @@ const SelectComponent = ({
   onValueChange,
   ...props
 }: SelectComponentProps) => {
-
-
   return (
-    <Select value={value} onValueChange={(val) => onValueChange?.(val)} {...props} >
+    <Select
+      value={value}
+      onValueChange={(val) => onValueChange?.(val)}
+      {...props}
+    >
       <SelectTrigger className={`w-full ${classname}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

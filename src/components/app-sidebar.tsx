@@ -13,13 +13,15 @@ import {
 } from "@/components/ui/sidebar";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-import { BadgeRussianRuble, Command, Wrench } from "lucide-react";
-import { getDepartmentsWithPersons } from "@/entities/department/api";
-import { useQuery } from "@tanstack/react-query";
+import { BadgeRussianRuble, Wrench } from "lucide-react";
 import { UserResponse } from "@/entities/user/types";
-import { DepartmentListType, DepartmentTypeSidebar } from "@/entities/department/types";
-import { TOAST } from "@/entities/user/ui/Toast";
+import {
+  DepartmentInfo,
+  DepartmentListType,
+} from "@/entities/department/types";
 import Link from "next/link";
+import Image from "next/image";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 
 const icons = {
   SALES: <BadgeRussianRuble />,
@@ -27,55 +29,30 @@ const icons = {
 };
 
 export function AppSidebar() {
-  const {
-    data: departments,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["depsWithEmp"],
-    queryFn: async () => {
-      try {
-        return await getDepartmentsWithPersons();
-      } catch (error) {
-        TOAST.ERROR((error as Error).message);
-        throw error;
-      }
-    },
-  });
+  const { data: departments , isPending } = useGetDepartmentsWithUsers();
 
-  if (isLoading)
-    return (
-      <div className="grid content-start gap-2 p-4 min-w-64">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-10 w-full rounded-xl bg-muted/50 animate-pulse"
-          />
-        ))}
-      </div>
-    );
 
-  if (error)
-    return (
-      <div className="grid content-start gap-2 p-4 min-w-64">
-        <p>Не удалось получить данные</p>
-        <p>Попробуйте перезагрузить страницу</p>
-      </div>
-    );
+  if (isPending) {
+    return <div className="hidden md:block top-[--header-height] !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-muted/50"/>;  
+  }
 
-  const navMainItems = (departments as DepartmentTypeSidebar[]).map(
-    (dept: DepartmentTypeSidebar) => ({
+  if (!departments) {
+    return null;
+  }
+
+  const navMainItems = (departments as DepartmentInfo[]).map(
+    (dept: DepartmentInfo) => ({
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],
-      url: `/dashboard/department/${dept.id}`,
+      url: `/department/${dept.id}`,
       directorId: dept.directorId,
       items: dept.users.map((person: Omit<UserResponse, "email" | "role">) => ({
         id: person.id,
         departmentId: person.departmentId,
         username: person.username,
         position: person.position,
-        url: `/dashboard/table/${person.id}`,
+        url: `/table/${person.departmentId}`,
       })),
     })
   );
@@ -90,12 +67,20 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" variant="outline" asChild>
-              <Link href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
+              <Link href="/">
+                <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
+                  <Image
+                    src="/logo.png"
+                    alt="logo"
+                    width={16}
+                    height={16}
+                    className="dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)] drop-shadow-[0_0px_8px_rgba(255,255,255,1)]"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Эртел</span>
+                  <span className="truncate text-lg font-semibold italic">
+                    Ertel
+                  </span>
                 </div>
               </Link>
             </SidebarMenuButton>

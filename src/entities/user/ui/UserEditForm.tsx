@@ -23,12 +23,13 @@ import { userEditSchema, userFormEditSchema } from "../model/schema";
 import { TOAST } from "./Toast";
 import { updateUser } from "../api";
 import { useMutation } from "@tanstack/react-query";
-import { UserRequest, UserWithdepartmentName } from "../types";
+import { OPTIONS, UserRequest, UserWithdepartmentName } from "../types";
 import useStoreUser from "../store/useStoreUser";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import PhoneInput from "@/shared/ui/PhoneInput";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
 import { getQueryClient } from "@/app/provider/query-provider";
+import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
 
 const UserEditForm = ({
   user,
@@ -49,6 +50,7 @@ const UserEditForm = ({
       position: user?.position ?? "",
       department: user?.departmentName as keyof typeof DepartmentsTitle,
       role: user?.role as keyof typeof RolesUser,
+      permissions: user?.permissions as string[]
     },
   });
 
@@ -65,7 +67,7 @@ const UserEditForm = ({
         });
       }
       queryClient.invalidateQueries({
-        queryKey: ["depsWithEmp"],
+        queryKey: ["depsWithUsers"],
         exact: true,
       });
     },
@@ -96,6 +98,7 @@ const UserEditForm = ({
         position: user.position,
         department: user.departmentName as keyof typeof DepartmentsTitle,
         role: user.role as keyof typeof RolesUser,
+        permissions: user.permissions as string[]
       });
     }
   }, [form, user]);
@@ -104,7 +107,7 @@ const UserEditForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid gap-5 max-h-[85vh] overflow-y-auto p-1"
+        className="grid max-h-[85vh] gap-5 overflow-y-auto p-1"
       >
         <div>
           <FormField
@@ -250,26 +253,33 @@ const UserEditForm = ({
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="role"
+            name="permissions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Роль</FormLabel>
+                <FormLabel>Разрешения/Права</FormLabel>
                 <FormControl>
-                  <SelectComponent
-                    placeholder="Выберите права"
-                    options={Object.entries(PermissionsUser)}
-                    classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
-                    defaultValue={user?.role}
+                  <MultiSelectComponent
+                    options={OPTIONS}
+                    placeholder="Установите разрешения"
                     {...field}
-                    required
+                    onValueChange={(selected) => {
+                      console.log(selected);
+                      // const selectedList = selected.map((item) => item.value);
+                      // form.setValue("permissions", selectedList);
+
+                      form.setValue("permissions", selected);
+                    }}
+                    defaultValue={field.value}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>
+                  {form.formState.errors.permissions?.message}
+                </FormMessage>
               </FormItem>
             )}
-          /> */}
+          />
         </div>
         <SubmitFormButton title="Сохранить" isPending={isPending} />
       </form>

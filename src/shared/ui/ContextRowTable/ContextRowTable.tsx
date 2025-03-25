@@ -7,10 +7,11 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
-import EditProject from "../../../entities/project/ui/Modals/EditProject";
-
-import DelProject from "../../../entities/project/ui/Modals/DelProject";
-import { Project } from "@/entities/project/types";
+import { Project, Retail } from "@prisma/client";
+import Link from "next/link";
+import { FilePenLine, FileText, Trash2 } from "lucide-react";
+import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;
@@ -29,27 +30,46 @@ const ContextRowTable = <T,>({
         <ContextMenu>
           <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
-          <ContextMenuContent>
-            <ContextMenuItem onClick={() => setOpenModal("edit")} className="hover:border-muted-foreground focus-visible:border-muted-foreground">
-              Редактировать
+          <ContextMenuContent className="grid gap-1 bg-background">
+            <ContextMenuItem className="flex gap-2">
+              <FileText size="14" />
+              <Link
+                href={`/deal/${(
+                  rowData as Project | Retail
+                ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
+              >
+                Подробнее
+              </Link>
             </ContextMenuItem>
 
-            <ContextMenuItem onClick={() => setOpenModal("delete")}>
-              Удалить
+            <ContextMenuItem
+              onClick={() => setOpenModal("edit")}
+              className="flex gap-2"
+            >
+              <FilePenLine size="14" /> Редактировать
+            </ContextMenuItem>
+
+            <ContextMenuItem
+              onClick={() => setOpenModal("delete")}
+              className="flex gap-2"
+            >
+              <Trash2 size="14" /> Удалить
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
 
         {openModal === "edit" && (
-          <EditProject
+          <EditDealContextMenu
             close={() => setOpenModal(null)}
-            id={(rowData as Project).id}
+            id={(rowData as Project | Retail).id}
+            type={(rowData as Project | Retail).type}
           />
         )}
         {openModal === "delete" && (
-          <DelProject
+          <DelDealContextMenu
             close={() => setOpenModal(null)}
-            id={(rowData as Project).id}
+            id={(rowData as Project | Retail).id}
+            type={(rowData as Project | Retail).type}
           />
         )}
       </Dialog>

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DepartmentsTitle, RolesUser } from "./objectTypes";
+import { DepartmentsTitle, PermissionUser, RolesUser } from "./objectTypes";
 
 export const userFormSchema = z.object({
   username: z
@@ -23,8 +23,11 @@ export const userFormSchema = z.object({
     .string()
     .min(3, { message: "Должность должна содержать не менее 3 символов" })
     .max(60, { message: "Должность должна содержать не более 60 символов" }),
-  department: z.enum(Object.keys(DepartmentsTitle) as [string, ...string[]]), 
+  department: z.enum(Object.keys(DepartmentsTitle) as [string, ...string[]]),
   role: z.enum(Object.keys(RolesUser) as [string, ...string[]]),
+  permissions: z
+    .array(z.enum(Object.keys(PermissionUser) as [string, ...string[]]))
+    .optional(),
 });
 
 export const userFormEditSchema = userFormSchema.merge(
@@ -33,11 +36,10 @@ export const userFormEditSchema = userFormSchema.merge(
       .string()
       .min(6, { message: "Пароль должен содержать не менее 6 символов" })
       .max(30, { message: "Пароль должен содержать не более 30 символов" })
-      .or(z.literal("")) 
+      .or(z.literal(""))
       .optional(),
   })
 );
-
 
 export type userEditSchema = z.infer<typeof userFormEditSchema>;
 export type userSchema = z.infer<typeof userFormSchema>;

@@ -22,6 +22,8 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/entities/user/ui/Toast";
 import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 
 export const loginFormSchema = z.object({
   email: z.string().email(),
@@ -44,6 +46,9 @@ export function LoginForm({
   const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
+  const { setDepartments } = useStoreDepartment();
+  const { data: departmentData } = useGetDepartmentsWithUsers();
+
   const onSubmit = (formData: FormData) => {
     const isValidData = loginFormSchema.parse(Object.fromEntries(formData));
     if (!isValidData) return;
@@ -65,13 +70,20 @@ export function LoginForm({
       setIsAuth(true);
     }
 
-    if (isAuth) {
-      setShouldRedirect(true);
-    }
+    // if (isAuth) {
+    //   setShouldRedirect(true);
+    // }
   }, [state, setAuthUser, setIsAuth, isAuth]);
 
+  useEffect(() => {
+    if (isAuth && departmentData) {
+      setDepartments(departmentData);
+      setShouldRedirect(true);
+    }
+  }, [isAuth, departmentData, setDepartments]);
+
   if (shouldRedirect) {
-    redirect(`/dashboard/table/${authUser?.id}`);
+    redirect(`/table/${authUser?.departmentId}/projects/${authUser?.id}`);
   }
 
   return (
@@ -97,7 +109,7 @@ export function LoginForm({
                         <InputEmail
                           {...field}
                           required
-                          className="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                          className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                         />
                       </FormControl>
                       <FormMessage />
@@ -115,7 +127,7 @@ export function LoginForm({
                           {...field}
                           minLength={6}
                           maxLength={30}
-                          className="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                          className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                           required
                         />
                       </FormControl>

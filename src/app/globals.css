@@ -132,7 +132,7 @@
 
     --sidebar-foreground: 240 4.8% 95.9%;
 
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 224.3 76.3% 30%;
 
     --sidebar-primary-foreground: 0 0% 100%;
 
@@ -186,7 +186,7 @@ body {
 }
 
 .btn_hover {
-  @apply flex gap-2 items-center p-2 bg-background border border-solid border-transparent py-2 hover:border-muted-foreground focus-visible:border-muted-foreground text-sidebar-accent-foreground hover:bg-sidebar-accent rounded-md focus-visible:outline focus-visible:outline-1 focus-visible:outline-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+  @apply flex gap-2 items-center p-2 bg-background border border-solid py-2 hover:border-muted-foreground focus-visible:border-muted-foreground text-sidebar-accent-foreground hover:bg-sidebar-accent rounded-md focus-visible:outline focus-visible:outline-1 focus-visible:outline-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
 }
 
 .tr{
@@ -203,4 +203,44 @@ body {
 
 .td:not(:first-child) {
   @apply min-w-[120px] w-full;
+}
+
+.loader {
+  width: min(150px, 20%);
+  height: min(150px, 20%);
+  display: inline-block;
+  position: relative;
+}
+.loader::after,
+.loader::before {
+  content: '';  
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #FFF;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: animloader 2s linear infinite;
+}
+.loader::after {
+  animation-delay: 1s;
+}
+
+@keyframes animloader {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
 }

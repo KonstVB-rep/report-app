@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import { jwtVerify } from "jose"; // Используем jose для верификации токенов
 import { cookies } from "next/headers";
@@ -9,9 +9,8 @@ interface DecodedToken {
 
 // Получаем текущего/делающего запрос пользователя
 export async function getUserIdFromRequest(): Promise<string | null> {
-
   const cookieStore = await cookies();
-  const cookie = cookieStore.get("access_token"); //  
+  const cookie = cookieStore.get("access_token"); //
 
   // Если куки нет или нет значения, возвращаем null
   if (!cookie || !cookie.value) {
@@ -26,7 +25,11 @@ export async function getUserIdFromRequest(): Promise<string | null> {
     const decodedPayload = payload as unknown;
 
     // Проверяем, что userId существует в decodedPayload
-    if (typeof decodedPayload === 'object' && decodedPayload !== null && 'userId' in decodedPayload) {
+    if (
+      typeof decodedPayload === "object" &&
+      decodedPayload !== null &&
+      "userId" in decodedPayload
+    ) {
       const decodedToken = decodedPayload as DecodedToken; // Теперь мы уверены, что в payload есть userId
       return decodedToken.userId;
     }

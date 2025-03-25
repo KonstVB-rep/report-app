@@ -4,6 +4,7 @@ export const TOAST = {
   ERROR: (message: string) =>
     toast.error(message, {
       duration: 3000,
+      icon: "",
       position: "top-center",
       style: {
         border: "1px solid oklch(0.577 0.245 27.325)",

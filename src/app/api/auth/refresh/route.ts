@@ -17,16 +17,22 @@ export async function POST(req: NextRequest) {
     const { payload } = await jwtVerify(refreshToken, secretKey); // Верификация токена
 
     if (!payload) {
-      return NextResponse.json({ error: "Неверный refresh token" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Неверный refresh token" },
+        { status: 401 }
+      );
     }
 
     // Генерируем новые токены
-    const { accessToken } = await generateTokens(payload.userId as string);
+    const { accessToken } = await generateTokens(payload.userId as string, payload.deratmentId as string | number);
 
     // Возвращаем новый access token
     return NextResponse.json({ accessToken });
   } catch (error) {
     console.error("Ошибка обновления токена:", error);
-    return NextResponse.json({ error: "Ошибка обновления токена" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Ошибка обновления токена" },
+      { status: 500 }
+    );
   }
 }
