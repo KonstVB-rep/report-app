@@ -20,7 +20,6 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
   onValueChange: (value: DateRange | undefined) => void;
 };
 
-
 export function DateRangePicker({ className, value, onValueChange }: Props) {
   const [date, setDate] = React.useState<DateRange | undefined>(value);
 

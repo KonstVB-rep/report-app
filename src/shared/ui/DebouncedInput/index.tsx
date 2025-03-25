@@ -6,7 +6,7 @@ import React from "react";
 const DebouncedInput = ({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 300,
   ...props
 }: {
   value: string;
@@ -25,7 +25,7 @@ const DebouncedInput = ({
     }, debounce);
 
     return () => clearTimeout(timeout);
-  }, [value]);
+  }, [debounce, onChange, value]);
 
   return (
     <Label className="relative">

@@ -1,19 +1,17 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from "react";
 
-const useScrollIntoViewBlock = (dep:unknown) => {
+const useScrollIntoViewBlock = (dep: unknown) => {
+  const ref = useRef<HTMLElement>(null);
 
-    const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    setTimeout(() => {
+      if (ref.current) {
+        ref.current.scrollTop = ref.current.scrollHeight;
+      }
+    }, 100);
+  }, [dep]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            if(ref.current){
-                ref.current.scrollTop = ref.current.scrollHeight;
-            }
-        }, 100)
-      }, [dep]);
+  return ref;
+};
 
-
-  return ref
-}
-
-export default useScrollIntoViewBlock
+export default useScrollIntoViewBlock;

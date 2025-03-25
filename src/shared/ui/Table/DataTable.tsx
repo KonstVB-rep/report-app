@@ -1,61 +1,142 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import React, { useState, ReactNode } from "react";
+
+import React, { useEffect, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
-  flexRender,
   SortingState,
   getSortedRowModel,
   getFilteredRowModel,
   ColumnFiltersState,
   VisibilityState,
   ColumnDef,
-  Row,
 } from "@tanstack/react-table";
-import { MoveUp, MoveDown, ArrowDownUp } from "lucide-react";
-import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import SelectColumns from "../SelectColumns";
 import { DateRange } from "react-day-picker";
 import DateRangeFilter from "../DateRangeFilter";
-import FilterPopover from "../FilterPopover";
-import { DeliveryLabels, DirectionLabels, StatusLabels } from "@/entities/project/lib/constants";
+import { DealTypeLabels, LABELS } from "@/entities/deal/lib/constants";
 import MultiColumnFilter from "../MultiColumnFilter";
-import Link from "next/link";
+import TableComponent from "./TableComponent";
+import FilterPopoverGroup from "../Filters/FilterPopoverGroup";
+import FilterByUser from "../Filters/FilterByUsers";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, X } from "lucide-react";
+import TooltipComponent from "../TooltipComponent";
+import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
+
+const includedColumns = [
+  "nameObject",
+  "nameDeal",
+  "contact",
+  "phone",
+  "email",
+  "additionalContact",
+  "comments",
+];
+
+// Преобразование параметров фильтра в строку URL
+const paramsToString = (arr: ColumnFiltersState) =>
+  arr
+    .map(
+      (item) => `${item.id}=${encodeURIComponent(JSON.stringify(item.value))}`
+    )
+    .join("&");
+
+// Разбор строки URL в объект фильтров
+const parsedParams = (str: string) => {
+  if (!str) return [];
+  return str.split("&").map((item) => {
+    const [filterName, filterValue] = item.split("=");
+    let value = filterValue.split(",");
+    try {
+      value = JSON.parse(decodeURIComponent(filterValue));
+    } catch (e) {
+      console.error("Ошибка при разборе фильтров:", e);
+    }
+    return { id: filterName, value };
+  });
+};
+
+// Преобразование скрытых колонок в строку URL
+const visibilityToString = (visibility: VisibilityState) =>
+  Object.entries(visibility)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .filter(([_, isVisible]) => !isVisible)
+    .map(([key]) => key)
+    .join(",");
+
+// Разбор строки URL в объект скрытых колонок
+const parsedVisibility = (str: string) => {
+  if (!str) return {};
+  return Object.fromEntries(str.split(",").map((key) => [key, false]));
+};
+
+const reduceSearchPrams = (str: string, includeArr: string[]) => {
+  if (!str) return {};
+
+  const arr = decodeURIComponent(str).split("&");
+
+  return arr.reduce<{ [key: string]: string }>((acc, item) => {
+    const innerItem = item.split("=");
+    if (includeArr.includes(innerItem[0])) {
+      acc[innerItem[0]] = decodeURIComponent(innerItem[1]).replace(/"/g, "");
+    }
+    return acc;
+  }, {});
+};
 
 interface DataTableProps<TData, TValue = unknown> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  getRowLink?: (row: TData & { id: string }) => string;
+  getRowLink?: (row: TData & { id: string }, type: string) => string;
+  type: keyof typeof DealTypeLabels;
 }
 
 const DataTable = <TData extends Record<string, unknown>, TValue>({
   columns,
   data,
   getRowLink,
+  type,
 }: DataTableProps<TData, TValue>) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { dealType } = useParams();
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [date, setDate] = useState<DateRange | undefined>(undefined);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(() =>
+    Object.keys(reduceSearchPrams(searchParams.toString(), includedColumns))
+  );
+  const [filterValueSearchByCol, setFilterValueSearchByCol] = useState<string>(
+    () =>
+      Object.values(
+        reduceSearchPrams(searchParams.toString(), includedColumns)
+      )[0] || ""
+  );
+
+  const [openFilters, setOpenFilters] = useState(false);
+
+  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
+    | DateRange
+    | undefined;
 
   const table = useReactTable({
     data,
     columns,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
       columnFilters,
@@ -64,16 +145,17 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   });
 
   const handleDateChange = (date: DateRange | undefined) => {
-    setDate(date);
     setColumnFilters((prev) => {
-      if (!date?.from && !date?.to) {
-        return prev.filter((f) => f.id !== "dateRequest");
+      const newFilters = prev.filter((f) => f.id !== "dateRequest");
+
+      if (date?.from && date?.to) {
+        return [
+          ...newFilters,
+          { id: "dateRequest", value: { from: date.from, to: date.to } },
+        ];
       }
-      return prev.some((f) => f.id === "dateRequest")
-        ? prev.map((f) =>
-            f.id === "dateRequest" ? { ...f, value: date || {} } : f
-          )
-        : [...prev, { id: "dateRequest", value: date || {} }];
+
+      return newFilters;
     });
   };
 
@@ -81,140 +163,133 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
   };
 
-  const renderRowCells = (row: Row<TData>) => {
-    const rowLink = getRowLink
-      ? getRowLink(row.original as TData & { id: string })
-      : undefined;
-    return row.getVisibleCells().map((cell) => (
-      <TableCell key={cell.id} className="td border-r border-b min-w-12">
-        {rowLink ? (
-          <Link href={rowLink}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </Link>
-        ) : (
-          flexRender(cell.column.columnDef.cell, cell.getContext())
-        )}
-      </TableCell>
-    ));
-  };
-
-  const renderRow = (row: Row<TData>): ReactNode => {
-    return (
-      <ContextRowTable key={row.id} rowData={row.original}>
-        <TableRow className="cursor-pointer hover:bg-zinc-600 hover:text-white tr">
-          {renderRowCells(row)}
-        </TableRow>
-      </ContextRowTable>
+  useEffect(() => {
+    const initialFilters = parsedParams(
+      decodeURIComponent(searchParams.get("filters") || "")
     );
-  };
+    const initialVisibility = parsedVisibility(
+      decodeURIComponent(searchParams.get("hidden") || "")
+    );
+
+    if (initialFilters.length) {
+      setColumnFilters(initialFilters);
+    }
+    if (Object.keys(initialVisibility).length) {
+      setColumnVisibility(initialVisibility);
+    }
+  }, [searchParams]);
+
+  // Сохраняем фильтры и скрытые колонки в URL при изменении
+  useEffect(() => {
+    const filtersString = paramsToString(columnFilters);
+    const visibilityString = visibilityToString(columnVisibility);
+
+    const queryParams = new URLSearchParams(searchParams.toString());
+
+    if (filtersString) {
+      queryParams.set("filters", filtersString);
+    } else {
+      queryParams.delete("filters");
+    }
+
+    if (visibilityString) {
+      queryParams.set("hidden", visibilityString);
+    } else {
+      queryParams.delete("hidden");
+    }
+
+    router.replace(`${pathname}?${queryParams.toString()}`);
+  }, [columnFilters, columnVisibility, pathname, router, searchParams]);
 
   return (
-    <div className="flex flex-col bg-background w-full max-h-[80vh] overflow-auto border rounded-lg p-2">
-      <div className="flex gap-2 justify-between">
-        <DateRangeFilter
-          onDateChange={handleDateChange}
-          onClearDateFilter={handleClearDateFilter}
-          value={
-            columnFilters.find((f) => f.id === "dateRequest")?.value as
-              | DateRange
-              | undefined
-          }
-        />
-        <MultiColumnFilter
-          table={table}
-          columns={columns}
-          excludedColumns={[
-            "rowNumber",
-            "direction",
-            "deliveryType",
-            "dateRequest",
-            "user",
-            "lastDateConnection",
-            "plannedDateConnection",
-            "project_status",
-            "delta",
-            "amounCo",
-          ]}
-        />
+    <div className="relative flex max-h-[80vh] w-full flex-col overflow-auto rounded-lg border bg-background p-2">
+      <div className="flex items-center justify-between gap-2">
+        <Button
+          variant={"ghost"}
+          onClick={() => setOpenFilters(!openFilters)}
+          className="flex w-fit justify-start gap-2 px-4"
+        >
+          <span>Фильтры</span>{" "}
+          <ChevronDown
+            className={`h-4 w-4 transition-all duration-200 ${openFilters ? "rotate-180" : ""}`}
+          />
+        </Button>
+        <div className="flex items-center gap-2">
+          {searchParams.size > 0 && (
+            <TooltipComponent content="Сбросить фильтры">
+              <Button
+                variant={"destructive"}
+                size={"icon"}
+                className="w-[50px] transition-transform duration-150 active:scale-95"
+                onClick={() => {
+                  setColumnFilters([]);
+                  setColumnVisibility({});
+                  setSelectedColumns([]);
+                }}
+              >
+                <X />
+              </Button>
+            </TooltipComponent>
+          )}
+          <AddNewDeal type={dealType as string} />
+        </div>
       </div>
-      <div className="flex flex-wrap items-center justify-start gap-2 py-2 bg-background">
-        <FilterPopover
-          columnId="project_status"
-          options={StatusLabels}
-          label="Статус"
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
-        />
-        <FilterPopover
-          columnId="direction"
-          options={DirectionLabels}
-          label="Направление"
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
-        />
-        <FilterPopover
-          columnId="deliveryType"
-          options={DeliveryLabels}
-          label="Тип поставки"
-          columnFilters={columnFilters}
-          setColumnFilters={setColumnFilters}
-        />
-        <SelectColumns data={table} />
+      <div
+        className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+      >
+        <div className="min-h-0">
+          <div className="pb-2">
+            <FilterByUser
+              columnFilters={columnFilters}
+              setColumnFilters={setColumnFilters}
+            />
+          </div>
+          <div className="flex justify-between gap-2">
+            <DateRangeFilter
+              onDateChange={handleDateChange}
+              onClearDateFilter={handleClearDateFilter}
+              value={value}
+            />
+            <MultiColumnFilter
+              columns={columns}
+              setColumnFilters={setColumnFilters}
+              includedColumns={includedColumns}
+              selectedColumns={selectedColumns}
+              setSelectedColumns={setSelectedColumns}
+              filterValueSearchByCol={filterValueSearchByCol}
+              setFilterValueSearchByCol={setFilterValueSearchByCol}
+            />
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 bg-background">
+            <div className="flex flex-wrap items-center justify-start gap-2 bg-background">
+              <FilterPopoverGroup
+                options={[
+                  {
+                    label: "Статус",
+                    columnId: "dealStatus",
+                    options: LABELS[type].STATUS,
+                  },
+                  {
+                    label: "Направление",
+                    columnId: "direction",
+                    options: LABELS[type].DIRECTION,
+                  },
+                  {
+                    label: "Тип поставки",
+                    columnId: "deliveryType",
+                    options: LABELS[type].DELIVERY,
+                  },
+                ]}
+                columnFilters={columnFilters}
+                setColumnFilters={setColumnFilters}
+              />
+              <SelectColumns data={table} />
+            </div>
+          </div>
+        </div>
       </div>
-      {data && data.length ? (
-        <Table className="w-full border rounded-lg mb-2 border-separate border-spacing-0">
-          <TableHeader className="sticky top-0 z-1">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    className="border-r border-zinc-600 bg-zinc-400 dark:bg-zinc-800 py-2 px-3"
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none flex items-center text-center justify-center w-full gap-1 h-full text-primary"
-                            : "flex items-center justify-center h-full w-full text-center text-primary",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        <span className="first-letter:capitalize font-semibold text-xs text-start">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </span>
-                        {header.column.getCanSort() && (
-                          <span>
-                            {header.column.getIsSorted() === "asc" ? (
-                              <MoveUp className="ml-2 h-4 w-4" />
-                            ) : header.column.getIsSorted() === "desc" ? (
-                              <MoveDown className="ml-2 h-4 w-4" />
-                            ) : (
-                              <ArrowDownUp className="ml-2 h-4 w-4" />
-                            )}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
 
-          <TableBody className="space-y-[2px] table-grid-container">
-            {table.getRowModel().rows.map(renderRow)}
-          </TableBody>
-        </Table>
-      ) : (
-        <h1 className="text-center text-xl py-2 px-4 bg-muted rounded-md">
-         Проекты не найдены
-        </h1>
-      )}
+      <TableComponent data={data} getRowLink={getRowLink} table={table} />
     </div>
   );
 };

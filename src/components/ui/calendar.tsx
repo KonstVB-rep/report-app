@@ -8,7 +8,7 @@ import { cn } from "@/shared/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
-   formatters?: { formatMonthCaption: (month: Date) => string }
+  formatters?: { formatMonthCaption: (month: Date) => string };
 };
 function Calendar({
   className,

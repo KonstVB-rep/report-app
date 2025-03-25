@@ -26,10 +26,10 @@ const DropdownWrapper = ({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleOpenChange = (open: boolean) => {
-    console.log('handleOpenChange');
+    console.log("handleOpenChange");
     if (!isMobile) {
       if (open) {
-        setIsOpen(true);  // Открытие при наведение
+        setIsOpen(true); // Открытие при наведение
       } else {
         timeoutRef.current = setTimeout(() => {
           setIsOpen(false); // Закрытие с задержкой
@@ -39,19 +39,19 @@ const DropdownWrapper = ({
   };
 
   const handleMouseEnter = () => {
-    console.log('handleMouseEnter');
+    console.log("handleMouseEnter");
     if (!isMobile) {
-      clearTimeout(timeoutRef.current!);  // Убираем любые предыдущие задержки
-      setIsOpen(true);  // Открытие меню при наведении
+      clearTimeout(timeoutRef.current!); // Убираем любые предыдущие задержки
+      setIsOpen(true); // Открытие меню при наведении
     }
   };
 
   const handleMouseLeave = () => {
-    console.log('handleMouseLeave');
+    console.log("handleMouseLeave");
     if (!isMobile) {
       timeoutRef.current = setTimeout(() => {
-        setIsOpen(false);  // Закрытие с задержкой
-      }, 200);  // Можно настроить время задержки
+        setIsOpen(false); // Закрытие с задержкой
+      }, 200); // Можно настроить время задержки
     }
   };
 

@@ -1,8 +1,8 @@
-"use client"
- 
-import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
- 
+"use client";
+
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+
 export function ThemeProvider({
   children,
   ...props
@@ -13,7 +13,7 @@ export function ThemeProvider({
     setMounted(true);
   }, []);
 
-  if (!mounted) return <div className="bg-background w-full h-full"/>; 
-  
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+  if (!mounted) return <div className="h-full w-full bg-background" />;
+
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
