@@ -16,6 +16,7 @@ import {
   SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { DepartmentsTitle } from "@/entities/user/model/objectTypes";
+import { useRouter } from "next/navigation";
 
 import DialogAddUser from "@/entities/user/ui/DialogAddUser";
 import Link from "next/link";
@@ -44,6 +45,8 @@ const deals = [
 export function NavMain({ items }: { items: DepartmentListType[] }) {
   const { departmentId, userId, dealType } = useParams();
   const pathname = usePathname();
+  const router = useRouter();
+
 
   const [open, setOpen] = useState(true); // Устанавливаем начальное значение true, чтобы меню было открыто
 
@@ -68,17 +71,23 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
               item.id === Number(departmentId) &&
               " border-blue-600 text-primary dark:text-stone-400"
             }`}
+
+            onClickCapture={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              router.push(item.url); 
+            }}
           >
-            <Link
-              href={item.url}
-              className={`${!item.icon && "grid gap-[2px]"}}`}
+            <div
+              role="link"
+              className={`${!item.icon && "grid gap-[2px]"}} cursor-pointer`}
               style={{ width: "calc(100% - 45px)" }}
             >
               {item?.icon ?? null}
-              <span>
+              <span className="text-primary">
                 {DepartmentsTitle[item.title as keyof typeof DepartmentsTitle]}
               </span>
-            </Link>
+            </div>
           </SidebarMenuButton>
           {item.items?.length ? (
             <>

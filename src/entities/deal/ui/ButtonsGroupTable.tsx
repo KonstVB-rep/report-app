@@ -1,4 +1,4 @@
-import { DealType } from "@prisma/client";
+import { DealType, PermissionEnum } from "@prisma/client";
 import React from "react";
 import HoverCardComponent from "@/shared/ui/HoverCard";
 import SummaryTableLink from "./SummaryTableLink";
@@ -6,6 +6,7 @@ import LinkToUserTable from "./LinkToUserTable";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
 import { useGetUser } from "@/entities/user/hooks/query";
 import { useParams } from "next/navigation";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 
 const ButtonsGroupTable = () => {
   const { userId } = useParams();
@@ -19,10 +20,14 @@ const ButtonsGroupTable = () => {
       <ProfileSettings user={user} />
       <div className="flex gap-2">
         <LinkToUserTable />
-        <HoverCardComponent title="Сводная таблица">
-          <SummaryTableLink type={DealType.PROJECT} />
-          <SummaryTableLink type={DealType.RETAIL} />
-        </HoverCardComponent>
+        <ProtectedByPermissions
+          permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+        >
+          <HoverCardComponent title="Сводная таблица">
+            <SummaryTableLink type={DealType.PROJECT} />
+            <SummaryTableLink type={DealType.RETAIL} />
+          </HoverCardComponent>
+        </ProtectedByPermissions>
       </div>
     </div>
   );
