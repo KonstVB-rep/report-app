@@ -38,19 +38,9 @@ const TableComponent = <T extends Record<string, unknown>>({
   );
 
   const renderRowCells = (row: Row<T>) => {
-    // const rowLink = getRowLink
-    //   ? getRowLink(row.original as T & { id: string }, row.original.type as string)
-    //   : undefined;
-
     return row.getVisibleCells().map((cell) => (
       <TableCell key={cell.id} className="td min-w-12 border-b border-r">
-        {/* {rowLink ? (
-          <Link href={rowLink}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </Link>
-        ) : ( */}
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        {/* )} */}
       </TableCell>
     ));
   };
@@ -136,10 +126,14 @@ const TableComponent = <T extends Record<string, unknown>>({
           <div
             key={index}
             className="m-auto my-1 h-14 w-full animate-pulse rounded-lg bg-muted/50"
-          />
+          >
+            {index === 2 ? (
+              <p className="flex items-center justify-center h-full">Загрузка...</p>
+            ) : null}
+          </div>
         ))
       ) : (
-        <h1 className="rounded-md bg-muted px-4 py-2 text-center text-xl my-2">
+        <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
           Проекты не найдены
         </h1>
       )}

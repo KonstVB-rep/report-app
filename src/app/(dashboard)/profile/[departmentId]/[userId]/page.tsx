@@ -13,7 +13,7 @@ import { useGetUser } from "@/entities/user/hooks/query";
 const ProfilePage = () => {
   const { userId } = useParams();
 
-  const { data: user, error, isPending } = useGetUser(userId as string);
+  const { data: user, error, isPending } = useGetUser(userId as string, [PermissionEnum.USER_MANAGEMENT]);
 
   if (isPending)
     return (

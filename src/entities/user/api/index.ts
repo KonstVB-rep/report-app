@@ -439,7 +439,8 @@ export const updateUser = async (
 };
 
 export const getUser = async (
-  targetUserId: string
+  targetUserId: string,
+  permissions: PermissionEnum[]
 ): Promise<(User & { departmentName: string }) | undefined> => {
   try {
     const { user, userId } = await handleAuthorization();
@@ -465,7 +466,7 @@ export const getUser = async (
     if (!targetUser) return handleError("Пользователь не найден");
 
     if (targetUserId !== userId && user) {
-      await checkUserPermissionByRole(user);
+      await checkUserPermissionByRole(user, permissions);
     }
 
     const lastSession = await prisma.userLogin.findFirst({
@@ -521,7 +522,7 @@ export const getUserShort = async (
     if (!targetUser) return handleError("Пользователь не найден");
 
     if (targetUserId !== userId && user) {
-      await checkUserPermissionByRole(user);
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
     }
 
     const userWithDepartmentName = {

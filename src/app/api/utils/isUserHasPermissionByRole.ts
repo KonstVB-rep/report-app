@@ -1,60 +1,63 @@
-import { PermissionType, User } from "@/entities/user/types";
+import { User } from "@/entities/user/types";
 import prisma from "@/prisma/prisma-client";
 import { PermissionEnum } from "@prisma/client";
-
-/*получаем текущего/делающего запрос пользователя*/
 
 export async function isUserHasPermissionByRole(
   user: User,
   permission?: (keyof typeof PermissionEnum)[]
 ): Promise<boolean> {
+
+  if (!user) return false;
+
   // Получаем информацию о департаменте по ID
   const department = await prisma.department.findUnique({
     where: { id: user.departmentId },
-    select: {
-      directorId: true, // Получаем только directorId
-    },
+    select: { directorId: true },
   });
 
+  // Получаем разрешения пользователя
   const userWithPermissions = await prisma.user.findUnique({
     where: { id: user.id },
     select: {
+      role: true, // Добавляем роль, если она не в объекте user
       permissions: {
         include: {
           permission: {
-            select: {
-              name: true,
-            },
+            select: { name: true },
           },
         },
       },
     },
   });
 
-  // Если департамент найден и пользователь является директором этого отдела
+  // Если департамент найден и пользователь — директор этого отдела или он администратор
   if (
     (department && department.directorId === user.id) ||
-    user.role === "ADMIN"
+    userWithPermissions?.role === "ADMIN"
   ) {
     return true;
   }
 
-  const hasAllRequiredPermissions = permission?.every(
-    (reqPermission: PermissionType) => {
-      return userWithPermissions?.permissions.some((p) => {
-        console.log(PermissionEnum[p.permission.name], "p.permission");
-        console.log(reqPermission, "reqPermission");
-
-        return PermissionEnum[p.permission.name] === reqPermission;
-      });
-    }
-  );
-
-  console.log(permission, "hasAllRequiredPermissions");
-
-  if (permission && hasAllRequiredPermissions) {
-    return true;
+  // Если у пользователя нет разрешений в базе, сразу возвращаем false
+  if (!userWithPermissions?.permissions?.length) {
+    console.log("Пользователь не имеет никаких разрешений.");
+    return false;
   }
 
-  return false;
+  const permissionsUser = userWithPermissions.permissions.map(
+    (p) => p.permission.name
+  );
+
+
+  if (!permission || permission.length === 0) {
+
+    return false;
+  }
+
+  const hasAllRequiredPermissions = permission.some((reqPermission) => {
+    const hasPermission = permissionsUser.includes(reqPermission);
+    return hasPermission;
+  });
+
+  return hasAllRequiredPermissions;
 }

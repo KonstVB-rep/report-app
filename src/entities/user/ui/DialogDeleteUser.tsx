@@ -13,12 +13,13 @@ import { Trash } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useGetUser } from "../hooks/query";
 import { useDeleteUser } from "../hooks/mutate";
+import { PermissionEnum } from "@prisma/client";
 
 const DialogDeleteUser = () => {
   const params = useParams();
   const userId = String(params.userId);
 
-  const { data } = useGetUser(userId);
+  const { data } = useGetUser(userId, [PermissionEnum.USER_MANAGEMENT]);
 
   const { mutate, isPending } = useDeleteUser(userId)
 
@@ -35,6 +36,7 @@ const DialogDeleteUser = () => {
       <DialogContent className="sm:max-w-[425px]" showX={false}>
         <DialogHeader>
           <DialogTitle className="sr-only">Удалить пользователя</DialogTitle>
+          
           <DialogDescription className="sr-only">
             Пользователь будет удален навсегда
           </DialogDescription>

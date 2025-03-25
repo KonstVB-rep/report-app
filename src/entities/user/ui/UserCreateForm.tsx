@@ -19,20 +19,17 @@ import { TOAST } from "./Toast";
 import { userFormSchema, userSchema } from "../model/schema";
 import PhoneInput from "@/shared/ui/PhoneInput";
 import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
-import {
-  DepartmentTypeName,
-  OPTIONS,
-} from "../types";
+import { DepartmentTypeName, OPTIONS } from "../types";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
 import { useCreateUser } from "../hooks/mutate";
 
 const UserCreateForm = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setOpen,
 }: {
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
-
-  const { mutate, isPending } = useCreateUser(setOpen)
+  const { mutate, isPending } = useCreateUser();
 
   const form = useForm<userSchema>({
     resolver: zodResolver(userFormSchema),
@@ -48,19 +45,26 @@ const UserCreateForm = ({
   });
 
   const onSubmit = (data: userSchema) => {
-    TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data); // Разрешаем промис при успехе
-          },
-          onError: (error) => {
-            reject(error); // Отклоняем промис при ошибке
-          },
-        });
-      }),
-      "Пользователь сохранен"
-    );
+    try {
+      TOAST.PROMISE(
+        new Promise((resolve, reject) => {
+          mutate(data, {
+            onSuccess: (data) => {
+              resolve(data);
+            },
+            onError: (error) => {
+              reject(error);
+            },
+          });
+        }),
+        "Пользователь сохранен"
+      );
+      form.reset();
+      form.setValue("phone", "");
+    } catch (error) {
+      console.error("Error creating user:", error);
+      TOAST.ERROR("Ошибка при создании пользователя");
+    }
   };
 
   return (
@@ -228,8 +232,6 @@ const UserCreateForm = ({
                     classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
                     value={field.value || ""}
                     onValueChange={(selected) => {
-                      console.log(selected, "selected");
-                      // Убедитесь, что selected передается в нужном формате
                       form.setValue("role", selected);
                     }}
                     required

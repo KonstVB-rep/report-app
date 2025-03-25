@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getUser, getUserShort } from "../api";
 import { UserWithdepartmentName } from "../types";
 import { TOAST } from "../ui/Toast";
+import { PermissionEnum } from "@prisma/client";
 
-export const useGetUser = (userId: string) => {
+export const useGetUser = (userId: string, permissions?: PermissionEnum[] | undefined) => {
   return useQuery({
     queryKey: ["user", userId],
     queryFn: async () => {
       try {
-        return await getUser(userId as string);
+        return await getUser(userId as string, permissions as PermissionEnum[]);
       } catch (error) {
         console.log(error);
         throw error;

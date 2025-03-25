@@ -1,55 +1,32 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { JWTPayload, jwtVerify } from "jose";
 import axiosInstance from "./shared/api/axiosInstance";
 import { cookies } from "next/headers";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
-export default async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+
+async function verifyToken(token: string): Promise<JWTPayload | null> {
+  try {
+    const { payload } = await jwtVerify(token, secretKey);
+    return payload;
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    return null;
+  }
+}
+
+async function redirectToLogin(request: NextRequest) {
   const cookiesStore = await cookies();
-  const accessToken = cookiesStore.get("access_token")?.value;
-  const refreshToken = cookiesStore.get("refresh_token")?.value;
+  cookiesStore.set("auth_redirected", "true", { maxAge: 60 });
+  cookiesStore.delete("access_token");
+  cookiesStore.delete("refresh_token");
 
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+  return NextResponse.redirect(new URL("/login", request.url));
+}
 
-  if (pathname === "/login" || pathname === "/") {
-    if (accessToken) {
-      try {
-        const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
-        const { payload } = await jwtVerify(accessToken, secretKey); // Проверка токена
-        const userId = payload?.userId;
-        const deratmentId = payload?.deratmentId;
-        console.log("Decoded payload:", payload);
-        console.log("Пользователь уже авторизован, редирект на /");
-        return NextResponse.redirect(
-          new URL(`/table/${deratmentId}/projects/${userId}`, request.url)
-        );
-      } catch (error) {
-        console.log("Access token недействителен, оставляем на /login", error);
-      }
-    }
-    return NextResponse.next();
-  }
-
-  // // Если есть accessToken, проверяем его
-  if (accessToken) {
-    try {
-      const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
-      await jwtVerify(accessToken, secretKey); // Проверка токена
-      return NextResponse.next();
-    } catch (error) {
-      console.log("Access token истёк, пробуем обновить...", error);
-    }
-  }
-  // // Если нет refreshToken, редирект на логин
-  if (!refreshToken) {
-    console.log("Нет refresh token, редирект на логин");
-    return redirectToLogin(request);
-  }
-
-  // // Попробуем обновить токен
+async function refreshAccessToken(refreshToken: string, cookiesStore: ReadonlyRequestCookies, request: NextRequest, pathname: string) {
   try {
     const res = await axiosInstance.post("auth/refresh", {
       refresh_token: refreshToken,
@@ -76,13 +53,53 @@ export default async function middleware(request: NextRequest) {
   }
 }
 
-// Удаляем токены и редиректим на логин
-async function redirectToLogin(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const cookiesStore = await cookies();
-  cookiesStore.set("auth_redirected", "true", { maxAge: 60 });
+  const accessToken = cookiesStore.get("access_token")?.value;
+  const refreshToken = cookiesStore.get("refresh_token")?.value;
 
-  return NextResponse.redirect(new URL("/login", request.url));
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (pathname === "/login" || pathname === "/") {
+    if (accessToken) {
+      try {
+        const payload = await verifyToken(accessToken); // Проверка токена
+      if (payload) {
+        const { userId, deratmentId } = payload;
+        console.log("User already logged in, redirecting to /");
+        return NextResponse.redirect(
+          new URL(`/table/${deratmentId}/projects/${userId}`, request.url)
+        );
+      }
+      } catch (error) {
+        console.log("Access token недействителен, оставляем на /login", error);
+      }
+    }
+    return NextResponse.next();
+  }
+
+  // // Если есть accessToken, проверяем его
+  if (accessToken) {
+    try {
+      await jwtVerify(accessToken, secretKey); // Проверка токена
+      return NextResponse.next();
+    } catch (error) {
+      console.log("Access token истёк, пробуем обновить...", error);
+    }
+  }
+  // // Если нет refreshToken, редирект на логин
+  if (!refreshToken) {
+    console.log("Нет refresh token, редирект на логин");
+    return redirectToLogin(request);
+  }
+
+  // // Попробуем обновить токен
+  await refreshAccessToken(refreshToken, cookiesStore, request, pathname);
 }
+
 
 export const config = {
     matcher: ["/(dashboard | table | profile | login | summary-table | deal)/:path*", "/"],
