@@ -41,7 +41,6 @@ export const getAllRetailsByDepartmentQuery = async () => {
     return await getAllRetailsByDepartment();
   } catch (error) {
     console.log(error);
-    TOAST.ERROR((error as Error).message);
     throw error;
   }
 };

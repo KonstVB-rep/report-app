@@ -14,16 +14,17 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  const { data: deals } = useGetProjectsUser(
-    hasAccess ? (userId as string) : null
-  );
+  const {
+    data: deals,
+    isPending,
+  } = useGetProjectsUser(hasAccess ? (userId as string) : null);
 
   if (!hasAccess)
     return (
       <AccessDeniedMessage
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
-    );
+  );
 
   const getRowLink = (row: ProjectResponse) => `/deal/project/${row.id}`;
 
@@ -33,6 +34,7 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
       type={DealType.PROJECT}
       columns={columnsDataProject}
       getRowLink={getRowLink}
+      isPending={isPending}
     />
   );
 };

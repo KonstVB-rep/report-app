@@ -14,7 +14,7 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
   );
 
   // Передаём userId только если есть доступ, иначе null
-  const { data: deals } = useGetRetailsUser(
+  const { data: deals, isPending } = useGetRetailsUser(
     hasAccess ? (userId as string) : null
   );
 
@@ -33,6 +33,7 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
       type={DealType.RETAIL}
       columns={columnsDataRetail}
       getRowLink={getRowLink}
+      isPending={isPending}
     />
   );
 };

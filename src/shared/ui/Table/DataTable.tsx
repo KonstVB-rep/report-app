@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, X } from "lucide-react";
 import TooltipComponent from "../TooltipComponent";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
+import TableRowsSkeleton from "../../../entities/deal/ui/Skeletons/TableRowsSkeleton";
 
 const includedColumns = [
   "nameObject",
@@ -96,6 +97,7 @@ interface DataTableProps<TData, TValue = unknown> {
   data: TData[];
   getRowLink?: (row: TData & { id: string }, type: string) => string;
   type: keyof typeof DealTypeLabels;
+  isPending: boolean;
 }
 
 const DataTable = <TData extends Record<string, unknown>, TValue>({
@@ -103,6 +105,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   data,
   getRowLink,
   type,
+  isPending,
 }: DataTableProps<TData, TValue>) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -210,7 +213,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
         <Button
           variant={"ghost"}
           onClick={() => setOpenFilters(!openFilters)}
-          className="flex w-fit justify-start gap-2 px-4 mb-1"
+          className="mb-1 flex w-fit justify-start gap-2 px-4"
         >
           <span>Фильтры</span>{" "}
           <ChevronDown
@@ -292,7 +295,15 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
         </div>
       </div>
 
-      <TableComponent data={data} getRowLink={getRowLink} table={table} />
+      {isPending ? (
+        <TableRowsSkeleton />
+      ) : data.length ? (
+        <TableComponent table={table} getRowLink={getRowLink} />
+      ) : (
+        <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
+          Проекты не найдены
+        </h1>
+      )}
     </div>
   );
 };

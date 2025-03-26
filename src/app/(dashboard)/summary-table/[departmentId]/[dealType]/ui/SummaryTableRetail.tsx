@@ -1,19 +1,19 @@
 "use client";
 
 import React from "react";
-
-import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import { RetailResponse } from "@/entities/deal/types";
-import DataTable from "@/shared/ui/Table/DataTable";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
 import { useGetAllRetails } from "@/entities/deal/hooks/query";
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
+import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
+import { useParams } from "next/navigation";
+import SummaryTableTemplate from "./SummaryTableTemplate";
 import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 
-const SummaryTableRetail = ({ userId }: { userId: string }) => {
-  const hasAccess = hasAccessToData(
+const SummaryTableRetail = () => {
+  const { userId } = useParams();
+
+  const hasAccess = hasAccessToDataSummary(
     userId as string,
     PermissionEnum.VIEW_UNION_REPORT
   );
@@ -21,8 +21,13 @@ const SummaryTableRetail = ({ userId }: { userId: string }) => {
   const {
     data: deals,
     error,
+    isPending,
     isError,
   } = useGetAllRetails(hasAccess ? (userId as string) : null);
+
+  const getRowLink = (row: RetailResponse & { id: string }, type: string) => {
+    return `/deal/${type.toLowerCase()}/${row.id}`;
+  };
 
   if (!hasAccess)
     return (
@@ -30,32 +35,17 @@ const SummaryTableRetail = ({ userId }: { userId: string }) => {
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
     );
-  
-  const getRowLink = (row: RetailResponse & { id: string }, type: string) => {
-    return `/deal/${type.toLowerCase()}/${row.id}`;
-  };
 
   return (
-    <DealTableTemplate>
-      {isError && (
-        <div className="grid h-full place-items-center">
-          <h1 className="rounded-md bg-muted p-4 text-center text-xl">
-            {error?.message}
-          </h1>
-        </div>
-      )}
-      <LinkToUserTable />
-      {deals && (
-        <>
-          <DataTable
-            columns={columnsDataRetailSummary}
-            data={(deals as RetailResponse[]) ?? []}
-            getRowLink={getRowLink}
-            type={DealType.PROJECT}
-          />
-        </>
-      )}
-    </DealTableTemplate>
+    <SummaryTableTemplate
+      columns={columnsDataRetailSummary}
+      data={(deals as RetailResponse[]) ?? []}
+      getRowLink={getRowLink}
+      type={DealType.RETAIL}
+      isError={isError}
+      error={error}
+      isPending={isPending}
+    />
   );
 };
 

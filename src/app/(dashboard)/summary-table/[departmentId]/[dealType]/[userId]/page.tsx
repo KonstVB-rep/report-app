@@ -12,7 +12,7 @@ const SummaryTablePage = async ({
 }: {
   params: Promise<{ dealType: string; departmentId: string; userId: string }>;
 }) => {
-  const { dealType, departmentId, userId } = await params;
+  const { dealType, departmentId } = await params;
 
   const queryClient = getQueryClient();
 
@@ -37,13 +37,13 @@ const SummaryTablePage = async ({
     case "projects":
       return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <SummaryTableProject userId={userId} />
+          <SummaryTableProject />
         </HydrationBoundary>
       );
     case "retails":
       return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <SummaryTableRetail userId={userId} />
+          <SummaryTableRetail />
         </HydrationBoundary>
       );
     default:

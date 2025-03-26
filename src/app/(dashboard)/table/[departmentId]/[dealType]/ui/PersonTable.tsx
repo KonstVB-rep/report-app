@@ -15,6 +15,7 @@ interface PersonTableProps<T> {
   type: DealType;
   columns: ColumnDef<T>[]; // Можешь уточнить тип колонок, если он известен
   getRowLink: (row: T, type: string) => string;
+  isPending: boolean;
 }
 
 const PersonTable = <T extends { id: string }>({
@@ -22,6 +23,7 @@ const PersonTable = <T extends { id: string }>({
   type,
   columns,
   getRowLink,
+  isPending,
 }: PersonTableProps<T>) => {
   const { userId } = useParams();
   const { authUser } = useStoreUser();
@@ -30,6 +32,7 @@ const PersonTable = <T extends { id: string }>({
   const ref = useScrollIntoViewBlock(
     data
   ) as unknown as RefObject<HTMLDivElement>;
+
 
   return (
     <DealTableTemplate ref={ref}>
@@ -40,6 +43,7 @@ const PersonTable = <T extends { id: string }>({
           data={data ?? []}
           getRowLink={getRowLink}
           type={type}
+          isPending={isPending}
         />
       </>
     </DealTableTemplate>

@@ -1,18 +1,19 @@
 "use client";
 
 import React, { useCallback } from "react";
-import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import { ProjectResponse } from "@/entities/deal/types";
-import DataTable from "@/shared/ui/Table/DataTable";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
 import { useGetAllProjects } from "@/entities/deal/hooks/query";
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
+import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
+import { useParams } from "next/navigation";
+import SummaryTableTemplate from "./SummaryTableTemplate";
 
-const SummaryTableProject = ({ userId }: { userId: string }) => {
-  const hasAccess = hasAccessToData(
+const SummaryTableProject = () => {
+  const { userId } = useParams();
+
+  const hasAccess = hasAccessToDataSummary(
     userId as string,
     PermissionEnum.VIEW_UNION_REPORT
   );
@@ -20,6 +21,7 @@ const SummaryTableProject = ({ userId }: { userId: string }) => {
   const {
     data: deals,
     error,
+    isPending,
     isError,
   } = useGetAllProjects(hasAccess ? (userId as string) : null);
 
@@ -38,24 +40,15 @@ const SummaryTableProject = ({ userId }: { userId: string }) => {
     );
 
   return (
-    <DealTableTemplate>
-      {isError && (
-        <div className="grid h-full place-items-center">
-          <h1 className="rounded-md bg-muted p-4 text-center text-xl">
-            {error?.message}
-          </h1>
-        </div>
-      )}
-      <LinkToUserTable />
-      {deals && (
-        <DataTable
-          columns={columnsDataProjectSummary}
-          data={(deals as ProjectResponse[]) ?? []}
-          getRowLink={getRowLink}
-          type={DealType.PROJECT}
-        />
-      )}
-    </DealTableTemplate>
+    <SummaryTableTemplate
+      columns={columnsDataProjectSummary}
+      data={(deals as ProjectResponse[]) ?? []}
+      getRowLink={getRowLink}
+      type={DealType.PROJECT}
+      isError={isError}
+      error={error}
+      isPending={isPending}
+    />
   );
 };
 

@@ -31,27 +31,27 @@ const ContextRowTable = <T,>({
           <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
           <ContextMenuContent className="grid gap-1 bg-background">
-            <ContextMenuItem className="flex gap-2">
-              <FileText size="14" />
+            <ContextMenuItem className="flex gap-2 p-0">
               <Link
+                className="flex w-full gap-2 items-center justify-start p-2"
                 href={`/deal/${(
                   rowData as Project | Retail
                 ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
               >
-                Подробнее
+                <FileText size="14" /> Подробнее
               </Link>
             </ContextMenuItem>
 
             <ContextMenuItem
               onClick={() => setOpenModal("edit")}
-              className="flex gap-2"
+              className="flex gap-2 cursor-pointer"
             >
               <FilePenLine size="14" /> Редактировать
             </ContextMenuItem>
 
             <ContextMenuItem
               onClick={() => setOpenModal("delete")}
-              className="flex gap-2"
+              className="flex gap-2 cursor-pointer"
             >
               <Trash2 size="14" /> Удалить
             </ContextMenuItem>

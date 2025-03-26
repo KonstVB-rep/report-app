@@ -187,7 +187,7 @@ export const useGetAllRetails = (userId: string | null) => {
 };
 
 export const useGetRetailsUser = (userId: string | null) => {
-  const { data, isError } = useQuery({
+  const { data, isError, ...restData } = useQuery({
     queryKey: ["retails", userId],
     queryFn: async () => {
       try {
@@ -199,8 +199,7 @@ export const useGetRetailsUser = (userId: string | null) => {
     },
     enabled: !!userId,
   });
-
-  return { data };
+return { data, isError, ...restData };
 };
 
 export const useGetProjectsUser = (userId: string | null) => {
@@ -217,5 +216,5 @@ export const useGetProjectsUser = (userId: string | null) => {
     enabled: !!userId,
   });
 
-  return { data, ...restData };
+  return { data,isError, ...restData };
 };

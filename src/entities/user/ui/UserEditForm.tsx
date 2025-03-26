@@ -109,7 +109,7 @@ const UserEditForm = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid max-h-[85vh] gap-5 overflow-y-auto p-1"
       >
-        <div>
+        <div className="grid gap-1">
           <FormField
             control={form.control}
             name="username"

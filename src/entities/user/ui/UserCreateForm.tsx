@@ -73,7 +73,7 @@ const UserCreateForm = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex max-h-[85vh] flex-col gap-8 overflow-y-auto p-1"
       >
-        <div className="grid gap-2">
+        <div className="grid gap-1">
           <FormField
             control={form.control}
             name="username"
