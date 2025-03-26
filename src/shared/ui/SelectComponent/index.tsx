@@ -31,6 +31,7 @@ const SelectComponent = ({
       <SelectTrigger className={`w-full ${classname}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
+
       <SelectContent>
         <SelectGroup>
           {options.map(([key, value]) => (
@@ -40,6 +41,7 @@ const SelectComponent = ({
           ))}
         </SelectGroup>
       </SelectContent>
+      
     </Select>
   );
 };
