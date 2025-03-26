@@ -35,6 +35,7 @@ export interface ProjectResponse {
   dealStatus: StatusProject;
   comments: string;
   plannedDateConnection: Date | null;
+  resource: string | null,
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
@@ -58,6 +59,7 @@ export interface RetailResponse {
   dealStatus: StatusRetail;
   comments: string;
   plannedDateConnection?: Date | null;
+  resource: string | null,
   createdAt: Date;
   updatedAt: Date;
   type: DealType;

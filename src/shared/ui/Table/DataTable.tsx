@@ -140,7 +140,10 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
+      columnVisibility: {
+        resource: false,
+        user: false,
+      },
     },
   });
 

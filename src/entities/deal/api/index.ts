@@ -184,7 +184,6 @@ export const createProject = async (data: ProjectWithoutId) => {
       data: {
         ...(dealData as ProjectResponse),
         userId,
-        dateRequest: new Date(),
         amountCP: safeAmountCP,
         delta: safeDelta,
         amountWork: safeAmountWork,
@@ -235,7 +234,6 @@ export const createRetail = async (data: RetailWithoutId) => {
       data: {
         ...(dealData as RetailResponse),
         userId,
-        dateRequest: new Date(),
         amountCP: safeamountCP,
         delta: safeDelta,
       },
@@ -285,7 +283,6 @@ export const updateProject = async (
       data: {
         ...dealData,
         userId,
-        dateRequest: new Date(),
         amountCP: safeAmountCP,
         delta: safeDelta,
         amountWork: safeAmountWork,
@@ -336,7 +333,6 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
       data: {
         ...(dealData as RetailResponse),
         userId,
-        dateRequest: new Date(),
         amountCP: safeAmountCP,
         delta: safeDelta,
       },
@@ -418,6 +414,7 @@ export const getProjectsUser = async (
 export const getRetailsUser = async (
   idDealOwner: string
 ): Promise<RetailResponse[] | null> => {
+ 
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -566,8 +563,13 @@ export const deleteDeal = async (
   idDealOwner: string,
   type: string
 ) => {
+  
   try {
-    await handleAuthorization();
+    const {user} = await handleAuthorization();
+
+    if(!user){
+      return handleError("Пользователь не найден");
+    }
 
     if (!dealId || !idDealOwner) {
       return handleError("Недостаточно данных");
@@ -600,17 +602,26 @@ export const deleteDeal = async (
     }
 
     if (deal.userId !== idDealOwner) {
-      return handleError("Недостаточно прав");
+      
+      const permissionError = await checkUserPermissionByRole(user, [
+        PermissionEnum.VIEW_UNION_REPORT,
+      ]);
+
+      if (permissionError) {
+        return handleError("Недостаточно прав");
+      }
+
     }
+
     switch (type) {
       case DealType.PROJECT:
         await prisma.project.delete({
-          where: { id: dealId, userId: idDealOwner },
+          where: { id: dealId},
         });
         break;
       case DealType.RETAIL:
         await prisma.retail.delete({
-          where: { id: dealId, userId: idDealOwner },
+          where: { id: dealId },
         });
         break;
     }

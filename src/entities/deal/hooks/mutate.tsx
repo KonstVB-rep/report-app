@@ -23,7 +23,8 @@ import { ProjectResponse, RetailResponse } from "../types";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
-  type: string
+  type: string,
+  ownerId: string
 ) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
@@ -32,16 +33,17 @@ export const useDelDeal = (
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
-      return await deleteDeal(nealId, authUser.id, type);
+
+      return await deleteDeal(nealId, ownerId, type);
     },
     onSuccess: () => {
       closeModalFn();
       queryClient.invalidateQueries({
-        queryKey: [`${type.toLowerCase()}s`, authUser?.id],
+        queryKey: [`${type.toLowerCase()}s`, ownerId],
         exact: true,
       });
       queryClient.invalidateQueries({
-        queryKey: [`${type.toLowerCase()}`, authUser?.id],
+        queryKey: [`${type.toLowerCase()}`, ownerId],
         exact: true,
       });
     },
@@ -63,12 +65,12 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
       return updateProject({
         ...data,
         id: dealId,
+        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
         additionalContact: data.additionalContact || "",
         userId: authUser.id,
         deliveryType: data.deliveryType as DeliveryProject,
-        dateRequest: new Date(),
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
@@ -121,6 +123,9 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
               ? {
                   ...p,
                   ...newData,
+                  dateRequest: newData.dateRequest
+                    ? new Date(newData.dateRequest)
+                    : new Date(),
                   direction: newData.direction as DirectionProject,
                   dealStatus: newData.dealStatus as StatusProject,
                   deliveryType: newData.deliveryType as DeliveryProject,
@@ -141,6 +146,9 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
           return {
             ...oldProject,
             ...newData,
+            dateRequest: newData.dateRequest
+            ? new Date(newData.dateRequest)
+            : new Date(),
             direction: newData.direction as DirectionProject,
             dealStatus: newData.dealStatus as StatusProject,
             deliveryType: newData.deliveryType as DeliveryProject,
@@ -206,12 +214,12 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
       return updateRetail({
         id: dealId,
         ...data,
+        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
         additionalContact: data.additionalContact || "",
         userId: authUser.id,
         deliveryType: data.deliveryType as DeliveryRetail,
-        dateRequest: new Date(),
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
@@ -252,6 +260,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
               ? {
                   ...p,
                   ...newData,
+                  dateRequest: newData.dateRequest ? new Date(newData.dateRequest) : new Date(),
                   direction: newData.direction as DirectionRetail,
                   dealStatus: newData.dealStatus as StatusRetail,
                   deliveryType: newData.deliveryType as DeliveryRetail,
@@ -272,6 +281,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
           return {
             ...oldProject,
             ...newData,
+            dateRequest: newData.dateRequest ? new Date(newData.dateRequest) : new Date(),
             direction: newData.direction as DirectionRetail,
             dealStatus: newData.dealStatus as StatusRetail,
             deliveryType: newData.deliveryType as DeliveryRetail,
@@ -342,7 +352,7 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
           data.deliveryType === ""
             ? null
             : (data.deliveryType as DeliveryProject),
-        dateRequest: new Date(),
+        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)
@@ -405,7 +415,7 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
           data.deliveryType === ""
             ? null
             : (data.deliveryType as DeliveryRetail),
-        dateRequest: new Date(),
+        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(data.plannedDateConnection)

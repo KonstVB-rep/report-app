@@ -10,7 +10,10 @@ export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [
     id: "user",
     header: "Менеджер",
     cell: (info) => info.getValue(),
-    enableHiding: true,
+    enableHiding: false,
+    meta: {
+      hidden: true,
+    },
     filterFn: (row, columnId, filterValues) => {
       console.log("filterValues", filterValues);
       if (!filterValues || filterValues.length === 0) {

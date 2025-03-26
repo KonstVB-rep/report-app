@@ -43,8 +43,23 @@ const ProjectFormBody = <T extends FieldValues>({
         <div className="text-center font-semibold uppercase">
           Форма добавления проекта
         </div>
-        <div className="grid gap-2 p-1 sm:grid-cols-2">
+        <div className="grid gap-2 p-2 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
+            <FormField
+              control={form.control}
+              name={"dateRequest" as Path<T>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Дата запроса</FormLabel>
+                  <CalendarComponent field={field} />
+                  {form.formState.errors.dateRequest?.message && (
+                    <FormMessage className="text-red-500">
+                      {form.formState.errors.dateRequest?.message as string}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name={"nameDeal" as Path<T>}
@@ -363,12 +378,29 @@ const ProjectFormBody = <T extends FieldValues>({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name={"resource" as Path<T>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Источник</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Сайт откуда пришлол клиент" required {...field} />
+                  </FormControl>
+                  {form.formState.errors.resource?.message && (
+                    <FormMessage className="text-red-500">
+                      {form.formState.errors.resource?.message as string}
+                    </FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
           </div>
         </div>
         <SubmitFormButton
           title="Сохранить"
           isPending={isPending}
-          className="ml-auto w-max"
+          className="ml-auto mr-2 w-max"
         />
       </form>
     </Form>

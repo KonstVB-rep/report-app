@@ -9,6 +9,10 @@ import {
 } from "@prisma/client";
 
 export const ProjectFormSchema = z.object({
+  dateRequest: z.preprocess(
+    (val) => (val instanceof Date ? val.toISOString() : val || ""),
+    z.string()
+  ),
   nameDeal: z.string({
     message: "Введите название сделки",
   }),
@@ -23,7 +27,8 @@ export const ProjectFormSchema = z.object({
   ),
   deliveryType: z
     .enum(Object.values(DeliveryProject) as [string, ...string[]])
-    .optional(),
+    .optional()
+    .nullable(),
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")), // ✅ Email необязателен
@@ -42,6 +47,7 @@ export const ProjectFormSchema = z.object({
     (val) => (val instanceof Date ? val.toISOString() : val || ""),
     z.string()
   ),
+  resource: z.string().optional(),
 });
 // refine((data) => {
 //   // Сравниваем lastDateConnection и plannedDateConnection
@@ -56,6 +62,10 @@ export const ProjectFormSchema = z.object({
 // });
 
 export const RetailFormSchema = z.object({
+  dateRequest: z.preprocess(
+    (val) => (val instanceof Date ? val.toISOString() : val || ""),
+    z.string()
+  ),
   nameDeal: z.string({
     message: "Введите название сделки",
   }),
@@ -69,8 +79,9 @@ export const RetailFormSchema = z.object({
     }
   ),
   deliveryType: z
-    .enum(Object.values(DeliveryRetail) as [string, ...string[]])
-    .optional(),
+  .enum(Object.values(DeliveryRetail) as [string, ...string[]])
+  .optional()
+  .nullable(),
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")),
@@ -87,6 +98,8 @@ export const RetailFormSchema = z.object({
     (val) => (val instanceof Date ? val.toISOString() : val || ""),
     z.string()
   ),
+  resource: z.string().optional(),
+  
 });
 
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;

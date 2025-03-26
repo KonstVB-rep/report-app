@@ -13,6 +13,7 @@ const RetailForm = () => {
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema),
     defaultValues: {
+      dateRequest: undefined,
       nameDeal: "",
       nameObject: "",
       direction: "",
@@ -26,6 +27,7 @@ const RetailForm = () => {
       dealStatus: "",
       comments: "",
       plannedDateConnection: undefined,
+      resource: "",
     },
   });
 

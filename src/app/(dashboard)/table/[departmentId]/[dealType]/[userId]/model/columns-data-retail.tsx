@@ -225,4 +225,15 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     accessorFn: (row: RetailResponse) => row.plannedDateConnection,
   },
+  {
+    id: "resource",
+    accessorKey: "resource",
+    header: "Источник сделки/сайт",
+    cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
+    enableHiding: false,
+    meta: {
+      hidden: true,
+    },
+    accessorFn: (row: RetailResponse) => row.nameDeal,
+  },
 ];

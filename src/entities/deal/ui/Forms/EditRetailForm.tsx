@@ -22,6 +22,7 @@ const EditRetailForm = ({
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema),
     defaultValues: {
+      dateRequest: undefined,
       nameDeal: data?.nameDeal || "",
       nameObject: data?.nameObject || "",
       direction: data?.direction ? String(data.direction) : "",
@@ -35,6 +36,7 @@ const EditRetailForm = ({
       delta: data?.delta || "0",
       comments: data?.comments || "",
       plannedDateConnection: undefined,
+      resource: data?.resource || "",
     },
   });
 
@@ -60,6 +62,7 @@ const EditRetailForm = ({
     if (data) {
       form.reset({
         ...data,
+        dateRequest: data.dateRequest?.toISOString(), // Преобразуем Date в строку
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
         direction: data.direction as DirectionRetail,
@@ -67,6 +70,7 @@ const EditRetailForm = ({
         email: data.email ?? undefined, // Преобразуем null в undefined
         amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
         delta: formatterCurrency.format(parseFloat(data.delta)),
+        resource: data.resource ?? "",
       });
     }
   }, [form, data]);

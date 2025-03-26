@@ -26,6 +26,7 @@ const EditProjectForm = ({
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues: {
+      dateRequest: undefined,
       nameDeal: data?.nameDeal || "",
       nameObject: data?.nameObject || "",
       direction: data?.direction ? String(data.direction) : "",
@@ -44,6 +45,7 @@ const EditProjectForm = ({
       delta: data?.delta || "0",
       comments: data?.comments || "",
       plannedDateConnection: undefined,
+      resource: data?.resource || "",
     },
   });
 
@@ -69,6 +71,7 @@ const EditProjectForm = ({
     if (data) {
       form.reset({
         ...data,
+        dateRequest: data.dateRequest?.toISOString(), // Преобразуем Date в строку
         deliveryType: (data.deliveryType as DeliveryProject) || undefined,
         dealStatus: data.dealStatus as StatusProject,
         direction: data.direction as DirectionProject,
@@ -80,6 +83,7 @@ const EditProjectForm = ({
         ),
         amountWork: formatterCurrency.format(parseFloat(data.amountWork)),
         delta: formatterCurrency.format(parseFloat(data.delta)),
+        resource: data.resource ?? "", // Преобразуем null в undefined
       });
     }
   }, [form, data]);

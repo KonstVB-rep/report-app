@@ -81,6 +81,7 @@ model Project {
   amountPurchase        Decimal          @db.Decimal(15, 2)
   amountWork            Decimal          @db.Decimal(15, 2)
   dealStatus            StatusProject
+  resource              String?
   files                 File[]
   user                  User             @relation(fields: [userId], references: [id])
 
@@ -105,6 +106,7 @@ model Retail {
   dealStatus            StatusRetail
   comments              String
   plannedDateConnection DateTime?
+  resource              String?
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
   files                 File[]

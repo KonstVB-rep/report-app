@@ -23,7 +23,8 @@ const DelDealContextMenu = ({
   type: DealType;
 }) => {
   const { data: deal } = useGetDealById(id, type);
-  const { mutate: delDeal, isPending } = useDelDeal(close, type);
+
+  const { mutate: delDeal, isPending } = useDelDeal(close, type, deal?.userId as string);
 
   return (
     <DialogContent className="sm:max-w-[425px]">
@@ -47,7 +48,9 @@ const DelDealContextMenu = ({
         <SubmitFormButton
           type="submit"
           isPending={isPending}
-          onClick={() => delDeal(id)}
+          onClick={() => {
+            if (deal) delDeal(deal.id);
+          }}
           title="Удалить"
         />
       </DialogFooter>

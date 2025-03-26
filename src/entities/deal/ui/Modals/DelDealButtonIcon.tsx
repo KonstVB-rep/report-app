@@ -20,7 +20,7 @@ import { useDelDeal } from "../../hooks/mutate";
 const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const { data: deal } = useGetDealById(id, type);
   const [open, setOpen] = React.useState(false);
-  const { mutate: delDeal, isPending } = useDelDeal(close, type);
+  const { mutate: delDeal, isPending } = useDelDeal(close, type, deal?.userId as string);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

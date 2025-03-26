@@ -11,7 +11,10 @@ export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] =
       id: "user",
       header: "Менеджер",
       cell: (info) => info.getValue(),
-      enableHiding: true,
+      enableHiding: false,
+    meta: {
+      hidden: true,
+    },
       filterFn: (row, columnId, filterValues) => {
         if (!filterValues || filterValues.length === 0) {
           return true;
