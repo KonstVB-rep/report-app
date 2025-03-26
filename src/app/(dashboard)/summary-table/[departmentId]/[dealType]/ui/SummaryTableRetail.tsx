@@ -9,6 +9,8 @@ import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
 import { useGetAllRetails } from "@/entities/deal/hooks/query";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
+import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
+import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 
 const SummaryTableRetail = ({ userId }: { userId: string }) => {
   const hasAccess = hasAccessToData(
@@ -22,6 +24,13 @@ const SummaryTableRetail = ({ userId }: { userId: string }) => {
     isError,
   } = useGetAllRetails(hasAccess ? (userId as string) : null);
 
+  if (!hasAccess)
+    return (
+      <AccessDeniedMessage
+        error={{ message: "у вас нет доступа к этому разделу" }}
+      />
+    );
+  
   const getRowLink = (row: RetailResponse & { id: string }, type: string) => {
     return `/deal/${type.toLowerCase()}/${row.id}`;
   };
@@ -35,6 +44,7 @@ const SummaryTableRetail = ({ userId }: { userId: string }) => {
           </h1>
         </div>
       )}
+      <LinkToUserTable />
       {deals && (
         <>
           <DataTable

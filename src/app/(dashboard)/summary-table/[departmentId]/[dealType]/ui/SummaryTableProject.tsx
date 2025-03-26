@@ -8,6 +8,8 @@ import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
 import { useGetAllProjects } from "@/entities/deal/hooks/query";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
+import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
+import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 
 const SummaryTableProject = ({ userId }: { userId: string }) => {
   const hasAccess = hasAccessToData(
@@ -19,7 +21,6 @@ const SummaryTableProject = ({ userId }: { userId: string }) => {
     data: deals,
     error,
     isError,
-    // isPending,
   } = useGetAllProjects(hasAccess ? (userId as string) : null);
 
   const getRowLink = useCallback(
@@ -29,7 +30,12 @@ const SummaryTableProject = ({ userId }: { userId: string }) => {
     []
   );
 
-  //   if (isPending) return <Loading />;
+  if (!hasAccess)
+    return (
+      <AccessDeniedMessage
+        error={{ message: "у вас нет доступа к этому разделу" }}
+      />
+    );
 
   return (
     <DealTableTemplate>
@@ -40,6 +46,7 @@ const SummaryTableProject = ({ userId }: { userId: string }) => {
           </h1>
         </div>
       )}
+      <LinkToUserTable />
       {deals && (
         <DataTable
           columns={columnsDataProjectSummary}

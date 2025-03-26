@@ -210,7 +210,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
         <Button
           variant={"ghost"}
           onClick={() => setOpenFilters(!openFilters)}
-          className="flex w-fit justify-start gap-2 px-4"
+          className="flex w-fit justify-start gap-2 px-4 mb-1"
         >
           <span>Фильтры</span>{" "}
           <ChevronDown

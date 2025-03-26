@@ -5,18 +5,21 @@ import { Redo2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { DealsUnionType } from "../types";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 
 const linksPersonTable = (
   deptId: string | number
 ): Record<DealsUnionType, { title: string; url: string }> => {
- return { retails: {
-    title: "Проекты",
-    url: `/table/${deptId}/projects`,
-  },
-  projects: {
-    title: "Розничные сделки",
-    url: `/table/${deptId}/retails`,
-  },}
+  return {
+    retails: {
+      title: "Проекты",
+      url: `/table/${deptId}/projects`,
+    },
+    projects: {
+      title: "Розничные сделки",
+      url: `/table/${deptId}/retails`,
+    },
+  };
 };
 
 const linksSummaryTable = (
@@ -24,11 +27,11 @@ const linksSummaryTable = (
 ): Record<DealsUnionType, { title: string; url: string }> => {
   return {
     retails: {
-      title: "Проекты",
+      title: "Проекты/Сводная таблица",
       url: `/summary-table/${deptId}/projects`,
     },
     projects: {
-      title: "Розничные сделки",
+      title: "Розничные сделки/Сводная таблица",
       url: `/summary-table/${deptId}/retails`,
     },
   };
@@ -45,7 +48,9 @@ const LinkToUserTable = () => {
 
   const tableLinks = linksPersonTable(departmentId as string);
 
-  const hasTable = pathname.includes(`/table/${departmentId}/${dealType}/${userId}`)
+  const hasTable = pathname.includes(
+    `/table/${departmentId}/${dealType}/${userId}`
+  )
     ? tableLinks[dealType as DealsUnionType]
     : false;
 
@@ -73,13 +78,15 @@ const LinkToUserTable = () => {
 
   if (hasSummaryTable) {
     return (
-      <Link
-        className="btn_hover max-w-max border-muted px-4 text-sm"
-        href={`${hasSummaryTable.url}/${authUser.id}`}
-        title={`Перейти на страницу - ${hasSummaryTable.title}`}
-      >
-        {hasSummaryTable.title} <Redo2 size={14} />
-      </Link>
+      <ProtectedByPermissions permissionArr={["VIEW_UNION_REPORT"]}>
+        <Link
+          className="btn_hover max-w-max border-muted px-4 text-sm"
+          href={`${hasSummaryTable.url}/${authUser.id}`}
+          title={`Перейти на страницу - ${hasSummaryTable.title}`}
+        >
+          {hasSummaryTable.title} <Redo2 size={14} />
+        </Link>
+      </ProtectedByPermissions>
     );
   }
 };
