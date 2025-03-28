@@ -21,7 +21,7 @@ import {
 } from "@/entities/department/types";
 import Link from "next/link";
 import Image from "next/image";
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 
 const icons = {
   SALES: <BadgeRussianRuble />,
@@ -29,12 +29,12 @@ const icons = {
 };
 
 export function AppSidebar() {
-  const { data: departments , isPending } = useGetDepartmentsWithUsers();
+  const { departments } = useStoreDepartment();
 
 
-  if (isPending) {
-    return <div className="hidden md:block top-[--header-height] !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-muted/50"/>;  
-  }
+  // if (isPending) {
+  //   return <div className="hidden md:block top-[--header-height] !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-muted/50"/>;  
+  // }
 
   if (!departments) {
     return null;

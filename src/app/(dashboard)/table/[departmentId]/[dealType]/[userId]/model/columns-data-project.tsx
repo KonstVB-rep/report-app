@@ -37,6 +37,8 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     meta: {
       isDateFilter: true,
     },
+    size: 100,  // Фиксированная ширина
+    enableResizing: false, // Запрещаем изменение размера
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date;
       const dateAtStartOfDay = startOfDay(date);
@@ -124,6 +126,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId);
+      if (!rowValue) return false;
       if (Array.isArray(value)) {
         return value.some((direction) =>
           (rowValue as typeofDirections).includes(direction)
@@ -191,7 +194,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   },
   {
     id: "additionalContact",
-    header: "Дополнительный контакт",
+    header: "Доп. контакт",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.additionalContact,
@@ -232,7 +235,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofStatus;
       return (
-        <span className="whitespace-nowrap">{StatusProjectLabels[value]}</span>
+        <span >{StatusProjectLabels[value]}</span>
       );
     },
     enableHiding: true,

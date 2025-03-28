@@ -92,6 +92,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId);
+      if(!rowValue) return false;
       if (Array.isArray(value)) {
         return value.some((direction) =>
           (rowValue as typeofDirections).includes(direction)
@@ -112,6 +113,8 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId);
+
+      if (!rowValue) return false;
       if (Array.isArray(value)) {
         return value.some((direction) =>
           (rowValue as typeofDirections).includes(direction)
@@ -154,11 +157,11 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
   },
   {
     id: "additionalСontact",
-    accessorKey: "contact",
-    header: "Дополнительный контакт",
+    accessorKey: "additionalСontact",
+    header: "Доп. контакт",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: RetailResponse) => row.contact,
+    accessorFn: (row: RetailResponse) => row.additionalСontact,
   },
   {
     id: "amountCP",

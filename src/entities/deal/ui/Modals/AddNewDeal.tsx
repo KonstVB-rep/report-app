@@ -192,21 +192,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DialogHeader,
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-
 import { Plus } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 
 import RetailForm from "../Forms/RetailForm";
 import ProjectForm from "../Forms/ProjectForm";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
+import DialogComponent from "@/shared/ui/DialogComponent";
 
 type AddNewDealProps = {
   type: string;
@@ -224,24 +215,18 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
 };
 
 const AddNewDeal = ({ type }: AddNewDealProps) => {
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <TooltipComponent content={contentType[type].title}>
-        <DialogTrigger asChild>
-          <Button variant="outline">
-            <Plus />
-          </Button>
-        </DialogTrigger>
-      </TooltipComponent>
-      <DialogContent className="sm:max-w-[825px]" showX={true}>
-        <DialogHeader>
-          <DialogTitle />
-          <DialogDescription />
-        </DialogHeader>
-        {contentType[type].form}
-      </DialogContent>
-    </Dialog>
+    <DialogComponent
+      contentTooltip={contentType[type].title}
+      trigger={
+        <Button variant="outline">
+          <Plus />
+        </Button>
+      }
+    >
+      {contentType[type].form}
+    </DialogComponent>
   );
 };
 

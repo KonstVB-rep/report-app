@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -26,10 +26,56 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, X } from "lucide-react";
+import { Check, ChevronDown, Settings2, X } from "lucide-react";
 import TooltipComponent from "../TooltipComponent";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import TableRowsSkeleton from "../../../entities/deal/ui/Skeletons/TableRowsSkeleton";
+import SaveFilter from "@/entities/deal/ui/Modals/SaveFilter";
+import HoverCardComponent from "../HoverCard";
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import FiltersManagment from "@/entities/deal/ui/FiltersManagment";
+
+const userFiltersData = [
+  {
+    id: "1a2b3c",
+    userId: "user123",
+    filterName: "status",
+    filterValue:
+      "filters=deliveryType%3D%255B%2522SUPPLY%2522%255D%26direction%3D%255B%2522OTHER%2522%255D",
+    isActive: true,
+    createdAt: new Date("2024-03-20T12:00:00Z"),
+    updatedAt: new Date("2024-03-25T14:30:00Z"),
+  },
+  {
+    id: "4d5e6f",
+    userId: "user456",
+    filterName: "role",
+    filterValue:
+      "filters=deliveryType%3D%255B%2522SUPPLY%2522%255D%26direction%3D%255B%2522OTHER%2522%255D&hidden=nameDeal%2CnameObject%2Cdirection",
+    isActive: false,
+    createdAt: new Date("2024-02-15T09:20:00Z"),
+    updatedAt: new Date("2024-03-10T10:45:00Z"),
+  },
+  {
+    id: "7g8h9i",
+    userId: "user789",
+    filterName: "deliveryType",
+    filterValue: "filters=deliveryType%3D%255B%2522SUPPLY%2522%255D",
+    isActive: true,
+    createdAt: new Date("2024-01-10T08:15:00Z"),
+    updatedAt: new Date("2024-02-28T16:00:00Z"),
+  },
+  {
+    id: "0j1k2l",
+    userId: "user321",
+    filterName: "subscription",
+    filterValue:
+      "filters=deliveryType%3D%255B%2522SUPPLY%2522%255D%26direction%3D%255B%2522OTHER%2522%255D%26dealStatus%3D%255B%2522PROGRESS%2522%252C%2522PAID%2522%255D&hidden=nameDeal%2CnameObject%2Cdirection",
+    isActive: true,
+    createdAt: new Date("2024-03-05T18:45:00Z"),
+    updatedAt: new Date("2024-03-27T20:10:00Z"),
+  },
+];
 
 const includedColumns = [
   "nameObject",
@@ -136,19 +182,28 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     columns,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    getCoreRowModel: getCoreRowModel(),
+    debugTable: true,
+    debugHeaders: true,
+    debugColumns: true,
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
+    },
+    meta: {
       columnVisibility: {
         resource: false,
         user: false,
       },
     },
   });
+
 
   const handleDateChange = (date: DateRange | undefined) => {
     setColumnFilters((prev) => {
@@ -169,6 +224,41 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
   };
 
+  // const handleClearFilters = () => {
+  //   setColumnFilters([]);
+  //   setColumnVisibility({});
+
+  //   setFilterInDb(null);
+  // };
+
+  // const filterSelect = (filterValue: string) => {
+  //   const queryParams = new URLSearchParams(filterValue);
+
+  //   const filters = decodeURIComponent(queryParams.get("filters") || "");
+
+  //   const filtersArr = filters.split("&").map((filter) => {
+  //     const [key, value]: string[] = filter.split("=");
+  //     return {
+  //       id: key,
+  //       value: JSON.parse(decodeURIComponent(value)),
+  //     };
+  //   });
+
+  //   const hiddenCols = queryParams
+  //     .get("hidden")
+  //     ?.split(",")
+  //     ?.reduce(
+  //       (acc, item) => {
+  //         acc[item] = false;
+  //         return acc;
+  //       },
+  //       {} as { [key: string]: boolean }
+  //     );
+
+  //   setColumnFilters(filtersArr ?? []);
+  //   setColumnVisibility(hiddenCols ?? {});
+  // };
+
   useEffect(() => {
     const initialFilters = parsedParams(
       decodeURIComponent(searchParams.get("filters") || "")
@@ -183,8 +273,10 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     if (Object.keys(initialVisibility).length) {
       setColumnVisibility(initialVisibility);
     }
-  }, [searchParams]);
 
+    console.log("useEffext1");
+  }, [searchParams]);
+  console.log(columnFilters, "columnFilters");
   // Сохраняем фильтры и скрытые колонки в URL при изменении
   useEffect(() => {
     const filtersString = paramsToString(columnFilters);
@@ -203,48 +295,98 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     } else {
       queryParams.delete("hidden");
     }
-
+    console.log("useEffext2");
     router.replace(`${pathname}?${queryParams.toString()}`);
   }, [columnFilters, columnVisibility, pathname, router, searchParams]);
 
   return (
-    <div className="relative flex max-h-[80vh] w-full flex-col overflow-auto rounded-lg border bg-background p-2">
-      <div className="flex items-center justify-between gap-2">
-        <Button
-          variant={"ghost"}
-          onClick={() => setOpenFilters(!openFilters)}
-          className="mb-1 flex w-fit justify-start gap-2 px-4"
-        >
-          <span>Фильтры</span>{" "}
-          <ChevronDown
-            className={`h-4 w-4 transition-all duration-200 ${openFilters ? "rotate-180" : ""}`}
-          />
-        </Button>
-        <div className="flex items-center gap-2">
-          {searchParams.size > 0 && (
-            <TooltipComponent content="Сбросить фильтры">
-              <Button
-                variant={"destructive"}
-                size={"icon"}
-                className="w-[50px] transition-transform duration-150 active:scale-95"
-                onClick={() => {
-                  setColumnFilters([]);
-                  setColumnVisibility({});
-                  setSelectedColumns([]);
-                }}
-              >
-                <X />
-              </Button>
-            </TooltipComponent>
-          )}
-          <AddNewDeal type={dealType as string} />
+    <div className="relative grid max-h-[85vh] w-full overflow-hidden rounded-lg border bg-background p-2">
+      <div className="flex items-center justify-between gap-2 pb-2">
+        <div className="flex items-center justify-between gap-2 flex-1">
+          {/* <div className="flex items-center gap-2">
+            <Button
+              variant={"ghost"}
+              onClick={() => setOpenFilters(!openFilters)}
+              className="flex h-full w-fit justify-start gap-2 px-4"
+            >
+              <span>Фильтры</span>{" "}
+              <ChevronDown
+                className={`h-4 w-4 transition-all duration-200 ${openFilters ? "rotate-180" : ""}`}
+              />
+            </Button>
+            {!openFilters && columnFilters.length > 0 && (
+              <div className="flex h-8 w-8 items-center justify-center gap-2 rounded-md bg-muted p-1">
+                {columnFilters.length}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {userFiltersData.length > 0 && (
+              <HoverCardComponent title={<Settings2 />}>
+                {userFiltersData.map((item) => {
+                  return (
+                    <div key={item.id} className="flex gap-1">
+                      <span>{item.filterName}</span>
+                      <Button
+                        variant={"secondary"}
+                        className="flex h-full w-fit justify-start gap-2 px-4"
+                        onClick={() => filterSelect(item.filterValue)}
+                      >
+                        <Check />
+                      </Button>
+                      <Button
+                        variant={"destructive"}
+                        className="flex h-full w-fit justify-start gap-2 px-4"
+                        onClick={handleClearFilters}
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </HoverCardComponent>
+            )}
+            {searchParams.size > 0 && (
+              <HoverCardComponent title={<Settings2 />}>
+                {columnFilters.length ||
+                Object.keys(columnVisibility).length ? (
+                  <SaveFilter />
+                ) : null}
+                <TooltipComponent content="Сбросить фильтры">
+                  <Button
+                    variant={"destructive"}
+                    size={"icon"}
+                    className="w-[50px] min-w-24 transition-transform duration-150 active:scale-95"
+                    onClick={() => {
+                      setColumnFilters([]);
+                      setColumnVisibility({});
+                      setSelectedColumns([]);
+                    }}
+                  >
+                    <X />
+                  </Button>
+                </TooltipComponent>
+              </HoverCardComponent>
+            )}
+          </div> */}
+          <FiltersManagment
+            setColumnFilters={setColumnFilters}
+            setColumnVisibility={setColumnVisibility}
+            setSelectedColumns={setSelectedColumns}
+            openFilters={openFilters}
+            setOpenFilters={setOpenFilters}
+            columnFilters={columnFilters}
+            columnVisibility={columnVisibility} 
+            selectedColumns={[]}          
+            />
         </div>
+        <AddNewDeal type={dealType as string} />
       </div>
       <div
         className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
       >
         <div className="min-h-0">
-          <div className="pb-2">
+          <div>
             <FilterByUser
               columnFilters={columnFilters}
               setColumnFilters={setColumnFilters}

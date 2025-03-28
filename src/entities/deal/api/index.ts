@@ -3,7 +3,7 @@
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
-import { DealType, PermissionEnum, Prisma } from "@prisma/client";
+import { DealType, PermissionEnum, Prisma, UserFilter } from "@prisma/client";
 import { ProjectResponse, RetailResponse } from "../types";
 import prisma from "@/prisma/prisma-client";
 
@@ -58,8 +58,6 @@ export const getProjectById = async (
   try {
     const data = await handleAuthorization();
 
-    if (!data) return handleError("Ошибка авторизации");
-
     const { user, userId } = data!;
 
     if (!dealId || !idDealOwner) {
@@ -81,20 +79,20 @@ export const getProjectById = async (
       await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
-    const project = await prisma.project.findUnique({
+    const deal = await prisma.project.findUnique({
       where: { id: dealId },
     });
 
-    if (!project) {
+    if (!deal) {
       return handleError("Проект не найден");
     }
 
     const formattedProject = {
-      ...project,
-      amountCP: project.amountCP.toString(),
-      amountWork: project.amountWork.toString(),
-      amountPurchase: project.amountPurchase.toString(),
-      delta: project.delta.toString(),
+      ...deal,
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      amountWork: deal.amountWork ? deal.amountWork.toString() : "", // Преобразуем Decimal в строку
+      amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
+      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
     };
     return formattedProject;
   } catch (error) {
@@ -109,8 +107,6 @@ export const getRetailById = async (
 ): Promise<RetailResponse | null> => {
   try {
     const data = await handleAuthorization();
-
-    if (!data) return handleError("Ошибка авторизации");
 
     const { user, userId } = data!;
 
@@ -133,18 +129,18 @@ export const getRetailById = async (
       await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
-    const retail = await prisma.retail.findUnique({
+    const deal = await prisma.retail.findUnique({
       where: { id: dealId },
     });
 
-    if (!retail) {
+    if (!deal) {
       return handleError("Проект не найден");
     }
 
     const formattedRetail = {
-      ...retail,
-      amountCP: retail.amountCP.toString(),
-      delta: retail.delta.toString(),
+      ...deal,
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
     };
 
     return formattedRetail;
@@ -291,14 +287,14 @@ export const updateProject = async (
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdAt, updatedAt, ...rest } = updatedDeal;
+    const { createdAt, updatedAt, ...restDeal } = updatedDeal;
 
     const formattedDeal = {
-      ...rest,
-      amountCP: rest.amountCP.toString(),
-      amountWork: rest.amountWork.toString(),
-      amountPurchase: rest.amountPurchase.toString(),
-      delta: rest.delta.toString(), // Преобразуем Decimal в строку
+      ...restDeal,
+      amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      amountWork: restDeal.amountWork ? restDeal.amountWork.toString() : "", // Преобразуем Decimal в строку
+      amountPurchase: restDeal.amountPurchase ? restDeal.amountPurchase.toString() : "",
+      delta: restDeal.delta ? restDeal.delta.toString() : "", // Преобразуем Decimal в строку
     };
 
     return formattedDeal;
@@ -339,12 +335,12 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdAt, updatedAt, ...rest } = updatedDeal;
+    const { createdAt, updatedAt, ...restDeal } = updatedDeal;
 
     const formattedDeal = {
-      ...rest,
-      amountCP: rest.amountCP.toString(),
-      delta: rest.delta.toString(), // Преобразуем Decimal в строку
+      ...restDeal,
+      amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      delta: restDeal.delta ? restDeal.delta.toString() : "", // Преобразуем Decimal в строку
     };
 
     return formattedDeal;
@@ -361,34 +357,33 @@ export const getProjectsUser = async (
     const data = await handleAuthorization();
     const { user, userId } = data!;
 
-    if (!user) {
-      return handleError("Пользователь не найден");
-    }
-
     if (!idProjectOwner) {
       return handleError("Недостаточно данных");
     }
 
     if (userId === idProjectOwner) {
-      const projects = await prisma.project.findMany({
+      const deals = await prisma.project.findMany({
         where: { userId: idProjectOwner },
       });
 
-      const formattedProjects = projects.map((project) => ({
-        ...project,
-        amountCP: project.amountCP.toString(),
-        amountWork: project.amountWork.toString(),
-        amountPurchase: project.amountPurchase.toString(),
-        delta: project.delta.toString(),
+      const formattedProjects = deals.map((deal) => ({
+        ...deal,
+         amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      amountWork: deal.amountWork ? deal.amountWork.toString() : "", // Преобразуем Decimal в строку
+      amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
+      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
       }));
 
       return formattedProjects;
     }
 
-    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
 
     const deals = await prisma.project.findMany({
       where: { userId: idProjectOwner },
+      orderBy: {
+        dateRequest: "asc", 
+      },
     });
 
     if (!deals.length) {
@@ -397,10 +392,10 @@ export const getProjectsUser = async (
 
     const formattedDeals = deals.map((deals) => ({
       ...deals,
-      amountCP: deals.amountCP.toString(),
-      amountWork: deals.amountWork.toString(),
-      amountPurchase: deals.amountPurchase.toString(),
-      delta: deals.delta.toString(),
+      amountCP: deals.amountCP ? deals.amountCP.toString() : "", // Преобразуем Decimal в строку
+      amountWork: deals.amountWork ? deals.amountWork.toString() : "", // Преобразуем Decimal в строку
+      amountPurchase: deals.amountPurchase ? deals.amountPurchase.toString() : "",
+      delta: deals.delta ? deals.delta.toString() : "", // Преобразуем Decimal в строку
     }));
 
     return formattedDeals;
@@ -419,10 +414,6 @@ export const getRetailsUser = async (
     const data = await handleAuthorization();
     const { user, userId } = data!;
 
-    if (!user) {
-      return handleError("Пользователь не найден");
-    }
-
     if (!idDealOwner) {
       return handleError("Недостаточно данных");
     }
@@ -434,17 +425,20 @@ export const getRetailsUser = async (
 
       const formattedDeal = retails.map((deal) => ({
         ...deal,
-        amountCP: deal.amountCP.toString(),
-        delta: deal.delta.toString(),
+        amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
+        delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
       }));
 
       return formattedDeal;
     }
 
-    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
 
     const retails = await prisma.retail.findMany({
       where: { userId: idDealOwner },
+      orderBy: {
+        dateRequest: "asc", 
+      },
     });
 
     if (!retails.length) {
@@ -453,8 +447,8 @@ export const getRetailsUser = async (
 
     const formattedDeals = retails.map((deal) => ({
       ...deal,
-      amountCP: deal.amountCP.toString(),
-      delta: deal.delta.toString(),
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
     }));
 
     return formattedDeals;
@@ -471,11 +465,7 @@ export const getAllProjectsByDepartment = async (): Promise<
   try {
     const { user } = await handleAuthorization();
 
-    if (!user) {
-      return handleError("Пользователь не найден");
-    }
-
-    const permissionError = await checkUserPermissionByRole(user, [
+    const permissionError = await checkUserPermissionByRole(user!, [
       PermissionEnum.VIEW_UNION_REPORT,
     ]);
 
@@ -484,7 +474,7 @@ export const getAllProjectsByDepartment = async (): Promise<
     const deals = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: user.departmentId, // Фильтрация через связанного пользователя
+          departmentId: user!.departmentId, // Фильтрация через связанного пользователя
         },
       },
       include: {
@@ -494,15 +484,18 @@ export const getAllProjectsByDepartment = async (): Promise<
           },
         }, // Включаем данные владельца проекта
       },
+      orderBy: {
+        dateRequest: "asc", 
+      },
     });
 
     const formattedDeals = deals.map((deal) => ({
       ...deal,
       user: deal.user.username,
-      amountCP: deal.amountCP.toString(), // Преобразуем Decimal в строку
-      amountWork: deal.amountWork.toString(), // Преобразуем Decimal в строку
-      amountPurchase: deal.amountPurchase.toString(),
-      delta: deal.delta.toString(), // Преобразуем Decimal в строку
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      amountWork: deal.amountWork ? deal.amountWork.toString() : "", // Преобразуем Decimal в строку
+      amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
+      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
     }));
 
     return formattedDeals;
@@ -518,11 +511,7 @@ export const getAllRetailsByDepartment = async (): Promise<
   try {
     const { user } = await handleAuthorization();
 
-    if (!user) {
-      return handleError("Пользователь не найден");
-    }
-
-    const permissionError = await checkUserPermissionByRole(user, [
+    const permissionError = await checkUserPermissionByRole(user!, [
       PermissionEnum.VIEW_UNION_REPORT,
     ]);
 
@@ -531,7 +520,7 @@ export const getAllRetailsByDepartment = async (): Promise<
     const deals = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: user.departmentId, // Фильтрация через связанного пользователя
+          departmentId: user!.departmentId, // Фильтрация через связанного пользователя
         },
       },
       include: {
@@ -541,13 +530,16 @@ export const getAllRetailsByDepartment = async (): Promise<
           },
         }, // Включаем данные владельца проекта
       },
+      orderBy: {
+        dateRequest: "asc", 
+      },
     });
 
     const formattedDeals = deals.map((deal) => ({
       ...deal,
       user: deal.user.username,
-      amountCP: deal.amountCP.toString(), // Преобразуем Decimal в строку
-      delta: deal.delta.toString(), // Преобразуем Decimal в строку
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
+      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
     }));
 
     return formattedDeals;
@@ -567,9 +559,6 @@ export const deleteDeal = async (
   try {
     const {user} = await handleAuthorization();
 
-    if(!user){
-      return handleError("Пользователь не найден");
-    }
 
     if (!dealId || !idDealOwner) {
       return handleError("Недостаточно данных");
@@ -603,7 +592,7 @@ export const deleteDeal = async (
 
     if (deal.userId !== idDealOwner) {
       
-      const permissionError = await checkUserPermissionByRole(user, [
+      const permissionError = await checkUserPermissionByRole(user!, [
         PermissionEnum.VIEW_UNION_REPORT,
       ]);
 
@@ -632,3 +621,85 @@ export const deleteDeal = async (
     return handleError((error as Error).message);
   }
 };
+
+export const getUserFilters = async () => {
+  try {
+    const { user } = await handleAuthorization();
+
+    const filters = await prisma.userFilter.findMany({
+      where: {
+        userId: user!.id,
+      },
+    });
+
+    return filters;
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+}
+
+
+export const saveFilter = async (filter: { 
+  data: Omit<UserFilter, 'createdAt' | 'updatedAt' | 'id' | 'userId'>; 
+  ownerId: string;
+}) => {
+  try {
+    const { user } = await handleAuthorization();
+
+    const {data, ownerId} = filter
+    
+    const existingFilter = await prisma.userFilter.findUnique({
+      where: { id: user!.id, filterName: data.filterName },  // Ищем по user.id, а не userId
+    });
+
+    if(existingFilter){
+      return handleError("Фильтр уже существует");
+    }
+
+    if(user!.id !== ownerId){
+      return handleError("ВЫ не можете создать фильтр на другого пользователя");
+    }
+
+    const newFilter = await prisma.userFilter.create({
+      data: {
+        ...data,
+        userId: user!.id,
+      },
+    });
+
+    return newFilter;
+    } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
+export const deleteFilter = async (id: string) => {
+  try {
+
+    const { user } = await handleAuthorization();
+
+    const filter = await prisma.userFilter.findUnique({
+      where: { id },
+    });
+
+    if (!filter) {
+      return handleError("Фильтр не найден");
+    }
+
+    if (filter.userId !== user!.id) {
+      return handleError("Недостаточно прав");
+    }
+
+    await prisma.userFilter.delete({
+      where: { id },
+    });
+
+    return { data: null, message: "Фильтр успешно удален", error: false };
+    
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+}

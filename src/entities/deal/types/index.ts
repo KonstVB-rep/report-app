@@ -25,8 +25,8 @@ export interface ProjectResponse {
   direction: DirectionProject;
   deliveryType: DeliveryProject | null;
   contact: string;
-  additionalContact: string;
-  phone: string;
+  additionalContact: string | null;
+  phone: string | null;
   email: string | null;
   amountCP: string;
   amountWork: string;
@@ -51,9 +51,9 @@ export interface RetailResponse {
   direction: DirectionRetail;
   deliveryType: DeliveryRetail | null;
   contact: string;
-  phone: string;
+  phone: string | null;
   email?: string | null;
-  additionalContact: string;
+  additionalContact: string | null;
   amountCP: string;
   delta: string;
   dealStatus: StatusRetail;
@@ -67,3 +67,4 @@ export interface RetailResponse {
 
 export type DealUnionType = "retail" | "project";
 export type DealsUnionType = "retails" | "projects";
+

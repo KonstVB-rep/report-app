@@ -6,10 +6,8 @@ import { PermissionEnum } from "@prisma/client";
 
 const DealTableTemplate = ({
   children,
-  ref,
 }: {
   children: React.ReactNode;
-  ref?: React.RefObject<HTMLDivElement>;
 }) => {
   const { userId } = useParams();
 
@@ -20,7 +18,7 @@ const DealTableTemplate = ({
   return (
     <section className="h-full p-4">
       {user ? (
-        <div className="grid gap-2" ref={ref}>
+        <div className="grid gap-2">
           {children}
         </div>
       ) : (

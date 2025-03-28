@@ -27,6 +27,7 @@ model User {
   department    Department       @relation("DepartmentUsers", fields: [departmentId], references: [id])
   login         UserLogin[]
   permissions   UserPermission[]
+  userFilters   UserFilter[]
 
   @@index([departmentId])
 }
@@ -64,24 +65,24 @@ model Project {
   userId                String
   type                  DealType         @default(PROJECT) // <-- Тип сделки
   dateRequest           DateTime
-  nameObject            String
   nameDeal              String
+  nameObject            String
   direction             DirectionProject
   deliveryType          DeliveryProject?
   contact               String
-  phone                 String
+  phone                 String?
   email                 String?
-  delta                 Decimal          @db.Decimal(15, 2)
+  additionalContact     String?
+  amountCP              Decimal?          @db.Decimal(15, 2)
+  amountPurchase        Decimal?          @db.Decimal(15, 2)
+  amountWork            Decimal?          @db.Decimal(15, 2)
+  delta                 Decimal?          @db.Decimal(15, 2)
   comments              String
+  dealStatus            StatusProject
   plannedDateConnection DateTime?
+  resource              String?
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
-  additionalContact     String
-  amountCP              Decimal          @db.Decimal(15, 2)
-  amountPurchase        Decimal          @db.Decimal(15, 2)
-  amountWork            Decimal          @db.Decimal(15, 2)
-  dealStatus            StatusProject
-  resource              String?
   files                 File[]
   user                  User             @relation(fields: [userId], references: [id])
 
@@ -92,17 +93,17 @@ model Retail {
   id                    String           @id @default(cuid())
   userId                String
   type                  DealType         @default(RETAIL) // <-- Тип сделки
-  nameDeal              String
   dateRequest           DateTime
+  nameDeal              String
   nameObject            String
   direction             DirectionRetail
   deliveryType          DeliveryRetail?
   contact               String
-  additionalContact     String
-  phone                 String
+  phone                 String?
   email                 String?
-  amountCP              Decimal          @db.Decimal(15, 2)
-  delta                 Decimal          @db.Decimal(15, 2)
+  additionalContact     String?
+  amountCP              Decimal?          @db.Decimal(15, 2)
+  delta                 Decimal?          @db.Decimal(15, 2)
   dealStatus            StatusRetail
   comments              String
   plannedDateConnection DateTime?
@@ -140,6 +141,18 @@ model File {
   @@index([projectId], map: "File_projectId_fkey")
   @@index([retailId], map: "File_retailId_fkey")
   @@index([userId], map: "File_userId_fkey")
+}
+
+model UserFilter {
+  id           String    @id @default(uuid())
+  userId       String
+  filterName   String    
+  filterValue  String    @db.Text
+  isActive     Boolean   @default(false) 
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id])
+
 }
 
 enum PermissionEnum {

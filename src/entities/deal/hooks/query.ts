@@ -7,10 +7,11 @@ import {
   getProjectsUser,
   getRetailById,
   getRetailsUser,
+  getUserFilters,
 } from "../api";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { ProjectResponse, RetailResponse } from "../types";
-import { DealType } from "@prisma/client";
+import { DealType, Prisma } from "@prisma/client";
 import {
   getAllProjectsByDepartmentQuery,
   getAllRetailsByDepartmentQuery,
@@ -37,7 +38,19 @@ export const useGetProjectById = (id: string, useCache: boolean = true) => {
 
         return project ?? undefined;
       } catch (error) {
-        TOAST.ERROR((error as Error).message);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -68,7 +81,19 @@ export const useGetRetailById = (id: string, useCache: boolean = true) => {
 
         return project ?? undefined;
       } catch (error) {
-        TOAST.ERROR((error as Error).message);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -105,15 +130,26 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
   };
 
   const fetchFn = async (): Promise<T | undefined> => {
-    if (!authUser?.id) {
-      throw new Error("Пользователь не авторизован");
-    }
-
     try {
+      if (!authUser?.id) {
+        throw new Error("Пользователь не авторизован");
+      }
       const entity = await fetchFunctions[type](id, authUser.id);
       return entity as T | undefined;
     } catch (error) {
-      TOAST.ERROR((error as Error).message);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.error('Prisma ошибка:', error.code);
+        TOAST.ERROR("Ошибка cхемы Prisma");
+      } else if (error instanceof Prisma.PrismaClientValidationError) {
+        console.error('Ошибка валидации:', error.message);
+        TOAST.ERROR("Ошибка валидации");
+      } else if (error instanceof Prisma.PrismaClientInitializationError) {
+        console.error('Ошибка подключения:', error.message);
+        TOAST.ERROR("Ошибка подключения");
+      } else {
+        console.error('Другая ошибка:', (error as Error).message);
+        TOAST.ERROR((error as Error).message);
+      }
       throw error;
     }
   };
@@ -152,10 +188,24 @@ export const useGetAllDealsByDepartmentByType = (
     queryKey: queryKeys[type],
     queryFn: async () => {
       try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
         return await fetchFunctions[type]();
       } catch (error) {
-        console.log(error);
-        TOAST.ERROR((error as Error).message);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -169,7 +219,29 @@ export const useGetAllProjects = (userId: string | null) => {
 
   return useQuery({
     queryKey: ["all-projects", authUser?.departmentId],
-    queryFn: getAllProjectsByDepartmentQuery,
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+        return await getAllProjectsByDepartmentQuery();
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          TOAST.ERROR((error as Error).message);
+        }
+        throw error;
+      }
+    },
     enabled: !!userId && !!authUser?.departmentId,
     retry: 2,
   });
@@ -180,20 +252,58 @@ export const useGetAllRetails = (userId: string | null) => {
 
   return useQuery({
     queryKey: ["all-retails", authUser?.departmentId],
-    queryFn: getAllRetailsByDepartmentQuery,
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+        return await getAllRetailsByDepartmentQuery();
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          TOAST.ERROR((error as Error).message);
+        }
+        throw error;
+      }
+    },
     enabled: !!userId && !!authUser?.departmentId,
     retry: 2,
   });
 };
 
 export const useGetRetailsUser = (userId: string | null) => {
+  const { authUser } = useStoreUser();
   const { data, isError, ...restData } = useQuery({
     queryKey: ["retails", userId],
     queryFn: async () => {
       try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
         return await getRetailsUser(userId as string);
       } catch (error) {
-        if (!isError) TOAST.ERROR((error as Error).message);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          if (!isError) TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -203,13 +313,29 @@ return { data, isError, ...restData };
 };
 
 export const useGetProjectsUser = (userId: string | null) => {
+  const { authUser } = useStoreUser();
   const { data, isError, ...restData } = useQuery({
     queryKey: ["projects", userId],
     queryFn: async () => {
       try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
         return await getProjectsUser(userId as string);
       } catch (error) {
-        if (!isError) TOAST.ERROR((error as Error).message);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          if (!isError) TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -217,4 +343,36 @@ export const useGetProjectsUser = (userId: string | null) => {
   });
 
   return { data,isError, ...restData };
+};
+
+
+export const useGetUserFilters = () => {
+  const { authUser } = useStoreUser();
+  return ({
+    queryKey: ["filters", authUser?.id],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+        return await getUserFilters();
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error('Prisma ошибка:', error.code);
+          TOAST.ERROR("Ошибка cхемы Prisma");
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          console.error('Ошибка валидации:', error.message);
+          TOAST.ERROR("Ошибка валидации");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          console.error('Ошибка подключения:', error.message);
+          TOAST.ERROR("Ошибка подключения");
+        } else {
+          console.error('Другая ошибка:', (error as Error).message);
+          TOAST.ERROR((error as Error).message);
+        }
+        throw error;
+      }
+    },
+  
+  });
 };

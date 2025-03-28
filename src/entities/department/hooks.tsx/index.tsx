@@ -1,10 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
 import { getDepartmentsWithUsersQuery } from "../api/queryFn";
 
-export const useGetDepartmentsWithUsers = () => {
-  return useQuery({
+export const useGetDepartmentsWithUsers = () => ({
     queryKey: ["depsWithUsers"],
     queryFn: getDepartmentsWithUsersQuery,
     refetchOnWindowFocus: false,
   });
-};
+

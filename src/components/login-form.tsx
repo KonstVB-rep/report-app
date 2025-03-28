@@ -24,6 +24,8 @@ import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import { useGetUserFilters } from "@/entities/deal/hooks/query";
+import { useQueries } from "@tanstack/react-query";
 
 export const loginFormSchema = z.object({
   email: z.string().email(),
@@ -43,11 +45,18 @@ export function LoginForm({
   });
 
   const [state, formAction] = useActionState(login, undefined);
-  const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
+  const { setAuthUser, setIsAuth, isAuth, authUser, setUserFilters } =
+    useStoreUser();
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const { setDepartments } = useStoreDepartment();
-  const { data: departmentData } = useGetDepartmentsWithUsers();
+
+  const [departmentDataResult, userFiltersDataResult] = useQueries({
+    queries: [useGetDepartmentsWithUsers(), useGetUserFilters()],
+  });
+
+  const departmentData = departmentDataResult.data; 
+  const userFiltersData = userFiltersDataResult.data;
 
   const onSubmit = (formData: FormData) => {
     const isValidData = loginFormSchema.parse(Object.fromEntries(formData));
@@ -76,11 +85,19 @@ export function LoginForm({
   }, [state, setAuthUser, setIsAuth, isAuth]);
 
   useEffect(() => {
-    if (isAuth && departmentData) {
+    if (isAuth && departmentData && userFiltersData) {
       setDepartments(departmentData);
       setShouldRedirect(true);
+      setUserFilters(userFiltersData || []);
     }
-  }, [isAuth, departmentData, setDepartments]);
+  }, [
+    isAuth,
+    departmentData,
+    setDepartments,
+    setShouldRedirect,
+    userFiltersData,
+    setUserFilters,
+  ]);
 
   if (shouldRedirect) {
     redirect(`/table/${authUser?.departmentId}/projects/${authUser?.id}`);

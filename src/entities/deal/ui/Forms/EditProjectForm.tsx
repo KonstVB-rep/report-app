@@ -71,6 +71,8 @@ const EditProjectForm = ({
     if (data) {
       form.reset({
         ...data,
+        phone: data.phone ?? undefined, // Преобразуем null в undefined
+        additionalContact: data.additionalContact ?? undefined, // Преобразуем null в undefined
         dateRequest: data.dateRequest?.toISOString(), // Преобразуем Date в строку
         deliveryType: (data.deliveryType as DeliveryProject) || undefined,
         dealStatus: data.dealStatus as StatusProject,

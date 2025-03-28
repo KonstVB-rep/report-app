@@ -67,7 +67,9 @@ const EditRetailForm = ({
         dealStatus: data.dealStatus as StatusRetail,
         direction: data.direction as DirectionRetail,
         plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
+        phone: data.phone ?? undefined, // Преобразуем null в undefined
         email: data.email ?? undefined, // Преобразуем null в undefined
+        additionalContact: data.additionalContact ?? undefined, // Преобразуем null в undefined
         amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
         delta: formatterCurrency.format(parseFloat(data.delta)),
         resource: data.resource ?? "",

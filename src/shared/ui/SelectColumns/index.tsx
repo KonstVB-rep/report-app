@@ -25,12 +25,13 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
       Object.fromEntries(data.getAllColumns().map((col) => [col.id, true]))
     );
   };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         asChild
         className={`${
-          hiddenColumns.length - 2 > 0 ? "border-solid" : "border-dashed"
+          hiddenColumns.length > 0 ? "border-solid" : "border-dashed"
         } border-muted-foreground`}
       >
         <Button
@@ -39,9 +40,9 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
           className="relative flex gap-1"
         >
           <ListChecks />
-          {hiddenColumns.length - 2 > 0 && (
+          {hiddenColumns.length > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {hiddenColumns.length - 2 }
+              {hiddenColumns.length }
             </span>
           )}
           {"Колонки показать/скрыть"}

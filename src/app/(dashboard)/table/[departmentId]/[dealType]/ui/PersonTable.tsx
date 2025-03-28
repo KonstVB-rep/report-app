@@ -1,12 +1,11 @@
 "use client";
-import React, { RefObject } from "react";
+import React from "react";
 
 import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import useScrollIntoViewBlock from "@/shared/hooks/useScrollIntoViewBlock";
 import DataTable from "@/shared/ui/Table/DataTable";
 import { useParams } from "next/navigation";
 
@@ -29,13 +28,10 @@ const PersonTable = <T extends { id: string }>({
   const { authUser } = useStoreUser();
   const isPageAuthuser = userId === authUser?.id;
 
-  const ref = useScrollIntoViewBlock(
-    data
-  ) as unknown as RefObject<HTMLDivElement>;
 
 
   return (
-    <DealTableTemplate ref={ref}>
+    <DealTableTemplate>
       <>
         {isPageAuthuser && <ButtonsGroupTable />}
         <DataTable
