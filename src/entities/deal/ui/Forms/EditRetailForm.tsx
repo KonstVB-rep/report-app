@@ -10,6 +10,10 @@ import RetailFormBody from "./RetailFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 import { useMutationUpdateRetail } from "../../hooks/mutate";
 
+const formatCurrency = (value: string | null | undefined): string => {
+  return formatterCurrency.format(parseFloat(value || "0"));
+};
+
 const EditRetailForm = ({
   close,
   dealId,
@@ -62,16 +66,16 @@ const EditRetailForm = ({
     if (data) {
       form.reset({
         ...data,
+        phone: data.phone ?? undefined, 
+        email: data.email ?? undefined, 
+        additionalContact: data.additionalContact ?? undefined, 
         dateRequest: data.dateRequest?.toISOString(), // Преобразуем Date в строку
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
         direction: data.direction as DirectionRetail,
-        plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
-        phone: data.phone ?? undefined, // Преобразуем null в undefined
-        email: data.email ?? undefined, // Преобразуем null в undefined
-        additionalContact: data.additionalContact ?? undefined, // Преобразуем null в undefined
-        amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
-        delta: formatterCurrency.format(parseFloat(data.delta)),
+        plannedDateConnection: data.plannedDateConnection?.toISOString(),
+        amountCP: formatCurrency(data.amountCP),
+        delta: formatCurrency(data.delta),
         resource: data.resource ?? "",
       });
     }

@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Textarea } from "@/components/ui/textarea";
-import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
+import { transformObjValueToArr } from "@/shared/lib/helpers";
 import SelectComponent from "@/shared/ui/SelectComponent";
 import CalendarComponent from "@/shared/ui/Calendar";
 import {

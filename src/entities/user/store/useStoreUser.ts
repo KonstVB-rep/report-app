@@ -1,8 +1,8 @@
-import { create } from "zustand";
 import { User } from "../types";
 import { persist } from "zustand/middleware";
 import { checkUserPermission } from "@/feature/auth/lib/checkUserPermission";
 import { UserFilter } from "@prisma/client";
+import { create } from "@/shared/lib/helpers/сreate";
 
 type State = {
   authUser: User | null;
@@ -11,7 +11,7 @@ type State = {
   setIsAuth: (isAuth: boolean) => void;
   hasPermissionByRole: boolean;
   resetStore: () => void;
-  userFilters:UserFilter[] | [];
+  userFilters: UserFilter[] | [];
   setUserFilters: (filters: UserFilter[]) => void;
 };
 
@@ -33,7 +33,6 @@ const useStoreUser = create<State>()(
           hasPermissionByRole: false,
           userFilters: [],
         });
-        localStorage.removeItem("user-storage");
       },
     }),
     {

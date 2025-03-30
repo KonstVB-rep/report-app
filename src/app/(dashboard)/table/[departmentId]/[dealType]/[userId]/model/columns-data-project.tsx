@@ -276,12 +276,12 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "resource",
     accessorKey: "resource",
-    header: "Источник сделки/сайт",
+    header: "Источник/сайт",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: false,
     meta: {
       hidden: true,
     },
-    accessorFn: (row: ProjectResponse) => row.nameDeal,
+    accessorFn: (row: ProjectResponse) => row.resource,
   },
 ];

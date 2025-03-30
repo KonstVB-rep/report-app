@@ -59,6 +59,9 @@ export default async function middleware(request: NextRequest) {
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
 
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete("x-middleware-subrequest");
+
   if (pathname === "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -66,7 +69,7 @@ export default async function middleware(request: NextRequest) {
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
-        const payload = await verifyToken(accessToken); // Проверка токена
+        const payload = await verifyToken(accessToken); 
       if (payload) {
         const { userId, deratmentId } = payload;
         console.log("User already logged in, redirecting to /");
@@ -81,22 +84,24 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // // Если есть accessToken, проверяем его
   if (accessToken) {
     try {
-      await jwtVerify(accessToken, secretKey); // Проверка токена
-      return NextResponse.next();
+      await jwtVerify(accessToken, secretKey); 
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders, // Обновленные заголовки без X-Middleware-Subrequest
+        },
+      });
     } catch (error) {
       console.log("Access token истёк, пробуем обновить...", error);
     }
   }
-  // // Если нет refreshToken, редирект на логин
+  
   if (!refreshToken) {
     console.log("Нет refresh token, редирект на логин");
     return redirectToLogin(request);
   }
 
-  // // Попробуем обновить токен
   await refreshAccessToken(refreshToken, cookiesStore, request, pathname);
 }
 

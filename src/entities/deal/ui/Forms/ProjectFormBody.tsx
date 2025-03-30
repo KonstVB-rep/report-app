@@ -7,7 +7,7 @@ import {
   Form,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
+import { transformObjValueToArr } from "@/shared/lib/helpers";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import CalendarComponent from "@/shared/ui/Calendar";
 import InputEmail from "@/shared/ui/Inputs/InputEmail";

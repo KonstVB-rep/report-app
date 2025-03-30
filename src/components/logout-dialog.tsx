@@ -8,14 +8,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { logout } from "@/feature/auth/logout";
+import { resetAllStores } from "@/shared/lib/helpers/сreate";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function LogoutDialog() {
-  const { resetStore } = useStoreUser();
+
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -25,7 +25,7 @@ export function LogoutDialog() {
     try {
       await logout();
       router.push("/login");
-      resetStore();
+      resetAllStores();
     } catch (error) {
       console.error("Ошибка при выходе:", error);
     } finally {

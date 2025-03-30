@@ -1,12 +1,7 @@
-import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DepartmentInfo } from "../types";
 import { formattedArr } from "../lib/utils";
-
-// export type DeptFormattedItem = {
-//     name: string;
-//     users: Record<string, string>[];
-// }
+import { create } from "@/shared/lib/helpers/сreate";
 
 export type DeptFormatted = {
   id: number;
@@ -37,7 +32,6 @@ const useStoreDepartment = create<State>()(
           departments: null,
           deptsFormatted: null,
         });
-        localStorage.removeItem("deparments-storage");
       },
     }),
     {

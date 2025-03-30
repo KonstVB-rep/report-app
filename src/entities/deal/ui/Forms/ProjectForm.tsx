@@ -21,13 +21,14 @@ const ProjectForm = () => {
       phone: "",
       email: "",
       additionalContact: "",
-      amountCP: "",
-      amountWork: "",
-      amountPurchase: "",
-      delta: "",
+      amountCP: "0",
+      amountWork: "0",
+      amountPurchase: "0",
+      delta: "0",
       dealStatus: "",
       comments: "",
       plannedDateConnection: undefined,
+      resource: "",
     },
   });
 

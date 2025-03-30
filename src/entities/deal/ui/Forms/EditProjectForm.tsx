@@ -14,6 +14,11 @@ import ProjectFormBody from "./ProjectFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 import { useMutationUpdateProject } from "../../hooks/mutate";
 
+
+const formatCurrency = (value: string | null | undefined): string => {
+  return formatterCurrency.format(parseFloat(value || "0"));
+};
+
 const EditProjectForm = ({
   close,
   dealId,
@@ -27,25 +32,20 @@ const EditProjectForm = ({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues: {
       dateRequest: undefined,
-      nameDeal: data?.nameDeal || "",
-      nameObject: data?.nameObject || "",
-      direction: data?.direction ? String(data.direction) : "",
-      deliveryType:
-        data?.deliveryType === null
-          ? undefined
-          : (data?.deliveryType as DeliveryProject),
-      dealStatus: data?.dealStatus ? String(data.dealStatus) : "",
-      contact: data?.contact || "",
-      phone: data?.phone || "",
-      email: data?.email || "",
-      additionalContact: data?.additionalContact || "",
-      amountCP: data?.amountCP || "0",
-      amountPurchase: data?.amountPurchase || "0",
-      amountWork: data?.amountWork || "0",
-      delta: data?.delta || "0",
-      comments: data?.comments || "",
+      nameDeal: data?.nameDeal ?? "",
+      nameObject: data?.nameObject ?? "",
+      direction: data?.direction ?? "",
+      deliveryType: data?.deliveryType ?? undefined,
+      dealStatus: data?.dealStatus ?? "",
+      contact: data?.contact ?? "",
+      phone: data?.phone ?? "",
+      email: data?.email ?? "",
+      additionalContact: data?.additionalContact ?? "",
+      amountCP: data?.amountCP ?? "0",
+      delta: data?.delta ?? "0",
+      comments: data?.comments ?? "",
       plannedDateConnection: undefined,
-      resource: data?.resource || "",
+      resource: data?.resource ?? "",
     },
   });
 
@@ -71,20 +71,18 @@ const EditProjectForm = ({
     if (data) {
       form.reset({
         ...data,
-        phone: data.phone ?? undefined, // Преобразуем null в undefined
-        additionalContact: data.additionalContact ?? undefined, // Преобразуем null в undefined
-        dateRequest: data.dateRequest?.toISOString(), // Преобразуем Date в строку
+        phone: data.phone ?? undefined, 
+        email: data.email ?? undefined,
+        additionalContact: data.additionalContact ?? undefined, 
+        dateRequest: data.dateRequest?.toISOString(), 
         deliveryType: (data.deliveryType as DeliveryProject) || undefined,
         dealStatus: data.dealStatus as StatusProject,
         direction: data.direction as DirectionProject,
-        plannedDateConnection: data.plannedDateConnection?.toISOString(), // Преобразуем Date в строку
-        email: data.email ?? undefined, // Преобразуем null в undefined
-        amountCP: formatterCurrency.format(parseFloat(data.amountCP)),
-        amountPurchase: formatterCurrency.format(
-          parseFloat(data.amountPurchase)
-        ),
-        amountWork: formatterCurrency.format(parseFloat(data.amountWork)),
-        delta: formatterCurrency.format(parseFloat(data.delta)),
+        plannedDateConnection: data.plannedDateConnection?.toISOString(),
+        amountCP: formatCurrency(data.amountCP),
+        amountPurchase: formatCurrency(data.amountPurchase),
+        amountWork: formatCurrency(data.amountWork),
+        delta: formatCurrency(data.delta),
         resource: data.resource ?? "", // Преобразуем null в undefined
       });
     }

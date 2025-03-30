@@ -29,15 +29,6 @@ type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
 
 type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 
-// const modelName = type.toLowerCase(); // Приводим к нижнему регистру, если нужно
-// const model = (prisma as PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>)[modelName];
-
-// if (!model) {
-//   return handleError("Неверный тип сделки");
-// }
-
-// const deal = await model.findUnique({ where: { id: projectId } });
-
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
   const { userId } = await handleAuthorization();
 
@@ -90,9 +81,9 @@ export const getProjectById = async (
     const formattedProject = {
       ...deal,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      amountWork: deal.amountWork ? deal.amountWork.toString() : "", // Преобразуем Decimal в строку
+      amountWork: deal.amountWork ? deal.amountWork.toString() : "",
       amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
+      delta: deal.delta ? deal.delta.toString() : "",
     };
     return formattedProject;
   } catch (error) {
@@ -139,8 +130,8 @@ export const getRetailById = async (
 
     const formattedRetail = {
       ...deal,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+      delta: deal.delta ? deal.delta.toString() : "",
     };
 
     return formattedRetail;
@@ -291,10 +282,12 @@ export const updateProject = async (
 
     const formattedDeal = {
       ...restDeal,
-      amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      amountWork: restDeal.amountWork ? restDeal.amountWork.toString() : "", // Преобразуем Decimal в строку
-      amountPurchase: restDeal.amountPurchase ? restDeal.amountPurchase.toString() : "",
-      delta: restDeal.delta ? restDeal.delta.toString() : "", // Преобразуем Decimal в строку
+      amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "",
+      amountWork: restDeal.amountWork ? restDeal.amountWork.toString() : "",
+      amountPurchase: restDeal.amountPurchase
+        ? restDeal.amountPurchase.toString()
+        : "",
+      delta: restDeal.delta ? restDeal.delta.toString() : "",
     };
 
     return formattedDeal;
@@ -339,8 +332,8 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
 
     const formattedDeal = {
       ...restDeal,
-      amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      delta: restDeal.delta ? restDeal.delta.toString() : "", // Преобразуем Decimal в строку
+      amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "",
+      delta: restDeal.delta ? restDeal.delta.toString() : "",
     };
 
     return formattedDeal;
@@ -368,10 +361,12 @@ export const getProjectsUser = async (
 
       const formattedProjects = deals.map((deal) => ({
         ...deal,
-         amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      amountWork: deal.amountWork ? deal.amountWork.toString() : "", // Преобразуем Decimal в строку
-      amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
+        amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+        amountWork: deal.amountWork ? deal.amountWork.toString() : "",
+        amountPurchase: deal.amountPurchase
+          ? deal.amountPurchase.toString()
+          : "",
+        delta: deal.delta ? deal.delta.toString() : "",
       }));
 
       return formattedProjects;
@@ -382,7 +377,7 @@ export const getProjectsUser = async (
     const deals = await prisma.project.findMany({
       where: { userId: idProjectOwner },
       orderBy: {
-        dateRequest: "asc", 
+        dateRequest: "asc",
       },
     });
 
@@ -392,10 +387,12 @@ export const getProjectsUser = async (
 
     const formattedDeals = deals.map((deals) => ({
       ...deals,
-      amountCP: deals.amountCP ? deals.amountCP.toString() : "", // Преобразуем Decimal в строку
-      amountWork: deals.amountWork ? deals.amountWork.toString() : "", // Преобразуем Decimal в строку
-      amountPurchase: deals.amountPurchase ? deals.amountPurchase.toString() : "",
-      delta: deals.delta ? deals.delta.toString() : "", // Преобразуем Decimal в строку
+      amountCP: deals.amountCP ? deals.amountCP.toString() : "",
+      amountWork: deals.amountWork ? deals.amountWork.toString() : "",
+      amountPurchase: deals.amountPurchase
+        ? deals.amountPurchase.toString()
+        : "",
+      delta: deals.delta ? deals.delta.toString() : "",
     }));
 
     return formattedDeals;
@@ -409,7 +406,6 @@ export const getProjectsUser = async (
 export const getRetailsUser = async (
   idDealOwner: string
 ): Promise<RetailResponse[] | null> => {
- 
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -425,8 +421,8 @@ export const getRetailsUser = async (
 
       const formattedDeal = retails.map((deal) => ({
         ...deal,
-        amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-        delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
+        amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+        delta: deal.delta ? deal.delta.toString() : "",
       }));
 
       return formattedDeal;
@@ -437,7 +433,7 @@ export const getRetailsUser = async (
     const retails = await prisma.retail.findMany({
       where: { userId: idDealOwner },
       orderBy: {
-        dateRequest: "asc", 
+        dateRequest: "asc",
       },
     });
 
@@ -447,8 +443,8 @@ export const getRetailsUser = async (
 
     const formattedDeals = retails.map((deal) => ({
       ...deal,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+      delta: deal.delta ? deal.delta.toString() : "",
     }));
 
     return formattedDeals;
@@ -474,7 +470,7 @@ export const getAllProjectsByDepartment = async (): Promise<
     const deals = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: user!.departmentId, // Фильтрация через связанного пользователя
+          departmentId: +user!.departmentId, // Фильтрация через связанного пользователя
         },
       },
       include: {
@@ -485,29 +481,29 @@ export const getAllProjectsByDepartment = async (): Promise<
         }, // Включаем данные владельца проекта
       },
       orderBy: {
-        dateRequest: "asc", 
+        dateRequest: "asc",
       },
     });
 
     const formattedDeals = deals.map((deal) => ({
       ...deal,
       user: deal.user.username,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      amountWork: deal.amountWork ? deal.amountWork.toString() : "", // Преобразуем Decimal в строку
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+      amountWork: deal.amountWork ? deal.amountWork.toString() : "",
       amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
+      delta: deal.delta ? deal.delta.toString() : "",
     }));
 
     return formattedDeals;
   } catch (error) {
-    console.error(error);
+    console.log(error);
+    // console.error(error);
     return handleError((error as Error).message);
   }
 };
 
-export const getAllRetailsByDepartment = async (): Promise<
-  RetailResponse[]
-> => {
+export const getAllRetailsByDepartment = async (
+): Promise<RetailResponse[]> => {
   try {
     const { user } = await handleAuthorization();
 
@@ -520,7 +516,7 @@ export const getAllRetailsByDepartment = async (): Promise<
     const deals = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: user!.departmentId, // Фильтрация через связанного пользователя
+          departmentId: +user!.departmentId, // Фильтрация через связанного пользователя
         },
       },
       include: {
@@ -531,15 +527,15 @@ export const getAllRetailsByDepartment = async (): Promise<
         }, // Включаем данные владельца проекта
       },
       orderBy: {
-        dateRequest: "asc", 
+        dateRequest: "asc",
       },
     });
 
     const formattedDeals = deals.map((deal) => ({
       ...deal,
       user: deal.user.username,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      delta: deal.delta ? deal.delta.toString() : "", // Преобразуем Decimal в строку
+      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+      delta: deal.delta ? deal.delta.toString() : "",
     }));
 
     return formattedDeals;
@@ -555,10 +551,8 @@ export const deleteDeal = async (
   idDealOwner: string,
   type: string
 ) => {
-  
   try {
-    const {user} = await handleAuthorization();
-
+    const { user } = await handleAuthorization();
 
     if (!dealId || !idDealOwner) {
       return handleError("Недостаточно данных");
@@ -591,7 +585,6 @@ export const deleteDeal = async (
     }
 
     if (deal.userId !== idDealOwner) {
-      
       const permissionError = await checkUserPermissionByRole(user!, [
         PermissionEnum.VIEW_UNION_REPORT,
       ]);
@@ -599,13 +592,12 @@ export const deleteDeal = async (
       if (permissionError) {
         return handleError("Недостаточно прав");
       }
-
     }
 
     switch (type) {
       case DealType.PROJECT:
         await prisma.project.delete({
-          where: { id: dealId},
+          where: { id: dealId },
         });
         break;
       case DealType.RETAIL:
@@ -622,42 +614,66 @@ export const deleteDeal = async (
   }
 };
 
+// export const getUserFilters = async () => {
+//   try {
+//     const { user } = await handleAuthorization();
+//     console.log(user, '********************')
+
+//     const filters = await prisma.userFilter.findMany({
+//       where: {
+//         userId: user!.id,
+//       },
+//     });
+
+//     return filters;
+//   } catch (error) {
+//     console.error(error);
+//     return handleError((error as Error).message);
+//   }
+// }
+
 export const getUserFilters = async () => {
   try {
-    const { user } = await handleAuthorization();
+    console.log("Начало getUserFilters");
 
+    const { user } = await handleAuthorization();
+    console.log("Получен пользователь:", user);
+
+    if (!user?.id) {
+      throw new Error("User ID отсутствует");
+    }
+
+    console.log("Делаем запрос в БД с userId:", user.id);
     const filters = await prisma.userFilter.findMany({
-      where: {
-        userId: user!.id,
-      },
+      where: { userId: user.id },
     });
+    console.log("Фильтры пользователя:", filters);
 
     return filters;
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error("Ошибка в getUserFilters:", error);
+    return handleError((error as Error).message || "Произошла ошибка");
   }
-}
+};
 
-
-export const saveFilter = async (filter: { 
-  data: Omit<UserFilter, 'createdAt' | 'updatedAt' | 'id' | 'userId'>; 
+export const saveFilter = async (filter: {
+  data: Omit<UserFilter, "createdAt" | "updatedAt" | "id" | "userId">;
   ownerId: string;
 }) => {
   try {
     const { user } = await handleAuthorization();
 
-    const {data, ownerId} = filter
-    
+    const { data, ownerId } = filter;
+
     const existingFilter = await prisma.userFilter.findUnique({
-      where: { id: user!.id, filterName: data.filterName },  // Ищем по user.id, а не userId
+      where: { id: user!.id, filterName: data.filterName }, // Ищем по user.id, а не userId
     });
 
-    if(existingFilter){
+    if (existingFilter) {
       return handleError("Фильтр уже существует");
     }
 
-    if(user!.id !== ownerId){
+    if (user!.id !== ownerId) {
       return handleError("ВЫ не можете создать фильтр на другого пользователя");
     }
 
@@ -669,7 +685,7 @@ export const saveFilter = async (filter: {
     });
 
     return newFilter;
-    } catch (error) {
+  } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
   }
@@ -677,7 +693,6 @@ export const saveFilter = async (filter: {
 
 export const deleteFilter = async (id: string) => {
   try {
-
     const { user } = await handleAuthorization();
 
     const filter = await prisma.userFilter.findUnique({
@@ -697,9 +712,8 @@ export const deleteFilter = async (id: string) => {
     });
 
     return { data: null, message: "Фильтр успешно удален", error: false };
-    
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
   }
-}
+};
