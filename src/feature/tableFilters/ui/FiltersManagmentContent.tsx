@@ -49,7 +49,7 @@ const FiltersManagmentContent = ({
   const defaultCheckedFilter = userFilters.find((item) => item.isActive);
 
   const handleClearFilters = () => {
-    console.log("Сбрасываем фильтры");
+
     setColumnFilters([]);
     setColumnVisibility({});
     setSelectedFilterName("");
@@ -60,7 +60,7 @@ const FiltersManagmentContent = ({
 
   const filterSelect = useCallback(
     (filter: UserFilter) => {
-      console.log("Выбранный фильтр:", filter);
+
       const { filterName, filterValue } = filter;
       if (!filterValue) return;
 

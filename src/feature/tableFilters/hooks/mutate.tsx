@@ -32,7 +32,8 @@ export const useSaveFilter = (setOpen: (value: boolean) => void) => {
       },
       onError: (error) => {
         setOpen(false);
-        TOAST.ERROR(error.message);
+        console.log('error', error);
+        TOAST.ERROR("Ошибка сохранения фильтра");
       },
     });
   };

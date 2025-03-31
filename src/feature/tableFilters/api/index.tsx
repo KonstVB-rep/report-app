@@ -33,7 +33,7 @@ import { UserFilter } from "@prisma/client";
   
   export const getUserFilterById = async (filterId: string) => {
     try {
-      console.log("Начало getUserFilters");
+
   
       const { user } = await handleAuthorization();
   
@@ -69,9 +69,6 @@ import { UserFilter } from "@prisma/client";
         return handleError("Фильтр уже существует");
       }
   
-      if (user!.id !== ownerId) {
-        return handleError("ВЫ не можете создать фильтр на другого пользователя");
-      }
   
       const newFilter = await prisma.userFilter.create({
         data: {
@@ -91,7 +88,7 @@ import { UserFilter } from "@prisma/client";
   
 
     try {
-      const { user } = await handleAuthorization();
+      await handleAuthorization();
   
       const filter = await prisma.userFilter.findUnique({
         where: { id },
@@ -101,9 +98,6 @@ import { UserFilter } from "@prisma/client";
         return handleError("Фильтр не найден");
       }
   
-      if (filter.userId !== user!.id) {
-        return handleError("Недостаточно прав");
-      }
   
       await prisma.userFilter.delete({
         where: { id },
@@ -120,7 +114,7 @@ import { UserFilter } from "@prisma/client";
     data: Partial<UserFilter>
   ): Promise<UserFilter | undefined> => {
     try {
-      const { user } = await handleAuthorization();
+      await handleAuthorization();
   
       const filter = await prisma.userFilter.findUnique({
         where: { id:data.id },
@@ -130,9 +124,6 @@ import { UserFilter } from "@prisma/client";
         return handleError("Фильтр не найден");
       }
   
-      if (filter.userId !== user!.id) {
-        return handleError("Недостаточно прав");
-      }
   
       const updatedFilter = await prisma.userFilter.update({
         where: { id: data.id },
