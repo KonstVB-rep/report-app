@@ -15,12 +15,17 @@ type DialogComponentProps = {
     classNameContent?: string
 }
 
-const DialogComponent = ({contentTooltip, trigger, children, showX = true, open = false, dialogTitle="",footer, classNameContent, onOpenChange = () => {}}:DialogComponentProps) => {
+const DialogComponent = ({contentTooltip, trigger, children, showX = true, open: controlledOpen, onOpenChange: controlledOnOpenChange, dialogTitle="",footer, classNameContent}:DialogComponentProps) => {
+  const [internalOpen, setInternalOpen] = React.useState(false);
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
     return (
-      <Dialog open={open ? open : undefined} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <TooltipComponent content={contentTooltip}>
-          <DialogTrigger asChild onClick={open ? () => onOpenChange(true) : undefined}>
+          <DialogTrigger asChild>
             {trigger}
           </DialogTrigger>
         </TooltipComponent>

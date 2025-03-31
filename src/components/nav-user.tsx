@@ -16,8 +16,6 @@ export function NavUser() {
 
   const { authUser } = useStoreUser();
 
-  
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -36,7 +34,7 @@ export function NavUser() {
           side={isMobile ? "bottom" : "right"}
           align="start"
           alignOffset={20}
-          classname="relative -top-1"
+          className="relative -top-1"
         >
           <div className="grid min-w-40 gap-1">
             <Link

@@ -60,7 +60,7 @@ const TableComponent = <T extends Record<string, unknown>>({
                 key={header.id}
                 colSpan={header.colSpan}
                 className="border-r border-zinc-600 bg-zinc-400 px-3 py-2 dark:bg-zinc-800"
-                style={{ position: "relative", width: header.getSize() }}
+                style={{ position: "relative", width: header.getSize(), minWidth: header.column.columnDef.minSize }}
               >
                 {header.isPlaceholder ? null : (
                   <div

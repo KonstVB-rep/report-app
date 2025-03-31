@@ -6,8 +6,6 @@ import {
   createProject,
   createRetail,
   deleteDeal,
-  deleteFilter,
-  saveFilter,
   updateProject,
   updateRetail,
 } from "../api";
@@ -18,7 +16,6 @@ import {
   DirectionRetail,
   StatusProject,
   StatusRetail,
-  UserFilter,
 } from "@prisma/client";
 import { ProjectSchema, RetailSchema } from "../model/schema";
 import { UseFormReturn } from "react-hook-form";
@@ -167,6 +164,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
 
     // 🔄 Откат данных в случае ошибки
     onError: (_error, _newData, context) => {
+      TOAST.ERROR((_error as Error).message);
       if (context?.previousDeal) {
         queryClient.setQueryData(["project", dealId], context.previousDeal);
       }
@@ -298,6 +296,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
       return { previousDeals, previousDeal };
     },
     onError: (_error, _newData, context) => {
+      TOAST.ERROR((_error as Error).message);
       if (context?.previousDeal) {
         queryClient.setQueryData(["retail", dealId], context.previousDeal);
       }
@@ -395,6 +394,9 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
         });
       }
     },
+    onError: (error) => {
+      TOAST.ERROR((error as Error).message);
+    },
   });
 };
 
@@ -455,55 +457,3 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
     },
   });
 };
-
-
-
-
-
-export const useSaveFilter = () => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
-  return useMutation({
-    mutationFn: ({ data, ownerId }: { 
-      data: Omit<UserFilter, 'createdAt' | 'updatedAt' | 'id' | 'userId'>;
-      ownerId: string;
-    }) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-      return saveFilter({data, ownerId});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["filters", authUser?.id],
-        exact: true,
-      });
-    },
-    onError: (error) => {
-      TOAST.ERROR((error as Error).message);
-    },
-  });
-};
-
-
-export const useDeleteFilter = () => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
-  return useMutation({
-    mutationFn: (filterId: string) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-      return deleteFilter(filterId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["filters", authUser?.id],
-        exact: true,
-      });
-    },
-    onError: (error) => {
-      TOAST.ERROR((error as Error).message);
-    },
-  });
-}

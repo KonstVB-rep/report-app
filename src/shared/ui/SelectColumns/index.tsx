@@ -31,7 +31,7 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
       <PopoverTrigger
         asChild
         className={`${
-          hiddenColumns.length > 0 ? "border-solid" : "border-dashed"
+          hiddenColumns.length - 1 > 0 ? "border-solid" : "border-dashed"
         } border-muted-foreground`}
       >
         <Button
@@ -40,7 +40,7 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
           className="relative flex gap-1"
         >
           <ListChecks />
-          {hiddenColumns.length > 0 && (
+          {hiddenColumns.length - 1 > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
               {hiddenColumns.length }
             </span>
@@ -53,7 +53,7 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
           <div className="grid grid-cols-1 items-center gap-1">
             {data
               .getAllColumns()
-              .filter((col) => col.getCanHide())
+              .filter((col) => col.getCanHide() && col.id !== "user")
               .map((col) => (
                 <div key={col.id} className="flex items-center gap-1">
                   <Checkbox
@@ -67,7 +67,7 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
                 </div>
               ))}
           </div>
-          {hiddenColumns.length > 0 && (
+          {hiddenColumns.length - 1 > 0 && (
             <Button
               onClick={handleResetVisibility}
               variant="outline"

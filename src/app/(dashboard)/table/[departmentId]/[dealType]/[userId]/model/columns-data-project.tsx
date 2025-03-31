@@ -253,8 +253,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "comments",
     header: "Комментарии",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(), //тег
-    enableSorting: false,
+    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
+    size: 300,
+    minSize: 300,
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.comments,
   },
@@ -276,12 +277,12 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "resource",
     accessorKey: "resource",
-    header: "Источник/сайт",
+    header: "Источник/Сайт",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
-    enableHiding: false,
-    meta: {
-      hidden: true,
-    },
+    enableHiding: true,
+    // meta: {
+    //   hidden: true,
+    // },
     accessorFn: (row: ProjectResponse) => row.resource,
   },
 ];

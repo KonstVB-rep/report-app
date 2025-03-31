@@ -50,7 +50,7 @@ const UserEditForm = ({
       position: user?.position ?? "",
       department: user?.departmentName as keyof typeof DepartmentsTitle,
       role: user?.role as keyof typeof RolesUser,
-      permissions: user?.permissions as string[]
+      permissions: user?.permissions as string[],
     },
   });
 
@@ -98,7 +98,7 @@ const UserEditForm = ({
         position: user.position,
         department: user.departmentName as keyof typeof DepartmentsTitle,
         role: user.role as keyof typeof RolesUser,
-        permissions: user.permissions as string[]
+        permissions: user.permissions as string[],
       });
     }
   }, [form, user]);
@@ -210,7 +210,7 @@ const UserEditForm = ({
                   <SelectComponent
                     placeholder="Выберите отдел"
                     options={Object.entries(DepartmentsTitle)}
-                    classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     value={field.value}
                     onValueChange={field.onChange}
                     required
@@ -234,7 +234,7 @@ const UserEditForm = ({
                   <SelectComponent
                     placeholder="Выберите роль"
                     options={Object.entries(RolesUser)}
-                    classname="invalid:[&:not(:placeholder-shown)]:border-red-500 valid:border-green-500"
+                    className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                     value={field.value}
                     onValueChange={field.onChange}
                     disabled={

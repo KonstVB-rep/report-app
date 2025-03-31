@@ -14,7 +14,7 @@ type Props = {
   side?: "top" | "right" | "bottom" | "left";
   sideOffset?: number;
   alignOffset?: number;
-  classname?: string;
+  className?: string;
 };
 
 const HoverCardComponent = ({
@@ -22,7 +22,7 @@ const HoverCardComponent = ({
   title,
   align = "center",
   sideOffset = 2,
-  classname,
+  className,
   ...props
 }: Props) => {
   return (
@@ -36,7 +36,7 @@ const HoverCardComponent = ({
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
-        className={`grid w-max gap-1 p-1 ${classname}`}
+        className={`grid w-max gap-1 p-1 ${className}`}
         align={align}
         sideOffset={sideOffset}
         {...props}

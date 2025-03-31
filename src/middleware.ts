@@ -18,6 +18,12 @@ async function verifyToken(token: string): Promise<JWTPayload | null> {
 }
 
 async function redirectToLogin(request: NextRequest) {
+
+  if (request.nextUrl.pathname === "/login") {
+    console.log("🔄 Уже на /login, не редиректим.");
+    return NextResponse.next();
+  }
+
   const cookiesStore = await cookies();
   cookiesStore.set("auth_redirected", "true", { maxAge: 60 });
   cookiesStore.delete("access_token");
@@ -59,6 +65,10 @@ export default async function middleware(request: NextRequest) {
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
 
+  if(!accessToken && !refreshToken) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete("x-middleware-subrequest");
 
@@ -70,13 +80,13 @@ export default async function middleware(request: NextRequest) {
     if (accessToken) {
       try {
         const payload = await verifyToken(accessToken); 
-      if (payload) {
-        const { userId, deratmentId } = payload;
-        console.log("User already logged in, redirecting to /");
-        return NextResponse.redirect(
-          new URL(`/table/${deratmentId}/projects/${userId}`, request.url)
-        );
-      }
+        if (payload) {
+          const { userId, departmentId } = payload;
+          console.log("Пользоваетль авторизован не перенаправляем на /");
+          return NextResponse.redirect(
+            new URL(`/table/${departmentId}/projects/${userId}`, request.url)
+          );
+        }
       } catch (error) {
         console.log("Access token недействителен, оставляем на /login", error);
       }
@@ -107,5 +117,5 @@ export default async function middleware(request: NextRequest) {
 
 
 export const config = {
-    matcher: ["/(dashboard | table | profile | login | summary-table | deal)/:path*", "/"],
+  matcher: ["/dashboard/:path*", "/table/:path*", "/profile/:path*", "/summary-table/:path*", "/deal/:path*", "/"],
 };

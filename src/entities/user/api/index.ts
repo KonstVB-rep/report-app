@@ -590,37 +590,3 @@ export const getAllUsersByDepartment = async (
   }
 };
 
-export const getAllUsersFromFilter = async (
-  id: number
-): Promise<Record<string, string> | null> => {
-  try {
-    const data = await handleAuthorization();
-    const { user } = data!;
-
-    // Утверждаем, что user не может быть null
-    if (!user) {
-      return handleError("Пользователь не найден");
-    }
-
-    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_UNION_REPORT]);
-
-    const users = await prisma.user.findMany({
-      where: { departmentId: Number(id) },
-      select: {
-        id: true,
-        username: true,
-      },
-    });
-    const transformUsers = users.reduce(
-      (acc, user) => {
-        acc[user.id] = user.username;
-        return acc;
-      },
-      {} as Record<string, string>
-    );
-    return transformUsers;
-  } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
-  }
-};

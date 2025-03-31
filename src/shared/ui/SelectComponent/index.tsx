@@ -11,13 +11,13 @@ import {
 type SelectComponentProps = {
   placeholder: string;
   options: [string, string][]; // Это массив кортежей [key, value]
-  classname?: string;
+  className?: string;
 } & React.ComponentProps<typeof Select>;
 
 const SelectComponent = ({
   placeholder,
   options,
-  classname,
+  className,
   value,
   onValueChange,
   ...props
@@ -28,7 +28,7 @@ const SelectComponent = ({
       onValueChange={(val) => onValueChange?.(val)}
       {...props}
     >
-      <SelectTrigger className={`w-full ${classname}`}>
+      <SelectTrigger className={`w-full ${className}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 
@@ -41,7 +41,6 @@ const SelectComponent = ({
           ))}
         </SelectGroup>
       </SelectContent>
-      
     </Select>
   );
 };

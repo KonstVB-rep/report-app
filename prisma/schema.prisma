@@ -126,7 +126,7 @@ model UserLogin {
 }
 
 model File {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   name      String
   type      String
   data      Bytes
@@ -144,7 +144,7 @@ model File {
 }
 
 model UserFilter {
-  id           String    @id @default(uuid())
+  id           String    @id @default(cuid())
   userId       String
   filterName   String    
   filterValue  String    @db.Text

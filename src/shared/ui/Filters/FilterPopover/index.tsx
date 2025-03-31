@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ColumnFilter, ColumnFiltersState } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type Props = {
   columnId: string;
@@ -104,12 +105,12 @@ const FilterPopover = React.memo(
                     checked={filterValues.includes(id)}
                     onCheckedChange={() => handleChange(id)}
                   />
-                  <label
+                  <Label
                     htmlFor={id}
                     className="cursor-pointer whitespace-nowrap capitalize"
                   >
                     {label}
-                  </label>
+                  </Label>
                 </div>
               ))}
             </div>

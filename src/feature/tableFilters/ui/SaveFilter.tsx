@@ -7,31 +7,37 @@ import { Label } from "@/components/ui/label";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import { Save } from "lucide-react";
 import React, { useRef } from "react";
-import { useSaveFilter } from "../../hooks/mutate";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import { useParams, useSearchParams } from "next/navigation";
+import { useSaveFilter } from "../hooks/mutate";
 
 const SaveFilter = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const {userId} = useParams();
+  const { userId } = useParams();
 
   const searchParams = useSearchParams();
+  const [open, setOpen] = React.useState(false);
 
   // Преобразуем параметры в объект
-  const params = Object.values(Object.fromEntries(searchParams.entries())).join("&");
-  console.log(params);
-  
-  const { mutate, isPending } = useSaveFilter();
+  // const params = Object.values(Object.fromEntries(searchParams.entries())).join(
+  //   "&"
+  // );
+  // console.log(searchParams, "searchParams");
+  // console.log(Object.fromEntries(searchParams.entries()), "Object.fromEntries(searchParams.entries())")
+  // console.log(params, "params");
 
-  const handleSubmit = () => {
+  const { mutate, isPending } = useSaveFilter(() => setOpen(false));
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (inputRef.current) {
       mutate({
+        ownerId: userId as string,
         data: {
           filterName: inputRef.current.value,
-          filterValue: params,
+          filterValue: searchParams.toString(),
           isActive: false,
         },
-        ownerId: userId as string,
       });
     }
   };
@@ -40,6 +46,8 @@ const SaveFilter = () => {
     <DialogComponent
       dialogTitle="Сохранить фильтр"
       contentTooltip="Сохранить фильтр"
+      open={open}
+      onOpenChange={setOpen}
       trigger={
         <Button
           variant={"secondary"}
@@ -62,7 +70,7 @@ const SaveFilter = () => {
             </Button>
           </DialogClose>
           <SubmitFormButton
-            type="submit"
+            title="Сохранить"
             disabled={isPending}
             isPending={isPending}
           />

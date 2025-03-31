@@ -3,7 +3,7 @@
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
-import { DealType, PermissionEnum, Prisma, UserFilter } from "@prisma/client";
+import { DealType, PermissionEnum, Prisma } from "@prisma/client";
 import { ProjectResponse, RetailResponse } from "../types";
 import prisma from "@/prisma/prisma-client";
 
@@ -608,110 +608,6 @@ export const deleteDeal = async (
     }
 
     return { data: null, message, error: false };
-  } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
-  }
-};
-
-// export const getUserFilters = async () => {
-//   try {
-//     const { user } = await handleAuthorization();
-//     console.log(user, '********************')
-
-//     const filters = await prisma.userFilter.findMany({
-//       where: {
-//         userId: user!.id,
-//       },
-//     });
-
-//     return filters;
-//   } catch (error) {
-//     console.error(error);
-//     return handleError((error as Error).message);
-//   }
-// }
-
-export const getUserFilters = async () => {
-  try {
-    console.log("Начало getUserFilters");
-
-    const { user } = await handleAuthorization();
-    console.log("Получен пользователь:", user);
-
-    if (!user?.id) {
-      throw new Error("User ID отсутствует");
-    }
-
-    console.log("Делаем запрос в БД с userId:", user.id);
-    const filters = await prisma.userFilter.findMany({
-      where: { userId: user.id },
-    });
-    console.log("Фильтры пользователя:", filters);
-
-    return filters;
-  } catch (error) {
-    console.error("Ошибка в getUserFilters:", error);
-    return handleError((error as Error).message || "Произошла ошибка");
-  }
-};
-
-export const saveFilter = async (filter: {
-  data: Omit<UserFilter, "createdAt" | "updatedAt" | "id" | "userId">;
-  ownerId: string;
-}) => {
-  try {
-    const { user } = await handleAuthorization();
-
-    const { data, ownerId } = filter;
-
-    const existingFilter = await prisma.userFilter.findUnique({
-      where: { id: user!.id, filterName: data.filterName }, // Ищем по user.id, а не userId
-    });
-
-    if (existingFilter) {
-      return handleError("Фильтр уже существует");
-    }
-
-    if (user!.id !== ownerId) {
-      return handleError("ВЫ не можете создать фильтр на другого пользователя");
-    }
-
-    const newFilter = await prisma.userFilter.create({
-      data: {
-        ...data,
-        userId: user!.id,
-      },
-    });
-
-    return newFilter;
-  } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
-  }
-};
-
-export const deleteFilter = async (id: string) => {
-  try {
-    const { user } = await handleAuthorization();
-
-    const filter = await prisma.userFilter.findUnique({
-      where: { id },
-    });
-
-    if (!filter) {
-      return handleError("Фильтр не найден");
-    }
-
-    if (filter.userId !== user!.id) {
-      return handleError("Недостаточно прав");
-    }
-
-    await prisma.userFilter.delete({
-      where: { id },
-    });
-
-    return { data: null, message: "Фильтр успешно удален", error: false };
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

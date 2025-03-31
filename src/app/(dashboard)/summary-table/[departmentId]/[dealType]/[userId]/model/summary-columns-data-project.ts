@@ -11,18 +11,19 @@ export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] =
       id: "user",
       header: "Менеджер",
       cell: (info) => info.getValue(),
-      enableHiding: false,
-    meta: {
-      hidden: true,
-    },
+      enableHiding: true,  // Разрешает скрывать колонку
+      meta: {
+        hidden: true,  // Изначально скрыта
+      },
       filterFn: (row, columnId, filterValues) => {
+        console.log("filterValues", filterValues);
         if (!filterValues || filterValues.length === 0) {
           return true;
         }
-
+    
         const userIdOfProject = row.original.userId;
         return filterValues.includes(userIdOfProject);
       },
       accessorFn: (row: ProjectResponse) => row.userId,
-    },
+    }
   ];

@@ -326,3 +326,8 @@ button {
 .Toggle:focus {
 	box-shadow: 0 0 0 2px black;
 }
+
+
+.border-stone-solid-600 {
+  @apply border border-solid border-stone-600;
+}

@@ -1,6 +1,10 @@
 import { getQueryClient } from "@/app/provider/query-provider";
 import { useMutation } from "@tanstack/react-query";
-import { createUser, deleteUser } from "../api";
+import {
+  createUser,
+
+  deleteUser,
+} from "../api";
 import { userSchema } from "../model/schema";
 import {
   UserRequest,
@@ -36,11 +40,10 @@ export const useCreateUser = () => {
       });
     },
     onError: (error) => {
-      TOAST.ERROR((error as Error).message);
+      TOAST.ERROR(error.message);
     },
   });
 };
-
 
 export const useDeleteUser = (userId: string) => {
   const router = useRouter();
@@ -48,7 +51,6 @@ export const useDeleteUser = (userId: string) => {
   return useMutation({
     mutationFn: () => deleteUser(userId),
     onMutate: async () => {
-      
       const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"]);
 
       queryClient.setQueryData(
@@ -68,24 +70,23 @@ export const useDeleteUser = (userId: string) => {
       return { previousDepsWithUsers };
     },
     onSuccess: async () => {
-
       router.back();
 
       await queryClient.invalidateQueries({
-           queryKey: ["depsWithUsers"],
-        });
+        queryKey: ["depsWithUsers"],
+      });
 
       queryClient.refetchQueries({
         queryKey: ["depsWithUsers"],
-     });
+      });
     },
     onError: (error, variables, context) => {
-
       queryClient.setQueryData(
         ["depsWithUsers"],
         context?.previousDepsWithUsers
       );
-      TOAST.ERROR((error as Error).message);
+      TOAST.ERROR(error.message);
     },
   });
 };
+

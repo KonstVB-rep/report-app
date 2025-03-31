@@ -23,7 +23,7 @@ import { useParams, useSearchParams } from "next/navigation";
 
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import TableRowsSkeleton from "../../../entities/deal/ui/Skeletons/TableRowsSkeleton";
-import FiltersManagment from "@/entities/deal/ui/FiltersManagment";
+import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 
 const includedColumns = [
@@ -71,21 +71,25 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
     enableColumnResizing: true,
     columnResizeMode: "onChange",
-    getCoreRowModel: getCoreRowModel(),
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
     state: {
       sorting,
       columnFilters,
-      columnVisibility,
+      columnVisibility: {
+        ...columnVisibility, // Сохраняем остальные настройки видимости
+        user: false,
+        // resource: false // Скрываем колонку с id 'user'
+      },
     },
     meta: {
       columnVisibility: {
         resource: false,
-        user: false,
+        // user: false,
       },
     },
   });
@@ -109,7 +113,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   });
 
   return (
-    <div className="relative grid max-h-[85vh] w-full overflow-hidden rounded-lg border bg-background p-2">
+    <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
       <div className="flex items-center justify-between gap-2 pb-2">
         <div className="flex flex-1 items-center justify-between gap-2">
           <FiltersManagment
@@ -127,15 +131,15 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
         <AddNewDeal type={dealType as string} />
       </div>
       <div
-        className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+        className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
       >
         <div className="min-h-0">
-            <FilterByUser
-              columnFilters={columnFilters}
-              setColumnFilters={setColumnFilters}
-            />
+          <FilterByUser
+            columnFilters={columnFilters}
+            setColumnFilters={setColumnFilters}
+          />
 
-          <div className="flex justify-between gap-2 mt-2">
+          <div className="mt-2 flex flex-wrap justify-between gap-2">
             <DateRangeFilter
               onDateChange={handleDateChange}
               onClearDateFilter={handleClearDateFilter}

@@ -207,6 +207,8 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     id: "comments",
     accessorKey: "comments",
     header: "Комментарии",
+    size: 300,
+    minSize: 300, 
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(), //тег
     enableSorting: false,
     enableHiding: true,
@@ -231,12 +233,12 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
   {
     id: "resource",
     accessorKey: "resource",
-    header: "Источник/сайт",
+    header: "Источник/Сайт",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
-    enableHiding: false,
-    meta: {
-      hidden: true,
-    },
+    enableHiding: true,
+    // meta: {
+    //   hidden: true,
+    // },
     accessorFn: (row: RetailResponse) => row.resource,
   },
 ];
