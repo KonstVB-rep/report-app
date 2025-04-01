@@ -56,8 +56,6 @@ const FiltersManagmentContent = ({
     disableSavedFilters()
   };
 
-
-
   const filterSelect = useCallback(
     (filter: UserFilter) => {
 

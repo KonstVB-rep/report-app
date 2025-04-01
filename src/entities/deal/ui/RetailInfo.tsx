@@ -22,8 +22,6 @@ const RetailItemInfo = () => {
 
   const { data: deal, isLoading } = useGetRetailById(dealId as string, false);
 
-  console.log(deal, "deal");
-
   if (isLoading) {
     return <Loading />;
   }

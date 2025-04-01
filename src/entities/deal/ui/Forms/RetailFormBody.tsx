@@ -346,7 +346,7 @@ const RetailFormBody = <T extends FieldValues>({
                     <FormLabel>Источник</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Сайт откуда ришел клиент..."
+                        placeholder="Сайт откуда пришёл клиент..."
                         required
                         {...field}
                       />

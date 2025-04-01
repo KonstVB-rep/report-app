@@ -18,14 +18,6 @@ const SaveFilter = () => {
   const searchParams = useSearchParams();
   const [open, setOpen] = React.useState(false);
 
-  // Преобразуем параметры в объект
-  // const params = Object.values(Object.fromEntries(searchParams.entries())).join(
-  //   "&"
-  // );
-  // console.log(searchParams, "searchParams");
-  // console.log(Object.fromEntries(searchParams.entries()), "Object.fromEntries(searchParams.entries())")
-  // console.log(params, "params");
-
   const { mutate, isPending } = useSaveFilter(() => setOpen(false));
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

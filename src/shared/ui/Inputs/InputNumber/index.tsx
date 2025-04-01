@@ -10,6 +10,7 @@ interface InputNumberProps
   className?: string;
   placeholder?: string;
   value?: string;
+  disabled?: boolean;
   onChange?: (value: string) => void;
   ref?: ForwardedRef<typeof IMaskInput>;
 }
@@ -20,6 +21,7 @@ const InputNumber = ({
   value,
   onChange,
   ref,
+  disabled = false,
   ...props
 }: InputNumberProps) => {
   return (
@@ -41,6 +43,7 @@ const InputNumber = ({
       )}
       placeholder={placeholder}
       value={value}
+      disabled={disabled}
     />
   );
 };

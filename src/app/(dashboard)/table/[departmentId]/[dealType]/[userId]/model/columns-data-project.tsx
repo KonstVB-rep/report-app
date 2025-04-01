@@ -65,42 +65,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
 
       return true;
     },
-    // filterFn: (row, columnId, filterValue) => {
-    //   const date = row.getValue(columnId) as Date;
-    //   const dateAtStartOfDay = startOfDay(date);
-
-    //   let parsedFilterValue = filterValue;
-    //   if (typeof filterValue === 'string') {
-    //     try {
-    //       parsedFilterValue = JSON.parse(filterValue);
-    //     } catch (e) {
-    //       console.error('Ошибка при парсинге filterValue', e);
-    //       parsedFilterValue = null;
-    //     }
-    //   }
-
-    //   if (parsedFilterValue) {
-    //     const { from, to } = parsedFilterValue as DateRange;
-
-    //     if (from && to) {
-    //       const toAtEndOfDay = endOfDay(to);
-    //       return (
-    //         dateAtStartOfDay >= startOfDay(from) &&
-    //         dateAtStartOfDay <= toAtEndOfDay
-    //       );
-    //     }
-
-    //     if (from) {
-    //       return dateAtStartOfDay >= startOfDay(from);
-    //     }
-    //     if (to) {
-    //       return dateAtStartOfDay <= endOfDay(to);
-    //     }
-    //     return false;
-    //   }
-
-    //   return true;
-    // },
     accessorFn: (row: ProjectResponse) => row.dateRequest,
   },
   {
@@ -202,7 +166,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "amountCP",
     header: "Сумма КП",
-    cell: (info: CellContext<ProjectResponse, unknown>) =>
+    cell: (info: CellContext<ProjectResponse, unknown>) => 
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountCP,
@@ -210,21 +174,23 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "amountWork",
     header: "Сумма работ",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
+    cell: (info: CellContext<ProjectResponse, unknown>) => 
+      formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountWork,
   },
   {
     id: "amountPurchase",
     header: "Сумма закупки",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
+    cell: (info: CellContext<ProjectResponse, unknown>) => 
+      formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountPurchase,
   },
   {
     id: "delta",
     header: "Дельта",
-    cell: (info: CellContext<ProjectResponse, unknown>) =>
+    cell: (info: CellContext<ProjectResponse, unknown>) => 
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.delta,

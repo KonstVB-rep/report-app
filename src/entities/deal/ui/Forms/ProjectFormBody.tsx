@@ -21,7 +21,10 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants";
 import { Input } from "@/components/ui/input";
-import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
+import { FieldValues, Path, PathValue, UseFormReturn, useWatch } from "react-hook-form";
+
+const parseFormattedNumber = (value: string): number =>  parseFloat(value.replace(/\s+/g, "").replace(",", ".")) || 0;
+
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -34,6 +37,33 @@ const ProjectFormBody = <T extends FieldValues>({
   onSubmit,
   isPending,
 }: ProjectFormBodyProps<T>) => {
+
+  const watchedValues = useWatch({
+    control: form.control,
+    name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
+  });
+
+  // При изменении значений пересчитываем delta
+  React.useEffect(() => {
+    const [amountCP, amountWork, amountPurchase] = watchedValues;
+  
+    // Преобразуем значения из строк в числа
+    const parsedAmountCP = parseFormattedNumber(amountCP || "0");
+    const parsedAmountWork = parseFormattedNumber(amountWork || "0");
+    const parsedAmountPurchase = parseFormattedNumber(amountPurchase || "0");
+
+    if(!parsedAmountCP || !parsedAmountWork || !parsedAmountPurchase) return;
+  
+    const calculatedDelta = parsedAmountCP - parsedAmountWork - parsedAmountPurchase;
+
+    if(calculatedDelta < 0) {
+      form.setValue("delta" as Path<T>, '0,00' as PathValue<T, Path<T>>);
+      return;
+    }
+  
+    form.setValue("delta" as Path<T>, calculatedDelta as PathValue<T, Path<T>>);
+  }, [watchedValues, form]);
+
   return (
     <Form {...form}>
       <form
@@ -303,6 +333,7 @@ const ProjectFormBody = <T extends FieldValues>({
                         placeholder="Дельта"
                         {...field}
                         value={String(field.value || "")}
+                        disabled={true}
                       />
                     </FormControl>
                     {form.formState.errors.delta?.message && (
@@ -390,7 +421,7 @@ const ProjectFormBody = <T extends FieldValues>({
                     <FormLabel>Источник</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Сайт откуда пришлол клиент"
+                        placeholder="Сайт откуда пришлёл клиент"
                         required
                         {...field}
                       />
