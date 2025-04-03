@@ -10,9 +10,9 @@ export default function LoginPage() {
         height={0}
         sizes="100vw"
         priority
-        className="absolute inset-0 z-[0] h-full w-full object-cover filter opacity-25 brightness-[25%]"
+        className="absolute inset-0 z-[0] h-full w-full object-cover filter brightness-75 opacity-20"
       />
-      <div className="w-full max-w-sm md:max-w-3xl relative z-10">
+      <div className="relative z-10 w-full max-w-sm md:max-w-3xl">
         <LoginForm />
       </div>
     </div>
