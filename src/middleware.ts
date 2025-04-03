@@ -18,25 +18,33 @@ async function verifyToken(token: string): Promise<JWTPayload | null> {
 }
 
 async function redirectToLogin(request: NextRequest) {
-
-  if (request.nextUrl.pathname === "/login") {
-    console.log("🔄 Уже на /login, не редиректим.");
+  if (request.nextUrl.pathname.startsWith("/login")) {
     return NextResponse.next();
   }
 
-  const cookiesStore = await cookies();
-  cookiesStore.set("auth_redirected", "true", { maxAge: 60 });
-  cookiesStore.delete("access_token");
-  cookiesStore.delete("refresh_token");
+  const response = NextResponse.redirect(new URL("/login", request.url));
 
-  return NextResponse.redirect(new URL("/login", request.url));
+  // Удаляем куки в браузере
+  response.cookies.delete("access_token");
+  response.cookies.delete("refresh_token");
+
+  // Добавляем флаг для предотвращения зацикливания
+  response.cookies.set("auth_redirected", "true", { maxAge: 2 });
+
+  return response;
 }
 
-async function refreshAccessToken(refreshToken: string, cookiesStore: ReadonlyRequestCookies, request: NextRequest, pathname: string) {
+async function refreshAccessToken(
+  refreshToken: string,
+  cookiesStore: ReadonlyRequestCookies,
+  request: NextRequest,
+  pathname: string
+) {
   try {
     const res = await axiosInstance.post("auth/refresh", {
       refresh_token: refreshToken,
     });
+
     const data = res.data; // Новый access_token
     console.log("Новый access token получен:", data.accessToken);
 
@@ -46,7 +54,9 @@ async function refreshAccessToken(refreshToken: string, cookiesStore: ReadonlyRe
       sameSite: "strict",
       maxAge: 24 * 60 * 60,
     });
-    console.log("Oбновилили access_token в cookies");
+
+    // const response = NextResponse.next();
+    // response.headers.set("Authorization", `Bearer ${data.accessToken}`);
     // Если был редирект на /login, то перенаправим на /
     if (pathname === "/login") {
       return NextResponse.redirect(new URL("/", request.url));
@@ -54,7 +64,10 @@ async function refreshAccessToken(refreshToken: string, cookiesStore: ReadonlyRe
 
     return NextResponse.next();
   } catch (error) {
-    console.log("Ошибка обновления токена, редирект на логин", error);
+    console.log(
+      "Ошибка обновления токена, редирект на логин",
+      (error as Error).message
+    );
     return redirectToLogin(request);
   }
 }
@@ -65,24 +78,20 @@ export default async function middleware(request: NextRequest) {
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
 
-  if(!accessToken && !refreshToken) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (!accessToken && !refreshToken) {
+    return redirectToLogin(request);
   }
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete("x-middleware-subrequest");
 
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
-        const payload = await verifyToken(accessToken); 
+        const payload = await verifyToken(accessToken);
         if (payload) {
           const { userId, departmentId } = payload;
-          console.log("Пользоваетль авторизован не перенаправляем на /");
+          console.log("Пользователь авторизован, не перенаправляем на /");
           return NextResponse.redirect(
             new URL(`/table/${departmentId}/projects/${userId}`, request.url)
           );
@@ -96,26 +105,37 @@ export default async function middleware(request: NextRequest) {
 
   if (accessToken) {
     try {
-      await jwtVerify(accessToken, secretKey); 
+      await jwtVerify(accessToken, secretKey);
       return NextResponse.next({
         request: {
-          headers: requestHeaders, // Обновленные заголовки без X-Middleware-Subrequest
+          headers: requestHeaders,
         },
       });
     } catch (error) {
       console.log("Access token истёк, пробуем обновить...", error);
     }
   }
-  
+
   if (!refreshToken) {
     console.log("Нет refresh token, редирект на логин");
     return redirectToLogin(request);
   }
 
-  await refreshAccessToken(refreshToken, cookiesStore, request, pathname);
+  return await refreshAccessToken(
+    refreshToken,
+    cookiesStore,
+    request,
+    pathname
+  );
 }
 
-
 export const config = {
-  matcher: ["/dashboard/:path*", "/table/:path*", "/profile/:path*", "/summary-table/:path*", "/deal/:path*", "/"],
+  matcher: [
+    "/dashboard/:path*",
+    "/table/:path*",
+    "/profile/:path*",
+    "/summary-table/:path*",
+    "/deal/:path*",
+    "/",
+  ],
 };

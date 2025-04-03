@@ -9,7 +9,6 @@ import { PermissionEnum } from "@prisma/client";
 import useStoreUser from "../store/useStoreUser";
 
 
-
 export const useGetUser = (
   userId: string,
   permissions?: PermissionEnum[] | undefined
@@ -23,6 +22,7 @@ export const useGetUser = (
         return await getUser(userId as string, permissions as PermissionEnum[]);
       } catch (error) {
         TOAST.ERROR((error as Error).message);
+        throw error; 
       }
     },
     enabled: !!userId,
@@ -40,9 +40,9 @@ export const useGetUserShortInfo = (userId: string) => {
         return (await getUserShort(userId)) as UserWithdepartmentName;
       } catch (error) {
         TOAST.ERROR((error as Error).message);
+        throw error;
       }
     },
     enabled: !!userId,
   });
 };
-

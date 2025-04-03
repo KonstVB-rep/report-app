@@ -37,12 +37,13 @@ export type UserResponse = Omit<
   "lastlogin" | "createdAt" | "updatedAt" | "user_password"
 >;
 
-export enum Permission {
-  VIEW_USER_REPORT = "Просмотр отчета пользователя",
-  VIEW_UNION_REPORT = "Просмотр отчета объединения",
-  DOWNLOAD_REPORTS = "Скачивание отчетов",
-  USER_MANAGEMENT = "Управление пользователями",
-}
+// export enum Permission {
+//   VIEW_USER_REPORT = "Просмотр отчета пользователя",
+//   VIEW_UNION_REPORT = "Просмотр отчета объединения",
+//   DOWNLOAD_REPORTS = "Скачивание отчетов",
+//   USER_MANAGEMENT = "Управление пользователями",
+//   DEAL_MANAGEMENT = "Редактирование/удаление сделок"
+// }
 
 export type Option = {
   label: string;
@@ -69,4 +70,4 @@ export const OPTIONS: Option[] = [
   },
 ];
 
-export type PermissionType = keyof typeof Permission;
+export type PermissionType = keyof typeof PermissionEnum;

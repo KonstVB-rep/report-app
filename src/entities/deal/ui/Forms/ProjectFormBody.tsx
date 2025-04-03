@@ -23,7 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FieldValues, Path, PathValue, UseFormReturn, useWatch } from "react-hook-form";
 
-const parseFormattedNumber = (value: string): number =>  parseFloat(value.replace(/\s+/g, "").replace(",", ".")) || 0;
+export const parseFormattedNumber = (value: string): number =>  parseFloat(value.replace(/\s+/g, "").replace(",", ".")) || 0;
 
 
 type ProjectFormBodyProps<T extends FieldValues> = {
@@ -43,25 +43,25 @@ const ProjectFormBody = <T extends FieldValues>({
     name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
   });
 
-  // При изменении значений пересчитываем delta
   React.useEffect(() => {
-    const [amountCP, amountWork, amountPurchase] = watchedValues;
+    if (!watchedValues) return;
   
-    // Преобразуем значения из строк в числа
-    const parsedAmountCP = parseFormattedNumber(amountCP || "0");
-    const parsedAmountWork = parseFormattedNumber(amountWork || "0");
-    const parsedAmountPurchase = parseFormattedNumber(amountPurchase || "0");
+    const [amountCP = "0", amountWork = "0", amountPurchase = "0"] = watchedValues || [];
+    const parsedAmountCP = parseFormattedNumber(amountCP);
+    const parsedAmountWork = parseFormattedNumber(amountWork);
+    const parsedAmountPurchase = parseFormattedNumber(amountPurchase);
+  
+    if (isNaN(parsedAmountCP) || isNaN(parsedAmountWork) || isNaN(parsedAmountPurchase)) return;
 
-    if(!parsedAmountCP || !parsedAmountWork || !parsedAmountPurchase) return;
+    if(parsedAmountCP === 0 || parsedAmountWork === 0 || parsedAmountPurchase === 0) return;
   
     const calculatedDelta = parsedAmountCP - parsedAmountWork - parsedAmountPurchase;
-
-    if(calculatedDelta < 0) {
-      form.setValue("delta" as Path<T>, '0,00' as PathValue<T, Path<T>>);
-      return;
-    }
   
-    form.setValue("delta" as Path<T>, calculatedDelta as PathValue<T, Path<T>>);
+
+    form.setValue("delta" as Path<T>, String(calculatedDelta) as PathValue<T, Path<T>>, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   }, [watchedValues, form]);
 
   return (
@@ -421,7 +421,7 @@ const ProjectFormBody = <T extends FieldValues>({
                     <FormLabel>Источник</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Сайт откуда пришлёл клиент"
+                        placeholder="Сайт откуда пришёл клиент"
                         required
                         {...field}
                       />

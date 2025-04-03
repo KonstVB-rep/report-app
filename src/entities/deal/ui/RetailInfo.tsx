@@ -16,8 +16,12 @@ import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
 import { Separator } from "@radix-ui/react-separator";
 import { Building, ContactRound } from "lucide-react";
+import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
 const RetailItemInfo = () => {
+  
+  useRedirectToLoginNotAuthUser();
+
   const { dealId } = useParams();
 
   const { data: deal, isLoading } = useGetRetailById(dealId as string, false);

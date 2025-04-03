@@ -9,8 +9,12 @@ import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { useParams } from "next/navigation";
 import SummaryTableTemplate from "./SummaryTableTemplate";
 import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
+import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
 const SummaryTableRetail = () => {
+
+  useRedirectToLoginNotAuthUser();
+
   const { userId } = useParams();
 
   const hasAccess = hasAccessToDataSummary(

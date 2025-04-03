@@ -9,11 +9,19 @@ import { PermissionEnum } from "@prisma/client";
 import { useParams } from "next/navigation";
 import React from "react";
 import { useGetUser } from "@/entities/user/hooks/query";
+import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
 const ProfilePage = () => {
+
+  useRedirectToLoginNotAuthUser();
+
   const { userId } = useParams();
 
-  const { data: user, error, isPending } = useGetUser(userId as string, [PermissionEnum.USER_MANAGEMENT]);
+  const {
+    data: user,
+    error,
+    isPending,
+  } = useGetUser(userId as string, [PermissionEnum.USER_MANAGEMENT]);
 
   if (isPending)
     return (

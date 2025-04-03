@@ -24,7 +24,7 @@ const InputPassword = (props: InputPasswordProps) => {
         size={"icon"}
         type="button"
       >
-        {visible ? <EyeClosed /> : <Eye />}
+        {visible ?  <Eye /> :<EyeClosed />}
       </Button>
     </div>
   );

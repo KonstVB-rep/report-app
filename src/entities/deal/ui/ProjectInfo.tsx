@@ -16,11 +16,22 @@ import { formatterCurrency } from "@/shared/lib/utils";
 import IntoDealItem from "./IntoDealItem";
 import { Separator } from "@/components/ui/separator";
 import { Building, ContactRound } from "lucide-react";
+// import FileUploadForm from "@/widgets/Files/ui/UploadFile";
+// import { Button } from "@/components/ui/button";
+// import DownloadFile from "@/widgets/Files/ui/DownLoadFile/DownLoadFile";
+// import { useGetInfoYandexDisk } from "@/widgets/Files/hooks/query";
+// import { Progress } from "@/components/ui/progress";
+// import axiosInstance from "@/shared/api/axiosInstance";
+import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
 const ProjectItemInfo = () => {
+  useRedirectToLoginNotAuthUser();
+
   const { dealId } = useParams();
 
   const { data: deal, isLoading } = useGetProjectById(dealId as string, false);
+
+  // const { data: ydxDiskInfo } = useGetInfoYandexDisk();
 
   if (isLoading) {
     return <Loading />;
@@ -139,6 +150,53 @@ const ProjectItemInfo = () => {
           </p>
         </div>
       </IntoDealItem>
+      {/* <div>
+        <p>Яндекс диск</p>
+        <Progress
+          value={ydxDiskInfo?.usedSpace}
+          max={ydxDiskInfo?.totalSpace}
+          getValueLabel={() => {
+            return `${ydxDiskInfo?.usedSpace}/${ydxDiskInfo?.totalSpace}`;
+          }}
+        />
+      </div>
+      <Button
+        onClick={async () => {
+          // const info = await getResourceInfo('report_app_uploads')
+          try {
+            const response = await axiosInstance.get("/yandex-disk/download", {
+              responseType: "blob",
+            });
+
+            // Получение Blob из ответа
+            const blob = response.data;
+
+            // Создание временной ссылки для скачивания
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "example.txt"; // Название файла, который будет скачан
+            document.body.appendChild(a);
+
+            // Имитируем клик по ссылке для начала скачивания
+            a.click();
+
+            // Удаляем ссылку после скачивания
+            document.body.removeChild(a);
+          } catch (error) {
+            console.log(error);
+          }
+        }}
+      >
+        META INFO
+      </Button>
+      <DownloadFile />
+
+      <FileUploadForm
+        userId={deal.userId}
+        dealId={dealId as string}
+        dealType="PROJECT"
+      /> */}
     </section>
   );
 };

@@ -70,6 +70,7 @@ export const useGetRetailById = (id: string, useCache: boolean = true) => {
       } catch (error) {
         console.log(error, "Ошибка useGetRetailById");
         TOAST.ERROR((error as Error).message);
+        throw error
       }
     },
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
@@ -114,6 +115,7 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
     } catch (error) {
       console.log(error, "Ошибка useGetDealById");
       TOAST.ERROR((error as Error).message);
+      throw error
     }
   };
 
@@ -158,6 +160,7 @@ export const useGetAllDealsByDepartmentByType = (
       } catch (error) {
         console.log(error, "Ошибка useGetAllDealsByDepartmentByType");
         TOAST.ERROR((error as Error).message);
+        throw error
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
@@ -179,6 +182,7 @@ export const useGetAllProjects = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
         TOAST.ERROR((error as Error).message);
+        throw error
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
@@ -200,6 +204,7 @@ export const useGetAllRetails = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
         TOAST.ERROR((error as Error).message);
+        throw error
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
@@ -220,6 +225,7 @@ export const useGetRetailsUser = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
         TOAST.ERROR((error as Error).message);
+        throw error
       }
     },
     enabled: !!userId,
@@ -240,6 +246,7 @@ export const useGetProjectsUser = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         TOAST.ERROR((error as Error).message);
+        throw error
       }
     },
     enabled: !!userId,

@@ -21,7 +21,7 @@ model User {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   directorOf    Department?      @relation("DepartmentDirector")
-  File          File[]
+  File          DealFile[]
   projects      Project[]
   retail        Retail[]
   department    Department       @relation("DepartmentUsers", fields: [departmentId], references: [id])
@@ -83,7 +83,6 @@ model Project {
   resource              String?
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
-  files                 File[]
   user                  User             @relation(fields: [userId], references: [id])
 
   @@index([userId], map: "Project_userId_fkey")
@@ -110,7 +109,6 @@ model Retail {
   resource              String?
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
-  files                 File[]
   user                  User             @relation(fields: [userId], references: [id])
 
   @@index([userId], map: "Retail_userId_fkey")
@@ -125,23 +123,23 @@ model UserLogin {
   @@index([userId], map: "UserLogin_userId_fkey")
 }
 
-model File {
-  id        String   @id @default(cuid())
-  name      String
-  type      String
-  data      Bytes
-  createdAt DateTime @default(now())
-  userId    String
-  projectId String?
-  retailId  String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  retail    Retail?  @relation(fields: [retailId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model DealFile {
+  id          String       @id @default(cuid())
+  name        String
+  href        String
+  storageType StorageType  @default(YANDEX_DISK)
+  userId      String
+  dealId      String       // Универсальный ID сделки (может быть как Project, так и Retail)
+  dealType    DealType     // PROJECT или RETAIL
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  @@index([projectId], map: "File_projectId_fkey")
-  @@index([retailId], map: "File_retailId_fkey")
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
   @@index([userId], map: "File_userId_fkey")
 }
+
 
 model UserFilter {
   id           String    @id @default(cuid())
@@ -160,6 +158,7 @@ enum PermissionEnum {
   VIEW_UNION_REPORT
   DOWNLOAD_REPORTS
   USER_MANAGEMENT
+  DEAL_MANAGEMENT
 }
 
 enum DirectionProject {
@@ -237,4 +236,7 @@ enum Role {
 enum DealType {
   PROJECT
   RETAIL
+}
+enum StorageType {
+  YANDEX_DISK
 }

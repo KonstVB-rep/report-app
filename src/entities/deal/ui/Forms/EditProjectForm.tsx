@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TOAST } from "@/entities/user/ui/Toast";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
 import { useGetProjectById } from "../../hooks/query";
-import { formatterCurrency } from "@/shared/lib/utils";
 import {
   DeliveryProject,
   DirectionProject,
@@ -14,10 +13,6 @@ import ProjectFormBody from "./ProjectFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 import { useMutationUpdateProject } from "../../hooks/mutate";
 
-
-const formatCurrency = (value: string | null | undefined): string => {
-  return formatterCurrency.format(parseFloat(value || "0"));
-};
 
 const EditProjectForm = ({
   close,
@@ -79,10 +74,10 @@ const EditProjectForm = ({
         dealStatus: data.dealStatus as StatusProject,
         direction: data.direction as DirectionProject,
         plannedDateConnection: data.plannedDateConnection?.toISOString(),
-        amountCP: formatCurrency(data.amountCP),
-        amountPurchase: formatCurrency(data.amountPurchase),
-        amountWork: formatCurrency(data.amountWork),
-        delta: formatCurrency(data.delta),
+        amountCP: data.amountCP,
+        amountPurchase: data.amountPurchase,
+        amountWork: data.amountWork,
+        delta: data.delta,
         resource: data.resource ?? "", // Преобразуем null в undefined
       });
     }

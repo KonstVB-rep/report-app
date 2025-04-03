@@ -6,8 +6,11 @@ import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 import PersonTable from "./PersonTable";
 import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
+import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
 const PersonTableRetail = ({ userId }: { userId: string }) => {
+  useRedirectToLoginNotAuthUser();
+  
   const hasAccess = hasAccessToData(
     userId as string,
     PermissionEnum.VIEW_USER_REPORT

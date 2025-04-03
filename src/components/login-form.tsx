@@ -24,6 +24,7 @@ import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import { resetAllStores } from "@/shared/lib/helpers/сreate";
 
 export const loginFormSchema = z.object({
   email: z.string().email(),
@@ -65,7 +66,7 @@ export function LoginForm({
     const isRedirected = document.cookie.includes("auth_redirected=true");
 
     if (isRedirected) {
-      setIsAuth(false);
+      resetAllStores()
       document.cookie = "auth_redirected=; Max-Age=0; path=/"; // Удаляем флаг из куки
     } else if (state && state.data) {
       setAuthUser(state.data);

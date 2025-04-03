@@ -30,7 +30,7 @@ type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
 type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
-  const { userId } = await handleAuthorization();
+  const data= await handleAuthorization();
 
   for (const field of requiredFields as (keyof ProjectWithoutId)[]) {
     if (!projectData[field]) {
@@ -38,7 +38,7 @@ const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
     }
   }
 
-  return userId;
+  return data;
 };
 
 /* Получить проект */
@@ -146,7 +146,7 @@ export const createProject = async (data: ProjectWithoutId) => {
     if (!data) {
       return handleError("Ошибка: data не переданы в createProject");
     }
-    const userId = await checkAuthAndDataFill(data);
+    const {userId} = await checkAuthAndDataFill(data);
 
     const { amountCP, amountPurchase, amountWork, delta, ...dealData } = data;
 
@@ -198,7 +198,7 @@ export const createRetail = async (data: RetailWithoutId) => {
     if (!data) {
       return handleError("Ошибка: data не переданы в createProject");
     }
-    const userId = await checkAuthAndDataFill(data);
+    const {userId} = await checkAuthAndDataFill(data);
 
     const { amountCP, delta, ...dealData } = data;
 
@@ -244,7 +244,7 @@ export const updateProject = async (
   data: ProjectWithoutDateCreateAndUpdate
 ) => {
   try {
-    const userId = await checkAuthAndDataFill(data);
+    const {userId, user} = await checkAuthAndDataFill(data);
     const { id, amountCP, amountPurchase, amountWork, delta, ...dealData } =
       data;
 
@@ -256,8 +256,10 @@ export const updateProject = async (
       return [];
     }
 
-    if (deal.userId !== userId) {
-      return handleError("Недостаточно прав");
+    const isOwner = deal.userId !== userId;
+
+    if (!isOwner && user) {
+      await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT]);
     }
 
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
@@ -299,7 +301,7 @@ export const updateProject = async (
 
 export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
   try {
-    const userId = await checkAuthAndDataFill(data);
+    const {userId, user} = await checkAuthAndDataFill(data);
     const { id, amountCP, delta, ...dealData } = data;
 
     const deal = await prisma.retail.findUnique({
@@ -310,9 +312,12 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
       return [];
     }
 
-    if (deal.userId !== userId) {
-      return handleError("Недостаточно прав");
+    const isOwner = deal.userId === userId;
+
+    if (!isOwner) {
+      await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
     }
+
 
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
@@ -344,64 +349,61 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
 };
 
 export const getProjectsUser = async (
-  idProjectOwner: string
+  idDealOwner: string
 ): Promise<ProjectResponse[] | null> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
 
-    if (!idProjectOwner) {
+    if (!idDealOwner) {
       return handleError("Недостаточно данных");
     }
 
-    if (userId === idProjectOwner) {
-      const deals = await prisma.project.findMany({
-        where: { userId: idProjectOwner },
-      });
+    // if (userId === idProjectOwner) {
+    //   const deals = await prisma.project.findMany({
+    //     where: { userId: idProjectOwner },
+    //   });
 
-      const formattedProjects = deals.map((deal) => ({
-        ...deal,
-        amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-        amountWork: deal.amountWork ? deal.amountWork.toString() : "",
-        amountPurchase: deal.amountPurchase
-          ? deal.amountPurchase.toString()
-          : "",
-        delta: deal.delta ? deal.delta.toString() : "",
-      }));
+    //   return deals.length
+    //   ? deals.map((deal) => ({
+    //       ...deal,
+    //       amountCP: deal.amountCP?.toString() || "",
+    //       amountWork: deal.amountWork?.toString() || "",
+    //       amountPurchase: deal.amountPurchase?.toString()||  "",
+    //       delta: deal.delta?.toString() || "",
+    //     }))
+    //   : []; 
+    // }
 
-      return formattedProjects;
+    const isOwner = userId === idDealOwner;
+
+    if (!isOwner) {
+      await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
-    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
-
     const deals = await prisma.project.findMany({
-      where: { userId: idProjectOwner },
+      where: { userId: idDealOwner },
       orderBy: {
         dateRequest: "asc",
       },
     });
 
-    if (!deals.length) {
-      return [];
-    }
-
-    const formattedDeals = deals.map((deals) => ({
-      ...deals,
-      amountCP: deals.amountCP ? deals.amountCP.toString() : "",
-      amountWork: deals.amountWork ? deals.amountWork.toString() : "",
-      amountPurchase: deals.amountPurchase
-        ? deals.amountPurchase.toString()
-        : "",
-      delta: deals.delta ? deals.delta.toString() : "",
-    }));
-
-    return formattedDeals;
+    return deals.length
+    ? deals.map((deal) => ({
+        ...deal,
+        amountCP: deal.amountCP?.toString() || "",
+        amountWork: deal.amountWork?.toString() || "",
+        amountPurchase: deal.amountPurchase?.toString() || "",
+        delta: deal.delta?.toString() || "",
+      }))
+    : []; 
   } catch (error) {
     console.error(error);
     handleError((error as Error).message);
     return null;
   }
-};
+}
+
 
 export const getRetailsUser = async (
   idDealOwner: string
@@ -414,40 +416,39 @@ export const getRetailsUser = async (
       return handleError("Недостаточно данных");
     }
 
-    if (userId === idDealOwner) {
-      const retails = await prisma.retail.findMany({
-        where: { userId: idDealOwner },
-      });
+    // if (userId === idDealOwner) {
+    //   const deals = await prisma.retail.findMany({
+    //     where: { userId: idDealOwner },
+    //   });
 
-      const formattedDeal = retails.map((deal) => ({
-        ...deal,
-        amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-        delta: deal.delta ? deal.delta.toString() : "",
-      }));
+    //   return deals.length
+    //   ? deals.map((deal) => ({
+    //     ...deal,
+    //     amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+    //     delta: deal.delta ? deal.delta.toString() : "",
+    //   })): [];
+    // }
 
-      return formattedDeal;
+    const isOwner = userId === idDealOwner;
+
+    if (!isOwner) {
+    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
-    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
-
-    const retails = await prisma.retail.findMany({
+    const deals = await prisma.retail.findMany({
       where: { userId: idDealOwner },
       orderBy: {
         dateRequest: "asc",
       },
     });
 
-    if (!retails.length) {
-      return [];
-    }
-
-    const formattedDeals = retails.map((deal) => ({
+    return deals.length
+    ? deals.map((deal) => ({
       ...deal,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "",
       delta: deal.delta ? deal.delta.toString() : "",
-    }));
+    })) : [];
 
-    return formattedDeals;
   } catch (error) {
     console.error(error);
     handleError((error as Error).message);
@@ -461,11 +462,9 @@ export const getAllProjectsByDepartment = async (): Promise<
   try {
     const { user } = await handleAuthorization();
 
-    const permissionError = await checkUserPermissionByRole(user!, [
+    await checkUserPermissionByRole(user!, [
       PermissionEnum.VIEW_UNION_REPORT,
     ]);
-
-    if (permissionError) return permissionError;
 
     const deals = await prisma.project.findMany({
       where: {
@@ -485,16 +484,16 @@ export const getAllProjectsByDepartment = async (): Promise<
       },
     });
 
-    const formattedDeals = deals.map((deal) => ({
+    return deals.length
+    ? deals.map((deal) => ({
       ...deal,
       user: deal.user.username,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "",
       amountWork: deal.amountWork ? deal.amountWork.toString() : "",
       amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
       delta: deal.delta ? deal.delta.toString() : "",
-    }));
+    })) : []
 
-    return formattedDeals;
   } catch (error) {
     console.log(error);
     // console.error(error);
@@ -531,14 +530,14 @@ export const getAllRetailsByDepartment = async (
       },
     });
 
-    const formattedDeals = deals.map((deal) => ({
+    return deals.length
+    ? deals.map((deal) => ({
       ...deal,
       user: deal.user.username,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "",
       delta: deal.delta ? deal.delta.toString() : "",
-    }));
+    })) : []
 
-    return formattedDeals;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -585,13 +584,9 @@ export const deleteDeal = async (
     }
 
     if (deal.userId !== idDealOwner) {
-      const permissionError = await checkUserPermissionByRole(user!, [
-        PermissionEnum.VIEW_UNION_REPORT,
+       await checkUserPermissionByRole(user!, [
+        PermissionEnum.DEAL_MANAGEMENT,
       ]);
-
-      if (permissionError) {
-        return handleError("Недостаточно прав");
-      }
     }
 
     switch (type) {

@@ -1,35 +1,50 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose"; // Используем jose вместо jsonwebtoken
 import { generateTokens } from "@/feature/auth/lib/generateTokens";
-import type { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    // Получаем refresh token из cookies
     const { refresh_token: refreshToken } = await req.json();
 
     if (!refreshToken) {
       return NextResponse.json({ error: "Нет refresh token" }, { status: 401 });
     }
 
-    // Проверяем refresh token с использованием jose
     const secretKey = new TextEncoder().encode(process.env.REFRESH_SECRET_KEY);
-    const { payload } = await jwtVerify(refreshToken, secretKey); // Верификация токена
 
-    if (!payload) {
+    try {
+      const { payload } = await jwtVerify(refreshToken, secretKey);
+
+      if (!payload) {
+        return NextResponse.json(
+          { error: "Неверный refresh token" },
+          { status: 401 }
+        );
+      }
+
+      const { accessToken } = await generateTokens(
+        payload.userId as string,
+        payload.deratmentId as string | number
+      );
+
+      return NextResponse.json({ accessToken });
+    } catch (error) {
+      console.error("Ошибка верификации refresh token:", error);
+
+      if ((error as Error).name === "JWTExpired") {
+        return NextResponse.json(
+          { error: "Refresh token истек" },
+          { status: 401 }
+        );
+      }
+
       return NextResponse.json(
-        { error: "Неверный refresh token" },
-        { status: 401 }
+        { error: "Ошибка обновления токена" },
+        { status: 500 }
       );
     }
-
-    // Генерируем новые токены
-    const { accessToken } = await generateTokens(payload.userId as string, payload.deratmentId as string | number);
-
-    // Возвращаем новый access token
-    return NextResponse.json({ accessToken });
   } catch (error) {
-    console.error("Ошибка обновления токена:", error);
+    console.error("Ошибка обновления токена:", (error as Error).message);
     return NextResponse.json(
       { error: "Ошибка обновления токена" },
       { status: 500 }

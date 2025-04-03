@@ -1,6 +1,5 @@
 "use server";
 
-import { TOAST } from "@/entities/user/ui/Toast";
 import {
   getAllProjectsByDepartment,
   getAllRetailsByDepartment,
@@ -12,17 +11,18 @@ export const getRetailsUserQuery = async (userId: string) => {
   try {
     return await getRetailsUser(userId as string);
   } catch (error) {
-    TOAST.ERROR((error as Error).message);
-    throw error;
+    console.log(error, "Ошибка getRetailsUserQuery");
+    return []; 
   }
 };
 
 export const getProjectsUserQuery = async (userId: string) => {
   try {
-    return await getProjectsUser(userId as string);
+    const projects = await getProjectsUser(userId);
+    return projects || []; // Возвращаем пустой массив, если projects === null
   } catch (error) {
-    TOAST.ERROR((error as Error).message);
-    throw error;
+    console.log(error, "Ошибка getProjectsUserQuery");
+    return []; 
   }
 };
 
@@ -30,9 +30,8 @@ export const getAllProjectsByDepartmentQuery = async () => {
   try {
     return await getAllProjectsByDepartment();
   } catch (error) {
-    console.log(error);
-    TOAST.ERROR((error as Error).message);
-    throw error;
+    console.log(error, "Ошибка getAllProjectsByDepartmentQuery");
+    return []; 
   }
 };
 
@@ -40,7 +39,7 @@ export const getAllRetailsByDepartmentQuery = async () => {
   try {
     return await getAllRetailsByDepartment();
   } catch (error) {
-    console.log(error);
-    throw error;
+    console.log(error, "Ошибка getAllRetailsByDepartmentQuery");
+    return []; 
   }
 };

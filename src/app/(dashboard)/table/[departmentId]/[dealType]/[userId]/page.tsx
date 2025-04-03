@@ -20,13 +20,27 @@ const PersonTablePage = async ({
     case "projects":
       await queryClient.prefetchQuery({
         queryKey: ["projects", userId],
-        queryFn: () => getProjectsUserQuery(userId),
-      }); // Запрос данных для проектов
+        queryFn: () => {
+          try {
+            return getProjectsUserQuery(userId)
+          } catch (error) {
+            console.log(error,"ErrorPersonTablePage")
+            throw error
+          }
+        },
+      }); 
       break;
     case "retails":
       await queryClient.prefetchQuery({
         queryKey: ["retails", userId],
-        queryFn: () => getRetailsUserQuery(userId),
+        queryFn: () => {
+          try {
+            return getRetailsUserQuery(userId)
+          } catch (error) {
+            console.log(error,"ErrorPersonTablePage")
+            throw error
+          }
+        },
       });
       break;
     default:

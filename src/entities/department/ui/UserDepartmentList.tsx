@@ -5,8 +5,12 @@ import React from "react";
 import UserItem from "./UserItem";
 import useStoreDepartment from "../store/useStoreDepartment";
 import { useParams } from "next/navigation";
+import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
 const UserDepartmentList = () => {
+  
+  useRedirectToLoginNotAuthUser();
+
   const { departmentId } = useParams();
   const { departments } = useStoreDepartment();
 

@@ -17,6 +17,7 @@ export const PermissionUser = {
   VIEW_UNION_REPORT: "Просмотр отчета объединения",
   DOWNLOAD_REPORTS: "Скачивание отчетов",
   USER_MANAGEMENT: "Управление пользователями",
+  DEAL_MANAGEMENT: "Редактирование/удаление сделок"
 } as const;
 
 export const DepartmentsTitle = {

@@ -77,13 +77,27 @@ const SummaryTablePage = async ({
     case "projects":
       await queryClient.prefetchQuery({
         queryKey: ["all-projects", +departmentId],
-        queryFn: () => getAllProjectsByDepartmentQuery(),
+        queryFn: () => {
+          try {
+            return getAllProjectsByDepartmentQuery();
+          } catch (error) {
+            console.log(error);
+            throw error;
+          }
+        },
       });
       break;
     case "retails":
       await queryClient.prefetchQuery({
         queryKey: ["all-retails", +departmentId],
-        queryFn: () => getAllRetailsByDepartmentQuery(),
+        queryFn: () => {
+          try {
+            return getAllRetailsByDepartmentQuery();
+          } catch (error) {
+            console.log(error);
+            throw error;
+          }
+        },
       });
       break;
     default:
