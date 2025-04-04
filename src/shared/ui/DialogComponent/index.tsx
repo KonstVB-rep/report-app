@@ -30,7 +30,7 @@ const DialogComponent = ({contentTooltip, trigger, children, showX = true, open:
           </DialogTrigger>
         </TooltipComponent>
         <DialogContent className={`sm:max-w-[825px] ${classNameContent}`} showX={showX}>
-          <DialogHeader>
+          <DialogHeader className={`${!dialogTitle && 'sr-only p-0 m-0'}`}>
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogDescription />
           </DialogHeader>

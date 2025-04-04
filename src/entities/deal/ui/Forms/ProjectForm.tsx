@@ -32,20 +32,11 @@ const ProjectForm = () => {
     },
   });
 
-  const { mutate, isPending } = useCreateProject(form);
+  const { mutateAsync, isPending } = useCreateProject(form);
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data);
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
-      }),
+      mutateAsync(data),
       "Проект создан"
     );
   };

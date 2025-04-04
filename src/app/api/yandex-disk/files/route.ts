@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getFiles } from "../../utils/yandexDisk";
+import { getFiles } from "../yandexDisk";
 
 
 export async function GET(request: Request) {

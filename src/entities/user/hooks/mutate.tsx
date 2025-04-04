@@ -4,8 +4,9 @@ import {
   createUser,
 
   deleteUser,
+  updateUser,
 } from "../api";
-import { userSchema } from "../model/schema";
+import { userEditSchema, userSchema } from "../model/schema";
 import {
   UserRequest,
   DepartmentTypeName,
@@ -90,3 +91,21 @@ export const useDeleteUser = (userId: string) => {
   });
 };
 
+export const useUpdateUser = (user: UserResponse, setOpen: (value: boolean) => void) => {
+  return useMutation({
+        mutationFn: (data: userEditSchema) => updateUser(data as UserRequest),
+        onSuccess: () => {
+          setOpen(false);
+          if (user) {
+            queryClient.invalidateQueries({
+              queryKey: ["user", user.id],
+              exact: true,
+            });
+          }
+          queryClient.invalidateQueries({
+            queryKey: ["depsWithUsers"],
+            exact: true,
+          });
+        },
+  })
+};

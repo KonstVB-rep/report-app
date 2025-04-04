@@ -44,21 +44,12 @@ const EditProjectForm = ({
     },
   });
 
-  const { mutate, isPending } = useMutationUpdateProject(dealId, close);
+  const { mutateAsync, isPending } = useMutationUpdateProject(dealId, close);
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data);
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
-      }),
-      "Проект обновлен"
+      mutateAsync(data),
+      "Данные обновлены"
     );
   };
 
@@ -82,6 +73,7 @@ const EditProjectForm = ({
       });
     }
   }, [form, data]);
+  console.log(data, 'data')
 
   if (isLoading) return <FormEditSkeleton />;
 

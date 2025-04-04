@@ -31,20 +31,11 @@ const RetailForm = () => {
     },
   });
 
-  const { mutate, isPending } = useCreateRetail(form);
+  const { mutateAsync, isPending } = useCreateRetail(form);
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data);
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
-      }),
+      mutateAsync(data),
       "Сделка по рознице добавлена"
     );
   };

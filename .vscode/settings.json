@@ -3,5 +3,8 @@
   "files.autoSave": "afterDelay",
   "editor.formatOnSave": true,
   "WillLuke.nextjs.addTypesOnSave": true,
-  "WillLuke.nextjs.hasPrompted": true
+  "WillLuke.nextjs.hasPrompted": true,
+  "workbench.editorAssociations": {
+    "*.svg": "default"
+  }
 }

@@ -256,7 +256,7 @@ export const updateProject = async (
       return [];
     }
 
-    const isOwner = deal.userId !== userId;
+    const isOwner = deal.userId === userId;
 
     if (!isOwner && user) {
       await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT]);
@@ -271,7 +271,7 @@ export const updateProject = async (
       where: { id: deal.id },
       data: {
         ...dealData,
-        userId,
+        userId: deal.userId,
         amountCP: safeAmountCP,
         delta: safeDelta,
         amountWork: safeAmountWork,
@@ -322,11 +322,13 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
 
+    console.log(userId, deal.userId, 'userId, deal.userId')
+
     const updatedDeal = await prisma.retail.update({
       where: { id: deal.id },
       data: {
         ...(dealData as RetailResponse),
-        userId,
+        userId: deal.userId,
         amountCP: safeAmountCP,
         delta: safeDelta,
       },

@@ -126,7 +126,7 @@ model UserLogin {
 model DealFile {
   id          String       @id @default(cuid())
   name        String
-  href        String
+  localPath   String
   storageType StorageType  @default(YANDEX_DISK)
   userId      String
   dealId      String       // Универсальный ID сделки (может быть как Project, так и Retail)

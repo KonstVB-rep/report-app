@@ -44,22 +44,13 @@ const EditRetailForm = ({
     },
   });
 
-  const { mutate, isPending } = useMutationUpdateRetail(dealId, close);
+  const { mutateAsync, isPending } = useMutationUpdateRetail(dealId, close);
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data);
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
-      }),
-      "Проект обновлен"
-    );
+         mutateAsync(data),
+         "Данные обновлены"
+       );
   };
 
   useEffect(() => {

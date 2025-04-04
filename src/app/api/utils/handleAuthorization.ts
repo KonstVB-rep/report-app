@@ -34,6 +34,7 @@ export const handleAuthorization = async (): Promise<{
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
+
   if (!user) {
     return handleError("Пользователь не найден");
   }

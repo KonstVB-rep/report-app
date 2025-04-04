@@ -21,15 +21,14 @@ import {
 
 import { userEditSchema, userFormEditSchema } from "../model/schema";
 import { TOAST } from "./Toast";
-import { updateUser } from "../api";
-import { useMutation } from "@tanstack/react-query";
-import { OPTIONS, UserRequest, UserWithdepartmentName } from "../types";
+import { OPTIONS, UserWithdepartmentName } from "../types";
 import useStoreUser from "../store/useStoreUser";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import PhoneInput from "@/shared/ui/PhoneInput";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
-import { getQueryClient } from "@/app/provider/query-provider";
+
 import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
+import { useUpdateUser } from "../hooks/mutate";
 
 const UserEditForm = ({
   user,
@@ -54,39 +53,10 @@ const UserEditForm = ({
     },
   });
 
-  const queryClient = getQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: userEditSchema) => updateUser(data as UserRequest),
-    onSuccess: () => {
-      setOpen(false);
-      if (user) {
-        queryClient.invalidateQueries({
-          queryKey: ["user", user.id],
-          exact: true,
-        });
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-        exact: true,
-      });
-    },
-  });
+  const { mutateAsync, isPending } = useUpdateUser(user!, setOpen);
 
   const onSubmit = (data: userEditSchema) => {
-    TOAST.PROMISE(
-      new Promise((resolve, reject) => {
-        mutate(data, {
-          onSuccess: (data) => {
-            resolve(data);
-          },
-          onError: (error) => {
-            reject(error);
-          },
-        });
-      }),
-      "Изменения сохранены"
-    );
+    TOAST.PROMISE(mutateAsync(data), "Изменения сохранены");
   };
 
   useEffect(() => {

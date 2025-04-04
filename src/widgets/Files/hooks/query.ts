@@ -3,32 +3,37 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllFilesDealFromDb } from "../api/actions_db";
 import { DealType } from "@prisma/client";
 import { TOAST } from "@/entities/user/ui/Toast";
-import { getInfoDisk } from "@/app/api/utils/yandexDisk";
+import { getInfoDisk } from "@/app/api/yandex-disk/yandexDisk";
 
 export const useGetHrefFilesDealFromDB = (
+  data: {
   userId: string,
   dealId: string,
   dealType: DealType
+  } | undefined
 ) => {
   const { isAuth } = useStoreUser();
   return useQuery({
-    queryKey: ["files-deal", userId, dealId, dealType],
+    queryKey: ["get-deal-files", data?.userId, data?.dealId, data?.dealType],
     queryFn: async () => {
       try {
         if (!isAuth) throw new Error("Пользователь не авторизован");
 
+        if(!data) throw new Error("Данные не переданы");
+
+        const { userId, dealId, dealType } = data;
+        
         // Получаем все файлы сделки из базы данных
         const files = await getAllFilesDealFromDb(userId, dealId, dealType);
         
-        return files;  // Возвращаем данные
+        return files; 
       } catch (error) {
         console.error("Ошибка при получении файлов сделки:", error);
         TOAST.ERROR((error as Error).message);
-        throw error;  // Прокидываем ошибку, чтобы useQuery мог её обработать
+        throw error; 
       }
     },
-    // Проверяем, чтобы запрос выполнялся только если все данные валидны
-    enabled: !!isAuth && !!userId && !!dealId && !!dealType,
+    enabled: !!isAuth && !!data?.userId && !!data?.dealId && !!data?.dealType,
   });
 };
 
@@ -45,3 +50,8 @@ export const useGetInfoYandexDisk = () => {
       refetchOnMount: true,
     });
 }
+
+
+
+
+     

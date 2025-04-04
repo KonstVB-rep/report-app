@@ -1,3 +1,5 @@
+'use server';
+
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
@@ -5,20 +7,15 @@ import { handleError } from "@/shared/api/handleError";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { FileInfo } from "../types";
 
-
-export const typeIdFile = {
-    [DealType.PROJECT]: "projectId",
-    [DealType.RETAIL]: "retailId",
-  };
-
 const checkingAccessRight = async (fileUserId: string) => {
   try {
-
-    const { user } = await handleAuthorization();
 
     if (!fileUserId) {
       handleError("Недостаточно данных");
     }
+
+    const { user } = await handleAuthorization();
+    
 
     const userOwnerProject = await prisma.user.findUnique({
       where: { id: fileUserId },
@@ -33,7 +30,7 @@ const checkingAccessRight = async (fileUserId: string) => {
     if (!isOwner && user) {
       await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
-    
+    return true;
   } catch (error) {
     console.error(error);
     throw error;
@@ -42,9 +39,10 @@ const checkingAccessRight = async (fileUserId: string) => {
 
 export const getFileFromDB = async (fileInfo: Omit<FileInfo, 'id'| 'storageType'>) => {
     try {
-        return await prisma.dealFile.findUnique({
+        return await prisma.dealFile.findFirst({
             where: {
-              id: fileInfo.dealId,
+              name: fileInfo.name,
+              localPath: fileInfo.localPath,
               dealId: fileInfo.dealId,
               dealType: fileInfo.dealType,
               userId: fileInfo.userId,
@@ -57,16 +55,18 @@ export const getFileFromDB = async (fileInfo: Omit<FileInfo, 'id'| 'storageType'
 }
 
 
-export const writeHrefDownloadFileInDB = async (formData: FormData) => {
+export const writeHrefDownloadFileInDB = async (data: {
+  name: string;
+  localPath: string;
+  dealId: string;
+  dealType: DealType;
+  userId: string;
+  }) => {
   try {
 
-     const fileName = formData.get("fileName");
-    const href = formData.get("href");
-    const dealId = formData.get("dealId");
-    const dealType = formData.get("dealType");
-    const userId = formData.get("userId");
+    const { name: fileName,localPath, dealId, dealType, userId } = data;
 
-    if (!fileName || !href || !dealId || !dealType || !userId) {
+    if (!fileName || !localPath || !dealId || !dealType || !userId) {
       throw new Error("Некоторые поля отсутствуют в formData");
     }
 
@@ -74,7 +74,7 @@ export const writeHrefDownloadFileInDB = async (formData: FormData) => {
 
     const fileInfo: Omit<FileInfo, 'id' | 'storageType'> = {
       name: fileName as string,
-      href: href as string,
+      localPath: localPath as string,
       dealId: dealId as string,
       dealType: dealType as DealType,
       userId: userId as string,
@@ -84,13 +84,13 @@ export const writeHrefDownloadFileInDB = async (formData: FormData) => {
     const isExistFile = await getFileFromDB(fileInfo);
     
     if (isExistFile) {
-      return handleError("Файл с таким названием уже существует");
+      return handleError("Файл с таким именем уже существует");
     }
 
     const file = await prisma.dealFile.create({
       data: {
         name: fileInfo.name,
-        href: fileInfo.href,
+        localPath: fileInfo.localPath,
         dealId: fileInfo.dealId,
         dealType: fileInfo.dealType,
         userId: fileInfo.userId,
@@ -104,46 +104,48 @@ export const writeHrefDownloadFileInDB = async (formData: FormData) => {
   }
 };
 
-export const getHrefDownloadFileFromDB = async (fileInfo: FileInfo) => {
-  try {
-    await checkingAccessRight(fileInfo.userId);
+// export const getHrefDownloadFileFromDB = async (fileInfo: FileInfo) => {
+//   try {
+//     await checkingAccessRight(fileInfo.userId);
+
+//     const file = await getFileFromDB(fileInfo);
+
+//     if (!file) {
+//       return handleError("Файл не найден");
+//     }
+
+//     return file.href;
+//   } catch (error) {
+//     console.error(error);
+//     return handleError("Ошибка при получении файла из базы данных");
+//   }
+// };
 
 
-    const file = await getFileFromDB(fileInfo);
-
-    if (!file) {
-      return handleError("Файл не найден");
-    }
-
-    return file.href;
-  } catch (error) {
-    console.error(error);
-    return handleError("Ошибка при получении файла из базы данных");
-  }
-};
-
-
-export const deleteFileFromDB = async (fileInfo:Omit<FileInfo, 'id'| 'storageType'>) => {
+export const deleteFileFromDB = async (fileInfo:Pick<FileInfo, 'id' | 'dealType' | 'userId'>) => {
 
     try {
-        await checkingAccessRight(fileInfo.userId);
+          await checkingAccessRight(fileInfo.userId);
 
-          const isExistFile = await getFileFromDB(fileInfo)
-      
+          const isExistFile = await prisma.dealFile.findUnique({
+            where: {
+              id: fileInfo.id,
+              dealType: fileInfo.dealType,
+            },
+          });
+  
           if (!isExistFile) {
             return handleError("Файл не найден");
           }
       
-          await prisma.dealFile.delete({
+          const deletedFile = await prisma.dealFile.delete({
             where: {
                 id: isExistFile.id,
-                dealId: fileInfo.dealId,
-                dealType: fileInfo.dealType,
-                userId: fileInfo.userId,
+                dealType: isExistFile.dealType,
             },
           });
       
-          return { message: "Файл успешно удален", success: true };
+          return deletedFile
     } catch (error) {
         console.error(error);
         return handleError("Ошибка при удалении данных из базы");
@@ -169,9 +171,6 @@ export const updateFileInDB = async (fileInfo: FileInfo) => {
               dealType: fileInfo.dealType,
               userId: fileInfo.userId,
             },
-            data: {
-              href: fileInfo.href,
-            }
           });
 
           return { message: "Файл успешно удален", success: true };

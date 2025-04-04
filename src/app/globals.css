@@ -299,7 +299,7 @@ body {
   }
 }
 
-button {
+.btn-active {
   @apply transition-transform duration-150 active:scale-95;
 }
 

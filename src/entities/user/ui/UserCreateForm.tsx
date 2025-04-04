@@ -29,7 +29,7 @@ const UserCreateForm = ({
 }: {
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { mutate, isPending } = useCreateUser();
+  const { mutateAsync, isPending } = useCreateUser();
 
   const form = useForm<userSchema>({
     resolver: zodResolver(userFormSchema),
@@ -47,16 +47,7 @@ const UserCreateForm = ({
   const onSubmit = (data: userSchema) => {
     try {
       TOAST.PROMISE(
-        new Promise((resolve, reject) => {
-          mutate(data, {
-            onSuccess: (data) => {
-              resolve(data);
-            },
-            onError: (error) => {
-              reject(error);
-            },
-          });
-        }),
+        mutateAsync(data),
         "Пользователь сохранен"
       );
       form.reset();
