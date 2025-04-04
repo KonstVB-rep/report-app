@@ -235,10 +235,6 @@ const UserEditForm = ({
                     placeholder="Установите разрешения"
                     {...field}
                     onValueChange={(selected) => {
-                      console.log(selected);
-                      // const selectedList = selected.map((item) => item.value);
-                      // form.setValue("permissions", selectedList);
-
                       form.setValue("permissions", selected);
                     }}
                     defaultValue={field.value}

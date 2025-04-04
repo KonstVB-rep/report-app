@@ -15,7 +15,6 @@ export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [
       hidden: true,
     },
     filterFn: (row, columnId, filterValues) => {
-      console.log("filterValues", filterValues);
       if (!filterValues || filterValues.length === 0) {
         return true;
       }

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "format": "npx prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "prisma:generate": "prisma generate",
     "build": "npm run prisma:generate && next build",

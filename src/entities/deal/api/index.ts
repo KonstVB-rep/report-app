@@ -322,8 +322,6 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
 
-    console.log(userId, deal.userId, 'userId, deal.userId')
-
     const updatedDeal = await prisma.retail.update({
       where: { id: deal.id },
       data: {
@@ -498,7 +496,6 @@ export const getAllProjectsByDepartment = async (): Promise<
 
   } catch (error) {
     console.log(error);
-    // console.error(error);
     return handleError((error as Error).message);
   }
 };

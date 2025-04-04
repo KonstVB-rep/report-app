@@ -13,7 +13,6 @@ import ProjectFormBody from "./ProjectFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 import { useMutationUpdateProject } from "../../hooks/mutate";
 
-
 const EditProjectForm = ({
   close,
   dealId,
@@ -69,11 +68,10 @@ const EditProjectForm = ({
         amountPurchase: data.amountPurchase,
         amountWork: data.amountWork,
         delta: data.delta,
-        resource: data.resource ?? "", // Преобразуем null в undefined
+        resource: data.resource ?? "",
       });
     }
   }, [form, data]);
-  console.log(data, 'data')
 
   if (isLoading) return <FormEditSkeleton />;
 

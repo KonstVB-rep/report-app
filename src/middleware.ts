@@ -45,7 +45,7 @@ async function refreshAccessToken(
       refresh_token: refreshToken,
     });
 
-    const data = res.data; // Новый access_token
+    const data = res.data; 
     console.log("Новый access token получен:", data.accessToken);
 
     cookiesStore.set("access_token", data.accessToken, {
@@ -55,19 +55,13 @@ async function refreshAccessToken(
       maxAge: 24 * 60 * 60,
     });
 
-    // const response = NextResponse.next();
-    // response.headers.set("Authorization", `Bearer ${data.accessToken}`);
-    // Если был редирект на /login, то перенаправим на /
     if (pathname === "/login") {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
     return NextResponse.next();
   } catch (error) {
-    console.log(
-      "Ошибка обновления токена, редирект на логин",
-      (error as Error).message
-    );
+    console.log("Ошибка обновления access token:", error);
     return redirectToLogin(request);
   }
 }
@@ -91,7 +85,6 @@ export default async function middleware(request: NextRequest) {
         const payload = await verifyToken(accessToken);
         if (payload) {
           const { userId, departmentId } = payload;
-          console.log("Пользователь авторизован, не перенаправляем на /");
           return NextResponse.redirect(
             new URL(`/table/${departmentId}/projects/${userId}`, request.url)
           );
@@ -117,7 +110,6 @@ export default async function middleware(request: NextRequest) {
   }
 
   if (!refreshToken) {
-    console.log("Нет refresh token, редирект на логин");
     return redirectToLogin(request);
   }
 

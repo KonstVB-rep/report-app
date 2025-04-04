@@ -4,6 +4,7 @@ import { deleteFileFromDB, writeHrefDownloadFileInDB } from "@/widgets/Files/api
 import { DealType } from "@prisma/client";
 import axios, { AxiosError } from "axios";
 
+
 export const axiosDownLoaderFromYD = axios.create({
 headers: {
     "Content-Type": "application/json",
@@ -156,7 +157,6 @@ const createFolderOnYandexDisk = async (folderPath: string) => {
 /**
  * Удаление файла/папки с Яндекс.Диска
  */
-
 const deleteFileOrFolderFromYandexDiskAnDB = async (file: { filePath: string, id: string, dealType: DealType, userId: string }) => {
   try {
     const { filePath, id, dealType, userId } = file;
@@ -174,17 +174,7 @@ const deleteFileOrFolderFromYandexDiskAnDB = async (file: { filePath: string, id
   }
 };
 
-/**
- * Проверка свободного места на диске
- */
-const checkDiskSpace = async () => {
-  const diskInfo = await getInfoDisk();
-  console.log("Всего места:", diskInfo.total_space);
-  console.log("Использовано:", diskInfo.used_space);
-  console.log("Свободно:", diskInfo.total_space - diskInfo.used_space);
-};
-
-export { getFiles,getInfoDisk,getResourceInfo, uploadFileToYandexDiskAndDB, downloadFileFromYandexDisk, createFolderOnYandexDisk,deleteFileOrFolderFromYandexDiskAnDB, checkDiskSpace };
+export { getFiles,getInfoDisk,getResourceInfo, uploadFileToYandexDiskAndDB, downloadFileFromYandexDisk, createFolderOnYandexDisk,deleteFileOrFolderFromYandexDiskAnDB };
 
 
 
