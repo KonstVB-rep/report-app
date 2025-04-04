@@ -153,33 +153,33 @@ export const deleteFileFromDB = async (fileInfo:Pick<FileInfo, 'id' | 'dealType'
 }
 
 
-export const updateFileInDB = async (fileInfo: FileInfo) => {
-    try {
-        await checkingAccessRight(fileInfo.userId);
+// export const updateFileInDB = async (fileInfo: FileInfo) => {
+//     try {
+//         await checkingAccessRight(fileInfo.userId);
 
 
-          const isExistFile = await getFileFromDB(fileInfo)
+//           const isExistFile = await getFileFromDB(fileInfo)
 
-          if (!isExistFile) {
-            return handleError("Файл не найден");
-          }
+//           if (!isExistFile) {
+//             return handleError("Файл не найден");
+//           }
       
-          await prisma.dealFile.update({
-            where: {
-              id: isExistFile.id,
-              dealId: fileInfo.dealId,
-              dealType: fileInfo.dealType,
-              userId: fileInfo.userId,
-            },
-          });
+//           await prisma.dealFile.update({
+//             where: {
+//               id: isExistFile.id,
+//               dealId: fileInfo.dealId,
+//               dealType: fileInfo.dealType,
+//               userId: fileInfo.userId,
+//             },
+//           });
 
-          return { message: "Файл успешно удален", success: true };
+//           return { message: "Файл успешно удален", success: true };
         
-    } catch (error) {
-        console.error(error);
-        return handleError("Ошибка при удалении данных из базы");
-    }
-}
+//     } catch (error) {
+//         console.error(error);
+//         return handleError("Ошибка при удалении данных из базы");
+//     }
+// }
 
 export const getAllFilesDealFromDb = async( userId: string, dealId: string, dealType: DealType) => {
     try {
