@@ -8,7 +8,7 @@ import axios, { AxiosError } from "axios";
 export const axiosDownLoaderFromYD = axios.create({
 headers: {
     "Content-Type": "application/json",
-    Authorization: `OAuth ${process.env.NEXT_PUBLIC_YANDEX_OAUTH_TOKEN}`,
+    Authorization: `OAuth ${process.env.YANDEX_OAUTH_TOKEN}`,
   }, 
 });
 
@@ -16,7 +16,7 @@ export const axiosInstanceYandexDisk = axios.create({
   baseURL: "https://cloud-api.yandex.net/v1/disk",
   headers: {
     "Content-Type": "application/json",
-    Authorization: `OAuth ${process.env.NEXT_PUBLIC_YANDEX_OAUTH_TOKEN}`,
+    Authorization: `OAuth ${process.env.YANDEX_OAUTH_TOKEN}`,
   },
 });
 
@@ -35,10 +35,10 @@ async function getFiles(folderPath: string = "/") {
 
 /**
  * Получение информации о диске
- */
+//  */
 const getInfoDisk = async () => {
   try {
-    const response = await axiosInstanceYandexDisk.get('');
+    const response = await axiosInstanceYandexDisk.get('/');
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении информации о диске:", error);

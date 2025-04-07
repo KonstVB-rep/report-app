@@ -36,8 +36,6 @@ export const useGetHrefFilesDealFromDB = (
     enabled: !!isAuth && !!data?.userId && !!data?.dealId && !!data?.dealType,
   });
 };
-
-
 export const useGetInfoYandexDisk = () => {
     const {isAuth} = useStoreUser();
       return useQuery({
