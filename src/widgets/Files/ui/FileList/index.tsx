@@ -27,6 +27,8 @@ const imageFormat = [
   ".ico",
 ];
 const excelFormat = [".xls", ".xlsx", ".csv"];
+const pdfFormat = [".pdf"];
+const text = [".txt"];
 
 const FileList = ({ data }: FileListProps) => {
   const {
@@ -63,6 +65,11 @@ const FileList = ({ data }: FileListProps) => {
 
           const isImg = imageFormat.includes(formatFile);
           const isExcel = excelFormat.includes(formatFile);
+          const isPdf = pdfFormat.includes(formatFile);
+          const isText = text.includes(formatFile);
+
+          const anotherFormat = !isImg && !isExcel && !isPdf && !isText;
+
           return (
             <li
               tabIndex={0}
@@ -72,14 +79,19 @@ const FileList = ({ data }: FileListProps) => {
               <p className="flex items-center justify-center">
                 {isImg && iconsTypeFile[".img"]()}
                 {isExcel && iconsTypeFile[".xls"]()}
-                {iconsTypeFile[formatFile] && iconsTypeFile[formatFile]()}
+                {isPdf && iconsTypeFile[".pdf"]()}
+                {isText && iconsTypeFile[".txt"]()}
+                {anotherFormat && iconsTypeFile["default"]()}
               </p>
 
               <p className="truncate text-xs">{file?.name}</p>
-              
-              <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]"/>
-              
-              <DownloadOrDeleteFile className="items-center justify-center group-hover:flex hidden group-focus-visible:flex absolute inset-0 h-full w-full z-10" {...file}/>
+
+              <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
+
+              <DownloadOrDeleteFile
+                className="absolute inset-0 z-10 hidden h-full w-full items-center justify-center group-hover:flex group-focus-visible:flex"
+                {...file}
+              />
             </li>
           );
         })}

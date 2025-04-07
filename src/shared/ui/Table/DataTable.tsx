@@ -25,52 +25,11 @@ import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import TableRowsSkeleton from "../../../entities/deal/ui/Skeletons/TableRowsSkeleton";
 import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
-// import { Button } from "@/components/ui/button";
-// import iconsTypeFile from "@/widgets/Files/ui/FileList/iconsTypeFile";
-
-// import ExcelJS from 'exceljs';
-// import { saveAs } from 'file-saver';
-
-// const downloadToExcel = (data: any[]) => {
-//   const workbook = new ExcelJS.Workbook();
-//   const worksheet = workbook.addWorksheet('Table Data');
-
-//   // const columnsToExclude = Object.keys(columnVisibility).filter(col => !columnVisibility[col]); видимые колонки
-//   //const columnsToExclude = [
-// //   ...Object.keys(columnVisibility).filter(col => !columnVisibility[col]), // Скрытые колонки
-// //   ...selectedColumns.filter(col => !columnFilters.some(filter => filter.id === col)) // Фильтруемые колонки
-// // ];
-// // СТРОКИ
-// // const filteredData = data.filter(item => {
-// //   // Применяем фильтрацию по всем активным фильтрам (например, по значениям в колонке)
-// //   return columnFilters.every(filter => {
-// //     const value = item[filter.id];
-// //     if (filter.value) {
-// //       return value.toString().toLowerCase().includes(filter.value.toString().toLowerCase()); // Простая фильтрация по значению
-// //     }
-// //     return true; // Если фильтра нет, оставляем строку
-// //   });
-// // });
-  
-//   // Добавление заголовков (если они есть в data)
-//   const columns = Object.keys(data[0] || {});
-//   worksheet.columns = columns.map(col => ({
-//     header: col,
-//     key: col,
-//     width: 20,
-//   }));
-
-//   // Заполнение данных в таблицу
-//   data.forEach((item) => {
-//     worksheet.addRow(item);
-//   });
-
-//   // Экспорт файла в Excel
-//   workbook.xlsx.writeBuffer().then((buffer) => {
-//     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'table-data.xlsx');
-//   });
-// };
+import { Button } from "@/components/ui/button";
+import iconsTypeFile from "@/widgets/Files/ui/FileList/iconsTypeFile";
+import ProtectedByPermissions from "../ProtectedByPermissions";
+import { PermissionEnum } from "@prisma/client";
+import { downloadToExcel } from "./exceljs/downLoadToExcel";
 
 const includedColumns = [
   "nameObject",
@@ -127,7 +86,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
       sorting,
       columnFilters,
       columnVisibility: {
-        ...columnVisibility, // Сохраняем остальные настройки видимости
+        ...columnVisibility,
         user: false,
         // resource: false // Скрываем колонку с id 'user'
       },
@@ -160,14 +119,24 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
 
   return (
     <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
-      {/* <Button
-        onClick={() => downloadToExcel(data )}
-        className="bg-white p-2 hover:bg-slate-700"
-        title="Export to XLSX"
-      >
-        {iconsTypeFile[".xls"]({ width: 20, height: 20 })}
-      </Button> */}
       <div className="flex items-center justify-between gap-2 pb-2">
+       <ProtectedByPermissions permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}>
+       <Button
+          variant={"ghost"}
+          onClick={() =>
+            downloadToExcel<TData, TValue>(
+              data,
+              columns,
+              columnFilters,
+              columnVisibility
+            )
+          }
+          className="w-fit p-2 hover:bg-slate-700 border"
+          title="Export to XLSX"
+        >
+          {iconsTypeFile[".xls"]({ width: 20, height: 20 })}
+        </Button>
+       </ProtectedByPermissions>
         <div className="flex flex-1 items-center justify-between gap-2">
           <FiltersManagment
             setColumnFilters={setColumnFilters}
