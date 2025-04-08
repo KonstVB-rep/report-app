@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { RetailResponse } from "@/entities/deal/types";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
@@ -8,8 +8,10 @@ import { useGetAllRetails } from "@/entities/deal/hooks/query";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { useParams } from "next/navigation";
 import SummaryTableTemplate from "./SummaryTableTemplate";
-import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
+import dynamic from "next/dynamic";
+
+const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
 
 const SummaryTableRetail = () => {
 
@@ -25,13 +27,12 @@ const SummaryTableRetail = () => {
   const {
     data: deals,
     error,
-    isPending,
     isError,
   } = useGetAllRetails(hasAccess ? (userId as string) : null);
 
-  const getRowLink = (row: RetailResponse & { id: string }, type: string) => {
+  const getRowLink =  useCallback((row: RetailResponse & { id: string }, type: string) => {
     return `/deal/${type.toLowerCase()}/${row.id}`;
-  };
+  },[]);
 
   if (!hasAccess)
     return (
@@ -48,7 +49,6 @@ const SummaryTableRetail = () => {
       type={DealType.RETAIL}
       isError={isError}
       error={error}
-      isPending={isPending}
     />
   );
 };

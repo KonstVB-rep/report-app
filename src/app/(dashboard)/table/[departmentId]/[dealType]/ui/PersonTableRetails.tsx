@@ -4,9 +4,12 @@ import { RetailResponse } from "@/entities/deal/types";
 import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 import PersonTable from "./PersonTable";
-import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
+import { useCallback } from "react";
+import dynamic from "next/dynamic";
+
+const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
 
 const PersonTableRetail = ({ userId }: { userId: string }) => {
   useRedirectToLoginNotAuthUser();
@@ -16,10 +19,11 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  // Передаём userId только если есть доступ, иначе null
-  const { data: deals, isPending } = useGetRetailsUser(
+  const { data: deals } = useGetRetailsUser(
     hasAccess ? (userId as string) : null
   );
+
+  const getRowLink = useCallback((row: RetailResponse) => `/deal/retail/${row.id}`,[]);
 
   if (!hasAccess)
     return (
@@ -28,7 +32,6 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
       />
     );
 
-  const getRowLink = (row: RetailResponse) => `/deal/retail/${row.id}`;
 
   return (
     <PersonTable
@@ -36,7 +39,6 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
       type={DealType.RETAIL}
       columns={columnsDataRetail}
       getRowLink={getRowLink}
-      isPending={isPending}
     />
   );
 };

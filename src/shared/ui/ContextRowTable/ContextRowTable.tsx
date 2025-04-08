@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -77,4 +77,4 @@ const ContextRowTable = <T,>({
   );
 };
 
-export default ContextRowTable;
+export default memo(ContextRowTable);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -22,7 +22,6 @@ import FilterByUser from "../Filters/FilterByUsers";
 import { useParams, useSearchParams } from "next/navigation";
 
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-import TableRowsSkeleton from "../../../entities/deal/ui/Skeletons/TableRowsSkeleton";
 import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { Button } from "@/components/ui/button";
@@ -47,7 +46,6 @@ interface DataTableProps<TData, TValue = unknown> {
   data: TData[];
   getRowLink?: (row: TData & { id: string }, type: string) => string;
   type: keyof typeof DealTypeLabels;
-  isPending: boolean;
 }
 
 const DataTable = <TData extends Record<string, unknown>, TValue>({
@@ -55,7 +53,6 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   data,
   getRowLink,
   type,
-  isPending,
 }: DataTableProps<TData, TValue>) => {
   const searchParams = useSearchParams();
   const { dealType } = useParams();
@@ -64,13 +61,17 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
+
+  const memoizedData = useMemo(() => data, [data]);
+  const memoizedColumns = useMemo(() => columns, [columns]);
+
   const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
     | DateRange
     | undefined;
 
   const table = useReactTable({
-    data,
-    columns,
+    data: memoizedData,
+    columns: memoizedColumns,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
@@ -120,23 +121,19 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   return (
     <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
       <div className="flex items-center justify-between gap-2 pb-2">
-       <ProtectedByPermissions permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}>
-       <Button
-          variant={"ghost"}
-          onClick={() =>
-            downloadToExcel<TData, TValue>(
-              data,
-              columns,
-              columnFilters,
-              columnVisibility
-            )
-          }
-          className="w-fit p-2 hover:bg-slate-700 border"
-          title="Export to XLSX"
+        <ProtectedByPermissions
+          permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}
         >
-          {iconsTypeFile[".xls"]({ width: 20, height: 20 })}
-        </Button>
-       </ProtectedByPermissions>
+          <Button
+            variant={"ghost"}
+            onClick={() => downloadToExcel<TData, TValue>(table, columns)}
+            className="w-fit border p-2 hover:bg-slate-700"
+            title="Export to XLSX"
+          >
+            {iconsTypeFile[".xls"]({ width: 20, height: 20 })}
+          </Button>
+        </ProtectedByPermissions>
+
         <div className="flex flex-1 items-center justify-between gap-2">
           <FiltersManagment
             setColumnFilters={setColumnFilters}
@@ -209,9 +206,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
         </div>
       </div>
 
-      {isPending ? (
-        <TableRowsSkeleton />
-      ) : data.length ? (
+      {data.length ? (
         <TableComponent table={table} getRowLink={getRowLink} />
       ) : (
         <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">

@@ -1,6 +1,6 @@
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import React from "react";
+import React, { memo } from "react";
 import FilterPopover from "../FilterPopover";
 import { ColumnFiltersState } from "@tanstack/react-table";
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
@@ -48,4 +48,4 @@ const FilterByUser = ({ columnFilters, setColumnFilters }: Props) => {
   );
 };
 
-export default FilterByUser;
+export default memo(FilterByUser);

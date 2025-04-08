@@ -3,16 +3,21 @@ import { ColumnDef } from "@tanstack/react-table";
 import React from "react";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
-import DataTable from "@/shared/ui/Table/DataTable";
+import dynamic from "next/dynamic";
+import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
+
+const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
+  ssr: false,
+  loading: () => <TableRowsSkeleton/>,
+});
 
 type SummaryTableTemplateProps<T extends { id: string }> = {
   columns: ColumnDef<T, unknown>[];
-  data: T[]; 
+  data: T[];
   getRowLink: (row: T, type: string) => string;
   type: DealType;
   isError: boolean;
   error: Error | null;
-  isPending: boolean;
 };
 
 const SummaryTableTemplate = <T extends { id: string }>({
@@ -22,9 +27,7 @@ const SummaryTableTemplate = <T extends { id: string }>({
   type,
   isError,
   error,
-  isPending,
 }: SummaryTableTemplateProps<T>) => {
-
   return (
     <DealTableTemplate>
       {isError && (
@@ -35,7 +38,12 @@ const SummaryTableTemplate = <T extends { id: string }>({
         </div>
       )}
       <LinkToUserTable />
-      <DataTable columns={columns} data={data} getRowLink={getRowLink} type={type} isPending={isPending}/>
+      <DataTable
+        columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
+        data={data as Record<string, unknown>[]}
+        getRowLink={getRowLink as (row: Record<string, unknown>, type: string) => string}
+        type={type}
+      />
     </DealTableTemplate>
   );
 };

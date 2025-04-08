@@ -24,7 +24,7 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
 };
 
 const AddNewDeal = ({ type }: AddNewDealProps) => {
-  // const [open, setOpen] = useState(false);
+
   return (
     <DialogComponent
       contentTooltip={contentType[type].title}

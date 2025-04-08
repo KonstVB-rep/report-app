@@ -44,7 +44,7 @@ const SaveFilter = () => {
         <Button
           variant={"secondary"}
           size={"icon"}
-          className="btn_hover w-full min-w-24"
+          className="btn_hover w-fit"
         >
           <Save />
         </Button>

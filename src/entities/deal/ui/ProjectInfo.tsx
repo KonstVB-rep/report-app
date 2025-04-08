@@ -8,20 +8,22 @@ import {
   DirectionProjectLabels,
   StatusProjectLabels,
 } from "../lib/constants";
-import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
-import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
-import NotFoundDeal from "./NotFoundDeal";
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import { formatterCurrency } from "@/shared/lib/utils";
-import IntoDealItem from "./IntoDealItem";
 import { Separator } from "@/components/ui/separator";
 import { Building, ContactRound } from "lucide-react";
-import FileUploadForm from "@/widgets/Files/ui/UploadFile";
-// import { Button } from "@/components/ui/button";
-// import axiosInstance from "@/shared/api/axiosInstance";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
-import FileList from "@/widgets/Files/ui/FileList";
+import dynamic from "next/dynamic";
+import FileUploadForm from "@/widgets/Files/ui/UploadFile";
+import IntoDealItem from "./IntoDealItem";
+import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
+import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
+
+const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
+  ssr: false,
+});
+const NotFoundDeal = dynamic(() => import("./NotFoundDeal"), { ssr: false });
 
 const ProjectItemInfo = () => {
   useRedirectToLoginNotAuthUser();
@@ -39,12 +41,15 @@ const ProjectItemInfo = () => {
   }
 
   return (
-    <section className="grid p-4 gap-2">
-      <div className="flex items-center justify-between pb-2">
+    <section className="grid gap-2 p-4">
+      <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
 
-          <p className="text-xs"> Дата: {deal.createdAt?.toLocaleDateString()}</p>
+          <p className="text-xs">
+            {" "}
+            Дата: {deal.createdAt?.toLocaleDateString()}
+          </p>
         </div>
 
         <div className="flex justify-end gap-2">
@@ -64,38 +69,40 @@ const ProjectItemInfo = () => {
 
       <div className="grid gap-2">
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
-          <div>
+          <div className="grid gap-4">
             <div className="grid min-w-72 gap-2">
-              <p className="text-2xl">Объект</p>
-              <div className="flex w-full items-center justify-start gap-4 rounded-md border border-solid p-3">
-                <Building size="40" strokeWidth={1} />
+              <IntoDealItem title={"Объект"}>
+                <div className="flex w-full items-center justify-start gap-4">
+                  <Building size="40" strokeWidth={1} />
 
-                <p>{deal?.nameObject}</p>
-              </div>
+                  <p>{deal?.nameObject}</p>
+                </div>
+              </IntoDealItem>
             </div>
             <div className="grid gap-2">
-              <p className="text-2xl">Контакт</p>
-              <div className="grid w-full rounded-md border border-solid p-3">
-                <div className="flex items-center justify-start gap-4">
-                  <ContactRound size="40" strokeWidth={1} />
+              <IntoDealItem title={"Контакт"}>
+                <div className="grid w-full">
+                  <div className="flex items-center justify-start gap-4">
+                    <ContactRound size="40" strokeWidth={1} />
 
-                  <div className="flex flex-col items-start justify-start">
-                    <p>{deal.contact || "Нет данных"}</p>
+                    <div className="flex flex-col items-start justify-start">
+                      <p>{deal.contact || "Нет данных"}</p>
 
-                    <p className="whitespace-nowrap">
-                      {deal.phone || "Нет данных"}
-                    </p>
+                      <p className="whitespace-nowrap">
+                        {deal.phone || "Нет данных"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Separator className="my-2" />
+
+                  <div className="flex flex-col items-start justify-start text-sm">
+                    <p>Дополнительный контакт: </p>
+
+                    <p>{deal.additionalContact || "Нет данных"}</p>
                   </div>
                 </div>
-
-                <Separator className="my-2" />
-
-                <div className="flex flex-col items-start justify-start text-sm">
-                  <p>Дополнительный контакт: </p>
-
-                  <p>{deal.additionalContact || "Нет данных"}</p>
-                </div>
-              </div>
+              </IntoDealItem>
             </div>
           </div>
           <div className="grid-container gap-2">
@@ -162,7 +169,9 @@ const ProjectItemInfo = () => {
           </div>
         </div>
         <IntoDealItem title={"Комментарии"}>
-          <p>Комментарии: {deal.comments || "Нет данных"}</p>
+          <p className="first-letter:capitalize">
+            {deal.comments || "Нет данных"}
+          </p>
         </IntoDealItem>
 
         <IntoDealItem title={"Статус"}>
@@ -175,8 +184,16 @@ const ProjectItemInfo = () => {
           </div>
         </IntoDealItem>
       </div>
-    
-      <FileList data={deal && { userId: deal?.userId, dealId: deal?.id, dealType: deal?.type }} />
+
+      <FileList
+        data={
+          deal && {
+            userId: deal?.userId,
+            dealId: deal?.id,
+            dealType: deal?.type,
+          }
+        }
+      />
     </section>
   );
 };

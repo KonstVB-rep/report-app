@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import SelectComponent from "@/shared/ui/SelectComponent";
 import { DepartmentsTitle, RolesUser } from "../model/objectTypes";
@@ -22,13 +22,9 @@ import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
 import { DepartmentTypeName, OPTIONS } from "../types";
 import InputPassword from "@/shared/ui/Inputs/InputPassword";
 import { useCreateUser } from "../hooks/mutate";
+import Overlay from "@/shared/ui/Overlay";
 
-const UserCreateForm = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setOpen,
-}: {
-  setOpen?: Dispatch<SetStateAction<boolean>>;
-}) => {
+const UserCreateForm = () => {
   const { mutateAsync, isPending } = useCreateUser();
 
   const form = useForm<userSchema>({
@@ -59,6 +55,8 @@ const UserCreateForm = ({
   };
 
   return (
+    <>
+   <Overlay isPending={isPending}/>
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -263,6 +261,7 @@ const UserCreateForm = ({
         <SubmitFormButton title="Добавить" isPending={isPending} />
       </form>
     </Form>
+    </>
   );
 };
 

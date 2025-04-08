@@ -29,7 +29,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { Separator } from "@radix-ui/react-separator";
-import { Fragment, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 
 const deals = [
   {
@@ -47,14 +47,12 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
   const pathname = usePathname();
   const router = useRouter();
 
-
-  const [open, setOpen] = useState(true); // Устанавливаем начальное значение true, чтобы меню было открыто
-
+  const [open, setOpen] = useState(true); 
   const handleToggle = () => {
     setOpen((prev) => !prev);
   };
 
-  const render = (item: (typeof items)[number]) => {
+  const render = useCallback((item: (typeof items)[number]) => {
     return (
       <Collapsible
         key={item?.id || item.title}
@@ -216,7 +214,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
         </SidebarMenuItem>
       </Collapsible>
     );
-  };
+  },[departmentId]);
 
   return (
     <SidebarGroup className="grid h-full grid-rows-[1fr_auto] gap-4">

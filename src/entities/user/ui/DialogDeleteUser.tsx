@@ -14,6 +14,7 @@ import { useParams } from "next/navigation";
 import { useGetUser } from "../hooks/query";
 import { useDeleteUser } from "../hooks/mutate";
 import { PermissionEnum } from "@prisma/client";
+import Overlay from "@/shared/ui/Overlay";
 
 const DialogDeleteUser = () => {
   const params = useParams();
@@ -21,7 +22,7 @@ const DialogDeleteUser = () => {
 
   const { data } = useGetUser(userId, [PermissionEnum.USER_MANAGEMENT]);
 
-  const { mutate, isPending } = useDeleteUser(userId)
+  const { mutate, isPending } = useDeleteUser(userId);
 
   return (
     <Dialog>
@@ -36,19 +37,20 @@ const DialogDeleteUser = () => {
       <DialogContent className="sm:max-w-[425px]" showX={false}>
         <DialogHeader>
           <DialogTitle className="sr-only">Удалить пользователя</DialogTitle>
-          
+
           <DialogDescription className="sr-only">
             Пользователь будет удален навсегда
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-8 py-4">
+          <Overlay isPending={isPending} />
           <p className="text-center">Вы уверены что хотите удалить аккаунт?</p>
-          <p>
-            Пользователь:{" "}
-            <span className="font-bold capitalize">
+          <p className="grid text-center">
+            <span> Пользователь: </span>
+            <span className="font-bold capitalize text-lg">
               {data?.username.split(" ").join(" ")}
             </span>{" "}
-            будет удален безвозвратно
+            <span>будет удален безвозвратно</span>
           </p>
           <div className="flex justify-between gap-4">
             <Button onClick={() => mutate()} className="flex-1">

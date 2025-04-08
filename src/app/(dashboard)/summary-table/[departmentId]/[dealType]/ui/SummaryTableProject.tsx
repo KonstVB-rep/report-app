@@ -6,10 +6,12 @@ import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
 import { useGetAllProjects } from "@/entities/deal/hooks/query";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
-import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 import { useParams } from "next/navigation";
 import SummaryTableTemplate from "./SummaryTableTemplate";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
+import dynamic from "next/dynamic";
+
+const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
 
 const SummaryTableProject = () => {
 
@@ -25,7 +27,6 @@ const SummaryTableProject = () => {
   const {
     data: deals,
     error,
-    isPending,
     isError,
   } = useGetAllProjects(hasAccess ? (userId as string) : null);
 
@@ -51,7 +52,6 @@ const SummaryTableProject = () => {
       type={DealType.PROJECT}
       isError={isError}
       error={error}
-      isPending={isPending}
     />
   );
 };

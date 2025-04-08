@@ -110,7 +110,7 @@ const FiltersManagmentContent = ({
         {searchParams.size > 0 && (
           <HoverCardComponent
             title={<Settings2 />}
-            className="border-stone-solid-600"
+            className="border-stone-solid-600 flex gap-1 items-center"
           >
             {columnFilters.length || Object.keys(columnVisibility).length ? (
               <SaveFilter />
@@ -119,7 +119,7 @@ const FiltersManagmentContent = ({
               <Button
                 variant={"destructive"}
                 size={"icon"}
-                className="w-[50px] min-w-24 transition-transform duration-150 active:scale-95"
+                className="btn_hover w-fit"
                 onClick={() => {
                   handleClearFilters();
                   setSelectedColumns([]);

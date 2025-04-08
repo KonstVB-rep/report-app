@@ -24,6 +24,7 @@ import PhoneInput from "@/shared/ui/PhoneInput";
 import InputNumber from "@/shared/ui/Inputs/InputNumber";
 import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
+import Overlay from "@/shared/ui/Overlay";
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -37,7 +38,9 @@ const RetailFormBody = <T extends FieldValues>({
   isPending,
 }: RetailFormBodyProps<T>) => {
   return (
-    <Form {...form}>
+    <>
+     <Overlay isPending={isPending}/>
+     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid max-h-[85vh] gap-10 overflow-y-auto"
@@ -409,6 +412,7 @@ const RetailFormBody = <T extends FieldValues>({
         </div>
       </form>
     </Form>
+    </>
   );
 };
 

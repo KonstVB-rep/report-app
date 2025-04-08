@@ -19,4 +19,5 @@ const AccessDeniedMessage = ({ error }: AccessDeniedMessageProps) => {
 };
 
 export default AccessDeniedMessage;
-// w-[80%] h-[80%] opacity-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-1
+
+AccessDeniedMessage.displayName = "AccessDeniedMessage";

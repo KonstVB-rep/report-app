@@ -29,6 +29,7 @@ import InputPassword from "@/shared/ui/Inputs/InputPassword";
 
 import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
 import { useUpdateUser } from "../hooks/mutate";
+import Overlay from "@/shared/ui/Overlay";
 
 const UserEditForm = ({
   user,
@@ -74,7 +75,9 @@ const UserEditForm = ({
   }, [form, user]);
 
   return (
-    <Form {...form}>
+    <>
+     <Overlay isPending={isPending}/>
+     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid max-h-[85vh] gap-5 overflow-y-auto p-1"
@@ -250,6 +253,7 @@ const UserEditForm = ({
         <SubmitFormButton title="Сохранить" isPending={isPending} />
       </form>
     </Form>
+    </>
   );
 };
 

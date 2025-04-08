@@ -22,6 +22,7 @@ import {
 } from "../../lib/constants";
 import { Input } from "@/components/ui/input";
 import { FieldValues, Path, PathValue, UseFormReturn, useWatch } from "react-hook-form";
+import Overlay from "@/shared/ui/Overlay";
 
 export const parseFormattedNumber = (value: string): number =>  parseFloat(value.replace(/\s+/g, "").replace(",", ".")) || 0;
 
@@ -65,7 +66,9 @@ const ProjectFormBody = <T extends FieldValues>({
   }, [watchedValues, form]);
 
   return (
-    <Form {...form}>
+    <>
+     <Overlay isPending={isPending}/>
+     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid max-h-[85vh] gap-10 overflow-y-auto"
@@ -271,9 +274,9 @@ const ProjectFormBody = <T extends FieldValues>({
                       <Input placeholder="Данные контактного лица" {...field} />
                     </FormControl>
 
-                    {form.formState.errors.contact?.message && (
+                    {form.formState.errors.additionalContact?.message && (
                       <FormMessage className="text-red-500">
-                        {form.formState.errors.contact?.message as string}
+                        {form.formState.errors.additionalContact?.message as string}
                       </FormMessage>
                     )}
                   </FormItem>
@@ -494,6 +497,7 @@ const ProjectFormBody = <T extends FieldValues>({
         </div>
       </form>
     </Form>
+    </>
   );
 };
 

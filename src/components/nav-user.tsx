@@ -12,8 +12,8 @@ import Link from "next/link";
 import HoverCardComponent from "@/shared/ui/HoverCard";
 
 export function NavUser() {
+  
   const { isMobile } = useSidebar();
-
   const { authUser } = useStoreUser();
 
   return (

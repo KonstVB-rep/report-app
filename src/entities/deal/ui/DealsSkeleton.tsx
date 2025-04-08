@@ -6,11 +6,14 @@ const DealsSkeleton = () => {
       <div className="grid h-full grid-rows-[auto_1fr] content-start gap-4">
         <div className="flex items-center justify-between">
           <div className="h-10 w-40 animate-pulse rounded-xl bg-muted/50" />
+
           <div className="flex gap-2">
             <div className="h-10 w-40 animate-pulse rounded-xl bg-muted/50" />
+
             <div className="h-10 w-40 animate-pulse rounded-xl bg-muted/50" />
           </div>
         </div>
+        
         <div className="h-full max-h-[80vh] w-full animate-pulse rounded-xl bg-muted/50" />
       </div>
     </section>

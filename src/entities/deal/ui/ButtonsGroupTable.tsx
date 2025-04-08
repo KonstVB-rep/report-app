@@ -18,13 +18,16 @@ const ButtonsGroupTable = () => {
   return (
     <div className="flex items-center justify-between gap-2">
       <ProfileSettings user={user} />
+      
       <div className="flex gap-2">
         <LinkToUserTable />
+
         <ProtectedByPermissions
           permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
         >
           <HoverCardComponent title="Сводная таблица">
             <SummaryTableLink type={DealType.PROJECT} />
+
             <SummaryTableLink type={DealType.RETAIL} />
           </HoverCardComponent>
         </ProtectedByPermissions>

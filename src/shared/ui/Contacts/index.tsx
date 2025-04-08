@@ -2,36 +2,34 @@ import { Mail, Phone } from "lucide-react";
 import React from "react";
 
 type Props = {
-  user: {
-    email: string;
-    phone: string;
-  };
+  email: string;
+  phone: string;
   className: string;
 };
 
-const Contacts = ({ user, className }: Props) => {
+const Contacts = ({ email, phone, className }: Props) => {
   return (
     <>
-      {user.email && (
+      {email && (
         <a
-          href={`mailto:${user.email}`}
+          href={`mailto:${email}`}
           className={`flex items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background ${className}`}
         >
           {" "}
           <Mail size="24" />
         </a>
       )}
-      {user.phone && (
+      {phone && (
         <a
-          href={`tel:${user?.phone}`}
+          href={`tel:${phone}`}
           className={`flex items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:bg-blue-600 hover:text-white focus-visible:bg-blue-600 focus-visible:text-white ${className}`}
         >
           <Phone size="24" />
         </a>
       )}
-      {user.phone && (
+      {phone && (
         <a
-          href={`https://wa.me/${user?.phone}`}
+          href={`https://wa.me/${phone}`}
           target="_blank"
           className={`flex items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:border-chart-2 hover:bg-green-600 hover:text-white focus-visible:bg-green-600 focus-visible:text-white ${className}`}
         >

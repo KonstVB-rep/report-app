@@ -3,8 +3,6 @@ import ExcelJS from "exceljs";
 import React from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
-  VisibilityState,
   CellContext,
   Row,
   Table,
@@ -25,58 +23,29 @@ interface ExcelCellContext<TData, TValue> {
     table: Table<TData>;
   }
 
+
 export const downloadToExcel = <
   TData extends Record<string, unknown>,
   TValue = unknown
 >(
-  data: TData[],
+  table: Table<TData>,
   columns: ColumnDef<TData, TValue>[],
-  columnFilters: ColumnFiltersState,
-  columnVisibility: VisibilityState
 ) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Table Data");
 
   const allCols = columns.map((col) => ({ id: col.id, header: col.header }));
+  const columnVisibility = table.getState().columnVisibility;
 
   const columnsToExclude = Object.keys(columnVisibility).filter(
     (col) => !columnVisibility[col as keyof TData & string]
   );
 
   const colsVisible = allCols.filter(
-    (col) => !columnsToExclude.includes(col.id as string)
+    (col) => !columnsToExclude.includes(col.id as string) && col.id !== "rowNumber"
   );
 
-  const filteredData = data.filter((item) =>
-    columnFilters.every((filter) => {
-      const value = item[filter.id as keyof TData];
-
-      if (filter.value) {
-        if (filter.id === "dateRequest") {
-          if (typeof value !== "string" && typeof value !== "number")
-            return false;
-
-          const dateValue = new Date(value);
-          const { from, to } = filter.value as { from?: Date; to?: Date };
-
-          if (from && to) return dateValue >= from && dateValue <= to;
-          if (from) return dateValue >= from;
-          if (to) return dateValue <= to;
-        }
-
-        return value
-          ?.toString()
-          .toLowerCase()
-          .includes(
-            typeof filter.value === "string"
-              ? filter.value.toLowerCase()
-              : ""
-          );
-      }
-
-      return true;
-    })
-  );
+  const filteredData = table.getFilteredRowModel().rows.map((row) => row.original);
 
   const transformedData = filteredData.map((row) => {
     const newRow: Partial<Record<string, string | number | null>> = {};
@@ -105,8 +74,7 @@ export const downloadToExcel = <
           if (typeof rendered === "string" || typeof rendered === "number") {
             renderedValue = rendered;
           } else if (React.isValidElement(rendered)) {
-            const child = (rendered.props as { children?: React.ReactNode })
-              .children;
+            const child = (rendered.props as { children?: React.ReactNode }).children;
             renderedValue =
               typeof child === "string" || typeof child === "number"
                 ? child
@@ -122,6 +90,7 @@ export const downloadToExcel = <
 
     return newRow;
   });
+
 
   worksheet.columns = colsVisible.map((col) => ({
     header: col.header as string,

@@ -1,26 +1,34 @@
 "use client";
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { SquarePlus } from "lucide-react";
 import dynamic from "next/dynamic"; // Динамический импорт
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 import { PermissionEnum } from "@prisma/client";
+import DialogComponent from "@/shared/ui/DialogComponent";
+import { Button } from "@/components/ui/button";
+import UserFormSkeleton from "./UserFormSkeleton";
 
-const DialogForm = dynamic(() => import("./DialogForm"), { ssr: false });
 const UserCreateForm = dynamic(() => import("./UserCreateForm"), {
-  ssr: false,
+  ssr: false, loading: () => <UserFormSkeleton/>
 });
 
 const DialogAddUser = () => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
-      <DialogForm
-        icon={<SquarePlus size={16} />}
-        renderItem={(setOpen: Dispatch<SetStateAction<boolean>>) => (
-          <UserCreateForm setOpen={setOpen} />
-        )}
-        textTrigger="Добавить пользователя"
-        title={"Форма добавления пользователя"}
-      />
+      <DialogComponent
+        trigger={
+          <Button variant={"outline"} className="btn_hover">
+            <SquarePlus size={16} />
+            <span className="whitespace-nowrap text-sm">
+              Добавить пользователя
+            </span>
+          </Button>
+        }
+        dialogTitle={"Форма добавления пользователя"}
+        classNameContent="sm:max-w-[600px]"
+      >
+        <UserCreateForm />
+      </DialogComponent>
     </ProtectedByPermissions>
   );
 };

@@ -16,7 +16,6 @@ const SummaryTablePage = async ({
 
   const queryClient = getQueryClient();
 
-  // Выполняем запросы для prefetch
   switch (dealType) {
     case "projects":
       await queryClient.prefetchQuery({
@@ -48,7 +47,6 @@ const SummaryTablePage = async ({
       return null;
   }
 
-  // Гидратация и передача данных через HydrationBoundary
   const dehydratedState = dehydrate(queryClient);
 
   switch (dealType) {

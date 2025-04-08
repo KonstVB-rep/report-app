@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-// import { TOAST } from "@/entities/user/ui/Toast";
 import { useEffect, useRef } from "react";
 
 export default function Error({
@@ -12,10 +11,6 @@ export default function Error({
 }) {
   const handleErrorRef = useRef(false);
   useEffect(() => {
-    // if (error && !handleErrorRef.current) {
-    //   TOAST.ERROR(error.message);
-    // }
-    // Log the error to an error reporting service
     console.error(error);
     return () => {
       handleErrorRef.current = true;

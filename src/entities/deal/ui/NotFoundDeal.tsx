@@ -8,6 +8,7 @@ const NotFoundDeal = () => {
         <h1 className="p-4 text-center text-2xl uppercase">
           Данные по сделке не найдены
         </h1>
+        
         <FileQuestion strokeWidth={1} className="h-[50%] w-[50%] opacity-30" />
       </div>
     </section>

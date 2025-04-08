@@ -1,4 +1,3 @@
-// AppSidebar.tsx - Клиентский компонент
 "use client";
 
 import * as React from "react";
@@ -22,26 +21,30 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import { memo, useEffect, useMemo } from "react";
 
 const icons = {
   SALES: <BadgeRussianRuble />,
   TECHNICAL: <Wrench />,
 };
 
-export function AppSidebar() {
+const AppSidebar = () => {
   const { departments } = useStoreDepartment();
+  const { isAuth } = useStoreUser();
+  const { setDepartments } = useStoreDepartment();
 
+  const { data: departmentData } = useGetDepartmentsWithUsers(isAuth);
 
-  // if (isPending) {
-  //   return <div className="hidden md:block top-[--header-height] !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-muted/50"/>;  
-  // }
+  useEffect(() => {
+    if (departmentData) {
+      setDepartments(departmentData);
+    }
+  }, [departmentData]);
 
-  if (!departments) {
-    return null;
-  }
-
-  const navMainItems = (departments as DepartmentInfo[]).map(
-    (dept: DepartmentInfo) => ({
+  const navMainItems = useMemo(() => 
+    (departments as DepartmentInfo[]).map((dept: DepartmentInfo) => ({
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],
@@ -54,12 +57,16 @@ export function AppSidebar() {
         position: person.position,
         url: `/table/${person.departmentId}`,
       })),
-    })
-  );
+    })),
+  [departments]);
 
   const data: { navMain: DepartmentListType[] } = {
     navMain: navMainItems,
   };
+
+  if (!departments || !departments.length) {
+    return null;
+  }
 
   return (
     <Sidebar className="top-[--header-height] !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0">
@@ -74,7 +81,7 @@ export function AppSidebar() {
                     alt="logo"
                     width={16}
                     height={16}
-                    className="dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)] drop-shadow-[0_0px_8px_rgba(255,255,255,1)]"
+                    className="drop-shadow-[0_0px_8px_rgba(255,255,255,1)] dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)]"
                   />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -88,7 +95,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain.length ? data.navMain : []} />
       </SidebarContent>
       <SidebarFooter className="border-t border-muted">
         <NavUser />
@@ -96,3 +103,6 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
+
+export default memo(AppSidebar);

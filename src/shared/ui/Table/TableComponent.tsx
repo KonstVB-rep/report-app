@@ -9,7 +9,7 @@ import {
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
 import { MoveUp, MoveDown, ArrowDownUp } from "lucide-react";
-import React, { ReactNode, RefObject } from "react";
+import { memo, ReactNode, RefObject, useCallback } from "react";
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import useScrollIntoViewBottomTable from "@/shared/hooks/useScrollIntoViewBottomTable";
 
@@ -18,14 +18,14 @@ type TableComponentProps<T> = {
   getRowLink?: (row: T & { id: string }, type: string) => string;
 };
 
-const TableComponent = <T extends Record<string, unknown>>({
+const TableComponentInner = <T extends Record<string, unknown>>({
   table,
 }: TableComponentProps<T>) => {
 
   const ref = useScrollIntoViewBottomTable(
     table
   ) as unknown as RefObject<HTMLTableElement | null>;
-  const renderRowCells = (row: Row<T>) => {
+  const renderRowCells = useCallback((row: Row<T>) => {
     return row.getVisibleCells().map((cell) => (
       <TableCell
         key={cell.id}
@@ -35,9 +35,9 @@ const TableComponent = <T extends Record<string, unknown>>({
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </TableCell>
     ));
-  };
-
-  const renderRow = (row: Row<T>): ReactNode => {
+  }, []);
+  
+  const renderRow = useCallback((row: Row<T>): ReactNode => {
     return (
       <ContextRowTable key={row.id} rowData={row.original}>
         <TableRow className="tr hover:bg-zinc-600 hover:text-white">
@@ -45,7 +45,7 @@ const TableComponent = <T extends Record<string, unknown>>({
         </TableRow>
       </ContextRowTable>
     );
-  };
+  }, [renderRowCells]);
 
   return (
     <Table
@@ -126,5 +126,7 @@ const TableComponent = <T extends Record<string, unknown>>({
     </Table>
   );
 };
+
+const TableComponent = memo(TableComponentInner) as typeof TableComponentInner;
 
 export default TableComponent;

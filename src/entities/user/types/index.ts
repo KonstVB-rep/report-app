@@ -68,6 +68,10 @@ export const OPTIONS: Option[] = [
     label: PermissionUser.USER_MANAGEMENT,
     value: PermissionEnum.USER_MANAGEMENT,
   },
+  {
+    label: PermissionUser.DEAL_MANAGEMENT,
+    value: PermissionEnum.DEAL_MANAGEMENT,
+  }
 ];
 
 export type PermissionType = keyof typeof PermissionEnum;

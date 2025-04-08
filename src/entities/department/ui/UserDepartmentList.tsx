@@ -8,7 +8,6 @@ import { useParams } from "next/navigation";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 
 const UserDepartmentList = () => {
-  
   useRedirectToLoginNotAuthUser();
 
   const { departmentId } = useParams();
@@ -31,7 +30,7 @@ const UserDepartmentList = () => {
       currentDepartment?.users.length > 0 ? (
         <ul className="grid max-w-max gap-2 pt-4">
           {currentDepartment?.users.map((per: UserResponse) => (
-            <UserItem key={per.id} person={per} />
+            <UserItem key={per.id} {...per} />
           ))}
         </ul>
       ) : (

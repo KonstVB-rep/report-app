@@ -8,15 +8,20 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../lib/constants";
-import NotFoundDeal from "./NotFoundDeal";
-import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import { formatterCurrency } from "@/shared/lib/utils";
-import IntoDealItem from "./IntoDealItem";
-import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
-import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
 import { Separator } from "@radix-ui/react-separator";
 import { Building, ContactRound } from "lucide-react";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
+import dynamic from "next/dynamic";
+import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
+import FileUploadForm from "@/widgets/Files/ui/UploadFile";
+import IntoDealItem from "./IntoDealItem";
+import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
+import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
+
+
+const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), { ssr: false });
+const NotFoundDeal = dynamic(() => import("./NotFoundDeal"), { ssr: false }); 
 
 const RetailItemInfo = () => {
   
@@ -34,19 +39,30 @@ const RetailItemInfo = () => {
   }
 
   return (
-    <section className="grid p-4">
-      <div className="flex items-center justify-between pb-4">
-        <div>
-          <h1 className="text-2xl first-letter:capitalize">проект</h1>
+    <section className="grid p-4 gap-2">
+     <div className="flex items-center justify-between pb-2 p-2 rounded-md bg-muted">
+        <div className="grid gap-1">
+          <h1 className="text-2xl first-letter:capitalize">Розница</h1>
+
+          <p className="text-xs"> Дата: {deal.createdAt?.toLocaleDateString()}</p>
         </div>
+
         <div className="flex justify-end gap-2">
+          <FileUploadForm
+            userId={deal.userId}
+            dealId={dealId as string}
+            dealType="RETAIL"
+          />
+
           <EditDealButtonIcon id={deal.id} type={deal.type} />
+
           <DelDealButtonIcon id={deal.id} type={deal.type} />
         </div>
       </div>
+
       <Separator />
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
-        <div>
+        <div className="grid gap-">
           <div className="grid min-w-72 gap-2">
             <p className="text-2xl">Объект</p>
             <div className="flex w-full items-center justify-start gap-4 rounded-md border border-solid p-3">
@@ -114,7 +130,7 @@ const RetailItemInfo = () => {
         </div>
       </div>
       <IntoDealItem title={"Комментарии"}>
-        <p>Комментарии: {deal.comments || "Нет данных"}</p>
+          <p className="first-letter:capitalize">{deal.comments || "Нет данных"}</p>
       </IntoDealItem>
       <IntoDealItem title={"Статус"}>
         <div className="text-2xl first-letter:capitalize">
@@ -125,6 +141,8 @@ const RetailItemInfo = () => {
           </p>
         </div>
       </IntoDealItem>
+
+      <FileList data={deal && { userId: deal?.userId, dealId: deal?.id, dealType: deal?.type }} />
     </section>
   );
 };

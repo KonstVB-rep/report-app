@@ -16,6 +16,7 @@ const SubmitFormButton = ({
       type="submit"
       className="w-full"
       aria-label="Отправить форму"
+      disabled={isPending}
       {...props}
     >
       {isPending ? <Loader className="h-5 w-5 animate-spin" /> : title}

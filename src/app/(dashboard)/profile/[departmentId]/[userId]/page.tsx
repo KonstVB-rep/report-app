@@ -1,18 +1,26 @@
 "use client";
 import { DepartmentsTitle, RolesUser } from "@/entities/user/model/objectTypes";
-import { DeleteUser } from "@/entities/user/ui/DeleteUser";
-import PersonEdit from "@/entities/user/ui/PersonTableEdit";
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
-import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
 import UserCard from "@/shared/ui/UserCard";
 import { PermissionEnum } from "@prisma/client";
 import { useParams } from "next/navigation";
 import React from "react";
 import { useGetUser } from "@/entities/user/hooks/query";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
+import dynamic from "next/dynamic";
+
+const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
+  ssr: false,
+});
+const DeleteUser = dynamic(() => import("@/entities/user/ui/DeleteUser"), {
+  ssr: false,
+});
+const AccessDeniedMessage = dynamic(
+  () => import("@/shared/ui/AccessDeniedMessage"),
+  { ssr: false }
+);
 
 const ProfilePage = () => {
-
   useRedirectToLoginNotAuthUser();
 
   const { userId } = useParams();
@@ -25,9 +33,9 @@ const ProfilePage = () => {
 
   if (isPending)
     return (
-      <div className="flex aspect-[16/4] justify-start gap-2 p-4">
-        <div className="h-full w-full max-w-[260px] animate-pulse rounded-md bg-muted" />
-        <div className="h-full w-full max-w-[360px] animate-pulse rounded-md bg-muted" />
+      <div className="flex aspect-[16/7] justify-start gap-2 p-4">
+        <div className="h-full w-full max-w-[280px] animate-pulse rounded-md bg-muted" />
+        <div className="h-full w-full max-w-[220px] animate-pulse rounded-md bg-muted" />
       </div>
     );
 
@@ -49,8 +57,13 @@ const ProfilePage = () => {
     <section className="p-4">
       <div className="flex gap-4">
         <div className="grid max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
-          <div className="@container flex h-full flex-col justify-between">
-            <UserCard user={user} />
+          <div className="@container flex h-full flex-col justify-between min-w-[260px]">
+            <UserCard
+              email={user.email}
+              username={user.username}
+              phone={user.phone}
+              position={user.position}
+            />
             <div className="@sm:grid-cols-2 grid w-full gap-2 divide-solid rounded-md bg-muted p-4">
               <PersonEdit />
               <DeleteUser />
