@@ -26,7 +26,7 @@ export const useUploadFileYdxDisk = () => {
       const { dealId, dealType, userId } = data;
 
       TOAST.SUCCESS(
-        "Файл успешно загружен на Яндекс.Диск и сохранен в базе данных"
+        "Файл успешно загружен"
       );
       queryClient.invalidateQueries({
         queryKey: ["get-deal-files", userId, dealId, dealType],

@@ -11,12 +11,16 @@ export async function GET(request: Request) {
 
     if(filePath === null) throw new Error("Не указан путь к файлу.")
 
+
+
     const fileBlob = await downloadFileFromYandexDisk(filePath);
     return new NextResponse(fileBlob, {
       status: 200,
       headers: {
         "Content-Type": "application/octet-stream",
-        "Content-Disposition": `attachment; filename="${filePath.split("/").pop()}"`,
+        "Content-Disposition": `attachment; filename="${encodeURIComponent(
+          filePath.split("/").pop() || "file"
+        )}"`,
       },
     });
   } catch (error) {

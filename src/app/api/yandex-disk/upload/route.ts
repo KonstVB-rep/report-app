@@ -8,13 +8,10 @@ import { getErrorMessageUploadByCode } from "./getErrorMessageUploadByCode";
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get("file") as File;
-    // const fileName = formData.get("fileName") as string;
-    // const folderPath = formData.get("folderPath") as string || "/report_app_uploads"; 
+    const file = formData.get("file") as File; 
     
     if (!file) throw new Error("Файл не найден в запросе.");
 
-    // const uploadFileResponse = await uploadFileToYandexDisk(folderPath, fileName, file);
     const uploadFileResponse = await uploadFileToYandexDiskAndDB(formData);
 
     return NextResponse.json({ message: "Файл успешно загружен!", success: true, data: uploadFileResponse });

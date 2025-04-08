@@ -132,7 +132,6 @@ async function downloadFileFromYandexDisk(filePath: string): Promise<Blob> {
     const response = await axiosInstanceYandexDisk.get(`/resources/download?path=${encodeURIComponent(filePath)}`);
     const { href: downloadUrl } = response.data;
 
-    // Загружаем файл
     const downloadResponse = await axiosDownLoaderFromYD.get(downloadUrl, { responseType: "blob" });
 
     return downloadResponse.data;

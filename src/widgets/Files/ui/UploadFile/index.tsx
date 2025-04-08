@@ -8,6 +8,7 @@ import { useUploadFileYdxDisk } from "../../hooks/mutate";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import { useGetInfoYandexDisk } from "../../hooks/query";
 import { Progress } from "@/components/ui/progress";
+import Overlay from "@/shared/ui/Overlay";
 
 export default function FileUploadForm({
   userId,
@@ -71,6 +72,7 @@ export default function FileUploadForm({
       classNameContent="sm:max-w-72"
     >
       <div className="grid gap-4">
+        <Overlay isPending={isPending} />
         <div className="grid w-full place-items-center gap-2 p-1">
           <p>Диск</p>
           <div className="grid gap-2">
