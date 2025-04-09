@@ -9,7 +9,7 @@ import {
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
 import { MoveUp, MoveDown, ArrowDownUp } from "lucide-react";
-import { memo, ReactNode, RefObject, useCallback } from "react";
+import { ReactNode, RefObject, useCallback } from "react";
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import useScrollIntoViewBottomTable from "@/shared/hooks/useScrollIntoViewBottomTable";
 
