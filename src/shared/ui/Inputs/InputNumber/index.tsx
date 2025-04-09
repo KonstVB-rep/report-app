@@ -1,60 +1,41 @@
-import { cn } from "@/shared/lib/utils";
-import React, { forwardRef, ForwardedRef } from "react";
-import { IMaskInput } from "react-imask";
+import { Input } from "@/components/ui/input";
+import React from "react";
 
-interface InputNumberProps
-  extends Omit<
-    React.HTMLAttributes<HTMLInputElement>,
-    "value" | "onChange" | "ref"
-  > {
-  className?: string;
-  placeholder?: string;
+interface InputNumberProps {
   value?: string;
-  disabled?: boolean;
   onChange?: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
 }
 
-const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
-  (
-    {
-      className,
-      placeholder,
-      value,
-      onChange,
-      disabled = false,
-      ...props
-    }: InputNumberProps,
-    ref: ForwardedRef<HTMLInputElement>
-  ) => {
+const InputNumber: React.FC<InputNumberProps> = ({
+  value,
+  onChange,
+  placeholder,
+  disabled = false,
+}) => {
+ 
+  const cleanedValue = value?.replace(/\s+/g, "").replace(",", ".") || "";
 
-    
-    return (
-      <IMaskInput
-        {...props}
-        inputRef={ref} // Передаем ref базовому DOM-элементу через inputRef
-        mask={Number}
-        min={0}
-        max={999999999999.99}
-        scale={2}
-        padFractionalZeros={true}
-        thousandsSeparator={"\u00A0"}
-        radix=","
-        normalizeZeros={true}
-        onAccept={(value) => {
-          onChange?.(value)}
-        }
-        className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",
-          className
-        )}
-        placeholder={placeholder}
-        value={value}
-        disabled={disabled}
-      />
-    );
-  }
-);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    const numericValue = rawValue.replace(/\s+/g, "").replace(",", ".");
+
+    if (isNaN(parseFloat(numericValue))) return;
 
 
-InputNumber.displayName = "InputNumber";
+    onChange?.(numericValue);
+  };
+
+  return (
+    <Input
+      type="text"
+      value={cleanedValue}
+      onChange={handleChange}
+      placeholder={placeholder}
+      disabled={disabled}
+    />
+  );
+};
+
 export default InputNumber;

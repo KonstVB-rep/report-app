@@ -25,20 +25,20 @@ import { FieldValues, Path, PathValue, UseFormReturn, useWatch } from "react-hoo
 import Overlay from "@/shared/ui/Overlay";
 
 export const parseFormattedNumber = (value: string): number => {
-  if (!value) return 0; // Если значение пустое, возвращаем 0
-  // Удаляем все пробелы (включая `\u00A0`) и заменяем запятую на точку
+  if (!value) return 0; 
   const cleanedValue = value.replace(/\s+/g, "").replace(",", ".");
-  // Преобразуем в число
   return parseFloat(cleanedValue) || 0;
 };
 
-const formatNumber = (value: number): string => {
+export const formatNumber = (value: number): string => {
   if (isNaN(value)) return "0,00";
+  if (value <= 0) return "0,00";
   return value
-    .toFixed(2) // Оставляем два знака после запятой
-    .replace(".", ",") // Заменяем точку на запятую
-    .replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0"); // Добавляем пробелы как разделители тысяч
+    .toFixed(2) 
+    .replace(".", ",")
+    .replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
 };
+
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -71,8 +71,8 @@ const ProjectFormBody = <T extends FieldValues>({
   
     const calculatedDelta = parsedAmountCP - parsedAmountWork - parsedAmountPurchase;
   
-
-    form.setValue("delta" as Path<T>, formatNumber(calculatedDelta) as PathValue<T, Path<T>>, {
+    console.log(String(calculatedDelta), "calculatedDelta");
+    form.setValue("delta" as Path<T>,  formatNumber(calculatedDelta) as PathValue<T, Path<T>>, {
       shouldValidate: true,
       shouldDirty: true,
     });
@@ -276,7 +276,7 @@ const ProjectFormBody = <T extends FieldValues>({
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name={"additionalContact" as Path<T>}
                 render={({ field }) => (
@@ -294,7 +294,7 @@ const ProjectFormBody = <T extends FieldValues>({
                     )}
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
             <div className="flex flex-col gap-1">
@@ -309,7 +309,7 @@ const ProjectFormBody = <T extends FieldValues>({
                       <InputNumber
                         placeholder="Сумма КП"
                         {...field}
-                        value={String(field.value || "")}
+                        value={field.value || ""}
                       />
                     </FormControl>
 
@@ -333,7 +333,7 @@ const ProjectFormBody = <T extends FieldValues>({
                       <InputNumber
                         placeholder="Сумма работ"
                         {...field}
-                        value={String(field.value || "")}
+                        value={field.value || ""}
                       />
                     </FormControl>
 
@@ -357,7 +357,7 @@ const ProjectFormBody = <T extends FieldValues>({
                       <InputNumber
                         placeholder="Сумма закупки"
                         {...field}
-                        value={String(field.value || "")}
+                        value={field.value || ""}
                       />
                     </FormControl>
 

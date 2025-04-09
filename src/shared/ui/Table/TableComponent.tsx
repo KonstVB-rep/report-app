@@ -18,7 +18,7 @@ type TableComponentProps<T> = {
   getRowLink?: (row: T & { id: string }, type: string) => string;
 };
 
-const TableComponentInner = <T extends Record<string, unknown>>({
+const TableComponent = <T extends Record<string, unknown>>({
   table,
 }: TableComponentProps<T>) => {
 
@@ -126,7 +126,5 @@ const TableComponentInner = <T extends Record<string, unknown>>({
     </Table>
   );
 };
-
-const TableComponent = memo(TableComponentInner) as typeof TableComponentInner;
 
 export default TableComponent;

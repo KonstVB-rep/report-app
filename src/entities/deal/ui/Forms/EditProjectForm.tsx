@@ -43,7 +43,7 @@ const EditProjectForm = ({
     },
   });
 
-  const { mutateAsync, isPending } = useMutationUpdateProject(dealId, close);
+  const { mutateAsync, isPending } = useMutationUpdateProject(dealId, data!.userId, close);
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(

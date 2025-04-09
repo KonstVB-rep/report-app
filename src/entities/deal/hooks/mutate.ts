@@ -53,7 +53,8 @@ export const useDelDeal = (
   });
 };
 
-export const useMutationUpdateProject = (dealId: string, close: () => void) => {
+
+export const useMutationUpdateProject = (dealId: string,userId:string, close: () => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({
@@ -69,7 +70,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
         email: data.email || "",
         phone: data.phone || "",
         additionalContact: data.additionalContact || "",
-        userId: authUser.id,
+        userId,
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
@@ -101,12 +102,12 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
 
     // Оптимистичное обновление UI перед запросом
     onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: ["projects", authUser?.id] });
+      await queryClient.cancelQueries({ queryKey: ["projects", userId] });
       await queryClient.cancelQueries({ queryKey: ["project", dealId] });
 
       const previousDeals = queryClient.getQueryData<ProjectResponse[]>([
         "projects",
-        authUser?.id,
+        userId,
       ]);
 
       const previousDeal = queryClient.getQueryData<ProjectResponse[]>([
@@ -115,7 +116,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
       ]);
 
       queryClient.setQueryData<ProjectResponse[]>(
-        ["projects", authUser?.id],
+        ["projects", userId],
         (oldProjects) => {
           if (!oldProjects) return oldProjects;
           return oldProjects.map((p) =>
@@ -170,7 +171,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
       }
       if (context?.previousDeals) {
         queryClient.setQueryData(
-          ["projects", authUser?.id],
+          ["projects", userId],
           context.previousDeals
         );
       }
@@ -181,18 +182,18 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
       close();
 
       queryClient.setQueryData(
-        ["projects", authUser?.id],
-        (oldProjects: ProjectResponse[] | undefined) =>
-          oldProjects
-            ? oldProjects.map((p) => (p.id === dealId ? updatedDeal : p))
-            : oldProjects
-      );
+        ["projects", userId],
+        (oldProjects: ProjectResponse[] | undefined) =>{
+          return oldProjects
+            ? [...oldProjects.map((p) => (p.id === dealId ? { ...p, ...updatedDeal } : p))]
+            : oldProjects;
+        });
 
-      queryClient.setQueryData(["project", dealId], updatedDeal);
+      queryClient.setQueryData(["project", dealId], {...updatedDeal});
 
       // 👇 Инвалидируем кэш, только если серверные данные могли измениться
       queryClient.invalidateQueries({
-        queryKey: ["projects", authUser?.id],
+        queryKey: ["projects", userId],
         exact: true,
       });
       queryClient.invalidateQueries({
@@ -203,7 +204,7 @@ export const useMutationUpdateProject = (dealId: string, close: () => void) => {
   });
 };
 
-export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
+export const useMutationUpdateRetail = (dealId: string, userId: string,close: () => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({
@@ -219,7 +220,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
         email: data.email || "",
         phone: data.phone || "",
         additionalContact: data.additionalContact || "",
-        userId: authUser.id,
+        userId,
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
@@ -239,12 +240,12 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
       });
     },
     onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: ["retails", authUser?.id] });
+      await queryClient.cancelQueries({ queryKey: ["retails", userId] });
       await queryClient.cancelQueries({ queryKey: ["retail", dealId] });
 
       const previousDeals = queryClient.getQueryData<RetailResponse[]>([
         "retails",
-        authUser?.id,
+        userId,
       ]);
 
       const previousDeal = queryClient.getQueryData<RetailResponse[]>([
@@ -253,7 +254,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
       ]);
 
       queryClient.setQueryData<RetailResponse[]>(
-        ["retails", authUser?.id],
+        ["retails", userId],
         (oldProjects) => {
           if (!oldProjects) return oldProjects;
           return oldProjects.map((p) =>
@@ -302,7 +303,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
       }
       if (context?.previousDeals) {
         queryClient.setQueryData(
-          ["retails", authUser?.id],
+          ["retails", userId],
           context.previousDeals
         );
       }
@@ -313,7 +314,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
       close();
 
       queryClient.setQueryData(
-        ["retails", authUser?.id],
+        ["retails", userId],
         (oldProjects: RetailResponse[] | undefined) =>
           oldProjects
             ? oldProjects.map((p) => (p.id === dealId ? updatedDeal : p))
@@ -324,7 +325,7 @@ export const useMutationUpdateRetail = (dealId: string, close: () => void) => {
 
       // 👇 Если серверные данные могли измениться, сбрасываем кэш
       queryClient.invalidateQueries({
-        queryKey: ["retails", authUser?.id],
+        queryKey: ["retails", userId],
         exact: true,
       });
       queryClient.invalidateQueries({
