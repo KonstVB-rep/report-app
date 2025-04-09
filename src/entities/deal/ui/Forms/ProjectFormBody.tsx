@@ -24,8 +24,21 @@ import { Input } from "@/components/ui/input";
 import { FieldValues, Path, PathValue, UseFormReturn, useWatch } from "react-hook-form";
 import Overlay from "@/shared/ui/Overlay";
 
-export const parseFormattedNumber = (value: string): number =>  parseFloat(value.replace(/\s+/g, "").replace(",", ".")) || 0;
+export const parseFormattedNumber = (value: string): number => {
+  if (!value) return 0; // Если значение пустое, возвращаем 0
+  // Удаляем все пробелы (включая `\u00A0`) и заменяем запятую на точку
+  const cleanedValue = value.replace(/\s+/g, "").replace(",", ".");
+  // Преобразуем в число
+  return parseFloat(cleanedValue) || 0;
+};
 
+const formatNumber = (value: number): string => {
+  if (isNaN(value)) return "0,00";
+  return value
+    .toFixed(2) // Оставляем два знака после запятой
+    .replace(".", ",") // Заменяем точку на запятую
+    .replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0"); // Добавляем пробелы как разделители тысяч
+};
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -59,7 +72,7 @@ const ProjectFormBody = <T extends FieldValues>({
     const calculatedDelta = parsedAmountCP - parsedAmountWork - parsedAmountPurchase;
   
 
-    form.setValue("delta" as Path<T>, String(calculatedDelta) as PathValue<T, Path<T>>, {
+    form.setValue("delta" as Path<T>, formatNumber(calculatedDelta) as PathValue<T, Path<T>>, {
       shouldValidate: true,
       shouldDirty: true,
     });
