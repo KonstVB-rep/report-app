@@ -25,7 +25,7 @@ export interface ProjectResponse {
   direction: DirectionProject;
   deliveryType: DeliveryProject | null;
   contact: string;
-  additionalContact: string | null;
+  // additionalContact: string | null;
   phone: string | null;
   email: string | null;
   amountCP: string;
@@ -53,7 +53,7 @@ export interface RetailResponse {
   contact: string;
   phone: string | null;
   email?: string | null;
-  additionalContact: string | null;
+  // additionalContact: string | null;
   amountCP: string;
   delta: string;
   dealStatus: StatusRetail;

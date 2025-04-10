@@ -32,7 +32,7 @@ export const ProjectFormSchema = z.object({
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")), // ✅ Email необязателен
-  additionalContact: z.string().optional(),
+  // additionalContact: z.string().optional(),
 
   amountCP: z.string().optional(),
   amountWork: z.string().optional(),
@@ -47,7 +47,15 @@ export const ProjectFormSchema = z.object({
     (val) => (val instanceof Date ? val.toISOString() : val || ""),
     z.string()
   ),
-  resource: z.string().optional(),
+  resource: z
+  .string()
+  .optional()
+  .refine(
+    (val) => !val || /^www\.[a-zA-Z0-9-]{2,63}\.[a-zA-Z]{2,}$/.test(val),
+    {
+      message: "Адрес должен быть в формате www.site.ru",
+    }
+  ),
 });
 // refine((data) => {
 //   // Сравниваем lastDateConnection и plannedDateConnection
@@ -85,7 +93,7 @@ export const RetailFormSchema = z.object({
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")),
-  additionalContact: z.string().optional(),
+  // additionalContact: z.string().optional(),
 
   amountCP: z.string().optional(),
   delta: z.string().optional(),
@@ -98,8 +106,15 @@ export const RetailFormSchema = z.object({
     (val) => (val instanceof Date ? val.toISOString() : val || ""),
     z.string()
   ),
-  resource: z.string().optional(),
-  
+  resource: z
+  .string()
+  .optional()
+  .refine(
+    (val) => !val || /^www\.[a-zA-Z0-9-]{2,63}\.[a-zA-Z]{2,}$/.test(val),
+    {
+      message: "Адрес должен быть в формате www.site.ru",
+    }
+  ),
 });
 
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;

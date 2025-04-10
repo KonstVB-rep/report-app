@@ -13,6 +13,8 @@ import ProjectFormBody from "./ProjectFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 import { useMutationUpdateProject } from "../../hooks/mutate";
 
+
+
 const EditProjectForm = ({
   close,
   dealId,
@@ -34,9 +36,11 @@ const EditProjectForm = ({
       contact: data?.contact ?? "",
       phone: data?.phone ?? "",
       email: data?.email ?? "",
-      additionalContact: data?.additionalContact ?? "",
-      amountCP: data?.amountCP ?? "0",
-      delta: data?.delta ?? "0",
+      // additionalContact: data?.additionalContact ?? "",
+      amountCP: data?.amountCP ?? "",
+      amountWork: data?.amountWork ?? "",
+      amountPurchase: data?.amountPurchase ?? "",
+      delta: data?.delta ?? "",
       comments: data?.comments ?? "",
       plannedDateConnection: undefined,
       resource: data?.resource ?? "",
@@ -58,16 +62,16 @@ const EditProjectForm = ({
         ...data,
         phone: data.phone ?? undefined, 
         email: data.email ?? undefined,
-        additionalContact: data.additionalContact ?? undefined, 
+        // additionalContact: data.additionalContact ?? undefined, 
         dateRequest: data.dateRequest?.toISOString(), 
         deliveryType: (data.deliveryType as DeliveryProject) || undefined,
         dealStatus: data.dealStatus as StatusProject,
         direction: data.direction as DirectionProject,
         plannedDateConnection: data.plannedDateConnection?.toISOString(),
-        amountCP: data.amountCP,
-        amountPurchase: data.amountPurchase,
-        amountWork: data.amountWork,
-        delta: data.delta,
+        amountCP: data.amountCP ?? "",
+        amountPurchase: data.amountPurchase ?? "",
+        amountWork: data.amountWork ?? "",
+        delta: data.delta ?? "",
         resource: data.resource ?? "",
       });
     }

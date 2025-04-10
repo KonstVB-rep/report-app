@@ -72,6 +72,9 @@ export const getProjectById = async (
 
     const deal = await prisma.project.findUnique({
       where: { id: dealId },
+      // include: {
+      //   additionalContacts: true, 
+      // },
     });
 
     if (!deal) {
@@ -122,6 +125,9 @@ export const getRetailById = async (
 
     const deal = await prisma.retail.findUnique({
       where: { id: dealId },
+      // include: {
+      //   additionalContacts: true,
+      // },
     });
 
     if (!deal) {
@@ -175,6 +181,22 @@ export const createProject = async (data: ProjectWithoutId) => {
         delta: safeDelta,
         amountWork: safeAmountWork,
         amountPurchase: safeAmountPurchase,
+        // additionalContacts: {
+        //   create: [
+        //     {
+        //       name: 'Контакт 1',
+        //       email: 'contact1@example.com',
+        //       phone: '+79991112233',
+        //       position: 'Менеджер'
+        //     },
+        //     {
+        //       name: 'Контакт 2',
+        //       email: 'contact2@example.com',
+        //       phone: '+79994445566',
+        //       position: 'Инженер'
+        //     }
+        //   ]
+        // }
       },
     });
 
@@ -223,6 +245,22 @@ export const createRetail = async (data: RetailWithoutId) => {
         userId,
         amountCP: safeamountCP,
         delta: safeDelta,
+        // additionalContacts: {
+        //   create: [
+        //     {
+        //       name: 'Контакт 1',
+        //       email: 'contact1@example.com',
+        //       phone: '+79991112233',
+        //       position: 'Менеджер'
+        //     },
+        //     {
+        //       name: 'Контакт 2',
+        //       email: 'contact2@example.com',
+        //       phone: '+79994445566',
+        //       position: 'Инженер'
+        //     }
+        //   ]
+        // }
       },
     });
 
@@ -543,7 +581,7 @@ export const getAllRetailsByDepartment = async (
   }
 };
 
-/* Удалить проект */
+/* Удалить сделку */
 export const deleteDeal = async (
   dealId: string,
   idDealOwner: string,

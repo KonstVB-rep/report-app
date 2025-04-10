@@ -20,7 +20,7 @@ const ProjectForm = () => {
       contact: "",
       phone: "",
       email: "",
-      additionalContact: "",
+      // additionalContact: "",
       amountCP: "0",
       amountWork: "0",
       amountPurchase: "0",

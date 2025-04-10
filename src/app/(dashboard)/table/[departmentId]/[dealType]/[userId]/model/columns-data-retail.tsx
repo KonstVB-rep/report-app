@@ -155,14 +155,14 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     accessorFn: (row: RetailResponse) => row.email,
   },
-  {
-    id: "additionalСontact",
-    accessorKey: "additionalСontact",
-    header: "Доп. контакт",
-    cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
-    enableHiding: true,
-    accessorFn: (row: RetailResponse) => row.additionalСontact,
-  },
+  // {
+  //   id: "additionalСontact",
+  //   accessorKey: "additionalСontact",
+  //   header: "Доп. контакт",
+  //   cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
+  //   enableHiding: true,
+  //   accessorFn: (row: RetailResponse) => row.additionalСontact,
+  // },
   {
     id: "amountCP",
     accessorKey: "amountCP",

@@ -234,7 +234,7 @@ const RetailFormBody = <T extends FieldValues>({
             </div>
 
             <div className="flex flex-col gap-1">
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name={"additionalContact" as Path<T>}
                 render={({ field }) => (
@@ -252,7 +252,7 @@ const RetailFormBody = <T extends FieldValues>({
                     )}
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <FormField
                 control={form.control}

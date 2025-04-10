@@ -21,7 +21,7 @@ const RetailForm = () => {
       contact: "",
       phone: "",
       email: "",
-      additionalContact: "",
+      // additionalContact: "",
       amountCP: "0",
       delta: "0",
       dealStatus: "",

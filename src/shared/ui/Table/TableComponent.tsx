@@ -22,6 +22,8 @@ const TableComponent = <T extends Record<string, unknown>>({
   table,
 }: TableComponentProps<T>) => {
 
+  console.log(table, "table")
+
   const ref = useScrollIntoViewBottomTable(
     table
   ) as unknown as RefObject<HTMLTableElement | null>;

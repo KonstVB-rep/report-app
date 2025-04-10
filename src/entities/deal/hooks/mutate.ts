@@ -53,7 +53,6 @@ export const useDelDeal = (
   });
 };
 
-
 export const useMutationUpdateProject = (dealId: string,userId:string, close: () => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
@@ -69,7 +68,7 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
+        // additionalContact: data.additionalContact || "",
         userId,
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
@@ -219,7 +218,8 @@ export const useMutationUpdateRetail = (dealId: string, userId: string,close: ()
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
+
+        // additionalContact: data.additionalContact || "",
         userId,
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
@@ -349,7 +349,7 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
+        // additionalContact: data.additionalContact || "",
         userId: authUser.id,
         deliveryType:
           data.deliveryType === ""
@@ -415,7 +415,7 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
+        // additionalContact: data.additionalContact || "",
         userId: authUser.id,
         deliveryType:
           data.deliveryType === ""

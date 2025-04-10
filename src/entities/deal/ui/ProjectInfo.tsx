@@ -99,7 +99,7 @@ const ProjectItemInfo = () => {
                   <div className="flex flex-col items-start justify-start text-sm">
                     <p>Дополнительный контакт: </p>
 
-                    <p>{deal.additionalContact || "Нет данных"}</p>
+                    {/* <p>{deal.additionalContact || "Нет данных"}</p> */}
                   </div>
                 </div>
               </IntoDealItem>

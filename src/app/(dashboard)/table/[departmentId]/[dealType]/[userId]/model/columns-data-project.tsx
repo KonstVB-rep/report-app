@@ -155,13 +155,13 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.email,
   },
-  {
-    id: "additionalContact",
-    header: "Доп. контакт",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
-    enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.additionalContact,
-  },
+  // {
+  //   id: "additionalContact",
+  //   header: "Доп. контакт",
+  //   cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
+  //   enableHiding: true,
+  //   accessorFn: (row: ProjectResponse) => row.additionalContact,
+  // },
   {
     id: "amountCP",
     header: "Сумма КП",

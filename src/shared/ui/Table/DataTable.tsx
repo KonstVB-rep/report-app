@@ -36,7 +36,7 @@ const includedColumns = [
   "contact",
   "phone",
   "email",
-  "additionalContact",
+  // "additionalContact",
   "comments",
 ];
 
