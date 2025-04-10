@@ -8,15 +8,12 @@ import { useGetAllProjects } from "@/entities/deal/hooks/query";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { useParams } from "next/navigation";
 import SummaryTableTemplate from "./SummaryTableTemplate";
-import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 import dynamic from "next/dynamic";
 import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 
 const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
 
 const SummaryTableProject = () => {
-
-    useRedirectToLoginNotAuthUser();
 
   const { userId } = useParams();
 

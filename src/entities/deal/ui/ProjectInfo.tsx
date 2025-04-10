@@ -12,8 +12,6 @@ import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import { formatterCurrency } from "@/shared/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Building, ContactRound } from "lucide-react";
-import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
-
 import dynamic from "next/dynamic";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 import IntoDealItem from "./IntoDealItem";
@@ -27,7 +25,6 @@ const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
 const NotFoundDeal = dynamic(() => import("./NotFoundDeal"), { ssr: false });
 
 const ProjectItemInfo = () => {
-  useRedirectToLoginNotAuthUser();
 
   const { dealId } = useParams();
 

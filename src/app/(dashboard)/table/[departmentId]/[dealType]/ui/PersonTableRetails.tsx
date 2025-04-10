@@ -5,7 +5,6 @@ import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 import PersonTable from "./PersonTable";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 import { useCallback } from "react";
 import dynamic from "next/dynamic";
 import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
@@ -13,7 +12,6 @@ import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
 
 const PersonTableRetail = ({ userId }: { userId: string }) => {
-  useRedirectToLoginNotAuthUser();
   
   const hasAccess = hasAccessToData(
     userId as string,

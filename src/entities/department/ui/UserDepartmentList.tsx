@@ -5,11 +5,9 @@ import React from "react";
 import UserItem from "./UserItem";
 import useStoreDepartment from "../store/useStoreDepartment";
 import { useParams } from "next/navigation";
-import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 
 const UserDepartmentList = () => {
-  useRedirectToLoginNotAuthUser();
 
   const { departmentId } = useParams();
   const { departments } = useStoreDepartment();

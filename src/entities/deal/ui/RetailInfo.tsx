@@ -11,7 +11,6 @@ import {
 import { formatterCurrency } from "@/shared/lib/utils";
 import { Separator } from "@radix-ui/react-separator";
 import { Building, ContactRound } from "lucide-react";
-import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 import dynamic from "next/dynamic";
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
@@ -25,8 +24,6 @@ const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), { ssr: fal
 const NotFoundDeal = dynamic(() => import("./NotFoundDeal"), { ssr: false }); 
 
 const RetailItemInfo = () => {
-  
-  useRedirectToLoginNotAuthUser();
 
   const { dealId } = useParams();
 

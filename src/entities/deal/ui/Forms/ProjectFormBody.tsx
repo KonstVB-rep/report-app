@@ -71,7 +71,6 @@ const ProjectFormBody = <T extends FieldValues>({
   
     const calculatedDelta = parsedAmountCP - parsedAmountWork - parsedAmountPurchase;
   
-    console.log(String(calculatedDelta), "calculatedDelta");
     form.setValue("delta" as Path<T>,  formatNumber(calculatedDelta) as PathValue<T, Path<T>>, {
       shouldValidate: true,
       shouldDirty: true,
