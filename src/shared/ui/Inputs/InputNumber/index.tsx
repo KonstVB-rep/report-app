@@ -1,38 +1,73 @@
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 interface InputNumberProps {
-  value?: string;
-  onChange?: (value: string) => void;
   placeholder?: string;
+  value?: string;
+  onChange: (val: string) => void;
   disabled?: boolean;
 }
 
-const InputNumber: React.FC<InputNumberProps> = ({
-  value,
-  onChange,
-  placeholder,
-  disabled = false,
-}) => {
- 
-  const cleanedValue = value?.replace(/\s+/g, "").replace(",", ".") || "";
+const formatOnBlur = (raw: string): string => {
+  if (!raw) return "";
+
+  const cleaned = raw.replace(/\s/g, "").replace(",", ".");
+  const num = parseFloat(cleaned);
+
+  if (isNaN(num)) return "";
+
+  const [integer, fractional = ""] = num.toFixed(2).split(".");
+  const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return `${formattedInteger},${fractional}`;
+};
+
+const InputNumber: React.FC<InputNumberProps> = ({ placeholder, value, onChange, disabled = false }) => {
+  const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    if (value) {
+      const formatted = formatOnBlur(value);
+      setInputValue(formatted);
+    }
+  }, [inputValue, value]);
+
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setInputValue(value);
+    }
+  }, [value]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-    const numericValue = rawValue.replace(/\s+/g, "").replace(",", ".");
+    const raw = e.target.value;
 
-    if (isNaN(parseFloat(numericValue))) return;
+    // Разрешаем только цифры, запятую и точку
+    const cleaned = raw.replace(/[^\d,\.]/g, "")
+      .replace(/\.(?=.*\.)/g, "") // только одна точка
+      .replace(/,(?=.*,)/g, ""); // только одна запятая
 
+    // Преобразуем точку в запятую
+    const normalized = cleaned.replace(".", ",");
 
-    onChange?.(numericValue);
+    setInputValue(normalized);
+    onChange(normalized);
+  };
+
+  const handleBlur = () => {
+    const formatted = formatOnBlur(inputValue);
+    setInputValue(formatted);
+    onChange(formatted);
   };
 
   return (
     <Input
       type="text"
-      value={cleanedValue}
-      onChange={handleChange}
+      inputMode="decimal"
       placeholder={placeholder}
+      value={inputValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
       disabled={disabled}
     />
   );
