@@ -1,0 +1,40 @@
+export const defaultProjectValues = {
+    dateRequest: undefined,
+    nameObject: "",
+    nameDeal: "",
+    direction: "",
+    deliveryType: undefined,
+    contact: "",
+    phone: "",
+    email: "",
+    amountCP: "0",
+    amountWork: "0",
+    amountPurchase: "0",
+    delta: "0",
+    dealStatus: "",
+    comments: "",
+    plannedDateConnection: undefined,
+    resource: "",
+    contacts: [],
+  };
+
+
+  export const defaultRetailValues = {
+    dateRequest: undefined,
+    nameDeal: "",
+    nameObject: "",
+    direction: "",
+    deliveryType: undefined,
+    contact: "",
+    phone: "",
+    email: "",
+    // additionalContact: "",
+    amountCP: "0",
+    delta: "0",
+    dealStatus: "",
+    comments: "",
+    plannedDateConnection: undefined,
+    resource: "",
+    contacts: [],
+  };
+  

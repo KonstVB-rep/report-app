@@ -18,6 +18,7 @@ import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+import CardInfo from "./CardInfo";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -65,34 +66,65 @@ const RetailItemInfo = () => {
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
         <div className="gap- grid">
           <div className="grid min-w-72 gap-2">
-            <p className="text-2xl">Объект</p>
-            <div className="flex w-full items-center justify-start gap-4 rounded-md border border-solid p-3">
-              <Building size="40" strokeWidth={1} />
-              <p>{deal?.nameObject}</p>
-            </div>
-            <p> Дата создания: {deal.createdAt?.toLocaleDateString()}</p>
+            <IntoDealItem title={"Объект"}>
+              <div className="flex w-full items-center justify-start gap-4 text-lg">
+                <Building size="40" strokeWidth={1} />
+
+                <p>{deal?.nameObject}</p>
+              </div>
+            </IntoDealItem>
           </div>
           <div className="grid gap-2">
-            <p className="text-2xl">Контакт</p>
-            <div className="grid w-full rounded-md border border-solid p-3">
-              <div className="flex items-center justify-start gap-4">
-                <ContactRound size="40" strokeWidth={1} />
-                <div className="flex flex-col items-start justify-start">
-                  <p>{deal.contact || "Нет данных"}</p>
-                  <p className="whitespace-nowrap">
-                    {deal.phone || "Нет данных"}
-                  </p>
+            <IntoDealItem title={"Основной контакт"}>
+              <div className="grid w-full">
+                <div className="flex items-center justify-start gap-4">
+                  <ContactRound size="40" strokeWidth={1} />
+
+                  <div className="flex flex-col items-start justify-start text-lg">
+                    <CardInfo data={deal.contact} title="Имя" />
+
+                    <CardInfo data={deal.phone} title="Телефон" />
+
+                    <CardInfo data={deal.email} title="Email" />
+                  </div>
                 </div>
               </div>
-              <Separator className="my-2" />
-              <div className="flex flex-col items-start justify-start text-sm">
-                <p>Дополнительный контакт: </p>
-                <p>{deal.additionalContact || "Нет данных"}</p>
-              </div>
-            </div>
+            </IntoDealItem>
           </div>
         </div>
         <div className="grid-container gap-2">
+          <IntoDealItem title={"Дополнительные контакты"}>
+            {deal.additionalContacts && deal.additionalContacts.length > 0 ? (
+              <div className="grid gap-2">
+                {deal.additionalContacts.map((contact, index) => (
+                  <div key={contact.id} className="grid">
+                    <div className="flex items-start justify-start gap-4">
+                      <ContactRound
+                        size="20"
+                        strokeWidth={1}
+                        className="flex-shrink-0 pt-1"
+                      />
+
+                      <div className="text-md flex flex-col items-start justify-start">
+                        <CardInfo data={contact.name} title="Имя" />
+
+                        <CardInfo data={contact.phone} title="Телефон" />
+
+                        <CardInfo data={contact.email} title="Email" />
+
+                        <CardInfo data={contact.position} title="Должность" />
+                      </div>
+                    </div>
+                    {index !== deal.additionalContacts!.length - 1 && (
+                      <Separator className="my-2" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Нет данных</p>
+            )}
+          </IntoDealItem>
           <IntoDealItem title={"Информация о сделке"}>
             <p>Название сделки: {deal?.nameDeal}</p>
             <p>

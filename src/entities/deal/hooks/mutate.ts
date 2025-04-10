@@ -20,6 +20,7 @@ import {
 import { ProjectSchema, RetailSchema } from "../model/schema";
 import { UseFormReturn } from "react-hook-form";
 import { ProjectResponse, RetailResponse } from "../types";
+import { defaultProjectValues, defaultRetailValues } from "../model/defaultvaluesForm";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
@@ -53,7 +54,6 @@ export const useDelDeal = (
   });
 };
 
-
 export const useMutationUpdateProject = (dealId: string,userId:string, close: () => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
@@ -69,7 +69,7 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
+        // additionalContact: data.additionalContact || "",
         userId,
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
@@ -219,7 +219,6 @@ export const useMutationUpdateRetail = (dealId: string, userId: string,close: ()
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
         userId,
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
@@ -349,7 +348,6 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
         userId: authUser.id,
         deliveryType:
           data.deliveryType === ""
@@ -365,7 +363,7 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
           ? parseFloat(
               data.amountCP.replace(/\s/g, "").replace(",", ".")
             ).toString()
-          : "0", // Преобразуем в строку
+          : "0",
         amountPurchase: data.amountPurchase
           ? parseFloat(
               data.amountPurchase.replace(/\s/g, "").replace(",", ".")
@@ -380,14 +378,14 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
           ? parseFloat(
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
-          : "0", // Преобразуем в строку
+          : "0",
       });
     },
 
     onSuccess: (data) => {
       if (data) {
         // setOpen(false);
-        form.reset();
+        form.reset(defaultProjectValues);
 
         queryClient.invalidateQueries({
           queryKey: ["projects", authUser?.id],
@@ -415,7 +413,6 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        additionalContact: data.additionalContact || "",
         userId: authUser.id,
         deliveryType:
           data.deliveryType === ""
@@ -431,24 +428,22 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
           ? parseFloat(
               data.amountCP.replace(/\s/g, "").replace(",", ".")
             ).toString()
-          : "0", // Преобразуем в строку
+          : "0", 
         delta: data.delta
           ? parseFloat(
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
-          : "0", // Преобразуем в строку
+          : "0", 
       });
     },
     onError: (error) => {
-      // Обработка ошибок
       console.error("Ошибка при создании проекта:", error);
       TOAST.ERROR("Ошибка при создании проекта");
     },
     onSuccess: (data) => {
       if (data) {
-        // setOpen(false);
 
-        form.reset();
+        form.reset(defaultRetailValues);
 
         queryClient.invalidateQueries({
           queryKey: ["retails", authUser?.id],

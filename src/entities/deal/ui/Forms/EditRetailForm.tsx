@@ -35,16 +35,16 @@ const EditRetailForm = ({
       contact: data?.contact || "",
       phone: data?.phone || "",
       email: data?.email || "",
-      additionalContact: data?.additionalContact || "",
       amountCP: data?.amountCP || "0",
       delta: data?.delta || "0",
       comments: data?.comments || "",
       plannedDateConnection: undefined,
       resource: data?.resource || "",
+      contacts: data?.additionalContacts ?? [],
     },
   });
 
-  const { mutateAsync, isPending } = useMutationUpdateRetail(dealId,data!.userId, close);
+  const { mutateAsync, isPending } = useMutationUpdateRetail(dealId, data!.userId, close);
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(
@@ -59,7 +59,6 @@ const EditRetailForm = ({
         ...data,
         phone: data.phone ?? undefined, 
         email: data.email ?? undefined, 
-        additionalContact: data.additionalContact ?? undefined, 
         dateRequest: data.dateRequest?.toISOString(), // Преобразуем Date в строку
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
@@ -68,6 +67,7 @@ const EditRetailForm = ({
         amountCP: formatCurrency(data.amountCP),
         delta: formatCurrency(data.delta),
         resource: data.resource ?? "",
+        contacts: data?.additionalContacts ?? [],
       });
     }
   }, [form, data]);

@@ -72,7 +72,6 @@ model Project {
   contact               String
   phone                 String?
   email                 String?
-  additionalContact     String?
   amountCP              Decimal?          @db.Decimal(15, 2)
   amountPurchase        Decimal?          @db.Decimal(15, 2)
   amountWork            Decimal?          @db.Decimal(15, 2)
@@ -84,6 +83,7 @@ model Project {
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
   user                  User             @relation(fields: [userId], references: [id])
+  additionalContacts    AdditionalContact[] @relation("ProjectContacts")
 
   @@index([userId], map: "Project_userId_fkey")
 }
@@ -100,7 +100,6 @@ model Retail {
   contact               String
   phone                 String?
   email                 String?
-  additionalContact     String?
   amountCP              Decimal?          @db.Decimal(15, 2)
   delta                 Decimal?          @db.Decimal(15, 2)
   dealStatus            StatusRetail
@@ -110,8 +109,20 @@ model Retail {
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
   user                  User             @relation(fields: [userId], references: [id])
+  additionalContacts    AdditionalContact[] @relation("RetailContacts")
 
   @@index([userId], map: "Retail_userId_fkey")
+}
+
+model AdditionalContact {
+  id           String    @id @default(cuid())
+  name         String 
+  phone        String?      
+  email        String?    
+  position     String?    
+
+  projects     Project[] @relation("ProjectContacts") // связь с несколькими проектами
+  retails      Retail[]  @relation("RetailContacts") // связь с несколькими розничными сделками
 }
 
 model UserLogin {

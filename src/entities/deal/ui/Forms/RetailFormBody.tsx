@@ -25,6 +25,9 @@ import InputNumber from "@/shared/ui/Inputs/InputNumber";
 import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import Overlay from "@/shared/ui/Overlay";
+import useSendDealInfo from "../../hooks/useSendDealInfo";
+import ContactDeal from "../ContactDeal";
+import ContactsList from "../ContactsList";
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -37,12 +40,15 @@ const RetailFormBody = <T extends FieldValues>({
   onSubmit,
   isPending,
 }: RetailFormBodyProps<T>) => {
+
+  const { contacts, setContacts, handleDeleteContact, handleSubmit } = useSendDealInfo<T>(onSubmit);
+
   return (
     <>
      <Overlay isPending={isPending}/>
      <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="grid max-h-[85vh] gap-10 overflow-y-auto"
       >
         <div className="text-center font-semibold uppercase">
@@ -235,26 +241,6 @@ const RetailFormBody = <T extends FieldValues>({
             <div className="flex flex-col gap-1">
               <FormField
                 control={form.control}
-                name={"additionalContact" as Path<T>}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Дополнительный контакт</FormLabel>
-
-                    <FormControl>
-                      <Input placeholder="Данные контактного лица" {...field} />
-                    </FormControl>
-
-                    {form.formState.errors.contact?.message && (
-                      <FormMessage className="text-red-500">
-                        {form.formState.errors.contact?.message as string}
-                      </FormMessage>
-                    )}
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name={"amountCP" as Path<T>}
                 render={({ field }) => (
                   <FormItem>
@@ -409,6 +395,8 @@ const RetailFormBody = <T extends FieldValues>({
             className="ml-auto mr-2 w-max"
           />
         </div>
+        <ContactDeal onContactsChange={setContacts} contacts={contacts} />
+        <ContactsList contacts={contacts} handleDeleteContact={handleDeleteContact} />
       </form>
     </Form>
     </>

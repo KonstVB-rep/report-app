@@ -8,27 +8,12 @@ import { RetailFormSchema, RetailSchema } from "../../model/schema";
 
 import RetailFormBody from "./RetailFormBody";
 import { useCreateRetail } from "../../hooks/mutate";
+import { defaultRetailValues } from "../../model/defaultvaluesForm";
 
 const RetailForm = () => {
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema),
-    defaultValues: {
-      dateRequest: undefined,
-      nameDeal: "",
-      nameObject: "",
-      direction: "",
-      deliveryType: undefined,
-      contact: "",
-      phone: "",
-      email: "",
-      additionalContact: "",
-      amountCP: "0",
-      delta: "0",
-      dealStatus: "",
-      comments: "",
-      plannedDateConnection: undefined,
-      resource: "",
-    },
+    defaultValues: defaultRetailValues,
   });
 
   const { mutateAsync, isPending } = useCreateRetail(form);

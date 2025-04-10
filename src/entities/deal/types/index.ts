@@ -25,7 +25,7 @@ export interface ProjectResponse {
   direction: DirectionProject;
   deliveryType: DeliveryProject | null;
   contact: string;
-  additionalContact: string | null;
+  // additionalContact: string | null;
   phone: string | null;
   email: string | null;
   amountCP: string;
@@ -39,6 +39,7 @@ export interface ProjectResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+  additionalContacts: Contact[] | [];
 }
 
 export interface RetailResponse {
@@ -53,7 +54,6 @@ export interface RetailResponse {
   contact: string;
   phone: string | null;
   email?: string | null;
-  additionalContact: string | null;
   amountCP: string;
   delta: string;
   dealStatus: StatusRetail;
@@ -63,7 +63,16 @@ export interface RetailResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+  additionalContacts: Contact[] | null;
 }
+
+export type Contact = {
+    id: string;
+    email: string | null;
+    name: string;
+    phone: string | null;
+    position: string | null;
+};
 
 export type DealUnionType = "retail" | "project";
 export type DealsUnionType = "retails" | "projects";

@@ -34,12 +34,14 @@ const EditProjectForm = ({
       contact: data?.contact ?? "",
       phone: data?.phone ?? "",
       email: data?.email ?? "",
-      additionalContact: data?.additionalContact ?? "",
       amountCP: data?.amountCP ?? "0",
+      amountPurchase: data?.amountPurchase ?? "0",
+      amountWork: data?.amountWork ?? "0",
       delta: data?.delta ?? "0",
       comments: data?.comments ?? "",
       plannedDateConnection: undefined,
       resource: data?.resource ?? "",
+      contacts: data?.additionalContacts ?? [],
     },
   });
 
@@ -58,7 +60,6 @@ const EditProjectForm = ({
         ...data,
         phone: data.phone ?? undefined, 
         email: data.email ?? undefined,
-        additionalContact: data.additionalContact ?? undefined, 
         dateRequest: data.dateRequest?.toISOString(), 
         deliveryType: (data.deliveryType as DeliveryProject) || undefined,
         dealStatus: data.dealStatus as StatusProject,
@@ -69,6 +70,7 @@ const EditProjectForm = ({
         amountWork: data.amountWork,
         delta: data.delta,
         resource: data.resource ?? "",
+        contacts: data.additionalContacts  ?? [],
       });
     }
   }, [form, data]);

@@ -4,7 +4,7 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
 import { DealType, PermissionEnum, Prisma } from "@prisma/client";
-import { ProjectResponse, RetailResponse } from "../types";
+import { Contact, ProjectResponse, RetailResponse } from "../types";
 import prisma from "@/prisma/prisma-client";
 
 const requiredFields = [
@@ -30,7 +30,7 @@ type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
 type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
-  const data= await handleAuthorization();
+  const data = await handleAuthorization();
 
   for (const field of requiredFields as (keyof ProjectWithoutId)[]) {
     if (!projectData[field]) {
@@ -72,6 +72,9 @@ export const getProjectById = async (
 
     const deal = await prisma.project.findUnique({
       where: { id: dealId },
+      include: {
+        additionalContacts: true,
+      }
     });
 
     if (!deal) {
@@ -122,6 +125,9 @@ export const getRetailById = async (
 
     const deal = await prisma.retail.findUnique({
       where: { id: dealId },
+      include: {
+        additionalContacts: true,
+      }
     });
 
     if (!deal) {
@@ -146,9 +152,16 @@ export const createProject = async (data: ProjectWithoutId) => {
     if (!data) {
       return handleError("Ошибка: data не переданы в createProject");
     }
-    const {userId} = await checkAuthAndDataFill(data);
+    const { userId } = await checkAuthAndDataFill(data);
 
-    const { amountCP, amountPurchase, amountWork, delta, ...dealData } = data;
+    const {
+      amountCP,
+      amountPurchase,
+      amountWork,
+      delta,
+      contacts,
+      ...dealData
+    } = data;
 
     // const existingProject = await prisma.project.findUnique({
     //   where: { nameObject },
@@ -175,6 +188,14 @@ export const createProject = async (data: ProjectWithoutId) => {
         delta: safeDelta,
         amountWork: safeAmountWork,
         amountPurchase: safeAmountPurchase,
+        additionalContacts: {
+          create: (contacts as Contact[]).map((contact) => ({
+            name: contact.name,
+            phone: contact.phone || undefined,
+            email: contact.email || undefined,
+            position: contact.position || undefined,
+          })),
+        },
       },
     });
 
@@ -198,9 +219,9 @@ export const createRetail = async (data: RetailWithoutId) => {
     if (!data) {
       return handleError("Ошибка: data не переданы в createProject");
     }
-    const {userId} = await checkAuthAndDataFill(data);
+    const { userId } = await checkAuthAndDataFill(data);
 
-    const { amountCP, delta, ...dealData } = data;
+    const { amountCP, delta, contacts, ...dealData } = data;
 
     // const existingProject = await prisma.project.findUnique({
     //   where: { nameObject },
@@ -223,6 +244,14 @@ export const createRetail = async (data: RetailWithoutId) => {
         userId,
         amountCP: safeamountCP,
         delta: safeDelta,
+        additionalContacts: {
+          create: (contacts as Contact[]).map((contact) => ({
+            name: contact.name,
+            phone: contact.phone || undefined,
+            email: contact.email || undefined,
+            position: contact.position || undefined,
+          })),
+        },
       },
     });
 
@@ -244,12 +273,22 @@ export const updateProject = async (
   data: ProjectWithoutDateCreateAndUpdate
 ) => {
   try {
-    const {userId, user} = await checkAuthAndDataFill(data);
-    const { id, amountCP, amountPurchase, amountWork, delta, ...dealData } =
-      data;
+    const { userId, user } = await checkAuthAndDataFill(data);
+    const {
+      id,
+      amountCP,
+      amountPurchase,
+      amountWork,
+      delta,
+      contacts,
+      ...dealData
+    } = data;
 
     const deal = await prisma.project.findUnique({
       where: { id: id as string },
+      include: {
+        additionalContacts: true, // Включаем контакты проекта
+      },
     });
 
     if (!deal) {
@@ -279,8 +318,53 @@ export const updateProject = async (
       },
     });
 
+    // Если контакты переданы, делаем работу с ними
+    if (contacts && (contacts as Contact[]).length > 0) {
+      // Удаление старых контактов
+      await prisma.additionalContact.deleteMany({
+        where: {
+          projects: {
+            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+          },
+        },
+      });
+
+      // Добавление новых контактов
+      const newContacts = (contacts as Contact[]).map((contact) => ({
+        name: contact.name,
+        phone: contact.phone || undefined,
+        email: contact.email || undefined,
+        position: contact.position || undefined,
+        projects: {
+          connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
+        },
+      }));
+
+      await prisma.additionalContact.createMany({
+        data: newContacts,
+      });
+    } else {
+      // Если контакты не переданы, удаляем все контакты для этого проекта
+      await prisma.additionalContact.deleteMany({
+        where: {
+          projects: {
+            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+          },
+        },
+      });
+    }
+
+    const finalDeal = await prisma.project.findUnique({
+      where: { id: updatedDeal.id },
+      include: {
+        additionalContacts: true,
+      },
+    });
+
+    if (!finalDeal) return [];
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdAt, updatedAt, ...restDeal } = updatedDeal;
+    const { createdAt, updatedAt, ...restDeal } = finalDeal;
 
     const formattedDeal = {
       ...restDeal,
@@ -301,11 +385,14 @@ export const updateProject = async (
 
 export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
   try {
-    const {userId, user} = await checkAuthAndDataFill(data);
-    const { id, amountCP, delta, ...dealData } = data;
+    const { userId, user } = await checkAuthAndDataFill(data);
+    const { id, amountCP, delta, contacts, ...dealData } = data;
 
     const deal = await prisma.retail.findUnique({
       where: { id: id as string },
+      include: {
+        additionalContacts: true, // Включаем контакты проекта
+      },
     });
 
     if (!deal) {
@@ -318,22 +405,66 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
       await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
     }
 
-
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
 
     const updatedDeal = await prisma.retail.update({
       where: { id: deal.id },
       data: {
-        ...(dealData as RetailResponse),
+        ...dealData,
         userId: deal.userId,
         amountCP: safeAmountCP,
         delta: safeDelta,
       },
     });
 
+     if (contacts && (contacts as Contact[]).length > 0) {
+      // Удаление старых контактов
+      await prisma.additionalContact.deleteMany({
+        where: {
+          retails: {
+            some: { id: updatedDeal.id }, 
+          },
+        },
+      });
+
+      // Добавление новых контактов
+      const newContacts = (contacts as Contact[]).map((contact) => ({
+        name: contact.name,
+        phone: contact.phone || undefined,
+        email: contact.email || undefined,
+        position: contact.position || undefined,
+        retails: {
+          connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
+        },
+      }));
+
+      await prisma.additionalContact.createMany({
+        data: newContacts,
+      });
+    } else {
+      // Если контакты не переданы, удаляем все контакты для этого проекта
+      await prisma.additionalContact.deleteMany({
+        where: {
+          retails: {
+            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+          },
+        },
+      });
+    }
+
+    const finalDeal = await prisma.retail.findUnique({
+      where: { id: updatedDeal.id },
+      include: {
+        additionalContacts: true,
+      },
+    });
+
+    if (!finalDeal) return [];
+
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdAt, updatedAt, ...restDeal } = updatedDeal;
+    const { createdAt, updatedAt, ...restDeal } = finalDeal;
 
     const formattedDeal = {
       ...restDeal,
@@ -350,7 +481,7 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
 
 export const getProjectsUser = async (
   idDealOwner: string
-): Promise<ProjectResponse[] | null> => {
+): Promise<Omit<ProjectResponse,"additionalContacts">[] | null> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -372,7 +503,7 @@ export const getProjectsUser = async (
     //       amountPurchase: deal.amountPurchase?.toString()||  "",
     //       delta: deal.delta?.toString() || "",
     //     }))
-    //   : []; 
+    //   : [];
     // }
 
     const isOwner = userId === idDealOwner;
@@ -389,25 +520,24 @@ export const getProjectsUser = async (
     });
 
     return deals.length
-    ? deals.map((deal) => ({
-        ...deal,
-        amountCP: deal.amountCP?.toString() || "",
-        amountWork: deal.amountWork?.toString() || "",
-        amountPurchase: deal.amountPurchase?.toString() || "",
-        delta: deal.delta?.toString() || "",
-      }))
-    : []; 
+      ? deals.map((deal) => ({
+          ...deal,
+          amountCP: deal.amountCP?.toString() || "",
+          amountWork: deal.amountWork?.toString() || "",
+          amountPurchase: deal.amountPurchase?.toString() || "",
+          delta: deal.delta?.toString() || "",
+        }))
+      : [];
   } catch (error) {
     console.error(error);
     handleError((error as Error).message);
     return null;
   }
-}
-
+};
 
 export const getRetailsUser = async (
   idDealOwner: string
-): Promise<RetailResponse[] | null> => {
+): Promise<Omit<RetailResponse,"additionalContacts">[] | null> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -432,7 +562,7 @@ export const getRetailsUser = async (
     const isOwner = userId === idDealOwner;
 
     if (!isOwner) {
-    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
     const deals = await prisma.retail.findMany({
@@ -443,12 +573,12 @@ export const getRetailsUser = async (
     });
 
     return deals.length
-    ? deals.map((deal) => ({
-      ...deal,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "",
-    })) : [];
-
+      ? deals.map((deal) => ({
+          ...deal,
+          amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+          delta: deal.delta ? deal.delta.toString() : "",
+        }))
+      : [];
   } catch (error) {
     console.error(error);
     handleError((error as Error).message);
@@ -456,15 +586,12 @@ export const getRetailsUser = async (
   }
 };
 
-export const getAllProjectsByDepartment = async (): Promise<
-  ProjectResponse[]
+export const getAllProjectsByDepartment = async (): Promise<Omit<ProjectResponse,"additionalContacts">[]
 > => {
   try {
     const { user } = await handleAuthorization();
 
-    await checkUserPermissionByRole(user!, [
-      PermissionEnum.VIEW_UNION_REPORT,
-    ]);
+    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_UNION_REPORT]);
 
     const deals = await prisma.project.findMany({
       where: {
@@ -485,23 +612,26 @@ export const getAllProjectsByDepartment = async (): Promise<
     });
 
     return deals.length
-    ? deals.map((deal) => ({
-      ...deal,
-      user: deal.user.username,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-      amountWork: deal.amountWork ? deal.amountWork.toString() : "",
-      amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "",
-    })) : []
-
+      ? deals.map((deal) => ({
+          ...deal,
+          user: deal.user.username,
+          amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+          amountWork: deal.amountWork ? deal.amountWork.toString() : "",
+          amountPurchase: deal.amountPurchase
+            ? deal.amountPurchase.toString()
+            : "",
+          delta: deal.delta ? deal.delta.toString() : "",
+        }))
+      : [];
   } catch (error) {
     console.log(error);
     return handleError((error as Error).message);
   }
 };
 
-export const getAllRetailsByDepartment = async (
-): Promise<RetailResponse[]> => {
+export const getAllRetailsByDepartment = async (): Promise<
+Omit<RetailResponse, "additionalContacts">[]
+> => {
   try {
     const { user } = await handleAuthorization();
 
@@ -530,13 +660,13 @@ export const getAllRetailsByDepartment = async (
     });
 
     return deals.length
-    ? deals.map((deal) => ({
-      ...deal,
-      user: deal.user.username,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "",
-    })) : []
-
+      ? deals.map((deal) => ({
+          ...deal,
+          user: deal.user.username,
+          amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+          delta: deal.delta ? deal.delta.toString() : "",
+        }))
+      : [];
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -583,9 +713,7 @@ export const deleteDeal = async (
     }
 
     if (deal.userId !== idDealOwner) {
-       await checkUserPermissionByRole(user!, [
-        PermissionEnum.DEAL_MANAGEMENT,
-      ]);
+      await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
     }
 
     switch (type) {

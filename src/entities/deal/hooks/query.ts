@@ -16,7 +16,7 @@ import {
   getAllRetailsByDepartmentQuery,
 } from "../api/queryFn";
 
-export const useGetProjectById = (id: string, useCache: boolean = true) => {
+export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
@@ -24,16 +24,16 @@ export const useGetProjectById = (id: string, useCache: boolean = true) => {
     "projects",
     authUser?.id,
   ]);
-  const cachedDeal = cachedDeals?.find((p) => p.id === id);
+  const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
   return useQuery<ProjectResponse | undefined, Error>({
-    queryKey: ["project", id],
+    queryKey: ["project", dealId],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        const project = await getProjectById(id, authUser.id);
+        const project = await getProjectById(dealId, authUser.id);
 
         return project ?? undefined;
       } catch (error) {
@@ -47,7 +47,7 @@ export const useGetProjectById = (id: string, useCache: boolean = true) => {
   });
 };
 
-export const useGetRetailById = (id: string, useCache: boolean = true) => {
+export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
@@ -55,16 +55,16 @@ export const useGetRetailById = (id: string, useCache: boolean = true) => {
     "retails",
     authUser?.id,
   ]);
-  const cachedDeal = cachedDeals?.find((p) => p.id === id);
+  const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
   return useQuery<RetailResponse | undefined, Error>({
-    queryKey: ["retail", id],
+    queryKey: ["retail", dealId],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        const project = await getRetailById(id, authUser.id);
+        const project = await getRetailById(dealId, authUser.id);
 
         return project ?? undefined;
       } catch (error) {
@@ -80,18 +80,18 @@ export const useGetRetailById = (id: string, useCache: boolean = true) => {
 };
 
 export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
-  id: string,
+  dealId: string,
   type: DealType
 ) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
-  const queryKey = [type.toLowerCase(), id];
+  const queryKey = [type.toLowerCase(), dealId];
 
   const cachedData = queryClient.getQueryData<
     Array<ProjectResponse | RetailResponse>
   >([`${type.toLowerCase()}s`, authUser?.id]);
-  const cachedEntity = cachedData?.find((p) => p.id === id) as T | undefined;
+  const cachedEntity = cachedData?.find((p) => p.id === dealId) as T | undefined;
 
   // Функции для запроса данных
   const fetchFunctions = {
@@ -110,7 +110,7 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
-      const entity = await fetchFunctions[type](id, authUser.id);
+      const entity = await fetchFunctions[type](dealId, authUser.id);
       return entity as T | undefined;
     } catch (error) {
       console.log(error, "Ошибка useGetDealById");

@@ -7,29 +7,12 @@ import { TOAST } from "@/entities/user/ui/Toast";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
 import ProjectFormBody from "./ProjectFormBody";
 import { useCreateProject } from "../../hooks/mutate";
+import { defaultProjectValues } from "../../model/defaultvaluesForm";
 
 const ProjectForm = () => {
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
-    defaultValues: {
-      dateRequest: undefined,
-      nameObject: "",
-      nameDeal: "",
-      direction: "",
-      deliveryType: undefined,
-      contact: "",
-      phone: "",
-      email: "",
-      additionalContact: "",
-      amountCP: "0",
-      amountWork: "0",
-      amountPurchase: "0",
-      delta: "0",
-      dealStatus: "",
-      comments: "",
-      plannedDateConnection: undefined,
-      resource: "",
-    },
+    defaultValues: defaultProjectValues,
   });
 
   const { mutateAsync, isPending } = useCreateProject(form);

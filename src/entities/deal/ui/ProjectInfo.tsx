@@ -11,13 +11,14 @@ import {
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import { formatterCurrency } from "@/shared/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { Building, ContactRound } from "lucide-react";
+import { BookUser, Building, ContactRound } from "lucide-react";
 import dynamic from "next/dynamic";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+import CardInfo from "./CardInfo";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -66,10 +67,10 @@ const ProjectItemInfo = () => {
 
       <div className="grid gap-2">
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
-          <div className="grid gap-4">
+          <div className="grid gap-2">
             <div className="grid min-w-72 gap-2">
               <IntoDealItem title={"Объект"}>
-                <div className="flex w-full items-center justify-start gap-4">
+                <div className="flex w-full items-center justify-start gap-4 text-lg">
                   <Building size="40" strokeWidth={1} />
 
                   <p>{deal?.nameObject}</p>
@@ -77,91 +78,118 @@ const ProjectItemInfo = () => {
               </IntoDealItem>
             </div>
             <div className="grid gap-2">
-              <IntoDealItem title={"Контакт"}>
+              <IntoDealItem title={"Основной контакт"}>
                 <div className="grid w-full">
                   <div className="flex items-center justify-start gap-4">
                     <ContactRound size="40" strokeWidth={1} />
 
-                    <div className="flex flex-col items-start justify-start">
-                      <p>{deal.contact || "Нет данных"}</p>
+                    <div className="flex flex-col items-start justify-start text-lg">
+                      <CardInfo data={deal.contact} title="Имя" />
 
-                      <p className="whitespace-nowrap">
-                        {deal.phone || "Нет данных"}
-                      </p>
+                      <CardInfo data={deal.phone} title="Телефон" />
+
+                      <CardInfo data={deal.email} title="Email" />
                     </div>
-                  </div>
-
-                  <Separator className="my-2" />
-
-                  <div className="flex flex-col items-start justify-start text-sm">
-                    <p>Дополнительный контакт: </p>
-
-                    <p>{deal.additionalContact || "Нет данных"}</p>
                   </div>
                 </div>
               </IntoDealItem>
             </div>
           </div>
-          <div className="grid-container gap-2">
-            <IntoDealItem title={"Информация о сделке"}>
-              <p>Название сделки: {deal?.nameDeal}</p>
+          <div className="grid gap-2">
+            <div className="grid-container gap-2">
+              <IntoDealItem title={"Информация о сделке"}>
+                <p>Название сделки: {deal?.nameDeal}</p>
 
-              <p>
-                Тип сделки:{" "}
-                {DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
-                  "Нет данных"}
-              </p>
+                <p>
+                  Тип сделки:{" "}
+                  {DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
+                    "Нет данных"}
+                </p>
 
-              <p>Дата запроса: {deal?.dateRequest?.toLocaleDateString()}</p>
-            </IntoDealItem>
+                <p>Дата запроса: {deal?.dateRequest?.toLocaleDateString()}</p>
+              </IntoDealItem>
 
-            <IntoDealItem title={"Детали"}>
-              <p>
-                Направление:{" "}
-                {DirectionProjectLabels[
-                  deal?.direction as keyof typeof DirectionProjectLabels
-                ] || "Нет данных"}
-              </p>
+              <IntoDealItem title={"Детали"}>
+                <p>
+                  Направление:{" "}
+                  {DirectionProjectLabels[
+                    deal?.direction as keyof typeof DirectionProjectLabels
+                  ] || "Нет данных"}
+                </p>
 
-              <p>
-                Тип поставки:{" "}
-                {DeliveryProjectLabels[
-                  deal?.deliveryType as keyof typeof DeliveryProjectLabels
-                ] || "Нет данных"}
-              </p>
-            </IntoDealItem>
+                <p>
+                  Тип поставки:{" "}
+                  {DeliveryProjectLabels[
+                    deal?.deliveryType as keyof typeof DeliveryProjectLabels
+                  ] || "Нет данных"}
+                </p>
+              </IntoDealItem>
 
-            <IntoDealItem title={"Финансы"}>
-              <p>
-                Дельта:{" "}
-                {formatterCurrency.format(parseFloat(deal.delta as string)) ||
-                  "Нет данных"}
-              </p>
+              <IntoDealItem title={"Финансы"}>
+                <p>
+                  Дельта:{" "}
+                  {formatterCurrency.format(parseFloat(deal.delta as string)) ||
+                    "Нет данных"}
+                </p>
 
-              <p>
-                Сумма КП:{" "}
-                {formatterCurrency.format(
-                  parseFloat(deal.amountCP as string)
-                ) || "Нет данных"}{" "}
-              </p>
+                <p>
+                  Сумма КП:{" "}
+                  {formatterCurrency.format(
+                    parseFloat(deal.amountCP as string)
+                  ) || "Нет данных"}{" "}
+                </p>
 
-              <p>
-                Сумма закупки:{" "}
-                {deal.amountPurchase
-                  ? formatterCurrency.format(
-                      parseFloat(deal.amountPurchase as string)
-                    )
-                  : "Нет данных"}{" "}
-              </p>
+                <p>
+                  Сумма закупки:{" "}
+                  {deal.amountPurchase
+                    ? formatterCurrency.format(
+                        parseFloat(deal.amountPurchase as string)
+                      )
+                    : "Нет данных"}{" "}
+                </p>
 
-              <p>
-                Сумма работы:{" "}
-                {deal.amountWork
-                  ? formatterCurrency.format(
-                      parseFloat(deal.amountWork as string)
-                    )
-                  : "Нет данных"}{" "}
-              </p>
+                <p>
+                  Сумма работы:{" "}
+                  {deal.amountWork
+                    ? formatterCurrency.format(
+                        parseFloat(deal.amountWork as string)
+                      )
+                    : "Нет данных"}{" "}
+                </p>
+              </IntoDealItem>
+            </div>
+
+            <IntoDealItem title={"Дополнительные контакты"}>
+              {deal.additionalContacts && deal.additionalContacts.length > 0 ? (
+                <div className="flex gap-2 divide-x-2 divide-solid divide-muted">
+                  {deal.additionalContacts.map((contact) => (
+                    <div key={contact.id} className="grid">
+                      <div className="flex items-start justify-start gap-4 p-2">
+                        <BookUser 
+                          size="32"
+                          strokeWidth={1}
+                          className="flex-shrink-0 pt-1"
+                        />
+
+                        <div className="text-md flex flex-col items-start justify-start">
+                          <CardInfo data={contact.name} title="Имя" />
+
+                          <CardInfo data={contact.phone} title="Телефон" />
+
+                          <CardInfo data={contact.email} title="Email" />
+
+                          <CardInfo data={contact.position} title="Должность" />
+                        </div>
+                      </div>
+                      {/* {index !== deal.additionalContacts!.length - 1 && (
+                        <Separator className="my-2" />
+                      )} */}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>Нет данных</p>
+              )}
             </IntoDealItem>
           </div>
         </div>
