@@ -6,6 +6,7 @@ import UserItem from "./UserItem";
 import useStoreDepartment from "../store/useStoreDepartment";
 import { useParams } from "next/navigation";
 import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
+import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 
 const UserDepartmentList = () => {
   useRedirectToLoginNotAuthUser();
@@ -40,4 +41,4 @@ const UserDepartmentList = () => {
   );
 };
 
-export default UserDepartmentList;
+export default withAuthGuard(UserDepartmentList);

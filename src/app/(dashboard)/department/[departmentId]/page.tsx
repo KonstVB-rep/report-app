@@ -1,5 +1,4 @@
 import UserDepartmentList from "@/entities/department/ui/UserDepartmentList";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 
 const DeparmentEmployees = async () => {
   return (
@@ -9,4 +8,4 @@ const DeparmentEmployees = async () => {
   );
 };
 
-export default withAuthGuard(DeparmentEmployees);
+export default DeparmentEmployees;
