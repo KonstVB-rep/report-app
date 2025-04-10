@@ -242,7 +242,6 @@ const ProjectFormBody = <T extends FieldValues>({
                       <PhoneInput
                         placeholder="Введите телефон пользователя"
                         onAccept={field.onChange}
-                        required={true}
                         {...field}
                       />
                     </FormControl>
@@ -276,7 +275,7 @@ const ProjectFormBody = <T extends FieldValues>({
                 )}
               />
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name={"additionalContact" as Path<T>}
                 render={({ field }) => (
@@ -294,8 +293,8 @@ const ProjectFormBody = <T extends FieldValues>({
                     )}
                   </FormItem>
                 )}
-              /> */}
-            </div>
+              />
+          </div>
 
             <div className="flex flex-col gap-1">
               <FormField

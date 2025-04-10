@@ -19,6 +19,7 @@ import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
+import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -198,4 +199,4 @@ const ProjectItemInfo = () => {
   );
 };
 
-export default ProjectItemInfo;
+export default withAuthGuard(ProjectItemInfo);

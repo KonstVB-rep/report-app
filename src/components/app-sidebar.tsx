@@ -43,8 +43,11 @@ const AppSidebar = () => {
     }
   }, [departmentData]);
 
-  const navMainItems = useMemo(() => 
-    (departments as DepartmentInfo[]).map((dept: DepartmentInfo) => ({
+  const navMainItems = useMemo(() => {
+    if (!departments || !departments.length) {
+      return [];
+    }
+    return (departments as DepartmentInfo[]).map((dept: DepartmentInfo) => ({
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],
@@ -57,7 +60,8 @@ const AppSidebar = () => {
         position: person.position,
         url: `/table/${person.departmentId}`,
       })),
-    })),
+    })) as DepartmentListType[];
+  },
   [departments]);
 
   const data: { navMain: DepartmentListType[] } = {

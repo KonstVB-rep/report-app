@@ -6,6 +6,8 @@ import  { useEffect } from 'react'
 const useRedirectToLoginNotAuthUser = () => {
     const router = useRouter();
 
+    console.log('useRedirectToLoginNotAuthUser')
+
     const { isAuth } = useStoreUser();
   
     useEffect(() => {

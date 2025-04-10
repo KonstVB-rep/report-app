@@ -6,14 +6,13 @@ import { DealType, PermissionEnum } from "@prisma/client";
 import { columnsDataProject } from "../[userId]/model/columns-data-project";
 import PersonTable from "./PersonTable";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
+import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 
 const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
 
 const PersonTableProject = ({ userId }: { userId: string }) => {
-  useRedirectToLoginNotAuthUser();
 
   const hasAccess = hasAccessToData(
     userId as string,
@@ -25,6 +24,7 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
   );
 
   const getRowLink = useCallback((row: ProjectResponse) => `/deal/project/${row.id}`,[]);
+
 
   if (!hasAccess)
     return (
@@ -44,4 +44,4 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
   );
 };
 
-export default PersonTableProject;
+export default withAuthGuard(PersonTableProject);

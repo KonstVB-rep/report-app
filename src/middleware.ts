@@ -71,7 +71,7 @@ export default async function middleware(request: NextRequest) {
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
-
+  
   if (!accessToken && !refreshToken) {
     return redirectToLogin(request);
   }

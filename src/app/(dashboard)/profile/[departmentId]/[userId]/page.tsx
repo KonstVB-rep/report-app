@@ -6,8 +6,9 @@ import { PermissionEnum } from "@prisma/client";
 import { useParams } from "next/navigation";
 import React from "react";
 import { useGetUser } from "@/entities/user/hooks/query";
-import useRedirectToLoginNotAuthUser from "@/shared/hooks/useRedirectToLoginNotAuthUser";
+
 import dynamic from "next/dynamic";
+import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,
@@ -21,7 +22,6 @@ const AccessDeniedMessage = dynamic(
 );
 
 const ProfilePage = () => {
-  useRedirectToLoginNotAuthUser();
 
   const { userId } = useParams();
 
@@ -133,4 +133,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default withAuthGuard(ProfilePage);

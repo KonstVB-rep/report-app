@@ -198,7 +198,6 @@ const RetailFormBody = <T extends FieldValues>({
                       <PhoneInput
                         placeholder="Введите телефон пользователя"
                         onAccept={field.onChange}
-                        required={true}
                         {...field}
                       />
 
