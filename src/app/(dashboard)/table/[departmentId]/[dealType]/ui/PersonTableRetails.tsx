@@ -7,12 +7,14 @@ import PersonTable from "./PersonTable";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import { useCallback } from "react";
 import dynamic from "next/dynamic";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
+const AccessDeniedMessage = dynamic(
+  () => import("@/shared/ui/AccessDeniedMessage"),
+  { ssr: false }
+);
 
 const PersonTableRetail = ({ userId }: { userId: string }) => {
-  
   const hasAccess = hasAccessToData(
     userId as string,
     PermissionEnum.VIEW_USER_REPORT
@@ -22,7 +24,10 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
     hasAccess ? (userId as string) : null
   );
 
-  const getRowLink = useCallback((row: RetailResponse) => `/deal/retail/${row.id}`,[]);
+  const getRowLink = useCallback(
+    (row: RetailResponse) => `/deal/retail/${row.id}`,
+    []
+  );
 
   if (!hasAccess)
     return (
@@ -30,7 +35,6 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
     );
-
 
   return (
     <PersonTable

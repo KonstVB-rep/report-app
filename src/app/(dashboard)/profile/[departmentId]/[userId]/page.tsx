@@ -8,7 +8,7 @@ import React from "react";
 import { useGetUser } from "@/entities/user/hooks/query";
 
 import dynamic from "next/dynamic";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,
@@ -22,7 +22,6 @@ const AccessDeniedMessage = dynamic(
 );
 
 const ProfilePage = () => {
-
   const { userId } = useParams();
 
   const {
@@ -57,7 +56,7 @@ const ProfilePage = () => {
     <section className="p-4">
       <div className="flex gap-4">
         <div className="grid max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
-          <div className="@container flex h-full flex-col justify-between min-w-[260px]">
+          <div className="@container flex h-full min-w-[260px] flex-col justify-between">
             <UserCard
               email={user.email}
               username={user.username}

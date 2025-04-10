@@ -5,10 +5,9 @@ import React from "react";
 import UserItem from "./UserItem";
 import useStoreDepartment from "../store/useStoreDepartment";
 import { useParams } from "next/navigation";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 const UserDepartmentList = () => {
-
   const { departmentId } = useParams();
   const { departments } = useStoreDepartment();
 

@@ -8,12 +8,14 @@ import PersonTable from "./PersonTable";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
+const AccessDeniedMessage = dynamic(
+  () => import("@/shared/ui/AccessDeniedMessage"),
+  { ssr: false }
+);
 
 const PersonTableProject = ({ userId }: { userId: string }) => {
-
   const hasAccess = hasAccessToData(
     userId as string,
     PermissionEnum.VIEW_USER_REPORT
@@ -23,8 +25,10 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
     hasAccess ? (userId as string) : null
   );
 
-  const getRowLink = useCallback((row: ProjectResponse) => `/deal/project/${row.id}`,[]);
-
+  const getRowLink = useCallback(
+    (row: ProjectResponse) => `/deal/project/${row.id}`,
+    []
+  );
 
   if (!hasAccess)
     return (
@@ -32,7 +36,6 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
     );
-
 
   return (
     <PersonTable

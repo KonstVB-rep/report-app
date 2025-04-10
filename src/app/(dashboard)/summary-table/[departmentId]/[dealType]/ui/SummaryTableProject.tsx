@@ -9,12 +9,14 @@ import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { useParams } from "next/navigation";
 import SummaryTableTemplate from "./SummaryTableTemplate";
 import dynamic from "next/dynamic";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-const AccessDeniedMessage = dynamic(() => import("@/shared/ui/AccessDeniedMessage"), { ssr: false });
+const AccessDeniedMessage = dynamic(
+  () => import("@/shared/ui/AccessDeniedMessage"),
+  { ssr: false }
+);
 
 const SummaryTableProject = () => {
-
   const { userId } = useParams();
 
   const hasAccess = hasAccessToDataSummary(

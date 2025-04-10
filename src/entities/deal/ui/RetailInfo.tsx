@@ -17,14 +17,14 @@ import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-
-const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), { ssr: false });
-const NotFoundDeal = dynamic(() => import("./NotFoundDeal"), { ssr: false }); 
+const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
+  ssr: false,
+});
+const NotFoundDeal = dynamic(() => import("./NotFoundDeal"), { ssr: false });
 
 const RetailItemInfo = () => {
-
   const { dealId } = useParams();
 
   const { data: deal, isLoading } = useGetRetailById(dealId as string, false);
@@ -37,12 +37,15 @@ const RetailItemInfo = () => {
   }
 
   return (
-    <section className="grid p-4 gap-2">
-     <div className="flex items-center justify-between pb-2 p-2 rounded-md bg-muted">
+    <section className="grid gap-2 p-4">
+      <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">Розница</h1>
 
-          <p className="text-xs"> Дата: {deal.createdAt?.toLocaleDateString()}</p>
+          <p className="text-xs">
+            {" "}
+            Дата: {deal.createdAt?.toLocaleDateString()}
+          </p>
         </div>
 
         <div className="flex justify-end gap-2">
@@ -60,7 +63,7 @@ const RetailItemInfo = () => {
 
       <Separator />
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
-        <div className="grid gap-">
+        <div className="gap- grid">
           <div className="grid min-w-72 gap-2">
             <p className="text-2xl">Объект</p>
             <div className="flex w-full items-center justify-start gap-4 rounded-md border border-solid p-3">
@@ -128,7 +131,9 @@ const RetailItemInfo = () => {
         </div>
       </div>
       <IntoDealItem title={"Комментарии"}>
-          <p className="first-letter:capitalize">{deal.comments || "Нет данных"}</p>
+        <p className="first-letter:capitalize">
+          {deal.comments || "Нет данных"}
+        </p>
       </IntoDealItem>
       <IntoDealItem title={"Статус"}>
         <div className="text-2xl first-letter:capitalize">
@@ -140,7 +145,15 @@ const RetailItemInfo = () => {
         </div>
       </IntoDealItem>
 
-      <FileList data={deal && { userId: deal?.userId, dealId: deal?.id, dealType: deal?.type }} />
+      <FileList
+        data={
+          deal && {
+            userId: deal?.userId,
+            dealId: deal?.id,
+            dealType: deal?.type,
+          }
+        }
+      />
     </section>
   );
 };

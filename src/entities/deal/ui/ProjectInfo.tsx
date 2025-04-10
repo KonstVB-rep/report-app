@@ -17,7 +17,7 @@ import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
-import withAuthGuard from "@/widgets/Files/libs/hoc/withAuthGuard";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -25,7 +25,6 @@ const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
 const NotFoundDeal = dynamic(() => import("./NotFoundDeal"), { ssr: false });
 
 const ProjectItemInfo = () => {
-
   const { dealId } = useParams();
 
   const { data: deal, isLoading } = useGetProjectById(dealId as string, false);
