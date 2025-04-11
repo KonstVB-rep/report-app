@@ -26,6 +26,8 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
   ]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
+console.log(cachedDeal, "cachedDeal");
+
   return useQuery<ProjectResponse | undefined, Error>({
     queryKey: ["project", dealId],
     queryFn: async () => {

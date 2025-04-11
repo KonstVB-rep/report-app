@@ -231,11 +231,15 @@ body {
   }
 }
 
+.flex-item-contact{
+  @apply flex-1 min-w-[240px] ;
+}
 
-.grid-container {
+
+/* .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-}
+} */
 
 .loader-table-content {
   width: 12px;

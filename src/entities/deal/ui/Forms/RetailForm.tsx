@@ -26,7 +26,7 @@ const RetailForm = () => {
   };
 
   return (
-    <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
+    <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} contactsKey="contacts"/>
   );
 };
 

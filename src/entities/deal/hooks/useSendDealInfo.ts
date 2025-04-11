@@ -22,6 +22,8 @@ const useSetContactsToDeal =  <T extends FieldValues>(
     onSubmit(fullData);
   };
 
+  
+
   return { contacts, setContacts, handleDeleteContact,handleSubmit };
 }
 

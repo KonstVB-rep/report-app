@@ -26,7 +26,7 @@ const ProjectForm = () => {
   };
 
   return (
-    <ProjectFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
+    <ProjectFormBody form={form} onSubmit={onSubmit} isPending={isPending} contactsKey="contacts"/>
   );
 };
 

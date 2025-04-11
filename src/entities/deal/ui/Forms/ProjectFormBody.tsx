@@ -14,7 +14,7 @@ import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import InputNumber from "@/shared/ui/Inputs/InputNumber";
 import PhoneInput from "@/shared/ui/PhoneInput";
 import SelectComponent from "@/shared/ui/SelectComponent";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   DirectionProjectLabels,
   DeliveryProjectLabels,
@@ -52,14 +52,20 @@ type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
+  contactsKey?: keyof T;
 };
 
 const ProjectFormBody = <T extends FieldValues>({
   form,
   onSubmit,
   isPending,
+  contactsKey,
 }: ProjectFormBodyProps<T>) => {
-  const { contacts, setContacts, handleDeleteContact, handleSubmit } = useSendDealInfo<T>(onSubmit);
+  
+  const { contacts, setContacts, handleDeleteContact, handleSubmit } =
+    useSendDealInfo<T>(onSubmit);
+
+  const currentContacts = form.getValues(contactsKey as Path<T>);
 
   const watchedValues = useWatch({
     control: form.control,
@@ -67,6 +73,7 @@ const ProjectFormBody = <T extends FieldValues>({
   });
 
   React.useEffect(() => {
+
     if (!watchedValues) return;
 
     const [amountCP = "0", amountWork = "0", amountPurchase = "0"] =
@@ -100,16 +107,22 @@ const ProjectFormBody = <T extends FieldValues>({
         shouldDirty: true,
       }
     );
-  }, [watchedValues, form]);
+  }, [form, watchedValues]);
 
+  useEffect(() => {
+    if (contactsKey) {
+      const contacts = form.getValues(contactsKey as Path<T>);
+      setContacts(contacts);
+    }
+  }, [contactsKey, form, currentContacts, setContacts]);
 
   return (
-    <div className="max-h-[85vh] overflow-y-auto">
+    <div className="max-h-[82vh] overflow-y-auto">
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="grid max-h-[85vh] gap-10 overflow-y-auto"
+          className="grid max-h-[82vh] gap-5 overflow-y-auto"
         >
           <div className="text-center font-semibold uppercase">
             Форма добавления проекта
@@ -185,17 +198,20 @@ const ProjectFormBody = <T extends FieldValues>({
                       <FormControl>
                         <SelectComponent
                           placeholder="Выберите направление"
+                          {...field}
                           options={transformObjValueToArr(
                             DirectionProjectLabels
                           )}
-                          onValueChange={(selected) =>
-                            form.setValue(
-                              "direction" as Path<T>,
-                              selected as PathValue<T, Path<T>>
-                            )
-                          }
                           required
-                          {...field}
+                          value={field.value || ""}
+                          onValueChange={(selected) => {
+                            if (selected) {
+                              return form.setValue(
+                                "direction" as Path<T>,
+                                selected as PathValue<T, Path<T>>
+                              );
+                            }
+                          }}
                         />
                       </FormControl>
 
@@ -218,16 +234,18 @@ const ProjectFormBody = <T extends FieldValues>({
                       <FormControl>
                         <SelectComponent
                           placeholder="Выберите тип поставки"
+                          {...field}
                           options={transformObjValueToArr(
                             DeliveryProjectLabels
                           )}
                           onValueChange={(selected) => {
-                            return form.setValue(
-                              "deliveryType" as Path<T>,
-                              selected as PathValue<T, Path<T>>
-                            );
+                            if (selected){
+                              return form.setValue(
+                                "deliveryType" as Path<T>,
+                                selected as PathValue<T, Path<T>>
+                              );
+                            }
                           }}
-                          {...field}
                         />
                       </FormControl>
 
@@ -419,15 +437,20 @@ const ProjectFormBody = <T extends FieldValues>({
                       <FormControl>
                         <SelectComponent
                           placeholder="Выберите статус КП"
-                          options={transformObjValueToArr(StatusProjectLabels)}
-                          onValueChange={(selected) =>
-                            form.setValue(
-                              "dealStatus" as Path<T>,
-                              selected as PathValue<T, Path<T>>
-                            )
-                          }
-                          required
                           {...field}
+                          required
+                          value={field.value || ""}
+                          options={transformObjValueToArr(StatusProjectLabels)}
+                          onValueChange={(selected) => {
+                            if (selected) {
+                              return form.setValue(
+                                "dealStatus" as Path<T>,
+                                selected as PathValue<T, Path<T>>
+                              );
+                            }
+
+                          }
+                          }
                         />
                       </FormControl>
 
@@ -465,30 +488,6 @@ const ProjectFormBody = <T extends FieldValues>({
 
                 <FormField
                   control={form.control}
-                  name={"comments" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Примечание / Комментарии</FormLabel>
-
-                      <FormControl>
-                        <Textarea
-                          placeholder="Введите комментарии"
-                          required
-                          {...field}
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.comments?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.comments?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name={"resource" as Path<T>}
                   render={({ field }) => (
                     <FormItem>
@@ -510,6 +509,30 @@ const ProjectFormBody = <T extends FieldValues>({
                     </FormItem>
                   )}
                 />
+
+<FormField
+                  control={form.control}
+                  name={"comments" as Path<T>}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Примечание / Комментарии</FormLabel>
+
+                      <FormControl>
+                        <Textarea
+                          placeholder="Введите комментарии"
+                          required
+                          {...field}
+                        />
+                      </FormControl>
+
+                      {form.formState.errors.comments?.message && (
+                        <FormMessage className="text-red-500">
+                          {form.formState.errors.comments?.message as string}
+                        </FormMessage>
+                      )}
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
             <SubmitFormButton
@@ -520,7 +543,12 @@ const ProjectFormBody = <T extends FieldValues>({
           </div>
         </form>
         <ContactDeal onContactsChange={setContacts} contacts={contacts} />
-        <ContactsList contacts={contacts} handleDeleteContact={handleDeleteContact} />
+        {contactsKey && (
+          <ContactsList
+            contacts={contacts as T[typeof contactsKey]}
+            handleDeleteContact={handleDeleteContact}
+          />
+        )}
       </Form>
     </div>
   );

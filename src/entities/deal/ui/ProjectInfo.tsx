@@ -67,7 +67,7 @@ const ProjectItemInfo = () => {
 
       <div className="grid gap-2">
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
-          <div className="grid gap-2">
+          <div className="grid gap-2 grid-rows-2">
             <div className="grid min-w-72 gap-2">
               <IntoDealItem title={"Объект"}>
                 <div className="flex w-full items-center justify-start gap-4 text-lg">
@@ -95,9 +95,9 @@ const ProjectItemInfo = () => {
               </IntoDealItem>
             </div>
           </div>
-          <div className="grid gap-2">
-            <div className="grid-container gap-2">
-              <IntoDealItem title={"Информация о сделке"}>
+          <div className="grid gap-2 grid-rows-2">
+            <div className="flex flex-wrap gap-2">
+              <IntoDealItem title={"Информация о сделке"} className="flex-item-contact">
                 <p>Название сделки: {deal?.nameDeal}</p>
 
                 <p>
@@ -109,7 +109,7 @@ const ProjectItemInfo = () => {
                 <p>Дата запроса: {deal?.dateRequest?.toLocaleDateString()}</p>
               </IntoDealItem>
 
-              <IntoDealItem title={"Детали"}>
+              <IntoDealItem title={"Детали"} className="flex-item-contact">
                 <p>
                   Направление:{" "}
                   {DirectionProjectLabels[
@@ -125,7 +125,7 @@ const ProjectItemInfo = () => {
                 </p>
               </IntoDealItem>
 
-              <IntoDealItem title={"Финансы"}>
+              <IntoDealItem title={"Финансы"} className="flex-item-contact">
                 <p>
                   Дельта:{" "}
                   {formatterCurrency.format(parseFloat(deal.delta as string)) ||

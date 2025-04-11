@@ -88,6 +88,7 @@ export const getProjectById = async (
       amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
       delta: deal.delta ? deal.delta.toString() : "",
     };
+
     return formattedProject;
   } catch (error) {
     console.error(error);
@@ -190,10 +191,10 @@ export const createProject = async (data: ProjectWithoutId) => {
         amountPurchase: safeAmountPurchase,
         additionalContacts: {
           create: (contacts as Contact[]).map((contact) => ({
-            name: contact.name,
-            phone: contact.phone || undefined,
-            email: contact.email || undefined,
-            position: contact.position || undefined,
+            name: contact.name ?? "",
+            phone: contact.phone ?? null,
+            email: contact.email ?? null,
+            position: contact.position ?? null,
           })),
         },
       },
@@ -246,10 +247,10 @@ export const createRetail = async (data: RetailWithoutId) => {
         delta: safeDelta,
         additionalContacts: {
           create: (contacts as Contact[]).map((contact) => ({
-            name: contact.name,
-            phone: contact.phone || undefined,
-            email: contact.email || undefined,
-            position: contact.position || undefined,
+            name: contact.name ?? "",
+            phone: contact.phone ?? null,
+            email: contact.email ?? null,
+            position: contact.position ?? null,
           })),
         },
       },
@@ -319,40 +320,44 @@ export const updateProject = async (
     });
 
     // Если контакты переданы, делаем работу с ними
-    if (contacts && (contacts as Contact[]).length > 0) {
-      // Удаление старых контактов
-      await prisma.additionalContact.deleteMany({
-        where: {
-          projects: {
-            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
-          },
-        },
-      });
+    // Если контакты переданы, делаем работу с ними
+if (contacts && (contacts as Contact[]).length > 0) {
+  // Удаление старых контактов
+  await prisma.additionalContact.deleteMany({
+    where: {
+      projects: {
+        some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+      },
+    },
+  });
 
-      // Добавление новых контактов
-      const newContacts = (contacts as Contact[]).map((contact) => ({
-        name: contact.name,
-        phone: contact.phone || undefined,
-        email: contact.email || undefined,
-        position: contact.position || undefined,
-        projects: {
-          connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
-        },
-      }));
+  // Добавление новых контактов
+  const newContacts = (contacts as Contact[]).map((contact) => ({
+    name: contact.name ?? "",
+    phone: contact.phone ?? null,
+    email: contact.email ?? null,
+    position: contact.position ?? null,
+    projects: {
+      connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
+    },
+  }));
 
-      await prisma.additionalContact.createMany({
-        data: newContacts,
-      });
-    } else {
-      // Если контакты не переданы, удаляем все контакты для этого проекта
-      await prisma.additionalContact.deleteMany({
-        where: {
-          projects: {
-            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
-          },
-        },
-      });
-    }
+  // Используем create вместо createMany
+  for (const contact of newContacts) {
+    await prisma.additionalContact.create({
+      data: contact,
+    });
+  }
+} else {
+  // Если контакты не переданы, удаляем все контакты для этого проекта
+  await prisma.additionalContact.deleteMany({
+    where: {
+      projects: {
+        some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+      },
+    },
+  });
+}
 
     const finalDeal = await prisma.project.findUnique({
       where: { id: updatedDeal.id },
@@ -418,30 +423,33 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
       },
     });
 
-     if (contacts && (contacts as Contact[]).length > 0) {
+    if (contacts && (contacts as Contact[]).length > 0) {
       // Удаление старых контактов
       await prisma.additionalContact.deleteMany({
         where: {
           retails: {
-            some: { id: updatedDeal.id }, 
+            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
           },
         },
       });
-
+    
       // Добавление новых контактов
       const newContacts = (contacts as Contact[]).map((contact) => ({
-        name: contact.name,
-        phone: contact.phone || undefined,
-        email: contact.email || undefined,
-        position: contact.position || undefined,
+        name: contact.name ?? "",
+        phone: contact.phone ?? null,
+        email: contact.email ?? null,
+        position: contact.position ?? null,
         retails: {
           connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
         },
       }));
-
-      await prisma.additionalContact.createMany({
-        data: newContacts,
-      });
+    
+      // Используем create вместо createMany
+      for (const contact of newContacts) {
+        await prisma.additionalContact.create({
+          data: contact,
+        });
+      }
     } else {
       // Если контакты не переданы, удаляем все контакты для этого проекта
       await prisma.additionalContact.deleteMany({

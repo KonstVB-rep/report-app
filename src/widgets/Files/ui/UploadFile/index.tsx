@@ -37,7 +37,7 @@ export default function FileUploadForm({
     const extIndex = file.name.lastIndexOf(".");
     const formatFile = file.name.slice(extIndex);
     const fileNameWithoutFormat = file.name.slice(0, extIndex);
-    const uniqueFileName = `${fileNameWithoutFormat}-${dealId}${formatFile}`;
+    const uniqueFileName = `${fileNameWithoutFormat}-${Date.now()}${formatFile}`;
 
     const formData = new FormData();
     formData.append("file", file);

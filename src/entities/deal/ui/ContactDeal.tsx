@@ -40,7 +40,6 @@ const ContactDeal = ({ contacts = [], onContactsChange }: ContactDealProps) => {
   } = useAddContactToDeal(contacts, onContactsChange);
 
   const onSubmit = (data: ContactSchema) => {
-    console.log("Отправка формы:", data);
     onContactsChange(data.contacts);
     setIsOpen(false);
   };
@@ -89,7 +88,7 @@ const ContactDeal = ({ contacts = [], onContactsChange }: ContactDealProps) => {
                   <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                      <Input placeholder="Должность" {...field} />
+                      <Input placeholder="Должность" {...field} value={field.value ?? ''}/>
                     </FormControl>
                     {form.formState.errors.contacts?.[index]?.position
                       ?.message && (
@@ -115,6 +114,7 @@ const ContactDeal = ({ contacts = [], onContactsChange }: ContactDealProps) => {
                         placeholder="Телефон"
                         onAccept={field.onChange}
                         {...field}
+                        value={field.value ?? ''}
                       />
                     </FormControl>
                     {(
@@ -143,7 +143,7 @@ const ContactDeal = ({ contacts = [], onContactsChange }: ContactDealProps) => {
                   <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                      <InputEmail {...field} />
+                      <InputEmail {...field} value={field.value ?? ''}/>
                     </FormControl>
                     {(
                       form.formState.errors.contacts?.[

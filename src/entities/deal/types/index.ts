@@ -25,7 +25,6 @@ export interface ProjectResponse {
   direction: DirectionProject;
   deliveryType: DeliveryProject | null;
   contact: string;
-  // additionalContact: string | null;
   phone: string | null;
   email: string | null;
   amountCP: string;
@@ -63,7 +62,7 @@ export interface RetailResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
-  additionalContacts: Contact[] | null;
+  additionalContacts: Contact[] | [];
 }
 
 export type Contact = {

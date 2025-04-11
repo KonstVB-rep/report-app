@@ -12,6 +12,7 @@ import {
 import ProjectFormBody from "./ProjectFormBody";
 import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
 import { useMutationUpdateProject } from "../../hooks/mutate";
+import { defaultProjectValues } from "../../model/defaultvaluesForm";
 
 const EditProjectForm = ({
   close,
@@ -20,32 +21,14 @@ const EditProjectForm = ({
   close: Dispatch<SetStateAction<void>>;
   dealId: string;
 }) => {
-  const { data, isPending: isLoading } = useGetProjectById(dealId);
+  const { data, isPending: isLoading } = useGetProjectById(dealId,false);
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
-    defaultValues: {
-      dateRequest: undefined,
-      nameDeal: data?.nameDeal ?? "",
-      nameObject: data?.nameObject ?? "",
-      direction: data?.direction ?? "",
-      deliveryType: data?.deliveryType ?? undefined,
-      dealStatus: data?.dealStatus ?? "",
-      contact: data?.contact ?? "",
-      phone: data?.phone ?? "",
-      email: data?.email ?? "",
-      amountCP: data?.amountCP ?? "0",
-      amountPurchase: data?.amountPurchase ?? "0",
-      amountWork: data?.amountWork ?? "0",
-      delta: data?.delta ?? "0",
-      comments: data?.comments ?? "",
-      plannedDateConnection: undefined,
-      resource: data?.resource ?? "",
-      contacts: data?.additionalContacts ?? [],
-    },
+    defaultValues: defaultProjectValues,
   });
 
-  const { mutateAsync, isPending } = useMutationUpdateProject(dealId, data!.userId, close);
+  const { mutateAsync, isPending } = useMutationUpdateProject(dealId, data?.userId ?? "", close);
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(
@@ -55,7 +38,7 @@ const EditProjectForm = ({
   };
 
   useEffect(() => {
-    if (data) {
+    if (data && !isLoading) {
       form.reset({
         ...data,
         phone: data.phone ?? undefined, 
@@ -73,12 +56,12 @@ const EditProjectForm = ({
         contacts: data.additionalContacts  ?? [],
       });
     }
-  }, [form, data]);
+  }, [data, form, isLoading]);
 
   if (isLoading) return <FormEditSkeleton />;
 
   return (
-    <ProjectFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
+    <ProjectFormBody form={form} onSubmit={onSubmit} isPending={isPending} contactsKey="contacts"/>
   );
 };
 
