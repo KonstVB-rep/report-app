@@ -244,9 +244,9 @@ const RetailFormBody = <T extends FieldValues>({
                       <Input placeholder="Данные контактного лица" {...field} />
                     </FormControl>
 
-                    {form.formState.errors.contact?.message && (
+                    {form.formState.errors.additionalContact?.message && (
                       <FormMessage className="text-red-500">
-                        {form.formState.errors.contact?.message as string}
+                        {form.formState.errors.additionalContact?.message as string}
                       </FormMessage>
                     )}
                   </FormItem>

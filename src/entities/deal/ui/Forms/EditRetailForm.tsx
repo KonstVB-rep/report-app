@@ -44,7 +44,7 @@ const EditRetailForm = ({
     },
   });
 
-  const { mutateAsync, isPending } = useMutationUpdateRetail(dealId,data!.userId, close);
+  const { mutateAsync, isPending } = useMutationUpdateRetail(dealId,data?.userId ?? "", close);
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(
