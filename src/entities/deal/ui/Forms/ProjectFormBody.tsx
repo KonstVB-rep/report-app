@@ -12,8 +12,8 @@ import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import CalendarComponent from "@/shared/ui/Calendar";
 import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import InputNumber from "@/shared/ui/Inputs/InputNumber";
-import PhoneInput from "@/shared/ui/PhoneInput";
-import SelectComponent from "@/shared/ui/SelectComponent";
+import PhoneInput from "@/shared/ui/Inputs/PhoneInput";
+import SelectComponent from "@/shared/ui/SelectForm/SelectComponent";
 import React, { useEffect } from "react";
 import {
   DirectionProjectLabels,
@@ -61,7 +61,6 @@ const ProjectFormBody = <T extends FieldValues>({
   isPending,
   contactsKey,
 }: ProjectFormBodyProps<T>) => {
-  
   const { contacts, setContacts, handleDeleteContact, handleSubmit } =
     useSendDealInfo<T>(onSubmit);
 
@@ -73,7 +72,6 @@ const ProjectFormBody = <T extends FieldValues>({
   });
 
   React.useEffect(() => {
-
     if (!watchedValues) return;
 
     const [amountCP = "0", amountWork = "0", amountPurchase = "0"] =
@@ -239,7 +237,7 @@ const ProjectFormBody = <T extends FieldValues>({
                             DeliveryProjectLabels
                           )}
                           onValueChange={(selected) => {
-                            if (selected){
+                            if (selected) {
                               return form.setValue(
                                 "deliveryType" as Path<T>,
                                 selected as PathValue<T, Path<T>>
@@ -448,9 +446,7 @@ const ProjectFormBody = <T extends FieldValues>({
                                 selected as PathValue<T, Path<T>>
                               );
                             }
-
-                          }
-                          }
+                          }}
                         />
                       </FormControl>
 
@@ -510,7 +506,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   )}
                 />
 
-<FormField
+                <FormField
                   control={form.control}
                   name={"comments" as Path<T>}
                   render={({ field }) => (

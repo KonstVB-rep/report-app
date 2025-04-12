@@ -16,10 +16,12 @@ import useScrollIntoViewBottomTable from "@/shared/hooks/useScrollIntoViewBottom
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
   getRowLink?: (row: T & { id: string }, type: string) => string;
+  isExistActionDeal?: boolean;
 };
 
 const TableComponent = <T extends Record<string, unknown>>({
   table,
+  isExistActionDeal = true
 }: TableComponentProps<T>) => {
 
   const ref = useScrollIntoViewBottomTable(
@@ -39,13 +41,13 @@ const TableComponent = <T extends Record<string, unknown>>({
   
   const renderRow = useCallback((row: Row<T>): ReactNode => {
     return (
-      <ContextRowTable key={row.id} rowData={row.original}>
+      <ContextRowTable key={row.id} rowData={row.original} isExistActionDeal={isExistActionDeal}>
         <TableRow className="tr hover:bg-zinc-600 hover:text-white">
           {renderRowCells(row)}
         </TableRow>
       </ContextRowTable>
     );
-  }, [renderRowCells]);
+  }, [renderRowCells,isExistActionDeal]);
 
   return (
     <Table

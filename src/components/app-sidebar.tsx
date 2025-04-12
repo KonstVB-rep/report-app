@@ -41,7 +41,7 @@ const AppSidebar = () => {
     if (departmentData) {
       setDepartments(departmentData);
     }
-  }, [departmentData]);
+  }, [departmentData, setDepartments]);
 
   const navMainItems = useMemo(() => {
     if (!departments || !departments.length) {

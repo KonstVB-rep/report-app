@@ -38,6 +38,9 @@ export interface ProjectResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+}
+
+export type ProjectResponseWithAdditionalContacts = ProjectResponse & {
   additionalContacts: Contact[] | [];
 }
 
@@ -62,6 +65,9 @@ export interface RetailResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+}
+
+export type RetailResponseWithAdditionalContacts = RetailResponse & {
   additionalContacts: Contact[] | [];
 }
 

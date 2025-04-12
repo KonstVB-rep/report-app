@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import InputEmail from "@/shared/ui/Inputs/InputEmail";
-import PhoneInput from "@/shared/ui/PhoneInput";
+import PhoneInput from "@/shared/ui/Inputs/PhoneInput";
 import { X, Plus } from "lucide-react";
 import { ContactSchema } from "../model/schema";
 import DialogComponent from "@/shared/ui/DialogComponent";
@@ -88,7 +88,11 @@ const ContactDeal = ({ contacts = [], onContactsChange }: ContactDealProps) => {
                   <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                      <Input placeholder="Должность" {...field} value={field.value ?? ''}/>
+                      <Input
+                        placeholder="Должность"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
                     </FormControl>
                     {form.formState.errors.contacts?.[index]?.position
                       ?.message && (
@@ -114,7 +118,7 @@ const ContactDeal = ({ contacts = [], onContactsChange }: ContactDealProps) => {
                         placeholder="Телефон"
                         onAccept={field.onChange}
                         {...field}
-                        value={field.value ?? ''}
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                     {(
@@ -143,7 +147,7 @@ const ContactDeal = ({ contacts = [], onContactsChange }: ContactDealProps) => {
                   <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                      <InputEmail {...field} value={field.value ?? ''}/>
+                      <InputEmail {...field} value={field.value ?? ""} />
                     </FormControl>
                     {(
                       form.formState.errors.contacts?.[

@@ -21,6 +21,7 @@ import { ProjectSchema, RetailSchema } from "../model/schema";
 import { UseFormReturn } from "react-hook-form";
 import { ProjectResponse, RetailResponse } from "../types";
 import { defaultProjectValues, defaultRetailValues } from "../model/defaultvaluesForm";
+import { useRouter } from "next/navigation";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
@@ -29,6 +30,7 @@ export const useDelDeal = (
 ) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
+  const router = useRouter();
   return useMutation({
     mutationFn: async (nealId: string) => {
       if (!authUser?.id) {
@@ -39,6 +41,7 @@ export const useDelDeal = (
     },
     onSuccess: () => {
       closeModalFn();
+      router.back();
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, ownerId],
         exact: true,
@@ -69,7 +72,6 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        // additionalContact: data.additionalContact || "",
         userId,
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
@@ -204,7 +206,7 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
   });
 };
 
-export const useMutationUpdateRetail = (dealId: string, userId: string,close: () => void) => {
+export const useMutationUpdateRetail = (dealId: string, userId: string, close: () => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({

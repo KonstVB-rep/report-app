@@ -4,7 +4,7 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import { handleError } from "@/shared/api/handleError";
 import { DealType, PermissionEnum, Prisma } from "@prisma/client";
-import { Contact, ProjectResponse, RetailResponse } from "../types";
+import { Contact, ProjectResponse, ProjectResponseWithAdditionalContacts, RetailResponse, RetailResponseWithAdditionalContacts } from "../types";
 import prisma from "@/prisma/prisma-client";
 
 const requiredFields = [
@@ -45,7 +45,7 @@ const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
 export const getProjectById = async (
   dealId: string,
   idDealOwner: string
-): Promise<ProjectResponse | null> => {
+): Promise<ProjectResponseWithAdditionalContacts | null> => {
   try {
     const data = await handleAuthorization();
 
@@ -99,7 +99,7 @@ export const getProjectById = async (
 export const getRetailById = async (
   dealId: string,
   idDealOwner: string
-): Promise<RetailResponse | null> => {
+): Promise<RetailResponseWithAdditionalContacts | null> => {
   try {
     const data = await handleAuthorization();
 
@@ -489,7 +489,7 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
 
 export const getProjectsUser = async (
   idDealOwner: string
-): Promise<Omit<ProjectResponse,"additionalContacts">[] | null> => {
+): Promise<ProjectResponse[] | null> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -545,7 +545,7 @@ export const getProjectsUser = async (
 
 export const getRetailsUser = async (
   idDealOwner: string
-): Promise<Omit<RetailResponse,"additionalContacts">[] | null> => {
+): Promise<RetailResponse[] | null> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -594,7 +594,7 @@ export const getRetailsUser = async (
   }
 };
 
-export const getAllProjectsByDepartment = async (): Promise<Omit<ProjectResponse,"additionalContacts">[]
+export const getAllProjectsByDepartment = async (): Promise<ProjectResponse[]
 > => {
   try {
     const { user } = await handleAuthorization();
@@ -638,7 +638,7 @@ export const getAllProjectsByDepartment = async (): Promise<Omit<ProjectResponse
 };
 
 export const getAllRetailsByDepartment = async (): Promise<
-Omit<RetailResponse, "additionalContacts">[]
+RetailResponse[]
 > => {
   try {
     const { user } = await handleAuthorization();

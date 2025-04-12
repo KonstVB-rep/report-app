@@ -9,7 +9,7 @@ const NotFoundDeal = () => {
           Данные по сделке не найдены
         </h1>
         
-        <FileQuestion strokeWidth={1} className="h-[50%] w-[50%] opacity-30" />
+        <FileQuestion strokeWidth={1} className="h-[30%] w-[30%] opacity-30" />
       </div>
     </section>
   );

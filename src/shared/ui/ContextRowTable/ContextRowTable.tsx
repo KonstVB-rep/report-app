@@ -16,11 +16,13 @@ import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;
   rowData: T;
+  isExistActionDeal?: boolean;
 };
 
 const ContextRowTable = <T,>({
   children,
   rowData,
+  isExistActionDeal = true,
 }: ContextMenuTableProps<T>) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
 
@@ -33,7 +35,7 @@ const ContextRowTable = <T,>({
           <ContextMenuContent className="grid gap-1 bg-background">
             <ContextMenuItem className="flex gap-2 p-0">
               <Link
-                className="flex w-full gap-2 items-center justify-start p-2"
+                className="flex w-full items-center justify-start gap-2 p-2"
                 href={`/deal/${(
                   rowData as Project | Retail
                 ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
@@ -42,19 +44,23 @@ const ContextRowTable = <T,>({
               </Link>
             </ContextMenuItem>
 
-            <ContextMenuItem
-              onClick={() => setOpenModal("edit")}
-              className="flex gap-2 cursor-pointer"
-            >
-              <FilePenLine size="14" /> Редактировать
-            </ContextMenuItem>
+            {isExistActionDeal && (
+              <>
+                <ContextMenuItem
+                  onClick={() => setOpenModal("edit")}
+                  className="flex cursor-pointer gap-2"
+                >
+                  <FilePenLine size="14" /> Редактировать
+                </ContextMenuItem>
 
-            <ContextMenuItem
-              onClick={() => setOpenModal("delete")}
-              className="flex gap-2 cursor-pointer"
-            >
-              <Trash2 size="14" /> Удалить
-            </ContextMenuItem>
+                <ContextMenuItem
+                  onClick={() => setOpenModal("delete")}
+                  className="flex cursor-pointer gap-2"
+                >
+                  <Trash2 size="14" /> Удалить
+                </ContextMenuItem>
+              </>
+            )}
           </ContextMenuContent>
         </ContextMenu>
 

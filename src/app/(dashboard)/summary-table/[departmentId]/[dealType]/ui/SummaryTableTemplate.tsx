@@ -5,6 +5,7 @@ import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
 import dynamic from "next/dynamic";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
+import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable";
 
 const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   ssr: false,
@@ -31,17 +32,14 @@ const SummaryTableTemplate = <T extends { id: string }>({
   return (
     <DealTableTemplate>
       {isError && (
-        <div className="grid h-full place-items-center p-4">
-          <h1 className="rounded-md bg-muted p-4 text-center text-xl">
-            {error?.message}
-          </h1>
-        </div>
+        <ErrorMessageTable message={error?.message} />
       )}
       <LinkToUserTable />
       <DataTable
         columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
         data={data as Record<string, unknown>[]}
         getRowLink={getRowLink as (row: Record<string, unknown>, type: string) => string}
+        isExistActionDeal={false}
         type={type}
       />
     </DealTableTemplate>

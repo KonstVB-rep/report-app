@@ -47,7 +47,7 @@ const SummaryTableRetail = () => {
   return (
     <SummaryTableTemplate
       columns={columnsDataRetailSummary}
-      data={(deals as RetailResponse[]) ?? []}
+      data={deals ?? []}
       getRowLink={getRowLink}
       type={DealType.RETAIL}
       isError={isError}

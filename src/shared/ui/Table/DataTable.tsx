@@ -36,16 +36,15 @@ const includedColumns = [
   "contact",
   "phone",
   "email",
-  // "additionalContact",
   "comments",
 ];
 
-// Разбор строки URL в объект скрытых колонок
 interface DataTableProps<TData, TValue = unknown> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   getRowLink?: (row: TData & { id: string }, type: string) => string;
   type: keyof typeof DealTypeLabels;
+  isExistActionDeal?: boolean;
 }
 
 const DataTable = <TData extends Record<string, unknown>, TValue>({
@@ -53,6 +52,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   data,
   getRowLink,
   type,
+  isExistActionDeal = true,
 }: DataTableProps<TData, TValue>) => {
   const searchParams = useSearchParams();
   const { dealType } = useParams();
@@ -207,7 +207,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
       </div>
 
       {data.length ? (
-        <TableComponent table={table} getRowLink={getRowLink} />
+        <TableComponent table={table} getRowLink={getRowLink} isExistActionDeal={isExistActionDeal} />
       ) : (
         <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
           Проекты не найдены

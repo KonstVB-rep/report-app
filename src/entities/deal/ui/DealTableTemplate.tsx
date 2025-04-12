@@ -3,6 +3,7 @@ import React from "react";
 import DealsSkeleton from "./DealsSkeleton";
 import { useGetUser } from "@/entities/user/hooks/query";
 import { PermissionEnum } from "@prisma/client";
+import ErrorMessageTable from "./ErrorMessageTable";
 
 const DealTableTemplate = ({
   children,
@@ -22,11 +23,7 @@ const DealTableTemplate = ({
           {children}
         </div>
       ) : (
-        <div className="grid h-full place-items-center">
-          <h1 className="rounded-md bg-muted p-4 text-center text-xl">
-            {error?.message}
-          </h1>
-        </div>
+       <ErrorMessageTable message={error?.message} />
       )}
     </section>
   );

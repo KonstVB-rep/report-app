@@ -214,7 +214,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
         </SidebarMenuItem>
       </Collapsible>
     );
-  },[departmentId]);
+  },[dealType, departmentId, open, pathname, router, userId]);
 
   return (
     <SidebarGroup className="grid h-full grid-rows-[1fr_auto] gap-4">

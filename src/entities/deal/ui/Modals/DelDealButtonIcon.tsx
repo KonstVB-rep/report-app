@@ -15,7 +15,7 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const { data: deal } = useGetDealById(id, type);
   const [open, setOpen] = React.useState(false);
   const { mutate: delDeal, isPending } = useDelDeal(
-    close,
+    () => setOpen(false),
     type,
     deal?.userId as string
   );
@@ -26,6 +26,7 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
       onOpenChange={setOpen}
       dialogTitle="Удалить сделку"
       contentTooltip="Удалить"
+      classNameContent="sm:max-w-[400px]"
       trigger={
         <Button size="icon" variant={"destructive"}>
           <Trash2 />

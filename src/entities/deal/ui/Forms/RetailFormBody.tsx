@@ -13,14 +13,14 @@ import { Input } from "@/components/ui/input";
 
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers";
-import SelectComponent from "@/shared/ui/SelectComponent";
+import SelectComponent from "@/shared/ui/SelectForm/SelectComponent";
 import CalendarComponent from "@/shared/ui/Calendar";
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../../lib/constants";
-import PhoneInput from "@/shared/ui/PhoneInput";
+import PhoneInput from "@/shared/ui/Inputs/PhoneInput";
 import InputNumber from "@/shared/ui/Inputs/InputNumber";
 import InputEmail from "@/shared/ui/Inputs/InputEmail";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
@@ -42,7 +42,6 @@ const RetailFormBody = <T extends FieldValues>({
   isPending,
   contactsKey,
 }: RetailFormBodyProps<T>) => {
-
   const { contacts, setContacts, handleDeleteContact, handleSubmit } =
     useSendDealInfo<T>(onSubmit);
 
@@ -170,15 +169,14 @@ const RetailFormBody = <T extends FieldValues>({
                           {...field}
                           placeholder="Выберите тип поставки"
                           options={transformObjValueToArr(DeliveryRetailLabels)}
-                          onValueChange={(selected) =>{
-                              if(selected) {
-                                form.setValue(
-                                  "deliveryType" as Path<T>,
-                                  selected as PathValue<T, Path<T>>
-                                )
-                              }
+                          onValueChange={(selected) => {
+                            if (selected) {
+                              form.setValue(
+                                "deliveryType" as Path<T>,
+                                selected as PathValue<T, Path<T>>
+                              );
                             }
-                          }
+                          }}
                         />
                       </FormControl>
 
@@ -236,11 +234,10 @@ const RetailFormBody = <T extends FieldValues>({
                     </FormItem>
                   )}
                 />
-
               </div>
 
               <div className="flex flex-col gap-1">
-              <FormField
+                <FormField
                   control={form.control}
                   name={"email" as Path<T>}
                   render={({ field }) => (
@@ -320,17 +317,14 @@ const RetailFormBody = <T extends FieldValues>({
                           placeholder="Выберите статус КП"
                           {...field}
                           options={transformObjValueToArr(StatusRetailLabels)}
-                          onValueChange={(selected) =>{
-                            if(selected) {
+                          onValueChange={(selected) => {
+                            if (selected) {
                               form.setValue(
                                 "dealStatus" as Path<T>,
                                 selected as PathValue<T, Path<T>>
-                              )
+                              );
                             }
-
-                          }
-                           
-                          }
+                          }}
                           required
                         />
                       </FormControl>
@@ -366,7 +360,7 @@ const RetailFormBody = <T extends FieldValues>({
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name={"resource" as Path<T>}
@@ -391,7 +385,7 @@ const RetailFormBody = <T extends FieldValues>({
                   )}
                 />
 
-<FormField
+                <FormField
                   control={form.control}
                   name={"comments" as Path<T>}
                   render={({ field }) => (
@@ -425,12 +419,12 @@ const RetailFormBody = <T extends FieldValues>({
           </div>
         </form>
         <ContactDeal onContactsChange={setContacts} contacts={contacts} />
-          {contactsKey && (
-            <ContactsList
-              contacts={contacts as T[typeof contactsKey]}
-              handleDeleteContact={handleDeleteContact}
-            />
-          )}
+        {contactsKey && (
+          <ContactsList
+            contacts={contacts as T[typeof contactsKey]}
+            handleDeleteContact={handleDeleteContact}
+          />
+        )}
       </Form>
     </div>
   );

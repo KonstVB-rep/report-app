@@ -32,7 +32,7 @@ const DelDealContextMenu = ({
   );
 
   return (
-    <DialogContent className="sm:max-w-[425px]">
+    <DialogContent className="sm:max-w-[400px]">
       <DialogHeader>
         <DialogTitle>Удалить проект</DialogTitle>
         <DialogDescription />

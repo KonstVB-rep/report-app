@@ -1,0 +1,48 @@
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+
+import React from "react";
+import { FieldValues } from "react-hook-form";
+import PhoneInput from "../PhoneInput";
+import { InputFormProps } from "../type";
+
+
+const InputPhoneForm = <T extends FieldValues>({
+  name,
+  label,
+  control,
+  errorMessage,
+  ...rest
+}: InputFormProps<T>) => {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <PhoneInput
+              placeholder="Введите телефон пользователя"
+              onAccept={field.onChange}
+              required={true}
+              {...field}
+              {...rest}
+              value={field.value as string}
+            />
+          </FormControl>
+          {errorMessage && (
+            <FormMessage className="text-red-500">{errorMessage}</FormMessage>
+          )}
+        </FormItem>
+      )}
+    />
+  );
+};
+
+export default InputPhoneForm;

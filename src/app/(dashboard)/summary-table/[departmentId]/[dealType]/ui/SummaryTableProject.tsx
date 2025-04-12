@@ -47,7 +47,7 @@ const SummaryTableProject = () => {
   return (
     <SummaryTableTemplate
       columns={columnsDataProjectSummary}
-      data={(deals as ProjectResponse[]) ?? []}
+      data={deals ?? []}
       getRowLink={getRowLink}
       type={DealType.PROJECT}
       isError={isError}

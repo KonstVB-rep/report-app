@@ -9,22 +9,24 @@ import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
 import { z } from "zod";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  // FormControl,
+  // FormField,
+  // FormItem,
+  // FormLabel,
+  // FormMessage,
 } from "./ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/entities/user/ui/Toast";
-import InputEmail from "@/shared/ui/Inputs/InputEmail";
-import InputPassword from "@/shared/ui/Inputs/InputPassword";
+// import InputEmail from "@/shared/ui/Inputs/InputEmail";
+// import InputPassword from "@/shared/ui/Inputs/InputPassword";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
+import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
+import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 
 export const loginFormSchema = z.object({
   email: z.string().email(),
@@ -44,13 +46,12 @@ export function LoginForm({
   });
 
   const [state, formAction] = useActionState(login, undefined);
-  const { setAuthUser, setIsAuth, isAuth, authUser } =
-    useStoreUser();
+  const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
   const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const { setDepartments } = useStoreDepartment();
 
-  const {data: departmentData} = useGetDepartmentsWithUsers(isAuth);
+  const { data: departmentData } = useGetDepartmentsWithUsers(isAuth);
 
   const onSubmit = (formData: FormData) => {
     const isValidData = loginFormSchema.parse(Object.fromEntries(formData));
@@ -66,7 +67,7 @@ export function LoginForm({
     const isRedirected = document.cookie.includes("auth_redirected=true");
 
     if (isRedirected) {
-      resetAllStores()
+      resetAllStores();
       document.cookie = "auth_redirected=; Max-Age=0; path=/"; // Удаляем флаг из куки
     } else if (state && state.data) {
       setAuthUser(state.data);
@@ -83,12 +84,7 @@ export function LoginForm({
       setDepartments(departmentData);
       setShouldRedirect(true);
     }
-  }, [
-    isAuth,
-    departmentData,
-    setDepartments,
-    setShouldRedirect,
-  ]);
+  }, [isAuth, departmentData, setDepartments, setShouldRedirect]);
 
   if (shouldRedirect) {
     redirect(`/table/${authUser?.departmentId}/projects/${authUser?.id}`);
@@ -103,48 +99,31 @@ export function LoginForm({
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Добро пожаловать</h1>
+                  
                   <p className="text-balance text-muted-foreground">
                     Войдите в свою учетную запись
                   </p>
                 </div>
-                <FormField
-                  control={form.control}
+
+                <InputTextForm
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <InputEmail
-                          {...field}
-                          required
-                          className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
-                          autoComplete="username"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
+                  label="Email"
                   control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <InputPassword
-                          {...field}
-                          minLength={6}
-                          maxLength={30}
-                          className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
-                          autoComplete="current-password"
-                          required
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  errorMessage={form.formState.errors.email?.message}
+                  type="email"
+                  placeholder="Введите email"
+                  required
                 />
+
+                <InputFormPassword
+                  name="password"
+                  label="Пароль"
+                  control={form.control}
+                  errorMessage={form.formState.errors.password?.message}
+                  autoComplete="current-password"
+                  required
+                />
+
                 <SubmitFormActionBtn title="Войти" />
               </div>
             </form>

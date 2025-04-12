@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { SquarePlus } from "lucide-react";
-import dynamic from "next/dynamic"; // Динамический импорт
+import dynamic from "next/dynamic";
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 import { PermissionEnum } from "@prisma/client";
 import DialogComponent from "@/shared/ui/DialogComponent";

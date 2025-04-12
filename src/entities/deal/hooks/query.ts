@@ -9,7 +9,7 @@ import {
   getRetailsUser,
 } from "../api";
 import { TOAST } from "@/entities/user/ui/Toast";
-import { ProjectResponse, RetailResponse } from "../types";
+import { ProjectResponse, ProjectResponseWithAdditionalContacts, RetailResponse, RetailResponseWithAdditionalContacts } from "../types";
 import { DealType } from "@prisma/client";
 import {
   getAllProjectsByDepartmentQuery,
@@ -20,15 +20,13 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
-  const cachedDeals = queryClient.getQueryData<ProjectResponse[]>([
+  const cachedDeals = queryClient.getQueryData<ProjectResponseWithAdditionalContacts[]>([
     "projects",
     authUser?.id,
   ]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
-console.log(cachedDeal, "cachedDeal");
-
-  return useQuery<ProjectResponse | undefined, Error>({
+  return useQuery<ProjectResponseWithAdditionalContacts | undefined, Error>({
     queryKey: ["project", dealId],
     queryFn: async () => {
       try {
@@ -53,13 +51,13 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
-  const cachedDeals = queryClient.getQueryData<RetailResponse[]>([
+  const cachedDeals = queryClient.getQueryData<RetailResponseWithAdditionalContacts[]>([
     "retails",
     authUser?.id,
   ]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
-  return useQuery<RetailResponse | undefined, Error>({
+  return useQuery<RetailResponseWithAdditionalContacts | undefined, Error>({
     queryKey: ["retail", dealId],
     queryFn: async () => {
       try {
