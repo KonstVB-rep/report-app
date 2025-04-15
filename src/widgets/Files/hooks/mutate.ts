@@ -31,6 +31,8 @@ export const useUploadFileYdxDisk = () => {
         queryKey: ["get-deal-files", userId, dealId, dealType],
       });
       queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] });
+
+      queryClient.invalidateQueries({queryKey:[dealType.toLowerCase(), dealId]});
     },
     onError: (error) => {
       console.log(error);
@@ -84,6 +86,8 @@ export const useDeleteFiles = (
       });
 
       queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] });
+
+      queryClient.invalidateQueries({queryKey:[dealType.toLowerCase(), dealId]});
 
       handleCloseDialog?.();
 
