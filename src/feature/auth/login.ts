@@ -55,7 +55,6 @@ export const login = async (prevState: unknown, formData: FormData) => {
     });
 
     if (!lastLoginDate) {
-      // Если записи нет, создаем новую
       await prisma.userLogin.create({
         data: {
           userId: user.id,
@@ -63,7 +62,6 @@ export const login = async (prevState: unknown, formData: FormData) => {
         },
       });
     } else {
-      // Если запись уже есть, обновляем `loginAt`
       await prisma.userLogin.update({
         where: { id: lastLoginDate.id },
         data: { loginAt: new Date() },

@@ -8,8 +8,6 @@ import {
   StatusRetail,
 } from "@prisma/client";
 
-// import { DealTypeLabels, EquipmentTypeEnum } from "../lib/constants";
-
 export type DirectionType = DirectionProject;
 
 export type DeliveryType = DeliveryProject;

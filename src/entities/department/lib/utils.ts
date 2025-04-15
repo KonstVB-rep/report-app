@@ -24,28 +24,3 @@ export const formattedArr = <T extends Dept>(
     }),
   }));
 };
-
-//   export const formattedArr = <T extends Dept>(arr: T[]): DeptFormatted[] | null => {
-//     if (!arr || arr.length === 0) return null;
-
-//     const response: DeptFormatted[] = [];
-
-//     for (let i = 0; i < arr.length; i++) {
-//       const dept = arr[i];
-
-//       if (!dept) continue;
-
-//       const innerObj: DeptFormatted = {};
-
-//       innerObj[`${dept.id}`] = {
-//         name: dept.name,
-//         users: dept.users.map((user) => {
-//             return {[user.id]: user.username};
-//         })
-//       };
-
-//       response.push(innerObj);
-//     }
-
-//     return response.length ? response : null;
-//   };

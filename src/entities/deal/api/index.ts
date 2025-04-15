@@ -172,18 +172,6 @@ export const createProject = async (data: ProjectWithoutId) => {
       ...dealData
     } = data;
 
-    // const existingProject = await prisma.project.findUnique({
-    //   where: { nameObject },
-    // });
-
-    // if (existingProject) {
-    //   return {
-    //     data: null,
-    //     message: "Проект с таким названием уже существует",
-    //     error: true,
-    //   };
-    // }
-
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
     const safeAmountWork = new Prisma.Decimal(amountWork as string);
@@ -231,18 +219,6 @@ export const createRetail = async (data: RetailWithoutId) => {
     const { userId } = await checkAuthAndDataFill(data);
 
     const { amountCP, delta, contacts, ...dealData } = data;
-
-    // const existingProject = await prisma.project.findUnique({
-    //   where: { nameObject },
-    // });
-
-    // if (existingProject) {
-    //   return {
-    //     data: null,
-    //     message: "Проект с таким названием уже существует",
-    //     error: true,
-    //   };
-    // }
 
     const safeamountCP = new Prisma.Decimal(amountCP as string);
     const safeDelta = new Prisma.Decimal(delta as string);
@@ -505,22 +481,6 @@ export const getProjectsUser = async (
       return handleError("Недостаточно данных");
     }
 
-    // if (userId === idProjectOwner) {
-    //   const deals = await prisma.project.findMany({
-    //     where: { userId: idProjectOwner },
-    //   });
-
-    //   return deals.length
-    //   ? deals.map((deal) => ({
-    //       ...deal,
-    //       amountCP: deal.amountCP?.toString() || "",
-    //       amountWork: deal.amountWork?.toString() || "",
-    //       amountPurchase: deal.amountPurchase?.toString()||  "",
-    //       delta: deal.delta?.toString() || "",
-    //     }))
-    //   : [];
-    // }
-
     const isOwner = userId === idDealOwner;
 
     if (!isOwner) {
@@ -561,18 +521,6 @@ export const getRetailsUser = async (
       return handleError("Недостаточно данных");
     }
 
-    // if (userId === idDealOwner) {
-    //   const deals = await prisma.retail.findMany({
-    //     where: { userId: idDealOwner },
-    //   });
-
-    //   return deals.length
-    //   ? deals.map((deal) => ({
-    //     ...deal,
-    //     amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-    //     delta: deal.delta ? deal.delta.toString() : "",
-    //   })): [];
-    // }
 
     const isOwner = userId === idDealOwner;
 

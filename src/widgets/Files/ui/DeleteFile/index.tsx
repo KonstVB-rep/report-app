@@ -74,6 +74,7 @@ const DeleteFile = ({
               <p className="text-center text-lg">
                 Вы действительно хотите удалить выбранные файлы?
               </p>
+
               <div className="grid max-h-[300] gap-1 overflow-y-auto">
                 {[...selectedFilesForDelete].map((file) => (
                   <p
@@ -81,6 +82,7 @@ const DeleteFile = ({
                     className="flex items-center justify-between break-all rounded-md bg-muted p-2 text-sm"
                   >
                     <span>{file.name}</span>
+                    
                     <Button
                       type="button"
                       variant="destructive"

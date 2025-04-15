@@ -11,7 +11,6 @@ export const useUploadFileYdxDisk = () => {
   const queryClient = useQueryClient();
   const { isAuth } = useStoreUser();
 
-  // Мутация для загрузки файла на Яндекс.Диск
   return useMutation({
     mutationFn: async (formData: FormData) => {
       if (!isAuth) throw new Error("Пользователь не авторизован");
@@ -79,7 +78,6 @@ export const useDeleteFiles = (
 
       handleCloseDialog();
 
-      // Можно взять userId и dealId из первого успешного ответа
       const { userId, dealId, dealType } = data[0];
 
       queryClient.invalidateQueries({

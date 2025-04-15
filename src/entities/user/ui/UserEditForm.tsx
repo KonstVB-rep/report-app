@@ -121,8 +121,8 @@ const UserEditForm = ({
               label="Пароль"
               control={form.control}
               errorMessage={form.formState.errors.user_password?.message}
-              className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
-              placeholder="Введите пароль для пользователя"
+              className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
+              placeholder="Введите пароль"
             />
 
             <InputTextForm

@@ -25,7 +25,9 @@ const UserCard = ({
     <div className={`grid gap-2 p-3 ${styles} justify-items-center text-sm`}>
       <div className="grid w-full justify-items-center gap-2 p-2">
         <CircleUserRound size="80" />
+
         <p className="capitalize">{username.split(" ").join(" ")}</p>
+        
         <p className="first-letter:capitalize">{position}</p>
       </div>
       <div className="grid grid-cols-3 gap-1 overflow-hidden rounded-md">

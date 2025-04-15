@@ -28,7 +28,7 @@ const InputFormPassword = <T extends FieldValues>({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <InputPassword
-              placeholder="Введите пароль для пользователя"
+              placeholder="Введите пароль"
               {...field}
               minLength={6}
               maxLength={30}

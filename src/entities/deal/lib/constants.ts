@@ -159,16 +159,6 @@ export const DepartmentLabels: Record<keyof typeof DepartmentEnum, string> = {
   TECHNICAL: "Технический отдел",
 } as const;
 
-export const EquipmentTypeLabels: Record<
-  keyof typeof EquipmentTypeEnum,
-  string
-> = {
-  BARRIER: "Шлагбаум",
-  GUARD: "Ограждения",
-  SAFETY_ISLAND: "Островок безопасности",
-  ARROW: "Стрела шлагбаума",
-} as const;
-
 export const LABELS = {
   RETAIL: {
     DIRECTION: DirectionRetailLabels,

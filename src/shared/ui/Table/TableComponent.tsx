@@ -92,6 +92,7 @@ const TableComponent = <T extends Record<string, unknown>>({
                         header.getContext()
                       )}
                     </span>
+                    
                     {header.column.getCanSort() && (
                       <span>
                         {header.column.getIsSorted() === "asc" ? (

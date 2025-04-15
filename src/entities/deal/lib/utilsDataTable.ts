@@ -55,7 +55,6 @@ export const utilsDataTable = {
     return Object.values(this.reduceSearchParams(list, includedColumns));
   },
 
-  // Преобразование скрытых колонок в строку URL
   transformParamsListToSFiltersObj(list: string, includedColumns: string[]) {
     return Object.keys(this.reduceSearchParams(list, includedColumns));
   },

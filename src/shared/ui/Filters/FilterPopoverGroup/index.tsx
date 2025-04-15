@@ -7,11 +7,11 @@ import FilterPopover from "../FilterPopover";
 export type OptionGroup = {
   label: string;
   columnId: string;
-  options: Record<string, string>; // ключи и значения из передаваемого объекта
+  options: Record<string, string>; 
 };
 
 type FilterPopoverGroupProps = {
-  options: OptionGroup[]; // Массив групп опций
+  options: OptionGroup[];
   columnFilters: ColumnFiltersState;
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
 };

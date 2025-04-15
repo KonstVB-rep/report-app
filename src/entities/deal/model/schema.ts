@@ -49,8 +49,7 @@ export const ProjectFormSchema = z.object({
     .nullable(),
   contact: z.string(),
   phone: z.string().optional(),
-  email: z.string().email().or(z.literal("")), // ✅ Email необязателен
-  // additionalContact: z.string().optional(),
+  email: z.string().email().or(z.literal("")),
 
   amountCP: z.string().optional(),
   amountWork: z.string().optional(),
@@ -68,17 +67,6 @@ export const ProjectFormSchema = z.object({
   resource: z.string().optional(),
   contacts: z.array(SingleContactSchema),
 });
-// refine((data) => {
-//   // Сравниваем lastDateConnection и plannedDateConnection
-//   const lastDate = new Date(data.lastDateConnection);
-//   const plannedDate = new Date(data.plannedDateConnection);
-
-//   // Проверяем, что lastDateConnection не больше plannedDateConnection
-//   return lastDate <= plannedDate;
-// }, {
-//   message: "Дата последнего контакта не может быть позже планируемой даты",
-//   path: ["lastDateConnection"], // Указываем поле, к которому относится ошибка
-// });
 
 export const RetailFormSchema = z.object({
   dateRequest: z.preprocess(

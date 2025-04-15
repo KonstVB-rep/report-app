@@ -56,8 +56,10 @@ export default function FileUploadForm({
         <div className="grid gap-4">
           <div className="grid w-full place-items-center gap-2 p-1">
             <p>Диск</p>
+
             <div className="grid gap-2">
               <Progress value={diskOccupancy} color="orange" />
+
               <span className="text-xs">
                 {(ydxDiskInfo?.used_space / 1024 / 1024).toFixed(2)} MB /
                 {(ydxDiskInfo?.total_space / 1024 / 1024).toFixed(2)} MB
@@ -75,6 +77,7 @@ export default function FileUploadForm({
             >
               <Upload className="h-10 w-10 cursor-pointer" />
             </div>
+
             {files && files.length > 0 ? (
               <div className="grid max-h-48 gap-2 overflow-auto">
                 {files.map((file, idx) => (
@@ -92,7 +95,9 @@ export default function FileUploadForm({
                     >
                       <X />
                     </Button>
+
                     <p className="break-all text-sm">Имя: {file.name}</p>
+
                     <p className="text-xs text-muted-foreground">
                       Размер: {(file.size / 1024 / 1024).toFixed(3)} MB
                     </p>
@@ -127,6 +132,7 @@ export default function FileUploadForm({
                       </span>
                     )}
                   </Button>
+                  
                   <Button
                     variant="destructive"
                     type="reset"

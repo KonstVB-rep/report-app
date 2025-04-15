@@ -33,7 +33,7 @@ const InputNumberForm = <T extends FieldValues>({
                   ? field.value
                   : String(field.value ?? "")
               }
-              onChange={(val) => field.onChange(val)} // оборачиваем!
+              onChange={(val) => field.onChange(val)}
               onBlur={field.onBlur}
               placeholder={rest.placeholder}
               disabled={rest.disabled}

@@ -159,7 +159,7 @@ const RetailFormBody = <T extends FieldValues>({
                   label="Email"
                   control={form.control}
                   errorMessage={form.formState.errors.email?.message}
-                  className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
+                  className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
                   type="email"
                 />
 

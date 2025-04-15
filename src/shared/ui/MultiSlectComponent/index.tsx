@@ -45,13 +45,6 @@ const MultiSelectComponent = ({
       <MultiSelectContent>
         <MultiSelectList>
           {renderMultiSelectOptions(options)}
-          {/* {options.map((option) => {
-            return (
-              <MultiSelectItem key={option.value} value={option.value}>
-                {option.label}
-              </MultiSelectItem>
-            );
-          })} */}
         </MultiSelectList>
       </MultiSelectContent>
     </MultiSelect>

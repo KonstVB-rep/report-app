@@ -51,6 +51,7 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
           {"Колонки показать/скрыть"}
         </Button>
       </PopoverTrigger>
+      
       <PopoverContent className="w-fit px-1 pb-2">
         <div className="grid gap-4">
           <div className="grid grid-cols-1 items-center gap-1">
@@ -64,6 +65,7 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
                     checked={data.getState().columnVisibility[col.id] ?? true}
                     onCheckedChange={(value) => col.toggleVisibility(!!value)}
                   />
+
                   <label htmlFor={col.id} className="cursor-pointer">
                     {col.columnDef.header as string}
                   </label>

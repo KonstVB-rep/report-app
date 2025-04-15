@@ -50,7 +50,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
       } catch (error) {
         console.error(error, "❌ Ошибка в useGetProjectById");
         TOAST.ERROR((error as Error).message);
-        throw error; // обязательно пробрасываем, иначе React Query думает, что всё ок
+        throw error;
       }
     },
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false

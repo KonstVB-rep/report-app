@@ -23,7 +23,7 @@ export const generateTokens = async (
   // Генерация refresh token
   const refreshToken = await new SignJWT({ userId, deratmentId })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("7d") // 7 дней
+    .setExpirationTime("7d")
     .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)); // Подпись токена с секретом
 
   const cookiesStore = await cookies();

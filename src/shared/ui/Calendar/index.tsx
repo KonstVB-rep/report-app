@@ -54,7 +54,6 @@ const CalendarComponent = ({
           selected={selectedDate}
           onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
           required={required}
-          // disabled={(date) => date.getTime() < new Date().setHours(0, 0, 0, 0)}
           locale={ru}
         />
       </PopoverContent>

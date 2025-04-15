@@ -27,7 +27,6 @@ export const useGetHrefFilesDealFromDB = (
 
         const { userId, dealId, dealType } = data;
 
-        // Получаем все файлы сделки из базы данных
         const files = await getAllFilesDealFromDb(userId, dealId, dealType);
 
         return files;

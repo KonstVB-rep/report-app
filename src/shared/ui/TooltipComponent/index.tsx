@@ -17,6 +17,7 @@ const TooltipComponent = ({ children, content }: TooltipComponent) => {
     <TooltipProvider delayDuration={150}>
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
+        
         <TooltipContent>
           <p>{content}</p>
         </TooltipContent>

@@ -76,6 +76,7 @@ const FileList = ({ data }: FileListProps) => {
         <p className="flex items-center justify-center gap-2 p-2 text-red-600">
           {" "}
           <FileWarning size="40" strokeWidth={1} className="text-red-600" />
+
           <span className="text-lg">Ошибка загрузки файлов</span>
         </p>
       </IntoDealItem>
@@ -128,6 +129,7 @@ const FileList = ({ data }: FileListProps) => {
                 className="absolute inset-0 z-10 hidden h-full w-full items-center justify-center group-hover:flex group-focus-visible:flex"
                 {...file}
               />
+
               <input
                 type="checkbox"
                 id={file.name}
@@ -135,6 +137,7 @@ const FileList = ({ data }: FileListProps) => {
                 checked={selectedFiles.has(file.name)}
                 className="absolute right-1 top-1 z-[11] h-5 w-5 cursor-pointer accent-blue-500"
               />
+              
               <span>{selectedFiles.has(file.name)}</span>
             </li>
           );

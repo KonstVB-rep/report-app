@@ -17,14 +17,12 @@ type SelectFormFieldProps<T extends FieldValues> = {
   control: Control<T>;
   errorMessage?: string;
   onValueChange?: (value: string) => void | undefined;
-  // option: [[label: string, value: string]];
 } & React.ComponentProps<typeof SelectComponent>;
 
 const SelectFormField = <T extends FieldValues>({
   name,
   label,
   control,
-  // option,
   onValueChange,
   errorMessage,
   ...rest
@@ -36,6 +34,7 @@ const SelectFormField = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
+
           <FormControl>
             <SelectComponent
               value={field.value || ""}
@@ -43,6 +42,7 @@ const SelectFormField = <T extends FieldValues>({
               {...rest}
             />
           </FormControl>
+          
           {errorMessage && (
             <FormMessage className="text-red-500">{errorMessage}</FormMessage>
           )}
