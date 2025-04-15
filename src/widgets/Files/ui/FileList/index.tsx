@@ -12,6 +12,7 @@ import DeleteFile from "../DeleteFile";
 import DownLoadFile from "../DownLoadFile";
 import SkeletonFiles from "../SkeletonFiles";
 import iconsTypeFile from "./iconsTypeFile";
+import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
 
 type FileListProps = {
   data: {
@@ -76,7 +77,6 @@ const FileList = ({ data }: FileListProps) => {
         <p className="flex items-center justify-center gap-2 p-2 text-red-600">
           {" "}
           <FileWarning size="40" strokeWidth={1} className="text-red-600" />
-
           <span className="text-lg">Ошибка загрузки файлов</span>
         </p>
       </IntoDealItem>
@@ -107,6 +107,8 @@ const FileList = ({ data }: FileListProps) => {
 
           const anotherFormat = !isImg && !isExcel && !isPdf && !isText;
 
+          const fileName = getFileNameWithoutUuid(file.name);
+
           return (
             <li
               tabIndex={0}
@@ -121,7 +123,7 @@ const FileList = ({ data }: FileListProps) => {
                 {anotherFormat && iconsTypeFile["default"]()}
               </p>
 
-              <p className="truncate text-xs">{file?.name}</p>
+              <p className="truncate text-xs">{fileName}</p>
 
               <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
 
@@ -137,7 +139,7 @@ const FileList = ({ data }: FileListProps) => {
                 checked={selectedFiles.has(file.name)}
                 className="absolute right-1 top-1 z-[11] h-5 w-5 cursor-pointer accent-blue-500"
               />
-              
+
               <span>{selectedFiles.has(file.name)}</span>
             </li>
           );

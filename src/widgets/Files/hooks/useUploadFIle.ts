@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 
 import { useUploadFileYdxDisk } from "./mutate";
 import { useGetInfoYandexDisk } from "./query";
+import { v4 as uuidv4 } from "uuid";
 
 const formingDataFiles = (
   files: File[] | FileList,
@@ -18,7 +19,7 @@ const formingDataFiles = (
     const extIndex = file.name.lastIndexOf(".");
     const formatFile = file.name.slice(extIndex);
     const fileNameWithoutFormat = file.name.slice(0, extIndex);
-    const uniqueFileName = `${fileNameWithoutFormat}-${Date.now()}${formatFile}`;
+    const uniqueFileName = `${fileNameWithoutFormat}_${uuidv4()}${formatFile}`;
 
     formData.append("files", file, uniqueFileName);
   });

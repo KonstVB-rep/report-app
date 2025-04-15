@@ -1,18 +1,8 @@
 import { toast } from "sonner";
 
-const errorMessage: Record<string, string> = {
-  "Network Error": "Ошибка сети",
-  "Failed to fetch": "Не удалось выполнить запрос",
-};
-
-const errorHandler = (message: string) =>
-  toast.error(errorMessage[message] || message);
-
 export const TOAST = {
-  ERROR: (message: string) => {
-    const errorMessage = errorHandler(message) || message;
-
-    return toast.error(errorMessage, {
+  ERROR: (message: string) => 
+toast.error(message, {
       duration: 3000,
       icon: "",
       position: "top-center",
@@ -25,8 +15,7 @@ export const TOAST = {
         maxWidth: "fit-content",
         minWidth: "12rem",
       },
-    });
-  },
+    }),
   SUCCESS: (message: string) =>
     toast.success(message, {
       duration: 3000,
@@ -54,10 +43,8 @@ export const TOAST = {
         },
       },
       error: (err) => {
-        const errorMessage = errorHandler(err.message);
-
         return {
-          message: errorMessage || "Произошла ошибка",
+          message: err.message || "Произошла ошибка",
           style: {
             border: "1px solid oklch(0.577 0.245 27.325)",
             borderRadius: "30px",

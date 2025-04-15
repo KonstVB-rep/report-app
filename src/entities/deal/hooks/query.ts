@@ -48,7 +48,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
 
         return deal;
       } catch (error) {
-        console.error(error, "❌ Ошибка в useGetProjectById");
+        console.error((error as Error).message, "❌ Ошибка в useGetProjectById");
         TOAST.ERROR((error as Error).message);
         throw error;
       }
@@ -84,7 +84,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
 
         return deal;
       } catch (error) {
-        console.error(error, "❌ Ошибка в useGetProjectById");
+        console.error(error, "❌ Ошибка в useGetRetailById");
         TOAST.ERROR((error as Error).message);
         throw error; // обязательно пробрасываем, иначе React Query думает, что всё ок
       }

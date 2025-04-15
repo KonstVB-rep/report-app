@@ -33,6 +33,7 @@ export const useUploadFileYdxDisk = () => {
       queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] });
     },
     onError: (error) => {
+      console.log(error);
       TOAST.ERROR((error as Error).message);
     },
   });

@@ -10,6 +10,7 @@ import DialogComponent from "@/shared/ui/DialogComponent";
 import Overlay from "@/shared/ui/Overlay";
 
 import { useDeleteFiles } from "../../hooks/mutate";
+import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
 
 type DeleteFileProps = {
   className?: string;
@@ -76,23 +77,26 @@ const DeleteFile = ({
               </p>
 
               <div className="grid max-h-[300] gap-1 overflow-y-auto">
-                {[...selectedFilesForDelete].map((file) => (
-                  <p
-                    key={file.id}
-                    className="flex items-center justify-between break-all rounded-md bg-muted p-2 text-sm"
-                  >
-                    <span>{file.name}</span>
-                    
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      className="h-6 w-6 p-1"
-                      onClick={() => handleDeleteFromListSelected(file.name)}
+                {[...selectedFilesForDelete].map((file) => {
+                  const fileName = getFileNameWithoutUuid(file.name);
+                  return (
+                    <p
+                      key={file.id}
+                      className="flex items-center justify-between break-all rounded-md bg-muted p-2 text-sm"
                     >
-                      <X strokeWidth={1} className="!h-6 !w-6" />
-                    </Button>
-                  </p>
-                ))}
+                      <span>{fileName}</span>
+
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        className="h-6 w-6 p-1"
+                        onClick={() => handleDeleteFromListSelected(file.name)}
+                      >
+                        <X strokeWidth={1} className="!h-6 !w-6" />
+                      </Button>
+                    </p>
+                  );
+                })}
               </div>
             </div>
             <SubmitFormButton title="Удалить" isPending={isPending} />
