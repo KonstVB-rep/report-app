@@ -1,11 +1,15 @@
+import { PermissionEnum } from "@prisma/client";
+import { ColumnFiltersState } from "@tanstack/react-table";
+
+import React, { memo } from "react";
+
+import { useParams, usePathname } from "next/navigation";
+
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import React, { memo } from "react";
-import FilterPopover from "../FilterPopover";
-import { ColumnFiltersState } from "@tanstack/react-table";
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
-import { PermissionEnum } from "@prisma/client";
-import { useParams, usePathname } from "next/navigation";
+
+import FilterPopover from "../FilterPopover";
 
 type Props = {
   columnFilters?: ColumnFiltersState;

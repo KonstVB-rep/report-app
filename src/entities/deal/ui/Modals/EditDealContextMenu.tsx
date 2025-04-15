@@ -1,7 +1,9 @@
 import { DealType } from "@prisma/client";
+
 import React, { Dispatch, SetStateAction } from "react";
-import EditRetail from "./EditRetail";
+
 import EditProject from "./EditProject";
+import EditRetail from "./EditRetail";
 
 const EditDealContextMenu = ({
   close,

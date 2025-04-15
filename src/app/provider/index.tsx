@@ -1,10 +1,14 @@
 "use client";
 
-import React, { PropsWithChildren } from "react";
-import { ThemeProvider } from "./theme-provider";
-import { Toaster } from "sonner";
-import QueryProvider from "./query-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+import React, { PropsWithChildren } from "react";
+
+import { Toaster } from "sonner";
+
+import QueryProvider from "./query-provider";
+import { ThemeProvider } from "./theme-provider";
+
 // import { ReactScan } from "../ReactScanComponent";
 
 const AppProvider = ({ children }: PropsWithChildren) => {

@@ -1,18 +1,21 @@
 "use client";
-import React from "react";
 
 import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
+
+import React from "react";
+
+import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
+
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { useParams } from "next/navigation";
-import dynamic from "next/dynamic";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
+import useStoreUser from "@/entities/user/store/useStoreUser";
 
 const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   ssr: false,
-  loading: () => <TableRowsSkeleton/>,
+  loading: () => <TableRowsSkeleton />,
 });
 
 interface PersonTableProps<T> {
@@ -31,7 +34,6 @@ const PersonTable = <T extends { id: string }>({
   const { userId } = useParams();
   const { authUser } = useStoreUser();
   const isPageAuthuser = userId === authUser?.id;
-
 
   return (
     <DealTableTemplate>

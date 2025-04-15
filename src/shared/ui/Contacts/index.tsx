@@ -1,5 +1,6 @@
-import { Mail, Phone } from "lucide-react";
 import React from "react";
+
+import { Mail, Phone } from "lucide-react";
 
 type Props = {
   email: string;

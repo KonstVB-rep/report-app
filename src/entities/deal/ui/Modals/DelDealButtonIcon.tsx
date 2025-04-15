@@ -1,19 +1,22 @@
-import { Button } from "@/components/ui/button";
-import {
-  DialogClose,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import React from "react";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import { useGetDealById } from "@/entities/deal/hooks/query";
 import { DealType } from "@prisma/client";
+
+import React from "react";
+
 import { Trash2 } from "lucide-react";
-import { useDelDeal } from "../../hooks/mutate";
+
+import { Button } from "@/components/ui/button";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { useGetDealById } from "@/entities/deal/hooks/query";
+import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DialogComponent from "@/shared/ui/DialogComponent";
+
+import { useDelDeal } from "../../hooks/mutate";
 
 const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const { data: deal } = useGetDealById(id, type);
+
   const [open, setOpen] = React.useState(false);
+
   const { mutate: delDeal, isPending } = useDelDeal(
     () => setOpen(false),
     type,

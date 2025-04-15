@@ -1,7 +1,8 @@
 "use client";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { PermissionEnum } from "@prisma/client";
+
+import useStoreUser from "@/entities/user/store/useStoreUser";
 
 type ProtectedProps = {
   permissionArr?: PermissionEnum[];

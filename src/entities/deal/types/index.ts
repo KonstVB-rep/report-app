@@ -7,6 +7,7 @@ import {
   StatusProject,
   StatusRetail,
 } from "@prisma/client";
+
 // import { DealTypeLabels, EquipmentTypeEnum } from "../lib/constants";
 
 export type DirectionType = DirectionProject;
@@ -34,7 +35,7 @@ export interface ProjectResponse {
   dealStatus: StatusProject;
   comments: string;
   plannedDateConnection: Date | null;
-  resource: string | null,
+  resource: string | null;
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
@@ -42,7 +43,7 @@ export interface ProjectResponse {
 
 export type ProjectResponseWithAdditionalContacts = ProjectResponse & {
   additionalContacts: Contact[] | [];
-}
+};
 
 export interface RetailResponse {
   [key: string]: unknown;
@@ -61,7 +62,7 @@ export interface RetailResponse {
   dealStatus: StatusRetail;
   comments: string;
   plannedDateConnection?: Date | null;
-  resource: string | null,
+  resource: string | null;
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
@@ -69,16 +70,15 @@ export interface RetailResponse {
 
 export type RetailResponseWithAdditionalContacts = RetailResponse & {
   additionalContacts: Contact[] | [];
-}
+};
 
 export type Contact = {
-    id: string;
-    email: string | null;
-    name: string;
-    phone: string | null;
-    position: string | null;
+  id: string;
+  email: string | null;
+  name: string;
+  phone: string | null;
+  position: string | null;
 };
 
 export type DealUnionType = "retail" | "project";
 export type DealsUnionType = "retails" | "projects";
-

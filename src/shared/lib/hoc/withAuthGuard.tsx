@@ -1,6 +1,9 @@
-'use client'
+"use client";
+
 import { useEffect } from "react";
+
 import { useRouter } from "next/navigation";
+
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
 const withAuthGuard = <P extends object>(Component: React.ComponentType<P>) => {
@@ -26,4 +29,3 @@ const withAuthGuard = <P extends object>(Component: React.ComponentType<P>) => {
 };
 
 export default withAuthGuard;
-

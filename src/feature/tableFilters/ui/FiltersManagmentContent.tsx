@@ -1,10 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import HoverCardComponent from "@/shared/ui/HoverCard";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
-import { ListFilterPlus, Settings2, X } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { UserFilter } from "@prisma/client";
+import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
+
 import React, {
   Dispatch,
   SetStateAction,
@@ -12,14 +10,21 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import SaveFilter from "./SaveFilter";
-import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+import { useSearchParams } from "next/navigation";
+
+import { ListFilterPlus, Settings2, X } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import UserFiltersChange from "./UserFiltersChange";
-import { UserFilter } from "@prisma/client";
-import { useGetUserFilters } from "../hooks/query";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import HoverCardComponent from "@/shared/ui/HoverCard";
+import TooltipComponent from "@/shared/ui/TooltipComponent";
+
 import { useDisableSavedFilters, useSelectFilter } from "../hooks/mutate";
+import { useGetUserFilters } from "../hooks/query";
+import SaveFilter from "./SaveFilter";
+import UserFiltersChange from "./UserFiltersChange";
 
 type FiltersManagmentContentProps = {
   columnFilters: ColumnFiltersState;
@@ -37,10 +42,11 @@ const FiltersManagmentContent = ({
   setSelectedColumns,
 }: FiltersManagmentContentProps) => {
   const { data: userFilters = [] } = useGetUserFilters();
-  const { mutate: disableSavedFilters, isPending } = useDisableSavedFilters()
-  const { mutate: selectFilter, isPending: isPendingSelect } = useSelectFilter();
+  const { mutate: disableSavedFilters, isPending } = useDisableSavedFilters();
+  const { mutate: selectFilter, isPending: isPendingSelect } =
+    useSelectFilter();
 
-  const progressRequest = isPending || isPendingSelect
+  const progressRequest = isPending || isPendingSelect;
 
   const searchParams = useSearchParams();
 
@@ -49,16 +55,14 @@ const FiltersManagmentContent = ({
   const defaultCheckedFilter = userFilters.find((item) => item.isActive);
 
   const handleClearFilters = () => {
-
     setColumnFilters([]);
     setColumnVisibility({});
     setSelectedFilterName("");
-    disableSavedFilters()
+    disableSavedFilters();
   };
 
   const filterSelect = useCallback(
     (filter: UserFilter) => {
-
       const { filterName, filterValue } = filter;
       if (!filterValue) return;
 
@@ -110,7 +114,7 @@ const FiltersManagmentContent = ({
         {searchParams.size > 0 && (
           <HoverCardComponent
             title={<Settings2 />}
-            className="border-stone-solid-600 flex gap-1 items-center"
+            className="border-stone-solid-600 flex items-center gap-1"
           >
             {columnFilters.length || Object.keys(columnVisibility).length ? (
               <SaveFilter />
@@ -149,17 +153,17 @@ const FiltersManagmentContent = ({
                     key={filter.id}
                     className="flex items-center justify-between space-x-2"
                   >
-                    <div className="flex items-center gap-2 btn_hover w-full">
+                    <div className="btn_hover flex w-full items-center gap-2">
                       <RadioGroupItem
                         value={filter.filterName}
                         id={filter.id}
                         onClick={() => filterSelect(filter)}
-                        className="active:scale-90 duration-150 transition-transform"
+                        className="transition-transform duration-150 active:scale-90"
                         disabled={progressRequest}
                       />
                       <Label
                         htmlFor={filter.id}
-                        className="max-w-36 w-full h-full cursor-pointer truncate first-letter:uppercase"
+                        className="h-full w-full max-w-36 cursor-pointer truncate first-letter:uppercase"
                       >
                         {filter.filterName}
                       </Label>
@@ -168,12 +172,12 @@ const FiltersManagmentContent = ({
                   </div>
                 );
               })}
-              <div className="flex h-9 items-center space-x-2 py-2 btn_hover w-full">
+              <div className="btn_hover flex h-9 w-full items-center space-x-2 py-2">
                 <RadioGroupItem
                   value="disableSavedFilters"
                   id="disableSavedFilters"
                   onClick={handleClearFilters}
-                  className="active:scale-90 duration-150 transition-transform"
+                  className="transition-transform duration-150 active:scale-90"
                   disabled={progressRequest}
                 />
                 <Label

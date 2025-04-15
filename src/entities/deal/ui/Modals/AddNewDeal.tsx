@@ -1,12 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import React from "react";
 
-import RetailForm from "../Forms/RetailForm";
-import ProjectForm from "../Forms/ProjectForm";
+import { Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
+
+import ProjectForm from "../Forms/ProjectForm";
+import RetailForm from "../Forms/RetailForm";
 
 type AddNewDealProps = {
   type: string;
@@ -24,7 +26,6 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
 };
 
 const AddNewDeal = ({ type }: AddNewDealProps) => {
-
   return (
     <DialogComponent
       contentTooltip={contentType[type].title}

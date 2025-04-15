@@ -1,11 +1,15 @@
 "use server";
 
-import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
-import { findUserByEmail } from "@/app/api/utils/findUserByEmail";
+import { DepartmentEnum, PermissionEnum, Role, User } from "@prisma/client";
+
 import bcrypt from "bcrypt";
 
+import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
+import { findUserByEmail } from "@/app/api/utils/findUserByEmail";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
+import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
+
 import {
   DepartmentTypeName,
   RoleType,
@@ -13,8 +17,7 @@ import {
   UserResponse,
   UserWithdepartmentName,
 } from "../types";
-import { DepartmentEnum, PermissionEnum, Role, User } from "@prisma/client";
-import prisma from "@/prisma/prisma-client";
+
 // import { PermissionEnum } from "../model/objectTypes";
 
 type RequiredFields = keyof UserRequest;
@@ -589,4 +592,3 @@ export const getAllUsersByDepartment = async (
     return handleError((error as Error).message);
   }
 };
-

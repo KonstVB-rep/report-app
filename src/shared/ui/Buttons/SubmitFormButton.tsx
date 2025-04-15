@@ -1,6 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
 import React from "react";
+
+import { Loader } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 type SubmitButtonProps = {
   isPending: boolean;

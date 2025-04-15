@@ -1,14 +1,17 @@
 "use client";
-import { DepartmentsTitle, RolesUser } from "@/entities/user/model/objectTypes";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
-import UserCard from "@/shared/ui/UserCard";
+
 import { PermissionEnum } from "@prisma/client";
-import { useParams } from "next/navigation";
+
 import React from "react";
-import { useGetUser } from "@/entities/user/hooks/query";
 
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
+
+import { useGetUser } from "@/entities/user/hooks/query";
+import { DepartmentsTitle, RolesUser } from "@/entities/user/model/objectTypes";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import UserCard from "@/shared/ui/UserCard";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,

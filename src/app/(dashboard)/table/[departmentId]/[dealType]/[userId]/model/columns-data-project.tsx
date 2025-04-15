@@ -1,5 +1,11 @@
 "use client";
 
+import { CellContext, ColumnDef } from "@tanstack/react-table";
+
+import { DateRange } from "react-day-picker";
+
+import { endOfDay, startOfDay } from "date-fns";
+
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
@@ -7,9 +13,6 @@ import {
 } from "@/entities/deal/lib/constants";
 import { ProjectResponse, StatusType } from "@/entities/deal/types";
 import { formatterCurrency } from "@/shared/lib/utils";
-import { CellContext, ColumnDef } from "@tanstack/react-table";
-import { endOfDay, startOfDay } from "date-fns";
-import { DateRange } from "react-day-picker";
 
 export type typeofDirections = keyof typeof DirectionProjectLabels;
 
@@ -36,7 +39,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     meta: {
       isDateFilter: true,
     },
-    size: 100,  // Фиксированная ширина
+    size: 100, // Фиксированная ширина
     enableResizing: false, // Запрещаем изменение размера
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date;
@@ -158,7 +161,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "amountCP",
     header: "Сумма КП",
-    cell: (info: CellContext<ProjectResponse, unknown>) => 
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountCP,
@@ -166,7 +169,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "amountWork",
     header: "Сумма работ",
-    cell: (info: CellContext<ProjectResponse, unknown>) => 
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountWork,
@@ -174,7 +177,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "amountPurchase",
     header: "Сумма закупки",
-    cell: (info: CellContext<ProjectResponse, unknown>) => 
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountPurchase,
@@ -182,7 +185,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "delta",
     header: "Дельта",
-    cell: (info: CellContext<ProjectResponse, unknown>) => 
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.delta,
@@ -192,9 +195,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     header: "Статус",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofStatus;
-      return (
-        <span >{StatusProjectLabels[value]}</span>
-      );
+      return <span>{StatusProjectLabels[value]}</span>;
     },
     enableHiding: true,
     filterFn: (row, columnId, value) => {

@@ -6,5 +6,8 @@
   "WillLuke.nextjs.hasPrompted": true,
   "workbench.editorAssociations": {
     "*.svg": "default"
-  }
+  },
+  "editor.foldingImportsByDefault": false,
+  "autoimport.doubleQuotes": true,
+  "autoimport.showNotifications": true
 }

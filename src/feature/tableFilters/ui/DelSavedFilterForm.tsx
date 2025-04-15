@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   Card,
   CardContent,
@@ -5,9 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import React from "react";
+
 import { useDeleteFilter } from "../hooks/mutate";
 
 const DelSavedFilterForm = ({
@@ -34,9 +35,9 @@ const DelSavedFilterForm = ({
       </CardHeader>
       <CardContent className="space-y-2">
         <form action="" className="grid gap-5" onSubmit={handleSubmit}>
-          <div className="space-y-1 flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center space-y-1">
             <p>Вы уверены что хотите удалить фильтр?</p>
-            <p className="font-bold text-xl">{filterName}</p>
+            <p className="text-xl font-bold">{filterName}</p>
           </div>
           <SubmitFormButton
             title="Удалить"

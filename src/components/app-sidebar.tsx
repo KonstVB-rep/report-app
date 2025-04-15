@@ -1,6 +1,15 @@
 "use client";
 
 import * as React from "react";
+import { memo, useEffect, useMemo } from "react";
+
+import Image from "next/image";
+import Link from "next/link";
+
+import { BadgeRussianRuble, Wrench } from "lucide-react";
+
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -10,20 +19,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
-import { BadgeRussianRuble, Wrench } from "lucide-react";
-import { UserResponse } from "@/entities/user/types";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import {
   DepartmentInfo,
   DepartmentListType,
 } from "@/entities/department/types";
-import Link from "next/link";
-import Image from "next/image";
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { memo, useEffect, useMemo } from "react";
+import { UserResponse } from "@/entities/user/types";
 
 const icons = {
   SALES: <BadgeRussianRuble />,
@@ -61,8 +64,7 @@ const AppSidebar = () => {
         url: `/table/${person.departmentId}`,
       })),
     })) as DepartmentListType[];
-  },
-  [departments]);
+  }, [departments]);
 
   const data: { navMain: DepartmentListType[] } = {
     navMain: navMainItems,
@@ -106,7 +108,6 @@ const AppSidebar = () => {
       </SidebarFooter>
     </Sidebar>
   );
-}
-
+};
 
 export default memo(AppSidebar);

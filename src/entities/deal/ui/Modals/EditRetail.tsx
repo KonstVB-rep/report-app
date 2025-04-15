@@ -1,12 +1,14 @@
 "use client";
-import {
-  DialogHeader,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 import React, { Dispatch, SetStateAction } from "react";
+
+import {
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import EditRetailForm from "../Forms/EditRetailForm";
 
 const EditRetail = ({

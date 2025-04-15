@@ -1,9 +1,11 @@
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
+
 import { JWTPayload, jwtVerify } from "jose";
+
 import axiosInstance from "./shared/api/axiosInstance";
-import { cookies } from "next/headers";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
@@ -45,7 +47,7 @@ async function refreshAccessToken(
       refresh_token: refreshToken,
     });
 
-    const data = res.data; 
+    const data = res.data;
     console.log("Новый access token получен:", data.accessToken);
 
     cookiesStore.set("access_token", data.accessToken, {
@@ -71,7 +73,7 @@ export default async function middleware(request: NextRequest) {
   const cookiesStore = await cookies();
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
-  
+
   if (!accessToken && !refreshToken) {
     return redirectToLogin(request);
   }

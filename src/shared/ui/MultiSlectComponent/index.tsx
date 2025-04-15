@@ -1,12 +1,13 @@
+import React from "react";
+
 import {
   MultiSelect,
-  MultiSelectTrigger,
-  MultiSelectValue,
   MultiSelectContent,
   MultiSelectList,
+  MultiSelectTrigger,
+  MultiSelectValue,
   renderMultiSelectOptions,
 } from "@/components/ui/multi-select";
-import React from "react";
 
 type OptionItem = {
   value: string;
@@ -28,7 +29,7 @@ const MultiSelectComponent = ({
   ...props
 }: MultiSelectComponentProps) => {
   return (
-     // @ts-expect-error: TypeScript does not infer the correct type for MultiSelect props
+    // @ts-expect-error: TypeScript does not infer the correct type for MultiSelect props
     <MultiSelect
       onValueChange={onValueChange}
       defaultValue={defaultValue}

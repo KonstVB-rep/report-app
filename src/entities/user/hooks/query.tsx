@@ -1,13 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import {
-  getUser,
-  getUserShort,
-} from "../api";
-import { UserWithdepartmentName } from "../types";
-import { TOAST } from "../ui/Toast";
 import { PermissionEnum } from "@prisma/client";
-import useStoreUser from "../store/useStoreUser";
+import { useQuery } from "@tanstack/react-query";
 
+import { TOAST } from "@/shared/ui/Toast";
+
+import { getUser, getUserShort } from "../api";
+import useStoreUser from "../store/useStoreUser";
+import { UserWithdepartmentName } from "../types";
 
 export const useGetUser = (
   userId: string,
@@ -22,7 +20,7 @@ export const useGetUser = (
         return await getUser(userId as string, permissions as PermissionEnum[]);
       } catch (error) {
         TOAST.ERROR((error as Error).message);
-        throw error; 
+        throw error;
       }
     },
     enabled: !!userId,

@@ -1,5 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import React from "react";
+import { useForm } from "react-hook-form";
+
 import {
   Form,
   FormControl,
@@ -8,25 +13,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-// import { Input } from "@/components/ui/input";
-import React from "react";
-import { useForm } from "react-hook-form";
-import SelectComponent from "@/shared/ui/SelectForm/SelectComponent";
-import { DepartmentsTitle, RolesUser } from "../model/objectTypes";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import { TOAST } from "./Toast";
-import { userFormSchema, userSchema } from "../model/schema";
-// import PhoneInput from "@/shared/ui/Inputs/PhoneInput";
-import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
-import { DepartmentTypeName, OPTIONS } from "../types";
-// import InputPassword from "@/shared/ui/Inputs/InputPassword";
-import { useCreateUser } from "../hooks/mutate";
-import Overlay from "@/shared/ui/Overlay";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
+import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
+import Overlay from "@/shared/ui/Overlay";
 import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
+import { TOAST } from "@/shared/ui/Toast";
+
+import { useCreateUser } from "../hooks/mutate";
+import { DepartmentsTitle, RolesUser } from "../model/objectTypes";
+import { userFormSchema, userSchema } from "../model/schema";
+import { OPTIONS } from "../types";
 
 const UserCreateForm = () => {
   const { mutateAsync, isPending } = useCreateUser();
@@ -72,6 +71,7 @@ const UserCreateForm = () => {
               minLength={3}
               maxLength={50}
               placeholder="Введите имя пользователя"
+              className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
               required
             />
 
@@ -81,6 +81,7 @@ const UserCreateForm = () => {
               control={form.control}
               errorMessage={form.formState.errors.email?.message}
               type="email"
+              className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
               placeholder="Введите email пользователя"
               required
             />
@@ -91,6 +92,7 @@ const UserCreateForm = () => {
               control={form.control}
               errorMessage={form.formState.errors.phone?.message}
               placeholder="Введите телефон пользователя"
+              required={true}
             />
 
             <InputFormPassword
@@ -98,6 +100,7 @@ const UserCreateForm = () => {
               label="Пароль"
               control={form.control}
               errorMessage={form.formState.errors.user_password?.message}
+              className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
               placeholder="Введите пароль для пользователя"
               required
             />
@@ -117,65 +120,20 @@ const UserCreateForm = () => {
               control={form.control}
               errorMessage={form.formState.errors.department?.message}
               options={Object.entries(DepartmentsTitle)}
+              placeholder="Выберите отдел"
               required
             />
-            
 
-            {/* <FormField
-              control={form.control}
-              name="department"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Отдел</FormLabel>
-                  <FormControl>
-                    <SelectComponent
-                      placeholder="Выберите отдел"
-                      options={Object.entries(DepartmentsTitle)}
-                      className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
-                      value={field.value || ""}
-                      onValueChange={(selected) =>
-                        form.setValue(
-                          "department",
-                          selected as DepartmentTypeName
-                        )
-                      }
-                      required
-                    />
-                  </FormControl>
-                  {form.formState.errors.department && (
-                    <FormMessage className="text-red-500">
-                      {form.formState.errors.department.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            /> */}
-            <FormField
-              control={form.control}
+            <SelectFormField<userSchema>
               name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Роль</FormLabel>
-                  <FormControl>
-                    <SelectComponent
-                      placeholder="Выберите роль"
-                      options={Object.entries(RolesUser)}
-                      className="valid:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
-                      value={field.value || ""}
-                      onValueChange={(selected) => {
-                        form.setValue("role", selected);
-                      }}
-                      required
-                    />
-                  </FormControl>
-                  {form.formState.errors.role && (
-                    <FormMessage className="text-red-500">
-                      {form.formState.errors.role.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
+              label="Роль"
+              control={form.control}
+              errorMessage={form.formState.errors.role?.message}
+              options={Object.entries(RolesUser)}
+              placeholder="Выберите роль"
+              required
             />
+
             <FormField
               control={form.control}
               name="permissions"

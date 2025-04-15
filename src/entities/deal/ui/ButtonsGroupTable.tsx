@@ -1,12 +1,16 @@
 import { DealType, PermissionEnum } from "@prisma/client";
+
 import React from "react";
-import HoverCardComponent from "@/shared/ui/HoverCard";
-import SummaryTableLink from "./SummaryTableLink";
-import LinkToUserTable from "./LinkToUserTable";
-import ProfileSettings from "@/entities/user/ui/ProfileSettings";
-import { useGetUser } from "@/entities/user/hooks/query";
+
 import { useParams } from "next/navigation";
+
+import { useGetUser } from "@/entities/user/hooks/query";
+import ProfileSettings from "@/entities/user/ui/ProfileSettings";
+import HoverCardComponent from "@/shared/ui/HoverCard";
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+
+import LinkToUserTable from "./LinkToUserTable";
+import SummaryTableLink from "./SummaryTableLink";
 
 const ButtonsGroupTable = () => {
   const { userId } = useParams();
@@ -18,7 +22,7 @@ const ButtonsGroupTable = () => {
   return (
     <div className="flex items-center justify-between gap-2">
       <ProfileSettings user={user} />
-      
+
       <div className="flex gap-2">
         <LinkToUserTable />
 

@@ -1,11 +1,13 @@
+import { HoverCardArrow } from "@radix-ui/react-hover-card";
+
+import React from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { HoverCardArrow } from "@radix-ui/react-hover-card";
-import React from "react";
 
 type Props = {
   children: React.ReactNode;

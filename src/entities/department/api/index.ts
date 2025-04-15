@@ -1,8 +1,9 @@
 "use server";
 
-import { handleError } from "@/shared/api/handleError";
-import { DepartmentInfo } from "../types";
 import prisma from "@/prisma/prisma-client";
+import { handleError } from "@/shared/api/handleError";
+
+import { DepartmentInfo } from "../types";
 
 export const getDepartmentsWithUsers = async (): Promise<DepartmentInfo[]> => {
   try {

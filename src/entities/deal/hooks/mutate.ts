@@ -1,7 +1,20 @@
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/entities/user/ui/Toast";
+import {
+  DealType,
+  DeliveryProject,
+  DeliveryRetail,
+  DirectionProject,
+  DirectionRetail,
+  StatusProject,
+  StatusRetail,
+} from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { Dispatch, SetStateAction } from "react";
+import { UseFormReturn } from "react-hook-form";
+
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import { TOAST } from "@/shared/ui/Toast";
+
 import {
   createProject,
   createRetail,
@@ -10,27 +23,20 @@ import {
   updateRetail,
 } from "../api";
 import {
-  DeliveryProject,
-  DeliveryRetail,
-  DirectionProject,
-  DirectionRetail,
-  StatusProject,
-  StatusRetail,
-} from "@prisma/client";
+  defaultProjectValues,
+  defaultRetailValues,
+} from "../model/defaultvaluesForm";
 import { ProjectSchema, RetailSchema } from "../model/schema";
-import { UseFormReturn } from "react-hook-form";
 import { ProjectResponse, RetailResponse } from "../types";
-import { defaultProjectValues, defaultRetailValues } from "../model/defaultvaluesForm";
-import { useRouter } from "next/navigation";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
-  type: string,
+  type: DealType,
   ownerId: string
 ) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
-  const router = useRouter();
+
   return useMutation({
     mutationFn: async (nealId: string) => {
       if (!authUser?.id) {
@@ -39,16 +45,14 @@ export const useDelDeal = (
 
       return await deleteDeal(nealId, ownerId, type);
     },
-    onSuccess: () => {
+    onSuccess: (_, dealId) => {
       closeModalFn();
-      router.back();
+
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, ownerId],
-        exact: true,
       });
       queryClient.invalidateQueries({
-        queryKey: [`${type.toLowerCase()}`, ownerId],
-        exact: true,
+        queryKey: [`${type.toLowerCase()}`, dealId],
       });
     },
     onError: (error) => {
@@ -57,7 +61,11 @@ export const useDelDeal = (
   });
 };
 
-export const useMutationUpdateProject = (dealId: string,userId:string, close: () => void) => {
+export const useMutationUpdateProject = (
+  dealId: string,
+  userId: string,
+  close: () => void
+) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({
@@ -150,8 +158,8 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
             ...oldProject,
             ...newData,
             dateRequest: newData.dateRequest
-            ? new Date(newData.dateRequest)
-            : new Date(),
+              ? new Date(newData.dateRequest)
+              : new Date(),
             direction: newData.direction as DirectionProject,
             dealStatus: newData.dealStatus as StatusProject,
             deliveryType: newData.deliveryType as DeliveryProject,
@@ -172,10 +180,7 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
         queryClient.setQueryData(["project", dealId], context.previousDeal);
       }
       if (context?.previousDeals) {
-        queryClient.setQueryData(
-          ["projects", userId],
-          context.previousDeals
-        );
+        queryClient.setQueryData(["projects", userId], context.previousDeals);
       }
     },
 
@@ -185,13 +190,18 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
 
       queryClient.setQueryData(
         ["projects", userId],
-        (oldProjects: ProjectResponse[] | undefined) =>{
+        (oldProjects: ProjectResponse[] | undefined) => {
           return oldProjects
-            ? [...oldProjects.map((p) => (p.id === dealId ? { ...p, ...updatedDeal } : p))]
+            ? [
+                ...oldProjects.map((p) =>
+                  p.id === dealId ? { ...p, ...updatedDeal } : p
+                ),
+              ]
             : oldProjects;
-        });
+        }
+      );
 
-      queryClient.setQueryData(["project", dealId], {...updatedDeal});
+      queryClient.setQueryData(["project", dealId], { ...updatedDeal });
 
       // 👇 Инвалидируем кэш, только если серверные данные могли измениться
       queryClient.invalidateQueries({
@@ -206,7 +216,11 @@ export const useMutationUpdateProject = (dealId: string,userId:string, close: ()
   });
 };
 
-export const useMutationUpdateRetail = (dealId: string, userId: string, close: () => void) => {
+export const useMutationUpdateRetail = (
+  dealId: string,
+  userId: string,
+  close: () => void
+) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({
@@ -263,7 +277,9 @@ export const useMutationUpdateRetail = (dealId: string, userId: string, close: (
               ? {
                   ...p,
                   ...newData,
-                  dateRequest: newData.dateRequest ? new Date(newData.dateRequest) : new Date(),
+                  dateRequest: newData.dateRequest
+                    ? new Date(newData.dateRequest)
+                    : new Date(),
                   direction: newData.direction as DirectionRetail,
                   dealStatus: newData.dealStatus as StatusRetail,
                   deliveryType: newData.deliveryType as DeliveryRetail,
@@ -284,7 +300,9 @@ export const useMutationUpdateRetail = (dealId: string, userId: string, close: (
           return {
             ...oldProject,
             ...newData,
-            dateRequest: newData.dateRequest ? new Date(newData.dateRequest) : new Date(),
+            dateRequest: newData.dateRequest
+              ? new Date(newData.dateRequest)
+              : new Date(),
             direction: newData.direction as DirectionRetail,
             dealStatus: newData.dealStatus as StatusRetail,
             deliveryType: newData.deliveryType as DeliveryRetail,
@@ -303,10 +321,7 @@ export const useMutationUpdateRetail = (dealId: string, userId: string, close: (
         queryClient.setQueryData(["retail", dealId], context.previousDeal);
       }
       if (context?.previousDeals) {
-        queryClient.setQueryData(
-          ["retails", userId],
-          context.previousDeals
-        );
+        queryClient.setQueryData(["retails", userId], context.previousDeals);
       }
     },
 
@@ -430,12 +445,12 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
           ? parseFloat(
               data.amountCP.replace(/\s/g, "").replace(",", ".")
             ).toString()
-          : "0", 
+          : "0",
         delta: data.delta
           ? parseFloat(
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
-          : "0", 
+          : "0",
       });
     },
     onError: (error) => {
@@ -444,7 +459,6 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
     },
     onSuccess: (data) => {
       if (data) {
-
         form.reset(defaultRetailValues);
 
         queryClient.invalidateQueries({

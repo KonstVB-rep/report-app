@@ -1,24 +1,30 @@
 "use client";
+
 import React from "react";
-import { useGetProjectById } from "../hooks/query";
+
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
+
+import { Building, ContactRound } from "lucide-react";
+
+import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
+import { Separator } from "@/components/ui/separator";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+import { formatterCurrency } from "@/shared/lib/utils";
+import FileUploadForm from "@/widgets/Files/ui/UploadFile";
+
+import { useGetProjectById } from "../hooks/query";
 import {
   DealTypeLabels,
   DeliveryProjectLabels,
   DirectionProjectLabels,
   StatusProjectLabels,
 } from "../lib/constants";
-import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
-import { formatterCurrency } from "@/shared/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { BookUser, Building, ContactRound } from "lucide-react";
-import dynamic from "next/dynamic";
-import FileUploadForm from "@/widgets/Files/ui/UploadFile";
+import CardInfo from "./CardInfo";
+import ContactCardInDealInfo from "./ContactCardInDealInfo";
 import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-import CardInfo from "./CardInfo";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -67,10 +73,10 @@ const ProjectItemInfo = () => {
 
       <div className="grid gap-2">
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
-          <div className="grid gap-2 grid-rows-2">
+          <div className="grid-rows-auto grid gap-2">
             <div className="grid min-w-72 gap-2">
               <IntoDealItem title={"Объект"}>
-                <div className="flex w-full items-center justify-start gap-4 text-lg">
+                <div className="flex w-full items-start justify-start gap-4 text-lg">
                   <Building size="40" strokeWidth={1} />
 
                   <p>{deal?.nameObject}</p>
@@ -80,28 +86,42 @@ const ProjectItemInfo = () => {
             <div className="grid gap-2">
               <IntoDealItem title={"Основной контакт"}>
                 <div className="grid w-full">
-                  <div className="flex items-center justify-start gap-4">
+                  <div className="flex items-start justify-start gap-4">
                     <ContactRound size="40" strokeWidth={1} />
 
                     <div className="flex flex-col items-start justify-start text-lg">
                       <CardInfo data={deal.contact} title="Имя" />
 
-                      <CardInfo data={deal.phone} title="Телефон" />
+                      <CardInfo
+                        data={deal.phone}
+                        title="Телефон"
+                        type="phone"
+                      />
 
-                      <CardInfo data={deal.email} title="Email" />
+                      <CardInfo data={deal.email} title="Email" type="email" />
                     </div>
                   </div>
                 </div>
               </IntoDealItem>
             </div>
           </div>
-          <div className="grid gap-2 grid-rows-2">
+          <div className="grid-rows-auto grid gap-2">
             <div className="flex flex-wrap gap-2">
-              <IntoDealItem title={"Информация о сделке"} className="flex-item-contact">
-                <p>Название сделки: {deal?.nameDeal}</p>
+              <IntoDealItem
+                title={"Информация о сделке"}
+                className="flex-item-contact"
+              >
+                <p>
+                  <span className="text-sm first-letter:capitalize">
+                    Название сделки:{" "}
+                  </span>{" "}
+                  {deal?.nameDeal}
+                </p>
 
                 <p>
-                  Тип сделки:{" "}
+                  <span className="text-sm first-letter:capitalize">
+                    Тип сделки:{" "}
+                  </span>
                   {DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
                     "Нет данных"}
                 </p>
@@ -128,63 +148,58 @@ const ProjectItemInfo = () => {
               <IntoDealItem title={"Финансы"} className="flex-item-contact">
                 <p>
                   Дельта:{" "}
-                  {formatterCurrency.format(parseFloat(deal.delta as string)) ||
-                    "Нет данных"}
+                  <span className="whitespace-nowrap">
+                    {deal.delta
+                      ? formatterCurrency.format(
+                          parseFloat(deal.delta as string)
+                        )
+                      : "Нет данных"}
+                  </span>
                 </p>
 
                 <p>
                   Сумма КП:{" "}
-                  {formatterCurrency.format(
-                    parseFloat(deal.amountCP as string)
-                  ) || "Нет данных"}{" "}
+                  <span className="whitespace-nowrap">
+                    {deal.amountCP
+                      ? formatterCurrency.format(
+                          parseFloat(deal.amountCP as string)
+                        )
+                      : "Нет данных"}
+                  </span>
                 </p>
 
                 <p>
                   Сумма закупки:{" "}
-                  {deal.amountPurchase
-                    ? formatterCurrency.format(
-                        parseFloat(deal.amountPurchase as string)
-                      )
-                    : "Нет данных"}{" "}
+                  <span className="whitespace-nowrap">
+                    {deal.amountPurchase
+                      ? formatterCurrency.format(
+                          parseFloat(deal.amountPurchase as string)
+                        )
+                      : "Нет данных"}
+                  </span>
                 </p>
 
                 <p>
                   Сумма работы:{" "}
-                  {deal.amountWork
-                    ? formatterCurrency.format(
-                        parseFloat(deal.amountWork as string)
-                      )
-                    : "Нет данных"}{" "}
+                  <span className="whitespace-nowrap">
+                    {deal.amountWork
+                      ? formatterCurrency.format(
+                          parseFloat(deal.amountWork as string)
+                        )
+                      : "Нет данных"}{" "}
+                  </span>
                 </p>
               </IntoDealItem>
             </div>
 
-            <IntoDealItem title={"Дополнительные контакты"}>
+            <IntoDealItem
+              title={"Дополнительные контакты"}
+              className="flex flex-col"
+            >
               {deal.additionalContacts && deal.additionalContacts.length > 0 ? (
-                <div className="flex gap-2 divide-x-2 divide-solid divide-muted">
+                <div className="flex h-full flex-wrap gap-2">
                   {deal.additionalContacts.map((contact) => (
-                    <div key={contact.id} className="grid">
-                      <div className="flex items-start justify-start gap-4 p-2">
-                        <BookUser 
-                          size="32"
-                          strokeWidth={1}
-                          className="flex-shrink-0 pt-1"
-                        />
-
-                        <div className="text-md flex flex-col items-start justify-start">
-                          <CardInfo data={contact.name} title="Имя" />
-
-                          <CardInfo data={contact.phone} title="Телефон" />
-
-                          <CardInfo data={contact.email} title="Email" />
-
-                          <CardInfo data={contact.position} title="Должность" />
-                        </div>
-                      </div>
-                      {/* {index !== deal.additionalContacts!.length - 1 && (
-                        <Separator className="my-2" />
-                      )} */}
-                    </div>
+                    <ContactCardInDealInfo key={contact.id} contact={contact} />
                   ))}
                 </div>
               ) : (
@@ -200,7 +215,7 @@ const ProjectItemInfo = () => {
         </IntoDealItem>
 
         <IntoDealItem title={"Статус"}>
-          <div className="text-2xl first-letter:capitalize">
+          <div className="text-xl first-letter:capitalize">
             <p>
               {StatusProjectLabels[
                 deal?.dealStatus as keyof typeof StatusProjectLabels

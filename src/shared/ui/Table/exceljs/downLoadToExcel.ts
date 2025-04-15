@@ -1,13 +1,15 @@
-import { saveAs } from "file-saver";
-import ExcelJS from "exceljs";
-import React from "react";
 import {
-  ColumnDef,
   CellContext,
+  Column,
+  ColumnDef,
   Row,
   Table,
-  Column,
 } from "@tanstack/react-table";
+
+import React from "react";
+
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 function toRenderedValue(value: unknown): string | number | null {
   if (value === null || value === undefined) return null;
@@ -15,21 +17,19 @@ function toRenderedValue(value: unknown): string | number | null {
   return String(value);
 }
 
-
 interface ExcelCellContext<TData, TValue> {
-    getValue: () => TValue;
-    row: Row<TData>;
-    column: Column<TData, TValue>;
-    table: Table<TData>;
-  }
-
+  getValue: () => TValue;
+  row: Row<TData>;
+  column: Column<TData, TValue>;
+  table: Table<TData>;
+}
 
 export const downloadToExcel = <
   TData extends Record<string, unknown>,
-  TValue = unknown
+  TValue = unknown,
 >(
   table: Table<TData>,
-  columns: ColumnDef<TData, TValue>[],
+  columns: ColumnDef<TData, TValue>[]
 ) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Table Data");
@@ -42,10 +42,13 @@ export const downloadToExcel = <
   );
 
   const colsVisible = allCols.filter(
-    (col) => !columnsToExclude.includes(col.id as string) && col.id !== "rowNumber"
+    (col) =>
+      !columnsToExclude.includes(col.id as string) && col.id !== "rowNumber"
   );
 
-  const filteredData = table.getFilteredRowModel().rows.map((row) => row.original);
+  const filteredData = table
+    .getFilteredRowModel()
+    .rows.map((row) => row.original);
 
   const transformedData = filteredData.map((row) => {
     const newRow: Partial<Record<string, string | number | null>> = {};
@@ -74,7 +77,8 @@ export const downloadToExcel = <
           if (typeof rendered === "string" || typeof rendered === "number") {
             renderedValue = rendered;
           } else if (React.isValidElement(rendered)) {
-            const child = (rendered.props as { children?: React.ReactNode }).children;
+            const child = (rendered.props as { children?: React.ReactNode })
+              .children;
             renderedValue =
               typeof child === "string" || typeof child === "number"
                 ? child
@@ -90,7 +94,6 @@ export const downloadToExcel = <
 
     return newRow;
   });
-
 
   worksheet.columns = colsVisible.map((col) => ({
     header: col.header as string,

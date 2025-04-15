@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getFiles } from "../yandexDisk";
 
+import { getFiles } from "../yandexDisk";
 
 export async function GET(request: Request) {
   try {
@@ -11,6 +11,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ files });
   } catch (error) {
     console.error("Ошибка получения файлов:", error);
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 500 }
+    );
   }
 }

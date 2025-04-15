@@ -1,11 +1,13 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
+import { getQueryClient } from "@/app/provider/query-provider";
 import {
   getAllProjectsByDepartmentQuery,
   getAllRetailsByDepartmentQuery,
 } from "@/entities/deal/api/queryFn";
+
 import SummaryTableProject from "../ui/SummaryTableProject";
 import SummaryTableRetail from "../ui/SummaryTableRetail";
-import { getQueryClient } from "@/app/provider/query-provider";
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
 const SummaryTablePage = async ({
   params,

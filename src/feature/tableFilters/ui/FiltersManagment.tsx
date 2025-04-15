@@ -1,13 +1,13 @@
-
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import React, {
-  Dispatch,
-  SetStateAction,
-} from "react";
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
+
+import React, { Dispatch, SetStateAction } from "react";
+
+import { ChevronDown } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+
 import FiltersManagmentContent from "./FiltersManagmentContent";
 
 type FilterManagmentProps = {
@@ -30,7 +30,6 @@ const FiltersManagment = ({
   columnVisibility,
   setSelectedColumns,
 }: FilterManagmentProps) => {
- 
   return (
     <>
       <div className="flex items-center gap-2">
@@ -50,7 +49,13 @@ const FiltersManagment = ({
           </div>
         )}
       </div>
-      <FiltersManagmentContent setColumnFilters={setColumnFilters} setColumnVisibility={setColumnVisibility} columnFilters={columnFilters} columnVisibility={columnVisibility} setSelectedColumns={setSelectedColumns} />
+      <FiltersManagmentContent
+        setColumnFilters={setColumnFilters}
+        setColumnVisibility={setColumnVisibility}
+        columnFilters={columnFilters}
+        columnVisibility={columnVisibility}
+        setSelectedColumns={setSelectedColumns}
+      />
     </>
   );
 };

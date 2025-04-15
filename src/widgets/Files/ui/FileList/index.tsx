@@ -1,11 +1,17 @@
 import { DealType } from "@prisma/client";
-import { getFormatFile } from "../../libs/helpers/getFormatFile";
-import iconsTypeFile from "./iconsTypeFile";
-import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
-import { useGetHrefFilesDealFromDB } from "../../hooks/query";
-import SkeletonFiles from "../SkeletonFiles";
+
+import React, { useState } from "react";
+
 import { FileWarning } from "lucide-react";
-import DownloadOrDeleteFile from "../DownLoadFile/DownloadOrDeleteFile";
+
+import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
+
+import { useGetHrefFilesDealFromDB } from "../../hooks/query";
+import { getFormatFile } from "../../libs/helpers/getFormatFile";
+import DeleteFile from "../DeleteFile";
+import DownLoadFile from "../DownLoadFile";
+import SkeletonFiles from "../SkeletonFiles";
+import iconsTypeFile from "./iconsTypeFile";
 
 type FileListProps = {
   data: {
@@ -37,6 +43,29 @@ const FileList = ({ data }: FileListProps) => {
     isError,
   } = useGetHrefFilesDealFromDB(data ? data : undefined);
 
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+
+  if (!files) return null;
+
+  const selectedFilesForDelete = files.filter((file) =>
+    selectedFiles.has(file.name)
+  );
+
+  const handleSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileName = e.target.id;
+
+    setSelectedFiles((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(fileName)) {
+        updated.delete(fileName);
+      } else {
+        updated.add(fileName);
+      }
+
+      return updated;
+    });
+  };
+
   if (isPending) {
     return <SkeletonFiles />;
   }
@@ -56,7 +85,14 @@ const FileList = ({ data }: FileListProps) => {
   if (!files.length) return null;
 
   return (
-    <IntoDealItem title={"Файлы"}>
+    <IntoDealItem title={"Файлы"} className="relative">
+      {selectedFiles.size > 0 && (
+        <DeleteFile
+          setSelectedFiles={setSelectedFiles}
+          selectedFilesForDelete={selectedFilesForDelete}
+          className="absolute right-2 top-2"
+        />
+      )}
       <ul className="flex flex-wrap gap-2">
         {files.map((file) => {
           const formatFile = getFormatFile(
@@ -88,10 +124,18 @@ const FileList = ({ data }: FileListProps) => {
 
               <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
 
-              <DownloadOrDeleteFile
+              <DownLoadFile
                 className="absolute inset-0 z-10 hidden h-full w-full items-center justify-center group-hover:flex group-focus-visible:flex"
                 {...file}
               />
+              <input
+                type="checkbox"
+                id={file.name}
+                onChange={(e) => handleSelectFile(e)}
+                checked={selectedFiles.has(file.name)}
+                className="absolute right-1 top-1 z-[11] h-5 w-5 cursor-pointer accent-blue-500"
+              />
+              <span>{selectedFiles.has(file.name)}</span>
             </li>
           );
         })}

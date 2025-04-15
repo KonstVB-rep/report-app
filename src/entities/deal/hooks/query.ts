@@ -1,5 +1,9 @@
-import useStoreUser from "@/entities/user/store/useStoreUser";
+import { DealType } from "@prisma/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import { TOAST } from "@/shared/ui/Toast";
+
 import {
   getAllProjectsByDepartment,
   getAllRetailsByDepartment,
@@ -8,41 +12,49 @@ import {
   getRetailById,
   getRetailsUser,
 } from "../api";
-import { TOAST } from "@/entities/user/ui/Toast";
-import { ProjectResponse, ProjectResponseWithAdditionalContacts, RetailResponse, RetailResponseWithAdditionalContacts } from "../types";
-import { DealType } from "@prisma/client";
 import {
   getAllProjectsByDepartmentQuery,
   getAllRetailsByDepartmentQuery,
 } from "../api/queryFn";
+import {
+  ProjectResponse,
+  ProjectResponseWithAdditionalContacts,
+  RetailResponse,
+  RetailResponseWithAdditionalContacts,
+} from "../types";
 
 export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
-  const cachedDeals = queryClient.getQueryData<ProjectResponseWithAdditionalContacts[]>([
-    "projects",
-    authUser?.id,
-  ]);
+  const cachedDeals = queryClient.getQueryData<
+    ProjectResponseWithAdditionalContacts[]
+  >(["projects", authUser?.id]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
-  return useQuery<ProjectResponseWithAdditionalContacts | undefined, Error>({
+  return useQuery<ProjectResponseWithAdditionalContacts | null, Error>({
     queryKey: ["project", dealId],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        const project = await getProjectById(dealId, authUser.id);
 
-        return project ?? undefined;
+        const deal = await getProjectById(dealId, authUser.id);
+
+        if (!deal) {
+          return null;
+        }
+
+        return deal;
       } catch (error) {
-        console.log(error, "Ошибка useGetProjectById");
+        console.error(error, "❌ Ошибка в useGetProjectById");
         TOAST.ERROR((error as Error).message);
+        throw error; // обязательно пробрасываем, иначе React Query думает, что всё ок
       }
     },
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
-    initialData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
+    placeholderData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
     staleTime: useCache ? 60 * 1000 : 0,
   });
 };
@@ -51,30 +63,34 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
-  const cachedDeals = queryClient.getQueryData<RetailResponseWithAdditionalContacts[]>([
-    "retails",
-    authUser?.id,
-  ]);
+  const cachedDeals = queryClient.getQueryData<
+    RetailResponseWithAdditionalContacts[]
+  >(["retails", authUser?.id]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
-  return useQuery<RetailResponseWithAdditionalContacts | undefined, Error>({
+  return useQuery<RetailResponseWithAdditionalContacts | null, Error>({
     queryKey: ["retail", dealId],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        const project = await getRetailById(dealId, authUser.id);
 
-        return project ?? undefined;
+        const deal = await getRetailById(dealId, authUser.id);
+
+        if (!deal) {
+          return null;
+        }
+
+        return deal;
       } catch (error) {
-        console.log(error, "Ошибка useGetRetailById");
+        console.error(error, "❌ Ошибка в useGetProjectById");
         TOAST.ERROR((error as Error).message);
-        throw error
+        throw error; // обязательно пробрасываем, иначе React Query думает, что всё ок
       }
     },
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
-    initialData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
+    placeholderData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
     staleTime: useCache ? 60 * 1000 : 0,
   });
 };
@@ -91,7 +107,9 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
   const cachedData = queryClient.getQueryData<
     Array<ProjectResponse | RetailResponse>
   >([`${type.toLowerCase()}s`, authUser?.id]);
-  const cachedEntity = cachedData?.find((p) => p.id === dealId) as T | undefined;
+  const cachedEntity = cachedData?.find((p) => p.id === dealId) as
+    | T
+    | undefined;
 
   // Функции для запроса данных
   const fetchFunctions = {
@@ -115,7 +133,7 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
     } catch (error) {
       console.log(error, "Ошибка useGetDealById");
       TOAST.ERROR((error as Error).message);
-      throw error
+      throw error;
     }
   };
 
@@ -160,7 +178,7 @@ export const useGetAllDealsByDepartmentByType = (
       } catch (error) {
         console.log(error, "Ошибка useGetAllDealsByDepartmentByType");
         TOAST.ERROR((error as Error).message);
-        throw error
+        throw error;
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
@@ -182,7 +200,7 @@ export const useGetAllProjects = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
         TOAST.ERROR((error as Error).message);
-        throw error
+        throw error;
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
@@ -204,7 +222,7 @@ export const useGetAllRetails = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
         TOAST.ERROR((error as Error).message);
-        throw error
+        throw error;
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
@@ -225,12 +243,12 @@ export const useGetRetailsUser = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
         TOAST.ERROR((error as Error).message);
-        throw error
+        throw error;
       }
     },
     enabled: !!userId,
   });
-return { data, isError, ...restData };
+  return { data, isError, ...restData };
 };
 
 export const useGetProjectsUser = (userId: string | null) => {
@@ -246,11 +264,11 @@ export const useGetProjectsUser = (userId: string | null) => {
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         TOAST.ERROR((error as Error).message);
-        throw error
+        throw error;
       }
     },
     enabled: !!userId,
   });
 
-  return { data,isError, ...restData };
+  return { data, isError, ...restData };
 };

@@ -1,5 +1,7 @@
-import { CircleUserRound } from "lucide-react";
 import React, { memo } from "react";
+
+import { CircleUserRound } from "lucide-react";
+
 import Contacts from "../Contacts";
 
 type UserCardProps = {
@@ -10,7 +12,13 @@ type UserCardProps = {
   isLink?: boolean;
 };
 
-const UserCard = ({ email, phone, username,position, isLink = false }: UserCardProps) => {
+const UserCard = ({
+  email,
+  phone,
+  username,
+  position,
+  isLink = false,
+}: UserCardProps) => {
   const styles = isLink ? "border border-solid rounded-md" : "";
 
   return (

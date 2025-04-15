@@ -1,11 +1,19 @@
 "use server";
 
+import { DealType, PermissionEnum, Prisma } from "@prisma/client";
+
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
-import { handleError } from "@/shared/api/handleError";
-import { DealType, PermissionEnum, Prisma } from "@prisma/client";
-import { Contact, ProjectResponse, ProjectResponseWithAdditionalContacts, RetailResponse, RetailResponseWithAdditionalContacts } from "../types";
 import prisma from "@/prisma/prisma-client";
+import { handleError } from "@/shared/api/handleError";
+
+import {
+  Contact,
+  ProjectResponse,
+  ProjectResponseWithAdditionalContacts,
+  RetailResponse,
+  RetailResponseWithAdditionalContacts,
+} from "../types";
 
 const requiredFields = [
   "nameObject",
@@ -74,11 +82,11 @@ export const getProjectById = async (
       where: { id: dealId },
       include: {
         additionalContacts: true,
-      }
+      },
     });
 
     if (!deal) {
-      return handleError("Проект не найден");
+      return null;
     }
 
     const formattedProject = {
@@ -128,11 +136,11 @@ export const getRetailById = async (
       where: { id: dealId },
       include: {
         additionalContacts: true,
-      }
+      },
     });
 
     if (!deal) {
-      return handleError("Проект не найден");
+      return null;
     }
 
     const formattedRetail = {
@@ -321,43 +329,43 @@ export const updateProject = async (
 
     // Если контакты переданы, делаем работу с ними
     // Если контакты переданы, делаем работу с ними
-if (contacts && (contacts as Contact[]).length > 0) {
-  // Удаление старых контактов
-  await prisma.additionalContact.deleteMany({
-    where: {
-      projects: {
-        some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
-      },
-    },
-  });
+    if (contacts && (contacts as Contact[]).length > 0) {
+      // Удаление старых контактов
+      await prisma.additionalContact.deleteMany({
+        where: {
+          projects: {
+            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+          },
+        },
+      });
 
-  // Добавление новых контактов
-  const newContacts = (contacts as Contact[]).map((contact) => ({
-    name: contact.name ?? "",
-    phone: contact.phone ?? null,
-    email: contact.email ?? null,
-    position: contact.position ?? null,
-    projects: {
-      connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
-    },
-  }));
+      // Добавление новых контактов
+      const newContacts = (contacts as Contact[]).map((contact) => ({
+        name: contact.name ?? "",
+        phone: contact.phone ?? null,
+        email: contact.email ?? null,
+        position: contact.position ?? null,
+        projects: {
+          connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
+        },
+      }));
 
-  // Используем create вместо createMany
-  for (const contact of newContacts) {
-    await prisma.additionalContact.create({
-      data: contact,
-    });
-  }
-} else {
-  // Если контакты не переданы, удаляем все контакты для этого проекта
-  await prisma.additionalContact.deleteMany({
-    where: {
-      projects: {
-        some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
-      },
-    },
-  });
-}
+      // Используем create вместо createMany
+      for (const contact of newContacts) {
+        await prisma.additionalContact.create({
+          data: contact,
+        });
+      }
+    } else {
+      // Если контакты не переданы, удаляем все контакты для этого проекта
+      await prisma.additionalContact.deleteMany({
+        where: {
+          projects: {
+            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+          },
+        },
+      });
+    }
 
     const finalDeal = await prisma.project.findUnique({
       where: { id: updatedDeal.id },
@@ -432,7 +440,7 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
           },
         },
       });
-    
+
       // Добавление новых контактов
       const newContacts = (contacts as Contact[]).map((contact) => ({
         name: contact.name ?? "",
@@ -443,7 +451,7 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
           connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
         },
       }));
-    
+
       // Используем create вместо createMany
       for (const contact of newContacts) {
         await prisma.additionalContact.create({
@@ -469,7 +477,6 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
     });
 
     if (!finalDeal) return [];
-
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { createdAt, updatedAt, ...restDeal } = finalDeal;
@@ -594,7 +601,8 @@ export const getRetailsUser = async (
   }
 };
 
-export const getAllProjectsByDepartment = async (): Promise<ProjectResponse[]
+export const getAllProjectsByDepartment = async (): Promise<
+  ProjectResponse[]
 > => {
   try {
     const { user } = await handleAuthorization();
@@ -638,7 +646,7 @@ export const getAllProjectsByDepartment = async (): Promise<ProjectResponse[]
 };
 
 export const getAllRetailsByDepartment = async (): Promise<
-RetailResponse[]
+  RetailResponse[]
 > => {
   try {
     const { user } = await handleAuthorization();

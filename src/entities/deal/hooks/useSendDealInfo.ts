@@ -1,10 +1,11 @@
-import React from 'react'
-import { ContactSchema } from '../model/schema';
-import { FieldValues } from 'react-hook-form';
+import React from "react";
+import { FieldValues } from "react-hook-form";
 
-const useSetContactsToDeal =  <T extends FieldValues>(
-    onSubmit: (data: T) => void
-  ) => {
+import { ContactSchema } from "../model/schema";
+
+const useSetContactsToDeal = <T extends FieldValues>(
+  onSubmit: (data: T) => void
+) => {
   const [contacts, setContacts] = React.useState<ContactSchema["contacts"]>([]);
 
   const handleDeleteContact = (id: string) => {
@@ -22,9 +23,7 @@ const useSetContactsToDeal =  <T extends FieldValues>(
     onSubmit(fullData);
   };
 
-  
+  return { contacts, setContacts, handleDeleteContact, handleSubmit };
+};
 
-  return { contacts, setContacts, handleDeleteContact,handleSubmit };
-}
-
-export default useSetContactsToDeal
+export default useSetContactsToDeal;

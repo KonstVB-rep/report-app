@@ -1,11 +1,13 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
+import { getQueryClient } from "@/app/provider/query-provider";
 import {
-  getRetailsUserQuery,
   getProjectsUserQuery,
+  getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn";
+
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
-import { getQueryClient } from "@/app/provider/query-provider";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 const PersonTablePage = async ({
   params,
@@ -22,23 +24,23 @@ const PersonTablePage = async ({
         queryKey: ["projects", userId],
         queryFn: () => {
           try {
-            return getProjectsUserQuery(userId)
+            return getProjectsUserQuery(userId);
           } catch (error) {
-            console.log(error,"ErrorPersonTablePage")
-            throw error
+            console.log(error, "ErrorPersonTablePage");
+            throw error;
           }
         },
-      }); 
+      });
       break;
     case "retails":
       await queryClient.prefetchQuery({
         queryKey: ["retails", userId],
         queryFn: () => {
           try {
-            return getRetailsUserQuery(userId)
+            return getRetailsUserQuery(userId);
           } catch (error) {
-            console.log(error,"ErrorPersonTablePage")
-            throw error
+            console.log(error, "ErrorPersonTablePage");
+            throw error;
           }
         },
       });

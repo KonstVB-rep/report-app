@@ -1,5 +1,6 @@
-import { ShieldAlert } from "lucide-react";
 import React from "react";
+
+import { ShieldAlert } from "lucide-react";
 
 interface AccessDeniedMessageProps {
   error?: {
@@ -8,7 +9,6 @@ interface AccessDeniedMessageProps {
 }
 
 const AccessDeniedMessage = ({ error }: AccessDeniedMessageProps) => {
-
   return (
     <section className="relative flex h-full flex-col items-center justify-center gap-5 p-4">
       <ShieldAlert strokeWidth={1.25} className="h-56 w-56 opacity-10" />

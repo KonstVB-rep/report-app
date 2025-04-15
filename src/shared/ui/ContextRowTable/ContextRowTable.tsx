@@ -1,5 +1,13 @@
 "use client";
+
+import { Project, Retail } from "@prisma/client";
+
 import { memo, useState } from "react";
+
+import Link from "next/link";
+
+import { FilePenLine, FileText, Trash2 } from "lucide-react";
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -7,11 +15,8 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
-import { Project, Retail } from "@prisma/client";
-import Link from "next/link";
-import { FilePenLine, FileText, Trash2 } from "lucide-react";
-import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
+import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;

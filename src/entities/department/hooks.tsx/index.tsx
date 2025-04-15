@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getDepartmentsWithUsersQuery } from "../api/queryFn";
-import { TOAST } from "@/entities/user/ui/Toast";
+
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { TOAST } from "@/shared/ui/Toast";
+
+import { getDepartmentsWithUsersQuery } from "../api/queryFn";
 
 export const useGetDepartmentsWithUsers = (isAuth: boolean) => {
   const { authUser } = useStoreUser();

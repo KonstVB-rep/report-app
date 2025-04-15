@@ -1,9 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { useEffect } from "react";
 import { DateRange } from "react-day-picker";
+
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -11,9 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ru } from "date-fns/locale";
 import { cn } from "@/shared/lib/utils";
-import { useEffect } from "react";
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   value?: DateRange;

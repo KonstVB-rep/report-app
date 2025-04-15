@@ -1,4 +1,11 @@
 "use client";
+
+import { PermissionEnum } from "@prisma/client";
+
+import { useParams } from "next/navigation";
+
+import { Trash } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,12 +16,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Trash } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useGetUser } from "../hooks/query";
-import { useDeleteUser } from "../hooks/mutate";
-import { PermissionEnum } from "@prisma/client";
 import Overlay from "@/shared/ui/Overlay";
+
+import { useDeleteUser } from "../hooks/mutate";
+import { useGetUser } from "../hooks/query";
 
 const DialogDeleteUser = () => {
   const params = useParams();
@@ -47,7 +52,7 @@ const DialogDeleteUser = () => {
           <p className="text-center">Вы уверены что хотите удалить аккаунт?</p>
           <p className="grid text-center">
             <span> Пользователь: </span>
-            <span className="font-bold capitalize text-lg">
+            <span className="text-lg font-bold capitalize">
               {data?.username.split(" ").join(" ")}
             </span>{" "}
             <span>будет удален безвозвратно</span>

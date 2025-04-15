@@ -1,14 +1,17 @@
+import { ColumnFilter, ColumnFiltersState } from "@tanstack/react-table";
+
 import React, { useState, useTransition } from "react";
+
 import { Filter } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { ColumnFilter, ColumnFiltersState } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 
 type Props = {
   columnId: string;

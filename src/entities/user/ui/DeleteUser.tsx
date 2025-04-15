@@ -1,6 +1,8 @@
-import DialogDeleteUser from "./DialogDeleteUser";
 import { PermissionEnum } from "@prisma/client";
+
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+
+import DialogDeleteUser from "./DialogDeleteUser";
 
 const DeleteUser = () => {
   return (
@@ -8,6 +10,6 @@ const DeleteUser = () => {
       <DialogDeleteUser />
     </ProtectedByPermissions>
   );
-}
+};
 
 export default DeleteUser;

@@ -1,15 +1,22 @@
 "use client";
-import React from "react";
-import { SquarePlus } from "lucide-react";
-import dynamic from "next/dynamic";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+
 import { PermissionEnum } from "@prisma/client";
-import DialogComponent from "@/shared/ui/DialogComponent";
+
+import React from "react";
+
+import dynamic from "next/dynamic";
+
+import { SquarePlus } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import DialogComponent from "@/shared/ui/DialogComponent";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+
 import UserFormSkeleton from "./UserFormSkeleton";
 
 const UserCreateForm = dynamic(() => import("./UserCreateForm"), {
-  ssr: false, loading: () => <UserFormSkeleton/>
+  ssr: false,
+  loading: () => <UserFormSkeleton />,
 });
 
 const DialogAddUser = () => {

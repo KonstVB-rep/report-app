@@ -1,5 +1,6 @@
-import { cn } from "@/shared/lib/utils";
 import React from "react";
+
+import { cn } from "@/shared/lib/utils";
 
 type IntoDealItemProps = {
   title: string;
@@ -7,12 +8,16 @@ type IntoDealItemProps = {
   className?: string;
 };
 
-const IntoDealItem = ({ title, children, className='' }: IntoDealItemProps) => {
+const IntoDealItem = ({
+  title,
+  children,
+  className = "",
+}: IntoDealItemProps) => {
   return (
     <div className={cn("overflow-hidden rounded-md border", className)}>
-      <p className="bg-muted p-4 firtst-letter:capitalize">{title}</p>
-      
-      <div className="p-3">{children}</div>
+      <p className="firtst-letter:capitalize bg-muted p-4">{title}</p>
+
+      <div className="flex-1 p-3">{children}</div>
     </div>
   );
 };

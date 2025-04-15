@@ -1,8 +1,11 @@
 "use client";
+
+import React from "react";
+
+import { Eye, EyeClosed } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeClosed } from "lucide-react";
-import React from "react";
 
 type InputPasswordProps = React.InputHTMLAttributes<HTMLInputElement>;
 const InputPassword = (props: InputPasswordProps) => {
@@ -24,7 +27,7 @@ const InputPassword = (props: InputPasswordProps) => {
         size={"icon"}
         type="button"
       >
-        {visible ?  <Eye /> :<EyeClosed />}
+        {visible ? <Eye /> : <EyeClosed />}
       </Button>
     </div>
   );

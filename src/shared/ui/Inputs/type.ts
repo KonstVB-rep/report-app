@@ -1,8 +1,8 @@
-import { FieldValues, Path, Control } from "react-hook-form"
+import { Control, FieldValues, Path } from "react-hook-form";
 
 export type InputFormProps<T extends FieldValues> = {
-  name: Path<T>
-  label: string
-  control: Control<T>
-  errorMessage?: string,
-} & React.InputHTMLAttributes<HTMLInputElement>
+  name: Path<T>;
+  label: string;
+  control: Control<T>;
+  errorMessage?: string;
+} & React.InputHTMLAttributes<HTMLInputElement>;

@@ -1,7 +1,9 @@
 "use server";
 
-import { jwtVerify } from "jose"; // Используем jose для верификации токенов
+// Используем jose для верификации токенов
 import { cookies } from "next/headers";
+
+import { jwtVerify } from "jose";
 
 interface DecodedToken {
   userId: string;

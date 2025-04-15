@@ -1,8 +1,10 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React from "react";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { useGetUserFilterById } from "../hooks/query";
 import DelSavedFilterForm from "./DelSavedFilterForm";
 import UpdateSavedFilterForm from "./UpdateSavedFilterForm";
-import { useGetUserFilterById } from "../hooks/query";
 
 const TabsChangeFilter = ({ filterId }: { filterId: string }) => {
   const { data: filter, isPending } = useGetUserFilterById(filterId);

@@ -1,5 +1,6 @@
-import { SignJWT } from "jose";
 import { cookies } from "next/headers";
+
+import { SignJWT } from "jose";
 
 if (!process.env.JWT_SECRET_KEY || !process.env.REFRESH_SECRET_KEY) {
   throw new Error("JWT_SECRET_KEY or REFRESH_SECRET_KEY is not defined");
@@ -9,7 +10,10 @@ if (!process.env.NODE_ENV) {
   throw new Error("NEXT_PUBLIC_NODE_ENV is not defined");
 }
 
-export const generateTokens = async (userId: string, deratmentId: string | number) => {
+export const generateTokens = async (
+  userId: string,
+  deratmentId: string | number
+) => {
   // Генерация access token
   const accessToken = await new SignJWT({ userId, deratmentId })
     .setProtectedHeader({ alg: "HS256" })

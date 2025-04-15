@@ -1,8 +1,9 @@
 import {
+  isServer,
   QueryClient,
   QueryClientProvider,
-  isServer,
 } from "@tanstack/react-query";
+
 import { PropsWithChildren } from "react";
 
 function makeQueryClient() {

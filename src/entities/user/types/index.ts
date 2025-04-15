@@ -1,4 +1,5 @@
 import { PermissionEnum } from "@prisma/client";
+
 import { PermissionUser, RolesUser } from "../model/objectTypes";
 
 export type RoleType = keyof typeof RolesUser;
@@ -71,7 +72,7 @@ export const OPTIONS: Option[] = [
   {
     label: PermissionUser.DEAL_MANAGEMENT,
     value: PermissionEnum.DEAL_MANAGEMENT,
-  }
+  },
 ];
 
 export type PermissionType = keyof typeof PermissionEnum;

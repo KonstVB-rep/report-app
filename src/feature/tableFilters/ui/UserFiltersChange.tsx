@@ -1,8 +1,10 @@
-import { Button } from "@/components/ui/button";
-
-import DialogComponent from "@/shared/ui/DialogComponent";
-import { FilePen } from "lucide-react";
 import React from "react";
+
+import { FilePen } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import DialogComponent from "@/shared/ui/DialogComponent";
+
 import TabsChangeFilter from "./TabsChangeFilter";
 
 const UserFiltersChange = ({ filterId }: { filterId: string }) => {

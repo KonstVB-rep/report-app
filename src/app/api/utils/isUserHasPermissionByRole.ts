@@ -1,12 +1,12 @@
+import { PermissionEnum } from "@prisma/client";
+
 import { User } from "@/entities/user/types";
 import prisma from "@/prisma/prisma-client";
-import { PermissionEnum } from "@prisma/client";
 
 export async function isUserHasPermissionByRole(
   user: User,
   permission?: (keyof typeof PermissionEnum)[]
 ): Promise<boolean> {
-
   if (!user) return false;
 
   // Получаем информацию о департаменте по ID
@@ -48,9 +48,7 @@ export async function isUserHasPermissionByRole(
     (p) => p.permission.name
   );
 
-
   if (!permission || permission.length === 0) {
-
     return false;
   }
 

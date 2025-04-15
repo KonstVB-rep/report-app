@@ -1,11 +1,13 @@
+import React, { useEffect, useState } from "react";
+
 import { Input } from "@/components/ui/input";
-import React, { useState, useEffect } from "react";
 
 interface InputNumberProps {
   placeholder?: string;
   value?: string;
   onChange: (val: string) => void;
   disabled?: boolean;
+  onBlur?: () => void;
 }
 
 const formatOnBlur = (raw: string): string => {
@@ -21,7 +23,12 @@ const formatOnBlur = (raw: string): string => {
   return `${formattedInteger},${fractional}`;
 };
 
-const InputNumber: React.FC<InputNumberProps> = ({ placeholder, value, onChange, disabled = false }) => {
+const InputNumber: React.FC<InputNumberProps> = ({
+  placeholder,
+  value,
+  onChange,
+  disabled = false,
+}) => {
   const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
@@ -31,19 +38,18 @@ const InputNumber: React.FC<InputNumberProps> = ({ placeholder, value, onChange,
     }
   }, [inputValue, value]);
 
-
   useEffect(() => {
     if (value !== undefined) {
       setInputValue(value);
     }
   }, [value]);
 
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
 
     // Разрешаем только цифры, запятую и точку
-    const cleaned = raw.replace(/[^\d,\.]/g, "")
+    const cleaned = raw
+      .replace(/[^\d,\.]/g, "")
       .replace(/\.(?=.*\.)/g, "") // только одна точка
       .replace(/,(?=.*,)/g, ""); // только одна запятая
 

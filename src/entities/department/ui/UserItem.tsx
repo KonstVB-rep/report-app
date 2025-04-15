@@ -1,12 +1,21 @@
+import React, { memo } from "react";
+
+import Link from "next/link";
+
+import { TableProperties } from "lucide-react";
+
 import { UserResponse } from "@/entities/user/types";
 import Contacts from "@/shared/ui/Contacts";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
-import { TableProperties } from "lucide-react";
-import Link from "next/link";
-import React, { memo } from "react";
 
-
-const UserItem = ({ id, username, position, departmentId, email, phone }: UserResponse ) => {
+const UserItem = ({
+  id,
+  username,
+  position,
+  departmentId,
+  email,
+  phone,
+}: UserResponse) => {
   return (
     <li key={id} className="grid grid-cols-3 gap-2">
       <Link
@@ -14,12 +23,8 @@ const UserItem = ({ id, username, position, departmentId, email, phone }: UserRe
         className="flex flex-col items-center justify-center rounded-md border border-solid px-4 py-2"
         title="Перейти в профиль"
       >
-        <span className="capitalize">
-          {username.split(" ").join(" ")}
-        </span>
-        <span className="text-xs first-letter:capitalize">
-          {position}
-        </span>
+        <span className="capitalize">{username.split(" ").join(" ")}</span>
+        <span className="text-xs first-letter:capitalize">{position}</span>
       </Link>
       <div className="grid grid-cols-3 gap-[2px] overflow-hidden rounded-md">
         <Contacts email={email} phone={phone} className="rounded-md" />

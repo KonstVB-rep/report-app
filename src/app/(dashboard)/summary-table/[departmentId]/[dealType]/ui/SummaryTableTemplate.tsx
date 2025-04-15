@@ -1,15 +1,18 @@
 import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
+
 import React from "react";
-import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
-import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
+
 import dynamic from "next/dynamic";
-import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
+
+import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable";
+import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
+import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 
 const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   ssr: false,
-  loading: () => <TableRowsSkeleton/>,
+  loading: () => <TableRowsSkeleton />,
 });
 
 type SummaryTableTemplateProps<T extends { id: string }> = {
@@ -31,14 +34,14 @@ const SummaryTableTemplate = <T extends { id: string }>({
 }: SummaryTableTemplateProps<T>) => {
   return (
     <DealTableTemplate>
-      {isError && (
-        <ErrorMessageTable message={error?.message} />
-      )}
+      {isError && <ErrorMessageTable message={error?.message} />}
       <LinkToUserTable />
       <DataTable
         columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
         data={data as Record<string, unknown>[]}
-        getRowLink={getRowLink as (row: Record<string, unknown>, type: string) => string}
+        getRowLink={
+          getRowLink as (row: Record<string, unknown>, type: string) => string
+        }
         isExistActionDeal={false}
         type={type}
       />

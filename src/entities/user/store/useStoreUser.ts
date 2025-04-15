@@ -1,7 +1,9 @@
-import { User } from "../types";
 import { persist } from "zustand/middleware";
+
 import { checkUserPermission } from "@/feature/auth/lib/checkUserPermission";
 import { create } from "@/shared/lib/helpers/сreate";
+
+import { User } from "../types";
 
 type State = {
   authUser: User | null;

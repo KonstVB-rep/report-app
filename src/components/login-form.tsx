@@ -1,32 +1,28 @@
 "use client";
 
-import { cn } from "@/shared/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { useActionState, useEffect, useState } from "react";
-import { login } from "@/feature/auth/login";
-import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
-import { z } from "zod";
-import {
-  Form,
-  // FormControl,
-  // FormField,
-  // FormItem,
-  // FormLabel,
-  // FormMessage,
-} from "./ui/form";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useActionState, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+
+import Image from "next/image";
 import { redirect } from "next/navigation";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/entities/user/ui/Toast";
-// import InputEmail from "@/shared/ui/Inputs/InputEmail";
-// import InputPassword from "@/shared/ui/Inputs/InputPassword";
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+
+import { z } from "zod";
+
+import { Card, CardContent } from "@/components/ui/card";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import { login } from "@/feature/auth/login";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
+import { cn } from "@/shared/lib/utils";
+import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+import { TOAST } from "@/shared/ui/Toast";
+
+import { Form } from "./ui/form";
 
 export const loginFormSchema = z.object({
   email: z.string().email(),
@@ -73,10 +69,6 @@ export function LoginForm({
       setAuthUser(state.data);
       setIsAuth(true);
     }
-
-    // if (isAuth) {
-    //   setShouldRedirect(true);
-    // }
   }, [state, setAuthUser, setIsAuth, isAuth]);
 
   useEffect(() => {
@@ -99,7 +91,7 @@ export function LoginForm({
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Добро пожаловать</h1>
-                  
+
                   <p className="text-balance text-muted-foreground">
                     Войдите в свою учетную запись
                   </p>
@@ -112,6 +104,7 @@ export function LoginForm({
                   errorMessage={form.formState.errors.email?.message}
                   type="email"
                   placeholder="Введите email"
+                  className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                   required
                 />
 
@@ -120,6 +113,7 @@ export function LoginForm({
                   label="Пароль"
                   control={form.control}
                   errorMessage={form.formState.errors.password?.message}
+                  className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
                   autoComplete="current-password"
                   required
                 />

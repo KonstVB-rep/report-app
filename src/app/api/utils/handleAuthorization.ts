@@ -1,7 +1,8 @@
-import { requireAuth } from "./requireAuth ";
-import { handleError } from "@/shared/api/handleError";
-import prisma from "@/prisma/prisma-client";
 import { User } from "@/entities/user/types";
+import prisma from "@/prisma/prisma-client";
+import { handleError } from "@/shared/api/handleError";
+
+import { requireAuth } from "./requireAuth ";
 
 interface Response<T> {
   error: boolean;
@@ -15,7 +16,7 @@ export const handleAuthorizationAction = async (): Promise<
   const userId = await requireAuth();
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  
+
   if (!user)
     return { error: true, message: "Пользователь не найден", data: null };
 
@@ -33,7 +34,6 @@ export const handleAuthorization = async (): Promise<{
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-
 
   if (!user) {
     return handleError("Пользователь не найден");

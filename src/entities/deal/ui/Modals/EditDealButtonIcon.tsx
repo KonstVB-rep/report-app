@@ -1,13 +1,16 @@
 import { DealType } from "@prisma/client";
-
-import EditRetail from "./EditRetail";
-import EditProject from "./EditProject";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+
+import { useState } from "react";
+
+import { FilePenLine } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { FilePenLine } from "lucide-react";
-import { useState } from "react";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
+
+import EditProject from "./EditProject";
+import EditRetail from "./EditRetail";
 
 const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const [open, setOpen] = useState(false);
@@ -19,7 +22,7 @@ const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
         <Dialog open={open} onOpenChange={setOpen}>
           <TooltipComponent content="Редактировать">
             <DialogTrigger asChild onClick={() => setOpen(true)}>
-              <Button size="icon" variant={"outline"}>
+              <Button size="icon" variant={"outline"} className="btn_hover">
                 <FilePenLine />
               </Button>
             </DialogTrigger>
@@ -32,7 +35,7 @@ const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
         <Dialog open={open} onOpenChange={setOpen}>
           <TooltipComponent content="Редактировать">
             <DialogTrigger asChild onClick={() => setOpen(true)}>
-              <Button size="icon" variant={"outline"}>
+              <Button size="icon" variant={"outline"} className="btn_hover">
                 <FilePenLine />
               </Button>
             </DialogTrigger>

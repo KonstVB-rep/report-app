@@ -1,8 +1,10 @@
 import React from "react";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
-import { Button } from "@/components/ui/button";
+
 import { X } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 
 interface DateRangeFilterProps {
   onDateChange: (date: DateRange | undefined) => void;

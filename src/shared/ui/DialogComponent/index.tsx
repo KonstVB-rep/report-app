@@ -1,3 +1,5 @@
+import React, { Dispatch, SetStateAction } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -7,7 +9,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import React, { Dispatch, SetStateAction } from "react";
 import TooltipComponent from "../TooltipComponent";
 
 type DialogComponentProps = {
@@ -20,6 +21,7 @@ type DialogComponentProps = {
   footer?: React.ReactNode;
   onOpenChange?: Dispatch<SetStateAction<boolean>>;
   classNameContent?: string;
+  disableClose?: boolean;
 };
 
 const DialogComponent = ({
@@ -32,6 +34,7 @@ const DialogComponent = ({
   dialogTitle = "",
   footer,
   classNameContent,
+  disableClose = false,
 }: DialogComponentProps) => {
   const [internalOpen, setInternalOpen] = React.useState(false);
 
@@ -51,9 +54,17 @@ const DialogComponent = ({
       <DialogContent
         className={`sm:max-w-[825px] ${classNameContent}`}
         showX={showX}
+        onInteractOutside={(e) => {
+          if (disableClose) e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          if (disableClose) e.preventDefault();
+        }}
       >
         <DialogHeader className={`${!dialogTitle && "sr-only m-0 p-0"}`}>
-          <DialogTitle className="text-center text-sm uppercase">{dialogTitle}</DialogTitle>
+          <DialogTitle className="text-center text-sm uppercase">
+            {dialogTitle}
+          </DialogTitle>
           <DialogDescription />
         </DialogHeader>
         {children}

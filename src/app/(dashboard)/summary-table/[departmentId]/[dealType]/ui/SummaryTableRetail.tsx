@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useCallback } from "react";
-import { RetailResponse } from "@/entities/deal/types";
 import { DealType, PermissionEnum } from "@prisma/client";
-import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
+
+import React, { useCallback } from "react";
+
+import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
+
 import { useGetAllRetails } from "@/entities/deal/hooks/query";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
-import { useParams } from "next/navigation";
-import SummaryTableTemplate from "./SummaryTableTemplate";
-import dynamic from "next/dynamic";
+import { RetailResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+
+import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
+import SummaryTableTemplate from "./SummaryTableTemplate";
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),

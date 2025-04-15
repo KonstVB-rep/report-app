@@ -1,34 +1,37 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { PermissionEnum } from "@prisma/client";
 import {
-  useReactTable,
-  getCoreRowModel,
-  SortingState,
-  getSortedRowModel,
-  getFilteredRowModel,
-  ColumnFiltersState,
-  VisibilityState,
   ColumnDef,
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
-import SelectColumns from "../SelectColumns";
+
+import React, { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
-import DateRangeFilter from "../DateRangeFilter";
-import { DealTypeLabels, LABELS } from "@/entities/deal/lib/constants";
-import MultiColumnFilter from "../MultiColumnFilter";
-import TableComponent from "./TableComponent";
-import FilterPopoverGroup from "../Filters/FilterPopoverGroup";
-import FilterByUser from "../Filters/FilterByUsers";
+
 import { useParams, useSearchParams } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
+import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
+import { DealTypeLabels, LABELS } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
-import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
-import { Button } from "@/components/ui/button";
 import iconsTypeFile from "@/widgets/Files/ui/FileList/iconsTypeFile";
+
+import DateRangeFilter from "../DateRangeFilter";
+import FilterByUser from "../Filters/FilterByUsers";
+import FilterPopoverGroup from "../Filters/FilterPopoverGroup";
+import MultiColumnFilter from "../MultiColumnFilter";
 import ProtectedByPermissions from "../ProtectedByPermissions";
-import { PermissionEnum } from "@prisma/client";
+import SelectColumns from "../SelectColumns";
 import { downloadToExcel } from "./exceljs/downLoadToExcel";
+import TableComponent from "./TableComponent";
 
 const includedColumns = [
   "nameObject",
@@ -60,7 +63,6 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-
 
   const memoizedData = useMemo(() => data, [data]);
   const memoizedColumns = useMemo(() => columns, [columns]);
@@ -207,7 +209,11 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
       </div>
 
       {data.length ? (
-        <TableComponent table={table} getRowLink={getRowLink} isExistActionDeal={isExistActionDeal} />
+        <TableComponent
+          table={table}
+          getRowLink={getRowLink}
+          isExistActionDeal={isExistActionDeal}
+        />
       ) : (
         <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
           Проекты не найдены

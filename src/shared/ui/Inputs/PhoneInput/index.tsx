@@ -1,5 +1,6 @@
 import React from "react";
 import { IMaskInput } from "react-imask";
+
 import { cn } from "@/shared/lib/utils";
 
 interface PhoneInputProps extends React.HTMLAttributes<HTMLInputElement> {
@@ -21,7 +22,6 @@ const PhoneInput = ({
   required,
   ...props
 }: PhoneInputProps) => {
-
   const handleValueChange = (value: string) => {
     // Проверяем, есть ли добавочный номер
     const cleanValue = value.replace(/\D/g, ""); // Убираем все символы, кроме цифр
@@ -35,7 +35,7 @@ const PhoneInput = ({
       onAccept?.(value);
     }
   };
-  
+
   return (
     <IMaskInput
       mask={mask}

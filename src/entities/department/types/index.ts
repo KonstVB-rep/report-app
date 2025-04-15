@@ -1,6 +1,8 @@
-import { UserResponse } from "@/entities/user/types";
 import type { DepartmentEnum } from "@prisma/client";
+
 import { ReactNode } from "react";
+
+import { UserResponse } from "@/entities/user/types";
 
 export type DepartmentInfo = {
   id: number;

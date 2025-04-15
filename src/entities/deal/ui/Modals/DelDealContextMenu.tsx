@@ -1,3 +1,7 @@
+import { DealType } from "@prisma/client";
+
+import React, { Dispatch, SetStateAction } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -7,12 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import React, { Dispatch, SetStateAction } from "react";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import { useGetDealById } from "@/entities/deal/hooks/query";
-import { DealType } from "@prisma/client";
-import { useDelDeal } from "../../hooks/mutate";
+import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import Overlay from "@/shared/ui/Overlay";
+
+import { useDelDeal } from "../../hooks/mutate";
 
 const DelDealContextMenu = ({
   close,

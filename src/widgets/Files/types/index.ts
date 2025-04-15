@@ -1,3 +1,3 @@
 import { DealFile } from "@prisma/client";
 
-export type FileInfo = Omit<DealFile, "createdAt" | "updatedAt" > 
+export type FileInfo = Omit<DealFile, "createdAt" | "updatedAt">;

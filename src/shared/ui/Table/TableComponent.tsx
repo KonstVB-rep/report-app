@@ -1,3 +1,9 @@
+import { flexRender, Row, useReactTable } from "@tanstack/react-table";
+
+import { ReactNode, RefObject, useCallback } from "react";
+
+import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
+
 import {
   Table,
   TableBody,
@@ -6,12 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { flexRender, Row, useReactTable } from "@tanstack/react-table";
-
-import { MoveUp, MoveDown, ArrowDownUp } from "lucide-react";
-import { ReactNode, RefObject, useCallback } from "react";
-import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import useScrollIntoViewBottomTable from "@/shared/hooks/useScrollIntoViewBottomTable";
+
+import ContextRowTable from "../ContextRowTable/ContextRowTable";
 
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -21,9 +24,8 @@ type TableComponentProps<T> = {
 
 const TableComponent = <T extends Record<string, unknown>>({
   table,
-  isExistActionDeal = true
+  isExistActionDeal = true,
 }: TableComponentProps<T>) => {
-
   const ref = useScrollIntoViewBottomTable(
     table
   ) as unknown as RefObject<HTMLTableElement | null>;
@@ -38,16 +40,23 @@ const TableComponent = <T extends Record<string, unknown>>({
       </TableCell>
     ));
   }, []);
-  
-  const renderRow = useCallback((row: Row<T>): ReactNode => {
-    return (
-      <ContextRowTable key={row.id} rowData={row.original} isExistActionDeal={isExistActionDeal}>
-        <TableRow className="tr hover:bg-zinc-600 hover:text-white">
-          {renderRowCells(row)}
-        </TableRow>
-      </ContextRowTable>
-    );
-  }, [renderRowCells,isExistActionDeal]);
+
+  const renderRow = useCallback(
+    (row: Row<T>): ReactNode => {
+      return (
+        <ContextRowTable
+          key={row.id}
+          rowData={row.original}
+          isExistActionDeal={isExistActionDeal}
+        >
+          <TableRow className="tr hover:bg-zinc-600 hover:text-white">
+            {renderRowCells(row)}
+          </TableRow>
+        </ContextRowTable>
+      );
+    },
+    [renderRowCells, isExistActionDeal]
+  );
 
   return (
     <Table
@@ -62,7 +71,11 @@ const TableComponent = <T extends Record<string, unknown>>({
                 key={header.id}
                 colSpan={header.colSpan}
                 className="border-r border-zinc-600 bg-zinc-400 px-3 py-2 dark:bg-zinc-800"
-                style={{ position: "relative", width: header.getSize(), minWidth: header.column.columnDef.minSize }}
+                style={{
+                  position: "relative",
+                  width: header.getSize(),
+                  minWidth: header.column.columnDef.minSize,
+                }}
               >
                 {header.isPlaceholder ? null : (
                   <div

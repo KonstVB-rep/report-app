@@ -1,14 +1,18 @@
 "use client";
 
+import React, { useRef } from "react";
+
+import { useParams, useSearchParams } from "next/navigation";
+
+import { Save } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import { Save } from "lucide-react";
-import React, { useRef } from "react";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import { useParams, useSearchParams } from "next/navigation";
+import DialogComponent from "@/shared/ui/DialogComponent";
+
 import { useSaveFilter } from "../hooks/mutate";
 
 const SaveFilter = () => {
@@ -41,11 +45,7 @@ const SaveFilter = () => {
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button
-          variant={"secondary"}
-          size={"icon"}
-          className="btn_hover w-fit"
-        >
+        <Button variant={"secondary"} size={"icon"} className="btn_hover w-fit">
           <Save />
         </Button>
       }

@@ -1,15 +1,19 @@
-'use server'
+"use server";
 
-import { deleteFileFromDB, writeHrefDownloadFileInDB } from "@/widgets/Files/api/actions_db";
 import { DealType } from "@prisma/client";
+
 import axios, { AxiosError } from "axios";
 
+import {
+  deleteFileFromDB,
+  writeHrefDownloadFileInDB,
+} from "@/widgets/Files/api/actions_db";
 
 export const axiosDownLoaderFromYD = axios.create({
-headers: {
+  headers: {
     "Content-Type": "application/json",
     Authorization: `OAuth ${process.env.YANDEX_OAUTH_TOKEN}`,
-  }, 
+  },
 });
 
 export const axiosInstanceYandexDisk = axios.create({
@@ -25,7 +29,9 @@ export const axiosInstanceYandexDisk = axios.create({
  */
 async function getFiles(folderPath: string = "/") {
   try {
-    const response = await axiosInstanceYandexDisk.get(`/resources?path=${encodeURIComponent(folderPath)}`);
+    const response = await axiosInstanceYandexDisk.get(
+      `/resources?path=${encodeURIComponent(folderPath)}`
+    );
     return response.data;
   } catch (error) {
     console.error("Ошибка в getFiles:", error);
@@ -35,10 +41,10 @@ async function getFiles(folderPath: string = "/") {
 
 /**
  * Получение информации о диске
-//  */
+ */
 const getInfoDisk = async () => {
   try {
-    const response = await axiosInstanceYandexDisk.get('/');
+    const response = await axiosInstanceYandexDisk.get("/");
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении информации о диске:", error);
@@ -48,33 +54,36 @@ const getInfoDisk = async () => {
 
 /**
  * Получить метаинформацию о ресурсе
- * 
  */
-
 async function getResourceInfo(resourcePath: string) {
-    try {
-      const response = await axiosInstanceYandexDisk.get(`/resources?path=${encodeURIComponent(resourcePath)}`);
-      return response.data;
-    } catch (error) {
-      console.error("Ошибка в getResourceInfo:", error);
-      throw error;
-    }
+  try {
+    const response = await axiosInstanceYandexDisk.get(
+      `/resources?path=${encodeURIComponent(resourcePath)}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка в getResourceInfo:", error);
+    throw error;
+  }
 }
 
 /**
  * Загрузка файла на Яндекс.Диск
  */
-async function uploadFileToYandexDiskAndDB(formData: FormData) {
+async function uploadFilesToYandexDiskAndDB(formData: FormData) {
   try {
+    const files = formData.getAll("files") as File[];
+    const folderPath =
+      (formData.get("folderPath") as string) || "/report_app_uploads";
+    const dealId = formData.get("dealId") as string;
+    const dealType = formData.get("dealType") as DealType;
+    const userId = formData.get("userId") as string;
 
-    const file = formData.get("file") as File;
-    const fileName = formData.get("fileName") as string;
-    const folderPath = formData.get("folderPath") as string || "/report_app_uploads";
-    const fullPath = `${folderPath}/${fileName}`;
-
-    // Проверяем существование папки
+    // Проверка папки (один раз)
     try {
-      await axiosInstanceYandexDisk.get(`/resources?path=${encodeURIComponent(folderPath)}`);
+      await axiosInstanceYandexDisk.get(
+        `/resources?path=${encodeURIComponent(folderPath)}`
+      );
     } catch (error) {
       if (error instanceof AxiosError && error.response?.status === 404) {
         await createFolderOnYandexDisk(folderPath);
@@ -83,44 +92,103 @@ async function uploadFileToYandexDiskAndDB(formData: FormData) {
       }
     }
 
-    // Получаем ссылку для загрузки
-    const uploadResponse = await axiosInstanceYandexDisk.get(`/resources/upload?path=${encodeURIComponent(fullPath)}`);
-    const uploadUrl = uploadResponse.data.href;
+    const uploadedFiles = [];
 
+    for (const file of files) {
+      const fullPath = `${folderPath}/${file.name}`;
 
-    // Загружаем файл
-    await axios.put(uploadUrl, file, {
-      headers: {
-        "Content-Type": file.type, // устанавливаем правильный MIME-тип
-      },
-    });
+      // Получаем ссылку на загрузку
+      const uploadResponse = await axiosInstanceYandexDisk.get(
+        `/resources/upload?path=${encodeURIComponent(fullPath)}`
+      );
+      const uploadUrl = uploadResponse.data.href;
 
-    // Получаем ссылку для скачивания
-    const downResponse = await axiosInstanceYandexDisk.get(`/resources/download?path=${encodeURIComponent(fullPath)}`);
+      // Загружаем файл
+      await axios.put(uploadUrl, file, {
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
 
-    const { href: downloadUrl } = downResponse.data;
+      // Запись в базу
+      const fileInfo = await writeHrefDownloadFileInDB({
+        name: file.name,
+        localPath: fullPath,
+        dealId,
+        dealType,
+        userId,
+      });
 
-    const formDatatForDb = {
-      name: fileName,
-      href: downloadUrl,
-      localPath: fullPath,
-      dealId: formData.get("dealId") as string,
-      dealType: formData.get("dealType") as DealType,
-      userId: formData.get("userId") as string
+      if (!fileInfo) {
+        throw new Error("Ошибка при записи данных о файле в базу");
+      }
+
+      uploadedFiles.push(fileInfo);
     }
-   
-    const fileInfo = await writeHrefDownloadFileInDB(formDatatForDb);
 
-    if (!fileInfo) {
-      throw new Error("Ошибка при записи данных о файле в базу данных");
-    }
-
-    return fileInfo;
+    return uploadedFiles;
   } catch (error) {
-    console.error("Ошибка в uploadFileToYandexDisk:", error);
+    console.error("Ошибка в uploadFilesToYandexDiskAndDB:", error);
     throw error;
   }
 }
+
+// async function uploadFileToYandexDiskAndDB(formData: FormData) {
+//   try {
+
+//     const file = formData.get("file") as File;
+//     const fileName = formData.get("fileName") as string;
+//     const folderPath = formData.get("folderPath") as string || "/report_app_uploads";
+//     const fullPath = `${folderPath}/${fileName}`;
+
+//     // Проверяем существование папки
+//     try {
+//       await axiosInstanceYandexDisk.get(`/resources?path=${encodeURIComponent(folderPath)}`);
+//     } catch (error) {
+//       if (error instanceof AxiosError && error.response?.status === 404) {
+//         await createFolderOnYandexDisk(folderPath);
+//       } else {
+//         throw error;
+//       }
+//     }
+
+//     // Получаем ссылку для загрузки
+//     const uploadResponse = await axiosInstanceYandexDisk.get(`/resources/upload?path=${encodeURIComponent(fullPath)}`);
+//     const uploadUrl = uploadResponse.data.href;
+
+//     // Загружаем файл
+//     await axios.put(uploadUrl, file, {
+//       headers: {
+//         "Content-Type": file.type, // устанавливаем правильный MIME-тип
+//       },
+//     });
+
+//     // Получаем ссылку для скачивания
+//     const downResponse = await axiosInstanceYandexDisk.get(`/resources/download?path=${encodeURIComponent(fullPath)}`);
+
+//     const { href: downloadUrl } = downResponse.data;
+
+//     const formDatatForDb = {
+//       name: fileName,
+//       href: downloadUrl,
+//       localPath: fullPath,
+//       dealId: formData.get("dealId") as string,
+//       dealType: formData.get("dealType") as DealType,
+//       userId: formData.get("userId") as string
+//     }
+
+//     const fileInfo = await writeHrefDownloadFileInDB(formDatatForDb);
+
+//     if (!fileInfo) {
+//       throw new Error("Ошибка при записи данных о файле в базу данных");
+//     }
+
+//     return fileInfo;
+//   } catch (error) {
+//     console.error("Ошибка в uploadFileToYandexDisk:", error);
+//     throw error;
+//   }
+// }
 
 /**
  * Скачивание файла с Яндекс.Диска
@@ -128,11 +196,15 @@ async function uploadFileToYandexDiskAndDB(formData: FormData) {
 async function downloadFileFromYandexDisk(filePath: string): Promise<Blob> {
   try {
     // Получаем URL для скачивания
-  
-    const response = await axiosInstanceYandexDisk.get(`/resources/download?path=${encodeURIComponent(filePath)}`);
+
+    const response = await axiosInstanceYandexDisk.get(
+      `/resources/download?path=${encodeURIComponent(filePath)}`
+    );
     const { href: downloadUrl } = response.data;
 
-    const downloadResponse = await axiosDownLoaderFromYD.get(downloadUrl, { responseType: "blob" });
+    const downloadResponse = await axiosDownLoaderFromYD.get(downloadUrl, {
+      responseType: "blob",
+    });
 
     return downloadResponse.data;
   } catch (error) {
@@ -146,7 +218,9 @@ async function downloadFileFromYandexDisk(filePath: string): Promise<Blob> {
  */
 const createFolderOnYandexDisk = async (folderPath: string) => {
   try {
-    return await axiosInstanceYandexDisk.put(`/resources?path=${encodeURIComponent(folderPath)}`);
+    return await axiosInstanceYandexDisk.put(
+      `/resources?path=${encodeURIComponent(folderPath)}`
+    );
   } catch (error) {
     console.error("Ошибка при создании папки:", error);
     throw error;
@@ -156,32 +230,36 @@ const createFolderOnYandexDisk = async (folderPath: string) => {
 /**
  * Удаление файла/папки с Яндекс.Диска
  */
-const deleteFileOrFolderFromYandexDiskAnDB = async (file: { filePath: string, id: string, dealType: DealType, userId: string }) => {
+const deleteFileOrFolderFromYandexDiskAnDB = async (file: {
+  filePath: string;
+  id: string;
+  dealType: DealType;
+  userId: string;
+}) => {
   try {
     const { filePath, id, dealType, userId } = file;
 
-    const response = await axiosInstanceYandexDisk.delete(`/resources?path=${filePath}`); 
+    const response = await axiosInstanceYandexDisk.delete(
+      `/resources?path=${filePath}`
+    );
 
     if (response.status !== 204 && response.status !== 200) {
-       throw new Error("Не удалось удалить файл.");
+      throw new Error("Не удалось удалить файл.");
     }
 
-    return await deleteFileFromDB({ id, dealType, userId })
+    return await deleteFileFromDB({ id, dealType, userId });
   } catch (error) {
     console.error("Ошибка при удалении файла/папки:", error);
     throw error;
   }
 };
 
-export { getFiles,getInfoDisk,getResourceInfo, uploadFileToYandexDiskAndDB, downloadFileFromYandexDisk, createFolderOnYandexDisk,deleteFileOrFolderFromYandexDiskAnDB };
-
-
-
-
-//Если файл текстовый, можно сразу вывести его содержимое.
-
-// export function readBlobText(blob: Blob) {
-//   const reader = new FileReader();
-//   reader.onload = () => console.log("Содержимое файла:", reader.result);
-//   reader.readAsText(blob);
-// }
+export {
+  getFiles,
+  getInfoDisk,
+  getResourceInfo,
+  uploadFilesToYandexDiskAndDB,
+  downloadFileFromYandexDisk,
+  createFolderOnYandexDisk,
+  deleteFileOrFolderFromYandexDiskAnDB,
+};

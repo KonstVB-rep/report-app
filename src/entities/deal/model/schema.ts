@@ -1,28 +1,26 @@
-import { z } from "zod";
 import {
-  DirectionProject,
   DeliveryProject,
-  StatusProject,
-  DirectionRetail,
   DeliveryRetail,
+  DirectionProject,
+  DirectionRetail,
+  StatusProject,
   StatusRetail,
 } from "@prisma/client";
+
+import { z } from "zod";
 
 export const SingleContactSchema = z
   .object({
     id: z.string(),
     name: z.string().min(1, "Имя обязательно"),
     phone: z.string().nullable().optional(),
-    email: z.string().nullable().optional(), 
+    email: z.string().nullable().optional(),
     position: z.string().nullable().optional(),
   })
-  .refine(
-    (contact) => contact.phone?.trim() || contact.email?.trim(),
-    {
-      message: "Укажите либо телефон, либо email",
-      path: ["_common"],
-    }
-  );
+  .refine((contact) => contact.phone?.trim() || contact.email?.trim(), {
+    message: "Укажите либо телефон, либо email",
+    path: ["_common"],
+  });
 
 export const ContactFormSchema = z.object({
   contacts: z.array(SingleContactSchema),
@@ -100,9 +98,9 @@ export const RetailFormSchema = z.object({
     }
   ),
   deliveryType: z
-  .enum(Object.values(DeliveryRetail) as [string, ...string[]])
-  .optional()
-  .nullable(),
+    .enum(Object.values(DeliveryRetail) as [string, ...string[]])
+    .optional()
+    .nullable(),
   contact: z.string(),
   phone: z.string().optional(),
   email: z.string().email().or(z.literal("")),
@@ -120,7 +118,6 @@ export const RetailFormSchema = z.object({
   ),
   resource: z.string().optional(),
   contacts: z.array(SingleContactSchema),
-  
 });
 
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;

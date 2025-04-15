@@ -1,8 +1,9 @@
 "use client";
 
+import { ColumnDef } from "@tanstack/react-table";
+
 import { columnsDataRetail } from "@/app/(dashboard)/table/[departmentId]/[dealType]/[userId]/model/columns-data-retail";
 import { RetailResponse } from "@/entities/deal/types";
-import { ColumnDef } from "@tanstack/react-table";
 
 export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [
   ...columnsDataRetail,

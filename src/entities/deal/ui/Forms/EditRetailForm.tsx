@@ -1,15 +1,18 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
+
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TOAST } from "@/entities/user/ui/Toast";
-import { RetailFormSchema, RetailSchema } from "../../model/schema";
-import { useGetRetailById } from "../../hooks/query";
+
 import { formatterCurrency } from "@/shared/lib/utils";
-import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
-import RetailFormBody from "./RetailFormBody";
-import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
+import { TOAST } from "@/shared/ui/Toast";
+
 import { useMutationUpdateRetail } from "../../hooks/mutate";
+import { useGetRetailById } from "../../hooks/query";
 import { defaultRetailValues } from "../../model/defaultvaluesForm";
+import { RetailFormSchema, RetailSchema } from "../../model/schema";
+import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
+import RetailFormBody from "./RetailFormBody";
 
 const formatCurrency = (value: string | null | undefined): string => {
   return formatterCurrency.format(parseFloat(value || "0"));
@@ -29,22 +32,23 @@ const EditRetailForm = ({
     defaultValues: defaultRetailValues,
   });
 
-  const { mutateAsync, isPending } = useMutationUpdateRetail(dealId, data?.userId ?? "", close);
+  const { mutateAsync, isPending } = useMutationUpdateRetail(
+    dealId,
+    data?.userId ?? "",
+    close
+  );
 
   const onSubmit = (data: RetailSchema) => {
-    TOAST.PROMISE(
-         mutateAsync(data),
-         "Данные обновлены"
-       );
+    TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
   };
 
   useEffect(() => {
     if (data && !isLoading) {
       form.reset({
         ...data,
-        phone: data.phone ?? undefined, 
-        email: data.email ?? undefined, 
-        dateRequest: data.dateRequest?.toISOString(), 
+        phone: data.phone ?? undefined,
+        email: data.email ?? undefined,
+        dateRequest: data.dateRequest?.toISOString(),
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
         direction: data.direction as DirectionRetail,
@@ -60,7 +64,12 @@ const EditRetailForm = ({
   if (isLoading) <FormEditSkeleton />;
 
   return (
-    <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} contactsKey="contacts"/>
+    <RetailFormBody
+      form={form}
+      onSubmit={onSubmit}
+      isPending={isPending}
+      contactsKey="contacts"
+    />
   );
 };
 

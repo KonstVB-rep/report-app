@@ -1,4 +1,5 @@
 import React from "react";
+
 import { File } from "lucide-react";
 
 const iconsTypeFile = {
@@ -123,7 +124,7 @@ const iconsTypeFile = {
       </g>
     </svg>
   ),
-  default: (props?: React.SVGProps<SVGSVGElement>) => <File {...props} />
+  default: (props?: React.SVGProps<SVGSVGElement>) => <File {...props} />,
 };
 
 export default iconsTypeFile;

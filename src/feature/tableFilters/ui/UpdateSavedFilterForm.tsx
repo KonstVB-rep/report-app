@@ -1,17 +1,21 @@
+import { UserFilter } from "@prisma/client";
+
+import React, { useEffect, useState } from "react";
+
+import { useSearchParams } from "next/navigation";
+
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import { UserFilter } from "@prisma/client";
-import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+
 import { useUpdateFilter } from "../hooks/mutate";
 
 const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {

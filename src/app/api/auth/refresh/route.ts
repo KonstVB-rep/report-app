@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { jwtVerify } from "jose"; // Используем jose вместо jsonwebtoken
+
+import { jwtVerify } from "jose";
+
+// Используем jose вместо jsonwebtoken
 import { generateTokens } from "@/feature/auth/lib/generateTokens";
 
 export async function POST(req: Request) {

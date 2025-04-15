@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
 import React from "react";
 import { useFormStatus } from "react-dom";
+
+import { Loader } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 type SubmitButtonProps = {} & React.ComponentProps<"button">;
 

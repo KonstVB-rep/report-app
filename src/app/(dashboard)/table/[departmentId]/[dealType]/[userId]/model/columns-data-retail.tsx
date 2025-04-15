@@ -1,5 +1,11 @@
 "use client";
 
+import { CellContext, ColumnDef } from "@tanstack/react-table";
+
+import { DateRange } from "react-day-picker";
+
+import { endOfDay, startOfDay } from "date-fns";
+
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
@@ -7,9 +13,6 @@ import {
 } from "@/entities/deal/lib/constants";
 import { RetailResponse, StatusType } from "@/entities/deal/types";
 import { formatterCurrency } from "@/shared/lib/utils";
-import { CellContext, ColumnDef } from "@tanstack/react-table";
-import { endOfDay, startOfDay } from "date-fns";
-import { DateRange } from "react-day-picker";
 
 export type typeofDirections = keyof typeof DirectionRetailLabels;
 
@@ -92,7 +95,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId);
-      if(!rowValue) return false;
+      if (!rowValue) return false;
       if (Array.isArray(value)) {
         return value.some((direction) =>
           (rowValue as typeofDirections).includes(direction)
@@ -200,7 +203,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "comments",
     header: "Комментарии",
     size: 300,
-    minSize: 300, 
+    minSize: 300,
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(), //тег
     enableSorting: false,
     enableHiding: true,

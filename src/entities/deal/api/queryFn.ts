@@ -12,7 +12,7 @@ export const getRetailsUserQuery = async (userId: string) => {
     return await getRetailsUser(userId as string);
   } catch (error) {
     console.log(error, "Ошибка getRetailsUserQuery");
-    return []; 
+    return [];
   }
 };
 
@@ -22,7 +22,7 @@ export const getProjectsUserQuery = async (userId: string) => {
     return projects || []; // Возвращаем пустой массив, если projects === null
   } catch (error) {
     console.log(error, "Ошибка getProjectsUserQuery");
-    return []; 
+    return [];
   }
 };
 
@@ -31,7 +31,7 @@ export const getAllProjectsByDepartmentQuery = async () => {
     return await getAllProjectsByDepartment();
   } catch (error) {
     console.log(error, "Ошибка getAllProjectsByDepartmentQuery");
-    return []; 
+    return [];
   }
 };
 
@@ -40,6 +40,6 @@ export const getAllRetailsByDepartmentQuery = async () => {
     return await getAllRetailsByDepartment();
   } catch (error) {
     console.log(error, "Ошибка getAllRetailsByDepartmentQuery");
-    return []; 
+    return [];
   }
 };

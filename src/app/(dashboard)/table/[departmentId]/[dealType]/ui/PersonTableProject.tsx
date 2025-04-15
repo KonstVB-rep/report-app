@@ -1,14 +1,18 @@
 "use client";
 
-import { useGetProjectsUser } from "@/entities/deal/hooks/query";
-import { ProjectResponse } from "@/entities/deal/types";
 import { DealType, PermissionEnum } from "@prisma/client";
+
+import { useCallback } from "react";
+
+import dynamic from "next/dynamic";
+
+import { useGetProjectsUser } from "@/entities/deal/hooks/query";
+import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
+import { ProjectResponse } from "@/entities/deal/types";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+
 import { columnsDataProject } from "../[userId]/model/columns-data-project";
 import PersonTable from "./PersonTable";
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import dynamic from "next/dynamic";
-import { useCallback } from "react";
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),

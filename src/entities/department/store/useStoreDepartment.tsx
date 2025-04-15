@@ -1,7 +1,9 @@
 import { persist } from "zustand/middleware";
-import { DepartmentInfo } from "../types";
-import { formattedArr } from "../lib/utils";
+
 import { create } from "@/shared/lib/helpers/сreate";
+
+import { formattedArr } from "../lib/utils";
+import { DepartmentInfo } from "../types";
 
 export type DeptFormatted = {
   id: number;

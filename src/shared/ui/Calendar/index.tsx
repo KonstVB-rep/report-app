@@ -1,4 +1,12 @@
 "use client";
+
+import React from "react";
+import { FieldValues } from "react-hook-form";
+
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { FormControl } from "@/components/ui/form";
@@ -8,11 +16,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/shared/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import React from "react";
-import { ru } from "date-fns/locale";
-import { FieldValues } from "react-hook-form";
 
 type CalendarComponentProps = {
   required?: boolean;

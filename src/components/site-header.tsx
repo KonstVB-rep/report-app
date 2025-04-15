@@ -1,9 +1,11 @@
 "use client";
 
 import { SidebarIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
+
 import { ModeToggle } from "./ui/mode-toggle";
 
 export function SiteHeader() {

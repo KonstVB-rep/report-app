@@ -1,18 +1,20 @@
 "use client";
+
+import Link from "next/link";
+
 import { BadgeCheck, ChevronsUpDown } from "lucide-react";
+
 import {
   SidebarMenu,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-import { LogoutDialog } from "./logout-dialog";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import Link from "next/link";
 import HoverCardComponent from "@/shared/ui/HoverCard";
 
+import { LogoutDialog } from "./logout-dialog";
+
 export function NavUser() {
-  
   const { isMobile } = useSidebar();
   const { authUser } = useStoreUser();
 

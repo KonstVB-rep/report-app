@@ -1,3 +1,9 @@
+import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { LogOut } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,12 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { logout } from "@/feature/auth/logout";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
-import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export function LogoutDialog() {
-
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();

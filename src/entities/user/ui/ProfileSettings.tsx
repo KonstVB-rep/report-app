@@ -1,12 +1,15 @@
 "use client";
 
-import { EllipsisVertical, UserRound } from "lucide-react";
 import React from "react";
-import { User } from "../types";
 
-import Link from "next/link";
-import HoverCardComponent from "@/shared/ui/HoverCard";
 import dynamic from "next/dynamic";
+import Link from "next/link";
+
+import { EllipsisVertical, UserRound } from "lucide-react";
+
+import HoverCardComponent from "@/shared/ui/HoverCard";
+
+import { User } from "../types";
 
 const PersonEdit = dynamic(() => import("./PersonTableEdit"), { ssr: false });
 

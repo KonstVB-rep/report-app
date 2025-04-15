@@ -1,22 +1,20 @@
-import { getQueryClient } from "@/app/provider/query-provider";
 import { useMutation } from "@tanstack/react-query";
-import {
-  createUser,
 
-  deleteUser,
-  updateUser,
-} from "../api";
+import { useRouter } from "next/navigation";
+
+import { getQueryClient } from "@/app/provider/query-provider";
+import { DepartmentInfo } from "@/entities/department/types";
+import { TOAST } from "@/shared/ui/Toast";
+
+import { createUser, deleteUser, updateUser } from "../api";
 import { userEditSchema, userSchema } from "../model/schema";
 import {
-  UserRequest,
   DepartmentTypeName,
-  RoleType,
   PermissionType,
+  RoleType,
+  UserRequest,
   UserResponse,
 } from "../types";
-import { useRouter } from "next/navigation";
-import { TOAST } from "../ui/Toast";
-import { DepartmentInfo } from "@/entities/department/types";
 
 const queryClient = getQueryClient();
 
@@ -91,21 +89,24 @@ export const useDeleteUser = (userId: string) => {
   });
 };
 
-export const useUpdateUser = (user: UserResponse, setOpen: (value: boolean) => void) => {
+export const useUpdateUser = (
+  user: UserResponse,
+  setOpen: (value: boolean) => void
+) => {
   return useMutation({
-        mutationFn: (data: userEditSchema) => updateUser(data as UserRequest),
-        onSuccess: () => {
-          setOpen(false);
-          if (user) {
-            queryClient.invalidateQueries({
-              queryKey: ["user", user.id],
-              exact: true,
-            });
-          }
-          queryClient.invalidateQueries({
-            queryKey: ["depsWithUsers"],
-            exact: true,
-          });
-        },
-  })
+    mutationFn: (data: userEditSchema) => updateUser(data as UserRequest),
+    onSuccess: () => {
+      setOpen(false);
+      if (user) {
+        queryClient.invalidateQueries({
+          queryKey: ["user", user.id],
+          exact: true,
+        });
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["depsWithUsers"],
+        exact: true,
+      });
+    },
+  });
 };

@@ -7,4 +7,4 @@ export async function saveBlobToFile(blob: Blob, fileName: string) {
   link.remove();
   window.URL.revokeObjectURL(link.href);
   return;
-  }
+}

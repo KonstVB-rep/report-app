@@ -1,14 +1,16 @@
 "use client";
-import React from "react";
-import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { TOAST } from "@/entities/user/ui/Toast";
-import { RetailFormSchema, RetailSchema } from "../../model/schema";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-import RetailFormBody from "./RetailFormBody";
+import { TOAST } from "@/shared/ui/Toast";
+
 import { useCreateRetail } from "../../hooks/mutate";
 import { defaultRetailValues } from "../../model/defaultvaluesForm";
+import { RetailFormSchema, RetailSchema } from "../../model/schema";
+import RetailFormBody from "./RetailFormBody";
 
 const RetailForm = () => {
   const form = useForm<RetailSchema>({
@@ -19,14 +21,16 @@ const RetailForm = () => {
   const { mutateAsync, isPending } = useCreateRetail(form);
 
   const onSubmit = (data: RetailSchema) => {
-    TOAST.PROMISE(
-      mutateAsync(data),
-      "Сделка по рознице добавлена"
-    );
+    TOAST.PROMISE(mutateAsync(data), "Сделка по рознице добавлена");
   };
 
   return (
-    <RetailFormBody form={form} onSubmit={onSubmit} isPending={isPending} contactsKey="contacts"/>
+    <RetailFormBody
+      form={form}
+      onSubmit={onSubmit}
+      isPending={isPending}
+      contactsKey="contacts"
+    />
   );
 };
 

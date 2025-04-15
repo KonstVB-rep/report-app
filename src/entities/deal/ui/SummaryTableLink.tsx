@@ -1,11 +1,13 @@
 "use client";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 import { DealType, PermissionEnum } from "@prisma/client";
-import Link from "next/link";
 
 import React from "react";
+
+import Link from "next/link";
+
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 
 type Props = {
   type: DealType;

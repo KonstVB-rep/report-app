@@ -1,13 +1,16 @@
-import React, { useState } from "react";
 import { Table } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
+
+import React, { useState } from "react";
+
 import { ListChecks } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface SelectColumnsProps<TData> {
   data: Table<TData>;
@@ -42,7 +45,7 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
           <ListChecks />
           {hiddenColumns.length - 1 > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {hiddenColumns.length }
+              {hiddenColumns.length}
             </span>
           )}
           {"Колонки показать/скрыть"}

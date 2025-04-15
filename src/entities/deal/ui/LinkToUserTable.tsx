@@ -1,11 +1,14 @@
 "use client";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { Redo2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { DealsUnionType } from "../types";
+
+import { Redo2 } from "lucide-react";
+
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+
+import { DealsUnionType } from "../types";
 
 const linksPersonTable = (
   deptId: string | number

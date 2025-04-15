@@ -1,11 +1,14 @@
 "use client";
 
-import { UserResponse } from "@/entities/user/types";
 import React from "react";
-import UserItem from "./UserItem";
-import useStoreDepartment from "../store/useStoreDepartment";
+
 import { useParams } from "next/navigation";
+
+import { UserResponse } from "@/entities/user/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+
+import useStoreDepartment from "../store/useStoreDepartment";
+import UserItem from "./UserItem";
 
 const UserDepartmentList = () => {
   const { departmentId } = useParams();

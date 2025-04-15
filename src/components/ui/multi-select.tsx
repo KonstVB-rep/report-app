@@ -3,11 +3,12 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import type { Primitive } from "@radix-ui/react-primitive";
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+
 import React from "react";
 import { createPortal } from "react-dom";
 
-import { ny } from "@/lib/utils";
+import { Check, ChevronsUpDown, X } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Command,
@@ -24,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ny } from "@/lib/utils";
 
 export interface MultiSelectOptionItem {
   value: string;
@@ -184,7 +186,6 @@ MultiSelect.displayName = "MultiSelect";
 
 type MultiSelectTriggerElement = React.ElementRef<typeof Primitive.div>;
 
-
 function PreventClick(e: React.MouseEvent | React.TouchEvent) {
   e.preventDefault();
   e.stopPropagation();
@@ -197,7 +198,10 @@ const MultiSelectTrigger = React.forwardRef<
   const { disabled } = useMultiSelect();
 
   return (
-    <PopoverPrimitive.Trigger ref={forwardedRef as React.Ref<HTMLButtonElement> | undefined} asChild>
+    <PopoverPrimitive.Trigger
+      ref={forwardedRef as React.Ref<HTMLButtonElement> | undefined}
+      asChild
+    >
       <div
         aria-disabled={disabled}
         data-disabled={disabled}

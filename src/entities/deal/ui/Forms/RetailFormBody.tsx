@@ -1,6 +1,8 @@
 "use client";
+
 import React, { useEffect } from "react";
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
+
 import {
   Form,
   FormControl,
@@ -9,25 +11,24 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers";
-import SelectComponent from "@/shared/ui/SelectForm/SelectComponent";
-import CalendarComponent from "@/shared/ui/Calendar";
+import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
+import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
+import InputNumberForm from "@/shared/ui/Inputs/InputNumberForm";
+import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+import Overlay from "@/shared/ui/Overlay";
+import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
+
+import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../../lib/constants";
-import PhoneInput from "@/shared/ui/Inputs/PhoneInput";
-import InputNumber from "@/shared/ui/Inputs/InputNumber";
-import InputEmail from "@/shared/ui/Inputs/InputEmail";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import Overlay from "@/shared/ui/Overlay";
-import useSendDealInfo from "../../hooks/useSendDealInfo";
-import ContactDeal from "../ContactDeal";
 import ContactsList from "../ContactsList";
+import ContactDeal from "../Modals/ContactDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -68,321 +69,150 @@ const RetailFormBody = <T extends FieldValues>({
           <div className="grid gap-2">
             <div className="grid gap-2 p-2 sm:grid-cols-2">
               <div className="flex flex-col gap-1">
-                <FormField
-                  control={form.control}
+                <DatePickerFormField<UseFormReturn<T>>
                   name={"dateRequest" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Дата запроса</FormLabel>
-                      <CalendarComponent field={field} />
-                      {form.formState.errors.dateRequest?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.dateRequest?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Дата запроса"
+                  control={form.control}
+                  errorMessage={
+                    form.formState.errors.dateRequest?.message as string
+                  }
                 />
 
-                <FormField
-                  control={form.control}
+                <InputTextForm
                   name={"nameDeal" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Название сделки</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Название..." required {...field} />
-                      </FormControl>
-                      {form.formState.errors.nameDeal?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.nameDeal?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Название сделки"
+                  control={form.control}
+                  errorMessage={
+                    form.formState.errors.nameDeal?.message as string
+                  }
+                  placeholder="Название..."
+                  required
                 />
 
-                <FormField
-                  control={form.control}
+                <InputTextForm
                   name={"nameObject" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Название объекта/Город</FormLabel>
-
-                      <FormControl>
-                        <Input placeholder="Название..." required {...field} />
-                      </FormControl>
-
-                      {form.formState.errors.nameObject?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.nameObject?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Название объекта/Город"
+                  control={form.control}
+                  errorMessage={
+                    form.formState.errors.nameObject?.message as string
+                  }
+                  placeholder="Название..."
+                  required
                 />
 
-                <FormField
-                  control={form.control}
+                <SelectFormField<UseFormReturn<T>>
                   name={"direction" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Направление</FormLabel>
-
-                      <FormControl>
-                        <SelectComponent
-                          placeholder="Выберите направление"
-                          {...field}
-                          options={transformObjValueToArr(
-                            DirectionRetailLabels
-                          )}
-                          onValueChange={(selected) => {
-                            if (selected) {
-                              form.setValue(
-                                "direction" as Path<T>,
-                                selected as PathValue<T, Path<T>>
-                              );
-                            }
-                          }}
-                          required
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.direction?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.direction?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Направление"
+                  control={form.control}
+                  errorMessage={form.formState.errors.department?.message}
+                  options={transformObjValueToArr(DirectionRetailLabels)}
+                  placeholder="Выберите направление"
+                  onValueChange={(selected) => {
+                    if (selected) {
+                      return form.setValue(
+                        "direction" as Path<T>,
+                        selected as PathValue<T, Path<T>>
+                      );
+                    }
+                  }}
+                  required
                 />
 
-                <FormField
-                  control={form.control}
+                <SelectFormField<UseFormReturn<T>>
                   name={"deliveryType" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Тип поставки</FormLabel>
-
-                      <FormControl>
-                        <SelectComponent
-                          {...field}
-                          placeholder="Выберите тип поставки"
-                          options={transformObjValueToArr(DeliveryRetailLabels)}
-                          onValueChange={(selected) => {
-                            if (selected) {
-                              form.setValue(
-                                "deliveryType" as Path<T>,
-                                selected as PathValue<T, Path<T>>
-                              );
-                            }
-                          }}
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.deliveryType?.message && (
-                        <FormMessage className="text-red-500">
-                          {
-                            form.formState.errors.deliveryType
-                              ?.message as string
-                          }
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Тип поставки"
+                  control={form.control}
+                  errorMessage={form.formState.errors.department?.message}
+                  options={transformObjValueToArr(DeliveryRetailLabels)}
+                  placeholder="Выберите тип поставки"
+                  onValueChange={(selected) => {
+                    if (selected) {
+                      return form.setValue(
+                        "deliveryType" as Path<T>,
+                        selected as PathValue<T, Path<T>>
+                      );
+                    }
+                  }}
                 />
 
-                <FormField
-                  control={form.control}
+                <InputTextForm
                   name={"contact" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Контакты</FormLabel>
-
-                      <FormControl>
-                        <Input placeholder="Имя контакта" required {...field} />
-                      </FormControl>
-
-                      {form.formState.errors.contact?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.contact?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Контакты"
+                  control={form.control}
+                  errorMessage={form.formState.errors.contact?.message}
+                  placeholder="Имя контакта"
+                  required
                 />
 
-                <FormField
+                <InputPhoneForm
+                  name="phone"
+                  label="Телефон"
                   control={form.control}
-                  name={"phone" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Телефон</FormLabel>
-
-                      <FormControl>
-                        <PhoneInput
-                          placeholder="Введите телефон пользователя"
-                          onAccept={field.onChange}
-                          {...field}
-                        />
-                      </FormControl>
-                      {form.formState.errors.phone?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.phone?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  errorMessage={form.formState.errors.phone?.message}
+                  placeholder="Введите телефон пользователя"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <FormField
-                  control={form.control}
+                <InputTextForm
                   name={"email" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-
-                      <FormControl>
-                        <InputEmail {...field} />
-                      </FormControl>
-
-                      {form.formState.errors.email?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.email?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Email"
+                  control={form.control}
+                  errorMessage={form.formState.errors.email?.message}
+                  className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
+                  type="email"
                 />
 
-                <FormField
-                  control={form.control}
+                <InputNumberForm
                   name={"amountCP" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Сумма КП</FormLabel>
-
-                      <FormControl>
-                        <InputNumber
-                          placeholder="Сумма КП"
-                          {...field}
-                          value={String(field.value || "")}
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.amountCP?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.amountCP?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Сумма КП"
+                  control={form.control}
+                  errorMessage={form.formState.errors.amountCP?.message}
+                  placeholder="Сумма КП"
                 />
 
-                <FormField
-                  control={form.control}
+                <InputNumberForm
                   name={"delta" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Дельта</FormLabel>
-
-                      <FormControl>
-                        <InputNumber
-                          placeholder="Дельта"
-                          {...field}
-                          value={String(field.value || "")}
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.delta?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.delta?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Дельта"
+                  control={form.control}
+                  errorMessage={form.formState.errors.amountCP?.message}
+                  placeholder="Дельта"
                 />
 
-                <FormField
-                  control={form.control}
+                <SelectFormField<UseFormReturn<T>>
                   name={"dealStatus" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Статус КП</FormLabel>
-
-                      <FormControl>
-                        <SelectComponent
-                          placeholder="Выберите статус КП"
-                          {...field}
-                          options={transformObjValueToArr(StatusRetailLabels)}
-                          onValueChange={(selected) => {
-                            if (selected) {
-                              form.setValue(
-                                "dealStatus" as Path<T>,
-                                selected as PathValue<T, Path<T>>
-                              );
-                            }
-                          }}
-                          required
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.dealStatus?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.dealStatus?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Статус КП"
+                  control={form.control}
+                  errorMessage={form.formState.errors.dealStatus?.message}
+                  options={transformObjValueToArr(StatusRetailLabels)}
+                  placeholder="Выберите статус КП"
+                  onValueChange={(selected) => {
+                    if (selected) {
+                      return form.setValue(
+                        "dealStatus" as Path<T>,
+                        selected as PathValue<T, Path<T>>
+                      );
+                    }
+                  }}
                 />
 
-                <FormField
-                  control={form.control}
+                <DatePickerFormField<UseFormReturn<T>>
                   name={"plannedDateConnection" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="h-[19px]">
-                        Планируемый контакт
-                      </FormLabel>
-
-                      <CalendarComponent field={field} />
-
-                      {form.formState.errors.plannedDateConnection?.message && (
-                        <FormMessage className="text-red-500">
-                          {
-                            form.formState.errors.plannedDateConnection
-                              ?.message as string
-                          }
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Планируемый контакт"
+                  control={form.control}
+                  errorMessage={
+                    form.formState.errors.plannedDateConnection
+                      ?.message as string
+                  }
                 />
 
-                <FormField
-                  control={form.control}
+                <InputTextForm
                   name={"resource" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Источник</FormLabel>
-
-                      <FormControl>
-                        <Input
-                          placeholder="Сайт откуда пришёл клиент..."
-                          required
-                          {...field}
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.resource?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.resource?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
+                  label="Источник"
+                  control={form.control}
+                  errorMessage={form.formState.errors.resource?.message}
+                  placeholder="Откуда пришёл клиент"
+                  required
                 />
 
                 <FormField
