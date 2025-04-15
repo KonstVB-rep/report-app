@@ -5,12 +5,14 @@ import React from "react";
 import { Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { DialogClose } from "@/components/ui/dialog";
 import { useGetDealById } from "@/entities/deal/hooks/query";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DialogComponent from "@/shared/ui/DialogComponent";
+import { useDeleteFiles } from "@/widgets/Files/hooks/mutate";
 
 import { useDelDeal } from "../../hooks/mutate";
+
 
 const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const { data: deal } = useGetDealById(id, type);
@@ -18,10 +20,26 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const [open, setOpen] = React.useState(false);
 
   const { mutate: delDeal, isPending } = useDelDeal(
-    () => setOpen(false),
+    () => {
+      if (!deal?.dealFiles?.length) {
+        setOpen(false);
+        return;
+      }
+      
+      mutate(deal.dealFiles);
+    },
     type,
-    deal?.userId as string
+    deal?.userId ?? ""
   );
+
+  const { mutate, isPending: isPendingDelete } = useDeleteFiles(() =>
+    setOpen(false)
+  );
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    delDeal(id);
+  };
 
   return (
     <DialogComponent
@@ -35,8 +53,14 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
           <Trash2 />
         </Button>
       }
-      footer={
-        <DialogFooter className="grid grid-cols-2 gap-4">
+    >
+      <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
+        <p>Вы точно уверены что хотите удалить сделку</p>
+        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
+          &quot;{deal?.nameObject}&quot;?
+        </p>
+        <p>Его нельзя будет восстановить!</p>
+        <div className="grid grid-cols-2 gap-2">
           <DialogClose asChild>
             <Button type="button" variant="outline">
               Передумал
@@ -44,20 +68,11 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
           </DialogClose>
           <SubmitFormButton
             type="submit"
-            isPending={isPending}
-            onClick={() => delDeal(id)}
+            isPending={isPending || isPendingDelete}
             title="Удалить"
           />
-        </DialogFooter>
-      }
-    >
-      <div className="grid gap-4 py-4">
-        <p>Вы точно уверены что хотите удалить сделку</p>
-        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
-          &quot;{deal?.nameObject}&quot;?
-        </p>
-        <p>Его нельзя будет восстановить!</p>
-      </div>
+        </div>
+      </form>
     </DialogComponent>
   );
 };

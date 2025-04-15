@@ -1,4 +1,5 @@
 import {
+  DealFile,
   DealType,
   DeliveryProject,
   DeliveryRetail,
@@ -39,8 +40,9 @@ export interface ProjectResponse {
   type: DealType;
 }
 
-export type ProjectResponseWithAdditionalContacts = ProjectResponse & {
+export type ProjectResponseWithContactsAndFiles = ProjectResponse & {
   additionalContacts: Contact[] | [];
+  dealFiles: DealFile[] | [];
 };
 
 export interface RetailResponse {
@@ -66,8 +68,9 @@ export interface RetailResponse {
   type: DealType;
 }
 
-export type RetailResponseWithAdditionalContacts = RetailResponse & {
+export type RetailResponseWithContactsAndFiles = RetailResponse & {
   additionalContacts: Contact[] | [];
+  dealFiles: DealFile[] | [];
 };
 
 export type Contact = {

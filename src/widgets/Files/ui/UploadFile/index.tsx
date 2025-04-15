@@ -79,11 +79,11 @@ export default function FileUploadForm({
             </div>
 
             {files && files.length > 0 ? (
-              <div className="grid max-h-48 gap-2 overflow-auto">
+              <ul className="grid max-h-48 gap-2 overflow-auto">
                 {files.map((file, idx) => (
-                  <div
+                  <li
                     key={idx}
-                    className="relative grid w-full justify-items-center gap-1 rounded-md border border-dashed p-2"
+                    className="relative grid w-full justify-items-center gap-1 rounded-md border border-dashed p-2 pr-[48px]"
                   >
                     <Button
                       type="button"
@@ -101,9 +101,9 @@ export default function FileUploadForm({
                     <p className="text-xs text-muted-foreground">
                       Размер: {(file.size / 1024 / 1024).toFixed(3)} MB
                     </p>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             ) : null}
 
             <div className="flex w-full items-center gap-2">

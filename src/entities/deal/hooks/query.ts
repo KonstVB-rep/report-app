@@ -18,9 +18,9 @@ import {
 } from "../api/queryFn";
 import {
   ProjectResponse,
-  ProjectResponseWithAdditionalContacts,
+  ProjectResponseWithContactsAndFiles,
   RetailResponse,
-  RetailResponseWithAdditionalContacts,
+  RetailResponseWithContactsAndFiles,
 } from "../types";
 
 export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
@@ -28,11 +28,11 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
   const queryClient = useQueryClient();
 
   const cachedDeals = queryClient.getQueryData<
-    ProjectResponseWithAdditionalContacts[]
+  ProjectResponseWithContactsAndFiles[]
   >(["projects", authUser?.id]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
-  return useQuery<ProjectResponseWithAdditionalContacts | null, Error>({
+  return useQuery<ProjectResponseWithContactsAndFiles | null, Error>({
     queryKey: ["project", dealId],
     queryFn: async () => {
       try {
@@ -64,11 +64,11 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   const queryClient = useQueryClient();
 
   const cachedDeals = queryClient.getQueryData<
-    RetailResponseWithAdditionalContacts[]
+  RetailResponseWithContactsAndFiles[]
   >(["retails", authUser?.id]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
-  return useQuery<RetailResponseWithAdditionalContacts | null, Error>({
+  return useQuery<RetailResponseWithContactsAndFiles | null, Error>({
     queryKey: ["retail", dealId],
     queryFn: async () => {
       try {
@@ -95,7 +95,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   });
 };
 
-export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
+export const useGetDealById = <T extends ProjectResponseWithContactsAndFiles | RetailResponseWithContactsAndFiles>(
   dealId: string,
   type: DealType
 ) => {
@@ -105,7 +105,7 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
   const queryKey = [type.toLowerCase(), dealId];
 
   const cachedData = queryClient.getQueryData<
-    Array<ProjectResponse | RetailResponse>
+    Array<ProjectResponseWithContactsAndFiles | RetailResponseWithContactsAndFiles>
   >([`${type.toLowerCase()}s`, authUser?.id]);
   const cachedEntity = cachedData?.find((p) => p.id === dealId) as
     | T
@@ -116,11 +116,11 @@ export const useGetDealById = <T extends ProjectResponse | RetailResponse>(
     [DealType.PROJECT]: getProjectById as (
       id: string,
       userId: string
-    ) => Promise<ProjectResponse>,
+    ) => Promise<ProjectResponseWithContactsAndFiles>,
     [DealType.RETAIL]: getRetailById as (
       id: string,
       userId: string
-    ) => Promise<RetailResponse>,
+    ) => Promise<RetailResponseWithContactsAndFiles>,
   };
 
   const fetchFn = async (): Promise<T | undefined> => {

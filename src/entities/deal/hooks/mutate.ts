@@ -46,7 +46,6 @@ export const useDelDeal = (
       return await deleteDeal(nealId, ownerId, type);
     },
     onSuccess: (_, dealId) => {
-      closeModalFn();
 
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, ownerId],
@@ -54,6 +53,8 @@ export const useDelDeal = (
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}`, dealId],
       });
+
+      closeModalFn();
     },
     onError: (error) => {
       TOAST.ERROR((error as Error).message);

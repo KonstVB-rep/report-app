@@ -10,9 +10,9 @@ import { handleError } from "@/shared/api/handleError";
 import {
   Contact,
   ProjectResponse,
-  ProjectResponseWithAdditionalContacts,
+  ProjectResponseWithContactsAndFiles,
   RetailResponse,
-  RetailResponseWithAdditionalContacts,
+  RetailResponseWithContactsAndFiles,
 } from "../types";
 
 const requiredFields = [
@@ -53,7 +53,7 @@ const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
 export const getProjectById = async (
   dealId: string,
   idDealOwner: string
-): Promise<ProjectResponseWithAdditionalContacts | null> => {
+): Promise<ProjectResponseWithContactsAndFiles | null> => {
   try {
     const data = await handleAuthorization();
 
@@ -89,12 +89,17 @@ export const getProjectById = async (
       return null;
     }
 
+    const dealFiles = await prisma.dealFile.findMany({
+      where: { dealId: dealId }, // Фильтруем по dealId
+    });
+
     const formattedProject = {
       ...deal,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
       amountWork: deal.amountWork ? deal.amountWork.toString() : "",
       amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
       delta: deal.delta ? deal.delta.toString() : "",
+      dealFiles,
     };
 
     return formattedProject;
@@ -107,7 +112,7 @@ export const getProjectById = async (
 export const getRetailById = async (
   dealId: string,
   idDealOwner: string
-): Promise<RetailResponseWithAdditionalContacts | null> => {
+): Promise<RetailResponseWithContactsAndFiles | null> => {
   try {
     const data = await handleAuthorization();
 
@@ -143,10 +148,15 @@ export const getRetailById = async (
       return null;
     }
 
+    const dealFiles = await prisma.dealFile.findMany({
+      where: { dealId: dealId }, // Фильтруем по dealId
+    });
+
     const formattedRetail = {
       ...deal,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "",
       delta: deal.delta ? deal.delta.toString() : "",
+      dealFiles,
     };
 
     return formattedRetail;
@@ -521,7 +531,6 @@ export const getRetailsUser = async (
       return handleError("Недостаточно данных");
     }
 
-
     const isOwner = userId === idDealOwner;
 
     if (!isOwner) {
@@ -692,6 +701,7 @@ export const deleteDeal = async (
         });
         break;
     }
+
 
     return { data: null, message, error: false };
   } catch (error) {

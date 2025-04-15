@@ -57,7 +57,7 @@ export const useDownLoadFile = () => {
 };
 
 export const useDeleteFiles = (
-  handleCloseDialog: React.Dispatch<React.SetStateAction<void>>
+  handleCloseDialog?: React.Dispatch<React.SetStateAction<void>>
 ) => {
   const queryClient = useQueryClient();
   const { isAuth } = useStoreUser();
@@ -77,8 +77,6 @@ export const useDeleteFiles = (
     onSuccess: (data) => {
       TOAST.SUCCESS("Файлы успешно удалены");
 
-      handleCloseDialog();
-
       const { userId, dealId, dealType } = data[0];
 
       queryClient.invalidateQueries({
@@ -86,6 +84,9 @@ export const useDeleteFiles = (
       });
 
       queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] });
+
+      handleCloseDialog?.();
+
     },
     onError: (error) => {
       TOAST.ERROR((error as Error).message);

@@ -82,7 +82,7 @@ const DeleteFile = ({
                   return (
                     <p
                       key={file.id}
-                      className="flex items-center justify-between break-all rounded-md bg-muted p-2 text-sm"
+                      className="flex items-center justify-between break-all rounded-md bg-muted p-2 text-sm pr-[48px]"
                     >
                       <span>{fileName}</span>
 

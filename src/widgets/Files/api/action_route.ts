@@ -21,6 +21,7 @@ export const deleteFile = async (fileInfo: {
   userId: string;
 }) => {
   try {
+
     const response = await axiosInstance.delete(`/yandex-disk/delete`, {
       data: fileInfo,
     });

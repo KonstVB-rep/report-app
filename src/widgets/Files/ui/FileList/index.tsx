@@ -113,7 +113,7 @@ const FileList = ({ data }: FileListProps) => {
             <li
               tabIndex={0}
               key={file?.name}
-              className="group relative grid max-w-40 gap-1 overflow-hidden rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
+              className="group flex-1 w-20 min-w-20 max-w-20 relative grid gap-1 overflow-hidden rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
             >
               <p className="flex items-center justify-center">
                 {isImg && iconsTypeFile[".img"]()}
@@ -129,7 +129,9 @@ const FileList = ({ data }: FileListProps) => {
 
               <DownLoadFile
                 className="absolute inset-0 z-10 hidden h-full w-full items-center justify-center group-hover:flex group-focus-visible:flex"
-                {...file}
+                fileName={fileName}
+                localPath={file.localPath}
+                name={file.name}
               />
 
               <input

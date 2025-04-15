@@ -124,7 +124,7 @@ const iconsTypeFile = {
       </g>
     </svg>
   ),
-  default: (props?: React.SVGProps<SVGSVGElement>) => <File {...props} />,
+  default: (props?: React.SVGProps<SVGSVGElement>) => <File {...props} size="40" />,
 };
 
 export default iconsTypeFile;

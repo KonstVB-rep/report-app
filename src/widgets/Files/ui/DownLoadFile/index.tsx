@@ -5,22 +5,24 @@ import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 import { useDownLoadFile } from "../../hooks/mutate";
 
-type DownloadOrDeleteFileProps = {
+type DownloadFileProps = {
   className: string;
   name: string;
   localPath: string;
+  fileName: string
 };
 
 const DownLoadFile = ({
   className,
   localPath,
   name,
-}: DownloadOrDeleteFileProps) => {
+  fileName
+}: DownloadFileProps) => {
   const { mutate: handleDownload, isPending } = useDownLoadFile();
 
   return (
     <div className={`flex gap-2 ${className}`}>
-      <TooltipComponent content="Скачать файл">
+      <TooltipComponent content={`Скачать файл - ${fileName}`}>
         <Button
           onClick={() => handleDownload({ localPath, name })}
           className="h-10 w-10 p-1"
