@@ -92,103 +92,46 @@ async function uploadFilesToYandexDiskAndDB(formData: FormData) {
       }
     }
 
-    const uploadedFiles = [];
+    const uploadedFiles = await Promise.all(
+      files.map(async (file) => {
+        const fullPath = `${folderPath}/${file.name}`;
 
-    for (const file of files) {
-      const fullPath = `${folderPath}/${file.name}`;
+        // Получение ссылки на загрузку
+        const uploadResponse = await axiosInstanceYandexDisk.get(
+          `/resources/upload?path=${encodeURIComponent(fullPath)}`
+        );
+        const uploadUrl = uploadResponse.data.href;
 
-      // Получаем ссылку на загрузку
-      const uploadResponse = await axiosInstanceYandexDisk.get(
-        `/resources/upload?path=${encodeURIComponent(fullPath)}`
-      );
-      const uploadUrl = uploadResponse.data.href;
+        // Загрузка файла
+        await axios.put(uploadUrl, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
 
-      // Загружаем файл
-      await axios.put(uploadUrl, file, {
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
+        // Запись в базу данных
+        const fileInfo = await writeHrefDownloadFileInDB({
+          name: file.name,
+          localPath: fullPath,
+          dealId,
+          dealType,
+          userId,
+        });
 
-      // Запись в базу
-      const fileInfo = await writeHrefDownloadFileInDB({
-        name: file.name,
-        localPath: fullPath,
-        dealId,
-        dealType,
-        userId,
-      });
+        if (!fileInfo) {
+          throw new Error(`Ошибка при записи данных о файле "${file.name}" в базу`);
+        }
 
-      if (!fileInfo) {
-        throw new Error("Ошибка при записи данных о файле в базу");
-      }
-
-      uploadedFiles.push(fileInfo);
-    }
-
+        return fileInfo;
+      })
+    );
+    
     return uploadedFiles;
   } catch (error) {
     console.error("Ошибка в uploadFilesToYandexDiskAndDB:", error);
     throw error;
   }
 }
-
-// async function uploadFileToYandexDiskAndDB(formData: FormData) {
-//   try {
-
-//     const file = formData.get("file") as File;
-//     const fileName = formData.get("fileName") as string;
-//     const folderPath = formData.get("folderPath") as string || "/report_app_uploads";
-//     const fullPath = `${folderPath}/${fileName}`;
-
-//     // Проверяем существование папки
-//     try {
-//       await axiosInstanceYandexDisk.get(`/resources?path=${encodeURIComponent(folderPath)}`);
-//     } catch (error) {
-//       if (error instanceof AxiosError && error.response?.status === 404) {
-//         await createFolderOnYandexDisk(folderPath);
-//       } else {
-//         throw error;
-//       }
-//     }
-
-//     // Получаем ссылку для загрузки
-//     const uploadResponse = await axiosInstanceYandexDisk.get(`/resources/upload?path=${encodeURIComponent(fullPath)}`);
-//     const uploadUrl = uploadResponse.data.href;
-
-//     // Загружаем файл
-//     await axios.put(uploadUrl, file, {
-//       headers: {
-//         "Content-Type": file.type, // устанавливаем правильный MIME-тип
-//       },
-//     });
-
-//     // Получаем ссылку для скачивания
-//     const downResponse = await axiosInstanceYandexDisk.get(`/resources/download?path=${encodeURIComponent(fullPath)}`);
-
-//     const { href: downloadUrl } = downResponse.data;
-
-//     const formDatatForDb = {
-//       name: fileName,
-//       href: downloadUrl,
-//       localPath: fullPath,
-//       dealId: formData.get("dealId") as string,
-//       dealType: formData.get("dealType") as DealType,
-//       userId: formData.get("userId") as string
-//     }
-
-//     const fileInfo = await writeHrefDownloadFileInDB(formDatatForDb);
-
-//     if (!fileInfo) {
-//       throw new Error("Ошибка при записи данных о файле в базу данных");
-//     }
-
-//     return fileInfo;
-//   } catch (error) {
-//     console.error("Ошибка в uploadFileToYandexDisk:", error);
-//     throw error;
-//   }
-// }
 
 /**
  * Скачивание файла с Яндекс.Диска
