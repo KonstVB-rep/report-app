@@ -21,7 +21,13 @@ const SubmitFormButton = ({
       disabled={isPending}
       {...props}
     >
-      {isPending ? <Loader className="h-5 w-5 animate-spin" /> : title}
+      {isPending ? (
+        <span className="flex items-center gap-2">
+          <Loader className="h-5 w-5 animate-spin" /> Выполнение...
+        </span>
+      ) : (
+        title
+      )}
     </Button>
   );
 };

@@ -28,7 +28,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
   const queryClient = useQueryClient();
 
   const cachedDeals = queryClient.getQueryData<
-  ProjectResponseWithContactsAndFiles[]
+    ProjectResponseWithContactsAndFiles[]
   >(["projects", authUser?.id]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
@@ -48,7 +48,10 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
 
         return deal;
       } catch (error) {
-        console.error((error as Error).message, "❌ Ошибка в useGetProjectById");
+        console.error(
+          (error as Error).message,
+          "❌ Ошибка в useGetProjectById"
+        );
         TOAST.ERROR((error as Error).message);
         throw error;
       }
@@ -64,7 +67,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   const queryClient = useQueryClient();
 
   const cachedDeals = queryClient.getQueryData<
-  RetailResponseWithContactsAndFiles[]
+    RetailResponseWithContactsAndFiles[]
   >(["retails", authUser?.id]);
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId);
 
@@ -95,7 +98,11 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   });
 };
 
-export const useGetDealById = <T extends ProjectResponseWithContactsAndFiles | RetailResponseWithContactsAndFiles>(
+export const useGetDealById = <
+  T extends
+    | ProjectResponseWithContactsAndFiles
+    | RetailResponseWithContactsAndFiles,
+>(
   dealId: string,
   type: DealType
 ) => {
@@ -105,7 +112,9 @@ export const useGetDealById = <T extends ProjectResponseWithContactsAndFiles | R
   const queryKey = [type.toLowerCase(), dealId];
 
   const cachedData = queryClient.getQueryData<
-    Array<ProjectResponseWithContactsAndFiles | RetailResponseWithContactsAndFiles>
+    Array<
+      ProjectResponseWithContactsAndFiles | RetailResponseWithContactsAndFiles
+    >
   >([`${type.toLowerCase()}s`, authUser?.id]);
   const cachedEntity = cachedData?.find((p) => p.id === dealId) as
     | T

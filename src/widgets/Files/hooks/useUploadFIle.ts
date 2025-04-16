@@ -3,9 +3,10 @@ import { DealType } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
+import { v4 as uuidv4 } from "uuid";
+
 import { useUploadFileYdxDisk } from "./mutate";
 import { useGetInfoYandexDisk } from "./query";
-import { v4 as uuidv4 } from "uuid";
 
 const formingDataFiles = (
   files: File[] | FileList,

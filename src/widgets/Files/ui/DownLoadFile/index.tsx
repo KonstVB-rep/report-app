@@ -9,14 +9,14 @@ type DownloadFileProps = {
   className: string;
   name: string;
   localPath: string;
-  fileName: string
+  fileName: string;
 };
 
 const DownLoadFile = ({
   className,
   localPath,
   name,
-  fileName
+  fileName,
 }: DownloadFileProps) => {
   const { mutate: handleDownload, isPending } = useDownLoadFile();
 

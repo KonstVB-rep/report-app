@@ -3,7 +3,10 @@ const getFileNameWithoutUuid = (fileName: string) => {
 
   const underlineIndex = fileName.lastIndexOf("_");
 
-  return [fileName.slice(0, underlineIndex),pointIndex[pointIndex.length - 1]].join(".");
+  return [
+    fileName.slice(0, underlineIndex),
+    pointIndex[pointIndex.length - 1],
+  ].join(".");
 };
 
 export default getFileNameWithoutUuid;

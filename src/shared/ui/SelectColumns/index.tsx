@@ -45,13 +45,13 @@ const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
           <ListChecks />
           {hiddenColumns.length - 1 > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {hiddenColumns.length}
+              {hiddenColumns.length - 1}
             </span>
           )}
           {"Колонки показать/скрыть"}
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent className="w-fit px-1 pb-2">
         <div className="grid gap-4">
           <div className="grid grid-cols-1 items-center gap-1">

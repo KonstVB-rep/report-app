@@ -3,16 +3,17 @@ import { DealType } from "@prisma/client";
 import React, { useState } from "react";
 
 import { FileWarning } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
 
 import { useGetHrefFilesDealFromDB } from "../../hooks/query";
+import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
 import { getFormatFile } from "../../libs/helpers/getFormatFile";
 import DeleteFile from "../DeleteFile";
 import DownLoadFile from "../DownLoadFile";
 import SkeletonFiles from "../SkeletonFiles";
 import iconsTypeFile from "./iconsTypeFile";
-import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
 
 type FileListProps = {
   data: {
@@ -46,9 +47,7 @@ const FileList = ({ data }: FileListProps) => {
 
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
 
-  if (!files) return null;
-
-  const selectedFilesForDelete = files.filter((file) =>
+  const selectedFilesForDelete = (files ?? []).filter((file) =>
     selectedFiles.has(file.name)
   );
 
@@ -62,91 +61,116 @@ const FileList = ({ data }: FileListProps) => {
       } else {
         updated.add(fileName);
       }
-
       return updated;
     });
   };
 
-  if (isPending) {
-    return <SkeletonFiles />;
-  }
-
-  if (isError) {
-    return (
-      <IntoDealItem title={"Файлы"}>
-        <p className="flex items-center justify-center gap-2 p-2 text-red-600">
-          {" "}
-          <FileWarning size="40" strokeWidth={1} className="text-red-600" />
-          <span className="text-lg">Ошибка загрузки файлов</span>
-        </p>
-      </IntoDealItem>
-    );
-  }
-
-  if (!files.length) return null;
+  if (!files || !files?.length) return null;
 
   return (
-    <IntoDealItem title={"Файлы"} className="relative">
-      {selectedFiles.size > 0 && (
-        <DeleteFile
-          setSelectedFiles={setSelectedFiles}
-          selectedFilesForDelete={selectedFilesForDelete}
-          className="absolute right-2 top-2"
-        />
-      )}
-      <ul className="flex flex-wrap gap-2">
-        {files.map((file) => {
-          const formatFile = getFormatFile(
-            file.name
-          ) as keyof typeof iconsTypeFile;
+    <IntoDealItem title="Файлы" className="relative">
+      <AnimatePresence mode="wait">
+        {isPending && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <SkeletonFiles />
+          </motion.div>
+        )}
 
-          const isImg = imageFormat.includes(formatFile);
-          const isExcel = excelFormat.includes(formatFile);
-          const isPdf = pdfFormat.includes(formatFile);
-          const isText = text.includes(formatFile);
+        {isError && (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="flex items-center justify-center gap-2 p-2 text-red-600"
+          >
+            <FileWarning size="40" strokeWidth={1} className="text-red-600" />
+            <span className="text-lg">Ошибка загрузки файлов</span>
+          </motion.div>
+        )}
 
-          const anotherFormat = !isImg && !isExcel && !isPdf && !isText;
-
-          const fileName = getFileNameWithoutUuid(file.name);
-
-          return (
-            <li
-              tabIndex={0}
-              key={file?.name}
-              className="group flex-1 w-20 min-w-20 max-w-20 relative grid gap-1 overflow-hidden rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
-            >
-              <p className="flex items-center justify-center">
-                {isImg && iconsTypeFile[".img"]()}
-                {isExcel && iconsTypeFile[".xls"]()}
-                {isPdf && iconsTypeFile[".pdf"]()}
-                {isText && iconsTypeFile[".txt"]()}
-                {anotherFormat && iconsTypeFile["default"]()}
-              </p>
-
-              <p className="truncate text-xs">{fileName}</p>
-
-              <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
-
-              <DownLoadFile
-                className="absolute inset-0 z-10 hidden h-full w-full items-center justify-center group-hover:flex group-focus-visible:flex"
-                fileName={fileName}
-                localPath={file.localPath}
-                name={file.name}
+        {files && files.length > 0 && (
+          <motion.div
+            key="files"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            {selectedFiles.size > 0 && (
+              <DeleteFile
+                setSelectedFiles={setSelectedFiles}
+                selectedFilesForDelete={selectedFilesForDelete}
+                className="absolute right-2 top-2 z-10"
               />
+            )}
 
-              <input
-                type="checkbox"
-                id={file.name}
-                onChange={(e) => handleSelectFile(e)}
-                checked={selectedFiles.has(file.name)}
-                className="absolute right-1 top-1 z-[11] h-5 w-5 cursor-pointer accent-blue-500"
-              />
+            <motion.ul layout className="flex flex-wrap gap-2">
+              <AnimatePresence>
+                {files.map((file) => {
+                  const formatFile = getFormatFile(
+                    file.name
+                  ) as keyof typeof iconsTypeFile;
 
-              <span>{selectedFiles.has(file.name)}</span>
-            </li>
-          );
-        })}
-      </ul>
+                  const isImg = imageFormat.includes(formatFile);
+                  const isExcel = excelFormat.includes(formatFile);
+                  const isPdf = pdfFormat.includes(formatFile);
+                  const isText = text.includes(formatFile);
+                  const anotherFormat = !isImg && !isExcel && !isPdf && !isText;
+
+                  const fileName = getFileNameWithoutUuid(file.name);
+
+                  return (
+                    <motion.li
+                      layout
+                      layoutId={file.name}
+                      key={file.name}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                      tabIndex={0}
+                      className="group flex-1 w-20 min-w-20 max-w-20 relative grid gap-1 overflow-hidden rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
+                    >
+                      <p className="flex items-center justify-center">
+                        {isImg && iconsTypeFile[".img"]()}
+                        {isExcel && iconsTypeFile[".xls"]()}
+                        {isPdf && iconsTypeFile[".pdf"]()}
+                        {isText && iconsTypeFile[".txt"]()}
+                        {anotherFormat && iconsTypeFile["default"]()}
+                      </p>
+
+                      <p className="truncate text-xs">{fileName}</p>
+
+                      <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
+
+                      <DownLoadFile
+                        className="absolute inset-0 z-10 hidden h-full w-full items-center justify-center group-hover:flex group-focus-visible:flex"
+                        fileName={fileName}
+                        localPath={file.localPath}
+                        name={file.name}
+                      />
+
+                      <input
+                        type="checkbox"
+                        id={file.name}
+                        onChange={handleSelectFile}
+                        checked={selectedFiles.has(file.name)}
+                        className="absolute right-1 top-1 z-[11] h-5 w-5 cursor-pointer accent-blue-500"
+                      />
+                    </motion.li>
+                  );
+                })}
+              </AnimatePresence>
+            </motion.ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </IntoDealItem>
   );
 };

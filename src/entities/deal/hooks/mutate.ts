@@ -46,7 +46,6 @@ export const useDelDeal = (
       return await deleteDeal(nealId, ownerId, type);
     },
     onSuccess: (_, dealId) => {
-
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, ownerId],
       });

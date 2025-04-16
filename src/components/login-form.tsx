@@ -8,8 +8,10 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+import { motion } from "motion/react";
 import { z } from "zod";
 
+import loginImg from "@/assets/login-img";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
@@ -29,10 +31,7 @@ export const loginFormSchema = z.object({
   password: z.string().min(6).max(30),
 });
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({ className }: React.ComponentProps<"div">) {
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -83,11 +82,22 @@ export function LoginForm({
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      className={cn("flex flex-col gap-6", className)}
+    >
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
-            <form className="p-6 md:p-8" action={onSubmit}>
+            <motion.form
+              initial={{ transform: "translateY(100%)", opacity: 0 }}
+              animate={{ opacity: 1, transform: "translateY(0)" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="p-6 md:p-8"
+              action={onSubmit}
+            >
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Добро пожаловать</h1>
@@ -120,21 +130,28 @@ export function LoginForm({
 
                 <SubmitFormActionBtn title="Войти" />
               </div>
-            </form>
+            </motion.form>
           </Form>
-          <div className="relative hidden bg-muted md:block">
+          <motion.div
+            initial={{
+              transform: "translateY(-100%)",
+              opacity: 0,
+            }}
+            animate={{ opacity: 1, transform: "translateY(0)" }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="relative hidden bg-muted md:block"
+          >
             <Image
-              src="/login-img.webp"
-              alt="Image"
-              width={400}
-              height={400}
-              quality={70}
+              src={loginImg}
+              alt="login background"
+              placeholder="blur"
               priority
+              fill
               className="absolute inset-0 h-full w-full dark:brightness-[0.2] dark:grayscale"
             />
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }

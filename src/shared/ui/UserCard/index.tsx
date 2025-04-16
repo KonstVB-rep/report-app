@@ -27,7 +27,7 @@ const UserCard = ({
         <CircleUserRound size="80" />
 
         <p className="capitalize">{username.split(" ").join(" ")}</p>
-        
+
         <p className="first-letter:capitalize">{position}</p>
       </div>
       <div className="grid grid-cols-3 gap-1 overflow-hidden rounded-md">

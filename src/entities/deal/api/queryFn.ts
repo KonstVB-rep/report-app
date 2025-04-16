@@ -19,7 +19,7 @@ export const getRetailsUserQuery = async (userId: string) => {
 export const getProjectsUserQuery = async (userId: string) => {
   try {
     const projects = await getProjectsUser(userId);
-    return projects || []; 
+    return projects || [];
   } catch (error) {
     console.log(error, "Ошибка getProjectsUserQuery");
     return [];

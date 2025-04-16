@@ -161,7 +161,6 @@ export const createUser = async (
   }
 };
 
-
 export const updateUser = async (
   dataUser: UserRequest
 ): Promise<UserResponse | undefined> => {

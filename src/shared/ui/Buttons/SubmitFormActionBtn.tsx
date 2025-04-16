@@ -16,7 +16,13 @@ const SubmitFormActionBtn = ({ title, ...props }: SubmitButtonProps) => {
       aria-label="Отправить форму"
       {...props}
     >
-      {pending ? <Loader className="h-5 w-5 animate-spin" /> : title}
+      {pending ? (
+        <span className="flex items-center gap-2">
+          <Loader className="h-5 w-5 animate-spin" /> Выполнение...
+        </span>
+      ) : (
+        title
+      )}
     </Button>
   );
 };

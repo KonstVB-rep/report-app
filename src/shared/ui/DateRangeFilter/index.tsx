@@ -17,7 +17,6 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   onClearDateFilter,
   value,
 }) => {
-
   const handleDateChange = (date: DateRange | undefined) => {
     if (date?.from && typeof date.from === "string") {
       date.from = new Date(date.from);

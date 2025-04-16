@@ -5,7 +5,8 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-import { Building, ContactRound } from "lucide-react";
+import { Building, ContactRound, Info } from "lucide-react";
+import { motion } from "motion/react";
 
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import { Separator } from "@/components/ui/separator";
@@ -46,7 +47,13 @@ const ProjectItemInfo = () => {
 
   return (
     <section className="grid gap-2 p-4">
-      <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.2 }}
+        className="flex items-center justify-between rounded-md bg-muted p-2 pb-2"
+      >
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
 
@@ -67,7 +74,7 @@ const ProjectItemInfo = () => {
 
           <DelDealButtonIcon id={deal.id} type={deal.type} />
         </div>
-      </div>
+      </motion.div>
 
       <Separator />
 
@@ -76,10 +83,30 @@ const ProjectItemInfo = () => {
           <div className="grid-rows-auto grid gap-2">
             <div className="grid min-w-72 gap-2">
               <IntoDealItem title={"Объект"}>
-                <div className="flex w-full items-start justify-start gap-4 text-lg">
-                  <Building size="40" strokeWidth={1} />
+                <div className="grid w-full gap-2">
+                  <div className="flex w-full items-start justify-start gap-4 text-lg">
+                    <Building size="40" strokeWidth={1} />
 
-                  <p>{deal?.nameObject}</p>
+                    <p>{deal?.nameObject}</p>
+                  </div>
+
+                  <div className="first-letter:capitalize">
+                    <div className="flex gap-2 items-center justify-start">
+                      <p className="flex items-center justify-start gap-2">
+                        <Info size="40" strokeWidth={1} />
+
+                        <span className="text-sm first-letter:capitalize">
+                          Статус:
+                        </span>
+                      </p>
+
+                      <span className="whitespace-nowrap text-md">
+                        {StatusProjectLabels[
+                          deal?.dealStatus as keyof typeof StatusProjectLabels
+                        ] || "Нет данных"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </IntoDealItem>
             </div>
@@ -89,7 +116,7 @@ const ProjectItemInfo = () => {
                   <div className="flex items-start justify-start gap-4">
                     <ContactRound size="40" strokeWidth={1} />
 
-                    <div className="flex flex-col items-start justify-start text-lg">
+                    <div className="flex h-full flex-col items-start justify-start text-lg">
                       <CardInfo data={deal.contact} title="Имя" />
 
                       <CardInfo
@@ -122,23 +149,33 @@ const ProjectItemInfo = () => {
                   <span className="text-sm first-letter:capitalize">
                     Тип сделки:{" "}
                   </span>
+
                   {DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
                     "Нет данных"}
                 </p>
 
-                <p>Дата запроса: {deal?.dateRequest?.toLocaleDateString()}</p>
+                <p>
+                  <span className="text-sm first-letter:capitalize">
+                    Дата запроса:{" "}
+                  </span>{" "}
+                  {deal?.dateRequest?.toLocaleDateString()}
+                </p>
               </IntoDealItem>
 
               <IntoDealItem title={"Детали"} className="flex-item-contact">
                 <p>
-                  Направление:{" "}
+                  <span className="text-sm first-letter:capitalize">
+                    Направление:{" "}
+                  </span>{" "}
                   {DirectionProjectLabels[
                     deal?.direction as keyof typeof DirectionProjectLabels
                   ] || "Нет данных"}
                 </p>
 
                 <p>
-                  Тип поставки:{" "}
+                  <span className="text-sm first-letter:capitalize">
+                    Тип поставки:{" "}
+                  </span>{" "}
                   {DeliveryProjectLabels[
                     deal?.deliveryType as keyof typeof DeliveryProjectLabels
                   ] || "Нет данных"}
@@ -147,7 +184,9 @@ const ProjectItemInfo = () => {
 
               <IntoDealItem title={"Финансы"} className="flex-item-contact">
                 <p>
-                  Дельта:{" "}
+                  <span className="text-sm first-letter:capitalize">
+                    Дельта:{" "}
+                  </span>{" "}
                   <span className="whitespace-nowrap">
                     {deal.delta
                       ? formatterCurrency.format(
@@ -158,7 +197,9 @@ const ProjectItemInfo = () => {
                 </p>
 
                 <p>
-                  Сумма КП:{" "}
+                  <span className="text-sm first-letter:capitalize">
+                    Сумма КП:{" "}
+                  </span>{" "}
                   <span className="whitespace-nowrap">
                     {deal.amountCP
                       ? formatterCurrency.format(
@@ -169,7 +210,9 @@ const ProjectItemInfo = () => {
                 </p>
 
                 <p>
-                  Сумма закупки:{" "}
+                  <span className="text-sm first-letter:capitalize">
+                    Сумма закупки:{" "}
+                  </span>{" "}
                   <span className="whitespace-nowrap">
                     {deal.amountPurchase
                       ? formatterCurrency.format(
@@ -180,7 +223,9 @@ const ProjectItemInfo = () => {
                 </p>
 
                 <p>
-                  Сумма работы:{" "}
+                  <span className="text-sm first-letter:capitalize">
+                    Сумма работ:{" "}
+                  </span>{" "}
                   <span className="whitespace-nowrap">
                     {deal.amountWork
                       ? formatterCurrency.format(
@@ -192,36 +237,21 @@ const ProjectItemInfo = () => {
               </IntoDealItem>
             </div>
 
-            <IntoDealItem
-              title={"Дополнительные контакты"}
-              className="flex flex-col"
-            >
-              {deal.additionalContacts && deal.additionalContacts.length > 0 ? (
+            {deal.additionalContacts && deal.additionalContacts.length > 0 ? (
+              <IntoDealItem title={"Дополнительные контакты"}>
                 <div className="flex h-full flex-wrap gap-2">
                   {deal.additionalContacts.map((contact) => (
                     <ContactCardInDealInfo key={contact.id} contact={contact} />
                   ))}
                 </div>
-              ) : (
-                <p>Нет данных</p>
-              )}
-            </IntoDealItem>
+              </IntoDealItem>
+            ) : null}
           </div>
         </div>
         <IntoDealItem title={"Комментарии"}>
           <p className="first-letter:capitalize">
             {deal.comments || "Нет данных"}
           </p>
-        </IntoDealItem>
-
-        <IntoDealItem title={"Статус"}>
-          <div className="text-xl first-letter:capitalize">
-            <p>
-              {StatusProjectLabels[
-                deal?.dealStatus as keyof typeof StatusProjectLabels
-              ] || "Нет данных"}
-            </p>
-          </div>
         </IntoDealItem>
       </div>
 

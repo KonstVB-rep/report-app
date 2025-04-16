@@ -92,7 +92,7 @@ const TableComponent = <T extends Record<string, unknown>>({
                         header.getContext()
                       )}
                     </span>
-                    
+
                     {header.column.getCanSort() && (
                       <span>
                         {header.column.getIsSorted() === "asc" ? (
@@ -121,24 +121,19 @@ const TableComponent = <T extends Record<string, unknown>>({
         ))}
       </TableHeader>
 
-      {
-        <TableBody className="table-grid-container space-y-[2px]">
-          {table.getRowModel().rows.length > 0 ? (
-            table.getRowModel().rows.map(renderRow)
-          ) : (
-            <TableRow className="h-[50px]">
-              <TableCell
-                colSpan={table.getAllColumns().length}
-                className="py-4"
-              >
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 transform whitespace-nowrap">
-                  Нет данных
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      }
+      <TableBody className="table-grid-container space-y-[2px]">
+        {table.getRowModel().rows.length > 0 ? (
+          table.getRowModel().rows.map(renderRow)
+        ) : (
+          <TableRow className="h-[50px]">
+            <TableCell colSpan={table.getAllColumns().length} className="py-4">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 transform whitespace-nowrap">
+                Нет данных
+              </div>
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
     </Table>
   );
 };

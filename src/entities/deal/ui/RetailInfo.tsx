@@ -7,7 +7,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-import { Building, ContactRound } from "lucide-react";
+import { Building, ContactRound, Info } from "lucide-react";
 
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
@@ -79,6 +79,31 @@ const RetailItemInfo = () => {
 
                 <p>{deal?.nameObject}</p>
               </div>
+              <div className="text-xl first-letter:capitalize">
+                <p>
+                  {StatusRetailLabels[
+                    deal?.dealStatus as keyof typeof StatusRetailLabels
+                  ] || "Нет данных"}
+                </p>
+              </div>
+
+              <div className="first-letter:capitalize">
+                <div className="flex gap-2 items-center justify-start">
+                  <p className="flex items-center justify-start gap-2">
+                    <Info size="40" strokeWidth={1} />
+
+                    <span className="text-sm first-letter:capitalize">
+                      Статус:
+                    </span>
+                  </p>
+
+                  <span className="whitespace-nowrap text-md">
+                    {StatusRetailLabels[
+                      deal?.dealStatus as keyof typeof StatusRetailLabels
+                    ] || "Нет данных"}
+                  </span>
+                </div>
+              </div>
             </IntoDealItem>
           </div>
           <div className="grid gap-2">
@@ -105,24 +130,41 @@ const RetailItemInfo = () => {
               title={"Информация о сделке"}
               className="flex-item-contact"
             >
-              <p>Название сделки: {deal?.nameDeal}</p>
               <p>
-                Тип сделки:{" "}
+                <span className="text-sm first-letter:capitalize">
+                  Название сделки:{" "}
+                </span>{" "}
+                {deal?.nameDeal}
+              </p>
+              <p>
+                <span className="text-sm first-letter:capitalize">
+                  Тип сделки:{" "}
+                </span>
+
                 {DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
                   "Нет данных"}
               </p>
-              <p>Дата запроса: {deal?.dateRequest?.toLocaleDateString()}</p>
+              <p>
+                <span className="text-sm first-letter:capitalize">
+                  Дата запроса:{" "}
+                </span>{" "}
+                {deal?.dateRequest?.toLocaleDateString()}
+              </p>
             </IntoDealItem>
 
             <IntoDealItem title={"Детали"} className="flex-item-contact">
               <p>
-                Направление:{" "}
+                <span className="text-sm first-letter:capitalize">
+                  Направление:{" "}
+                </span>{" "}
                 {DirectionRetailLabels[
                   deal?.direction as keyof typeof DirectionRetailLabels
                 ] || "Нет данных"}
               </p>
               <p>
-                Тип поставки:{" "}
+                <span className="text-sm first-letter:capitalize">
+                  Тип поставки:{" "}
+                </span>{" "}
                 {DeliveryRetailLabels[
                   deal?.deliveryType as keyof typeof DeliveryRetailLabels
                 ] || "Нет данных"}
@@ -131,7 +173,9 @@ const RetailItemInfo = () => {
 
             <IntoDealItem title={"Финансы"} className="flex-item-contact">
               <p>
-                Дельта:{" "}
+                <span className="text-sm first-letter:capitalize">
+                  Дельта:{" "}
+                </span>{" "}
                 <span className="whitespace-nowrap">
                   {deal.delta
                     ? formatterCurrency.format(parseFloat(deal.delta as string))
@@ -139,7 +183,9 @@ const RetailItemInfo = () => {
                 </span>
               </p>
               <p>
-                Сумма КП:{" "}
+                <span className="text-sm first-letter:capitalize">
+                  Сумма КП:{" "}
+                </span>{" "}
                 <span className="whitespace-nowrap">
                   {deal.amountCP
                     ? formatterCurrency.format(
@@ -151,17 +197,15 @@ const RetailItemInfo = () => {
             </IntoDealItem>
           </div>
 
-          <IntoDealItem title={"Дополнительные контакты"}>
-            {deal.additionalContacts && deal.additionalContacts.length > 0 ? (
+          {deal.additionalContacts && deal.additionalContacts.length > 0 ? (
+            <IntoDealItem title={"Дополнительные контакты"}>
               <div className="flex h-full flex-wrap gap-2">
                 {deal.additionalContacts.map((contact) => (
                   <ContactCardInDealInfo key={contact.id} contact={contact} />
                 ))}
               </div>
-            ) : (
-              <p>Нет данных</p>
-            )}
-          </IntoDealItem>
+            </IntoDealItem>
+          ) : null}
         </div>
       </div>
       <IntoDealItem title={"Комментарии"}>

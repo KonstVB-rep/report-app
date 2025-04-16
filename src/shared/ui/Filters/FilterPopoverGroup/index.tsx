@@ -7,7 +7,7 @@ import FilterPopover from "../FilterPopover";
 export type OptionGroup = {
   label: string;
   columnId: string;
-  options: Record<string, string>; 
+  options: Record<string, string>;
 };
 
 type FilterPopoverGroupProps = {

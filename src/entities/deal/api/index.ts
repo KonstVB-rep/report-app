@@ -702,7 +702,6 @@ export const deleteDeal = async (
         break;
     }
 
-
     return { data: null, message, error: false };
   } catch (error) {
     console.error(error);

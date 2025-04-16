@@ -4,7 +4,6 @@ import * as React from "react";
 import { memo, useEffect, useMemo } from "react";
 
 import Image from "next/image";
-import Link from "next/link";
 
 import { BadgeRussianRuble, Wrench } from "lucide-react";
 
@@ -80,7 +79,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" variant="outline" asChild>
-              <Link href="/">
+              <div>
                 <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
                   <Image
                     src="/logo.png"
@@ -95,7 +94,7 @@ const AppSidebar = () => {
                     Ertel
                   </span>
                 </div>
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

@@ -43,11 +43,11 @@ const DelDealContextMenu = ({
       <div>
         <Overlay isPending={isPending} />
         <div className="grid gap-4 py-4">
-          <p>Вы точно уверены что хотите удалить сделку</p>
+          <p>Вы точно уверены что хотите удалить данные</p>
           <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
             &quot;{deal?.nameObject}&quot;?
           </p>
-          <p>Его нельзя будет восстановить!</p>
+          <p>Их нельзя будет восстановить!</p>
         </div>
         <DialogFooter className="grid grid-cols-2 gap-4">
           <DialogClose asChild>

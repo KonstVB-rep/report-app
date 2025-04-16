@@ -3,6 +3,7 @@ import { DealFile } from "@prisma/client";
 import { useState } from "react";
 
 import { FileX, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
@@ -52,7 +53,13 @@ const DeleteFile = ({
   return (
     <>
       <Overlay isPending={isPending} />
-      <div className={`flex gap-2 ${className}`}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.5 }}
+        transition={{ duration: 0.2 }}
+        className={`flex gap-2 ${className}`}
+      >
         <DialogComponent
           open={open}
           onOpenChange={setOpen}
@@ -76,33 +83,51 @@ const DeleteFile = ({
                 Вы действительно хотите удалить выбранные файлы?
               </p>
 
-              <div className="grid max-h-[300] gap-1 overflow-y-auto">
-                {[...selectedFilesForDelete].map((file) => {
-                  const fileName = getFileNameWithoutUuid(file.name);
-                  return (
-                    <p
-                      key={file.id}
-                      className="flex items-center justify-between break-all rounded-md bg-muted p-2 text-sm pr-[48px]"
-                    >
-                      <span>{fileName}</span>
-
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        className="h-6 w-6 p-1"
-                        onClick={() => handleDeleteFromListSelected(file.name)}
+              <ul className="grid max-h-[300] gap-1 overflow-y-auto">
+                <AnimatePresence>
+                  {[...selectedFilesForDelete].map((file) => {
+                    const fileName = getFileNameWithoutUuid(file.name);
+                    return (
+                      <motion.li
+                        key={file.id}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="relative flex items-center justify-between break-all rounded-md bg-muted p-2 text-sm pr-[48px]"
                       >
-                        <X strokeWidth={1} className="!h-6 !w-6" />
-                      </Button>
-                    </p>
-                  );
-                })}
-              </div>
+                        <span>{fileName}</span>
+
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          className="h-6 w-6 p-1 absolute right-2 top-1/2 transform -translate-y-1/2"
+                          onClick={() =>
+                            handleDeleteFromListSelected(file.name)
+                          }
+                        >
+                          <motion.span
+                            initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={() =>
+                              handleDeleteFromListSelected(file.name)
+                            }
+                          >
+                            <X strokeWidth={1} className="!h-6 !w-6" />
+                          </motion.span>
+                        </Button>
+                      </motion.li>
+                    );
+                  })}
+                </AnimatePresence>
+              </ul>
             </div>
             <SubmitFormButton title="Удалить" isPending={isPending} />
           </form>
         </DialogComponent>
-      </div>
+      </motion.div>
     </>
   );
 };

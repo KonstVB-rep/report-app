@@ -1,8 +1,8 @@
 import { toast } from "sonner";
 
 export const TOAST = {
-  ERROR: (message: string) => 
-toast.error(message, {
+  ERROR: (message: string) =>
+    toast.error(message, {
       duration: 3000,
       icon: "",
       position: "top-center",

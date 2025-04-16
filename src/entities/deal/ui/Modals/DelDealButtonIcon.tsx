@@ -13,7 +13,6 @@ import { useDeleteFiles } from "@/widgets/Files/hooks/mutate";
 
 import { useDelDeal } from "../../hooks/mutate";
 
-
 const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const { data: deal } = useGetDealById(id, type);
 
@@ -25,7 +24,7 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
         setOpen(false);
         return;
       }
-      
+
       mutate(deal.dealFiles);
     },
     type,
@@ -45,7 +44,7 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
     <DialogComponent
       open={open}
       onOpenChange={setOpen}
-      dialogTitle="Удалить сделку"
+      dialogTitle="Удалить данные"
       contentTooltip="Удалить"
       classNameContent="sm:max-w-[400px]"
       trigger={
@@ -55,11 +54,11 @@ const DelDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
       }
     >
       <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
-        <p>Вы точно уверены что хотите удалить сделку</p>
+        <p>Вы точно уверены что хотите удалить данные</p>
         <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
           &quot;{deal?.nameObject}&quot;?
         </p>
-        <p>Его нельзя будет восстановить!</p>
+        <p>Их нельзя будет восстановить!</p>
         <div className="grid grid-cols-2 gap-2">
           <DialogClose asChild>
             <Button type="button" variant="outline">

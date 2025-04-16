@@ -5,6 +5,7 @@ import { DealType } from "@prisma/client";
 import { useRef } from "react";
 
 import { CloudUpload, Loader, Trash2, Upload, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,29 +81,35 @@ export default function FileUploadForm({
 
             {files && files.length > 0 ? (
               <ul className="grid max-h-48 gap-2 overflow-auto">
-                {files.map((file, idx) => (
-                  <li
-                    key={idx}
-                    className="relative grid w-full justify-items-center gap-1 rounded-md border border-dashed p-2 pr-[48px]"
-                  >
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="destructive"
-                      onClick={() => handleSelectFile(file.name)}
-                      className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md"
-                      title="Удалить из списка"
+                <AnimatePresence>
+                  {files.map((file) => (
+                    <motion.li
+                      key={file.name} // Уникальный ключ для каждого элемента
+                      initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className="relative grid w-full justify-items-center gap-1 rounded-md border border-dashed p-2 pr-[48px]"
                     >
-                      <X />
-                    </Button>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => handleSelectFile(file.name)}
+                        className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md"
+                        title="Удалить из списка"
+                      >
+                        <X />
+                      </Button>
 
-                    <p className="break-all text-sm">Имя: {file.name}</p>
+                      <p className="break-all text-sm">Имя: {file.name}</p>
 
-                    <p className="text-xs text-muted-foreground">
-                      Размер: {(file.size / 1024 / 1024).toFixed(3)} MB
-                    </p>
-                  </li>
-                ))}
+                      <p className="text-xs text-muted-foreground">
+                        Размер: {(file.size / 1024 / 1024).toFixed(3)} MB
+                      </p>
+                    </motion.li>
+                  ))}
+                </AnimatePresence>
               </ul>
             ) : null}
 
@@ -132,7 +139,7 @@ export default function FileUploadForm({
                       </span>
                     )}
                   </Button>
-                  
+
                   <Button
                     variant="destructive"
                     type="reset"

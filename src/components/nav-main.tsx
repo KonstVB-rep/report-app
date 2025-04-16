@@ -50,7 +50,7 @@ export function NavMain({ items }: { items: DepartmentListType[] }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const handleToggle = () => {
     setOpen((prev) => !prev);
   };

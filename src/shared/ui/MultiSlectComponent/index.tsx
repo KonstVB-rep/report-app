@@ -43,9 +43,7 @@ const MultiSelectComponent = ({
         />
       </MultiSelectTrigger>
       <MultiSelectContent>
-        <MultiSelectList>
-          {renderMultiSelectOptions(options)}
-        </MultiSelectList>
+        <MultiSelectList>{renderMultiSelectOptions(options)}</MultiSelectList>
       </MultiSelectContent>
     </MultiSelect>
   );

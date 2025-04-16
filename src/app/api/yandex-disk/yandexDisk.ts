@@ -119,13 +119,15 @@ async function uploadFilesToYandexDiskAndDB(formData: FormData) {
         });
 
         if (!fileInfo) {
-          throw new Error(`Ошибка при записи данных о файле "${file.name}" в базу`);
+          throw new Error(
+            `Ошибка при записи данных о файле "${file.name}" в базу`
+          );
         }
 
         return fileInfo;
       })
     );
-    
+
     return uploadedFiles;
   } catch (error) {
     console.error("Ошибка в uploadFilesToYandexDiskAndDB:", error);
