@@ -3,6 +3,9 @@
 import React, { useEffect } from "react";
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 
+import { ArrowLeft } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -27,7 +30,7 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../../lib/constants";
-import ContactsList from "../ContactsList";
+
 import ContactDeal from "../Modals/ContactDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
@@ -43,8 +46,16 @@ const RetailFormBody = <T extends FieldValues>({
   isPending,
   contactsKey,
 }: RetailFormBodyProps<T>) => {
-  const { contacts, setContacts, handleDeleteContact, handleSubmit } =
-    useSendDealInfo<T>(onSubmit);
+  const {
+    contacts,
+    setContacts,
+    selectedContacts,
+    setSelectedContacts,
+    handleDeleteContact,
+    handleSubmit,
+    isAddContact,
+    toggleAddContact,
+  } = useSendDealInfo<T>(onSubmit);
 
   const currentContacts = form.getValues(contactsKey as Path<T>);
 
@@ -56,12 +67,12 @@ const RetailFormBody = <T extends FieldValues>({
   }, [contactsKey, form, currentContacts, setContacts]);
 
   return (
-    <div className="max-h-[82vh] overflow-y-auto">
+    <div className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="grid max-h-[82vh] gap-5 overflow-y-auto"
+          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto trаnsform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
           <div className="text-center font-semibold uppercase">
             Форма добавления розничной сделки
@@ -241,20 +252,53 @@ const RetailFormBody = <T extends FieldValues>({
               </div>
             </div>
 
-            <SubmitFormButton
-              title="Сохранить"
-              isPending={isPending}
-              className="ml-auto mr-2 w-max"
-            />
+            <div className="flex items-center justify-between">
+              {isAddContact ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={toggleAddContact}
+                  size="icon"
+                >
+                  <ArrowLeft />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={toggleAddContact}
+                >
+                  Добавить доп.контакт
+                </Button>
+              )}
+              <SubmitFormButton
+                title="Сохранить"
+                isPending={isPending}
+                className="ml-auto mr-2 w-max"
+              />
+            </div>
           </div>
         </form>
-        <ContactDeal onContactsChange={setContacts} contacts={contacts} />
-        {contactsKey && (
-          <ContactsList
+        <div
+          className={`min-w-full flex flex-col gap-2 trаnsform ${isAddContact ? "-translate-x-full" : "translate-x-0"} duration-150`}
+        >
+          <Button
+            type="button"
+            variant="outline"
+            onClick={toggleAddContact}
+            size="icon"
+          >
+            <ArrowLeft />
+          </Button>
+          <ContactDeal
+            onContactsChange={setContacts}
+            selectedContacts={selectedContacts}
+            setSelectedContacts={setSelectedContacts}
             contacts={contacts as T[typeof contactsKey]}
+            contactsKey={contactsKey}
             handleDeleteContact={handleDeleteContact}
           />
-        )}
+        </div>
       </Form>
     </div>
   );

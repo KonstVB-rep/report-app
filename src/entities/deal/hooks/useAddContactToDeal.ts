@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { ContactFormSchema, ContactSchema } from "../model/schema";
@@ -9,7 +9,7 @@ const useAddContactToDeal = (
   contacts: ContactSchema["contacts"],
   onContactsChange: (contacts: ContactSchema["contacts"]) => void
 ) => {
-  const [isOpen, setIsOpen] = useState(false);
+
   const form = useForm<ContactSchema>({
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
@@ -29,7 +29,6 @@ const useAddContactToDeal = (
   });
 
   useEffect(() => {
-    if (isOpen) {
       form.reset({
         contacts:
           contacts.length > 0
@@ -44,10 +43,9 @@ const useAddContactToDeal = (
                 },
               ],
       });
-    }
-  }, [isOpen, contacts, form]);
+  }, [contacts, form]);
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "contacts",
   });
@@ -77,12 +75,24 @@ const useAddContactToDeal = (
     }
   };
 
+  const handleRemoveAll = () => {
+    replace([
+      {
+        id: crypto.randomUUID(),
+        name: "",
+        phone: "",
+        email: "",
+        position: "",
+      },
+    ]);
+    onContactsChange([]);
+  };
+
   return {
-    isOpen,
-    setIsOpen,
     form,
     handleRemove,
     handleAddNewContactForm,
+    handleRemoveAll,
     fields,
   };
 };

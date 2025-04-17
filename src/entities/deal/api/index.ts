@@ -646,11 +646,12 @@ export const getAllRetailsByDepartment = async (): Promise<
   }
 };
 
-/* Удалить проект */
+// /* Удалить проект */
+
 export const deleteDeal = async (
   dealId: string,
   idDealOwner: string,
-  type: string
+  type: DealType
 ) => {
   try {
     const { user } = await handleAuthorization();
@@ -661,46 +662,83 @@ export const deleteDeal = async (
 
     let deal;
     let message;
+    let contactIdsToCheck: string[] = [];
 
     switch (type) {
       case DealType.PROJECT:
         deal = await prisma.project.findUnique({
           where: { id: dealId },
-          select: { userId: true },
+          include: {
+            additionalContacts: { select: { id: true } },
+          },
         });
         message = "Проект успешно удален";
         break;
+
       case DealType.RETAIL:
         deal = await prisma.retail.findUnique({
           where: { id: dealId },
-          select: { userId: true },
+          include: {
+            additionalContacts: { select: { id: true } },
+          },
         });
         message = "Розничная сделка успешно удалена";
         break;
+
       default:
         return handleError("Неверный тип сделки");
     }
 
     if (!deal) {
-      return [];
+      return handleError("Сделка не найдена");
     }
 
     if (deal.userId !== idDealOwner) {
       await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
     }
 
-    switch (type) {
-      case DealType.PROJECT:
-        await prisma.project.delete({
+    // Собираем ID контактов
+    contactIdsToCheck = deal.additionalContacts.map(c => c.id);
+
+    // Удаляем связи
+    await prisma.$transaction(async tx => {
+      if (type === DealType.PROJECT) {
+        await tx.project.update({
           where: { id: dealId },
+          data: { additionalContacts: { set: [] } },
         });
-        break;
-      case DealType.RETAIL:
-        await prisma.retail.delete({
+        await tx.project.delete({ where: { id: dealId } });
+      } else {
+        await tx.retail.update({
           where: { id: dealId },
+          data: { additionalContacts: { set: [] } },
         });
-        break;
-    }
+        await tx.retail.delete({ where: { id: dealId } });
+      }
+
+      // Удаляем контакты, не связанные больше ни с чем
+      await Promise.all(
+        contactIdsToCheck.map(async (contactId) => {
+          const contact = await tx.additionalContact.findUnique({
+            where: { id: contactId },
+            include: {
+              projects: true,
+              retails: true,
+            },
+          });
+
+          if (
+            contact &&
+            contact.projects.length === 0 &&
+            contact.retails.length === 0
+          ) {
+            await tx.additionalContact.delete({
+              where: { id: contactId },
+            });
+          }
+        })
+      );
+    });
 
     return { data: null, message, error: false };
   } catch (error) {

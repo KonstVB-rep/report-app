@@ -65,7 +65,7 @@ const DialogComponent = ({
           <DialogTitle className="text-center text-sm uppercase">
             {dialogTitle}
           </DialogTitle>
-          <DialogDescription />
+          <DialogDescription  className="sr-only"/>
         </DialogHeader>
         {children}
         {footer}

@@ -1,29 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-
-import { usePathname } from "next/navigation";
+import React from "react";
 
 import { AnimatePresence, motion } from "motion/react";
 
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
-  const pathname = usePathname();
-  const [displayChildren, setDisplayChildren] = useState(children);
-
-  useEffect(() => {
-    setDisplayChildren(children);
-  }, [children]);
-
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       <motion.div
-        key={pathname}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.2, ease: "easeInOut" }}
+        key={Date.now()}
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 1, opacity: 1 }}
+        exit={{ y: -10, opacity: 0 }}
+        transition={{ ease: "easeInOut", duration: 0.25 }}
+        className="w-full h-full flex-1"
       >
-        {displayChildren}
+        {children}
       </motion.div>
     </AnimatePresence>
   );

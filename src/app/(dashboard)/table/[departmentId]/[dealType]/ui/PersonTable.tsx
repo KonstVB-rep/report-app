@@ -21,7 +21,7 @@ const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
 interface PersonTableProps<T> {
   data: T[];
   type: DealType;
-  columns: ColumnDef<T>[]; // Можешь уточнить тип колонок, если он известен
+  columns: ColumnDef<T>[]; 
   getRowLink: (row: T, type: string) => string;
 }
 
