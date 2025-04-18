@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
       const { accessToken } = await generateTokens(
         payload.userId as string,
-        payload.deratmentId as string | number
+        payload.departmentId as string | number
       );
 
       return NextResponse.json({ accessToken });

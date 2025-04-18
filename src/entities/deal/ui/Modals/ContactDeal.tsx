@@ -14,7 +14,9 @@ import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 import useAddContactToDeal from "../../hooks/useAddContactToDeal";
 import { ContactSchema } from "../../model/schema";
 import { Contact } from "../../types";
-import ContactsList from "../ContactsList";
+import dynamic from "next/dynamic";
+
+const ContactsList = dynamic(() => import("../ContactsList"), { ssr: false });
 
 type ContactFieldError = {
   _common?: {
@@ -52,8 +54,6 @@ const ContactDeal = ({
     handleRemoveAll();
   };
 
-  console.log(fields, "fields");
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -66,7 +66,7 @@ const ContactDeal = ({
               <div className="max-h-full overflow-hidden p-[2px]">
                 <InputTextForm
                   name={`contacts.${index}.name`}
-                  label={form.watch(`contacts.${index}.id`)}
+                  label=""
                   control={form.control}
                   errorMessage={
                     form.formState.errors.contacts?.[index]?.name?.message

@@ -12,16 +12,16 @@ if (!process.env.NODE_ENV) {
 
 export const generateTokens = async (
   userId: string,
-  deratmentId: string | number
+  departmentId: string | number
 ) => {
   // Генерация access token
-  const accessToken = await new SignJWT({ userId, deratmentId })
+  const accessToken = await new SignJWT({ userId, departmentId })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("1d") // 1 день
     .sign(new TextEncoder().encode(process.env.JWT_SECRET_KEY)); // Подпись токена с секретом
 
   // Генерация refresh token
-  const refreshToken = await new SignJWT({ userId, deratmentId })
+  const refreshToken = await new SignJWT({ userId, departmentId })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)); // Подпись токена с секретом

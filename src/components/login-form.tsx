@@ -85,16 +85,13 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
       className={cn("flex flex-col gap-6", className)}
     >
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
-            <motion.form
-              initial={{ transform: "translateY(100%)", opacity: 0 }}
-              animate={{ opacity: 1, transform: "translateY(0)" }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+            <form
               className="p-6 md:p-8"
               action={onSubmit}
             >
@@ -130,26 +127,21 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
 
                 <SubmitFormActionBtn title="Войти" />
               </div>
-            </motion.form>
+            </form>
           </Form>
-          <motion.div
-            initial={{
-              transform: "translateY(-100%)",
-              opacity: 0,
-            }}
-            animate={{ opacity: 1, transform: "translateY(0)" }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+          <div
+          
             className="relative hidden bg-muted md:block"
           >
             <Image
               src={loginImg}
-              alt="login background"
+              alt=""
               placeholder="blur"
               priority
               fill
               className="absolute inset-0 h-full w-full dark:brightness-[0.2] dark:grayscale"
             />
-          </motion.div>
+          </div>
         </CardContent>
       </Card>
     </motion.div>
