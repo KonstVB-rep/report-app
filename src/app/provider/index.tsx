@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 // import { ReactScan } from "../ReactScanComponent";
 
@@ -24,6 +25,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
         <QueryProvider>
           <ReactQueryDevtools />
           <Toaster position="top-center" />
+          <SpeedInsights/>
           {children}
         </QueryProvider>
       </ThemeProvider>
