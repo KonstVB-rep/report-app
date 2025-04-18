@@ -52,6 +52,11 @@ export const useDownLoadFile = () => {
       const { localPath, name } = data;
 
       const response = await downloadFile(localPath);
+
+      if (!response) {
+        throw new Error("Файл не найден");
+      }
+
       return saveBlobToFile(response, name);
     },
     onError: (error) => {

@@ -135,7 +135,7 @@ const FileList = ({ data }: FileListProps) => {
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.2, ease: "easeInOut" }}
                       tabIndex={0}
-                      className="group flex-1 w-20 min-w-20 max-w-20 relative grid gap-1 overflow-hidden rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
+                      className="group flex-1 w-20 min-w-20 max-w-20 relative grid gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
                     >
                       <p className="flex items-center justify-center">
                         {isImg && iconsTypeFile[".img"]()}
@@ -147,7 +147,7 @@ const FileList = ({ data }: FileListProps) => {
 
                       <p className="truncate text-xs">{fileName}</p>
 
-                      <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
+                      <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1] rounded-md" />
 
                       <DownLoadFile
                         className="absolute inset-0 z-10 hidden h-full w-full items-center justify-center group-hover:flex group-focus-visible:flex"
@@ -161,7 +161,7 @@ const FileList = ({ data }: FileListProps) => {
                         id={file.name}
                         onChange={handleSelectFile}
                         checked={selectedFiles.has(file.name)}
-                        className="absolute right-1 top-1 z-[11] h-5 w-5 cursor-pointer accent-blue-500"
+                        className="absolute hidden checked:block group-hover:block group-focus-visible:block -right-1 -top-1 z-[11] h-5 w-5 cursor-pointer accent-red-700"
                       />
                     </motion.li>
                   );

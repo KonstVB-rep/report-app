@@ -18,7 +18,7 @@ const IntoDealItem = ({
   return (
     <div className={cn("overflow-hidden rounded-md border", className)}>
       <p className="first-letter:capitalize bg-muted p-4">{title}</p>
-      <div className="flex-1 p-3">{children}</div>
+      <div className="flex-1 p-3 grid gap-2">{children}</div>
     </div>
   );
 };

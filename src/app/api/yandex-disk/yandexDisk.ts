@@ -137,27 +137,25 @@ async function uploadFilesToYandexDiskAndDB(formData: FormData) {
 
 /**
  * Скачивание файла с Яндекс.Диска
- */
-async function downloadFileFromYandexDisk(filePath: string): Promise<Blob> {
-  try {
-    // Получаем URL для скачивания
+//  */
 
+async function downloadFileFromYandexDisk(filePath: string): Promise<Uint8Array> {
+  try {
     const response = await axiosInstanceYandexDisk.get(
       `/resources/download?path=${encodeURIComponent(filePath)}`
     );
     const { href: downloadUrl } = response.data;
 
     const downloadResponse = await axiosDownLoaderFromYD.get(downloadUrl, {
-      responseType: "blob",
+      responseType: "arraybuffer", // <-- ВАЖНО
     });
 
-    return downloadResponse.data;
+    return new Uint8Array(downloadResponse.data); // <-- Возвращаем корректный тип
   } catch (error) {
     console.error("Ошибка в downloadFileFromYandexDisk:", error);
     throw error;
   }
 }
-
 /**
  * Создание папки на Яндекс.Диске
  */

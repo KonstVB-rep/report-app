@@ -5,12 +5,13 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-import { Building, ContactRound, Info } from "lucide-react";
+import { Building, Info } from "lucide-react";
 
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import { Separator } from "@/components/ui/separator";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
+import TooltipComponent from "@/shared/ui/TooltipComponent";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetProjectById } from "../hooks/query";
@@ -20,11 +21,12 @@ import {
   DirectionProjectLabels,
   StatusProjectLabels,
 } from "../lib/constants";
-import CardInfo from "./CardInfo";
+import CardMainContact from "./CardMainContact";
 import ContactCardInDealInfo from "./ContactCardInDealInfo";
 import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
+import RowInfoDealProp from "./RowInfoDealProp";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -74,159 +76,147 @@ const ProjectItemInfo = () => {
       <div className="grid gap-2">
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
           <div className="grid-rows-auto grid gap-2">
-            <div className="grid min-w-72 gap-2">
+            <div className="grid min-w-72 gap-4">
               <IntoDealItem title={"Объект"}>
                 <div className="grid w-full gap-2">
                   <div className="flex w-full items-start justify-start gap-4 text-lg">
-                    <Building size="40" strokeWidth={1} />
+                    <Building
+                      size="40"
+                      strokeWidth={1}
+                      className="icon-deal_info"
+                    />
 
-                    <p>{deal?.nameObject}</p>
+                    <p className="text-md prop-deal-value h-10 px-2 flex-1 zinc-400 dark:text-color-black font-semibold">
+                      {deal?.nameObject}
+                    </p>
                   </div>
 
                   <div className="first-letter:capitalize">
-                    <div className="flex gap-2 items-center justify-start">
-                      <p className="flex items-center justify-start gap-2">
-                        <Info size="40" strokeWidth={1} />
+                    <div className="flex flex-col items-start gap-2 justify-start">
+                      <p className="flex items-center justify-start gap-4">
+                        <Info
+                          size="40"
+                          strokeWidth={1}
+                          className="icon-deal_info"
+                        />
 
-                        <span className="text-sm first-letter:capitalize">
-                          Статус:
-                        </span>
+                        <TooltipComponent content="Статус сделки">
+                          <span className="text-md prop-deal-value h-10 px-2 flex-1 zinc-400 dark:text-color-black font-semibold">
+                            {StatusProjectLabels[
+                              deal?.dealStatus as keyof typeof StatusProjectLabels
+                            ] || "Нет данных"}
+                          </span>
+                        </TooltipComponent>
                       </p>
-
-                      <span className="whitespace-nowrap text-md">
-                        {StatusProjectLabels[
-                          deal?.dealStatus as keyof typeof StatusProjectLabels
-                        ] || "Нет данных"}
-                      </span>
                     </div>
                   </div>
                 </div>
               </IntoDealItem>
             </div>
+
             <div className="grid gap-2">
               <IntoDealItem title={"Основной контакт"}>
-                <div className="grid w-full">
-                  <div className="flex items-start justify-start gap-4">
-                    <ContactRound size="40" strokeWidth={1} />
-
-                    <div className="flex h-full flex-col items-start justify-start text-lg">
-                      <CardInfo data={deal.contact} title="Имя" />
-
-                      <CardInfo
-                        data={deal.phone}
-                        title="Телефон"
-                        type="phone"
-                      />
-
-                      <CardInfo data={deal.email} title="Email" type="email" />
-                    </div>
-                  </div>
-                </div>
+                <CardMainContact
+                  contact={deal.contact}
+                  phone={deal.phone}
+                  email={deal.email}
+                />
               </IntoDealItem>
             </div>
           </div>
+
           <div className="grid-rows-auto grid gap-2">
             <div className="flex flex-wrap gap-2">
               <IntoDealItem
                 title={"Информация о сделке"}
                 className="flex-item-contact"
               >
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Название сделки:{" "}
-                  </span>{" "}
-                  {deal?.nameDeal}
-                </p>
+                <RowInfoDealProp
+                  label="Название сделки:"
+                  value={deal?.nameDeal}
+                  direction="column"
+                />
 
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Тип сделки:{" "}
-                  </span>
+                <RowInfoDealProp
+                  label="Тип сделки:"
+                  value={
+                    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
+                    "Нет данных"
+                  }
+                  direction="column"
+                />
 
-                  {DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
-                    "Нет данных"}
-                </p>
-
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Дата запроса:{" "}
-                  </span>{" "}
-                  {deal?.dateRequest?.toLocaleDateString()}
-                </p>
+                <RowInfoDealProp
+                  label="Дата запроса:"
+                  value={deal?.dateRequest?.toLocaleDateString()}
+                  direction="column"
+                />
               </IntoDealItem>
 
               <IntoDealItem title={"Детали"} className="flex-item-contact">
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Направление:{" "}
-                  </span>{" "}
-                  {DirectionProjectLabels[
-                    deal?.direction as keyof typeof DirectionProjectLabels
-                  ] || "Нет данных"}
-                </p>
+                <RowInfoDealProp
+                  label="Направление:"
+                  value={
+                    DirectionProjectLabels[
+                      deal?.direction as keyof typeof DirectionProjectLabels
+                    ] || "Нет данных"
+                  }
+                />
 
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Тип поставки:{" "}
-                  </span>{" "}
-                  {DeliveryProjectLabels[
-                    deal?.deliveryType as keyof typeof DeliveryProjectLabels
-                  ] || "Нет данных"}
-                </p>
+                <RowInfoDealProp
+                  label="Тип поставки:"
+                  value={
+                    DeliveryProjectLabels[
+                      deal?.deliveryType as keyof typeof DeliveryProjectLabels
+                    ] || "Нет данных"
+                  }
+                />
               </IntoDealItem>
 
               <IntoDealItem title={"Финансы"} className="flex-item-contact">
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Дельта:{" "}
-                  </span>{" "}
-                  <span className="whitespace-nowrap">
-                    {deal.delta
+                <RowInfoDealProp
+                  label="Дельта:"
+                  value={
+                    deal.delta
                       ? formatterCurrency.format(
                           parseFloat(deal.delta as string)
                         )
-                      : "Нет данных"}
-                  </span>
-                </p>
+                      : "Нет данных"
+                  }
+                />
 
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Сумма КП:{" "}
-                  </span>{" "}
-                  <span className="whitespace-nowrap">
-                    {deal.amountCP
+                <RowInfoDealProp
+                  label="Сумма КП:"
+                  value={
+                    deal.amountCP
                       ? formatterCurrency.format(
                           parseFloat(deal.amountCP as string)
                         )
-                      : "Нет данных"}
-                  </span>
-                </p>
+                      : "Нет данных"
+                  }
+                />
 
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Сумма закупки:{" "}
-                  </span>{" "}
-                  <span className="whitespace-nowrap">
-                    {deal.amountPurchase
+                <RowInfoDealProp
+                  label="Сумма закупки:"
+                  value={
+                    deal.amountPurchase
                       ? formatterCurrency.format(
                           parseFloat(deal.amountPurchase as string)
                         )
-                      : "Нет данных"}
-                  </span>
-                </p>
+                      : "Нет данных"
+                  }
+                />
 
-                <p>
-                  <span className="text-sm first-letter:capitalize">
-                    Сумма работ:{" "}
-                  </span>{" "}
-                  <span className="whitespace-nowrap">
-                    {deal.amountWork
+                <RowInfoDealProp
+                  label="Сумма работ:"
+                  value={
+                    deal.amountWork
                       ? formatterCurrency.format(
                           parseFloat(deal.amountWork as string)
                         )
-                      : "Нет данных"}{" "}
-                  </span>
-                </p>
+                      : "Нет данных"
+                  }
+                />
               </IntoDealItem>
             </div>
 
@@ -241,6 +231,7 @@ const ProjectItemInfo = () => {
             ) : null}
           </div>
         </div>
+
         <IntoDealItem title={"Комментарии"}>
           <p className="first-letter:capitalize">
             {deal.comments || "Нет данных"}
@@ -262,3 +253,5 @@ const ProjectItemInfo = () => {
 };
 
 export default withAuthGuard(ProjectItemInfo);
+
+ProjectItemInfo.displayName = "ProjectItemInfo";

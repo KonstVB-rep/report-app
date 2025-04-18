@@ -37,6 +37,11 @@ export const downloadFile = async (filePath: string) => {
       params: { filePath },
       responseType: "blob",
     });
+
+    if (!response.data) {
+      throw new Error("Файл не найден");
+    }
+    
     return response.data;
   } catch (error) {
     console.error("Ошибка загрузки файла:", error);

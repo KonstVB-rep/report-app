@@ -7,11 +7,12 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-import { Building, ContactRound, Info } from "lucide-react";
+import { Building, Info } from "lucide-react";
 
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
+import TooltipComponent from "@/shared/ui/TooltipComponent";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetRetailById } from "../hooks/query";
@@ -21,11 +22,12 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../lib/constants";
-import CardInfo from "./CardInfo";
+import CardMainContact from "./CardMainContact";
 import ContactCardInDealInfo from "./ContactCardInDealInfo";
 import IntoDealItem from "./IntoDealItem";
 import DelDealButtonIcon from "./Modals/DelDealButtonIcon";
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon";
+import RowInfoDealProp from "./RowInfoDealProp";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -72,55 +74,49 @@ const RetailItemInfo = () => {
       <Separator />
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
         <div className="grid-rows-auto grid gap-2">
-          <div className="grid min-w-72 gap-2">
+          <div className="grid min-w-72 gap-4">
             <IntoDealItem title={"Объект"}>
               <div className="flex w-full items-center justify-start gap-4 text-lg">
-                <Building size="40" strokeWidth={1} />
+                <Building
+                  size="40"
+                  strokeWidth={1}
+                  className="icon-deal_info"
+                />
 
-                <p>{deal?.nameObject}</p>
-              </div>
-              <div className="text-xl first-letter:capitalize">
-                <p>
-                  {StatusRetailLabels[
-                    deal?.dealStatus as keyof typeof StatusRetailLabels
-                  ] || "Нет данных"}
+                <p className="text-md prop-deal-value h-10 px-2 flex-1 zinc-400 dark:text-color-black font-semibold">
+                  {deal?.nameObject}
                 </p>
               </div>
 
               <div className="first-letter:capitalize">
-                <div className="flex gap-2 items-center justify-start">
-                  <p className="flex items-center justify-start gap-2">
-                    <Info size="40" strokeWidth={1} />
+                <div className="flex flex-col items-start gap-2 justify-start">
+                  <p className="flex items-center justify-start gap-4">
+                    <Info
+                      size="40"
+                      strokeWidth={1}
+                      className="icon-deal_info"
+                    />
 
-                    <span className="text-sm first-letter:capitalize">
-                      Статус:
-                    </span>
+                    <TooltipComponent content="Статус сделки">
+                      <span className="text-md prop-deal-value h-10 px-2 flex-1 zinc-400 dark:text-color-black font-semibold">
+                        {StatusRetailLabels[
+                          deal?.dealStatus as keyof typeof StatusRetailLabels
+                        ] || "Нет данных"}
+                      </span>
+                    </TooltipComponent>
                   </p>
-
-                  <span className="whitespace-nowrap text-md">
-                    {StatusRetailLabels[
-                      deal?.dealStatus as keyof typeof StatusRetailLabels
-                    ] || "Нет данных"}
-                  </span>
                 </div>
               </div>
             </IntoDealItem>
           </div>
+
           <div className="grid gap-2">
             <IntoDealItem title={"Основной контакт"}>
-              <div className="grid w-full">
-                <div className="flex items-center justify-start gap-4">
-                  <ContactRound size="40" strokeWidth={1} />
-
-                  <div className="flex flex-col items-start justify-start text-lg">
-                    <CardInfo data={deal.contact} title="Имя" />
-
-                    <CardInfo data={deal.phone} title="Телефон" type="phone" />
-
-                    <CardInfo data={deal.email} title="Email" type="email" />
-                  </div>
-                </div>
-              </div>
+              <CardMainContact
+                contact={deal.contact}
+                phone={deal.phone}
+                email={deal.email}
+              />
             </IntoDealItem>
           </div>
         </div>
@@ -130,70 +126,70 @@ const RetailItemInfo = () => {
               title={"Информация о сделке"}
               className="flex-item-contact"
             >
-              <p>
-                <span className="text-sm first-letter:capitalize">
-                  Название сделки:{" "}
-                </span>{" "}
-                {deal?.nameDeal}
-              </p>
-              <p>
-                <span className="text-sm first-letter:capitalize">
-                  Тип сделки:{" "}
-                </span>
+              <RowInfoDealProp
+                label="Название сделки:"
+                value={deal?.nameDeal}
+                direction="column"
+              />
 
-                {DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] ||
-                  "Нет данных"}
-              </p>
-              <p>
-                <span className="text-sm first-letter:capitalize">
-                  Дата запроса:{" "}
-                </span>{" "}
-                {deal?.dateRequest?.toLocaleDateString()}
-              </p>
+              <RowInfoDealProp
+                label="Тип сделки:"
+                value={
+                  DealTypeLabels[deal?.type as keyof typeof DealTypeLabels]
+                }
+                direction="column"
+              />
+
+              <RowInfoDealProp
+                label="Дата запроса:"
+                value={deal?.dateRequest?.toLocaleDateString()}
+                direction="column"
+              />
             </IntoDealItem>
 
             <IntoDealItem title={"Детали"} className="flex-item-contact">
-              <p>
-                <span className="text-sm first-letter:capitalize">
-                  Направление:{" "}
-                </span>{" "}
-                {DirectionRetailLabels[
-                  deal?.direction as keyof typeof DirectionRetailLabels
-                ] || "Нет данных"}
-              </p>
-              <p>
-                <span className="text-sm first-letter:capitalize">
-                  Тип поставки:{" "}
-                </span>{" "}
-                {DeliveryRetailLabels[
-                  deal?.deliveryType as keyof typeof DeliveryRetailLabels
-                ] || "Нет данных"}
-              </p>
+              <RowInfoDealProp
+                label="Направление:"
+                value={
+                  DirectionRetailLabels[
+                    deal?.direction as keyof typeof DirectionRetailLabels
+                  ]
+                }
+                direction="column"
+              />
+              <RowInfoDealProp
+                label="Тип поставки:"
+                value={
+                  DeliveryRetailLabels[
+                    deal?.deliveryType as keyof typeof DeliveryRetailLabels
+                  ]
+                }
+                direction="column"
+              />
             </IntoDealItem>
 
             <IntoDealItem title={"Финансы"} className="flex-item-contact">
-              <p>
-                <span className="text-sm first-letter:capitalize">
-                  Дельта:{" "}
-                </span>{" "}
-                <span className="whitespace-nowrap">
-                  {deal.delta
+              <RowInfoDealProp
+                label="Дельта:"
+                value={
+                  deal.delta
                     ? formatterCurrency.format(parseFloat(deal.delta as string))
-                    : "Нет данных"}{" "}
-                </span>
-              </p>
-              <p>
-                <span className="text-sm first-letter:capitalize">
-                  Сумма КП:{" "}
-                </span>{" "}
-                <span className="whitespace-nowrap">
-                  {deal.amountCP
+                    : "0,00"
+                }
+                direction="column"
+              />
+
+              <RowInfoDealProp
+                label="Сумма КП:"
+                value={
+                  deal.amountCP
                     ? formatterCurrency.format(
                         parseFloat(deal.amountCP as string)
                       )
-                    : "Нет данных"}{" "}
-                </span>
-              </p>
+                    : "0,00"
+                }
+                direction="column"
+              />
             </IntoDealItem>
           </div>
 
@@ -208,19 +204,11 @@ const RetailItemInfo = () => {
           ) : null}
         </div>
       </div>
+
       <IntoDealItem title={"Комментарии"}>
         <p className="first-letter:capitalize">
           {deal.comments || "Нет данных"}
         </p>
-      </IntoDealItem>
-      <IntoDealItem title={"Статус"}>
-        <div className="text-xl first-letter:capitalize">
-          <p>
-            {StatusRetailLabels[
-              deal?.dealStatus as keyof typeof StatusRetailLabels
-            ] || "Нет данных"}
-          </p>
-        </div>
       </IntoDealItem>
 
       <FileList
