@@ -646,6 +646,83 @@ export const getAllRetailsByDepartment = async (): Promise<
   }
 };
 
+
+
+export const getAllDealsRequestSourceByDepartment = async (departmentId: number): Promise<
+{ dateRequest: Date; resource: string }[] | [] 
+> => {
+  try {
+    const { user } = await handleAuthorization();
+
+    const permissionError = await checkUserPermissionByRole(user!, [
+      PermissionEnum.VIEW_UNION_REPORT,
+    ]);
+
+    if (permissionError) return permissionError;
+
+    const retailsRequestResorce = await prisma.retail.findMany({
+      where: {
+        user: {
+          departmentId: departmentId, // Фильтрация по связанному пользователю
+        },
+        OR: [
+          {
+            resource: {
+              endsWith: ".ru",
+            },
+          },
+          {
+            resource: {
+              endsWith: ".рф",
+            },
+          },
+        ],
+      },
+      select: {
+        dateRequest: true,
+        resource: true,
+      },
+      orderBy: {
+        dateRequest: "asc",
+      },
+    });
+
+    const projectsRequestResource = await prisma.project.findMany({
+      where: {
+        user: {
+          departmentId: departmentId, // Фильтрация по связанному пользователю
+        },
+        OR: [
+          {
+            resource: {
+              endsWith: ".ru",
+            },
+          },
+          {
+            resource: {
+              endsWith: ".рф",
+            },
+          },
+        ],
+      },
+      select: {
+        dateRequest: true,
+        resource: true,
+      },
+      orderBy: {
+        dateRequest: "asc",
+      },
+    });
+    
+    const dealsRequestResource = [...retailsRequestResorce, ...projectsRequestResource];
+
+    return dealsRequestResource as { dateRequest: Date; resource: string }[] | [] 
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
 // /* Удалить проект */
 
 export const deleteDeal = async (
