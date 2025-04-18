@@ -8,7 +8,6 @@ import { useGetUser } from "@/entities/user/hooks/query";
 
 import DealsSkeleton from "./DealsSkeleton";
 import ErrorMessageTable from "./ErrorMessageTable";
-import { motion } from "motion/react";
 
 const DealTableTemplate = ({ children }: { children: React.ReactNode }) => {
   const { userId } = useParams();
@@ -22,19 +21,13 @@ const DealTableTemplate = ({ children }: { children: React.ReactNode }) => {
   if (isPending) return <DealsSkeleton />;
 
   return (
-    <motion.section
-      className="h-full p-4"
-      initial={{ y: 10, opacity: 0 }}
-      animate={{ y: 1, opacity: 1 }}
-      exit={{ y: -10, opacity: 0 }}
-      transition={{ ease: "easeInOut", duration: 0.25 }}
-    >
+    <section className="h-full p-4">
       {user ? (
         <div className="grid gap-2">{children}</div>
       ) : (
         <ErrorMessageTable message={error?.message} />
       )}
-    </motion.section>
+    </section>
   );
 };
 

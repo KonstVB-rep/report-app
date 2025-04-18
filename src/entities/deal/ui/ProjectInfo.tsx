@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { Building, ContactRound, Info } from "lucide-react";
-import { motion } from "motion/react";
 
 import Loading from "@/app/(dashboard)/deal/[dealType]/[dealId]/loading";
 import { Separator } from "@/components/ui/separator";
@@ -47,13 +46,7 @@ const ProjectItemInfo = () => {
 
   return (
     <section className="grid gap-2 p-4">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.2 }}
-        className="flex items-center justify-between rounded-md bg-muted p-2 pb-2"
-      >
+      <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
 
@@ -74,7 +67,7 @@ const ProjectItemInfo = () => {
 
           <DelDealButtonIcon id={deal.id} type={deal.type} />
         </div>
-      </motion.div>
+      </div>
 
       <Separator />
 

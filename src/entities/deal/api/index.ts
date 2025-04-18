@@ -698,10 +698,10 @@ export const deleteDeal = async (
     }
 
     // Собираем ID контактов
-    contactIdsToCheck = deal.additionalContacts.map(c => c.id);
+    contactIdsToCheck = deal.additionalContacts.map((c) => c.id);
 
     // Удаляем связи
-    await prisma.$transaction(async tx => {
+    await prisma.$transaction(async (tx) => {
       if (type === DealType.PROJECT) {
         await tx.project.update({
           where: { id: dealId },

@@ -2,12 +2,10 @@ import React from "react";
 
 import { BookUser } from "lucide-react";
 
-import { ContactSchema } from "../../model/schema";
+import { Contact } from "../types";
 import CardInfo from "./CardInfo";
 
-const ContactCardInDealInfo: React.FC<{ contact: ContactSchema }> = ({
-  contact,
-}) => {
+const ContactCardInDealInfo: React.FC<{ contact: Contact }> = ({ contact }) => {
   return (
     <div className="grid flex-1 rounded-md border border-solid">
       <div className="flex items-start justify-start gap-4 p-2">

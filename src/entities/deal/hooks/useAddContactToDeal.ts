@@ -9,7 +9,6 @@ const useAddContactToDeal = (
   contacts: ContactSchema["contacts"],
   onContactsChange: (contacts: ContactSchema["contacts"]) => void
 ) => {
-
   const form = useForm<ContactSchema>({
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
@@ -29,20 +28,20 @@ const useAddContactToDeal = (
   });
 
   useEffect(() => {
-      form.reset({
-        contacts:
-          contacts.length > 0
-            ? [...contacts]
-            : [
-                {
-                  name: "",
-                  email: "",
-                  phone: "",
-                  position: "",
-                  id: crypto.randomUUID(),
-                },
-              ],
-      });
+    form.reset({
+      contacts:
+        contacts.length > 0
+          ? [...contacts]
+          : [
+              {
+                name: "",
+                email: "",
+                phone: "",
+                position: "",
+                id: crypto.randomUUID(),
+              },
+            ],
+    });
   }, [contacts, form]);
 
   const { fields, append, remove, replace } = useFieldArray({

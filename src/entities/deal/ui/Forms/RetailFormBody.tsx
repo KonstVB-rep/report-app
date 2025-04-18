@@ -30,7 +30,6 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../../lib/constants";
-
 import ContactDeal from "../Modals/ContactDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {

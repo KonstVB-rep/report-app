@@ -3,6 +3,7 @@
 import React from "react";
 
 import { Plus, X } from "lucide-react";
+import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -26,7 +27,8 @@ type ContactDealProps = {
   onContactsChange: (contacts: ContactSchema["contacts"]) => void;
   contactsKey: string | null | undefined;
   handleDeleteContact: (id: string) => void;
-  selectedContacts: Contact[] | [], setSelectedContacts: (contacts: ContactSchema["contacts"]) => void
+  selectedContacts: Contact[] | [];
+  setSelectedContacts: (contacts: ContactSchema["contacts"]) => void;
 };
 
 const ContactDeal = ({
@@ -34,7 +36,8 @@ const ContactDeal = ({
   onContactsChange,
   handleDeleteContact,
   contactsKey,
-  selectedContacts, setSelectedContacts
+  selectedContacts,
+  setSelectedContacts,
 }: ContactDealProps) => {
   const {
     form,
@@ -45,20 +48,25 @@ const ContactDeal = ({
   } = useAddContactToDeal(contacts, onContactsChange);
 
   const onSubmit = (data: ContactSchema) => {
-    setSelectedContacts(data.contacts);
-    handleRemoveAll()
+    setSelectedContacts([...selectedContacts, ...data.contacts]);
+    handleRemoveAll();
   };
+
+  console.log(fields, "fields");
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid gap-2 p-2 overflow-y-auto max-h-[60vh] pr-1">
+        <div className="grid gap-2 p-2 overflow-y-auto max-h-[60vh] pr-5">
           {fields.map((field, index: number) => (
-            <div key={field.id} className="grid gap-2 rounded border p-4">
-              <div className="max-h-full overflow-y-auto p-[2px]">
+            <motion.div
+              key={form.watch(`contacts.${index}.id`)}
+              className="grid gap-2 rounded border p-4"
+            >
+              <div className="max-h-full overflow-hidden p-[2px]">
                 <InputTextForm
                   name={`contacts.${index}.name`}
-                  label=""
+                  label={form.watch(`contacts.${index}.id`)}
                   control={form.control}
                   errorMessage={
                     form.formState.errors.contacts?.[index]?.name?.message
@@ -117,7 +125,7 @@ const ContactDeal = ({
                   <X className="h-4 w-4" /> Удалить
                 </Button>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -132,16 +140,26 @@ const ContactDeal = ({
               <Plus className="h-4 w-4" />
             </Button>
 
-            <Button type="submit" className="active:scale-95 transition-transform duration-150">Сохранить</Button>
+            <Button
+              type="submit"
+              className="active:scale-95 transition-transform duration-150"
+            >
+              Сохранить
+            </Button>
           </div>
           {selectedContacts.length > 0 && (
             <DialogComponent
               dialogTitle="Контакты"
               classNameContent="sm:max-w-[600px] max-h-[82vh] overflow-y-auto"
               trigger={
-                <Button variant="outline" className="!relative flex w-fit gap-2 p-2">
+                <Button
+                  variant="outline"
+                  className="!relative flex w-fit gap-2 p-2"
+                >
                   Дополнительные контакты
-                  <span className="absolute -top-2 -right-2 p-[2px] dark:bg-black border border-solid border-primary rounded-full w-5 h-5 flex items-center justify-center">{selectedContacts.length}</span>
+                  <span className="absolute -top-2 -right-2 p-[2px] dark:bg-black border border-solid border-primary rounded-full w-5 h-5 flex items-center justify-center">
+                    {selectedContacts.length}
+                  </span>
                 </Button>
               }
             >

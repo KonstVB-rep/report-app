@@ -1,19 +1,14 @@
 "use client";
 
-import React from "react";
-
 import { AnimatePresence, motion } from "motion/react";
 
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div
-        key={Date.now()}
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 1, opacity: 1 }}
-        exit={{ y: -10, opacity: 0 }}
-        transition={{ ease: "easeInOut", duration: 0.25 }}
-        className="w-full h-full flex-1"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
       >
         {children}
       </motion.div>
