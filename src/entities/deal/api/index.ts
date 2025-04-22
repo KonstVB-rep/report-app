@@ -648,8 +648,84 @@ export const getAllRetailsByDepartment = async (): Promise<
 
 
 
+// export const getAllDealsRequestSourceByDepartment = async (departmentId: number): Promise<
+// { dateRequest: Date; resource: string }[] | [] 
+// > => {
+//   try {
+//     const { user } = await handleAuthorization();
+
+//     const permissionError = await checkUserPermissionByRole(user!, [
+//       PermissionEnum.VIEW_UNION_REPORT,
+//     ]);
+
+//     if (permissionError) return permissionError;
+
+//     const retailsRequestResorce = await prisma.retail.findMany({
+//       where: {
+//         user: {
+//           departmentId: departmentId, // Фильтрация по связанному пользователю
+//         },
+//         OR: [
+//           {
+//             resource: {
+//               endsWith: ".ru",
+//             },
+//           },
+//           {
+//             resource: {
+//               endsWith: ".рф",
+//             },
+//           },
+//         ],
+//       },
+//       select: {
+//         dateRequest: true,
+//         resource: true,
+//       },
+//       orderBy: {
+//         dateRequest: "asc",
+//       },
+//     });
+
+//     const projectsRequestResource = await prisma.project.findMany({
+//       where: {
+//         user: {
+//           departmentId: departmentId, // Фильтрация по связанному пользователю
+//         },
+//         OR: [
+//           {
+//             resource: {
+//               endsWith: ".ru",
+//             },
+//           },
+//           {
+//             resource: {
+//               endsWith: ".рф",
+//             },
+//           },
+//         ],
+//       },
+//       select: {
+//         dateRequest: true,
+//         resource: true,
+//       },
+//       orderBy: {
+//         dateRequest: "asc",
+//       },
+//     });
+    
+//     const dealsRequestResource = [...retailsRequestResorce, ...projectsRequestResource];
+
+//     return dealsRequestResource as { dateRequest: Date; resource: string }[] | [] 
+//   } catch (error) {
+//     console.error(error);
+//     return handleError((error as Error).message);
+//   }
+// };
+
+
 export const getAllDealsRequestSourceByDepartment = async (departmentId: number): Promise<
-{ dateRequest: Date; resource: string }[] | [] 
+{ deals: {dateRequest: Date; resource: string}[], totalDealsCount: number } | { deals: [], totalDealsCount: number }
 > => {
   try {
     const { user } = await handleAuthorization();
@@ -665,18 +741,6 @@ export const getAllDealsRequestSourceByDepartment = async (departmentId: number)
         user: {
           departmentId: departmentId, // Фильтрация по связанному пользователю
         },
-        OR: [
-          {
-            resource: {
-              endsWith: ".ru",
-            },
-          },
-          {
-            resource: {
-              endsWith: ".рф",
-            },
-          },
-        ],
       },
       select: {
         dateRequest: true,
@@ -692,18 +756,6 @@ export const getAllDealsRequestSourceByDepartment = async (departmentId: number)
         user: {
           departmentId: departmentId, // Фильтрация по связанному пользователю
         },
-        OR: [
-          {
-            resource: {
-              endsWith: ".ru",
-            },
-          },
-          {
-            resource: {
-              endsWith: ".рф",
-            },
-          },
-        ],
       },
       select: {
         dateRequest: true,
@@ -714,9 +766,15 @@ export const getAllDealsRequestSourceByDepartment = async (departmentId: number)
       },
     });
     
-    const dealsRequestResource = [...retailsRequestResorce, ...projectsRequestResource];
+    const allDeals = [...retailsRequestResorce, ...projectsRequestResource];
 
-    return dealsRequestResource as { dateRequest: Date; resource: string }[] | [] 
+    const totalDealsCount = allDeals.length || 0;
+
+    // const dealsBySites = allDeals.filter(({ resource }) =>
+    //   resource?.endsWith(".ru") || resource?.endsWith(".рф")
+    // );
+
+    return {deals: allDeals, totalDealsCount} as { deals: {dateRequest: Date; resource: string}[], totalDealsCount: number } | { deals: [], totalDealsCount: number }
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

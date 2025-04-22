@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { transformObjValueToArr } from "@/shared/lib/helpers";
+import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputNumberForm from "@/shared/ui/Inputs/InputNumberForm";

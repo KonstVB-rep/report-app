@@ -63,6 +63,7 @@ const useDataTableFilters = ({
     },
     [setColumnFilters]
   );
+  
   useEffect(() => {
     const initialFilters = utilsDataTable.parsedParams(
       decodeURIComponent(searchParams.get("filters") || "")

@@ -22,7 +22,7 @@ import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { DealTypeLabels, LABELS } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
-import iconsTypeFile from "@/widgets/Files/ui/FileList/iconsTypeFile";
+import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
 import DateRangeFilter from "../DateRangeFilter";
 import FilterByUser from "../Filters/FilterByUsers";
@@ -132,7 +132,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
             className="w-fit border p-2 hover:bg-slate-700"
             title="Export to XLSX"
           >
-            {iconsTypeFile[".xls"]({ width: 20, height: 20 })}
+            {ICONS_TYPE_FILE[".xls"]({ width: 20, height: 20 })}
           </Button>
         </ProtectedByPermissions>
 

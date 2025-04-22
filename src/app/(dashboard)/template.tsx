@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import AppSidebar from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import PageTransition from "@/shared/ui/PageTransition";
+import PageTransitionY from "@/shared/ui/MotionComponents/PageTransitionY";
 
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
@@ -19,7 +19,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
         <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] flex-1">
           <AppSidebar />
           <SidebarInset className="h-auto min-h-min" key={pathname}>
-            <PageTransition>{children}</PageTransition>
+            <PageTransitionY>{children}</PageTransitionY>
           </SidebarInset>
         </div>
       </SidebarProvider>

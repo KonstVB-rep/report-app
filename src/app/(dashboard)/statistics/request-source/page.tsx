@@ -1,16 +1,14 @@
 import React from "react";
 
 import { getAllDealsRequestSourceByDepartment } from "@/entities/deal/api";
-import { RequestsPerSiteChart } from "./charts";
 
-
+import RequestsPerSitePieChart from "./ui/charts";
 
 const RequestSourcePage = async () => {
   const data = await getAllDealsRequestSourceByDepartment(1);
+  console.log(data, "*******************");
 
-
-
-  console.log("*****************************", data);
+  if (!data || !data?.deals.length) return null;
 
   return (
     <div className="p-4">
@@ -22,7 +20,7 @@ const RequestSourcePage = async () => {
           </li>
         ))} */}
 
-        <RequestsPerSiteChart  deals={data}/>
+        <RequestsPerSitePieChart data={data}/>
       </ul>
     </div>
   );

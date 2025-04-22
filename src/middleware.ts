@@ -57,8 +57,8 @@ async function refreshAccessToken(
       maxAge: 24 * 60 * 60,
     });
 
-    if (pathname === "/login") {
-      return NextResponse.redirect(new URL("/", request.url));
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     return NextResponse.next();
@@ -80,6 +80,10 @@ export default async function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.delete("x-middleware-subrequest");
+
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {

@@ -13,7 +13,7 @@ import { getFormatFile } from "../../libs/helpers/getFormatFile";
 import DeleteFile from "../DeleteFile";
 import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
 import SkeletonFiles from "../SkeletonFiles";
-import iconsTypeFile from "./iconsTypeFile";
+import ICONS_TYPE_FILE from "./ICONS_TYPE_FILE";
 
 type FileListProps = {
   data: {
@@ -115,7 +115,7 @@ const FileList = ({ data }: FileListProps) => {
                 {files.map((file) => {
                   const formatFile = getFormatFile(
                     file.name
-                  ) as keyof typeof iconsTypeFile;
+                  ) as keyof typeof ICONS_TYPE_FILE;
 
                   const isImg = imageFormat.includes(formatFile);
                   const isExcel = excelFormat.includes(formatFile);
@@ -138,11 +138,11 @@ const FileList = ({ data }: FileListProps) => {
                       className="group flex-1 w-20 min-w-20 max-w-20 relative grid gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
                     >
                       <p className="flex items-center justify-center">
-                        {isImg && iconsTypeFile[".img"]()}
-                        {isExcel && iconsTypeFile[".xls"]()}
-                        {isPdf && iconsTypeFile[".pdf"]()}
-                        {isText && iconsTypeFile[".txt"]()}
-                        {anotherFormat && iconsTypeFile["default"]()}
+                        {isImg && ICONS_TYPE_FILE[".img"]()}
+                        {isExcel && ICONS_TYPE_FILE[".xls"]()}
+                        {isPdf && ICONS_TYPE_FILE[".pdf"]()}
+                        {isText && ICONS_TYPE_FILE[".txt"]()}
+                        {anotherFormat && ICONS_TYPE_FILE["default"]()}
                       </p>
 
                       <p className="truncate text-xs">{fileName}</p>

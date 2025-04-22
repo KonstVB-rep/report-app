@@ -2,7 +2,7 @@ import React from "react";
 
 import { File } from "lucide-react";
 
-const iconsTypeFile = {
+const ICONS_TYPE_FILE = {
   ".txt": (props?: React.SVGProps<SVGSVGElement>) => (
     <svg
       xmlSpace="preserve"
@@ -129,4 +129,4 @@ const iconsTypeFile = {
   ),
 };
 
-export default iconsTypeFile;
+export default ICONS_TYPE_FILE;
