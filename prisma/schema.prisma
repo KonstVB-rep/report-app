@@ -236,10 +236,11 @@ enum StatusRetail {
 enum DepartmentEnum {
   SALES
   TECHNICAL
+  MARKETING
 }
 
 enum Role {   
-  DIRECTOR            // Администратор
+  DIRECTOR          
   EMPLOYEE 
   ADMIN
 }

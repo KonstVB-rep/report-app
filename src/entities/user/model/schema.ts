@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { DepartmentsTitle, PermissionUser, RolesUser } from "./objectTypes";
+import { PermissionUser, RolesUser } from "./objectTypes";
+import { DepartmentLabels } from "@/entities/department/types";
 
 export const userFormSchema = z.object({
   username: z
@@ -24,7 +25,7 @@ export const userFormSchema = z.object({
     .string()
     .min(3, { message: "Должность должна содержать не менее 3 символов" })
     .max(60, { message: "Должность должна содержать не более 60 символов" }),
-  department: z.enum(Object.keys(DepartmentsTitle) as [string, ...string[]]),
+  department: z.enum(Object.keys(DepartmentLabels) as [string, ...string[]]),
   role: z.enum(Object.keys(RolesUser) as [string, ...string[]]),
   permissions: z
     .array(z.enum(Object.keys(PermissionUser) as [string, ...string[]]))

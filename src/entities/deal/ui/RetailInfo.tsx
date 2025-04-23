@@ -83,7 +83,7 @@ const RetailItemInfo = () => {
                   className="icon-deal_info"
                 />
 
-                <p className="text-md prop-deal-value h-10 px-2 flex-1 zinc-400 dark:text-color-black font-semibold">
+                <p className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                   {deal?.nameObject}
                 </p>
               </div>
@@ -98,7 +98,7 @@ const RetailItemInfo = () => {
                     />
 
                     <TooltipComponent content="Статус сделки">
-                      <span className="text-md prop-deal-value h-10 px-2 flex-1 zinc-400 dark:text-color-black font-semibold">
+                      <span className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                         {StatusRetailLabels[
                           deal?.dealStatus as keyof typeof StatusRetailLabels
                         ] || "Нет данных"}

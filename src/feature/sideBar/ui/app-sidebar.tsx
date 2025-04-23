@@ -5,10 +5,10 @@ import { memo, useEffect, useMemo } from "react";
 
 import Image from "next/image";
 
-import { BadgeRussianRuble, Wrench } from "lucide-react";
+import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/feature/sideBar/ui/nav-main";
+import { NavUser } from "@/feature/sideBar/ui/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +22,8 @@ import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import {
   DepartmentInfo,
-  DepartmentListType,
+  DepartmentListItemType,
+  UnionTypeDepartmentsName,
 } from "@/entities/department/types";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { UserResponse } from "@/entities/user/types";
@@ -30,7 +31,14 @@ import { UserResponse } from "@/entities/user/types";
 const icons = {
   SALES: <BadgeRussianRuble />,
   TECHNICAL: <Wrench />,
+  MARKETING: <ChartNoAxesCombined />,
 };
+
+const urlPath = (depsId: number): Record<UnionTypeDepartmentsName, string> => ({
+  SALES: `/table/${depsId}`,
+  TECHNICAL: "",
+  MARKETING: `/statistics/request-source`,
+});
 
 const AppSidebar = () => {
   const { departments } = useStoreDepartment();
@@ -60,12 +68,12 @@ const AppSidebar = () => {
         departmentId: person.departmentId,
         username: person.username,
         position: person.position,
-        url: `/table/${person.departmentId}`,
+        url: urlPath(person.departmentId)[dept.name],
       })),
-    })) as DepartmentListType[];
+    })) as DepartmentListItemType[];
   }, [departments]);
 
-  const data: { navMain: DepartmentListType[] } = {
+  const data: { navMain: DepartmentListItemType[] } = {
     navMain: navMainItems,
   };
 

@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { DepartmentLabels } from "@/entities/department/types";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
@@ -23,7 +24,7 @@ import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useCreateUser } from "../hooks/mutate";
-import { DepartmentsTitle, RolesUser } from "../model/objectTypes";
+import { RolesUser } from "../model/objectTypes";
 import { userFormSchema, userSchema } from "../model/schema";
 import { OPTIONS } from "../types";
 
@@ -119,7 +120,7 @@ const UserCreateForm = () => {
               label="Отдел"
               control={form.control}
               errorMessage={form.formState.errors.department?.message}
-              options={Object.entries(DepartmentsTitle)}
+              options={Object.entries(DepartmentLabels)}
               placeholder="Выберите отдел"
               required
             />

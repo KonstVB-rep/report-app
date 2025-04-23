@@ -134,6 +134,7 @@ export const config = {
     "/profile/:path*",
     "/summary-table/:path*",
     "/deal/:path*",
+    "/statistics/:path*",
     "/",
   ],
 };

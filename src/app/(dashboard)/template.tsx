@@ -4,9 +4,9 @@ import { PropsWithChildren } from "react";
 
 import { usePathname } from "next/navigation";
 
-import AppSidebar from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/feature/sideBar/ui/app-sidebar";
+import { SiteHeader } from "@/feature/sideBar/ui/site-header";
 import PageTransitionY from "@/shared/ui/MotionComponents/PageTransitionY";
 
 const TemplateDashboard = ({ children }: PropsWithChildren) => {

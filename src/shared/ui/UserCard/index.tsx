@@ -30,7 +30,7 @@ const UserCard = ({
 
         <p className="first-letter:capitalize">{position}</p>
       </div>
-      <div className="grid grid-cols-3 gap-1 overflow-hidden rounded-md">
+      <div className="flex gap-2 overflow-hidden rounded-md w-full">
         <Contacts email={email} phone={phone} className="rounded-full" />
       </div>
     </div>

@@ -64,11 +64,6 @@ export enum StatusRetail {
   CLOSED = "Закрыт",
 }
 
-export enum DepartmentEnum {
-  SALES = "Отдел продаж",
-  TECHNICAL = "Технический отдел",
-}
-
 export enum EquipmentTypeEnum {
   BARRIER = "Шлагбаум",
   GUARD = "Ограждения",
@@ -154,11 +149,6 @@ export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   CLOSED: "Закрыт",
 } as const;
 
-export const DepartmentLabels: Record<keyof typeof DepartmentEnum, string> = {
-  SALES: "Отдел продаж",
-  TECHNICAL: "Технический отдел",
-} as const;
-
 export const LABELS = {
   RETAIL: {
     DIRECTION: DirectionRetailLabels,
@@ -171,3 +161,22 @@ export const LABELS = {
     STATUS: StatusProjectLabels,
   },
 } as const;
+
+
+export type AllStatusKeys = keyof typeof StatusProject | keyof typeof StatusRetail;
+
+type ExcludedKeys = "PAID" | "CLOSED" | "REJECT";
+
+export type StatusesInWorkType = {
+  [K in Exclude<AllStatusKeys, ExcludedKeys>]?: string;
+};
+export const StatusesInWork: StatusesInWorkType = {
+  INVOICE_ISSUED: "Выставлен счет",
+  ACTUAL: "Актуально",
+  APPROVAL: "Согласование договора",
+  FIRST_CP_APPROVAL: "1-е КП на согласовании",
+  CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
+  PROGRESS: "Проект в работе / Закупка / Производство",
+  DELIVERY_WORKS: "Поставка / Выполнение работ",
+  SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
+};

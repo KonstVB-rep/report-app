@@ -2,19 +2,21 @@
 
 import React from "react";
 
+import dynamic from "next/dynamic";
+
 import { Plus, X } from "lucide-react";
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import DialogComponent from "@/shared/ui/DialogComponent";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+
 
 import useAddContactToDeal from "../../hooks/useAddContactToDeal";
 import { ContactSchema } from "../../model/schema";
 import { Contact } from "../../types";
-import dynamic from "next/dynamic";
+import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 
 const ContactsList = dynamic(() => import("../ContactsList"), { ssr: false });
 
@@ -56,8 +58,8 @@ const ContactDeal = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid gap-2 p-2 overflow-y-auto max-h-[60vh] pr-5">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="p-2">
+        <div className="grid gap-2 overflow-y-auto max-h-[60vh] pr-2 box-border">
           {fields.map((field, index: number) => (
             <motion.div
               key={form.watch(`contacts.${index}.id`)}
@@ -130,7 +132,7 @@ const ContactDeal = ({
         </div>
 
         <div className="flex flex-col justify-start gap-2">
-          <div className="flex gap-2">
+          <div className="flex gap-2 p-2 pt-4">
             <Button
               type="button"
               onClick={handleAddNewContactForm}

@@ -1,5 +1,16 @@
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, startOfDay, endOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
+
+import {
+  endOfDay,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+} from "date-fns";
+
 import { RADIAN } from "../lib/constants";
 import { CustomizedLabelProps } from "../types";
 
@@ -27,9 +38,9 @@ export const getPeriodRange = (
   }
 };
 
-
-const isFromSite = (resource: string) =>
-  resource?.endsWith(".ru") || resource?.endsWith(".рф");
+const isFromSite = (resource?: string) =>
+  typeof resource === "string" &&
+  (resource.endsWith(".ru") || resource.endsWith(".рф"));
 
 const normalizeResource = (resource: string): string =>
   resource
@@ -63,8 +74,6 @@ const dateFilter = (date: Date, filterValue?: DateRange): boolean => {
   return true;
 };
 
-
-
 const renderCustomizedLabel = ({
   cx,
   cy,
@@ -72,10 +81,16 @@ const renderCustomizedLabel = ({
   outerRadius,
   percent,
   payload,
-}: CustomizedLabelProps) => {
-  const radius = outerRadius + 30; // длина линии от сектора
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  width,
+}: CustomizedLabelProps & { width?: number }) => {
+  const padding = 16;
+  const dynamicRadius = Math.min(
+    outerRadius + 24,
+    (width ?? 400) / 2 - padding
+  );
+
+  const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN);
+  const y = cy + dynamicRadius * Math.sin(-midAngle * RADIAN);
 
   return (
     <text
@@ -86,7 +101,10 @@ const renderCustomizedLabel = ({
       dominantBaseline="text-after-edge"
       fontSize={14}
     >
-      {`${payload.name} (${(percent * 100).toFixed(0)}%)`}
+      <tspan x={x} dy="0">
+        {payload.name}
+      </tspan>
+      <tspan x={x} dy="1.2em">{`${(percent * 100).toFixed(0)}%`}</tspan>
     </text>
   );
 };

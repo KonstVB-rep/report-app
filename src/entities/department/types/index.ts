@@ -20,7 +20,7 @@ export type DepartmentUserItem = {
   url: string;
 };
 
-export type DepartmentListType = {
+export type DepartmentListItemType = {
   id: number;
   title: string;
   icon?: ReactNode;
@@ -28,3 +28,11 @@ export type DepartmentListType = {
   directorId: string;
   items: DepartmentUserItem[];
 };
+
+export const DepartmentLabels: Record<keyof typeof DepartmentEnum, string> = {
+  SALES: "Отдел продаж",
+  TECHNICAL: "Технический отдел",
+  MARKETING: "Отдел маркетинга"
+} as const;
+
+export type UnionTypeDepartmentsName = keyof typeof DepartmentLabels;

@@ -14,6 +14,7 @@ import {
   RetailResponse,
   RetailResponseWithContactsAndFiles,
 } from "../types";
+import { AllStatusKeys } from "../lib/constants";
 
 const requiredFields = [
   "nameObject",
@@ -723,9 +724,9 @@ export const getAllRetailsByDepartment = async (): Promise<
 //   }
 // };
 
-
+type DealsListWithResource= { deals: {dateRequest: Date; resource: string, dealStatus: AllStatusKeys}[], totalDealsCount: number } | { deals: [], totalDealsCount: number }
 export const getAllDealsRequestSourceByDepartment = async (departmentId: number): Promise<
-{ deals: {dateRequest: Date; resource: string}[], totalDealsCount: number } | { deals: [], totalDealsCount: number }
+DealsListWithResource
 > => {
   try {
     const { user } = await handleAuthorization();
@@ -745,6 +746,7 @@ export const getAllDealsRequestSourceByDepartment = async (departmentId: number)
       select: {
         dateRequest: true,
         resource: true,
+        dealStatus: true
       },
       orderBy: {
         dateRequest: "asc",
@@ -760,6 +762,7 @@ export const getAllDealsRequestSourceByDepartment = async (departmentId: number)
       select: {
         dateRequest: true,
         resource: true,
+        dealStatus: true
       },
       orderBy: {
         dateRequest: "asc",
@@ -770,11 +773,7 @@ export const getAllDealsRequestSourceByDepartment = async (departmentId: number)
 
     const totalDealsCount = allDeals.length || 0;
 
-    // const dealsBySites = allDeals.filter(({ resource }) =>
-    //   resource?.endsWith(".ru") || resource?.endsWith(".рф")
-    // );
-
-    return {deals: allDeals, totalDealsCount} as { deals: {dateRequest: Date; resource: string}[], totalDealsCount: number } | { deals: [], totalDealsCount: number }
+    return {deals: allDeals, totalDealsCount} as DealsListWithResource
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

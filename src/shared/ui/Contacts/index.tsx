@@ -14,7 +14,7 @@ const Contacts = ({ email, phone, className }: Props) => {
       {email && (
         <a
           href={`mailto:${email}`}
-          className={`flex items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background ${className}`}
+          className={`flex h-14 flex-1 flex-shrink-0 sm:aspect-square items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background ${className}`}
         >
           {" "}
           <Mail size="24" />
@@ -23,7 +23,7 @@ const Contacts = ({ email, phone, className }: Props) => {
       {phone && (
         <a
           href={`tel:${phone}`}
-          className={`flex items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:bg-blue-600 hover:text-white focus-visible:bg-blue-600 focus-visible:text-white ${className}`}
+          className={`flex h-14 flex-1 flex-shrink-0 sm:aspect-square items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:bg-blue-600 hover:text-white focus-visible:bg-blue-600 focus-visible:text-white ${className}`}
         >
           <Phone size="24" />
         </a>
@@ -32,7 +32,7 @@ const Contacts = ({ email, phone, className }: Props) => {
         <a
           href={`https://wa.me/${phone}`}
           target="_blank"
-          className={`flex items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:border-chart-2 hover:bg-green-600 hover:text-white focus-visible:bg-green-600 focus-visible:text-white ${className}`}
+          className={`flex h-14 flex-1 flex-shrink-0 sm:aspect-square items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:border-chart-2 hover:bg-green-600 hover:text-white focus-visible:bg-green-600 focus-visible:text-white ${className}`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

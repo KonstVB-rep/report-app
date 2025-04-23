@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
 
-import { ModeToggle } from "./ui/mode-toggle";
+import { ModeToggle } from "../../../components/ui/mode-toggle";
 
 export function SiteHeader() {
   const { toggleSidebar } = useSidebar();

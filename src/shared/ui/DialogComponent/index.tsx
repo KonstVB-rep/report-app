@@ -52,7 +52,7 @@ const DialogComponent = ({
         <DialogTrigger asChild>{trigger}</DialogTrigger>
       )}
       <DialogContent
-        className={`sm:max-w-[825px] ${classNameContent}`}
+        className={`max-w-[90vw] sm:max-w-[825px] ${classNameContent}`}
         showX={showX}
         onInteractOutside={(e) => {
           if (disableClose) e.preventDefault();

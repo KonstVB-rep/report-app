@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { DepartmentLabels } from "@/entities/department/types";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
@@ -23,11 +24,7 @@ import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useUpdateUser } from "../hooks/mutate";
-import {
-  DepartmentsTitle,
-  RolesUser,
-  RolesWithDefaultPermissions,
-} from "../model/objectTypes";
+import { RolesUser, RolesWithDefaultPermissions } from "../model/objectTypes";
 import { userEditSchema, userFormEditSchema } from "../model/schema";
 import useStoreUser from "../store/useStoreUser";
 import { OPTIONS, UserWithdepartmentName } from "../types";
@@ -49,7 +46,7 @@ const UserEditForm = ({
       user_password: "",
       email: user?.email ?? "",
       position: user?.position ?? "",
-      department: user?.departmentName as keyof typeof DepartmentsTitle,
+      department: user?.departmentName as keyof typeof DepartmentLabels,
       role: user?.role as keyof typeof RolesUser,
       permissions: user?.permissions as string[],
     },
@@ -68,7 +65,7 @@ const UserEditForm = ({
         email: user.email,
         phone: user.phone,
         position: user.position,
-        department: user.departmentName as keyof typeof DepartmentsTitle,
+        department: user.departmentName as keyof typeof DepartmentLabels,
         role: user.role as keyof typeof RolesUser,
         permissions: user.permissions as string[],
       });
@@ -139,7 +136,7 @@ const UserEditForm = ({
               label="Отдел"
               control={form.control}
               errorMessage={form.formState.errors.department?.message}
-              options={Object.entries(DepartmentsTitle)}
+              options={Object.entries(DepartmentLabels)}
               placeholder="Выберите отдел"
               required
             />

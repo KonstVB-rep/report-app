@@ -13,7 +13,7 @@ import { getFormatFile } from "../../libs/helpers/getFormatFile";
 import DeleteFile from "../DeleteFile";
 import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
 import SkeletonFiles from "../SkeletonFiles";
-import ICONS_TYPE_FILE from "./ICONS_TYPE_FILE";
+import ICONS_TYPE_FILE from "../../libs/iconsTypeFile";
 
 type FileListProps = {
   data: {

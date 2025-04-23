@@ -70,7 +70,7 @@ const TableComponent = <T extends Record<string, unknown>>({
               <TableHead
                 key={header.id}
                 colSpan={header.colSpan}
-                className="border-r border-zinc-600 zinc-400 px-3 py-2 dark:bg-zinc-800"
+                className="border-r border-zinc-600 px-3 py-2 dark:bg-zinc-800"
                 style={{
                   position: "relative",
                   width: header.getSize(),

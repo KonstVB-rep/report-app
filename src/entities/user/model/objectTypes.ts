@@ -20,7 +20,3 @@ export const PermissionUser = {
   DEAL_MANAGEMENT: "Редактирование/удаление сделок",
 } as const;
 
-export const DepartmentsTitle = {
-  SALES: "Отдел продаж",
-  TECHNICAL: "Технический отдел",
-} as const;

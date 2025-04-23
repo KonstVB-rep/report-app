@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import loginBg from "@/assets/login-bg";
-import { LoginForm } from "@/components/login-form";
+import { LoginForm } from "@/feature/auth/ui/login-form";
 
 export default function LoginPage() {
   return (

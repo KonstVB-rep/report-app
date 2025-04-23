@@ -355,3 +355,15 @@ body {
 .text-color-b {
   @apply text-black;
 }
+
+.grid-charts {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
+}
+
+.grid-charts_md {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}

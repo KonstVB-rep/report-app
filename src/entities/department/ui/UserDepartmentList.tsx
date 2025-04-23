@@ -29,7 +29,7 @@ const UserDepartmentList = () => {
       </h1>
       {Array.isArray(currentDepartment?.users) &&
       currentDepartment?.users.length > 0 ? (
-        <ul className="grid max-w-max gap-2 pt-4">
+        <ul className="grid w-full sm:max-w-fit gap-2 pt-4">
           {currentDepartment?.users.map((per: UserResponse) => (
             <UserItem key={per.id} {...per} />
           ))}

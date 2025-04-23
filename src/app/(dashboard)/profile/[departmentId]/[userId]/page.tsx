@@ -7,8 +7,9 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
+import { DepartmentLabels } from "@/entities/department/types";
 import { useGetUser } from "@/entities/user/hooks/query";
-import { DepartmentsTitle, RolesUser } from "@/entities/user/model/objectTypes";
+import { RolesUser } from "@/entities/user/model/objectTypes";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 import UserCard from "@/shared/ui/UserCard";
@@ -58,7 +59,7 @@ const ProfilePage = () => {
   return (
     <section className="p-4">
       <div className="flex gap-4">
-        <div className="grid max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
+        <div className="grid w-full md:max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
           <div className="@container flex h-full min-w-[260px] flex-col justify-between">
             <UserCard
               email={user.email}
@@ -77,8 +78,8 @@ const ProfilePage = () => {
                 <span className="first-letter:capitalize">Отдел:</span>{" "}
                 <span className="first-letter:capitalize">
                   {
-                    DepartmentsTitle[
-                      user.departmentName as keyof typeof DepartmentsTitle
+                    DepartmentLabels[
+                      user.departmentName as keyof typeof DepartmentLabels
                     ]
                   }
                 </span>

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import DialogComponent from "@/shared/ui/DialogComponent";
-import Overlay from "@/shared/ui/Overlay";
+import Overlay from "@/shared/ui/Overlay"
 
 import useUploadFile from "../../hooks/useUploadFIle";
 

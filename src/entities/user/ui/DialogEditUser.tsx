@@ -10,7 +10,7 @@ import { UserPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
 
-import { useGetUserShortInfo } from "../hooks/query";
+import { useGetUser } from "../hooks/query";
 import { UserWithdepartmentName } from "../types";
 import UserFormSkeleton from "./UserFormSkeleton";
 
@@ -23,7 +23,7 @@ const DialogEditUser = () => {
   const params = useParams();
   const userId = String(params.userId);
 
-  const { data } = useGetUserShortInfo(userId);
+  const { data } = useGetUser(userId as string);
   const [open, setOpen] = React.useState(false);
 
   return (
