@@ -85,7 +85,7 @@ export default async function middleware(request: NextRequest) {
   if (pathname === "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  console.log(pathname, "=================pathname");
+
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
