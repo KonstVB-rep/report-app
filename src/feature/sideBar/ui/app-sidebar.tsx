@@ -25,8 +25,8 @@ import {
 } from "@/entities/department/types";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { UserResponse } from "@/entities/user/types";
-import { NavMain } from "@/feature/sideBar/ui/nav-main";
-import { NavUser } from "@/feature/sideBar/ui/nav-user";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
 
 const icons = {
   SALES: <BadgeRussianRuble />,
