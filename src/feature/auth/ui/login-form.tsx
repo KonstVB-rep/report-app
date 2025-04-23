@@ -31,6 +31,17 @@ export const loginFormSchema = z.object({
   password: z.string().min(6).max(30),
 });
 
+export const redirectPath = (departmentId: number, userId: string) => {
+  switch (departmentId) {
+    case 1:
+      return `/table/${departmentId}/projects/${userId}`;
+    case 2:
+      return `/statistics/request-source/${departmentId}/${userId}`;
+    default:
+      return "/";
+  }
+};
+
 export function LoginForm({ className }: React.ComponentProps<"div">) {
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -77,8 +88,10 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
     }
   }, [isAuth, departmentData, setDepartments, setShouldRedirect]);
 
-  if (shouldRedirect) {
-    redirect(`/table/${authUser?.departmentId}/projects/${authUser?.id}`);
+  if (shouldRedirect && authUser) {
+    const redirectUrl = redirectPath(authUser?.departmentId, authUser?.id);
+    console.log(redirectUrl);
+    redirect(redirectUrl);
   }
 
   return (

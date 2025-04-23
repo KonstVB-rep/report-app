@@ -10,13 +10,12 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import DialogComponent from "@/shared/ui/DialogComponent";
-
+import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 
 import useAddContactToDeal from "../../hooks/useAddContactToDeal";
 import { ContactSchema } from "../../model/schema";
 import { Contact } from "../../types";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 
 const ContactsList = dynamic(() => import("../ContactsList"), { ssr: false });
 

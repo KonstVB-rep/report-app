@@ -22,10 +22,8 @@ import {
   normalizeResource,
   renderCustomizedLabel,
 } from "../utils";
-
-import MobileCharts from "./MobileCharts";
 import EmptyData from "./EmptyData";
-
+import MobileCharts from "./MobileCharts";
 
 type StatusGroup = "inWork" | "positive" | "negative";
 
@@ -33,9 +31,7 @@ type CountItem = Record<string, Record<StatusGroup, number>>;
 
 const emptyResourceKey = "Другое";
 
-const Charts = ({
-  data: { deals, totalDealsCount },
-}: Props) => {
+const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>();
 
   const { data, countsStatuses } = useMemo(() => {
@@ -84,9 +80,14 @@ const Charts = ({
 
   return (
     <div className="grid gap-5">
-      <h1 className="text-2xl font-semibold text-center">Статистика заявок по источникам</h1>
+      <h1 className="text-2xl font-semibold text-center">
+        Статистика заявок по источникам
+      </h1>
       <h2 className="text-lg p-2 pl-4 pr-[1px] w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
-        Общее количество заявок: <span className="p-2 border aspect-square border-solid rounded-md bg-muted">{totalDealsCount}</span>
+        Общее количество заявок:{" "}
+        <span className="p-2 border aspect-square border-solid rounded-md bg-muted">
+          {totalDealsCount}
+        </span>
       </h2>
       <div className="flex gap-2 justify-between items-center flex-wrap">
         <div className="flex gap-2 flex-wrap">

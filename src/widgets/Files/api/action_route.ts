@@ -41,7 +41,7 @@ export const downloadFile = async (filePath: string) => {
     if (!response.data) {
       throw new Error("Файл не найден");
     }
-    
+
     return response.data;
   } catch (error) {
     console.error("Ошибка загрузки файла:", error);

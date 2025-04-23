@@ -11,7 +11,7 @@ const RequestSourcePage = async () => {
 
   return (
     <div className="p-4">
-        <Charts data={data}/>   
+      <Charts data={data} />
     </div>
   );
 };

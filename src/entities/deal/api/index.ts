@@ -7,6 +7,7 @@ import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
+import { AllStatusKeys } from "../lib/constants";
 import {
   Contact,
   ProjectResponse,
@@ -14,7 +15,6 @@ import {
   RetailResponse,
   RetailResponseWithContactsAndFiles,
 } from "../types";
-import { AllStatusKeys } from "../lib/constants";
 
 const requiredFields = [
   "nameObject",
@@ -647,10 +647,8 @@ export const getAllRetailsByDepartment = async (): Promise<
   }
 };
 
-
-
 // export const getAllDealsRequestSourceByDepartment = async (departmentId: number): Promise<
-// { dateRequest: Date; resource: string }[] | [] 
+// { dateRequest: Date; resource: string }[] | []
 // > => {
 //   try {
 //     const { user } = await handleAuthorization();
@@ -714,20 +712,29 @@ export const getAllRetailsByDepartment = async (): Promise<
 //         dateRequest: "asc",
 //       },
 //     });
-    
+
 //     const dealsRequestResource = [...retailsRequestResorce, ...projectsRequestResource];
 
-//     return dealsRequestResource as { dateRequest: Date; resource: string }[] | [] 
+//     return dealsRequestResource as { dateRequest: Date; resource: string }[] | []
 //   } catch (error) {
 //     console.error(error);
 //     return handleError((error as Error).message);
 //   }
 // };
 
-type DealsListWithResource= { deals: {dateRequest: Date; resource: string, dealStatus: AllStatusKeys}[], totalDealsCount: number } | { deals: [], totalDealsCount: number }
-export const getAllDealsRequestSourceByDepartment = async (departmentId: number): Promise<
-DealsListWithResource
-> => {
+type DealsListWithResource =
+  | {
+      deals: {
+        dateRequest: Date;
+        resource: string;
+        dealStatus: AllStatusKeys;
+      }[];
+      totalDealsCount: number;
+    }
+  | { deals: []; totalDealsCount: number };
+export const getAllDealsRequestSourceByDepartment = async (
+  departmentId: number
+): Promise<DealsListWithResource> => {
   try {
     const { user } = await handleAuthorization();
 
@@ -746,7 +753,7 @@ DealsListWithResource
       select: {
         dateRequest: true,
         resource: true,
-        dealStatus: true
+        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
@@ -762,18 +769,18 @@ DealsListWithResource
       select: {
         dateRequest: true,
         resource: true,
-        dealStatus: true
+        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
       },
     });
-    
+
     const allDeals = [...retailsRequestResorce, ...projectsRequestResource];
 
     const totalDealsCount = allDeals.length || 0;
 
-    return {deals: allDeals, totalDealsCount} as DealsListWithResource
+    return { deals: allDeals, totalDealsCount } as DealsListWithResource;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

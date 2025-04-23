@@ -67,10 +67,14 @@ const ProfilePage = () => {
               phone={user.phone}
               position={user.position}
             />
-            <div className="@sm:grid-cols-2 grid w-full gap-2 divide-solid rounded-md bg-muted p-4">
-              <PersonEdit />
-              <DeleteUser />
-            </div>
+            <ProtectedByPermissions
+              permissionArr={[PermissionEnum.USER_MANAGEMENT]}
+            >
+              <div className="sm:grid-cols-2 grid w-full gap-2 divide-solid rounded-md bg-muted p-4">
+                <PersonEdit />
+                <DeleteUser />
+              </div>
+            </ProtectedByPermissions>
           </div>
           <div className="grid h-full w-full gap-2 text-sm">
             <div className="grid gap-2">

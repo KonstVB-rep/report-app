@@ -10,10 +10,10 @@ import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
 import { useGetHrefFilesDealFromDB } from "../../hooks/query";
 import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
 import { getFormatFile } from "../../libs/helpers/getFormatFile";
+import ICONS_TYPE_FILE from "../../libs/iconsTypeFile";
 import DeleteFile from "../DeleteFile";
 import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
 import SkeletonFiles from "../SkeletonFiles";
-import ICONS_TYPE_FILE from "../../libs/iconsTypeFile";
 
 type FileListProps = {
   data: {

@@ -162,8 +162,9 @@ export const LABELS = {
   },
 } as const;
 
-
-export type AllStatusKeys = keyof typeof StatusProject | keyof typeof StatusRetail;
+export type AllStatusKeys =
+  | keyof typeof StatusProject
+  | keyof typeof StatusRetail;
 
 type ExcludedKeys = "PAID" | "CLOSED" | "REJECT";
 

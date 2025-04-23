@@ -13,10 +13,9 @@ import {
 } from "@/components/ui/dialog";
 import { useGetDealById } from "@/entities/deal/hooks/query";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-
+import Overlay from "@/shared/ui/Overlay";
 
 import { useDelDeal } from "../../hooks/mutate";
-import Overlay from "@/shared/ui/Overlay";
 
 const DelDealContextMenu = ({
   close,

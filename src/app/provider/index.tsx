@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import React, { PropsWithChildren } from "react";
 
@@ -8,7 +9,6 @@ import { Toaster } from "sonner";
 
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
 // import { ReactScan } from "../ReactScanComponent";
 
@@ -25,7 +25,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
         <QueryProvider>
           <ReactQueryDevtools />
           <Toaster position="top-center" />
-          <SpeedInsights/>
+          <SpeedInsights />
           {children}
         </QueryProvider>
       </ThemeProvider>

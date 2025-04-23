@@ -7,11 +7,10 @@ import { useParams } from "next/navigation";
 import { useGetUser } from "@/entities/user/hooks/query";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
 import HoverCardComponent from "@/shared/ui/HoverCard";
-
+import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 
 import LinkToUserTable from "./LinkToUserTable";
 import SummaryTableLink from "./SummaryTableLink";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
 
 const ButtonsGroupTable = () => {
   const { userId } = useParams();

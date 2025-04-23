@@ -22,7 +22,9 @@ const UserCard = ({
   const styles = isLink ? "border border-solid rounded-md" : "";
 
   return (
-    <div className={`grid gap-2 p-3 ${styles} justify-items-center text-sm`}>
+    <div
+      className={`grid gap-2 p-3 ${styles} justify-items-center text-sm h-full`}
+    >
       <div className="grid w-full justify-items-center gap-2 p-2">
         <CircleUserRound size="80" />
 
@@ -30,7 +32,7 @@ const UserCard = ({
 
         <p className="first-letter:capitalize">{position}</p>
       </div>
-      <div className="flex gap-2 overflow-hidden rounded-md w-full">
+      <div className="flex gap-2 overflow-hidden rounded-md w-full items-center">
         <Contacts email={email} phone={phone} className="rounded-full" />
       </div>
     </div>

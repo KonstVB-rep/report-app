@@ -139,7 +139,9 @@ async function uploadFilesToYandexDiskAndDB(formData: FormData) {
  * Скачивание файла с Яндекс.Диска
 //  */
 
-async function downloadFileFromYandexDisk(filePath: string): Promise<Uint8Array> {
+async function downloadFileFromYandexDisk(
+  filePath: string
+): Promise<Uint8Array> {
   try {
     const response = await axiosInstanceYandexDisk.get(
       `/resources/download?path=${encodeURIComponent(filePath)}`

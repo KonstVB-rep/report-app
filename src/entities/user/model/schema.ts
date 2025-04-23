@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-import { PermissionUser, RolesUser } from "./objectTypes";
 import { DepartmentLabels } from "@/entities/department/types";
+
+import { PermissionUser, RolesUser } from "./objectTypes";
 
 export const userFormSchema = z.object({
   username: z

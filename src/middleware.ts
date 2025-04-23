@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 
 import { JWTPayload, jwtVerify } from "jose";
 
+import { redirectPath } from "./feature/auth/ui/login-form";
 import axiosInstance from "./shared/api/axiosInstance";
 
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
@@ -84,16 +85,19 @@ export default async function middleware(request: NextRequest) {
   if (pathname === "/") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-
+  console.log(pathname, "=================pathname");
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
         const payload = await verifyToken(accessToken);
+
         if (payload) {
           const { userId, departmentId } = payload;
-          return NextResponse.redirect(
-            new URL(`/table/${departmentId}/projects/${userId}`, request.url)
+          const redirectUrl = redirectPath(
+            Number(departmentId) as number,
+            userId as string
           );
+          return NextResponse.redirect(new URL(redirectUrl, request.url));
         }
       } catch (error) {
         console.log("Access token недействителен, оставляем на /login", error);

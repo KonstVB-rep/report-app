@@ -1,6 +1,6 @@
 "use client";
 
-import {  useState } from "react";
+import { useState } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -126,7 +125,6 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="grid w-full gap-1 pb-1 pr-1 pt-1">
-
                                 <DepartmentLinks
                                   departmentId={user.departmentId}
                                   user={user}

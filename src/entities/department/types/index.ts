@@ -32,7 +32,7 @@ export type DepartmentListItemType = {
 export const DepartmentLabels: Record<keyof typeof DepartmentEnum, string> = {
   SALES: "Отдел продаж",
   TECHNICAL: "Технический отдел",
-  MARKETING: "Отдел маркетинга"
+  MARKETING: "Отдел маркетинга",
 } as const;
 
 export type UnionTypeDepartmentsName = keyof typeof DepartmentLabels;

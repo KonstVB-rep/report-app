@@ -9,7 +9,6 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-
   return (
     <html>
       <body>

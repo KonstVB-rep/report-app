@@ -19,4 +19,3 @@ export const PermissionUser = {
   USER_MANAGEMENT: "Управление пользователями",
   DEAL_MANAGEMENT: "Редактирование/удаление сделок",
 } as const;
-
