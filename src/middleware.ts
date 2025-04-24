@@ -49,7 +49,7 @@ async function refreshAccessToken(
     });
 
     const data = res.data;
-    console.log("Новый access token получен:", data.accessToken);
+    console.log("Новый access token получен");
 
     cookiesStore.set("access_token", data.accessToken, {
       httpOnly: true,

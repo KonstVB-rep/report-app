@@ -90,7 +90,6 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
 
   if (shouldRedirect && authUser) {
     const redirectUrl = redirectPath(authUser?.departmentId, authUser?.id);
-    console.log(redirectUrl);
     redirect(redirectUrl);
   }
 

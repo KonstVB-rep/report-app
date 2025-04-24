@@ -1,6 +1,4 @@
 "use client";
-
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import React, { PropsWithChildren } from "react";
@@ -9,6 +7,20 @@ import { Toaster } from "sonner";
 
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
+
+// 🔧 Ленивая подгрузка Devtools
+import dynamic from "next/dynamic";
+
+const ReactQueryDevtools = dynamic(
+  () =>
+    import("@tanstack/react-query-devtools").then(
+      (mod) => mod.ReactQueryDevtools
+    ),
+  {
+    ssr: false,
+  }
+);
+
 
 // import { ReactScan } from "../ReactScanComponent";
 
@@ -23,7 +35,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
         disableTransitionOnChange
       >
         <QueryProvider>
-          <ReactQueryDevtools />
+          {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
           <Toaster position="top-center" />
           <SpeedInsights />
           {children}

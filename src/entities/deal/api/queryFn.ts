@@ -26,18 +26,18 @@ export const getProjectsUserQuery = async (userId: string) => {
   }
 };
 
-export const getAllProjectsByDepartmentQuery = async () => {
+export const getAllProjectsByDepartmentQuery = async (departmentId?: string | undefined) => {
   try {
-    return await getAllProjectsByDepartment();
+    return await getAllProjectsByDepartment(departmentId);
   } catch (error) {
     console.log(error, "Ошибка getAllProjectsByDepartmentQuery");
     return [];
   }
 };
 
-export const getAllRetailsByDepartmentQuery = async () => {
+export const getAllRetailsByDepartmentQuery = async (departmentId?: string | undefined) => {
   try {
-    return await getAllRetailsByDepartment();
+    return await getAllRetailsByDepartment(departmentId);
   } catch (error) {
     console.log(error, "Ошибка getAllRetailsByDepartmentQuery");
     return [];

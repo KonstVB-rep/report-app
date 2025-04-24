@@ -31,8 +31,11 @@ const DialogEditUser = () => {
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button variant={"outline"} className="btn_hover">
-          <UserPen size={16} />
+        <Button
+          variant="outline"
+          className="h-10 w-full border-none px-2 btn_hover"
+        >
+          <UserPen />
           <span className="whitespace-nowrap text-sm">
             Редактировать пользователя
           </span>

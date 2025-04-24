@@ -15,6 +15,7 @@ import {
 import useScrollIntoViewBottomTable from "@/shared/hooks/useScrollIntoViewBottomTable";
 
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
+import { useParams } from "next/navigation";
 
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -26,6 +27,7 @@ const TableComponent = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
+  const {departmentId} = useParams()
   const ref = useScrollIntoViewBottomTable(
     table
   ) as unknown as RefObject<HTMLTableElement | null>;
@@ -48,6 +50,7 @@ const TableComponent = <T extends Record<string, unknown>>({
           key={row.id}
           rowData={row.original}
           isExistActionDeal={isExistActionDeal}
+          departmentId={departmentId as string}
         >
           <TableRow className="tr hover:bg-zinc-600 hover:text-white">
             {renderRowCells(row)}
@@ -55,7 +58,7 @@ const TableComponent = <T extends Record<string, unknown>>({
         </ContextRowTable>
       );
     },
-    [renderRowCells, isExistActionDeal]
+    [isExistActionDeal, departmentId, renderRowCells]
   );
 
   return (

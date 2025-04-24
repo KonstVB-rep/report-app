@@ -3,7 +3,7 @@
 import { PermissionEnum } from "@prisma/client";
 
 import DialogEditUser from "@/entities/user/ui/DialogEditUser";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 const PersonEdit = () => {
   return (

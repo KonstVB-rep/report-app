@@ -1,6 +1,6 @@
 import { PermissionEnum } from "@prisma/client";
 
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import DialogDeleteUser from "./DialogDeleteUser";
 

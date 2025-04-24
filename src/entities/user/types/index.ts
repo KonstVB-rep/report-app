@@ -3,7 +3,7 @@ import { PermissionEnum } from "@prisma/client";
 import { PermissionUser, RolesUser } from "../model/objectTypes";
 
 export type RoleType = keyof typeof RolesUser;
-export type DepartmentTypeName = "SALES" | "TECNICAL";
+export type DepartmentTypeName = "SALES" | "TECNICAL" | "MARKETING";
 export type User = {
   id: string;
   username: string;

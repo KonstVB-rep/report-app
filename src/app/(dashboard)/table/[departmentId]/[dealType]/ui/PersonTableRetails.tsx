@@ -13,6 +13,7 @@ import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 import PersonTable from "./PersonTable";
+import Loading from "../[userId]/loading";
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),
@@ -25,7 +26,7 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  const { data: deals } = useGetRetailsUser(
+  const { data: deals, isPending } = useGetRetailsUser(
     hasAccess ? (userId as string) : null
   );
 
@@ -33,6 +34,7 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
     (row: RetailResponse) => `/deal/retail/${row.id}`,
     []
   );
+  if (isPending) return <Loading />;
 
   if (!hasAccess)
     return (

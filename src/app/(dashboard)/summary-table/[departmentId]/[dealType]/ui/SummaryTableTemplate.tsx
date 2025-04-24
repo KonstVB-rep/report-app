@@ -1,8 +1,8 @@
+"use client";
+
+import React, { JSX } from "react";
 import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-
-import React from "react";
-
 import dynamic from "next/dynamic";
 
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
@@ -13,12 +13,18 @@ import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   ssr: false,
   loading: () => <TableRowsSkeleton />,
-});
+}) as <T extends { id: string }>(props: {
+  columns: ColumnDef<T, unknown>[];
+  data: T[];
+  getRowLink: (row: T, type: DealType) => string;
+  isExistActionDeal: boolean;
+  type: DealType;
+}) => JSX.Element;
 
 type SummaryTableTemplateProps<T extends { id: string }> = {
   columns: ColumnDef<T, unknown>[];
   data: T[];
-  getRowLink: (row: T, type: string) => string;
+  getRowLink: (row: T, type: DealType) => string;
   type: DealType;
   isError: boolean;
   error: Error | null;
@@ -37,11 +43,9 @@ const SummaryTableTemplate = <T extends { id: string }>({
       {isError && <ErrorMessageTable message={error?.message} />}
       <LinkToUserTable />
       <DataTable
-        columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-        data={data as Record<string, unknown>[]}
-        getRowLink={
-          getRowLink as (row: Record<string, unknown>, type: string) => string
-        }
+        columns={columns}
+        data={data}
+        getRowLink={getRowLink}
         isExistActionDeal={false}
         type={type}
       />

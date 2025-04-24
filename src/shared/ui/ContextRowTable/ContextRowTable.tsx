@@ -17,17 +17,20 @@ import {
 import { Dialog } from "@/components/ui/dialog";
 import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAffiliation";
 
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;
   rowData: T;
   isExistActionDeal?: boolean;
+  departmentId: string
 };
 
 const ContextRowTable = <T,>({
   children,
   rowData,
   isExistActionDeal = true,
+  departmentId
 }: ContextMenuTableProps<T>) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
 
@@ -41,7 +44,7 @@ const ContextRowTable = <T,>({
             <ContextMenuItem className="flex gap-2 p-0">
               <Link
                 className="flex w-full items-center justify-start gap-2 p-2"
-                href={`/deal/${(
+                href={`/deal/${departmentId}/${(
                   rowData as Project | Retail
                 ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
               >
@@ -50,7 +53,7 @@ const ContextRowTable = <T,>({
             </ContextMenuItem>
 
             {isExistActionDeal && (
-              <>
+              <ProtectedByDepartmentAffiliation>
                 <ContextMenuItem
                   onClick={() => setOpenModal("edit")}
                   className="flex cursor-pointer gap-2"
@@ -64,7 +67,7 @@ const ContextRowTable = <T,>({
                 >
                   <Trash2 size="14" /> Удалить
                 </ContextMenuItem>
-              </>
+              </ProtectedByDepartmentAffiliation>
             )}
           </ContextMenuContent>
         </ContextMenu>

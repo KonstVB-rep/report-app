@@ -28,7 +28,7 @@ import DateRangeFilter from "../DateRangeFilter";
 import FilterByUser from "../Filters/FilterByUsers";
 import FilterPopoverGroup from "../Filters/FilterPopoverGroup";
 import MultiColumnFilter from "../MultiColumnFilter";
-import ProtectedByPermissions from "../ProtectedByPermissions";
+import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 import SelectColumns from "../SelectColumns";
 import { downloadToExcel } from "./exceljs/downLoadToExcel";
 import TableComponent from "./TableComponent";

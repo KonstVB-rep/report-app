@@ -6,7 +6,7 @@ import { useParams, usePathname } from "next/navigation";
 import { Redo2 } from "lucide-react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import { DealsUnionType } from "../types";
 

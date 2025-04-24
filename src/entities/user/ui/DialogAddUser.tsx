@@ -10,7 +10,7 @@ import { SquarePlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import UserFormSkeleton from "./UserFormSkeleton";
 

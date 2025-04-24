@@ -84,7 +84,7 @@ export const useDeleteFiles = (
       return responses.map((r) => r.data);
     },
     onSuccess: (data) => {
-      TOAST.SUCCESS("Файлы успешно удалены");
+      TOAST.SUCCESS("Данные успешно удалены");
 
       const { userId, dealId, dealType } = data[0];
 

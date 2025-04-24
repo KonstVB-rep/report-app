@@ -20,6 +20,7 @@ export function SiteHeader() {
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
+            aria-label="Открыть/закрыть боковую панель"
           >
             <SidebarIcon />
           </Button>

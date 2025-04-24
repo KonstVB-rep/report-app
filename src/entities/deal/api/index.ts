@@ -559,7 +559,7 @@ export const getRetailsUser = async (
   }
 };
 
-export const getAllProjectsByDepartment = async (): Promise<
+export const getAllProjectsByDepartment = async (departmentId?: string | undefined): Promise<
   ProjectResponse[]
 > => {
   try {
@@ -567,10 +567,12 @@ export const getAllProjectsByDepartment = async (): Promise<
 
     await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_UNION_REPORT]);
 
+    const departmentIdValue = departmentId !== undefined ? +departmentId : +user!.departmentId;
+
     const deals = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: +user!.departmentId, // Фильтрация через связанного пользователя
+          departmentId: departmentIdValue, 
         },
       },
       include: {
@@ -578,7 +580,7 @@ export const getAllProjectsByDepartment = async (): Promise<
           select: {
             username: true,
           },
-        }, // Включаем данные владельца проекта
+        }, 
       },
       orderBy: {
         dateRequest: "asc",
@@ -603,7 +605,7 @@ export const getAllProjectsByDepartment = async (): Promise<
   }
 };
 
-export const getAllRetailsByDepartment = async (): Promise<
+export const getAllRetailsByDepartment = async (departmentId?: string | undefined): Promise<
   RetailResponse[]
 > => {
   try {
@@ -614,11 +616,12 @@ export const getAllRetailsByDepartment = async (): Promise<
     ]);
 
     if (permissionError) return permissionError;
+    const departmentIdValue = departmentId !== undefined ? +departmentId : +user!.departmentId;
 
     const deals = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: +user!.departmentId, // Фильтрация через связанного пользователя
+          departmentId: departmentIdValue,
         },
       },
       include: {
@@ -626,7 +629,7 @@ export const getAllRetailsByDepartment = async (): Promise<
           select: {
             username: true,
           },
-        }, // Включаем данные владельца проекта
+        },
       },
       orderBy: {
         dateRequest: "asc",
@@ -646,81 +649,6 @@ export const getAllRetailsByDepartment = async (): Promise<
     return handleError((error as Error).message);
   }
 };
-
-// export const getAllDealsRequestSourceByDepartment = async (departmentId: number): Promise<
-// { dateRequest: Date; resource: string }[] | []
-// > => {
-//   try {
-//     const { user } = await handleAuthorization();
-
-//     const permissionError = await checkUserPermissionByRole(user!, [
-//       PermissionEnum.VIEW_UNION_REPORT,
-//     ]);
-
-//     if (permissionError) return permissionError;
-
-//     const retailsRequestResorce = await prisma.retail.findMany({
-//       where: {
-//         user: {
-//           departmentId: departmentId, // Фильтрация по связанному пользователю
-//         },
-//         OR: [
-//           {
-//             resource: {
-//               endsWith: ".ru",
-//             },
-//           },
-//           {
-//             resource: {
-//               endsWith: ".рф",
-//             },
-//           },
-//         ],
-//       },
-//       select: {
-//         dateRequest: true,
-//         resource: true,
-//       },
-//       orderBy: {
-//         dateRequest: "asc",
-//       },
-//     });
-
-//     const projectsRequestResource = await prisma.project.findMany({
-//       where: {
-//         user: {
-//           departmentId: departmentId, // Фильтрация по связанному пользователю
-//         },
-//         OR: [
-//           {
-//             resource: {
-//               endsWith: ".ru",
-//             },
-//           },
-//           {
-//             resource: {
-//               endsWith: ".рф",
-//             },
-//           },
-//         ],
-//       },
-//       select: {
-//         dateRequest: true,
-//         resource: true,
-//       },
-//       orderBy: {
-//         dateRequest: "asc",
-//       },
-//     });
-
-//     const dealsRequestResource = [...retailsRequestResorce, ...projectsRequestResource];
-
-//     return dealsRequestResource as { dateRequest: Date; resource: string }[] | []
-//   } catch (error) {
-//     console.error(error);
-//     return handleError((error as Error).message);
-//   }
-// };
 
 type DealsListWithResource =
   | {

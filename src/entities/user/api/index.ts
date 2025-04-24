@@ -11,14 +11,11 @@ import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
 import {
-  DepartmentTypeName,
   RoleType,
   UserRequest,
   UserResponse,
-  UserWithdepartmentName,
 } from "../types";
 
-// import { PermissionEnum } from "../model/objectTypes";
 
 type RequiredFields = keyof UserRequest;
 const requiredFields: RequiredFields[] = [
@@ -302,48 +299,6 @@ export const getUser = async (
   }
 };
 
-export const getUserShort = async (
-  targetUserId: string
-): Promise<UserWithdepartmentName | undefined> => {
-  try {
-    const { user, userId } = await handleAuthorization();
-
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetUserId },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        phone: true,
-        position: true,
-        departmentId: true, // Выбираем ID департамента, но не сам объект
-        role: true,
-        department: {
-          select: {
-            name: true, // Имя департамента
-          },
-        },
-      },
-    });
-
-    if (!targetUser) return handleError("Пользователь не найден");
-
-    if (targetUserId !== userId && user) {
-      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
-    }
-
-    const userWithDepartmentName = {
-      ...targetUser,
-      departmentName:
-        (targetUser!.department?.name as DepartmentTypeName) || null,
-    };
-
-    return userWithDepartmentName;
-  } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
-  }
-};
 
 export const deleteUser = async (
   deletedUserId: string

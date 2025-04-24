@@ -2,7 +2,7 @@
 
 import { DealType, PermissionEnum } from "@prisma/client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { useGetAllRetails } from "@/entities/deal/hooks/query";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { RetailResponse } from "@/entities/deal/types";
+import Loading from "../[userId]/loading";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
@@ -21,18 +22,28 @@ const AccessDeniedMessage = dynamic(
 );
 
 const SummaryTableRetail = () => {
-  const { userId } = useParams();
+  const { userId, departmentId } = useParams();
 
-  const hasAccess = hasAccessToDataSummary(
-    userId as string,
-    PermissionEnum.VIEW_UNION_REPORT
+  const hasAccess = useMemo(
+    () =>
+      userId
+        ? hasAccessToDataSummary(
+            userId as string,
+            PermissionEnum.VIEW_UNION_REPORT
+          )
+        : false,
+    [userId]
   );
 
   const {
     data: deals,
     error,
     isError,
-  } = useGetAllRetails(hasAccess ? (userId as string) : null);
+    isPending,
+  } = useGetAllRetails(
+    hasAccess ? (userId as string) : null,
+    departmentId as string
+  );
 
   const getRowLink = useCallback(
     (row: RetailResponse & { id: string }, type: string) => {
@@ -47,6 +58,8 @@ const SummaryTableRetail = () => {
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
     );
+
+  if (isPending) return <Loading />;
 
   return (
     <SummaryTableTemplate

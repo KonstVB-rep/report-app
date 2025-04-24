@@ -34,23 +34,8 @@ import {
   DirectionProjectLabels,
   StatusProjectLabels,
 } from "../../lib/constants";
-// import ContactsList from "../ContactsList";
 import ContactDeal from "../Modals/ContactDeal";
-
-export const parseFormattedNumber = (value: string): number => {
-  if (!value) return 0;
-  const cleanedValue = value.replace(/\s+/g, "").replace(",", ".");
-  return parseFloat(cleanedValue) || 0;
-};
-
-export const formatNumber = (value: number): string => {
-  if (isNaN(value)) return "0,00";
-  if (value <= 0) return "0,00";
-  return value
-    .toFixed(2)
-    .replace(".", ",")
-    .replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0");
-};
+import {parseFormattedNumber, formatNumber} from "../../lib/helpers";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -58,6 +43,20 @@ type ProjectFormBodyProps<T extends FieldValues> = {
   isPending: boolean;
   contactsKey?: keyof T;
 };
+
+const directionOptions = transformObjValueToArr(DirectionProjectLabels);
+const deliveryOptions = transformObjValueToArr(DeliveryProjectLabels);
+const statusOptions = transformObjValueToArr(StatusProjectLabels);
+
+const setSelectValue = <T extends FieldValues>(
+  form: UseFormReturn<T>,
+  name: keyof T,
+  selected: unknown
+) => {
+  if (selected) {
+    form.setValue(name as Path<T>, selected as PathValue<T, Path<T>>);
+  }
+}
 
 const ProjectFormBody = <T extends FieldValues>({
   form,
@@ -176,16 +175,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Направление"
                   control={form.control}
                   errorMessage={form.formState.errors.department?.message}
-                  options={transformObjValueToArr(DirectionProjectLabels)}
+                  options={directionOptions}
                   placeholder="Выберите направление"
-                  onValueChange={(selected) => {
-                    if (selected) {
-                      return form.setValue(
-                        "direction" as Path<T>,
-                        selected as PathValue<T, Path<T>>
-                      );
-                    }
-                  }}
+                  onValueChange={(selected) => setSelectValue(form, "direction", selected)}
                   required
                 />
 
@@ -194,16 +186,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Тип поставки"
                   control={form.control}
                   errorMessage={form.formState.errors.department?.message}
-                  options={transformObjValueToArr(DeliveryProjectLabels)}
+                  options={deliveryOptions}
                   placeholder="Выберите тип поставки"
-                  onValueChange={(selected) => {
-                    if (selected) {
-                      return form.setValue(
-                        "deliveryType" as Path<T>,
-                        selected as PathValue<T, Path<T>>
-                      );
-                    }
-                  }}
+                  onValueChange={(selected) => setSelectValue(form, "deliveryType", selected)}
                 />
 
                 <InputTextForm
@@ -271,16 +256,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Статус КП"
                   control={form.control}
                   errorMessage={form.formState.errors.dealStatus?.message}
-                  options={transformObjValueToArr(StatusProjectLabels)}
+                  options={statusOptions}
                   placeholder="Выберите статус КП"
-                  onValueChange={(selected) => {
-                    if (selected) {
-                      return form.setValue(
-                        "dealStatus" as Path<T>,
-                        selected as PathValue<T, Path<T>>
-                      );
-                    }
-                  }}
+                  onValueChange={(selected) => setSelectValue(form, "dealStatus", selected)}
                 />
 
                 <DatePickerFormField<UseFormReturn<T>>

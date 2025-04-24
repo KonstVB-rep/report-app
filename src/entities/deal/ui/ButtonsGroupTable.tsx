@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { useGetUser } from "@/entities/user/hooks/query";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
 import HoverCardComponent from "@/shared/ui/HoverCard";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import LinkToUserTable from "./LinkToUserTable";
 import SummaryTableLink from "./SummaryTableLink";

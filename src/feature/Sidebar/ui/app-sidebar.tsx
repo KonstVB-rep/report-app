@@ -82,7 +82,7 @@ const AppSidebar = () => {
   }
 
   return (
-    <Sidebar className="top-[--header-height] !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0">
+    <Sidebar className="top-0 !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

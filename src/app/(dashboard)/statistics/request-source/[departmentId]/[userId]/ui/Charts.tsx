@@ -24,12 +24,19 @@ import {
 } from "../utils";
 import EmptyData from "./EmptyData";
 import MobileCharts from "./MobileCharts";
+import ResourceRow from "./ResourceRow";
 
 type StatusGroup = "inWork" | "positive" | "negative";
 
 type CountItem = Record<string, Record<StatusGroup, number>>;
 
 const emptyResourceKey = "Другое";
+
+const defaultValuesCount = () => ({
+  inWork: 0,
+  positive: 0,
+  negative: 0,
+});
 
 const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>();
@@ -51,11 +58,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         : emptyResourceKey;
 
       if (!countsStatuses[key]) {
-        countsStatuses[key] = {
-          inWork: 0,
-          positive: 0,
-          negative: 0,
-        };
+        countsStatuses[key] = defaultValuesCount();
       }
 
       if (dealStatus in StatusesInWork) {
@@ -83,9 +86,9 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       <h1 className="text-2xl font-semibold text-center">
         Статистика заявок по источникам
       </h1>
-      <h2 className="text-lg p-2 pl-4 pr-[1px] w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
-        Общее количество заявок:{" "}
-        <span className="p-2 border aspect-square border-solid rounded-md bg-muted">
+      <h2 className="text-lg flex gap-2 p-2 items-center w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
+        <span>Общее количество заявок:{" "}</span>
+        <span className="grid place-items-center aspect-square p-2 border border-solid rounded-md ">
           {totalDealsCount}
         </span>
       </h2>
@@ -170,42 +173,11 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
             <div className="flex gap-2 w-full md:w-auto">
               <ul className="grid gap-2 flex-shrink-0 flex-1">
                 {data.map((item, index) => (
-                  <li
+                  <ResourceRow
                     key={index}
-                    className="grid gap-2 sm:flex sm:gap-4 items-center border border-solid sm:border-none rounded-md p-2 sm:p-0"
-                  >
-                    <span
-                      className="py-1 px-2 bg-muted sm:bg-transparent border border-solid rounded-md w-full sm:min-w-max"
-                      style={{ borderColor: COLORS[index] }}
-                    >
-                      {item.name}
-                    </span>
-                    <div
-                      key={index}
-                      className="grid grid-cols-4 sm:hidden gap-2 items-center"
-                    >
-                      <span className="py-1 bg-muted px-2 border border-solid rounded-md border-primary dark:border-muted flex items-center justify-center">
-                        {item.value}
-                      </span>
-                      <TooltipComponent content={"Оплачен/Закрыт"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-green-600 border-2">
-                          {countsStatuses[item.name].positive}
-                        </span>
-                      </TooltipComponent>
-
-                      <TooltipComponent content={"Не актуально/Отказ"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-red-600 border-2">
-                          {countsStatuses[item.name].negative}
-                        </span>
-                      </TooltipComponent>
-
-                      <TooltipComponent content={"Акуально/В работе"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-blue-600 border-2">
-                          {countsStatuses[item.name].inWork}
-                        </span>
-                      </TooltipComponent>
-                    </div>
-                  </li>
+                    item={item}
+                    color={COLORS[index % COLORS.length]}
+                    status={countsStatuses[item.name]}/>
                 ))}
               </ul>
 

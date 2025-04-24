@@ -2,7 +2,7 @@
 
 import { DealType, PermissionEnum } from "@prisma/client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -14,6 +14,7 @@ import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
 import SummaryTableTemplate from "./SummaryTableTemplate";
+import Loading from "../[userId]/loading";
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),
@@ -21,18 +22,28 @@ const AccessDeniedMessage = dynamic(
 );
 
 const SummaryTableProject = () => {
-  const { userId } = useParams();
+  const { userId, departmentId } = useParams();
 
-  const hasAccess = hasAccessToDataSummary(
-    userId as string,
-    PermissionEnum.VIEW_UNION_REPORT
+  const hasAccess = useMemo(
+    () =>
+      userId
+        ? hasAccessToDataSummary(
+            userId as string,
+            PermissionEnum.VIEW_UNION_REPORT
+          )
+        : false,
+    [userId]
   );
 
   const {
     data: deals,
     error,
     isError,
-  } = useGetAllProjects(hasAccess ? (userId as string) : null);
+    isPending,
+  } = useGetAllProjects(
+    hasAccess ? (userId as string) : null,
+    departmentId as string
+  );
 
   const getRowLink = useCallback(
     (row: ProjectResponse & { id: string }, type: string) => {
@@ -47,6 +58,8 @@ const SummaryTableProject = () => {
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
     );
+
+  if (isPending) return <Loading />;
 
   return (
     <SummaryTableTemplate

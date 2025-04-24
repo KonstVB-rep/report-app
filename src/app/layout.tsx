@@ -27,10 +27,10 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-sidebar`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppProvider>
-          <div className="max-w-[1980px] m-auto relative overflow-hidden">
+          <div className="max-w-[1980px] m-auto overflow-hidden">
             {children}
           </div>
         </AppProvider>

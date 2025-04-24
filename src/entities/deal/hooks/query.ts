@@ -89,11 +89,11 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
       } catch (error) {
         console.error(error, "❌ Ошибка в useGetRetailById");
         TOAST.ERROR((error as Error).message);
-        throw error; // обязательно пробрасываем, иначе React Query думает, что всё ок
+        throw error;
       }
     },
-    enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
-    placeholderData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
+    enabled: !useCache || !cachedDeal,
+    placeholderData: useCache ? cachedDeal : undefined, 
     staleTime: useCache ? 60 * 1000 : 0,
   });
 };
@@ -195,7 +195,7 @@ export const useGetAllDealsByDepartmentByType = (
   });
 };
 
-export const useGetAllProjects = (userId: string | null) => {
+export const useGetAllProjects = (userId: string | null, departmentId?: string | undefined) => {
   const { authUser } = useStoreUser();
 
   return useQuery({
@@ -205,7 +205,7 @@ export const useGetAllProjects = (userId: string | null) => {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getAllProjectsByDepartmentQuery();
+        return await getAllProjectsByDepartmentQuery(departmentId);
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
         TOAST.ERROR((error as Error).message);
@@ -217,7 +217,7 @@ export const useGetAllProjects = (userId: string | null) => {
   });
 };
 
-export const useGetAllRetails = (userId: string | null) => {
+export const useGetAllRetails = (userId: string | null, departmentId?: string | undefined) => {
   const { authUser } = useStoreUser();
 
   return useQuery({
@@ -227,7 +227,7 @@ export const useGetAllRetails = (userId: string | null) => {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getAllRetailsByDepartmentQuery();
+        return await getAllRetailsByDepartmentQuery(departmentId);
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
         TOAST.ERROR((error as Error).message);

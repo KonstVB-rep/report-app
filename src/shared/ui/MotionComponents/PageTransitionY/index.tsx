@@ -7,7 +7,7 @@ import MotionDivY from "../MotionDivY";
 const PageTransitionY = ({ children }: { children: React.ReactNode }) => {
   return (
     <AnimatePresence mode="wait">
-      <MotionDivY>{children}</MotionDivY>
+      <MotionDivY className="h-full w-full overflow-auto">{children}</MotionDivY>
     </AnimatePresence>
   );
 };

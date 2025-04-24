@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import ProjectsSkeleton from "@/entities/deal/ui/DealsSkeleton";
+import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";
 
 const Loading = () => {
-  return <ProjectsSkeleton />;
+  return <DealsSkeleton />;
 };
 
 export default Loading;

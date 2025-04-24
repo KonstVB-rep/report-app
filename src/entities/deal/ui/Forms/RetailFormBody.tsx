@@ -39,6 +39,20 @@ type RetailFormBodyProps<T extends FieldValues> = {
   contactsKey?: keyof T;
 };
 
+const setSelectValue = <T extends FieldValues>(
+  form: UseFormReturn<T>,
+  name: keyof T,
+  selected: unknown
+) => {
+  if (selected) {
+    form.setValue(name as Path<T>, selected as PathValue<T, Path<T>>);
+  }
+}
+
+const directionOptions = transformObjValueToArr(DirectionRetailLabels);
+const deliveryOptions = transformObjValueToArr(DeliveryRetailLabels);
+const statusOptions = transformObjValueToArr(StatusRetailLabels);
+
 const RetailFormBody = <T extends FieldValues>({
   form,
   onSubmit,
@@ -56,14 +70,15 @@ const RetailFormBody = <T extends FieldValues>({
     toggleAddContact,
   } = useSendDealInfo<T>(onSubmit);
 
-  const currentContacts = form.getValues(contactsKey as Path<T>);
-
   useEffect(() => {
     if (contactsKey) {
-      const contacts = form.getValues(contactsKey as Path<T>);
-      setContacts(contacts);
+      const value = form.getValues(contactsKey as Path<T>);
+      setContacts(value);
     }
-  }, [contactsKey, form, currentContacts, setContacts]);
+  }, [contactsKey, form, setContacts]);
+
+  const error = (name: keyof T) =>
+    form.formState.errors[name]?.message as string;
 
   return (
     <div className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -71,215 +86,172 @@ const RetailFormBody = <T extends FieldValues>({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto trаnsform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
           <div className="text-center font-semibold uppercase">
             Форма добавления розничной сделки
           </div>
-          <div className="grid gap-2">
-            <div className="grid gap-2 p-2 sm:grid-cols-2">
-              <div className="flex flex-col gap-1">
-                <DatePickerFormField<UseFormReturn<T>>
-                  name={"dateRequest" as Path<T>}
-                  label="Дата запроса"
-                  control={form.control}
-                  errorMessage={
-                    form.formState.errors.dateRequest?.message as string
-                  }
-                />
+          <div className="grid gap-2 p-2 sm:grid-cols-2">
+            <div className="flex flex-col gap-1">
+              <DatePickerFormField
+                name="dateRequest"
+                label="Дата запроса"
+                control={form.control}
+                errorMessage={error("dateRequest")}
+              />
 
-                <InputTextForm
-                  name={"nameDeal" as Path<T>}
-                  label="Название сделки"
-                  control={form.control}
-                  errorMessage={
-                    form.formState.errors.nameDeal?.message as string
-                  }
-                  placeholder="Название..."
-                  required
-                />
+              <InputTextForm
+                name="nameDeal"
+                label="Название сделки"
+                control={form.control}
+                errorMessage={error("nameDeal")}
+                required
+                placeholder="Название..."
+              />
 
-                <InputTextForm
-                  name={"nameObject" as Path<T>}
-                  label="Название объекта/Город"
-                  control={form.control}
-                  errorMessage={
-                    form.formState.errors.nameObject?.message as string
-                  }
-                  placeholder="Название..."
-                  required
-                />
+              <InputTextForm
+                name="nameObject"
+                label="Название объекта/Город"
+                control={form.control}
+                errorMessage={error("nameObject")}
+                required
+                placeholder="Название..."
+              />
 
-                <SelectFormField<UseFormReturn<T>>
-                  name={"direction" as Path<T>}
-                  label="Направление"
-                  control={form.control}
-                  errorMessage={form.formState.errors.department?.message}
-                  options={transformObjValueToArr(DirectionRetailLabels)}
-                  placeholder="Выберите направление"
-                  onValueChange={(selected) => {
-                    if (selected) {
-                      return form.setValue(
-                        "direction" as Path<T>,
-                        selected as PathValue<T, Path<T>>
-                      );
-                    }
-                  }}
-                  required
-                />
+              <SelectFormField
+                name="direction"
+                label="Направление"
+                control={form.control}
+                errorMessage={error("direction")}
+                options={directionOptions}
+                placeholder="Выберите направление"
+                onValueChange={(val) => setSelectValue(form,"direction", val)}
+                required
+              />
 
-                <SelectFormField<UseFormReturn<T>>
-                  name={"deliveryType" as Path<T>}
-                  label="Тип поставки"
-                  control={form.control}
-                  errorMessage={form.formState.errors.department?.message}
-                  options={transformObjValueToArr(DeliveryRetailLabels)}
-                  placeholder="Выберите тип поставки"
-                  onValueChange={(selected) => {
-                    if (selected) {
-                      return form.setValue(
-                        "deliveryType" as Path<T>,
-                        selected as PathValue<T, Path<T>>
-                      );
-                    }
-                  }}
-                />
+              <SelectFormField
+                name="deliveryType"
+                label="Тип поставки"
+                control={form.control}
+                errorMessage={error("deliveryType")}
+                options={deliveryOptions}
+                placeholder="Выберите тип поставки"
+                onValueChange={(val) => setSelectValue(form,"deliveryType", val)}
+              />
 
-                <InputTextForm
-                  name={"contact" as Path<T>}
-                  label="Контакты"
-                  control={form.control}
-                  errorMessage={form.formState.errors.contact?.message}
-                  placeholder="Имя контакта"
-                  required
-                />
+              <InputTextForm
+                name="contact"
+                label="Контакты"
+                control={form.control}
+                errorMessage={error("contact")}
+                required
+                placeholder="Имя контакта"
+              />
 
-                <InputPhoneForm
-                  name="phone"
-                  label="Телефон"
-                  control={form.control}
-                  errorMessage={form.formState.errors.phone?.message}
-                  placeholder="Введите телефон пользователя"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <InputTextForm
-                  name={"email" as Path<T>}
-                  label="Email"
-                  control={form.control}
-                  errorMessage={form.formState.errors.email?.message}
-                  className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
-                  type="email"
-                />
-
-                <InputNumberForm
-                  name={"amountCP" as Path<T>}
-                  label="Сумма КП"
-                  control={form.control}
-                  errorMessage={form.formState.errors.amountCP?.message}
-                  placeholder="Сумма КП"
-                />
-
-                <InputNumberForm
-                  name={"delta" as Path<T>}
-                  label="Дельта"
-                  control={form.control}
-                  errorMessage={form.formState.errors.amountCP?.message}
-                  placeholder="Дельта"
-                />
-
-                <SelectFormField<UseFormReturn<T>>
-                  name={"dealStatus" as Path<T>}
-                  label="Статус КП"
-                  control={form.control}
-                  errorMessage={form.formState.errors.dealStatus?.message}
-                  options={transformObjValueToArr(StatusRetailLabels)}
-                  placeholder="Выберите статус КП"
-                  onValueChange={(selected) => {
-                    if (selected) {
-                      return form.setValue(
-                        "dealStatus" as Path<T>,
-                        selected as PathValue<T, Path<T>>
-                      );
-                    }
-                  }}
-                />
-
-                <DatePickerFormField<UseFormReturn<T>>
-                  name={"plannedDateConnection" as Path<T>}
-                  label="Планируемый контакт"
-                  control={form.control}
-                  errorMessage={
-                    form.formState.errors.plannedDateConnection
-                      ?.message as string
-                  }
-                />
-
-                <InputTextForm
-                  name={"resource" as Path<T>}
-                  label="Источник"
-                  control={form.control}
-                  errorMessage={form.formState.errors.resource?.message}
-                  placeholder="Откуда пришёл клиент"
-                  required
-                />
-
-                <FormField
-                  control={form.control}
-                  name={"comments" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Примечание / Комментарии</FormLabel>
-
-                      <FormControl>
-                        <Textarea
-                          placeholder="Введите комментарии"
-                          required
-                          {...field}
-                        />
-                      </FormControl>
-
-                      {form.formState.errors.comments?.message && (
-                        <FormMessage className="text-red-500">
-                          {form.formState.errors.comments?.message as string}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <InputPhoneForm
+                name="phone"
+                label="Телефон"
+                control={form.control}
+                errorMessage={error("phone")}
+                placeholder="Введите телефон пользователя"
+              />
             </div>
 
-            <div className="flex items-center justify-between">
-              {isAddContact ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={toggleAddContact}
-                  size="icon"
-                >
-                  <ArrowLeft />
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={toggleAddContact}
-                >
-                  Добавить доп.контакт
-                </Button>
-              )}
-              <SubmitFormButton
-                title="Сохранить"
-                isPending={isPending}
-                className="ml-auto mr-2 w-max"
+            <div className="flex flex-col gap-1">
+              <InputTextForm
+                name="email"
+                label="Email"
+                type="email"
+                control={form.control}
+                errorMessage={error("email")}
+                className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
+              />
+
+              <InputNumberForm
+                name="amountCP"
+                label="Сумма КП"
+                control={form.control}
+                errorMessage={error("amountCP")}
+                placeholder="Сумма КП"
+              />
+
+              <InputNumberForm
+                name="delta"
+                label="Дельта"
+                control={form.control}
+                errorMessage={error("delta")}
+                placeholder="Дельта"
+              />
+
+              <SelectFormField
+                name="dealStatus"
+                label="Статус КП"
+                control={form.control}
+                errorMessage={error("dealStatus")}
+                options={statusOptions}
+                placeholder="Выберите статус КП"
+                onValueChange={(val) => setSelectValue(form,"dealStatus", val)}
+              />
+
+              <DatePickerFormField
+                name="plannedDateConnection"
+                label="Планируемый контакт"
+                control={form.control}
+                errorMessage={error("plannedDateConnection")}
+              />
+
+              <InputTextForm
+                name="resource"
+                label="Источник"
+                control={form.control}
+                errorMessage={error("resource")}
+                required
+                placeholder="Откуда пришёл клиент"
+              />
+
+              <FormField
+                control={form.control}
+                name={"comments" as Path<T>}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Примечание / Комментарии</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Введите комментарии"
+                        required
+                        {...field}
+                      />
+                    </FormControl>
+                    {error("comments") && (
+                      <FormMessage className="text-red-500">
+                        {error("comments")}
+                      </FormMessage>
+                    )}
+                  </FormItem>
+                )}
               />
             </div>
           </div>
+
+          <div className="flex items-center justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={toggleAddContact}
+              size={isAddContact ? "icon" : undefined}
+            >
+              {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
+            </Button>
+            <SubmitFormButton
+              title="Сохранить"
+              isPending={isPending}
+              className="ml-auto mr-2 w-max"
+            />
+          </div>
         </form>
+
         <div
-          className={`min-w-full flex flex-col gap-2 trаnsform ${isAddContact ? "-translate-x-full" : "translate-x-0"} duration-150`}
+          className={`min-w-full flex flex-col gap-2 transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
           <Button
             type="button"

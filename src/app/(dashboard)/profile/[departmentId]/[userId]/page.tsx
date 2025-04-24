@@ -11,7 +11,7 @@ import { DepartmentLabels } from "@/entities/department/types";
 import { useGetUser } from "@/entities/user/hooks/query";
 import { RolesUser } from "@/entities/user/model/objectTypes";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import UserCard from "@/shared/ui/UserCard";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
@@ -25,6 +25,10 @@ const AccessDeniedMessage = dynamic(
   { ssr: false }
 );
 
+const Loading = dynamic(() => import("./loading"), { ssr: false });
+
+const NotFoundUser = dynamic(() => import("./NotFoundUser"), { ssr: false });
+
 const ProfilePage = () => {
   const { userId } = useParams();
 
@@ -34,26 +38,14 @@ const ProfilePage = () => {
     isPending,
   } = useGetUser(userId as string, [PermissionEnum.USER_MANAGEMENT]);
 
-  if (isPending)
-    return (
-      <div className="flex aspect-[16/7] justify-start gap-2 p-4">
-        <div className="h-full w-full max-w-[280px] animate-pulse rounded-md bg-muted" />
-        <div className="h-full w-full max-w-[220px] animate-pulse rounded-md bg-muted" />
-      </div>
-    );
+  if (isPending) return <Loading />;
 
   if (error) {
     return <AccessDeniedMessage error={error} />;
   }
 
   if (!user) {
-    return (
-      <section className="grid h-full place-items-center p-4">
-        <h1 className="rounded-md bg-muted p-5 text-center text-xl font-bold">
-          Пользователь не найден
-        </h1>
-      </section>
-    );
+    return <NotFoundUser />;
   }
 
   return (
@@ -70,7 +62,7 @@ const ProfilePage = () => {
             <ProtectedByPermissions
               permissionArr={[PermissionEnum.USER_MANAGEMENT]}
             >
-              <div className="sm:grid-cols-2 grid w-full gap-2 divide-solid rounded-md bg-muted p-4">
+              <div className="grid w-full gap-2 divide-solid rounded-md bg-muted p-4">
                 <PersonEdit />
                 <DeleteUser />
               </div>

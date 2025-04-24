@@ -12,7 +12,8 @@ import { ProjectResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataProject } from "../[userId]/model/columns-data-project";
-import PersonTable from "./PersonTable";
+import PersonTable from "./PersonTable";import Loading from "../[userId]/loading";
+;
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),
@@ -25,7 +26,7 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  const { data: deals } = useGetProjectsUser(
+  const { data: deals, isPending } = useGetProjectsUser(
     hasAccess ? (userId as string) : null
   );
 
@@ -33,6 +34,8 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
     (row: ProjectResponse) => `/deal/project/${row.id}`,
     []
   );
+
+  if (isPending) return <Loading />;
 
   if (!hasAccess)
     return (

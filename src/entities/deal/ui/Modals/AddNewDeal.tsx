@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
+import ProtectedByDepartmentAffiliation from "@/shared/ui/Protect/ProtectedByDepartmentAffiliation";
 
 import ProjectForm from "../Forms/ProjectForm";
 import RetailForm from "../Forms/RetailForm";
@@ -27,16 +28,18 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
 
 const AddNewDeal = ({ type }: AddNewDealProps) => {
   return (
-    <DialogComponent
-      contentTooltip={contentType[type].title}
-      trigger={
-        <Button variant="outline">
-          <Plus />
-        </Button>
-      }
-    >
-      {contentType[type].form}
-    </DialogComponent>
+    <ProtectedByDepartmentAffiliation>
+      <DialogComponent
+        contentTooltip={contentType[type].title}
+        trigger={
+          <Button variant="outline" aria-label="Добавить новую сделку">
+            <Plus />
+          </Button>
+        }
+      >
+        {contentType[type].form}
+      </DialogComponent>
+    </ProtectedByDepartmentAffiliation>
   );
 };
 

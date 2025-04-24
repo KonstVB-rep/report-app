@@ -7,7 +7,7 @@ import { useParams, usePathname } from "next/navigation";
 
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import ProtectedByPermissions from "@/shared/ui/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import FilterPopover from "../FilterPopover";
 

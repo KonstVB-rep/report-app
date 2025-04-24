@@ -14,7 +14,7 @@ export function NavMain({ items }: { items: DepartmentListItemType[] }) {
           <DepartmentPersonsList key={item.id} item={item} />
         ))}
       </SidebarMenu>
-      {/* <SidebarMenu>{items.map(render)}</SidebarMenu> */}
+      
       <DialogAddUser />
     </SidebarGroup>
   );
