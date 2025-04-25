@@ -156,18 +156,20 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
           </ProtectedByPermissions>
         )}
 
-        <div className="flex flex-1 items-center justify-between gap-2">
-          <FiltersManagment
-            setColumnFilters={setColumnFilters}
-            setColumnVisibility={setColumnVisibility}
-            setSelectedColumns={setSelectedColumns}
-            openFilters={openFilters}
-            setOpenFilters={setOpenFilters}
-            columnFilters={columnFilters}
-            columnVisibility={columnVisibility}
-            selectedColumns={[]}
-          />
-        </div>
+        {memoizedData.length > 0 && (
+          <div className="flex flex-1 items-center justify-between gap-2">
+            <FiltersManagment
+              setColumnFilters={setColumnFilters}
+              setColumnVisibility={setColumnVisibility}
+              setSelectedColumns={setSelectedColumns}
+              openFilters={openFilters}
+              setOpenFilters={setOpenFilters}
+              columnFilters={columnFilters}
+              columnVisibility={columnVisibility}
+              selectedColumns={[]}
+            />
+          </div>
+        )}
 
         <AddNewDeal type={dealType as string} />
       </div>

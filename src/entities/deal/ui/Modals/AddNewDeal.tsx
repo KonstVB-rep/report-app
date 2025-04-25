@@ -42,7 +42,7 @@ const AddNewDeal = ({ type }: AddNewDealProps) => {
       <DialogComponent
         contentTooltip={contentType[type].title}
         trigger={
-          <Button variant="outline" aria-label="Добавить новую сделку">
+          <Button variant="outline" aria-label="Добавить новую сделку" className="ml-auto">
             <Plus />
           </Button>
         }
