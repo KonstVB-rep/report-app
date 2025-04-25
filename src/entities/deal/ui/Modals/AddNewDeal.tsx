@@ -2,14 +2,24 @@
 
 import React from "react";
 
+import dynamic from "next/dynamic";
+
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import ProtectedByDepartmentAffiliation from "@/shared/ui/Protect/ProtectedByDepartmentAffiliation";
 
-import ProjectForm from "../Forms/ProjectForm";
-import RetailForm from "../Forms/RetailForm";
+import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
+
+const ProjectForm = dynamic(() => import("../Forms/ProjectForm"), {
+  ssr: false,
+  loading: () => <FormDealSkeleton />,
+});
+const RetailForm = dynamic(() => import("../Forms/RetailForm"), {
+  ssr: false,
+  loading: () => <FormDealSkeleton />,
+});
 
 type AddNewDealProps = {
   type: string;

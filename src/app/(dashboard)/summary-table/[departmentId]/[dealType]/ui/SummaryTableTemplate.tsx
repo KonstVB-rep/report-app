@@ -1,8 +1,10 @@
 "use client";
 
-import React, { JSX } from "react";
 import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
+
+import React, { JSX } from "react";
+
 import dynamic from "next/dynamic";
 
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";

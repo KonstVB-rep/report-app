@@ -4,16 +4,27 @@ import { DealType } from "@prisma/client";
 
 import { useRef } from "react";
 
-import { CloudUpload, Loader, Trash2, Upload, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import dynamic from "next/dynamic";
+
+import { Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import Overlay from "@/shared/ui/Overlay";
 
 import useUploadFile from "../../hooks/useUploadFIle";
+import FormUploadFilesSkeleton from "./ui/FormUploadFilesSkeleton";
+import YandexDiskInfoSkeleton from "./ui/YandexDiskInfoSkeleton";
+
+const YandexDiskInfo = dynamic(() => import("./ui/YandexDiskInfo"), {
+  ssr: false,
+  loading: () => <YandexDiskInfoSkeleton />,
+});
+
+const FormUploadFiles = dynamic(() => import("./ui/FormUploadFiles"), {
+  ssr: false,
+  loading: () => <FormUploadFilesSkeleton />,
+});
 
 export default function FileUploadForm({
   userId,
@@ -55,105 +66,24 @@ export default function FileUploadForm({
         disableClose={isPending}
       >
         <div className="grid gap-4">
-          <div className="grid w-full place-items-center gap-2 p-1">
-            <p>Диск</p>
+          <YandexDiskInfo
+            diskOccupancy={diskOccupancy}
+            used_space={ydxDiskInfo?.used_space}
+            total_space={ydxDiskInfo?.total_space}
+          />
 
-            <div className="grid gap-2">
-              <Progress value={diskOccupancy} color="orange" />
-
-              <span className="text-xs">
-                {(ydxDiskInfo?.used_space / 1024 / 1024).toFixed(2)} MB /
-                {(ydxDiskInfo?.total_space / 1024 / 1024).toFixed(2)} MB
-              </span>
-            </div>
-          </div>
-
-          <form onSubmit={handleUpload} className="grid w-full gap-4">
-            <div
-              tabIndex={0}
-              className={`grid h-20 w-full cursor-pointer place-items-center rounded-md border-2 border-dashed p-4 ${isDragActive ? "border-blue-600 bg-muted" : ""} hover:border-blue-600 hover:bg-muted focus-visible:bg-muted`}
-              onClick={() => inputRef.current?.click()}
-              role="button"
-              {...getRootProps()}
-            >
-              <Upload className="h-10 w-10 cursor-pointer" />
-            </div>
-
-            {files && files.length > 0 ? (
-              <ul className="grid max-h-48 gap-2 overflow-auto">
-                <AnimatePresence>
-                  {files.map((file) => (
-                    <motion.li
-                      key={file.name} // Уникальный ключ для каждого элемента
-                      initial={{ opacity: 0, scale: 0.9, y: -10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                      transition={{ duration: 0.2 }}
-                      className="relative grid w-full justify-items-center gap-1 rounded-md border border-dashed p-2 pr-[48px]"
-                    >
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="destructive"
-                        onClick={() => handleSelectFile(file.name)}
-                        className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md"
-                        title="Удалить из списка"
-                      >
-                        <X />
-                      </Button>
-
-                      <p className="break-all text-sm">Имя: {file.name}</p>
-
-                      <p className="text-xs text-muted-foreground">
-                        Размер: {(file.size / 1024 / 1024).toFixed(3)} MB
-                      </p>
-                    </motion.li>
-                  ))}
-                </AnimatePresence>
-              </ul>
-            ) : null}
-
-            <div className="flex w-full items-center gap-2">
-              <Input
-                type="file"
-                multiple
-                className="hidden"
-                ref={inputRef}
-                {...getInputProps()}
-                onChange={(e) => {
-                  const selectedFiles = e.target.files;
-                  if (selectedFiles) {
-                    setFiles(Array.from(selectedFiles));
-                  }
-                }}
-              />
-
-              {files && files.length > 0 && (
-                <div className="grid w-full grid-cols-2 gap-2">
-                  <Button type="submit" className="p-2">
-                    {isPending ? (
-                      <Loader className="h-5 w-5 animate-spin" />
-                    ) : (
-                      <span className="flex items-center gap-2 text-xs">
-                        <CloudUpload /> Загрузить
-                      </span>
-                    )}
-                  </Button>
-
-                  <Button
-                    variant="destructive"
-                    type="reset"
-                    onClick={handleClear}
-                    className="p-2"
-                  >
-                    <span className="flex items-center gap-2 text-xs">
-                      <Trash2 /> Очистить
-                    </span>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </form>
+          <FormUploadFiles
+            inputRef={inputRef}
+            getRootProps={getRootProps}
+            isDragActive={isDragActive}
+            getInputProps={getInputProps}
+            files={files}
+            handleUpload={handleUpload}
+            handleClear={handleClear}
+            handleSelectFile={handleSelectFile}
+            isPending={isPending}
+            setFiles={setFiles}
+          />
         </div>
       </DialogComponent>
     </>

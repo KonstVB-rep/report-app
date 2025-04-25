@@ -2,6 +2,8 @@
 
 import React, { Dispatch, SetStateAction } from "react";
 
+import dynamic from "next/dynamic";
+
 import {
   DialogContent,
   DialogDescription,
@@ -9,7 +11,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import EditProjectForm from "../Forms/EditProjectForm";
+import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
+
+const EditProjectForm = dynamic(() => import("../Forms/EditProjectForm"), {
+  ssr: false,
+  loading: () => <FormDealSkeleton />,
+});
 
 const EditProject = ({
   close,

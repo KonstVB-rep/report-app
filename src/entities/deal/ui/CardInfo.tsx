@@ -18,7 +18,7 @@ const dataValue = (
   return {
     phone: (
       <a
-        href={`tel:${data}`}
+        href={`tel:${data.replace(/[^0-9]/g, "")}`}
         className={cn("whitespace-nowrap hover:underline", classNameData)}
       >
         {ICONS.phone}

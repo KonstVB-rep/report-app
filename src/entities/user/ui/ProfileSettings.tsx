@@ -11,7 +11,10 @@ import HoverCardComponent from "@/shared/ui/HoverCard";
 
 import { User } from "../types";
 
-const PersonEdit = dynamic(() => import("./PersonTableEdit"), { ssr: false });
+const PersonEdit = dynamic(() => import("./PersonTableEdit"), {
+  ssr: false,
+  loading: () => <div className="btn_hover animate-pulse h-10" />,
+});
 
 type Props = {
   user: User;
@@ -27,13 +30,14 @@ export function ProfileSettings({ user }: Props) {
         </span>
       }
     >
-      <PersonEdit />
       <Link
         href={`/profile/${user.departmentId}/${user.id}`}
         className="btn_hover text-sm"
       >
-        <UserRound size="16" /> <span>Профиль</span>
+        <UserRound size="16" /> <span>Профиль пользователя</span>
       </Link>
+
+      <PersonEdit />
     </HoverCardComponent>
   );
 }

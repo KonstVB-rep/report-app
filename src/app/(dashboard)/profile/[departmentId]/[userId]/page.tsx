@@ -16,10 +16,13 @@ import UserCard from "@/shared/ui/UserCard";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,
+  loading: () => <div className="btn_hover animate-pulse h-10" />,
 });
 const DeleteUser = dynamic(() => import("@/entities/user/ui/DeleteUser"), {
   ssr: false,
+  loading: () => <div className="btn_hover animate-pulse h-10" />,
 });
+
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),
   { ssr: false }

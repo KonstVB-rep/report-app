@@ -1,5 +1,6 @@
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
+import { startTransition } from "react";
 import React, { useCallback, useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 
@@ -99,7 +100,9 @@ const useDataTableFilters = ({
       queryParams.delete("hidden");
     }
 
-    router.replace(`${pathname}?${queryParams.toString()}`);
+    startTransition(() =>
+      router.replace(`${pathname}?${queryParams.toString()}`)
+    );
   }, [columnFilters, columnVisibility, pathname, router, searchParams]);
 
   return {

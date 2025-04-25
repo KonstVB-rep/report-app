@@ -1,24 +1,23 @@
 import React, { memo } from "react";
+
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 type ItemType = {
   name: string;
   value: number;
-}
+};
 
 type ResourceRowProps = {
-  item: ItemType,
-  color: string,
-  status:  {
-    positive: number,
-    negative: number
-    inWork: number
-  }
+  item: ItemType;
+  color: string;
+  status: {
+    positive: number;
+    negative: number;
+    inWork: number;
+  };
 };
 const ResourceRow = memo(({ item, color, status }: ResourceRowProps) => (
-  <li
-    className="grid gap-2 sm:flex sm:gap-4 items-center border border-solid sm:border-none rounded-md p-2 sm:p-0"
-  >
+  <li className="grid gap-2 sm:flex sm:gap-4 items-center border border-solid sm:border-none rounded-md p-2 sm:p-0">
     <span
       className="py-1 px-2 bg-muted sm:bg-transparent border border-solid rounded-md w-full sm:min-w-max"
       style={{ borderColor: color }}

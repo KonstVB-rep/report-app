@@ -8,6 +8,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   SortingState,
+  Table,
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
@@ -15,23 +16,29 @@ import {
 import React, { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 
+import dynamic from "next/dynamic";
 import { useParams, useSearchParams } from "next/navigation";
+
+import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
-import { DealTypeLabels, LABELS } from "@/entities/deal/lib/constants";
+import { DealTypeLabels } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
-import DateRangeFilter from "../DateRangeFilter";
-import FilterByUser from "../Filters/FilterByUsers";
-import FilterPopoverGroup from "../Filters/FilterPopoverGroup";
-import MultiColumnFilter from "../MultiColumnFilter";
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
-import SelectColumns from "../SelectColumns";
-import { downloadToExcel } from "./exceljs/downLoadToExcel";
 import TableComponent from "./TableComponent";
+
+const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex justify-center items-center h-20 bg-muted rounded-md">
+      <Loader className="animate-spin" />
+    </div>
+  ),
+});
 
 const includedColumns = [
   "nameObject",
@@ -49,6 +56,17 @@ interface DataTableProps<TData, TValue = unknown> {
   type: keyof typeof DealTypeLabels;
   isExistActionDeal?: boolean;
 }
+
+const handleExport = async <
+  TData extends Record<string, unknown>,
+  TValue = unknown,
+>(
+  table: Table<TData>,
+  columns: ColumnDef<TData, TValue>[]
+) => {
+  const { downloadToExcel } = await import("./exceljs/downLoadToExcel");
+  downloadToExcel(table, columns);
+};
 
 const DataTable = <TData extends Record<string, unknown>, TValue>({
   columns,
@@ -123,18 +141,20 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   return (
     <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
       <div className="flex items-center justify-between gap-2 pb-2">
-        <ProtectedByPermissions
-          permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}
-        >
-          <Button
-            variant={"ghost"}
-            onClick={() => downloadToExcel<TData, TValue>(table, columns)}
-            className="w-fit border p-2 hover:bg-slate-700"
-            title="Export to XLSX"
+        {memoizedData.length > 0 && (
+          <ProtectedByPermissions
+            permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}
           >
-            {ICONS_TYPE_FILE[".xls"]({ width: 20, height: 20 })}
-          </Button>
-        </ProtectedByPermissions>
+            <Button
+              variant={"ghost"}
+              onClick={() => handleExport<TData, TValue>(table, columns)}
+              className="w-fit border p-2 hover:bg-slate-700"
+              title="Export to XLSX"
+            >
+              {ICONS_TYPE_FILE[".xls"]({ width: 20, height: 20 })}
+            </Button>
+          </ProtectedByPermissions>
+        )}
 
         <div className="flex flex-1 items-center justify-between gap-2">
           <FiltersManagment
@@ -154,58 +174,23 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
       <div
         className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
       >
-        <div className="min-h-0">
-          <FilterByUser
+        {memoizedData.length > 0 && openFilters && (
+          <FiltersBlock
             columnFilters={columnFilters}
             setColumnFilters={setColumnFilters}
+            onDateChange={handleDateChange}
+            onClearDateFilter={handleClearDateFilter}
+            value={value}
+            columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
+            includedColumns={includedColumns}
+            selectedColumns={selectedColumns}
+            setSelectedColumns={setSelectedColumns}
+            filterValueSearchByCol={filterValueSearchByCol}
+            setFilterValueSearchByCol={setFilterValueSearchByCol}
+            type={type}
+            table={table as Table<Record<string, unknown>>}
           />
-
-          <div className="mt-2 flex flex-wrap justify-between gap-2">
-            <DateRangeFilter
-              onDateChange={handleDateChange}
-              onClearDateFilter={handleClearDateFilter}
-              value={value}
-            />
-
-            <MultiColumnFilter
-              columns={columns}
-              setColumnFilters={setColumnFilters}
-              includedColumns={includedColumns}
-              selectedColumns={selectedColumns}
-              setSelectedColumns={setSelectedColumns}
-              filterValueSearchByCol={filterValueSearchByCol}
-              setFilterValueSearchByCol={setFilterValueSearchByCol}
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-2 bg-background">
-            <div className="flex flex-wrap items-center justify-start gap-2 bg-background">
-              <FilterPopoverGroup
-                options={[
-                  {
-                    label: "Статус",
-                    columnId: "dealStatus",
-                    options: LABELS[type].STATUS,
-                  },
-                  {
-                    label: "Направление",
-                    columnId: "direction",
-                    options: LABELS[type].DIRECTION,
-                  },
-                  {
-                    label: "Тип поставки",
-                    columnId: "deliveryType",
-                    options: LABELS[type].DELIVERY,
-                  },
-                ]}
-                columnFilters={columnFilters}
-                setColumnFilters={setColumnFilters}
-              />
-
-              <SelectColumns data={table} />
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
       {data.length ? (

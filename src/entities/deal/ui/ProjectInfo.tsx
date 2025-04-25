@@ -7,9 +7,11 @@ import { useParams } from "next/navigation";
 
 import { Building, Info } from "lucide-react";
 
+import Loading from "@/app/(dashboard)/deal/[departmentId]/[dealType]/[dealId]/loading";
 import { Separator } from "@/components/ui/separator";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import ProtectedByDepartmentAffiliation from "@/shared/ui/Protect/ProtectedByDepartmentAffiliation";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
@@ -23,7 +25,6 @@ import {
 } from "../lib/constants";
 import IntoDealItem from "./IntoDealItem";
 import RowInfoDealProp from "./RowInfoDealProp";
-import Loading from "@/app/(dashboard)/deal/[departmentId]/[dealType]/[dealId]/loading";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -68,7 +69,7 @@ const ProjectItemInfo = () => {
     : "Нет данных";
 
   return (
-    <section className="grid gap-2 p-4">
+    <MotionDivY className="grid gap-2 p-4">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
@@ -221,7 +222,7 @@ const ProjectItemInfo = () => {
           dealType: deal.type,
         }}
       />
-    </section>
+    </MotionDivY>
   );
 };
 

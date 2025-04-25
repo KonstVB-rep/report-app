@@ -4,11 +4,16 @@ import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
 import React, { Dispatch, SetStateAction } from "react";
 
+import dynamic from "next/dynamic";
+
 import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-import FiltersManagmentContent from "./FiltersManagmentContent";
+const FiltersManagmentContent = dynamic(
+  () => import("./FiltersManagmentContent"),
+  { ssr: false }
+);
 
 type FilterManagmentProps = {
   openFilters: boolean;
@@ -43,19 +48,21 @@ const FiltersManagment = ({
             className={`h-4 w-4 transition-all duration-200 ${openFilters ? "rotate-180" : ""}`}
           />
         </Button>
-        {!openFilters && columnFilters.length > 0 && (
+        {columnFilters.length > 0 && (
           <div className="flex h-8 w-8 items-center justify-center gap-2 rounded-md border border-solid border-blue-600 bg-muted p-1">
             {columnFilters.length}
           </div>
         )}
       </div>
-      <FiltersManagmentContent
-        setColumnFilters={setColumnFilters}
-        setColumnVisibility={setColumnVisibility}
-        columnFilters={columnFilters}
-        columnVisibility={columnVisibility}
-        setSelectedColumns={setSelectedColumns}
-      />
+      {columnFilters.length > 0 && (
+        <FiltersManagmentContent
+          setColumnFilters={setColumnFilters}
+          setColumnVisibility={setColumnVisibility}
+          columnFilters={columnFilters}
+          columnVisibility={columnVisibility}
+          setSelectedColumns={setSelectedColumns}
+        />
+      )}
     </>
   );
 };

@@ -2,6 +2,8 @@ import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
 import { ReactNode, RefObject, useCallback } from "react";
 
+import { useParams } from "next/navigation";
+
 import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
 
 import {
@@ -15,7 +17,6 @@ import {
 import useScrollIntoViewBottomTable from "@/shared/hooks/useScrollIntoViewBottomTable";
 
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
-import { useParams } from "next/navigation";
 
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -27,7 +28,7 @@ const TableComponent = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
-  const {departmentId} = useParams()
+  const { departmentId } = useParams();
   const ref = useScrollIntoViewBottomTable(
     table
   ) as unknown as RefObject<HTMLTableElement | null>;

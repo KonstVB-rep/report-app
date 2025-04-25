@@ -6,6 +6,7 @@ import { FileWarning } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
 import { useGetHrefFilesDealFromDB } from "../../hooks/query";
 import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
@@ -71,37 +72,23 @@ const FileList = ({ data }: FileListProps) => {
     <IntoDealItem title="Файлы" className="relative">
       <AnimatePresence mode="wait">
         {isPending && (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <MotionDivY keyValue="loading">
             <SkeletonFiles />
-          </motion.div>
+          </MotionDivY>
         )}
 
         {isError && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+          <MotionDivY
+            keyValue="error"
             className="flex items-center justify-center gap-2 p-2 text-red-600"
           >
             <FileWarning size="40" strokeWidth={1} className="text-red-600" />
             <span className="text-lg">Ошибка загрузки файлов</span>
-          </motion.div>
+          </MotionDivY>
         )}
 
         {files && files.length > 0 && (
-          <motion.div
-            key="files"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-          >
+          <MotionDivY keyValue="files">
             {selectedFiles.size > 0 && (
               <DeleteFile
                 setSelectedFiles={setSelectedFiles}
@@ -158,20 +145,12 @@ const FileList = ({ data }: FileListProps) => {
                         onChange={handleSelectFile}
                         checked={selectedFiles.has(file.name)}
                       />
-
-                      {/* <input
-                        type="checkbox"
-                        id={file.name}
-                        onChange={handleSelectFile}
-                        checked={selectedFiles.has(file.name)}
-                        className="absolute hidden checked:block group-hover:block group-focus-visible:block -right-1 -top-1 z-[11] h-5 w-5 cursor-pointer accent-red-700"
-                      /> */}
                     </motion.li>
                   );
                 })}
               </AnimatePresence>
             </motion.ul>
-          </motion.div>
+          </MotionDivY>
         )}
       </AnimatePresence>
     </IntoDealItem>

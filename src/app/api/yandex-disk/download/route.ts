@@ -6,23 +6,30 @@ import mime from "mime-types";
 import { downloadFileFromYandexDisk } from "../yandexDisk";
 import { getErrorMessageDownloadByCode } from "./getErrorMessageDownloadByCode";
 
+export const runtime = "nodejs";
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const filePath = url.searchParams.get("filePath");
 
-    if (!filePath) throw new Error("Не указан путь к файлу.");
+    if (!filePath || typeof filePath !== "string") {
+      return NextResponse.json(
+        { error: "Не указан путь к файлу." },
+        { status: 400 }
+      );
+    }
 
     const fileBuffer = await downloadFileFromYandexDisk(filePath); // Uint8Array
     const fileName = filePath.split("/").pop() || "file";
     const contentType = mime.lookup(fileName) || "application/octet-stream";
 
-    return new NextResponse(Buffer.from(fileBuffer), {
+    return new NextResponse(fileBuffer, {
       status: 200,
       headers: {
         "Content-Type": contentType,
         "Content-Disposition": `attachment; filename="${encodeURIComponent(fileName)}"`,
-        "Content-Length": fileBuffer.byteLength.toString(), // Uint8Array has byteLength
+        "Content-Length": fileBuffer.byteLength.toString(),
       },
     });
   } catch (error) {
@@ -36,9 +43,11 @@ export async function GET(request: Request) {
       );
     }
 
-    return new NextResponse(
-      JSON.stringify({ error: (error as Error).message }),
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Неизвестная ошибка при скачивании файла";
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

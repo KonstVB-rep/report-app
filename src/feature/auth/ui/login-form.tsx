@@ -134,7 +134,7 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
                   required
                 />
 
-                <SubmitFormActionBtn title="Войти" />
+                <SubmitFormActionBtn title="Войти" aria-label="Войти" />
               </div>
             </form>
           </Form>

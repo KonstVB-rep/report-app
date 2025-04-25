@@ -16,10 +16,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import DebouncedInput from "../DebouncedInput";
 
-interface MultiColumnFilterProps<
+type MultiColumnFilterProps<
   TData extends Record<string, unknown>,
   TValue = unknown,
-> {
+> = {
   columns: ColumnDef<TData, TValue>[];
   includedColumns: string[];
   selectedColumns: string[];
@@ -29,7 +29,7 @@ interface MultiColumnFilterProps<
   setColumnFilters: (
     callback: (prev: ColumnFiltersState) => ColumnFiltersState
   ) => void;
-}
+};
 
 const MultiColumnFilter = <
   TData extends Record<string, unknown>,

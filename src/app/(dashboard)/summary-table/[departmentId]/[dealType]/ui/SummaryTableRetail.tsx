@@ -10,9 +10,9 @@ import { useParams } from "next/navigation";
 import { useGetAllRetails } from "@/entities/deal/hooks/query";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { RetailResponse } from "@/entities/deal/types";
-import Loading from "../[userId]/loading";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
+import Loading from "../[userId]/loading";
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
 import SummaryTableTemplate from "./SummaryTableTemplate";
 

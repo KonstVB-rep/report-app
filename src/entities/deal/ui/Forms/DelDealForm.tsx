@@ -1,13 +1,17 @@
+import { DealType } from "@prisma/client";
+
 import React, { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
-import { useGetDealById } from "../../hooks/query";
-import { useDelDeal } from "../../hooks/mutate";
-import { DealType } from "@prisma/client";
 import { useDeleteFiles } from "@/widgets/Files/hooks/mutate";
+
+import { useDelDeal } from "../../hooks/mutate";
+import { useGetDealById } from "../../hooks/query";
+import DelDealSkeleton from "../Skeletons/DelDealSkeleton";
 
 type Props = {
   id: string;
@@ -15,44 +19,44 @@ type Props = {
   close: Dispatch<SetStateAction<void>>;
 };
 
-const DelDealForm =({
-  id,
-  type,
-  close
-}: Props) => {
-    const { data: deal } = useGetDealById(id, type);
+const DelDealForm = ({ id, type, close }: Props) => {
+  const { data: deal } = useGetDealById(id, type);
 
-    const { mutate: delDeal, isPending } = useDelDeal(
-      () => {
-        if (!deal?.dealFiles?.length) {
-          close();
-          return;
-        }
-  
-        mutate(deal.dealFiles);
-      },
-      type,
-      deal?.userId ?? ""
-    );
-  
-    const { mutate, isPending: isPendingDelete } = useDeleteFiles(() =>
-      close
-    );
-  
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      delDeal(id);
-    };
+  const { mutate: delDeal, isPending } = useDelDeal(
+    () => {
+      if (!deal?.dealFiles?.length) {
+        close();
+        return;
+      }
+
+      mutate(deal.dealFiles);
+    },
+    type,
+    deal?.userId ?? ""
+  );
+
+  const { mutate, isPending: isPendingDelete } = useDeleteFiles(() => close);
+
+  const isLoading = isPending || isPendingDelete;
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    delDeal(id);
+  };
+
+  if (isLoading) return <DelDealSkeleton />;
 
   return (
-    <div>
-      <Overlay isPending={isPending || isPendingDelete} />
+    <MotionDivY>
+      <Overlay isPending={isLoading} />
       <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
-        <p>Вы точно уверены что хотите удалить данные</p>
+        <p className="text-center">
+          Вы точно уверены что хотите удалить данные
+        </p>
         <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
           &quot;{deal?.nameObject}&quot;?
         </p>
-        <p>Их нельзя будет восстановить!</p>
+        <p className="text-center">Их нельзя будет восстановить!</p>
         <div className="grid grid-cols-2 gap-2">
           <DialogClose asChild>
             <Button type="button" variant="outline">
@@ -61,12 +65,12 @@ const DelDealForm =({
           </DialogClose>
           <SubmitFormButton
             type="submit"
-            isPending={isPending || isPendingDelete}
+            isPending={isLoading}
             title="Удалить"
           />
         </div>
       </form>
-    </div>
+    </MotionDivY>
   );
 };
 

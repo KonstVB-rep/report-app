@@ -25,6 +25,7 @@ import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputNumberForm from "@/shared/ui/Inputs/InputNumberForm";
 import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
 import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
@@ -34,8 +35,8 @@ import {
   DirectionProjectLabels,
   StatusProjectLabels,
 } from "../../lib/constants";
+import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
 import ContactDeal from "../Modals/ContactDeal";
-import {parseFormattedNumber, formatNumber} from "../../lib/helpers";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -56,7 +57,7 @@ const setSelectValue = <T extends FieldValues>(
   if (selected) {
     form.setValue(name as Path<T>, selected as PathValue<T, Path<T>>);
   }
-}
+};
 
 const ProjectFormBody = <T extends FieldValues>({
   form,
@@ -126,7 +127,7 @@ const ProjectFormBody = <T extends FieldValues>({
   }, [contactsKey, form, currentContacts, setContacts]);
 
   return (
-    <div className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
+    <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
@@ -177,7 +178,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={form.formState.errors.department?.message}
                   options={directionOptions}
                   placeholder="Выберите направление"
-                  onValueChange={(selected) => setSelectValue(form, "direction", selected)}
+                  onValueChange={(selected) =>
+                    setSelectValue(form, "direction", selected)
+                  }
                   required
                 />
 
@@ -188,7 +191,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={form.formState.errors.department?.message}
                   options={deliveryOptions}
                   placeholder="Выберите тип поставки"
-                  onValueChange={(selected) => setSelectValue(form, "deliveryType", selected)}
+                  onValueChange={(selected) =>
+                    setSelectValue(form, "deliveryType", selected)
+                  }
                 />
 
                 <InputTextForm
@@ -258,7 +263,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={form.formState.errors.dealStatus?.message}
                   options={statusOptions}
                   placeholder="Выберите статус КП"
-                  onValueChange={(selected) => setSelectValue(form, "dealStatus", selected)}
+                  onValueChange={(selected) =>
+                    setSelectValue(form, "dealStatus", selected)
+                  }
                 />
 
                 <DatePickerFormField<UseFormReturn<T>>
@@ -354,7 +361,7 @@ const ProjectFormBody = <T extends FieldValues>({
           />
         </div>
       </Form>
-    </div>
+    </MotionDivY>
   );
 };
 

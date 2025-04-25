@@ -2,6 +2,7 @@ import { DealType, PermissionEnum } from "@prisma/client";
 
 import React from "react";
 
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { useGetUser } from "@/entities/user/hooks/query";
@@ -10,7 +11,10 @@ import HoverCardComponent from "@/shared/ui/HoverCard";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import LinkToUserTable from "./LinkToUserTable";
-import SummaryTableLink from "./SummaryTableLink";
+
+const SummaryTableLink = dynamic(() => import("./SummaryTableLink"), {
+  ssr: false,
+});
 
 const ButtonsGroupTable = () => {
   const { userId } = useParams();

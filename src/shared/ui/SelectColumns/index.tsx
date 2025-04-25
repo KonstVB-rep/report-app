@@ -12,11 +12,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface SelectColumnsProps<TData> {
+interface SelectColumnsProps<TData extends Record<string, unknown>> {
   data: Table<TData>;
 }
 
-const SelectColumns = <TData,>({ data }: SelectColumnsProps<TData>) => {
+const SelectColumns = <TData extends Record<string, unknown>>({
+  data,
+}: SelectColumnsProps<TData>) => {
   const [open, setOpen] = useState(false);
   const hiddenColumns = Object.entries(data.getState().columnVisibility)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

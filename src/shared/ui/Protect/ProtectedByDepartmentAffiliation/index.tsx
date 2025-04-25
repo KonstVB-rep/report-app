@@ -12,13 +12,11 @@ const ProtectedByDepartmentAffiliation = ({ children }: PropsWithChildren) => {
 
   if (!authUser) return null;
 
-
   if (
     authUser.departmentId !== Number(departmentId) ||
     authUser.role !== Role.ADMIN
   )
     return null;
-
 
   return <>{children}</>;
 };

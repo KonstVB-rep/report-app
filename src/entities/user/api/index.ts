@@ -10,12 +10,7 @@ import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
-import {
-  RoleType,
-  UserRequest,
-  UserResponse,
-} from "../types";
-
+import { RoleType, UserRequest, UserResponse } from "../types";
 
 type RequiredFields = keyof UserRequest;
 const requiredFields: RequiredFields[] = [
@@ -298,7 +293,6 @@ export const getUser = async (
     return handleError((error as Error).message);
   }
 };
-
 
 export const deleteUser = async (
   deletedUserId: string

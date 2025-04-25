@@ -14,7 +14,7 @@ import { useMutationUpdateProject } from "../../hooks/mutate";
 import { useGetProjectById } from "../../hooks/query";
 import { defaultProjectValues } from "../../model/defaultvaluesForm";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
-import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
+import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
 import ProjectFormBody from "./ProjectFormBody";
 
 const EditProjectForm = ({
@@ -62,7 +62,7 @@ const EditProjectForm = ({
     }
   }, [data, form, isLoading]);
 
-  if (isLoading) return <FormEditSkeleton />;
+  if (isLoading) return <FormDealSkeleton />;
 
   return (
     <ProjectFormBody

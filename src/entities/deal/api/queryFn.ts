@@ -26,7 +26,9 @@ export const getProjectsUserQuery = async (userId: string) => {
   }
 };
 
-export const getAllProjectsByDepartmentQuery = async (departmentId?: string | undefined) => {
+export const getAllProjectsByDepartmentQuery = async (
+  departmentId?: string | undefined
+) => {
   try {
     return await getAllProjectsByDepartment(departmentId);
   } catch (error) {
@@ -35,7 +37,9 @@ export const getAllProjectsByDepartmentQuery = async (departmentId?: string | un
   }
 };
 
-export const getAllRetailsByDepartmentQuery = async (departmentId?: string | undefined) => {
+export const getAllRetailsByDepartmentQuery = async (
+  departmentId?: string | undefined
+) => {
   try {
     return await getAllRetailsByDepartment(departmentId);
   } catch (error) {

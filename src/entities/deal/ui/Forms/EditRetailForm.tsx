@@ -11,7 +11,7 @@ import { useMutationUpdateRetail } from "../../hooks/mutate";
 import { useGetRetailById } from "../../hooks/query";
 import { defaultRetailValues } from "../../model/defaultvaluesForm";
 import { RetailFormSchema, RetailSchema } from "../../model/schema";
-import FormEditSkeleton from "../Skeletons/FormEditSkeleton";
+import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
 import RetailFormBody from "./RetailFormBody";
 
 const formatCurrency = (value: string | null | undefined): string => {
@@ -61,7 +61,7 @@ const EditRetailForm = ({
     }
   }, [form, data, isLoading]);
 
-  if (isLoading) <FormEditSkeleton />;
+  if (isLoading) <FormDealSkeleton />;
 
   return (
     <RetailFormBody

@@ -3,14 +3,16 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 
 import { useState } from "react";
 
+import dynamic from "next/dynamic";
+
 import { FilePenLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 
-import EditProject from "./EditProject";
-import EditRetail from "./EditRetail";
+const EditProject = dynamic(() => import("./EditProject"), { ssr: false });
+const EditRetail = dynamic(() => import("./EditRetail"), { ssr: false });
 
 const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
   const [open, setOpen] = useState(false);

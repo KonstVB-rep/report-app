@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: true,
 
   // ✅ Отключаем React Dev Overlay в проде (чтобы не грузилось лишнее)
   reactStrictMode: true,
@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
     // Оптимизация загрузки ресурсов
     optimizeCss: true,
     scrollRestoration: true,
-    serverActions: {},
+    serverActions: {}
   },
 
   webpack: (config, { dev, isServer }) => {

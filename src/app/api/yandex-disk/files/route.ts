@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("Ошибка получения файлов:", error);
     return NextResponse.json(
-      { error: (error as Error).message },
+      { error: "Ошибка получения файлов" },
       { status: 500 }
     );
   }

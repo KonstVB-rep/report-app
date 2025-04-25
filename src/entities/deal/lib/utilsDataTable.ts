@@ -1,61 +1,96 @@
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
 export const utilsDataTable = {
-  paramsFiltersToString: (arr: ColumnFiltersState) => {
+  /**
+   * Преобразует массив фильтров в строку для URL.
+   */
+  paramsFiltersToString: (arr: ColumnFiltersState): string => {
     return arr
       .map((item) => `${item.id}=${JSON.stringify(item.value)}`)
       .join("&");
   },
 
-  // Разбор строки URL в объект фильтров
-  parsedParams: (str: string) => {
+  /**
+   * Разбирает строку URL в массив объектов фильтров.
+   */
+  parsedParams: (str: string): ColumnFiltersState => {
     if (!str) return [];
     return str.split("&").map((item) => {
       const [filterName, filterValue] = item.split("=");
-      let value = filterValue.split(",");
       try {
-        value = JSON.parse(filterValue);
+        // Пытаемся распарсить значение как JSON
+        return { id: filterName, value: JSON.parse(filterValue) };
       } catch (e) {
         console.error("Ошибка при разборе фильтров:", e);
+        return { id: filterName, value: filterValue };
       }
-      return { id: filterName, value };
     });
   },
 
-  // Преобразование скрытых колонок в строку URL
-  transformHiddenColsFilterToString: (visibility: VisibilityState) =>
-    Object.entries(visibility)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .filter(([_, isVisible]) => !isVisible)
-      .map(([key]) => key)
-      .join(","),
+  /**
+   * Преобразует объект видимости колонок в строку для URL.
+   */
+  transformHiddenColsFilterToString: (visibility: VisibilityState): string => {
+    return (
+      Object.entries(visibility)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([_, isVisible]) => !isVisible) // Берем только скрытые колонки
+        .map(([key]) => key)
+        .join(",")
+    );
+  },
 
-  // Разбор строки URL в объект скрытых колонок
-  parsedHoddenColsFilter: (str: string) => {
+  /**
+   * Разбирает строку URL в объект видимости колонок.
+   */
+  parsedHoddenColsFilter: (str: string): VisibilityState => {
     if (!str) return {};
     return Object.fromEntries(str.split(",").map((key) => [key, false]));
   },
 
-  reduceSearchParams: (str: string, includeArr: string[]) => {
+  /**
+   * Фильтрует параметры строки запроса, оставляя только указанные ключи.
+   */
+  reduceSearchParams: (
+    str: string,
+    includeArr: string[]
+  ): Record<string, string> => {
     if (!str) return {};
 
-    const arr = str.split("&");
-
-    return arr.reduce<{ [key: string]: string }>((acc, item) => {
-      const innerItem = item.split("=");
-      if (includeArr.includes(innerItem[0])) {
-        acc[innerItem[0]] = innerItem[1].replace(/"/g, "");
+    return str.split("&").reduce<Record<string, string>>((acc, item) => {
+      const [key, value] = item.split("=");
+      if (includeArr.includes(key)) {
+        acc[key] = value.replace(/"/g, ""); // Убираем лишние кавычки
       }
       return acc;
     }, {});
   },
 
-  // Преобразование скрытых колонок в строку URL
-  transformParamsListToStringArr(list: string, includedColumns: string[]) {
-    return Object.values(this.reduceSearchParams(list, includedColumns));
+  /**
+   * Возвращает массив значений фильтров из строки запроса.
+   */
+  transformParamsListToStringArr: (
+    list: string,
+    includedColumns: string[]
+  ): string[] => {
+    const filteredParams = utilsDataTable.reduceSearchParams(
+      list,
+      includedColumns
+    );
+    return Object.values(filteredParams);
   },
 
-  transformParamsListToSFiltersObj(list: string, includedColumns: string[]) {
-    return Object.keys(this.reduceSearchParams(list, includedColumns));
+  /**
+   * Возвращает массив ключей фильтров из строки запроса.
+   */
+  transformParamsListToSFiltersObj: (
+    list: string,
+    includedColumns: string[]
+  ): string[] => {
+    const filteredParams = utilsDataTable.reduceSearchParams(
+      list,
+      includedColumns
+    );
+    return Object.keys(filteredParams);
   },
 };

@@ -87,7 +87,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         Статистика заявок по источникам
       </h1>
       <h2 className="text-lg flex gap-2 p-2 items-center w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
-        <span>Общее количество заявок:{" "}</span>
+        <span>Общее количество заявок: </span>
         <span className="grid place-items-center aspect-square p-2 border border-solid rounded-md ">
           {totalDealsCount}
         </span>
@@ -177,7 +177,8 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                     key={index}
                     item={item}
                     color={COLORS[index % COLORS.length]}
-                    status={countsStatuses[item.name]}/>
+                    status={countsStatuses[item.name]}
+                  />
                 ))}
               </ul>
 

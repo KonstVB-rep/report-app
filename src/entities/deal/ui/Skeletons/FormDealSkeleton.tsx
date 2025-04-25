@@ -1,6 +1,6 @@
 import React from "react";
 
-const FormEditSkeleton = () => {
+const FormDealSkeleton = () => {
   return (
     <div className="grid max-h-[85vh] gap-10 overflow-y-auto">
       <div className="m-auto h-14 w-64 animate-pulse rounded-lg bg-muted/50" />
@@ -31,4 +31,4 @@ const FormEditSkeleton = () => {
   );
 };
 
-export default FormEditSkeleton;
+export default FormDealSkeleton;

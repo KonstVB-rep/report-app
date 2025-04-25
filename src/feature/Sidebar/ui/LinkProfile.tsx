@@ -1,12 +1,13 @@
-import React, {memo} from "react";
+import React, { memo } from "react";
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 
 import { UserRound } from "lucide-react";
+
 import { DepartmentUserItem } from "@/entities/department/types";
 
-const LinkProfile = ({ user }: { user: DepartmentUserItem; }) => {
+const LinkProfile = ({ user }: { user: DepartmentUserItem }) => {
   const { userId } = useParams();
   const pathname = usePathname();
   return (

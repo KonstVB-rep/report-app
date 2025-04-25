@@ -22,7 +22,7 @@ const Contacts = ({ email, phone, className }: Props) => {
       )}
       {phone && (
         <a
-          href={`tel:${phone}`}
+          href={`tel:+${phone.replace(/[^0-9]/g, "")}`}
           className={`flex h-14 flex-1 flex-shrink-0 sm:aspect-square items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:bg-blue-600 hover:text-white focus-visible:bg-blue-600 focus-visible:text-white ${className}`}
         >
           <Phone size="24" />
@@ -30,7 +30,7 @@ const Contacts = ({ email, phone, className }: Props) => {
       )}
       {phone && (
         <a
-          href={`https://wa.me/${phone}`}
+          href={`https://wa.me/${phone.replace(/[^0-9]/g, "")}`}
           target="_blank"
           className={`flex h-14 flex-1 flex-shrink-0 sm:aspect-square items-center justify-center border border-solid border-transparent bg-muted p-2.5 hover:border-chart-2 hover:bg-green-600 hover:text-white focus-visible:bg-green-600 focus-visible:text-white ${className}`}
         >

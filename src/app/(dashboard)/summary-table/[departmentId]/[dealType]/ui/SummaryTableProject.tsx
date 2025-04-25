@@ -12,9 +12,9 @@ import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { ProjectResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
+import Loading from "../[userId]/loading";
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
 import SummaryTableTemplate from "./SummaryTableTemplate";
-import Loading from "../[userId]/loading";
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),

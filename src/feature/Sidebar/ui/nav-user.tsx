@@ -10,9 +10,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import LogoutDialog from "@/feature/auth/ui/logout-dialog";
 import HoverCardComponent from "@/shared/ui/HoverCard";
-
-import { LogoutDialog } from "../../auth/ui/logout-dialog";
 
 export function NavUser() {
   const { isMobile } = useSidebar();

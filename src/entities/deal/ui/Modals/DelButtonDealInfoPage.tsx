@@ -2,11 +2,19 @@ import { DealType } from "@prisma/client";
 
 import React from "react";
 
+import dynamic from "next/dynamic";
+
 import { Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";;
-import DialogComponent from "@/shared/ui/DialogComponent";;
-import DelDealForm from "../Forms/DelDealForm";
+import { Button } from "@/components/ui/button";
+import DialogComponent from "@/shared/ui/DialogComponent";
+
+import DelDealSkeleton from "../Skeletons/DelDealSkeleton";
+
+const DelDealForm = dynamic(() => import("../Forms/DelDealForm"), {
+  ssr: false,
+  loading: () => <DelDealSkeleton />,
+});
 
 const DelButtonDealInfoPage = ({
   id,
@@ -15,9 +23,7 @@ const DelButtonDealInfoPage = ({
   id: string;
   type: DealType;
 }) => {
-
   const [open, setOpen] = React.useState(false);
-
 
   return (
     <DialogComponent
@@ -32,11 +38,7 @@ const DelButtonDealInfoPage = ({
         </Button>
       }
     >
-      <DelDealForm
-        id={id}
-        type={type}
-        close={() => setOpen(false)}
-      />
+      <DelDealForm id={id} type={type} close={() => setOpen(false)} />
     </DialogComponent>
   );
 };

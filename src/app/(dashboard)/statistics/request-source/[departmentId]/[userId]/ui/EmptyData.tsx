@@ -1,5 +1,6 @@
-import { FileQuestion } from "lucide-react";
 import React from "react";
+
+import { FileQuestion } from "lucide-react";
 
 const EmptyData = () => {
   return (

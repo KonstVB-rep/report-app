@@ -21,6 +21,7 @@ import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputNumberForm from "@/shared/ui/Inputs/InputNumberForm";
 import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
 import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
@@ -47,7 +48,7 @@ const setSelectValue = <T extends FieldValues>(
   if (selected) {
     form.setValue(name as Path<T>, selected as PathValue<T, Path<T>>);
   }
-}
+};
 
 const directionOptions = transformObjValueToArr(DirectionRetailLabels);
 const deliveryOptions = transformObjValueToArr(DeliveryRetailLabels);
@@ -81,7 +82,7 @@ const RetailFormBody = <T extends FieldValues>({
     form.formState.errors[name]?.message as string;
 
   return (
-    <div className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
+    <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
@@ -125,7 +126,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={error("direction")}
                 options={directionOptions}
                 placeholder="Выберите направление"
-                onValueChange={(val) => setSelectValue(form,"direction", val)}
+                onValueChange={(val) => setSelectValue(form, "direction", val)}
                 required
               />
 
@@ -136,7 +137,9 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={error("deliveryType")}
                 options={deliveryOptions}
                 placeholder="Выберите тип поставки"
-                onValueChange={(val) => setSelectValue(form,"deliveryType", val)}
+                onValueChange={(val) =>
+                  setSelectValue(form, "deliveryType", val)
+                }
               />
 
               <InputTextForm
@@ -190,7 +193,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={error("dealStatus")}
                 options={statusOptions}
                 placeholder="Выберите статус КП"
-                onValueChange={(val) => setSelectValue(form,"dealStatus", val)}
+                onValueChange={(val) => setSelectValue(form, "dealStatus", val)}
               />
 
               <DatePickerFormField
@@ -271,7 +274,7 @@ const RetailFormBody = <T extends FieldValues>({
           />
         </div>
       </Form>
-    </div>
+    </MotionDivY>
   );
 };
 

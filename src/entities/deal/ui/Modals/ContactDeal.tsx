@@ -5,7 +5,6 @@ import React from "react";
 import dynamic from "next/dynamic";
 
 import { Plus, X } from "lucide-react";
-import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -60,7 +59,7 @@ const ContactDeal = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="p-2">
         <div className="grid gap-2 overflow-y-auto max-h-[60vh] pr-2 box-border">
           {fields.map((field, index: number) => (
-            <motion.div
+            <div
               key={form.watch(`contacts.${index}.id`)}
               className="grid gap-2 rounded border p-4"
             >
@@ -126,7 +125,7 @@ const ContactDeal = ({
                   <X className="h-4 w-4" /> Удалить
                 </Button>
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
 

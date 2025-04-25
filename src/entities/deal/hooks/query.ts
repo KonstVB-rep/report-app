@@ -93,7 +93,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
       }
     },
     enabled: !useCache || !cachedDeal,
-    placeholderData: useCache ? cachedDeal : undefined, 
+    placeholderData: useCache ? cachedDeal : undefined,
     staleTime: useCache ? 60 * 1000 : 0,
   });
 };
@@ -195,7 +195,10 @@ export const useGetAllDealsByDepartmentByType = (
   });
 };
 
-export const useGetAllProjects = (userId: string | null, departmentId?: string | undefined) => {
+export const useGetAllProjects = (
+  userId: string | null,
+  departmentId?: string | undefined
+) => {
   const { authUser } = useStoreUser();
 
   return useQuery({
@@ -217,7 +220,10 @@ export const useGetAllProjects = (userId: string | null, departmentId?: string |
   });
 };
 
-export const useGetAllRetails = (userId: string | null, departmentId?: string | undefined) => {
+export const useGetAllRetails = (
+  userId: string | null,
+  departmentId?: string | undefined
+) => {
   const { authUser } = useStoreUser();
 
   return useQuery({

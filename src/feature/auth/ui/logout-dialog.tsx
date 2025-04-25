@@ -17,7 +17,7 @@ import {
 import { logout } from "@/feature/auth/logout";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
 
-export function LogoutDialog() {
+const LogoutDialog = () => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -68,4 +68,6 @@ export function LogoutDialog() {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default LogoutDialog;

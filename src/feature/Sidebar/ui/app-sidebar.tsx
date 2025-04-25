@@ -25,6 +25,7 @@ import {
 } from "@/entities/department/types";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { UserResponse } from "@/entities/user/types";
+
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 

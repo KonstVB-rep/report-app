@@ -559,20 +559,21 @@ export const getRetailsUser = async (
   }
 };
 
-export const getAllProjectsByDepartment = async (departmentId?: string | undefined): Promise<
-  ProjectResponse[]
-> => {
+export const getAllProjectsByDepartment = async (
+  departmentId?: string | undefined
+): Promise<ProjectResponse[]> => {
   try {
     const { user } = await handleAuthorization();
 
     await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_UNION_REPORT]);
 
-    const departmentIdValue = departmentId !== undefined ? +departmentId : +user!.departmentId;
+    const departmentIdValue =
+      departmentId !== undefined ? +departmentId : +user!.departmentId;
 
     const deals = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: departmentIdValue, 
+          departmentId: departmentIdValue,
         },
       },
       include: {
@@ -580,7 +581,7 @@ export const getAllProjectsByDepartment = async (departmentId?: string | undefin
           select: {
             username: true,
           },
-        }, 
+        },
       },
       orderBy: {
         dateRequest: "asc",
@@ -605,9 +606,9 @@ export const getAllProjectsByDepartment = async (departmentId?: string | undefin
   }
 };
 
-export const getAllRetailsByDepartment = async (departmentId?: string | undefined): Promise<
-  RetailResponse[]
-> => {
+export const getAllRetailsByDepartment = async (
+  departmentId?: string | undefined
+): Promise<RetailResponse[]> => {
   try {
     const { user } = await handleAuthorization();
 
@@ -616,7 +617,8 @@ export const getAllRetailsByDepartment = async (departmentId?: string | undefine
     ]);
 
     if (permissionError) return permissionError;
-    const departmentIdValue = departmentId !== undefined ? +departmentId : +user!.departmentId;
+    const departmentIdValue =
+      departmentId !== undefined ? +departmentId : +user!.departmentId;
 
     const deals = await prisma.retail.findMany({
       where: {

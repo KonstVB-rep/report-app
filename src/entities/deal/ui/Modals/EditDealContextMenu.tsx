@@ -2,8 +2,10 @@ import { DealType } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction } from "react";
 
-import EditProject from "./EditProject";
-import EditRetail from "./EditRetail";
+import dynamic from "next/dynamic";
+
+const EditProject = dynamic(() => import("./EditProject"), { ssr: false });
+const EditRetail = dynamic(() => import("./EditRetail"), { ssr: false });
 
 const EditDealContextMenu = ({
   close,

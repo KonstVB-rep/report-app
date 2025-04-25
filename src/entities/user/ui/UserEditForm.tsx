@@ -18,6 +18,7 @@ import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
 import Overlay from "@/shared/ui/Overlay";
 import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
@@ -80,7 +81,7 @@ const UserEditForm = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="grid max-h-[85vh] gap-5 overflow-y-auto p-1"
         >
-          <div className="grid gap-1">
+          <MotionDivY className="grid gap-1">
             <InputTextForm
               name="username"
               label="Имя пользователя"
@@ -178,7 +179,7 @@ const UserEditForm = ({
                 </FormItem>
               )}
             />
-          </div>
+          </MotionDivY>
           <SubmitFormButton title="Сохранить" isPending={isPending} />
         </form>
       </Form>

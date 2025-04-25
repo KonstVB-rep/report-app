@@ -1,10 +1,23 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+
 import { getQueryClient } from "@/app/provider/query-provider";
-import { getProjectsUserQuery, getRetailsUserQuery } from "@/entities/deal/api/queryFn";
+import {
+  getProjectsUserQuery,
+  getRetailsUserQuery,
+} from "@/entities/deal/api/queryFn";
+
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
 
-const fetchData = async (queryClient: QueryClient, dealType: string, userId: string) => {
+const fetchData = async (
+  queryClient: QueryClient,
+  dealType: string,
+  userId: string
+) => {
   switch (dealType) {
     case "projects":
       return queryClient.prefetchQuery({
@@ -21,7 +34,11 @@ const fetchData = async (queryClient: QueryClient, dealType: string, userId: str
   }
 };
 
-const PersonTablePage = async ({ params }: { params: Promise<{ dealType: string; userId: string }> }) => {
+const PersonTablePage = async ({
+  params,
+}: {
+  params: Promise<{ dealType: string; userId: string }>;
+}) => {
   const { dealType, userId } = await params;
   const queryClient = getQueryClient();
 
@@ -52,4 +69,3 @@ const PersonTablePage = async ({ params }: { params: Promise<{ dealType: string;
 };
 
 export default PersonTablePage;
-

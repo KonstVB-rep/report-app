@@ -11,9 +11,9 @@ import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import { RetailResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
+import Loading from "../[userId]/loading";
 import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 import PersonTable from "./PersonTable";
-import Loading from "../[userId]/loading";
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),

@@ -13,7 +13,9 @@ export type OptionGroup = {
 type FilterPopoverGroupProps = {
   options: OptionGroup[];
   columnFilters: ColumnFiltersState;
-  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
+  setColumnFilters: (
+    callback: (prev: ColumnFiltersState) => ColumnFiltersState
+  ) => void;
 };
 
 const FilterPopoverGroup = React.memo(

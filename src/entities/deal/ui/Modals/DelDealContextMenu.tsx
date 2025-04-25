@@ -2,13 +2,21 @@ import { DealType } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction } from "react";
 
+import dynamic from "next/dynamic";
+
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import DelDealForm from "../Forms/DelDealForm";
+
+import DelDealSkeleton from "../Skeletons/DelDealSkeleton";
+
+const DelDealForm = dynamic(() => import("../Forms/DelDealForm"), {
+  ssr: false,
+  loading: () => <DelDealSkeleton />,
+});
 
 const DelDealContextMenu = ({
   close,
@@ -19,17 +27,15 @@ const DelDealContextMenu = ({
   id: string;
   type: DealType;
 }) => {
-  
   return (
+    <DialogContent className="sm:max-w-[400px]">
+      <DialogHeader>
+        <DialogTitle className="sr-only">Удалить проект</DialogTitle>
+        <DialogDescription className="sr-only" />
+      </DialogHeader>
 
-      <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
-          <DialogTitle>Удалить проект</DialogTitle>
-          <DialogDescription />
-        </DialogHeader>
-
-        <DelDealForm id={id} type={type} close={close} />
-      </DialogContent>
+      <DelDealForm id={id} type={type} close={close} />
+    </DialogContent>
   );
 };
 

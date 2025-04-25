@@ -27,6 +27,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: ({ row }) => Number(row.index) + 1,
     enableHiding: false,
     enableSorting: false,
+    accessorFn: () => "",
   },
   {
     id: "dateRequest",

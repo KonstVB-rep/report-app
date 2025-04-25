@@ -26,6 +26,7 @@ const InputPassword = (props: InputPasswordProps) => {
         className="absolute bottom-[2px] right-1 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full"
         size={"icon"}
         type="button"
+        aria-label="Переключить видимость пароля"
       >
         {visible ? <Eye /> : <EyeClosed />}
       </Button>

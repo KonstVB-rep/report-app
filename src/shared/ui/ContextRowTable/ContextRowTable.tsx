@@ -17,20 +17,21 @@ import {
 import { Dialog } from "@/components/ui/dialog";
 import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+
 import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAffiliation";
 
 type ContextMenuTableProps<T> = {
   children: React.ReactNode;
   rowData: T;
   isExistActionDeal?: boolean;
-  departmentId: string
+  departmentId: string;
 };
 
 const ContextRowTable = <T,>({
   children,
   rowData,
   isExistActionDeal = true,
-  departmentId
+  departmentId,
 }: ContextMenuTableProps<T>) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
 
