@@ -10,8 +10,6 @@ import { useGetProjectsUser } from "@/entities/deal/hooks/query";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import { ProjectResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-
-import Loading from "../[userId]/loading";
 import { columnsDataProject } from "../[userId]/model/columns-data-project";
 import PersonTable from "./PersonTable";
 
@@ -26,16 +24,16 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  const { data: deals, isPending } = useGetProjectsUser(
-    hasAccess ? (userId as string) : null
+  const { data: deals } = useGetProjectsUser(
+    hasAccess && (userId as string | undefined) ? (userId as string) : undefined
   );
+
 
   const getRowLink = useCallback(
     (row: ProjectResponse) => `/deal/project/${row.id}`,
     []
   );
 
-  if (isPending) return <Loading />;
 
   if (!hasAccess)
     return (

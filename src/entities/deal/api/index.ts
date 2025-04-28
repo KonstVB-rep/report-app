@@ -493,7 +493,6 @@ export const getProjectsUser = async (
     }
 
     const isOwner = userId === idDealOwner;
-
     if (!isOwner) {
       await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
     }
@@ -516,8 +515,7 @@ export const getProjectsUser = async (
       : [];
   } catch (error) {
     console.error(error);
-    handleError((error as Error).message);
-    return null;
+    return handleError((error as Error).message);
   }
 };
 
@@ -554,8 +552,7 @@ export const getRetailsUser = async (
       : [];
   } catch (error) {
     console.error(error);
-    handleError((error as Error).message);
-    return null;
+    return handleError((error as Error).message);
   }
 };
 
@@ -662,17 +659,18 @@ type DealsListWithResource =
       totalDealsCount: number;
     }
   | { deals: []; totalDealsCount: number };
+
 export const getAllDealsRequestSourceByDepartment = async (
   departmentId: number
 ): Promise<DealsListWithResource> => {
   try {
-    const { user } = await handleAuthorization();
+    await handleAuthorization();
 
-    const permissionError = await checkUserPermissionByRole(user!, [
-      PermissionEnum.VIEW_UNION_REPORT,
-    ]);
+    // const permissionError = await checkUserPermissionByRole(user!, [
+    //   PermissionEnum.VIEW_UNION_REPORT,
+    // ]);
 
-    if (permissionError) return permissionError;
+    // if (permissionError) return permissionError;
 
     const retailsRequestResorce = await prisma.retail.findMany({
       where: {
@@ -817,3 +815,5 @@ export const deleteDeal = async (
     return handleError((error as Error).message);
   }
 };
+
+

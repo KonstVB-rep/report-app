@@ -11,7 +11,6 @@ import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import { RetailResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-import Loading from "../[userId]/loading";
 import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 import PersonTable from "./PersonTable";
 
@@ -26,7 +25,7 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  const { data: deals, isPending } = useGetRetailsUser(
+  const { data: deals } = useGetRetailsUser(
     hasAccess ? (userId as string) : null
   );
 
@@ -34,7 +33,6 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
     (row: RetailResponse) => `/deal/retail/${row.id}`,
     []
   );
-  if (isPending) return <Loading />;
 
   if (!hasAccess)
     return (

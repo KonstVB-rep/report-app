@@ -239,7 +239,7 @@ export const updateUser = async (
 
 export const getUser = async (
   targetUserId: string,
-  permissions: PermissionEnum[]
+  permissions?: PermissionEnum[]
 ): Promise<(User & { departmentName: string }) | undefined> => {
   try {
     const { user, userId } = await handleAuthorization();
@@ -264,7 +264,7 @@ export const getUser = async (
 
     if (!targetUser) return handleError("Пользователь не найден");
 
-    if (targetUserId !== userId && user) {
+    if (targetUserId !== userId && user && (permissions && permissions.length > 0)) {
       await checkUserPermissionByRole(user, permissions);
     }
 
@@ -281,6 +281,7 @@ export const getUser = async (
     const userPermissions = targetUser.permissions.map(
       (p) => p.permission.name
     );
+
     const userWithDepartmentNameWithPermissions = {
       ...targetUser,
       departmentName: targetUser!.department?.name || null,

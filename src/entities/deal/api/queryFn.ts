@@ -18,11 +18,10 @@ export const getRetailsUserQuery = async (userId: string) => {
 
 export const getProjectsUserQuery = async (userId: string) => {
   try {
-    const projects = await getProjectsUser(userId);
-    return projects || [];
+    return await getProjectsUser(userId);
   } catch (error) {
     console.log(error, "Ошибка getProjectsUserQuery");
-    return [];
+    throw new Error((error as Error).message)
   }
 };
 
@@ -33,7 +32,7 @@ export const getAllProjectsByDepartmentQuery = async (
     return await getAllProjectsByDepartment(departmentId);
   } catch (error) {
     console.log(error, "Ошибка getAllProjectsByDepartmentQuery");
-    return [];
+    throw new Error((error as Error).message);
   }
 };
 
@@ -44,6 +43,6 @@ export const getAllRetailsByDepartmentQuery = async (
     return await getAllRetailsByDepartment(departmentId);
   } catch (error) {
     console.log(error, "Ошибка getAllRetailsByDepartmentQuery");
-    return [];
+    throw new Error((error as Error).message);
   }
 };

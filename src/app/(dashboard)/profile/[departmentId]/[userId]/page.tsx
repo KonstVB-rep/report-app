@@ -39,7 +39,7 @@ const ProfilePage = () => {
     data: user,
     error,
     isPending,
-  } = useGetUser(userId as string, [PermissionEnum.USER_MANAGEMENT]);
+  } = useGetUser(userId as string);
 
   if (isPending) return <Loading />;
 

@@ -266,15 +266,16 @@ export const useGetRetailsUser = (userId: string | null) => {
   return { data, isError, ...restData };
 };
 
-export const useGetProjectsUser = (userId: string | null) => {
+export const useGetProjectsUser = (userId: string | undefined) => {
   const { authUser } = useStoreUser();
-  const { data, isError, ...restData } = useQuery({
+  return useQuery({
     queryKey: ["projects", userId],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
+
         return await getProjectsUser(userId as string);
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
@@ -284,6 +285,4 @@ export const useGetProjectsUser = (userId: string | null) => {
     },
     enabled: !!userId,
   });
-
-  return { data, isError, ...restData };
 };
