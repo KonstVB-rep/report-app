@@ -1,4 +1,14 @@
+"use client";
+
+import { useEffect } from "react";
+
+import router from "next/router";
+
 const TemplateDashboard = () => {
+  useEffect(() => {
+    router.push("/login");
+  }, []);
+
   return (
     <div className="relative grid h-full place-items-center p-4">
       <div className="absolute left-1/2 top-1/2 flex h-full w-full flex-1 -translate-x-1/2 -translate-y-1/2 transform flex-col gap-4 p-4 blur-sm">
