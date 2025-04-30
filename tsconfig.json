@@ -24,5 +24,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/entities/user/ui/PersonTableEdit.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": []
 }

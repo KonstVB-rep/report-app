@@ -135,7 +135,7 @@ const ProjectFormBody = <T extends FieldValues>({
           <div className="text-center font-semibold uppercase">
             Форма добавления проекта
           </div>
-          <div className="grid gap-2">
+          <div className="grid gap-2 px-2">
             <div className="grid sm:grid-cols-2 gap-2">
               <div className="flex flex-col gap-1">
                 <DatePickerFormField<UseFormReturn<T>>
