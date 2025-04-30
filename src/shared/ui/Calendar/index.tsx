@@ -25,6 +25,7 @@ type CalendarComponentProps = {
 const CalendarComponent = ({
   required = false,
   field,
+  ...rest
 }: CalendarComponentProps) => {
   const selectedDate = field.value ? new Date(field.value) : undefined;
 
@@ -55,6 +56,8 @@ const CalendarComponent = ({
           onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
           required={required}
           locale={ru}
+          disabled={{ before: new Date() }}
+          {...rest}
         />
       </PopoverContent>
     </Popover>

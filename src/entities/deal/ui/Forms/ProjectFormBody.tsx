@@ -100,9 +100,7 @@ const ProjectFormBody = <T extends FieldValues>({
       return;
 
     if (
-      parsedAmountCP === 0 ||
-      parsedAmountWork === 0 ||
-      parsedAmountPurchase === 0
+      parsedAmountCP === 0
     )
       return;
 

@@ -26,7 +26,7 @@ export const useSaveFilter = (setOpen: (value: boolean) => void) => {
       data: Omit<UserFilter, "createdAt" | "updatedAt" | "id" | "userId">;
     }) => {
       if (!authUser?.id) {
-        throw new Error("User ID is missing");
+        throw new Error("Пользователь не авторизован");
       }
       return saveFilter(ownerId, data);
     },

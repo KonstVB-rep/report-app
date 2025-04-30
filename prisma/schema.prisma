@@ -28,6 +28,7 @@ model User {
   login         UserLogin[]
   permissions   UserPermission[]
   userFilters   UserFilter[]
+  eventsCalendar  EventCalendar[]
 
   @@index([departmentId])
 }
@@ -162,6 +163,18 @@ model UserFilter {
   updatedAt    DateTime  @updatedAt
   user         User      @relation(fields: [userId], references: [id])
 
+}
+
+
+model EventCalendar {
+  id        String   @id @default(cuid())
+  title     String
+  start     DateTime
+  end       DateTime?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum PermissionEnum {

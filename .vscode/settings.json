@@ -1,13 +1,3 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "files.autoSave": "afterDelay",
-  "editor.formatOnSave": true,
-  "WillLuke.nextjs.addTypesOnSave": true,
-  "WillLuke.nextjs.hasPrompted": true,
-  "workbench.editorAssociations": {
-    "*.svg": "default"
-  },
-  "editor.foldingImportsByDefault": false,
-  "autoimport.doubleQuotes": true,
-  "autoimport.showNotifications": true
+    "WillLuke.nextjs.hasPrompted": true
 }
