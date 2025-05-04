@@ -1,6 +1,6 @@
 "use client";
 
-import { EventClickArg } from "@fullcalendar/core";
+import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import React from "react";
@@ -65,7 +65,21 @@ const CalendarPage = () => {
     isPendingDelete,
   } = useActionEvents(handleResetAndClose, handleCloseModalAfterDeleteEvent);
 
-  const handleDateSelect = () => {
+  const closeModalForm = () => {
+    if (openModal) {
+      handleResetAndClose();
+    } else {
+      setOpenModal(true);
+    }
+  };
+
+  const handleDateSelect = (event: DateSelectArg) => {
+    const startDate = event.start;
+    const endDate =  new Date(event.end.getTime() - 86400000)
+
+    form.setValue("startDateEvent", startDate);
+    form.setValue("endDateEvent", endDate);
+
     setOpenModal(true);
   };
 
@@ -138,7 +152,7 @@ const CalendarPage = () => {
       <DialogComponent
         trigger={undefined}
         open={openModal}
-        onOpenChange={setOpenModal}
+        onOpenChange={closeModalForm}
         classNameContent="sm:max-w-[400px]"
       >
         <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -151,6 +165,8 @@ const CalendarPage = () => {
             events={events}
             isPendingDelete={isPendingDelete}
             deleteEvent={deleteEvent}
+            form={form}
+            isLoading={isLoading}
           />
         </MotionDivY>
       </DialogComponent>

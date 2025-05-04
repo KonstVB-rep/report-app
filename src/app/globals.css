@@ -389,9 +389,9 @@ body {
   background-color: #1e1e1e;
 }
 
-.fc .fc-daygrid-day.fc-day-today {
-  @apply bg-emerald-900
-}
+/* .fc .fc-daygrid-day.fc-day-today {
+  @apply bg-blue-950
+} */
 
 .fc .fc-cell-shaded, .fc .fc-day-disabled{
   @apply bg-stone-800
@@ -475,6 +475,10 @@ body {
 .fc-dayGridMonth-view.fc-view.fc-daygrid{
   max-width: 1200px;
   margin: auto;
+}
+
+a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygrid-dot-event{
+  @apply dark:hover:border-white dark:focus-visible:border-white hover:border-black focus-visible:border-black border-stone-600
 }
 
 @media(max-width: 980px){

@@ -1,13 +1,12 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { UseMutateFunction } from "@tanstack/react-query";
 
 import React, { Dispatch, SetStateAction } from "react";
-import { Path, useForm, UseFormReturn } from "react-hook-form";
+import { Path, UseFormReturn } from "react-hook-form";
 
 import { Form } from "@/components/ui/form";
 import {
-  EventCalendarFormSchema,
   EventCalendarSchema,
 } from "@/feature/calendar/model/schema";
 import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";
@@ -15,15 +14,7 @@ import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
-import { UseMutateFunction } from "@tanstack/react-query";
 
-const defaultValuesForm = {
-  eventTitle: "",
-  startDateEvent: "",
-  startTimeEvent: "",
-  endDateEvent: "",
-  endTimeEvent: "",
-};
 
 type FormEventType = {
   handleSubmit: (values: EventCalendarSchema) => void;
@@ -33,15 +24,27 @@ type FormEventType = {
   isLoading: boolean;
   isPendingDelete: boolean;
   events: EventInputType[] | undefined;
-  deleteEvent: UseMutateFunction<{
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    userId: string;
-    title: string;
-    start: Date;
-    end: Date | null;
-}, Error, string, unknown>
+  deleteEvent: UseMutateFunction<
+    {
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+      userId: string;
+      title: string;
+      start: Date;
+      end: Date | null;
+    },
+    Error,
+    string,
+    unknown
+  >;
+  form: UseFormReturn<{
+    eventTitle: string;
+    startDateEvent: Date;
+    startTimeEvent: string;
+    endDateEvent: Date;
+    endTimeEvent: string;
+}, any, TFieldValues>
 };
 
 const FormEvent = ({
@@ -52,12 +55,9 @@ const FormEvent = ({
   isLoading,
   isPendingDelete,
   events,
-  deleteEvent
+  deleteEvent,
+  form
 }: FormEventType) => {
-  const form = useForm<EventCalendarSchema>({
-    resolver: zodResolver(EventCalendarFormSchema),
-    defaultValues: defaultValuesForm,
-  });
 
   return (
     <Form {...form}>

@@ -76,7 +76,7 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
       });
-      TOAST.SUCCESS("Событие успешно удаленоСобытие успешно удаленоСобытие успешно удаленоСобытие успешно удаленоСобытие успешно удаленоСобытие успешно удаленоСобытие успешно удаленоСобытие успешно удалено");
+      TOAST.SUCCESS("Событие успешно удалено");
     },
     onError: (error) => {
       console.log(error);

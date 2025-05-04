@@ -9,15 +9,16 @@ export const TOAST = {
       style: {
         border: "1px solid oklch(0.577 0.245 27.325)",
         borderRadius: "30px",
-        height: "50px",
+        height: "auto",
         color: "oklch(0.577 0.245 27.325)",
         backgroundColor: "#azure",
         maxWidth: "400px",
         minWidth: "12rem",
-        margin:"auto",
         overflow: "hidden",
         textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
+        // whiteSpace: "nowrap",
+        display: "flex",
+        justifyContent: "center",
       },
     }),
   SUCCESS: (message: string) =>
@@ -27,16 +28,16 @@ export const TOAST = {
       style: {
         border: "2px solid oklch(0.723 0.219 149.579)",
         borderRadius: "30px",
-        height: "50px",
+        height: "auto",
         color: "green",
         backgroundColor: "#azure",
         maxWidth: "400px",
         minWidth: "12rem",
-        margin:"auto",
         overflow: "hidden",
         textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-
+        // whiteSpace: "nowrap",
+        display: "flex",
+        justifyContent: "center",
       },
     }),
   PROMISE: (promise: Promise<unknown>, messageSuccess: string) =>
@@ -49,7 +50,8 @@ export const TOAST = {
           borderRadius: "30px",
           color: "green",
           maxWidth: "400px",
-          margin:"auto"
+          display: "flex",
+          justifyContent: "center",
         },
       },
       error: (err) => {
@@ -60,13 +62,14 @@ export const TOAST = {
             borderRadius: "30px",
             color: "oklch(0.577 0.245 27.325)",
             maxWidth: "400px",
-            margin:"auto"
+            display: "flex",
+            justifyCOntent: "center",
           },
         };
       },
       style: {
         backgroundColor: "oklch(0.809 0.105 251.813)",
-        margin:"auto",
+        margin: "auto",
         maxWidth: "400px",
       },
       duration: 3000,

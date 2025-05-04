@@ -1,25 +1,27 @@
 "use client";
 
+import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 import ruLocale from "@fullcalendar/core/locales/ru";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { EventInputType } from "@/app/(dashboard)/calendar/[userId]/page";
-import { EventClickArg } from "@fullcalendar/core";
 
 import React from "react";
+
+import { EventInputType } from "@/app/(dashboard)/calendar/[userId]/page";
+
 type FullCalendarComponentProps = {
-  handleEventClick: (clickInfo: EventClickArg) => void,
-  events: EventInputType[] | undefined,
-  handleDateSelect: () => void,
-}
+  handleEventClick: (clickInfo: EventClickArg) => void;
+  events: EventInputType[] | undefined;
+  handleDateSelect: (clickInfo: DateSelectArg) => void;
+};
 const FullCalendarComponent = ({
   handleEventClick,
   events,
   handleDateSelect,
-} : FullCalendarComponentProps) => {
+}: FullCalendarComponentProps) => {
   const capitalizeTitle = () => {
     const titleEl = document.querySelector(".fc-toolbar-title");
     titleEl?.classList.add("title-calendar");
