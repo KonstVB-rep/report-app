@@ -17,13 +17,7 @@ import FullCalendarComponent from "@/feature/calendar/ui/FullCalendarComponent";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
-
-export type EventInputType = {
-  id?: string;
-  title: string;
-  start: string | Date;
-  end?: string | Date;
-};
+import Loading from "./loading";
 
 const defaultValuesForm = {
   eventTitle: "",
@@ -139,7 +133,7 @@ const CalendarPage = () => {
   };
 
   if (isPendingLoad) {
-    return <div>Loading...</div>;
+    return <Loading/>;
   }
 
   return (

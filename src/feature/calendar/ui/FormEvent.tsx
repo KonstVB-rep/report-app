@@ -14,9 +14,10 @@ import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
+import {EventInputType} from "@/feature/calendar/ui/types";
 
 
-type FormEventType = {
+type FormEventProps = {
   handleSubmit: (values: EventCalendarSchema) => void;
   editingId: string;
   confirmDelModal: boolean;
@@ -38,13 +39,13 @@ type FormEventType = {
     string,
     unknown
   >;
-  form: UseFormReturn<{
+  form:UseFormReturn<{
     eventTitle: string;
     startDateEvent: Date;
     startTimeEvent: string;
     endDateEvent: Date;
     endTimeEvent: string;
-}, any, TFieldValues>
+}>
 };
 
 const FormEvent = ({
@@ -57,7 +58,7 @@ const FormEvent = ({
   events,
   deleteEvent,
   form
-}: FormEventType) => {
+}: FormEventProps) => {
 
   return (
     <Form {...form}>

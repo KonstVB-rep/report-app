@@ -6,8 +6,8 @@ import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
-import { EventInputType } from "@/app/(dashboard)/calendar/[userId]/page";
 import { UseMutateFunction } from "@tanstack/react-query";
+import { EventInputType } from "../types";
 
 type ModalDelEventsType = {
   confirmDelModal: boolean;

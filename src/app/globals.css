@@ -394,11 +394,16 @@ body {
 } */
 
 .fc .fc-cell-shaded, .fc .fc-day-disabled{
-  @apply bg-stone-800
+  @apply bg-muted
 }
 
-.fc .fc-button-primary{
-  @apply bg-black
+.fc-button.fc-button-primary,
+.fc-today-button.fc-button-primary:disabled{
+  @apply bg-black/50
+}
+
+.fc-today-button.fc-button-primary:disabled{
+  @apply bg-stone-700
 }
 
 .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active{
@@ -446,6 +451,26 @@ body {
 }
 
 
+.fc-view-harness.fc-view-harness-passive{
+  max-width: calc(100vw - 40px);
+  overflow: auto;
+}
+
+.fc-dayGridMonth-view.fc-view.fc-daygrid{
+  max-width: 1200px;
+  margin: auto;
+}
+
+a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygrid-dot-event{
+  @apply dark:hover:border-white dark:focus-visible:border-white hover:border-black focus-visible:border-black border-stone-600
+}
+
+
+.fc .fc-button-primary:focus, .fc .fc-button:focus, 
+.fc .fc-button-primary:not(:disabled).fc-button-active:focus{
+  --tw-shadow: 0 0 0 0px #3b82f6;
+}
+
 
 @media (max-width: 768px) {
   .fc .fc-daygrid-event {
@@ -463,26 +488,19 @@ body {
   }
 }
 
-.fc-daygrid-day-frame {
-  min-width: 140px; /* ширина ячеек */
-}
-
-.fc-view-harness.fc-view-harness-passive{
-  max-width: calc(100vw - 40px);
-  overflow: auto;
-}
-
-.fc-dayGridMonth-view.fc-view.fc-daygrid{
-  max-width: 1200px;
-  margin: auto;
-}
-
-a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygrid-dot-event{
-  @apply dark:hover:border-white dark:focus-visible:border-white hover:border-black focus-visible:border-black border-stone-600
+.fc-daygrid-day {
+  min-width: 100px; /* ширина ячеек */
+  padding: 5px;
 }
 
 @media(max-width: 980px){
   .fc-dayGridMonth-view.fc-view.fc-daygrid{
-    width:980px;
+    width:770px;
   }
+
+  .fc-daygrid-day {
+    min-width: 70px; /* ширина ячеек */
+    padding: 5px;
+  }
+  
 }

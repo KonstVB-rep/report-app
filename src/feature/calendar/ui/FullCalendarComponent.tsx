@@ -9,8 +9,8 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 
 import React from "react";
+import { EventInputType } from "../types";
 
-import { EventInputType } from "@/app/(dashboard)/calendar/[userId]/page";
 
 type FullCalendarComponentProps = {
   handleEventClick: (clickInfo: EventClickArg) => void;
