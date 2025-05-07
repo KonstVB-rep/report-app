@@ -10,6 +10,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import DialogAddUser from "@/entities/user/ui/DialogAddUser";
 import LogoutDialog from "@/feature/auth/ui/logout-dialog";
 import HoverCardComponent from "@/shared/ui/HoverCard";
 
@@ -19,6 +20,9 @@ export function NavUser() {
 
   return (
     <SidebarMenu>
+      <SidebarMenuItem>
+        <DialogAddUser />
+      </SidebarMenuItem>
       <SidebarMenuItem>
         <HoverCardComponent
           title={

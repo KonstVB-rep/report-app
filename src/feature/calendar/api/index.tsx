@@ -1,25 +1,27 @@
 'use server'
 
-import { EventInputType } from "@/app/(dashboard)/calendar/[userId]/page";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
+import { EventInputType } from "../types";
 
 
 export const createEventCalendar = async (eventData: {
   title: string;
   start: string;
   end: string;
+  allDay?: boolean
 }) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
-    const { title, start, end } = eventData;
+    const { title, start, end, allDay = false } = eventData;
     const newEvent = await prisma.eventCalendar.create({
       data: {
         title,
         start: new Date(start),
-        end: end ? new Date(end) : undefined,
+        end: new Date(end),
+        allDay,
         userId,
       },
     });
@@ -37,11 +39,12 @@ export const updateEventCalendar = async (eventData: {
   title: string;
   start: string;
   end: string;
+  allDay?: boolean
 }) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
-    const { id, title, start, end } = eventData;
+    const { id, title, start, end, allDay = false } = eventData;
 
     // Проверка: принадлежит ли событие текущему пользователю
     const existingEvent = await prisma.eventCalendar.findFirst({
@@ -60,7 +63,8 @@ export const updateEventCalendar = async (eventData: {
       data: {
         title,
         start: new Date(start),
-        end: end ? new Date(end) : null,
+        end: new Date(end),
+        allDay
       },
     });
 
@@ -114,8 +118,9 @@ export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
     return events.map((event) => ({
       id: event.id,
       title: event.title,
-      start: event.start.toISOString(),
-      end: event.end?.toISOString(),
+      start: new Date(event.start),
+      end: new Date(event.end),
+      allDay:event.allDay
     }));
   } catch (error) {
     console.error(error);

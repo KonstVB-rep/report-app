@@ -55,7 +55,7 @@ const ModalDelEvents = ({
       <div className="w-full h-full grid gap-4">
         <div className="text-center grid gap-4">
           <p>Вы уверены что хотите удалить событие?</p>
-          <p className="p-2 border border-solid rounded-md">
+          <p className="p-2 border border-solid rounded-md break-all">
             {events.find((item) => item.id === editingId)?.title ??
               "Неизвестное событие"}
           </p>

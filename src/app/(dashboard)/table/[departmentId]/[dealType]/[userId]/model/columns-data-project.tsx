@@ -11,7 +11,7 @@ import {
   DirectionProjectLabels,
   StatusProjectLabels,
 } from "@/entities/deal/lib/constants";
-import { ProjectResponse, StatusType } from "@/entities/deal/types";
+import { ProjectResponse } from "@/entities/deal/types";
 import { formatterCurrency } from "@/shared/lib/utils";
 
 export type typeofDirections = keyof typeof DirectionProjectLabels;
@@ -95,9 +95,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       const rowValue = row.getValue(columnId);
       if (!rowValue) return false;
       if (Array.isArray(value)) {
-        return value.some((direction) =>
-          (rowValue as typeofDirections).includes(direction)
-        );
+        return value.includes(rowValue);
       }
       return rowValue === value;
     },
@@ -202,9 +200,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId);
       if (Array.isArray(value)) {
-        return value.some((status) =>
-          (rowValue as StatusType).includes(status)
-        );
+        return value.includes(rowValue);
       }
       return rowValue === value;
     },

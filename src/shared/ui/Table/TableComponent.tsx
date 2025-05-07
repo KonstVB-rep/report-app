@@ -63,8 +63,9 @@ const TableComponent = <T extends Record<string, unknown>>({
   );
 
   return (
+    <div className="rounded-lg overflow-hidden border">
     <Table
-      className="mb-2 w-full border-separate border-spacing-0 rounded-lg border"
+      className="w-full border-separate border-spacing-0 border"
       ref={ref}
     >
       <TableHeader className="z-1 sticky top-0">
@@ -139,6 +140,7 @@ const TableComponent = <T extends Record<string, unknown>>({
         )}
       </TableBody>
     </Table>
+    </div>
   );
 };
 

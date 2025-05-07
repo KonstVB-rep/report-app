@@ -4,6 +4,8 @@ export const EventCalendarFormSchema = z.object({
   eventTitle: z.string({
     message: "Введите наименование события",
   }),
+
+  allDay: z.boolean().optional(), 
   startDateEvent: z.preprocess(
     (val) => (typeof val === "string" ? new Date(val) : val),
     z.date()
@@ -28,6 +30,7 @@ export const EventCalendarFormSchema = z.object({
       "Некорректный формат времени"
     ),
 }).refine((data) => {
+  if(data.allDay) return true
   const now = new Date();
   const startDate = new Date(data.startDateEvent);
   const endDate = new Date(data.endDateEvent);

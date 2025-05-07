@@ -10,7 +10,7 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (eventData: { title: string; start: string; end: string }) => {
+    mutationFn: (eventData: { title: string; start: string; end: string, allDay?: boolean }) => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
@@ -40,6 +40,7 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
       title: string;
       start: string;
       end: string;
+      allDay?: boolean
     }) => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");

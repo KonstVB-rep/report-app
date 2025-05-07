@@ -11,7 +11,7 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "@/entities/deal/lib/constants";
-import { RetailResponse, StatusType } from "@/entities/deal/types";
+import { RetailResponse } from "@/entities/deal/types";
 import { formatterCurrency } from "@/shared/lib/utils";
 
 export type typeofDirections = keyof typeof DirectionRetailLabels;
@@ -119,9 +119,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
 
       if (!rowValue) return false;
       if (Array.isArray(value)) {
-        return value.some((direction) =>
-          (rowValue as typeofDirections).includes(direction)
-        );
+        return value.includes(rowValue);
       }
       return rowValue === value;
     },
@@ -190,9 +188,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId);
       if (Array.isArray(value)) {
-        return value.some((status) =>
-          (rowValue as StatusType).includes(status)
-        );
+        return value.includes(rowValue);
       }
       return rowValue === value;
     },

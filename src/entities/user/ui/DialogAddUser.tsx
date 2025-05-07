@@ -24,7 +24,7 @@ const DialogAddUser = () => {
     <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
       <DialogComponent
         trigger={
-          <Button variant={"outline"} className="btn_hover">
+          <Button variant={"outline"} className="btn_hover w-full">
             <SquarePlus size={16} />
             <span className="whitespace-nowrap text-sm">
               Добавить пользователя

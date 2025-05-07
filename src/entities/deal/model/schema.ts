@@ -66,6 +66,15 @@ export const ProjectFormSchema = z.object({
   ),
   resource: z.string().optional(),
   contacts: z.array(SingleContactSchema),
+})
+.superRefine((data, ctx) => {
+  if (data.dealStatus !== StatusProject.REJECT && !data.plannedDateConnection?.trim()) {
+    ctx.addIssue({
+      path: ["plannedDateConnection"],
+      code: z.ZodIssueCode.custom,
+      message: "Укажите планируемую дату подключения",
+    });
+  }
 });
 
 export const RetailFormSchema = z.object({
@@ -106,6 +115,15 @@ export const RetailFormSchema = z.object({
   ),
   resource: z.string().optional(),
   contacts: z.array(SingleContactSchema),
+})
+.superRefine((data, ctx) => {
+  if (data.dealStatus !== StatusRetail.REJECT && !data.plannedDateConnection?.trim()) {
+    ctx.addIssue({
+      path: ["plannedDateConnection"],
+      code: z.ZodIssueCode.custom,
+      message: "Укажите планируемую дату подключения",
+    });
+  }
 });
 
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;

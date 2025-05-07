@@ -7,30 +7,56 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
-import React from "react";
 import { EventInputType } from "../types";
-
 
 type FullCalendarComponentProps = {
   handleEventClick: (clickInfo: EventClickArg) => void;
   events: EventInputType[] | undefined;
   handleDateSelect: (clickInfo: DateSelectArg) => void;
 };
+
 const FullCalendarComponent = ({
   handleEventClick,
   events,
   handleDateSelect,
 }: FullCalendarComponentProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const defaultView = "dayGridMonth";
+  const viewFromUrl = searchParams.get("view");
+  const [currentView, setCurrentView] = useState(viewFromUrl || defaultView);
+
   const capitalizeTitle = () => {
     const titleEl = document.querySelector(".fc-toolbar-title");
     titleEl?.classList.add("title-calendar");
   };
 
+  const handleDatesSet = (arg: { view: { type: string } }) => {
+    capitalizeTitle();
+    const newView = arg.view.type;
+    setCurrentView(newView);
+
+    const params = new URLSearchParams(window.location.search);
+    params.set("view", newView);
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+
+    // Проводим проверку, чтобы избежать лишней перезагрузки, если URL не изменился
+    if (window.location.search !== `?${params.toString()}`) {
+      router.replace(newUrl, { scroll: false });
+    }
+  };
+
   return (
-    <FullCalendar
+    <div className="p-2">
+      <FullCalendar
+      selectMirror={false}
+      unselectAuto={true}
       plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
-      initialView={"dayGridMonth"}
+      initialView={currentView}
       eventClick={handleEventClick}
       selectable={true}
       dayMaxEvents={2}
@@ -49,7 +75,7 @@ const FullCalendarComponent = ({
       slotMinTime="00:00:00"
       slotMaxTime="24:00:00"
       headerToolbar={{
-        left: "prev,next today",
+        left: "prev,next",
         center: "title",
         right: "dayGridMonth,timeGridWeek,timeGridDay",
       }}
@@ -71,14 +97,15 @@ const FullCalendarComponent = ({
       dayCellClassNames={(arg) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const date = arg.date;
-        if (date < today) return ["fc-day-disabled"];
+        if (arg.date < today) return ["fc-day-disabled"];
         return [];
       }}
-      datesSet={capitalizeTitle}
+      datesSet={handleDatesSet}
       contentHeight="auto"
       handleWindowResize={false}
+      slotEventOverlap={false} // Предотвращаем наложение слотов на события
     />
+    </div>
   );
 };
 

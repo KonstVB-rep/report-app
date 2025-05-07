@@ -389,9 +389,13 @@ body {
   background-color: #1e1e1e;
 }
 
-/* .fc .fc-daygrid-day.fc-day-today {
-  @apply bg-blue-950
-} */
+.fc .fc-daygrid-day.fc-day-today {
+  @apply dark:bg-white/70 bg-black/70 font-bold
+}
+
+.fc-day-today .fc-daygrid-day-number{
+  @apply text-white dark:text-black
+}
 
 .fc .fc-cell-shaded, .fc .fc-day-disabled{
   @apply bg-muted
@@ -456,13 +460,17 @@ body {
   overflow: auto;
 }
 
+.fc-daygrid-dot-event .fc-event-title{
+  @apply text-start
+}
+
 .fc-dayGridMonth-view.fc-view.fc-daygrid{
   max-width: 1200px;
   margin: auto;
 }
 
 a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygrid-dot-event{
-  @apply dark:hover:border-white dark:focus-visible:border-white hover:border-black focus-visible:border-black border-stone-600
+  @apply cursor-pointer btn_hover !py-0 !px-1 !justify-start !rounded-sm
 }
 
 
@@ -503,4 +511,34 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
     padding: 5px;
   }
   
+}
+
+.fc-scrollgrid-sync-table,
+.fc-col-header,
+.fc .fc-daygrid-body{
+  width: 100%!important;
+}
+
+
+.fc-event,
+.fc-timegrid-event-harness-inset .fc-timegrid-event{
+  @apply min-h-5 h-auto overflow-hidden whitespace-nowrap text-ellipsis btn_hover !rounded-sm !px-1 !py-0
+}
+
+.fc-event-main{
+  @apply w-full 
+}
+.fc-v-event .fc-event-main-frame{
+  @apply h-auto text-white
+}
+.fc-event-title.fc-sticky {
+  @apply truncate max-w-full overflow-hidden whitespace-nowrap text-ellipsis;
+}
+
+.fc-sticky {
+  @apply !w-fit
+}
+
+.fc-scrollgrid-sync-inner{
+  padding: 5px;
 }
