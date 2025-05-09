@@ -18,6 +18,7 @@ import { handleDateSelect, handleEventClick } from "@/feature/calendar/utils/eve
 import CalendarFormModal from "@/feature/calendar/ui/CalendarFormModal"
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 import { ListTodo } from "lucide-react";
+import { CalendarMobile } from "@/feature/calendar/ui/CalendarMobile";
 
 const defaultValuesForm = {
   eventTitle: "",
@@ -122,27 +123,28 @@ const CalendarPage = () => {
   }
 
   return (
-    <div className="p-5 ">
-      <ButtonLink pathName={`${pathName}/events-list`} label="Список событий" icon={<ListTodo />}/>
-      <FullCalendarComponent
-        handleEventClick={(clickInfo) => handleEventClick(clickInfo, form, setEditingId, setOpenModal)}
-        events={events}
-        handleDateSelect={(event) => handleDateSelect(event, form, setOpenModal)}
-      />
-      <CalendarFormModal 
-        handleSubmit={handleSubmit}
-        confirmDelModal={confirmDelModal}
-        setConfirmDelModal={setConfirmDelModal}
-        editingId={editingId || ""}
-        events={events}
-        isPendingDelete={isPendingDelete}
-        deleteEvent={deleteEvent}
-        form={form}
-        isLoading={isLoading}
-        open={openModal}
-        setOpen={closeModalForm}
-      />
-    </div>
+    <CalendarMobile events={events}/>
+    // <div className="p-5 ">
+    //   <ButtonLink pathName={`${pathName}/events-list`} label="Список событий" icon={<ListTodo />}/>
+    //   <FullCalendarComponent
+    //     handleEventClick={(clickInfo) => handleEventClick(clickInfo, form, setEditingId, setOpenModal)}
+    //     events={events}
+    //     handleDateSelect={(event) => handleDateSelect(event, form, setOpenModal)}
+    //   />
+    //   <CalendarFormModal 
+    //     handleSubmit={handleSubmit}
+    //     confirmDelModal={confirmDelModal}
+    //     setConfirmDelModal={setConfirmDelModal}
+    //     editingId={editingId || ""}
+    //     events={events}
+    //     isPendingDelete={isPendingDelete}
+    //     deleteEvent={deleteEvent}
+    //     form={form}
+    //     isLoading={isLoading}
+    //     open={openModal}
+    //     setOpen={closeModalForm}
+    //   />
+    // </div>
   );
 };
 

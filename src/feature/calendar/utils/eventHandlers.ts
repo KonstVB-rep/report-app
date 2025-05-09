@@ -14,24 +14,32 @@ export const handleDateSelect = (
   setOpenModal(false);
   const startDate = event.start;
 
-  if (event.allDay) {
-    const endDate = new Date(event.end.getTime() - 86400000);
-    form.setValue("startTimeEvent", "00:00");
-    form.setValue("endTimeEvent", "23:59");
-    form.setValue("startDateEvent", startDate);
-    form.setValue("endDateEvent", endDate);
-
-    setOpenModal(true);
-    return;
-  }
+  const isToday = new Date(event.start).toDateString() === new Date().toDateString()
 
   // Для режима "месяц" (когда нужно уменьшить на 1 день)
   let endDate;
   if (event.view.type === "dayGridMonth") {
     // Отнимаем 1 день, если это месяц
     endDate = new Date(event.end.getTime() - 86400000);
+    const startTime = isToday ? new Date().toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }) : "00:00"
+    form.setValue("startTimeEvent", startTime);
+    form.setValue("endTimeEvent", "23:59");
+
   } else {
-    // В других случаях (например, день или неделя) оставляем как есть
+
+    if (event.allDay) {
+      const endDate = new Date(event.end.getTime() - 86400000);
+      form.setValue("startTimeEvent", "00:00");
+      form.setValue("endTimeEvent", "23:59");
+      form.setValue("startDateEvent", startDate);
+      form.setValue("endDateEvent", endDate);
+
+      setOpenModal(true);
+      return;
+    }
 
     endDate = new Date(event.end);
 
@@ -48,6 +56,7 @@ export const handleDateSelect = (
 
   form.setValue("startDateEvent", startDate);
   form.setValue("endDateEvent", endDate);
+  form.setValue("allDay", false);
 
   setOpenModal(true);
 };

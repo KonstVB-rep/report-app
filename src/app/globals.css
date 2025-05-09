@@ -154,7 +154,7 @@
 }
 
 body {
-  background-color: var(--background) !important;
+  background-color: hsl(var(--background))!important;
 }
 
 @layer base {
@@ -465,7 +465,7 @@ body {
 }
 
 .fc-dayGridMonth-view.fc-view.fc-daygrid{
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: auto;
 }
 
