@@ -104,15 +104,15 @@ export const deleteEventCalendar = async (id: string) => {
   }
 };
 
-
-
-
 export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
     const events = await prisma.eventCalendar.findMany({
       where: { userId },
+      orderBy: {
+        start: 'asc', 
+      },
     });
 
     return events.map((event) => ({

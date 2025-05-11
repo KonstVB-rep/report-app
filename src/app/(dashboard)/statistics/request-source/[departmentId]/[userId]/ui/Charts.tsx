@@ -93,28 +93,34 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         </span>
       </h2>
       <div className="flex gap-2 justify-between items-center flex-wrap">
-        <div className="flex gap-2 flex-wrap">
-          <Button
-            variant="outline"
-            onClick={() => setSelectedDate(getPeriodRange("week"))}
-            className="btn-active"
-          >
-            Неделя
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setSelectedDate(getPeriodRange("month"))}
-            className="btn-active"
-          >
-            Месяц
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setSelectedDate(getPeriodRange("year"))}
-            className="btn-active"
-          >
-            Год
-          </Button>
+        <div className="grid gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedDate(getPeriodRange("week"))}
+              className="btn-active"
+            >
+              Неделя
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedDate(getPeriodRange("month"))}
+              className="btn-active"
+            >
+              Месяц
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedDate(getPeriodRange("year"))}
+              className="btn-active"
+            >
+              Год
+            </Button>
+          </div>
+
+          <div>
+            <p className="p-3 border rounded-md">Всего за выбраный период: {deals.length}</p>
+          </div>
         </div>
 
         <div className="flex gap-2">

@@ -132,6 +132,7 @@ export const config = {
     "/summary-table/:path*",
     "/deal/:path*",
     "/statistics/:path*",
+    "/calendar/:path*",
     "/",
   ],
 };

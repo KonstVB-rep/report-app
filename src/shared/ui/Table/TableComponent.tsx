@@ -14,9 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import useScrollIntoViewBottomTable from "@/shared/hooks/useScrollIntoViewBottomTable";
 
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
+import useScrollIntoViewBottom from "@/shared/hooks/useScrollIntoViewBottomTable";
 
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -29,9 +29,7 @@ const TableComponent = <T extends Record<string, unknown>>({
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
   const { departmentId } = useParams();
-  const ref = useScrollIntoViewBottomTable(
-    table
-  ) as unknown as RefObject<HTMLTableElement | null>;
+  const ref = useScrollIntoViewBottom<T, HTMLTableElement>(table) as RefObject<HTMLTableElement>;
   const renderRowCells = useCallback((row: Row<T>) => {
     return row.getVisibleCells().map((cell) => (
       <TableCell

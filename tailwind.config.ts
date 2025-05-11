@@ -12,6 +12,9 @@ export default {
   ],
   theme: {
   	extend: {
+		screens: {
+			xs: "30rem", 
+		},
   		animation: {
   			'fade-in-down': 'fadeInDown 0.5s ease-out',
   			'accordion-down': 'accordion-down 0.2s ease-out',

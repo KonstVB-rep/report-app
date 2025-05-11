@@ -1,15 +1,23 @@
-import { getEventsCalendarUser } from '@/feature/calendar/api'
-import React from 'react'
-import EventsTable from './EventsTable'
+"use client";
 
-const EventsList =async () => {
+import React from "react";
 
-  const events =  await getEventsCalendarUser()
+import { useGetEventsCalendarUser } from "@/feature/calendar/hooks/query";
+import { EventInputType } from "@/feature/calendar/types";
+import EventsList from "@/feature/calendar/ui/EventsList";
+
+
+const UserEventsPage = () => {
+  const { data: events, isPending } = useGetEventsCalendarUser();
+
+  if (isPending) {
+    return <div>Загрузка данных...</div>;
+  }
   return (
-    <section className='p-5'>
-      <EventsTable events={events}/>
+    <section className="p-5">
+      <EventsList events={events as EventInputType[]} />
     </section>
-  )
-}
+  );
+};
 
-export default EventsList
+export default UserEventsPage;

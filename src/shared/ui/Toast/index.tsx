@@ -3,7 +3,7 @@ import { toast } from "sonner";
 export const TOAST = {
   ERROR: (message: string) =>
     toast.error(message, {
-      duration: 3000,
+      duration: 5000,
       icon: "",
       position: "top-center",
       style: {
@@ -16,14 +16,14 @@ export const TOAST = {
         minWidth: "12rem",
         overflow: "hidden",
         textOverflow: "ellipsis",
-        // whiteSpace: "nowrap",
         display: "flex",
         justifyContent: "center",
+        margin: "auto"
       },
     }),
   SUCCESS: (message: string) =>
     toast.success(message, {
-      duration: 3000,
+      duration: 2000,
       position: "top-center",
       style: {
         border: "2px solid oklch(0.723 0.219 149.579)",
@@ -35,9 +35,9 @@ export const TOAST = {
         minWidth: "12rem",
         overflow: "hidden",
         textOverflow: "ellipsis",
-        // whiteSpace: "nowrap",
         display: "flex",
         justifyContent: "center",
+         margin: "auto"
       },
     }),
   PROMISE: (promise: Promise<unknown>, messageSuccess: string) =>
