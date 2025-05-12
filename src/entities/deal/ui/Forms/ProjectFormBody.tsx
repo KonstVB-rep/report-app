@@ -99,10 +99,7 @@ const ProjectFormBody = <T extends FieldValues>({
     )
       return;
 
-    if (
-      parsedAmountCP === 0
-    )
-      return;
+    if (parsedAmountCP === 0) return;
 
     const calculatedDelta =
       parsedAmountCP - parsedAmountWork - parsedAmountPurchase;

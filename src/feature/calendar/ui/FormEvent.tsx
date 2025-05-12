@@ -7,6 +7,13 @@ import { Path, UseFormReturn } from "react-hook-form";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { EventCalendarSchema } from "@/feature/calendar/model/schema";
 import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";
 import { EventInputType } from "@/feature/calendar/ui/types";
@@ -15,13 +22,6 @@ import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 // import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
 import TextareaForm from "@/shared/ui/TextareaForm";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form";
 
 type FormEventProps = {
   handleSubmit: (values: EventCalendarSchema) => void;
@@ -31,15 +31,9 @@ type FormEventProps = {
   isLoading: boolean;
   isPendingDelete: boolean;
   events: EventInputType[] | undefined;
-  deleteEvent: UseMutateFunction<
-    EventInputType,
-    Error,
-    string,
-    unknown
-  >;
+  deleteEvent: UseMutateFunction<EventInputType, Error, string, unknown>;
   form: UseFormReturn<EventCalendarSchema>;
 };
-
 
 const FormEvent = ({
   handleSubmit,
@@ -52,7 +46,6 @@ const FormEvent = ({
   deleteEvent,
   form,
 }: FormEventProps) => {
-
   const allDay = form.watch("allDay");
 
   return (

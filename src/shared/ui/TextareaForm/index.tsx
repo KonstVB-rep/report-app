@@ -8,10 +8,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
+import { Textarea } from "@/components/ui/textarea";
 
 import { TextareaFormProps } from "../type";
-import { Textarea } from "@/components/ui/textarea";
 
 const TextareaForm = <T extends FieldValues>({
   name,

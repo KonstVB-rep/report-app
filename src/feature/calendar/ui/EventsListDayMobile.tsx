@@ -19,14 +19,13 @@ type EventsListProps = {
   events: EventInputType[];
   showLinkCalendar?: boolean;
   handleEventClickOnEventsList?: (evenetCalendar: EventInputType) => void;
-  handleDateSelectOnEventsList: () => void
-
+  handleDateSelectOnEventsList: () => void;
 };
 
 const EventsListDayMobile = ({
   events,
   handleEventClickOnEventsList,
-  handleDateSelectOnEventsList
+  handleDateSelectOnEventsList,
 }: EventsListProps) => {
   const table = useReactTable({
     data: events,

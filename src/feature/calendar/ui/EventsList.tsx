@@ -21,9 +21,7 @@ type EventsListProps = {
   handleEventClickOnEventsList?: (evenetCalendar: EventInputType) => void;
 };
 
-const EventsList = ({
-  events,
-}: EventsListProps) => {
+const EventsList = ({ events }: EventsListProps) => {
   const table = useReactTable({
     data: events,
     columns: columnsDataCalendar,
@@ -40,16 +38,14 @@ const EventsList = ({
 
   return (
     <>
-        <ButtonLink
-          pathName={`/calendar/${authUser.id}`}
-          label="Календарь"
-          icon={<CalendarFold />}
-        />
+      <ButtonLink
+        pathName={`/calendar/${authUser.id}`}
+        label="Календарь"
+        icon={<CalendarFold />}
+      />
 
       <div className="rounded-lg overflow-hidden border w-full">
-        <EventsListTable<EventInputType>
-          table={table}
-        />
+        <EventsListTable<EventInputType> table={table} />
       </div>
     </>
   );

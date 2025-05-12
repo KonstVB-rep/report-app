@@ -12,7 +12,7 @@ function makeQueryClient() {
       queries: {
         staleTime: 1000 * 60 * 5,
         refetchInterval: 60 * 1000 * 5,
-        refetchOnWindowFocus: false
+        refetchOnWindowFocus: false,
       },
     },
   });

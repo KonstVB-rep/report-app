@@ -1,10 +1,10 @@
 import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 
+import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 import { EventCalendarSchema } from "../model/schema";
 import { EventInputType } from "../types";
-import { Dispatch, SetStateAction } from "react";
 
 export const handleDateSelect = (
   event: DateSelectArg,
@@ -13,24 +13,25 @@ export const handleDateSelect = (
 ) => {
   setOpenModal(false);
   const startDate = event.start;
-  let isAllDay = false
+  let isAllDay = false;
 
-  const isToday = new Date(event.start).toDateString() === new Date().toDateString()
+  const isToday =
+    new Date(event.start).toDateString() === new Date().toDateString();
 
   // Для режима "месяц" (когда нужно уменьшить на 1 день)
   let endDate;
   if (event.view.type === "dayGridMonth") {
     // Отнимаем 1 день, если это месяц
     endDate = new Date(event.end.getTime() - 86400000);
-    const startTime = isToday ? new Date().toLocaleTimeString("ru-RU", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }) : "00:00"
+    const startTime = isToday
+      ? new Date().toLocaleTimeString("ru-RU", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "00:00";
     form.setValue("startTimeEvent", startTime);
     form.setValue("endTimeEvent", "23:59");
-
   } else {
-
     if (event.allDay) {
       const endDate = new Date(event.end.getTime() - 86400000);
       form.setValue("startTimeEvent", "00:00");
@@ -57,13 +58,12 @@ export const handleDateSelect = (
       form.setValue("endTimeEvent", endTime);
     }
 
-     isAllDay = startTime === "00:00" && endTime === "23:59"
-    
+    isAllDay = startTime === "00:00" && endTime === "23:59";
   }
 
   form.setValue("startDateEvent", startDate);
   form.setValue("endDateEvent", endDate);
-  form.setValue("allDay", isAllDay ?  true : false);
+  form.setValue("allDay", isAllDay ? true : false);
 
   setOpenModal(true);
 };
@@ -117,8 +117,6 @@ export const handleEventClickOnEventsList = (
   setEditingId: (id: string | null) => void,
   setOpenModal: (open: boolean) => void
 ) => {
-
-
   setOpenModal(true);
 
   form.setValue("eventTitle", event.title);
@@ -154,36 +152,37 @@ export const handleEventClickOnEventsList = (
   setEditingId(event.id!);
 };
 
-
 export const handleDateSelectOnEventsList = (
   startDate: Date | undefined,
   form: UseFormReturn<EventCalendarSchema>,
-  setOpenModal:Dispatch<SetStateAction<boolean>>
+  setOpenModal: Dispatch<SetStateAction<boolean>>
 ) => {
-  if(!startDate) return;
+  if (!startDate) return;
 
   setOpenModal(false);
 
-  const isToday = new Date(startDate).toDateString() === new Date().toDateString()
+  const isToday =
+    new Date(startDate).toDateString() === new Date().toDateString();
 
   // Для режима "месяц" (когда нужно уменьшить на 1 день)
 
-  const startTime = isToday ? new Date().toLocaleTimeString("ru-RU", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }) : "00:00"
+  const startTime = isToday
+    ? new Date().toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "00:00";
 
-  const endTime = "23:59"
+  const endTime = "23:59";
   form.setValue("startTimeEvent", startTime);
   form.setValue("endTimeEvent", endTime);
 
-
   const endDate = new Date(startDate);
 
-  const isAllDay = startTime === "00:00" && endTime === "23:59"
+  const isAllDay = startTime === "00:00" && endTime === "23:59";
   form.setValue("startDateEvent", startDate);
   form.setValue("endDateEvent", endDate);
-  form.setValue("allDay", isAllDay ?  true : false);
+  form.setValue("allDay", isAllDay ? true : false);
 
   setOpenModal(true);
 };

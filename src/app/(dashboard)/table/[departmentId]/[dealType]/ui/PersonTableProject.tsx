@@ -10,6 +10,7 @@ import { useGetProjectsUser } from "@/entities/deal/hooks/query";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import { ProjectResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+
 import { columnsDataProject } from "../[userId]/model/columns-data-project";
 import PersonTable from "./PersonTable";
 
@@ -28,12 +29,10 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
     hasAccess && (userId as string | undefined) ? (userId as string) : undefined
   );
 
-
   const getRowLink = useCallback(
     (row: ProjectResponse) => `/deal/project/${row.id}`,
     []
   );
-
 
   if (!hasAccess)
     return (

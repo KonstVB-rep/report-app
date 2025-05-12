@@ -35,11 +35,7 @@ const NotFoundUser = dynamic(() => import("./NotFoundUser"), { ssr: false });
 const ProfilePage = () => {
   const { userId } = useParams();
 
-  const {
-    data: user,
-    error,
-    isPending,
-  } = useGetUser(userId as string);
+  const { data: user, error, isPending } = useGetUser(userId as string);
 
   if (isPending) return <Loading />;
 

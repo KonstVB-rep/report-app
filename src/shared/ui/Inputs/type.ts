@@ -7,7 +7,6 @@ export type InputFormProps<T extends FieldValues> = {
   errorMessage?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
-
 export type TextareaFormProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;

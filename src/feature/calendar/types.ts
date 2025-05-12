@@ -3,5 +3,5 @@ export type EventInputType = {
   title: string;
   start: Date;
   end: Date;
-  allDay?: boolean
+  allDay?: boolean;
 };

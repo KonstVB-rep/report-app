@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-
 import { InputFormProps } from "../type";
 
 const InputTimeForm = <T extends FieldValues>({
@@ -28,11 +27,7 @@ const InputTimeForm = <T extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input
-              type="time"
-              {...field}
-              {...rest}
-            />
+            <Input type="time" {...field} {...rest} />
           </FormControl>
           {errorMessage && (
             <FormMessage className="text-red-500">{errorMessage}</FormMessage>

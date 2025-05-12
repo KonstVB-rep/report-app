@@ -119,7 +119,9 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
           </div>
 
           <div>
-            <p className="p-3 border rounded-md">Всего за выбраный период: {deals.length}</p>
+            <p className="p-3 border rounded-md">
+              Всего за выбраный период: {deals.length}
+            </p>
           </div>
         </div>
 

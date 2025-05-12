@@ -7,8 +7,10 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { useRouter, useSearchParams } from "next/navigation";
+
 import { useState } from "react";
+
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { EventInputType } from "../types";
 
@@ -53,58 +55,58 @@ const FullCalendarComponent = ({
   return (
     <div className="p-2">
       <FullCalendar
-      selectMirror={false}
-      unselectAuto={true}
-      plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
-      initialView={currentView}
-      eventClick={handleEventClick}
-      selectable={true}
-      dayMaxEvents={2}
-      events={events ?? []}
-      select={handleDateSelect}
-      height="auto"
-      locales={[ruLocale]}
-      locale={ruLocale}
-      slotLabelFormat={{
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }}
-      slotDuration="00:30:00"
-      slotLabelInterval="00:30:00"
-      slotMinTime="00:00:00"
-      slotMaxTime="24:00:00"
-      headerToolbar={{
-        left: "prev,next",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      }}
-      titleFormat={{
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }}
-      eventTimeFormat={{
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }}
-      selectAllow={(selectInfo) => {
-        const now = new Date();
-        now.setHours(0, 0, 0, 0);
-        return selectInfo.start >= now;
-      }}
-      dayCellClassNames={(arg) => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (arg.date < today) return ["fc-day-disabled"];
-        return [];
-      }}
-      datesSet={handleDatesSet}
-      contentHeight="auto"
-      handleWindowResize={false}
-      slotEventOverlap={false} // Предотвращаем наложение слотов на события
-    />
+        selectMirror={false}
+        unselectAuto={true}
+        plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+        initialView={currentView}
+        eventClick={handleEventClick}
+        selectable={true}
+        dayMaxEvents={2}
+        events={events ?? []}
+        select={handleDateSelect}
+        height="auto"
+        locales={[ruLocale]}
+        locale={ruLocale}
+        slotLabelFormat={{
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }}
+        slotDuration="00:30:00"
+        slotLabelInterval="00:30:00"
+        slotMinTime="00:00:00"
+        slotMaxTime="24:00:00"
+        headerToolbar={{
+          left: "prev,next",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,timeGridDay",
+        }}
+        titleFormat={{
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }}
+        eventTimeFormat={{
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }}
+        selectAllow={(selectInfo) => {
+          const now = new Date();
+          now.setHours(0, 0, 0, 0);
+          return selectInfo.start >= now;
+        }}
+        dayCellClassNames={(arg) => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (arg.date < today) return ["fc-day-disabled"];
+          return [];
+        }}
+        datesSet={handleDatesSet}
+        contentHeight="auto"
+        handleWindowResize={false}
+        slotEventOverlap={false} // Предотвращаем наложение слотов на события
+      />
     </div>
   );
 };

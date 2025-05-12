@@ -1,16 +1,16 @@
-'use server'
+"use server";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
-import { EventInputType } from "../types";
 
+import { EventInputType } from "../types";
 
 export const createEventCalendar = async (eventData: {
   title: string;
   start: string;
   end: string;
-  allDay?: boolean
+  allDay?: boolean;
 }) => {
   try {
     const data = await handleAuthorization();
@@ -33,13 +33,12 @@ export const createEventCalendar = async (eventData: {
   }
 };
 
-
 export const updateEventCalendar = async (eventData: {
   id: string;
   title: string;
   start: string;
   end: string;
-  allDay?: boolean
+  allDay?: boolean;
 }) => {
   try {
     const data = await handleAuthorization();
@@ -64,7 +63,7 @@ export const updateEventCalendar = async (eventData: {
         title,
         start: new Date(start),
         end: new Date(end),
-        allDay
+        allDay,
       },
     });
 
@@ -74,7 +73,6 @@ export const updateEventCalendar = async (eventData: {
     return handleError((error as Error).message);
   }
 };
-
 
 export const deleteEventCalendar = async (id: string) => {
   try {
@@ -111,7 +109,7 @@ export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
     const events = await prisma.eventCalendar.findMany({
       where: { userId },
       orderBy: {
-        start: 'asc', 
+        start: "asc",
       },
     });
 
@@ -120,7 +118,7 @@ export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
       title: event.title,
       start: new Date(event.start),
       end: new Date(event.end),
-      allDay:event.allDay
+      allDay: event.allDay,
     }));
   } catch (error) {
     console.error(error);

@@ -11,7 +11,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
 export function SiteHeader() {
-  const {authUser} = useStoreUser()
+  const { authUser } = useStoreUser();
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -31,7 +31,7 @@ export function SiteHeader() {
         </div>
         <div className="flex gap-2 items-center">
           <Button variant="outline" asChild>
-            <Link href={`/calendar/${authUser?.id}`}>
+            <Link href={`/calendar/${authUser?.id}`} title="Календарь">
               <CalendarClock />
             </Link>
           </Button>

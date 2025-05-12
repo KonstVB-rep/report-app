@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { JWTPayload, jwtVerify } from "jose";
 
-
 import { redirectPathCore } from "./shared/lib/helpers/redirectPathCore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
@@ -93,7 +92,7 @@ export default async function middleware(request: NextRequest) {
         const payload = await verifyToken(accessToken);
         if (payload) {
           const { userId, departmentId } = payload;
-          const url = redirectPathCore(Number(departmentId),userId as string);
+          const url = redirectPathCore(Number(departmentId), userId as string);
           return NextResponse.redirect(new URL(url, request.url));
         }
       } catch (error) {

@@ -17,6 +17,7 @@ import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { login } from "@/feature/auth/login";
+import { redirectPathCore } from "@/shared/lib/helpers/redirectPathCore";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
 import { cn } from "@/shared/lib/utils";
 import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
@@ -25,7 +26,6 @@ import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { Form } from "../../../components/ui/form";
-import { redirectPathCore } from "@/shared/lib/helpers/redirectPathCore";
 
 export const loginFormSchema = z.object({
   email: z.string().email(),

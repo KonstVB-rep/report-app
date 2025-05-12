@@ -18,7 +18,7 @@ export const TOAST = {
         textOverflow: "ellipsis",
         display: "flex",
         justifyContent: "center",
-        margin: "auto"
+        margin: "auto",
       },
     }),
   SUCCESS: (message: string) =>
@@ -37,7 +37,7 @@ export const TOAST = {
         textOverflow: "ellipsis",
         display: "flex",
         justifyContent: "center",
-         margin: "auto"
+        margin: "auto",
       },
     }),
   PROMISE: (promise: Promise<unknown>, messageSuccess: string) =>

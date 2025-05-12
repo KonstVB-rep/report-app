@@ -1,53 +1,56 @@
 import { z } from "zod";
 
-export const EventCalendarFormSchema = z.object({
-  eventTitle: z.string({
-    message: "Введите наименование события",
-  }),
+export const EventCalendarFormSchema = z
+  .object({
+    eventTitle: z.string({
+      message: "Введите наименование события",
+    }),
 
-  allDay: z.boolean().optional(), 
-  startDateEvent: z.preprocess(
-    (val) => (typeof val === "string" ? new Date(val) : val),
-    z.date()
-  ),
-
-  startTimeEvent: z
-    .string()
-    .regex(
-      /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
-      "Некорректный формат времени"
+    allDay: z.boolean().optional(),
+    startDateEvent: z.preprocess(
+      (val) => (typeof val === "string" ? new Date(val) : val),
+      z.date()
     ),
 
-  endDateEvent: z.preprocess(
-    (val) => (typeof val === "string" ? new Date(val) : val),
-    z.date()
-  ),
+    startTimeEvent: z
+      .string()
+      .regex(
+        /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
+        "Некорректный формат времени"
+      ),
 
-  endTimeEvent: z
-    .string()
-    .regex(
-      /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
-      "Некорректный формат времени"
+    endDateEvent: z.preprocess(
+      (val) => (typeof val === "string" ? new Date(val) : val),
+      z.date()
     ),
-}).refine((data) => {
-  if(data.allDay) return true
-  const now = new Date();
-  const startDate = new Date(data.startDateEvent);
-  const endDate = new Date(data.endDateEvent);
 
-  const [startH, startM] = data.startTimeEvent.split(':')
-  const [endH, endM] = data.endTimeEvent.split(':')
-  
-  startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
-  endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
+    endTimeEvent: z
+      .string()
+      .regex(
+        /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
+        "Некорректный формат времени"
+      ),
+  })
+  .refine(
+    (data) => {
+      if (data.allDay) return true;
+      const now = new Date();
+      const startDate = new Date(data.startDateEvent);
+      const endDate = new Date(data.endDateEvent);
 
-  return (startDate <= endDate &&
-    startDate >= now &&
-    endDate > now)
-}, {
-  message: "Проверьте корректность дат и времени — начало должно быть раньше конца и не в прошлом",
-  path: ['dateError']
-});
+      const [startH, startM] = data.startTimeEvent.split(":");
+      const [endH, endM] = data.endTimeEvent.split(":");
 
+      startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
+      endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
+
+      return startDate <= endDate && startDate >= now && endDate > now;
+    },
+    {
+      message:
+        "Проверьте корректность дат и времени — начало должно быть раньше конца и не в прошлом",
+      path: ["dateError"],
+    }
+  );
 
 export type EventCalendarSchema = z.infer<typeof EventCalendarFormSchema>;

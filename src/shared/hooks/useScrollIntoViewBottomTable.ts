@@ -1,35 +1,27 @@
 // import { useReactTable } from "@tanstack/react-table";
-
 // import { useEffect, useRef } from "react";
-
 // const useScrollIntoViewBottomTable = <T>(
 //   dep: ReturnType<typeof useReactTable<T>>
 // ) => {
 //   const ref = useRef<HTMLElement>(null);
-
 //   const filterLength = dep?.getState().columnFilters.length;
 //   const columnHiddenLength = Object.values(
 //     dep?.getState().columnFilters
 //   ).length;
-
 //   useEffect(() => {
 //     if (!ref.current) return;
-
 //     setTimeout(() => {
 //       if (ref.current) {
 //         ref.current.scrollTop = ref.current.scrollHeight;
 //       }
 //     }, 100);
 //   }, [dep, filterLength, columnHiddenLength]);
-
 //   return ref;
 // };
-
 // export default useScrollIntoViewBottomTable;
-
+import { useReactTable } from "@tanstack/react-table";
 
 import { useEffect, useRef } from "react";
-import { useReactTable } from "@tanstack/react-table";
 
 const useScrollIntoViewBottom = <T, E extends HTMLElement = HTMLDivElement>(
   dep: ReturnType<typeof useReactTable<T>>
@@ -37,7 +29,9 @@ const useScrollIntoViewBottom = <T, E extends HTMLElement = HTMLDivElement>(
   const ref = useRef<E>(null);
 
   const filterLength = dep?.getState().columnFilters?.length ?? 0;
-  const columnHiddenLength = Object.values(dep?.getState().columnFilters ?? {}).length;
+  const columnHiddenLength = Object.values(
+    dep?.getState().columnFilters ?? {}
+  ).length;
 
   useEffect(() => {
     if (!ref.current) return;
@@ -53,4 +47,3 @@ const useScrollIntoViewBottom = <T, E extends HTMLElement = HTMLDivElement>(
 };
 
 export default useScrollIntoViewBottom;
-

@@ -3,14 +3,23 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { createEventCalendar, updateEventCalendar, deleteEventCalendar } from "../api";
+import {
+  createEventCalendar,
+  deleteEventCalendar,
+  updateEventCalendar,
+} from "../api";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (eventData: { title: string; start: string; end: string, allDay?: boolean }) => {
+    mutationFn: (eventData: {
+      title: string;
+      start: string;
+      end: string;
+      allDay?: boolean;
+    }) => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
@@ -40,7 +49,7 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
       title: string;
       start: string;
       end: string;
-      allDay?: boolean
+      allDay?: boolean;
     }) => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");

@@ -264,7 +264,12 @@ export const getUser = async (
 
     if (!targetUser) return handleError("Пользователь не найден");
 
-    if (targetUserId !== userId && user && (permissions && permissions.length > 0)) {
+    if (
+      targetUserId !== userId &&
+      user &&
+      permissions &&
+      permissions.length > 0
+    ) {
       await checkUserPermissionByRole(user, permissions);
     }
 

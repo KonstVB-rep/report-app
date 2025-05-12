@@ -46,7 +46,7 @@ const PersonTablePage = async ({
     await fetchData(queryClient, dealType, userId);
   } catch (error) {
     console.log(error, "ErrorPersonTablePage");
-    throw new Error((error as Error).message)
+    throw new Error((error as Error).message);
   }
 
   let Component;
@@ -69,4 +69,3 @@ const PersonTablePage = async ({
 };
 
 export default PersonTablePage;
-

@@ -1,4 +1,5 @@
 import { DialogClose } from "@radix-ui/react-dialog";
+import { UseMutateFunction } from "@tanstack/react-query";
 
 import React, { Dispatch, SetStateAction } from "react";
 
@@ -6,7 +7,7 @@ import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
-import { UseMutateFunction } from "@tanstack/react-query";
+
 import { EventInputType } from "../types";
 
 type ModalDelEventsType = {
@@ -39,8 +40,7 @@ const ModalDelEvents = ({
   isPendingDelete,
   deleteEvent,
 }: ModalDelEventsType) => {
-
-  if(!editingId) return null
+  if (!editingId) return null;
   return (
     <DialogComponent
       trigger={

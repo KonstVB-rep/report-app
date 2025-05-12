@@ -1,7 +1,14 @@
-import { useCreateEventCalendar, useUpdateEventCalendar, useDeleteEventCalendar } from "./mutate";
+import {
+  useCreateEventCalendar,
+  useDeleteEventCalendar,
+  useUpdateEventCalendar,
+} from "./mutate";
 import { useGetEventsCalendarUser } from "./query";
 
-export const useActionEvents = (handleResetAndClose: () => void,handleCloseModalAfterDeleteEvent: () => void) => {
+export const useActionEvents = (
+  handleResetAndClose: () => void,
+  handleCloseModalAfterDeleteEvent: () => void
+) => {
   const { data: events, isPending: isPendingLoad } = useGetEventsCalendarUser();
   const { mutate: createEvent, isPending } =
     useCreateEventCalendar(handleResetAndClose);
@@ -21,6 +28,6 @@ export const useActionEvents = (handleResetAndClose: () => void,handleCloseModal
     updateEvent,
     deleteEvent,
     isPendingLoad,
-    isPendingDelete
+    isPendingDelete,
   };
 };

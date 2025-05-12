@@ -19,9 +19,7 @@ const useCalendarMobile = () => {
     | Matcher
     | Matcher[];
 
-
   const handleSelect = (date: Date | undefined) => {
-
     if (!date) return;
 
     setSelectedDate(date);
@@ -37,17 +35,20 @@ const useCalendarMobile = () => {
     if (eventsOnDate.length > 0) {
       setOpenList(true);
       setEventsDate(eventsOnDate);
-      return true
+      return true;
     }
-    return false
+    return false;
   };
 
   React.useEffect(() => {
     const isExistEventInDate = futureEvents?.filter(
-      (event) => new Date(event.start).toDateString() === selectedDate?.toDateString(), 'eventsDate').length
+      (event) =>
+        new Date(event.start).toDateString() === selectedDate?.toDateString(),
+      "eventsDate"
+    ).length;
 
-    if(!isExistEventInDate){
-      setOpenList(false)
+    if (!isExistEventInDate) {
+      setOpenList(false);
     }
     if (selectedDate) {
       showEventsOnDate(selectedDate);

@@ -815,5 +815,3 @@ export const deleteDeal = async (
     return handleError((error as Error).message);
   }
 };
-
-
