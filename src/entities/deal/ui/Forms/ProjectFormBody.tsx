@@ -1,3 +1,5 @@
+ "use client"
+
 import React, { useEffect } from "react";
 import {
   FieldValues,
@@ -308,7 +310,7 @@ const ProjectFormBody = <T extends FieldValues>({
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               {isAddContact ? (
                 <Button
                   type="button"

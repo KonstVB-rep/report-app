@@ -44,7 +44,7 @@ const FiltersBlock = ({
   table,
   type,
 }: FiltersBlockProps) => {
-  console.log("FiltersBlockProps");
+
   return (
     <MotionDivY className="min-h-0">
       <FilterByUser

@@ -53,7 +53,7 @@ const TableComponent = <T extends Record<string, unknown>>({
           isExistActionDeal={isExistActionDeal}
           departmentId={departmentId as string}
         >
-          <TableRow className="tr hover:bg-zinc-600 hover:text-white">
+          <TableRow className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === 'REJECT' && "bg-red-900/40"}`}>
             {renderRowCells(row)}
           </TableRow>
         </ContextRowTable>
@@ -64,6 +64,7 @@ const TableComponent = <T extends Record<string, unknown>>({
 
   return (
     <div className="rounded-lg overflow-hidden border">
+      {table.getRowModel().rows.length > 0 && <p className="border rounded-md px-2 py-1 m-1 w-fit bg-stone-700 text-white dark:bg-black">Количество выбранных заявок: {table.getRowModel().rows.length}</p>}
       <Table
         className="w-full border-separate border-spacing-0 border"
         ref={ref}
@@ -75,7 +76,7 @@ const TableComponent = <T extends Record<string, unknown>>({
                 <TableHead
                   key={header.id}
                   colSpan={header.colSpan}
-                  className="border-r border-zinc-600 px-3 py-2 dark:bg-zinc-800"
+                  className="border-r border-zinc-600 px-3 py-2 bg-white dark:bg-zinc-800"
                   style={{
                     position: "relative",
                     width: header.getSize(),

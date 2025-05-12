@@ -16,6 +16,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import DebouncedInput from "../DebouncedInput";
 
+type FilterKeys = "nameDeal" | "nameObject" | "contact" | "phone" | "email" | "comments";
+
+const filtersByColLabel: Record<FilterKeys, string> = {
+  nameDeal: "Название сделки",
+  nameObject: "Название объекта",
+  contact: "Контактное лицо",
+  phone: "Телефон",
+  email: "Email",
+  comments: "Комментарии",
+};
+
+
 type MultiColumnFilterProps<
   TData extends Record<string, unknown>,
   TValue = unknown,
@@ -158,7 +170,7 @@ const MultiColumnFilter = <
               className="w-36 rounded border shadow"
             />
             <div className="grid grid-cols-1 items-center gap-1">
-              {filteredColumns.map(({ id, header }) => {
+              {filteredColumns.map(({ id }) => {
                 if (!id) return null;
                 return (
                   <div
@@ -175,7 +187,7 @@ const MultiColumnFilter = <
                       htmlFor={id}
                       className="ml-2 cursor-pointer text-sm font-medium leading-none"
                     >
-                      {typeof header === "string" ? header : id}
+                      {filtersByColLabel[id as FilterKeys]}
                     </label>
                   </div>
                 );

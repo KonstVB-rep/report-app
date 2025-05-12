@@ -7,6 +7,7 @@ import { TOAST } from "@/shared/ui/Toast";
 import {
   getAllProjectsByDepartment,
   getAllRetailsByDepartment,
+  getDealsByDateRange,
   getProjectById,
   getProjectsUser,
   getRetailById,
@@ -17,6 +18,7 @@ import {
   getAllRetailsByDepartmentQuery,
 } from "../api/queryFn";
 import {
+  DateRange,
   ProjectResponse,
   ProjectResponseWithContactsAndFiles,
   RetailResponse,
@@ -286,3 +288,25 @@ export const useGetProjectsUser = (userId: string | undefined) => {
     enabled: !!userId,
   });
 };
+
+
+export const useGetDealsByDateRange = (userId:string,range: DateRange, dealType: DealType,departmentId:string) => {
+  const { authUser } = useStoreUser();
+  return useQuery({
+    queryKey: ["dealsByRange", userId, range, dealType, departmentId],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+
+        return await getDealsByDateRange(userId as string,range, dealType, departmentId );
+      } catch (error) {
+        console.log(error, "Ошибка useGetProjectsUser");
+        TOAST.ERROR((error as Error).message);
+        throw error;
+      }
+    },
+    enabled: !!userId,
+  });
+}

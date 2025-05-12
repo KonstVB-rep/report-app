@@ -83,3 +83,6 @@ export type Contact = {
 
 export type DealUnionType = "retail" | "project";
 export type DealsUnionType = "retails" | "projects";
+
+
+export type DateRange = "week" | "month" | "threeMonths" | "halfYear" | "year";

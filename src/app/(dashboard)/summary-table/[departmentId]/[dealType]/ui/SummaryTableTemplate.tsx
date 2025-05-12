@@ -43,7 +43,10 @@ const SummaryTableTemplate = <T extends { id: string }>({
   return (
     <DealTableTemplate>
       {isError && <ErrorMessageTable message={error?.message} />}
-      <LinkToUserTable />
+      <div className="flex gap-2 flex-wrap">
+        <LinkToUserTable />
+        <p className="border rounded-md p-2">Общее количество заявок: {data.length}</p>
+      </div>
       <DataTable
         columns={columns}
         data={data}

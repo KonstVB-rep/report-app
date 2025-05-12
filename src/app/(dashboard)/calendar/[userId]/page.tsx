@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { usePathname } from "next/navigation";
@@ -16,8 +15,6 @@ import {
   EventCalendarSchema,
 } from "@/feature/calendar/model/schema";
 import { EventInputType } from "@/feature/calendar/types";
-import CalendarFormModal from "@/feature/calendar/ui/CalendarFormModal";
-import CalendarMobile from "@/feature/calendar/ui/CalendarMobile";
 import FullCalendarComponent from "@/feature/calendar/ui/FullCalendarComponent";
 import {
   handleDateSelect,
@@ -26,7 +23,13 @@ import {
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 import { TOAST } from "@/shared/ui/Toast";
 
+import useCalendarPage from "@/feature/calendar/hooks/useCalendarPage";
+import dynamic from "next/dynamic";
 import Loading from "./loading";
+
+const CalendarFormModal = dynamic(() => import('@/feature/calendar/ui/CalendarFormModal'))
+
+const CalendarMobile = dynamic(() => import('@/feature/calendar/ui/CalendarMobile'))
 
 const defaultValuesForm = {
   eventTitle: "",
@@ -47,8 +50,6 @@ const IsExistIntersectionEvents = (
     const eventStart = new Date(event.start);
     const eventEnd = new Date(event.end);
 
-    console.log(newEventStart, "newEventStart");
-
     // Проверка, пересекается ли новое событие с существующим
     return (
       (newEventStart >= eventStart && newEventStart < eventEnd) || // Если начало нового события попадает в существующее
@@ -68,9 +69,7 @@ const IsExistIntersectionEvents = (
 };
 
 const CalendarPage = () => {
-  const [openModal, setOpenModal] = useState(false);
-  const [confirmDelModal, setConfirmDelModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+
   const pathName = usePathname();
 
   const { isMobile } = useSidebar();
@@ -80,17 +79,13 @@ const CalendarPage = () => {
     defaultValues: defaultValuesForm,
   });
 
-  const handleResetAndClose = () => {
-    setOpenModal(false);
-    form.reset(defaultValuesForm);
-  };
+  const { 
+    handleResetAndClose,
+    handleCloseModalAfterDeleteEvent,
+    openModal, setOpenModal,confirmDelModal, setConfirmDelModal,
+    editingId, setEditingId
+  } = useCalendarPage(() => form.reset(defaultValuesForm))
 
-  const handleCloseModalAfterDeleteEvent = () => {
-    setOpenModal(false);
-    setConfirmDelModal(false);
-    setEditingId(null);
-    form.reset(defaultValuesForm);
-  };
 
   const {
     isLoading,

@@ -10,6 +10,7 @@ import { handleError } from "@/shared/api/handleError";
 import { AllStatusKeys } from "../lib/constants";
 import {
   Contact,
+  DateRange,
   ProjectResponse,
   ProjectResponseWithContactsAndFiles,
   RetailResponse,
@@ -815,3 +816,102 @@ export const deleteDeal = async (
     return handleError((error as Error).message);
   }
 };
+
+export const getDealsByDateRange = async (
+  idDealOwner: string,
+  range: DateRange,
+  dealType: DealType,
+  departmentId: string
+) => {
+
+  const data = await handleAuthorization();
+  const { user, userId } = data!;
+
+  if (!idDealOwner) {
+    return handleError("Недостаточно данных");
+  }
+
+  const isOwner = userId === idDealOwner;
+
+  if (!isOwner) {
+    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
+  }
+
+  const now = new Date();
+  now.setHours(23, 59, 59, 999);
+
+  let startDate: Date;
+
+  switch (range) {
+    case "week":
+      startDate = new Date();
+      startDate.setDate(now.getDate() - 7);
+      break;
+
+    case "month":
+      startDate = new Date();
+      startDate.setMonth(now.getMonth() - 1);
+      break;
+
+    case "threeMonths":
+      startDate = new Date();
+      startDate.setMonth(now.getMonth() - 3);
+      break;
+
+    case "halfYear":
+      startDate = new Date();
+      startDate.setMonth(now.getMonth() - 6);
+      break;
+
+    case "year":
+      startDate = new Date();
+      startDate.setFullYear(now.getFullYear() - 1);
+      break;
+
+    default:
+      throw new Error("Некорректный диапазон дат");
+  }
+  // Получаем ID департамента
+  const departmentIdValue =
+    departmentId !== undefined ? +departmentId : +user!.departmentId;
+
+    startDate.setHours(0, 0, 0, 0)
+
+  // Общее условие
+  const whereClause = {
+    userId: idDealOwner,
+    dateRequest: {
+      gte: startDate,
+      lte: now,
+    },
+    user: {
+      departmentId: departmentIdValue,
+    }
+  };
+
+  let deals: ProjectResponse[] | RetailResponse[] =[];
+
+  if (dealType === DealType.PROJECT) {
+    deals = await prisma.project.findMany({
+      where: whereClause,
+      orderBy: {
+        dateRequest: "asc",
+      },
+    }) as unknown as ProjectResponse[];
+  }
+
+  if (dealType === DealType.RETAIL) {
+    deals = await prisma.retail.findMany({
+      where: whereClause,
+      orderBy: {
+        dateRequest: "asc",
+      },
+    }) as unknown as RetailResponse[];
+  }
+
+  const closedDeals = deals.filter(item => item.dealStatus === "CLOSED")
+  const rejectDeals = deals.filter(item => item.dealStatus === "REJECT")
+
+  return {length: deals.length, reject:rejectDeals.length, closed:closedDeals.length};
+};
+

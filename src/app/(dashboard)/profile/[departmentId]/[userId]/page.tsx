@@ -2,8 +2,6 @@
 
 import { PermissionEnum } from "@prisma/client";
 
-import React from "react";
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
@@ -13,6 +11,7 @@ import { RolesUser } from "@/entities/user/model/objectTypes";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import UserCard from "@/shared/ui/UserCard";
+import ProfileDealsData from "./ProfileDealsData";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,
@@ -48,7 +47,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <section className="p-4">
+    <section className="p-4 flex gap-2 flex-wrap">
       <div className="flex gap-4">
         <div className="grid w-full md:max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
           <div className="@container flex h-full min-w-[260px] flex-col justify-between">
@@ -127,6 +126,8 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      <ProfileDealsData/>
     </section>
   );
 };

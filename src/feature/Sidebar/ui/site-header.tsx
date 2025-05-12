@@ -30,7 +30,7 @@ export function SiteHeader() {
           <Separator orientation="vertical" className="mr-2 h-4" />
         </div>
         <div className="flex gap-2 items-center">
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="w-12 h-12">
             <Link href={`/calendar/${authUser?.id}`} title="Календарь">
               <CalendarClock />
             </Link>

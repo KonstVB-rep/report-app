@@ -342,7 +342,7 @@ body {
 }
 
 .icon-deal_info {
-  @apply h-10 w-10 rounded-md border border-solid border-foreground dark:border-muted p-1;
+  @apply h-10 w-10 rounded-md border border-solid border-foreground dark:border-muted p-2;
 }
 
 .prop-deal-value {
@@ -619,4 +619,8 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
     @apply text-xl
   }
   
+}
+
+.fc-daygrid-event-harness{
+  @apply cursor-pointer
 }

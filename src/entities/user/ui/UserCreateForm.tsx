@@ -62,7 +62,7 @@ const UserCreateForm = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex max-h-[85vh] flex-col gap-8 overflow-y-auto p-1"
+          className="flex max-h-[85vh] flex-col gap-8 overflow-y-auto px-2 py-8"
         >
           <MotionDivY className="grid gap-1">
             <InputTextForm
