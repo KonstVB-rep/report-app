@@ -104,7 +104,7 @@ const EventsListTable = <T,>({
                 colSpan={table.getAllColumns().length}
                 className="py-4"
               >
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 transform whitespace-nowrap">
+                <div className="text-center whitespace-nowrap font-semibold">
                   Нет данных
                 </div>
               </TableCell>
