@@ -4,12 +4,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 
 import { ListTodo } from "lucide-react";
 
 import { useSidebar } from "@/components/ui/sidebar";
 import { useActionEvents } from "@/feature/calendar/hooks/useActionEvents";
+import useCalendarPage from "@/feature/calendar/hooks/useCalendarPage";
 import {
   EventCalendarFormSchema,
   EventCalendarSchema,
@@ -23,13 +25,15 @@ import {
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 import { TOAST } from "@/shared/ui/Toast";
 
-import useCalendarPage from "@/feature/calendar/hooks/useCalendarPage";
-import dynamic from "next/dynamic";
 import Loading from "./loading";
 
-const CalendarFormModal = dynamic(() => import('@/feature/calendar/ui/CalendarFormModal'))
+const CalendarFormModal = dynamic(
+  () => import("@/feature/calendar/ui/CalendarFormModal")
+);
 
-const CalendarMobile = dynamic(() => import('@/feature/calendar/ui/CalendarMobile'))
+const CalendarMobile = dynamic(
+  () => import("@/feature/calendar/ui/CalendarMobile")
+);
 
 const defaultValuesForm = {
   eventTitle: "",
@@ -69,7 +73,6 @@ const IsExistIntersectionEvents = (
 };
 
 const CalendarPage = () => {
-
   const pathName = usePathname();
 
   const { isMobile } = useSidebar();
@@ -79,13 +82,16 @@ const CalendarPage = () => {
     defaultValues: defaultValuesForm,
   });
 
-  const { 
+  const {
     handleResetAndClose,
     handleCloseModalAfterDeleteEvent,
-    openModal, setOpenModal,confirmDelModal, setConfirmDelModal,
-    editingId, setEditingId
-  } = useCalendarPage(() => form.reset(defaultValuesForm))
-
+    openModal,
+    setOpenModal,
+    confirmDelModal,
+    setConfirmDelModal,
+    editingId,
+    setEditingId,
+  } = useCalendarPage(() => form.reset(defaultValuesForm));
 
   const {
     isLoading,

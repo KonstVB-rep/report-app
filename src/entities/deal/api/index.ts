@@ -823,7 +823,6 @@ export const getDealsByDateRange = async (
   dealType: DealType,
   departmentId: string
 ) => {
-
   const data = await handleAuthorization();
   const { user, userId } = data!;
 
@@ -875,7 +874,7 @@ export const getDealsByDateRange = async (
   const departmentIdValue =
     departmentId !== undefined ? +departmentId : +user!.departmentId;
 
-    startDate.setHours(0, 0, 0, 0)
+  startDate.setHours(0, 0, 0, 0);
 
   // Общее условие
   const whereClause = {
@@ -886,32 +885,35 @@ export const getDealsByDateRange = async (
     },
     user: {
       departmentId: departmentIdValue,
-    }
+    },
   };
 
-  let deals: ProjectResponse[] | RetailResponse[] =[];
+  let deals: ProjectResponse[] | RetailResponse[] = [];
 
   if (dealType === DealType.PROJECT) {
-    deals = await prisma.project.findMany({
+    deals = (await prisma.project.findMany({
       where: whereClause,
       orderBy: {
         dateRequest: "asc",
       },
-    }) as unknown as ProjectResponse[];
+    })) as unknown as ProjectResponse[];
   }
 
   if (dealType === DealType.RETAIL) {
-    deals = await prisma.retail.findMany({
+    deals = (await prisma.retail.findMany({
       where: whereClause,
       orderBy: {
         dateRequest: "asc",
       },
-    }) as unknown as RetailResponse[];
+    })) as unknown as RetailResponse[];
   }
 
-  const closedDeals = deals.filter(item => item.dealStatus === "CLOSED")
-  const rejectDeals = deals.filter(item => item.dealStatus === "REJECT")
+  const closedDeals = deals.filter((item) => item.dealStatus === "CLOSED");
+  const rejectDeals = deals.filter((item) => item.dealStatus === "REJECT");
 
-  return {length: deals.length, reject:rejectDeals.length, closed:closedDeals.length};
+  return {
+    length: deals.length,
+    reject: rejectDeals.length,
+    closed: closedDeals.length,
+  };
 };
-

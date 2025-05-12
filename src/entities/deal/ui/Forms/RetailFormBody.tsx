@@ -31,8 +31,8 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../../lib/constants";
-import ContactDeal from "../Modals/ContactDeal";
 import { Contact } from "../../types";
+import ContactDeal from "../Modals/ContactDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -79,7 +79,7 @@ const RetailFormBody = <T extends FieldValues>({
       const value = form.getValues(contactsKey as Path<T>);
       setContacts(value);
     }
-  }, [contactsKey, form, setContacts,currentContacts]);
+  }, [contactsKey, form, setContacts, currentContacts]);
 
   const error = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
@@ -275,7 +275,7 @@ const RetailFormBody = <T extends FieldValues>({
             onContactsChange={setContacts}
             selectedContacts={selectedContacts as Contact[]}
             setSelectedContacts={setSelectedContacts}
-            contacts={contactsKey ? contacts as T[typeof contactsKey] : []}
+            contacts={contactsKey ? (contacts as T[typeof contactsKey]) : []}
             contactsKey={contactsKey as string}
             handleDeleteContact={handleDeleteContact}
           />

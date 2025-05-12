@@ -110,9 +110,11 @@ export const handleEventClick = (
 
   setEditingId(event.id);
 
-  const popover = document.querySelector('.fc-popover.fc-more-popover.fc-day.fc-day-tue.fc-day-future') as HTMLElement;
-  if(popover){
-    popover.style.display = "none"
+  const popover = document.querySelector(
+    ".fc-popover.fc-more-popover.fc-day.fc-day-tue.fc-day-future"
+  ) as HTMLElement;
+  if (popover) {
+    popover.style.display = "none";
   }
 };
 

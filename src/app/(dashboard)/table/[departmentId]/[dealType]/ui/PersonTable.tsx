@@ -38,7 +38,9 @@ const PersonTable = <T extends { id: string }>({
   return (
     <DealTableTemplate>
       <>
-        <div className="border rounded-md p-2 w-fit">Общее количество заявок: {data.length}</div>
+        <div className="border rounded-md p-2 w-fit">
+          Общее количество заявок: {data.length}
+        </div>
 
         {isPageAuthuser && <ButtonsGroupTable />}
         <DataTable

@@ -289,8 +289,12 @@ export const useGetProjectsUser = (userId: string | undefined) => {
   });
 };
 
-
-export const useGetDealsByDateRange = (userId:string,range: DateRange, dealType: DealType,departmentId:string) => {
+export const useGetDealsByDateRange = (
+  userId: string,
+  range: DateRange,
+  dealType: DealType,
+  departmentId: string
+) => {
   const { authUser } = useStoreUser();
   return useQuery({
     queryKey: ["dealsByRange", userId, range, dealType, departmentId],
@@ -300,7 +304,12 @@ export const useGetDealsByDateRange = (userId:string,range: DateRange, dealType:
           throw new Error("Пользователь не авторизован");
         }
 
-        return await getDealsByDateRange(userId as string,range, dealType, departmentId );
+        return await getDealsByDateRange(
+          userId as string,
+          range,
+          dealType,
+          departmentId
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         TOAST.ERROR((error as Error).message);
@@ -309,4 +318,4 @@ export const useGetDealsByDateRange = (userId:string,range: DateRange, dealType:
     },
     enabled: !!userId,
   });
-}
+};

@@ -11,6 +11,7 @@ import { RolesUser } from "@/entities/user/model/objectTypes";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import UserCard from "@/shared/ui/UserCard";
+
 import ProfileDealsData from "./ProfileDealsData";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
@@ -127,7 +128,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <ProfileDealsData/>
+      <ProfileDealsData />
     </section>
   );
 };

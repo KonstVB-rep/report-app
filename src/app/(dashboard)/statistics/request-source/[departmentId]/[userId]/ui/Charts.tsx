@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
+
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { X } from "lucide-react";
 import { AnimatePresence } from "motion/react";
@@ -30,6 +32,8 @@ type StatusGroup = "inWork" | "positive" | "negative";
 
 type CountItem = Record<string, Record<StatusGroup, number>>;
 
+type DateRangeParams = "week" | "month" | "year";
+
 const emptyResourceKey = "Другое";
 
 const defaultValuesCount = () => ({
@@ -40,6 +44,11 @@ const defaultValuesCount = () => ({
 
 const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [dateRangeState, setDateRangeState] = useState<DateRangeParams | null>(
+    null
+  );
 
   const { data, countsStatuses } = useMemo(() => {
     const countsStatuses: CountItem = {};
@@ -79,6 +88,32 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
     return { data, countsStatuses };
   }, [deals, selectedDate]);
 
+  const dataCountByDate = data.reduce((acc, item) => (acc += item.value), 0);
+
+  const handleClick = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+    obj: DateRange
+  ) => {
+    setSelectedDate(obj);
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (e.currentTarget.id) {
+      params.set("dateRange", e.currentTarget.id);
+      setDateRangeState(e.currentTarget.id as DateRangeParams);
+
+      router.push(`?${params.toString()}`);
+    }
+  };
+
+  useEffect(() => {
+    const param = searchParams.get("dateRange");
+    if (param) {
+      setDateRangeState(param as DateRangeParams);
+      router.push(`?dateRange=${param.toString()}`);
+      setSelectedDate(getPeriodRange(param as DateRangeParams));
+    }
+  }, []);
+
   if (deals.length === 0) return <EmptyData />;
 
   return (
@@ -92,35 +127,38 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
           {totalDealsCount}
         </span>
       </h2>
-      <div className="flex gap-2 justify-between items-center flex-wrap">
+      <div className="flex gap-2 justify-between items-end flex-wrap">
         <div className="grid gap-2">
           <div className="flex gap-2 flex-wrap">
             <Button
               variant="outline"
-              onClick={() => setSelectedDate(getPeriodRange("week"))}
-              className="btn-active"
+              onClick={(e) => handleClick(e, getPeriodRange("week"))}
+              className={`btn-active ${dateRangeState === "week" && "border-2 border-primary"}`}
+              id="week"
             >
               Неделя
             </Button>
             <Button
               variant="outline"
-              onClick={() => setSelectedDate(getPeriodRange("month"))}
-              className="btn-active"
+              onClick={(e) => handleClick(e, getPeriodRange("month"))}
+              className={`btn-active ${dateRangeState === "month" && "border-2 border-primary"}`}
+              id="month"
             >
               Месяц
             </Button>
             <Button
               variant="outline"
-              onClick={() => setSelectedDate(getPeriodRange("year"))}
-              className="btn-active"
+              onClick={(e) => handleClick(e, getPeriodRange("year"))}
+              className={`btn-active ${dateRangeState === "year" && "border-2 border-primary"}`}
+              id="year"
             >
               Год
             </Button>
           </div>
 
           <div>
-            <p className="p-3 border rounded-md">
-              Всего за выбраный период: {deals.length}
+            <p className="p-2 border rounded-md w-fit">
+              За период: {dataCountByDate}
             </p>
           </div>
         </div>

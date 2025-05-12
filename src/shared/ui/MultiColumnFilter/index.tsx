@@ -16,7 +16,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import DebouncedInput from "../DebouncedInput";
 
-type FilterKeys = "nameDeal" | "nameObject" | "contact" | "phone" | "email" | "comments";
+type FilterKeys =
+  | "nameDeal"
+  | "nameObject"
+  | "contact"
+  | "phone"
+  | "email"
+  | "comments";
 
 const filtersByColLabel: Record<FilterKeys, string> = {
   nameDeal: "Название сделки",
@@ -26,7 +32,6 @@ const filtersByColLabel: Record<FilterKeys, string> = {
   email: "Email",
   comments: "Комментарии",
 };
-
 
 type MultiColumnFilterProps<
   TData extends Record<string, unknown>,

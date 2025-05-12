@@ -138,7 +138,6 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     columnVisibility,
   });
 
-
   return (
     <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
       <div className="flex items-center justify-between gap-2 pb-2">
