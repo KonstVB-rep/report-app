@@ -1,7 +1,5 @@
 "use client";
 
-import { UseMutateFunction } from "@tanstack/react-query";
-
 import * as React from "react";
 import { SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -31,7 +29,7 @@ type Props = {
   setConfirmDelModal: React.Dispatch<SetStateAction<boolean>>;
   isLoading: boolean;
   isPendingDelete: boolean;
-  deleteEvent: UseMutateFunction<EventInputType, Error, string, unknown>;
+  deleteEvent: (id: string) => void,
   form: UseFormReturn<EventCalendarSchema>;
   setEditingId: (id: string | null) => void;
   setOpenModal: (open: boolean) => void;

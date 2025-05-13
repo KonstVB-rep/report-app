@@ -9,6 +9,9 @@ import dynamic from "next/dynamic";
 
 import { Toaster } from "sonner";
 
+import NotificationChecker from "@/feature/calendar/ui/NotificationChecker";
+
+import { NotificationProvider } from "./notification-provider";
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 
@@ -40,7 +43,10 @@ const AppProvider = ({ children }: PropsWithChildren) => {
           )}
           <Toaster position="top-center" />
           <SpeedInsights />
-          {children}
+          <NotificationProvider>
+            <NotificationChecker />
+            {children}
+          </NotificationProvider>
         </QueryProvider>
       </ThemeProvider>
     </>

@@ -3,6 +3,7 @@
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
+import { startOfDay, endOfDay } from 'date-fns';
 
 import { EventInputType } from "../types";
 
@@ -110,6 +111,43 @@ export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
       where: { userId },
       orderBy: {
         start: "asc",
+      },
+    });
+
+    return events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      start: new Date(event.start),
+      end: new Date(event.end),
+      allDay: event.allDay,
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+
+export const getEventsCalendarUserToday = async (): Promise<EventInputType[]> => {
+  try {
+    const data = await handleAuthorization();
+    const { userId } = data!;
+
+    // Получаем начало и конец сегодняшнего дня
+    const todayStart = startOfDay(new Date());
+    const todayEnd = endOfDay(new Date());
+
+    // Запрашиваем события, которые происходят в пределах сегодняшнего дня
+    const events = await prisma.eventCalendar.findMany({
+      where: {
+        userId,
+        start: {
+          gte: todayStart, // Начало дня
+          lte: todayEnd,   // Конец дня
+        },
+      },
+      orderBy: {
+        start: 'asc',
       },
     });
 

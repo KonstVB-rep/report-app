@@ -112,7 +112,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       router.push(`?dateRange=${param.toString()}`);
       setSelectedDate(getPeriodRange(param as DateRangeParams));
     }
-  }, []);
+  }, [router, searchParams]);
 
   if (deals.length === 0) return <EmptyData />;
 

@@ -1,5 +1,3 @@
-import { UseMutateFunction } from "@tanstack/react-query";
-
 import React, { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
 
@@ -10,6 +8,7 @@ import Overlay from "@/shared/ui/Overlay";
 
 import { EventInputType } from "../types";
 import FormEvent from "./FormEvent";
+import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
 
 type CalendarFormModalProps = {
   open: boolean;
@@ -21,7 +20,7 @@ type CalendarFormModalProps = {
   isLoading: boolean;
   isPendingDelete: boolean;
   events: EventInputType[] | undefined;
-  deleteEvent: UseMutateFunction<EventInputType, Error, string, unknown>;
+  deleteEvent: (id: string) => void;
   form: UseFormReturn<EventCalendarSchema>;
 };
 
@@ -37,8 +36,12 @@ const CalendarFormModal: React.FC<CalendarFormModalProps> = ({
   events,
   deleteEvent,
   form,
-}) => (
-  <DialogComponent
+}) => {
+
+  const {openModal, setOpenModal} = useCalendarContext()
+
+  return(
+    <DialogComponent
     trigger={undefined}
     open={open}
     onOpenChange={setOpen}
@@ -59,6 +62,7 @@ const CalendarFormModal: React.FC<CalendarFormModalProps> = ({
       />
     </MotionDivY>
   </DialogComponent>
-);
+  )
+};
 
 export default CalendarFormModal;

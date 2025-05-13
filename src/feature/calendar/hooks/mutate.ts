@@ -30,6 +30,9 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["eventsCalendarToday", authUser?.id],
+      });
       TOAST.SUCCESS("Событие успешно добавлено в календарь");
     },
     onError: (error) => {
@@ -61,6 +64,9 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["eventsCalendarToday", authUser?.id],
+      });
       TOAST.SUCCESS("Событие успешно обновлено");
     },
     onError: (error) => {
@@ -85,6 +91,9 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
       closeModal();
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["eventsCalendarToday", authUser?.id],
       });
       TOAST.SUCCESS("Событие успешно удалено");
     },

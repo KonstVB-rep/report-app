@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import "./globals.css";
-import AppProvider from "./provider";
+import { CalendarProvider } from "../context/calendar-context";
+import { EventsActionProvider } from "../context/events-action-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,11 +29,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AppProvider>
-          <div className="max-w-[1980px] m-auto overflow-hidden">
-          {children}
-          </div>
-        </AppProvider>
+        <CalendarProvider>
+          <EventsActionProvider>
+            <div className="max-w-[1980px] m-auto overflow-hidden">
+              {children}
+            </div>
+          </EventsActionProvider>
+        </CalendarProvider>
       </body>
     </html>
   );

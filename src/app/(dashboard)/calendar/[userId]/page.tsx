@@ -47,9 +47,10 @@ const defaultValuesForm = {
 const IsExistIntersectionEvents = (
   newEventStart: Date,
   newEventEnd: Date,
-  events: EventInputType[] | undefined
+  events: EventInputType[] | undefined,
+  editingId: string | null
 ) => {
-  const overlap = events?.some((event) => {
+  const overlap = events?.filter(item => item.id !== editingId)?.some((event) => {
     // Преобразуем время начала и конца события в Date, чтобы избежать проблем с временем в разных часовых поясах
     const eventStart = new Date(event.start);
     const eventEnd = new Date(event.end);
@@ -141,7 +142,8 @@ const CalendarPage = () => {
     const isIntersections = IsExistIntersectionEvents(
       startDate,
       endDate,
-      events
+      events,
+      editingId
     );
 
     if (isIntersections) return;

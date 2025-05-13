@@ -48,7 +48,7 @@ const ProfileDealsData = () => {
     const param = searchParams.get("dateRange") || "week";
     setDateRangeState(param as DateRange);
     router.push(`?dateRange=${param.toString()}`);
-  }, []);
+  }, [router, searchParams]);
 
   return (
     <div className="flex flex-col gap-2">

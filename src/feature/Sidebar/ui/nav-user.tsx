@@ -46,7 +46,7 @@ export function NavUser() {
               href={`/profile/${authUser?.departmentId}/${authUser?.id}`}
               className="btn_hover w-full justify-center text-sm"
             >
-              <BadgeCheck className="mr-2 h-4 w-4" />
+              <BadgeCheck className="h-4 w-4" />
               <span>Профиль</span>
             </Link>
             <LogoutDialog />
