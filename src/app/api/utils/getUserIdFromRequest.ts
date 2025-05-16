@@ -12,6 +12,7 @@ interface DecodedToken {
 // Получаем текущего/делающего запрос пользователя
 export async function getUserIdFromRequest(): Promise<string | null> {
   const cookieStore = await cookies();
+
   const cookie = cookieStore.get("access_token"); //
 
   // Если куки нет или нет значения, возвращаем null

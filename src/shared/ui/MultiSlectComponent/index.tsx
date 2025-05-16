@@ -35,7 +35,7 @@ const MultiSelectComponent = ({
       defaultValue={defaultValue}
       {...props}
     >
-      <MultiSelectTrigger className="h-10">
+      <MultiSelectTrigger className="h-10 border border-solid border-border text-black">
         <MultiSelectValue
           placeholder={placeholder}
           maxDisplay={3}

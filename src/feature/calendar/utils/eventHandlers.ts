@@ -1,10 +1,10 @@
 import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 
-import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 import { EventCalendarSchema } from "../model/schema";
 import { EventInputType } from "../types";
+import { TOAST } from "@/shared/ui/Toast";
 
 export const handleDateSelect = (
   event: DateSelectArg,
@@ -32,12 +32,14 @@ export const handleDateSelect = (
     form.setValue("startTimeEvent", startTime);
     form.setValue("endTimeEvent", "23:59");
   } else {
+
     if (event.allDay) {
       const endDate = new Date(event.end.getTime() - 86400000);
       form.setValue("startTimeEvent", "00:00");
       form.setValue("endTimeEvent", "23:59");
       form.setValue("startDateEvent", startDate);
       form.setValue("endDateEvent", endDate);
+      form.setValue("allDay", true);
 
       setOpenModal(true);
       return;
@@ -71,11 +73,10 @@ export const handleDateSelect = (
 export const handleEventClick = (
   clickInfo: EventClickArg,
   form: UseFormReturn<EventCalendarSchema>,
-  setEditingId: (id: string | null) => void,
+  setEditingId: (id: string ) => void,
   setOpenModal: (open: boolean) => void
 ) => {
   const event = clickInfo.event;
-
   setOpenModal(true);
 
   form.setValue("eventTitle", event.title);
@@ -109,9 +110,8 @@ export const handleEventClick = (
   form.setValue("endTimeEvent", event.end?.toTimeString().slice(0, 5) || "");
 
   setEditingId(event.id);
-
   const popover = document.querySelector(
-    ".fc-popover.fc-more-popover.fc-day.fc-day-tue.fc-day-future"
+    ".fc-popover.fc-more-popover.fc-day"
   ) as HTMLElement;
   if (popover) {
     popover.style.display = "none";
@@ -121,7 +121,7 @@ export const handleEventClick = (
 export const handleEventClickOnEventsList = (
   event: EventInputType,
   form: UseFormReturn<EventCalendarSchema>,
-  setEditingId: (id: string | null) => void,
+  setEditingId: (id: string) => void,
   setOpenModal: (open: boolean) => void
 ) => {
   setOpenModal(true);
@@ -162,11 +162,13 @@ export const handleEventClickOnEventsList = (
 export const handleDateSelectOnEventsList = (
   startDate: Date | undefined,
   form: UseFormReturn<EventCalendarSchema>,
-  setOpenModal: Dispatch<SetStateAction<boolean>>
+  setEditingId: (value: string) => void,
+  setOpenModal: (value: boolean) => void
 ) => {
   if (!startDate) return;
 
   setOpenModal(false);
+  setEditingId("")
 
   const isToday =
     new Date(startDate).toDateString() === new Date().toDateString();
@@ -192,4 +194,35 @@ export const handleDateSelectOnEventsList = (
   form.setValue("allDay", isAllDay ? true : false);
 
   setOpenModal(true);
+};
+
+export const IsExistIntersectionEvents = (
+  newEventStart: Date,
+  newEventEnd: Date,
+  events: EventInputType[] | undefined,
+  editingId: string | null
+) => {
+  const overlap = events
+    ?.filter((item) => item.id !== editingId)
+    ?.some((event) => {
+      // Преобразуем время начала и конца события в Date, чтобы избежать проблем с временем в разных часовых поясах
+      const eventStart = new Date(event.start);
+      const eventEnd = new Date(event.end);
+
+      // Проверка, пересекается ли новое событие с существующим
+      return (
+        (newEventStart >= eventStart && newEventStart < eventEnd) || // Если начало нового события попадает в существующее
+        (newEventEnd > eventStart && newEventEnd <= eventEnd) || // Если конец нового события попадает в существующее
+        (newEventStart <= eventStart && newEventEnd >= eventEnd) // Если новое событие полностью охватывает существующее
+      );
+    });
+
+  if (overlap) {
+    // Если события пересекаются, установим предупреждение
+    TOAST.ERROR(
+      "У вас yже есть событие на выбранное время!Удалите или измените время одного из событий."
+    );
+    return true;
+  }
+  return false;
 };

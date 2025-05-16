@@ -4,26 +4,24 @@ import axios from "axios";
 
 import { EventInputType } from "@/feature/calendar/types";
 
-// 🔔 Функция для отправки уведомления
 async function sendNotification(message: string, chatId: string) {
   try {
-    console.log(process.env.TELEGRAM_API_URL,'*********************process.env.TELEGRAM_API_URL')
-    const response = await axios.post(`${process.env.TELEGRAM_API_URL}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
+    const response = await axios.post(`${process.env.TELEGRAM_API_URL}${process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
 
     return response;
   } catch (error) {
     console.error("Ошибка при отправке уведомления:", error);
   }
-}
+};
 
 export type EventInputTypeWithChatId = EventInputType & {
   chatId: string;
 };
 
-// 🔄 Основной POST метод
+
 export async function POST(req: NextRequest) {
   try {
-    const events = await req.json(); // Получаем массив событий
+    const events = await req.json(); 
 
     if (!Array.isArray(events) || events.length === 0) {
       return NextResponse.json(
@@ -32,7 +30,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Перебираем все события и отправляем уведомления
     for (const event of events) {
       const { title, start, chatId } = event;
 
@@ -46,9 +43,11 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const message = `Напоминание: через 30 минут начинается событие: ${title}`;
+      const message = `Напоминание: через 30 минут ${title}`;
+
 
       try {
+
         // Отправляем уведомление в Telegram
         await sendNotification(message, chatId);
 

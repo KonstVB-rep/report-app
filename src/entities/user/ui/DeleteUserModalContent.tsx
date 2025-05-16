@@ -30,7 +30,7 @@ const DeleteUserModalContent = ({
           Пользователь будет удален навсегда
         </DialogDescription>
       </DialogHeader>
-      <div className="grid gap-5 py-4">
+      <div className="grid gap-5">
         <Overlay isPending={isPending} />
         <p className="text-center">Вы уверены что хотите удалить аккаунт?</p>
         <p className="grid text-center">

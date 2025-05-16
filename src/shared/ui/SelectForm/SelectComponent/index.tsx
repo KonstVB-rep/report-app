@@ -12,13 +12,11 @@ import {
 type SelectComponentProps = {
   placeholder: string;
   options: [string, string][]; // Это массив кортежей [key, value]
-  className?: string;
 } & React.ComponentProps<typeof Select>;
 
 const SelectComponent = ({
   placeholder,
   options,
-  className,
   value,
   onValueChange,
   ...props
@@ -29,7 +27,7 @@ const SelectComponent = ({
       onValueChange={(val) => onValueChange?.(val)}
       {...props}
     >
-      <SelectTrigger className={`w-full ${className}`}>
+      <SelectTrigger className="w-full  border border-solid">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 

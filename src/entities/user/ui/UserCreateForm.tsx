@@ -73,7 +73,7 @@ const UserCreateForm = () => {
               minLength={3}
               maxLength={50}
               placeholder="Введите имя пользователя"
-              className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
+              className="w-ful invalid:[&:not(:placeholder-shown)]:border-red-500"
               required
             />
 
@@ -83,7 +83,7 @@ const UserCreateForm = () => {
               control={form.control}
               errorMessage={form.formState.errors.email?.message}
               type="email"
-              className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
+              className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
               placeholder="Введите email пользователя"
               required
             />

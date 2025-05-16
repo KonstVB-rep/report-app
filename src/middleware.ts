@@ -29,7 +29,7 @@ async function redirectToLogin(request: NextRequest) {
   response.cookies.delete("access_token");
   response.cookies.delete("refresh_token");
 
-  response.cookies.set("auth_redirected", "true", { maxAge: 2 });
+  // response.cookies.set("auth_redirected", "true", { maxAge: 5 });
 
   return response;
 }
@@ -125,6 +125,7 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/login",
     "/dashboard/:path*",
     "/table/:path*",
     "/profile/:path*",

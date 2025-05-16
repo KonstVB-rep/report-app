@@ -4,7 +4,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import React, { PropsWithChildren } from "react";
 
-// 🔧 Ленивая подгрузка Devtools
 import dynamic from "next/dynamic";
 
 import { Toaster } from "sonner";
@@ -44,7 +43,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
           <Toaster position="top-center" />
           <SpeedInsights />
           <NotificationProvider>
-            <NotificationChecker />
+            <NotificationChecker chatName="calendarChat"/>
             {children}
           </NotificationProvider>
         </QueryProvider>

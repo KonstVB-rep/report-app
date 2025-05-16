@@ -1,9 +1,13 @@
 "use server";
 
+import { NextResponse } from "next/server";
+
+import axios from "axios";
+import { endOfDay, startOfDay } from "date-fns";
+
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
-import { startOfDay, endOfDay } from 'date-fns';
 
 import { EventInputType } from "../types";
 
@@ -127,8 +131,9 @@ export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
   }
 };
 
-
-export const getEventsCalendarUserToday = async (): Promise<EventInputType[]> => {
+export const getEventsCalendarUserToday = async (): Promise<
+  EventInputType[]
+> => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -143,11 +148,11 @@ export const getEventsCalendarUserToday = async (): Promise<EventInputType[]> =>
         userId,
         start: {
           gte: todayStart, // Начало дня
-          lte: todayEnd,   // Конец дня
+          lte: todayEnd, // Конец дня
         },
       },
       orderBy: {
-        start: 'asc',
+        start: "asc",
       },
     });
 
@@ -161,5 +166,41 @@ export const getEventsCalendarUserToday = async (): Promise<EventInputType[]> =>
   } catch (error) {
     console.error(error);
     return [];
+  }
+};
+
+export async function getCalendarBotName(): Promise<string | null> {
+  const botName = process.env.TELEGRAM_BOT_ERTEL_REPORT_APP_NAME;
+  return botName ?? null;
+}
+
+export const sendNotification = async (
+  message: string,
+  chatId: string,
+  botName: string
+) => {
+  console.log(
+    process.env.NEXT_PUBLIC_API_BASE_URL,
+    "process.env.NEXT_PUBLIC_API_BASE_URL"
+  );
+  try {
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/telegram/send-message-calendar-bot`,
+      {
+        message,
+        chatId,
+        botName,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    
+
+    return NextResponse.json({ status: "success" });
+  } catch (error) {
+    console.error("Ошибка при отправке:", error);
   }
 };

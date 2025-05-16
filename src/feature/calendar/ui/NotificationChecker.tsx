@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 import { EventInputType } from "../types";
 import { useNotification } from "@/app/provider/notification-provider";
+import { useGetInfoChat } from "../hooks/query";
 
 async function sendNotificationsToTelegram(events: EventInputType[]) {
   try {
-    const response = await fetch('/api/notify', {
+    const response = await fetch('/api/telegram/notify', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(events), // отправляем массив целиком
+      body: JSON.stringify(events), 
     });
 
     if (!response.ok) {
@@ -25,35 +26,38 @@ async function sendNotificationsToTelegram(events: EventInputType[]) {
   }
 }
 
-export default function NotificationChecker() {
-    const { events } = useNotification(); // Получаем события из контекста
-    const [state, setState] = useState<boolean>(true); // Для хранения ID интервала
+export default function NotificationChecker({chatName} :{ chatName:string}) {
+    const { events } = useNotification();
+    const [state, setState] = useState<boolean>(true);
+
+    const {data: bot} = useGetInfoChat(chatName)
 
     useEffect(() => {
 
+
       if (!events?.length) {
-        console.log('Нет событий');
+        console.log('Нет событий или чат не активен');
         return;
       }
-  
-      // Запуск интервала, если его нет
+
+      if(!bot || !bot?.isActive || !bot.chatId){
+        console.log('Нет бота или чат не активен');
+        return
+      }
 
         const id = setInterval(() => {
-          console.log('interval');
-  
+          console.log('interval')
           const now = new Date();
           now.setSeconds(0, 0); 
-          const chatId = 1043614435; 
+          const chatId = Number(bot.chatId); 
   
           const upcomingEvents = events.filter((event) => {
             const eventStartTime = new Date(event.start);
-            const thirtyMinutesBefore = new Date(eventStartTime.getTime() - 30 * 60000);
+            const thirtyMinutesBefore = new Date(eventStartTime.getTime() - 31 * 60000);
             thirtyMinutesBefore.setSeconds(0,0)
 
             return now.getTime() === thirtyMinutesBefore.getTime() && now < eventStartTime;
           });
-  
-          console.log(upcomingEvents, 'upcomingEvents');
   
           if (upcomingEvents.length > 0) {
 
@@ -71,10 +75,9 @@ export default function NotificationChecker() {
       return () => {
         if (id) {
           clearInterval(id);
-          console.log('Interval cleared');
         }
       };
-    }, [events, state]); 
+    }, [bot, bot?.isActive, events, state]); 
 
   return null;
 }

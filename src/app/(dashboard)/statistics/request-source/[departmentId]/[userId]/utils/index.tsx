@@ -13,6 +13,7 @@ import {
 
 import { RADIAN } from "../lib/constants";
 import { CustomizedLabelProps } from "../types";
+// import { useEffect, useState } from "react";
 
 export const getPeriodRange = (
   period: "week" | "month" | "year"
@@ -91,12 +92,32 @@ const renderCustomizedLabel = ({
 
   const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN);
   const y = cy + dynamicRadius * Math.sin(-midAngle * RADIAN);
+  // const [isDarkTheme, setIsDarkTheme] = useState<boolean>(
+  //   window.matchMedia("(prefers-color-scheme: dark)").matches
+  // );
+
+  // // Обновление темы при изменении в системе
+  // useEffect(() => {
+  //   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  //   const handleThemeChange = (e: MediaQueryListEvent) => {
+  //     setIsDarkTheme(e.matches);
+  //   };
+
+  //   mediaQuery.addEventListener("change", handleThemeChange);
+
+  //   return () => {
+  //     mediaQuery.removeEventListener("change", handleThemeChange);
+  //   };
+  // }, []);
+
+  // Цвет текста в зависимости от темы
+  // const textColor = isDarkTheme ? "#ffffff" : "#000000";
 
   return (
     <text
       x={x}
       y={y}
-      fill="#fff"
+      fill={"darkgray"}
       textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="text-after-edge"
       fontSize={14}

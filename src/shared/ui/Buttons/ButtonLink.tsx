@@ -13,7 +13,7 @@ type EventsListLinkProps = {
 
 const ButtonLink = ({
   pathName,
-  className = "w-fit h-12 mb-2",
+  className = "w-fit h-12",
   label,
   icon,
 }: EventsListLinkProps) => (

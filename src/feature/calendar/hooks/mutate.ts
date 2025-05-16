@@ -8,6 +8,7 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
+import { toggleSubscribeChatBot } from "@/feature/telegramBot/api";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { authUser } = useStoreUser();
@@ -103,3 +104,27 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
     },
   });
 };
+
+
+export const useUpdateChatBot = () => {
+  const { authUser } = useStoreUser();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (chatData : {chatName: string, isActive: boolean}) => {
+      if (!authUser?.id) {
+        throw new Error("Пользователь не авторизован");
+      }
+      return await toggleSubscribeChatBot(chatData.chatName, chatData.isActive);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["chatInfo", authUser?.id, data.chatName],
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      TOAST.ERROR("Произошла ошибка при попытке удаления события");
+    },
+  });
+}

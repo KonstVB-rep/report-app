@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import Image from "next/image";
@@ -43,7 +43,7 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
 
   const [state, formAction] = useActionState(login, undefined);
   const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
-  const [shouldRedirect, setShouldRedirect] = useState(false);
+  // const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const { setDepartments } = useStoreDepartment();
 
@@ -55,33 +55,41 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
     formAction(formData);
   };
 
+
+
+  useEffect(() => {
+    if(!isAuth){
+      resetAllStores()
+    }
+    if (isAuth && departmentData) {
+      setDepartments(departmentData);
+      // setShouldRedirect(true);
+    }
+  }, [isAuth, departmentData, setDepartments]);
+
   useEffect(() => {
     if (state && state?.error) {
       TOAST.ERROR(state.message);
     }
 
-    const isRedirected = document.cookie.includes("auth_redirected=true");
+    // const isRedirected = document.cookie.includes("auth_redirected=true");
 
-    if (isRedirected) {
-      resetAllStores();
-      document.cookie = "auth_redirected=; Max-Age=0; path=/"; // Удаляем флаг из куки
-    } else if (state && state.data) {
+    // if (isRedirected) {
+    //   resetAllStores();
+    //   document.cookie = "auth_redirected=; Max-Age=0; path=/"; // Удаляем флаг из куки
+    // } else 
+    if (state && state.data) {
       setAuthUser(state.data);
       setIsAuth(true);
     }
   }, [state, setAuthUser, setIsAuth, isAuth]);
 
-  useEffect(() => {
-    if (isAuth && departmentData) {
-      setDepartments(departmentData);
-      setShouldRedirect(true);
-    }
-  }, [isAuth, departmentData, setDepartments, setShouldRedirect]);
 
-  if (shouldRedirect && authUser) {
-    const redirectUrl = redirectPathCore(authUser?.departmentId, authUser?.id);
+  if (authUser) {
+    const redirectUrl = redirectPathCore(authUser!.departmentId, authUser!.id);
     redirect(redirectUrl);
   }
+  
 
   return (
     <motion.div
@@ -135,6 +143,9 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
               placeholder="blur"
               priority
               fill
+              sizes="(max-width: 768px) 100vw, 
+               (max-width: 1200px) 50vw, 
+               33vw"
               className="absolute inset-0 h-full w-full dark:brightness-[0.2] dark:grayscale"
             />
           </div>

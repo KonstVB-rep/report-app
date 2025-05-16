@@ -130,7 +130,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
                               </div>
                             </AccordionTrigger>
 
-                            <AccordionContent className="grid w-full gap-1 pb-1 pr-1 pt-1">
+                            <AccordionContent className="grid w-full gap-1 p-2">
                               <DepartmentLinks
                                 departmentId={user.departmentId}
                                 user={user}

@@ -1,45 +1,25 @@
 import { DialogClose } from "@radix-ui/react-dialog";
-import { UseMutateFunction } from "@tanstack/react-query";
-
-import React, { Dispatch, SetStateAction } from "react";
 
 import { Loader } from "lucide-react";
 
+import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
+import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
 
 import { EventInputType } from "../types";
 
 type ModalDelEventsType = {
-  confirmDelModal: boolean;
-  setConfirmDelModal: Dispatch<SetStateAction<boolean>>;
-  editingId: string;
   events: EventInputType[];
-  isPendingDelete: boolean;
-  deleteEvent: UseMutateFunction<
-    {
-      id: string;
-      createdAt: Date;
-      updatedAt: Date;
-      userId: string;
-      title: string;
-      start: Date;
-      end: Date | null;
-    },
-    Error,
-    string,
-    unknown
-  >;
 };
 
 const ModalDelEvents = ({
-  confirmDelModal,
-  setConfirmDelModal,
-  editingId,
   events,
-  isPendingDelete,
-  deleteEvent,
 }: ModalDelEventsType) => {
+  const { deleteEvent, isPendingDelete } = useEventActionContext();
+  const { confirmDelModal, setConfirmDelModal, editingId } =
+    useCalendarContext();
+
   if (!editingId) return null;
   return (
     <DialogComponent

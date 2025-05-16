@@ -15,18 +15,23 @@ import useScrollIntoViewBottom from "@/shared/hooks/useScrollIntoViewBottomTable
 
 import { EventInputType } from "../types";
 
-type EventsListTableProps<T> = {
+type EventsListTableProps<T extends EventInputType> = {
   table: ReactTable<T>;
-  handleRowClick?: (row: T) => void;
+  handleRowClick?: (row:  T ) => void;
 };
 
-const EventsListTable = <T,>({
+const EventsListTable = <T extends EventInputType>({
   table,
   handleRowClick,
 }: EventsListTableProps<T>) => {
   const ref = useScrollIntoViewBottom<T, HTMLTableElement>(
     table
   ) as RefObject<HTMLTableElement>;
+
+  const handleClickRowEvent = (row: T ) => {
+   if(row.end < new Date(Date.now())) return;
+   handleRowClick?.(row)
+  }
 
   if (!table) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;
@@ -85,7 +90,7 @@ const EventsListTable = <T,>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
-                      onClick={() => handleRowClick?.(cell.row.original)}
+                      onClick={() => handleClickRowEvent?.(cell.row.original)}
                       key={cell.id}
                       className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
                     >

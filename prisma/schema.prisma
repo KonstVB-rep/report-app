@@ -9,26 +9,27 @@ datasource db {
 }
 
 model User {
-  id            String           @id @default(cuid())
-  username      String
-  email         String           @unique
-  phone         String           @unique
-  user_password String
-  position      String
-  departmentId  Int
-  role          Role
-  lastlogin     DateTime?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  directorOf    Department?      @relation("DepartmentDirector")
-  File          DealFile[]
-  projects      Project[]
-  retail        Retail[]
-  department    Department       @relation("DepartmentUsers", fields: [departmentId], references: [id])
-  login         UserLogin[]
-  permissions   UserPermission[]
-  userFilters   UserFilter[]
+  id              String           @id @default(cuid())
+  username        String
+  email           String           @unique
+  phone           String           @unique
+  user_password   String
+  position        String
+  departmentId    Int
+  role            Role
+  lastlogin       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  directorOf      Department?      @relation("DepartmentDirector")
+  File            DealFile[]
+  projects        Project[]
+  retail          Retail[]
+  department      Department       @relation("DepartmentUsers", fields: [departmentId], references: [id])
+  login           UserLogin[]
+  permissions     UserPermission[]
+  userFilters     UserFilter[]
   eventsCalendar  EventCalendar[]
+  chats           UserTelegramChat[]
 
   @@index([departmentId])
 }
@@ -161,10 +162,10 @@ model UserFilter {
   isActive     Boolean   @default(false) 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
   user         User      @relation(fields: [userId], references: [id])
 
 }
-
 
 model EventCalendar {
   id        String   @id @default(cuid())
@@ -172,12 +173,40 @@ model EventCalendar {
   start     DateTime
   end       DateTime
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   allDay    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id])
 }
 
+model TelegramBot {
+  id        String    @id @default(cuid())  // Уникальный ID бота
+  botName   String    @unique
+  token     String    @unique        
+  createdAt DateTime  @default(now())               // Время создания
+  updatedAt DateTime  @updatedAt                    // Время последнего обновления
+
+  chats     UserTelegramChat[]      // Связь с таблицей чатов
+}
+
+model UserTelegramChat {
+  id               String      @id @default(cuid())           // Уникальный ID записи
+  userId           String                                   // ID пользователя
+  botId            String                                   // ID бота
+  chatId           String                                   // ID чата
+  telegramUserId   String
+  chatName         String      @unique
+  telegramUsername String?                                  // ID пользователя в Telegram
+  isActive         Boolean     @default(true)                   // Статус активности чата
+  createdAt        DateTime    @default(now())                 // Время создания записи
+  updatedAt        DateTime    @updatedAt                      // Время последнего обновления записи
+
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
+  bot            TelegramBot @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
+
+  @@unique([botId, telegramUserId])   // Уникальность для каждого пользователя, бота и чата
+}
 enum PermissionEnum {
   VIEW_USER_REPORT
   VIEW_UNION_REPORT

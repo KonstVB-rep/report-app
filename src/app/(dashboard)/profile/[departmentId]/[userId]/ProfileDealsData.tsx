@@ -7,6 +7,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useGetDealsByDateRange } from "@/entities/deal/hooks/query";
 import { DateRange } from "@/entities/deal/types";
+import { OverlayLocal } from "@/shared/ui/Overlay";
 
 const dateRanges = [
   { name: "week", title: "неделя" },
@@ -31,18 +32,23 @@ const ProfileDealsData = () => {
     router.push(`?${params.toString()}`);
   };
 
-  const { data: projectsCount } = useGetDealsByDateRange(
-    userId as string,
-    dateRangeState,
-    DealType.PROJECT,
-    departmentId as string
-  );
-  const { data: retailsCount } = useGetDealsByDateRange(
-    userId as string,
-    dateRangeState,
-    DealType.RETAIL,
-    departmentId as string
-  );
+  const { data: projectsCount, isPending: isLoadingProjects } =
+    useGetDealsByDateRange(
+      userId as string,
+      dateRangeState,
+      DealType.PROJECT,
+      departmentId as string
+    );
+
+  const { data: retailsCount, isPending: isLoadingRetails } =
+    useGetDealsByDateRange(
+      userId as string,
+      dateRangeState,
+      DealType.RETAIL,
+      departmentId as string
+    );
+
+  const isPendingData = isLoadingProjects || isLoadingRetails;
 
   useEffect(() => {
     const param = searchParams.get("dateRange") || "week";
@@ -65,15 +71,18 @@ const ProfileDealsData = () => {
           </Button>
         ))}
       </div>
-      <div className="p-2 border flex justify-around rounded-md font-semibold">
-        <span>Проекты: {projectsCount?.length}</span> /{" "}
-        <span>Отказы: {retailsCount?.reject}</span> /{" "}
-        <span>Закрыты: {retailsCount?.closed}</span>
-      </div>
-      <div className="p-2 border flex justify-around rounded-md font-semibold">
-        <span>Розница: {retailsCount?.length}</span> /{" "}
-        <span>Отказы: {retailsCount?.reject}</span> /{" "}
-        <span>Закрыты: {retailsCount?.closed}</span>
+      <div className="relative">
+        <OverlayLocal isPending={isPendingData} className="rounded-md opacity-100"/>
+        <div className="p-2 border flex justify-around rounded-md">
+          <span>Проекты: {projectsCount?.length || 0}</span> /{" "}
+          <span>Отказы: {retailsCount?.reject || 0}</span> /{" "}
+          <span>Закрыты: {retailsCount?.closed || 0}</span>
+        </div>
+        <div className="p-2 border flex justify-around rounded-md">
+          <span>Розница: {retailsCount?.length || 0}</span> /{" "}
+          <span>Отказы: {retailsCount?.reject || 0}</span> /{" "}
+          <span>Закрыты: {retailsCount?.closed || 0}</span>
+        </div>
       </div>
     </div>
   );

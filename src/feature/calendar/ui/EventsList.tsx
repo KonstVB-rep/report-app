@@ -22,6 +22,7 @@ type EventsListProps = {
 };
 
 const EventsList = ({ events }: EventsListProps) => {
+
   const table = useReactTable({
     data: events,
     columns: columnsDataCalendar,

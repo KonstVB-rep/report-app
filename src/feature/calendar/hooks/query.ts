@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/ui/Toast";
 
-import { getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
+import { getCalendarBotName, getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
+import { getTelegramBotInDb } from "@/feature/telegramBot/api";
+import { TOAST } from "@/shared/ui/Toast";
 
 export const useGetEventsCalendarUser = () => {
   const { authUser } = useStoreUser();
@@ -17,14 +18,12 @@ export const useGetEventsCalendarUser = () => {
         return await getEventsCalendarUser();
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
-        TOAST.ERROR((error as Error).message);
         throw error;
       }
     },
     retry: !!authUser?.id,
   });
 };
-
 
 export const useGetEventsCalendarUserToday = () => {
   const { authUser } = useStoreUser();
@@ -38,6 +37,38 @@ export const useGetEventsCalendarUserToday = () => {
         return await getEventsCalendarUserToday();
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
+        throw error;
+      }
+    },
+    retry: !!authUser?.id,
+  });
+};
+
+export const useGetInfoChat = (chatName: string) => {
+  const { authUser } = useStoreUser();
+  return useQuery({
+    queryKey: ["chatInfo", authUser?.id, chatName],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+
+        const botName = await getCalendarBotName();
+
+        if (!botName) return;
+        const botInDb = await getTelegramBotInDb(
+          botName,
+          authUser.id,
+          "calendarChat"
+        );
+        if (!botInDb) {
+          return {botName, isActive: false, chatId: "", chatName: ""};
+        }
+
+        return botInDb || null;
+      } catch (error) {
+        console.log(error, "Ошибка useGetInfoChat");
         TOAST.ERROR((error as Error).message);
         throw error;
       }

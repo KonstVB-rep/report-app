@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { SetStateAction } from "react";
-import { UseFormReturn } from "react-hook-form";
 
 import { ru } from "date-fns/locale";
 
@@ -12,43 +10,15 @@ import DialogComponent from "@/shared/ui/DialogComponent";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
 import useCalendarMobile from "../hooks/useCalendarMobile";
-import { EventCalendarSchema } from "../model/schema";
 import { EventInputType } from "../types";
 import {
   handleDateSelectOnEventsList,
   handleEventClickOnEventsList,
 } from "../utils/eventHandlers";
 import CalendarFormModal from "./CalendarFormModal";
+import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
 
-type Props = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  handleSubmit: (values: EventCalendarSchema) => void;
-  editingId: string | null;
-  confirmDelModal: boolean;
-  setConfirmDelModal: React.Dispatch<SetStateAction<boolean>>;
-  isLoading: boolean;
-  isPendingDelete: boolean;
-  deleteEvent: (id: string) => void,
-  form: UseFormReturn<EventCalendarSchema>;
-  setEditingId: (id: string | null) => void;
-  setOpenModal: (open: boolean) => void;
-};
-
-const CalendarMobile = ({
-  open,
-  setOpen,
-  handleSubmit,
-  editingId,
-  confirmDelModal,
-  setConfirmDelModal,
-  isLoading,
-  isPendingDelete,
-  deleteEvent,
-  form,
-  setEditingId,
-  setOpenModal,
-}: Props) => {
+const CalendarMobile = () => {
   const {
     events,
     openList,
@@ -57,13 +27,14 @@ const CalendarMobile = ({
     selectedDate,
     eventDates,
     handleSelect,
-    // isPending
   } = useCalendarMobile();
+
+  const {form,closeModalForm,setEditingId,setOpenModal} = useCalendarContext();
 
   const handleDateSelect = (date: Date | undefined) => {
     const isExistEvents = handleSelect(date);
     if (!isExistEvents) {
-      handleDateSelectOnEventsList(date, form, setOpen);
+      handleDateSelectOnEventsList(date, form, setEditingId, closeModalForm);
     }
   };
 
@@ -83,6 +54,7 @@ const CalendarMobile = ({
         disabled={(date) => date < new Date(new Date().toDateString())}
         className="rounded-md border shadow"
       />
+      
       <DialogComponent
         trigger={undefined}
         open={openList}
@@ -101,23 +73,14 @@ const CalendarMobile = ({
               )
             }
             handleDateSelectOnEventsList={() =>
-              handleDateSelectOnEventsList(selectedDate, form, setOpen)
+              handleDateSelectOnEventsList(selectedDate, form, setEditingId, closeModalForm)
             }
           />
         </MotionDivY>
       </DialogComponent>
+
       <CalendarFormModal
-        handleSubmit={handleSubmit}
-        confirmDelModal={confirmDelModal}
-        setConfirmDelModal={setConfirmDelModal}
-        editingId={editingId || ""}
         events={events}
-        isPendingDelete={isPendingDelete}
-        deleteEvent={deleteEvent}
-        form={form}
-        isLoading={isLoading}
-        open={open}
-        setOpen={setOpen}
       />
     </div>
   );

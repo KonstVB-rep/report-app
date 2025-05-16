@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+// const normalizeTime = (time: string) => {
+//   // Если время не в формате HH:mm, пытаемся нормализовать
+//   if (!/^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/.test(time)) {
+//     const date = new Date(time);
+//     const hours = String(date.getHours()).padStart(2, "0");
+//     const minutes = String(date.getMinutes()).padStart(2, "0");
+//     return `${hours}:${minutes}`;
+//   }
+//   return time;
+// };
+
 export const EventCalendarFormSchema = z
   .object({
     eventTitle: z.string({
@@ -12,24 +23,28 @@ export const EventCalendarFormSchema = z
       z.date()
     ),
 
-    startTimeEvent: z
-      .string()
-      .regex(
-        /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
-        "Некорректный формат времени"
-      ),
-
     endDateEvent: z.preprocess(
       (val) => (typeof val === "string" ? new Date(val) : val),
       z.date()
     ),
 
-    endTimeEvent: z
+    startTimeEvent: z.preprocess((val) => {
+      return (val as string).slice(0,5);
+    }, z
       .string()
       .regex(
         /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
         "Некорректный формат времени"
-      ),
+      )),
+
+    endTimeEvent: z.preprocess((val) => {
+      return (val as string).slice(0,5);
+    }, z
+      .string()
+      .regex(
+        /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
+        "Некорректный формат времени"
+      )),
   })
   .refine(
     (data) => {

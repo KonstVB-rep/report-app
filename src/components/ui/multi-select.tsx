@@ -251,7 +251,7 @@ const MultiSelectValue = React.forwardRef<
 
     if (!value.length || !firstRendered) {
       return (
-        <span className="pointer-events-none text-neutral-500 dark:text-neutral-400">
+        <span className="pointer-events-none text-neutral-700 dark:text-neutral-100">
           {placeholder}
         </span>
       );

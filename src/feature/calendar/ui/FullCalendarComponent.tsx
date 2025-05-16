@@ -12,21 +12,19 @@ import { useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { EventInputType } from "../types";
-
-type FullCalendarComponentProps = {
-  handleEventClick: (clickInfo: EventClickArg) => void;
-  events: EventInputType[] | undefined;
-  handleDateSelect: (clickInfo: DateSelectArg) => void;
-};
-
-const FullCalendarComponent = ({
-  handleEventClick,
-  events,
+import {
   handleDateSelect,
-}: FullCalendarComponentProps) => {
+  handleEventClick,
+} from "@/feature/calendar/utils/eventHandlers";
+import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
+import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
+
+const FullCalendarComponent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const { events } = useEventActionContext()
+  const {form, setEditingId, setOpenModal} = useCalendarContext()
 
   const defaultView = "dayGridMonth";
   const viewFromUrl = searchParams.get("view");
@@ -46,24 +44,33 @@ const FullCalendarComponent = ({
     params.set("view", newView);
     const newUrl = `${window.location.pathname}?${params.toString()}`;
 
-    // Проводим проверку, чтобы избежать лишней перезагрузки, если URL не изменился
+
     if (window.location.search !== `?${params.toString()}`) {
       router.replace(newUrl, { scroll: false });
     }
   };
 
+  const handleEventClickFn=(clickInfo: EventClickArg) => handleEventClick(clickInfo, form, setEditingId, setOpenModal)
+              
+ 
+  const handleDateSelectFn=(event: DateSelectArg) => {
+    setEditingId('')
+    handleDateSelect(event, form, setOpenModal)
+  }
+              
+
   return (
-    <div className="p-2">
+    <div className="p-2 full-calendar">
       <FullCalendar
         selectMirror={false}
         unselectAuto={true}
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView={currentView}
-        eventClick={handleEventClick}
+        eventClick={handleEventClickFn}
         selectable={true}
         dayMaxEvents={2}
         events={events ?? []}
-        select={handleDateSelect}
+        select={handleDateSelectFn}
         height="auto"
         locales={[ruLocale]}
         locale={ruLocale}
@@ -105,7 +112,7 @@ const FullCalendarComponent = ({
         datesSet={handleDatesSet}
         contentHeight="auto"
         handleWindowResize={false}
-        slotEventOverlap={false} // Предотвращаем наложение слотов на события
+        slotEventOverlap={false} 
       />
     </div>
   );

@@ -4,7 +4,7 @@ import React from "react";
 
 const DeleteUserModalContentSkeleton = () => {
   return (
-    <div className="grid gap-5 py-4">
+    <div className="grid gap-5">
       <DialogTitle className="h-6 w-1/2 m-auto animate-pulse rounded-md bg-muted" />
 
       <div className="grid gap-2">

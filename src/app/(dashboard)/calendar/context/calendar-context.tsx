@@ -31,10 +31,11 @@ interface CalendareContextType {
   confirmDelModal: boolean;
   setConfirmDelModal: React.Dispatch<SetStateAction<boolean>>;
   editingId: string | null;
-  setEditingId: (id: string | null) => void;
+  setEditingId: (id: string ) => void;
   form: UseFormReturn<EventCalendarSchema>;
   handleResetAndClose: () => void;
   handleCloseModalAfterDeleteEvent: () => void;
+  closeModalForm: () => void;
 }
 
 const CalendarContext = createContext<CalendareContextType | undefined>(
@@ -43,6 +44,7 @@ const CalendarContext = createContext<CalendareContextType | undefined>(
 
 export const useCalendarContext = (): CalendareContextType => {
   const context = useContext(CalendarContext);
+
   if (!context) {
     throw new Error(
       "useCalendarContext must be used within a CalendarProvider"
@@ -54,7 +56,7 @@ export const useCalendarContext = (): CalendareContextType => {
 export const CalendarProvider = ({ children }: { children: ReactNode }) => {
   const [openModal, setOpenModal] = useState(false);
   const [confirmDelModal, setConfirmDelModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string>('');
 
   const form = useForm<EventCalendarSchema>({
     resolver: zodResolver(EventCalendarFormSchema),
@@ -63,14 +65,23 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
 
   const handleResetAndClose = useCallback(() => {
     setOpenModal(false);
+    setEditingId('');
     form.reset();
   }, [form]);
   
   const handleCloseModalAfterDeleteEvent = useCallback(() => {
     setConfirmDelModal(false);
-    setEditingId(null);
+   
     handleResetAndClose();
   }, [handleResetAndClose]);
+
+  const closeModalForm = useCallback(() => {
+    if (openModal) {
+      handleResetAndClose();
+    } else {
+      setOpenModal(true);
+    }
+  },[handleResetAndClose, openModal]);
   
   return (
     <CalendarContext.Provider
@@ -84,6 +95,7 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
         editingId,
         setEditingId,
         form,
+        closeModalForm
       }}
     >
       {children}
