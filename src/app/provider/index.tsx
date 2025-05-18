@@ -13,6 +13,7 @@ import NotificationChecker from "@/feature/calendar/ui/NotificationChecker";
 import { NotificationProvider } from "./notification-provider";
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
+import { LastPathProvider } from "./last-path-provider";
 
 const ReactQueryDevtools = dynamic(
   () =>
@@ -30,24 +31,26 @@ const AppProvider = ({ children }: PropsWithChildren) => {
   return (
     <>
       {/* <ReactScan /> */}
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <QueryProvider>
-          {process.env.NODE_ENV === "development" && (
-            <ReactQueryDevtools initialIsOpen={false} />
-          )}
-          <Toaster position="top-center" />
-          <SpeedInsights />
-          <NotificationProvider>
-            <NotificationChecker chatName="calendarChat"/>
-            {children}
-          </NotificationProvider>
-        </QueryProvider>
-      </ThemeProvider>
+      <LastPathProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            {process.env.NODE_ENV === "development" && (
+              <ReactQueryDevtools initialIsOpen={false} />
+            )}
+            <Toaster position="top-center" />
+            <SpeedInsights />
+            <NotificationProvider>
+              <NotificationChecker chatName="calendarChat" />
+              {children}
+            </NotificationProvider>
+          </QueryProvider>
+        </ThemeProvider>
+      </LastPathProvider>
     </>
   );
 };

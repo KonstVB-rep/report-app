@@ -13,7 +13,6 @@ import {
 
 import { RADIAN } from "../lib/constants";
 import { CustomizedLabelProps } from "../types";
-// import { useEffect, useState } from "react";
 
 export const getPeriodRange = (
   period: "week" | "month" | "year"
@@ -23,7 +22,7 @@ export const getPeriodRange = (
   switch (period) {
     case "week":
       return {
-        from: startOfWeek(now, { weekStartsOn: 1 }), // понедельник
+        from: startOfWeek(now, { weekStartsOn: 1 }),
         to: endOfWeek(now, { weekStartsOn: 1 }),
       };
     case "month":
@@ -75,59 +74,44 @@ const dateFilter = (date: Date, filterValue?: DateRange): boolean => {
   return true;
 };
 
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  outerRadius,
-  percent,
-  payload,
-  width,
-}: CustomizedLabelProps & { width?: number }) => {
-  const padding = 16;
-  const dynamicRadius = Math.min(
-    outerRadius + 24,
-    (width ?? 400) / 2 - padding
-  );
+const renderCustomizedLabel = (isDark: boolean) => {
+  const Label = ({
+    cx,
+    cy,
+    midAngle,
+    outerRadius,
+    percent,
+    payload,
+    width,
+  }: CustomizedLabelProps & { width?: number }) => {
+    const padding = 16;
+    const dynamicRadius = Math.min(
+      outerRadius + 24,
+      (width ?? 400) / 2 - padding
+    );
 
-  const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN);
-  const y = cy + dynamicRadius * Math.sin(-midAngle * RADIAN);
-  // const [isDarkTheme, setIsDarkTheme] = useState<boolean>(
-  //   window.matchMedia("(prefers-color-scheme: dark)").matches
-  // );
+    const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN);
+    const y = cy + dynamicRadius * Math.sin(-midAngle * RADIAN);
 
-  // // Обновление темы при изменении в системе
-  // useEffect(() => {
-  //   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-  //   const handleThemeChange = (e: MediaQueryListEvent) => {
-  //     setIsDarkTheme(e.matches);
-  //   };
+    return (
+      <text
+        x={x}
+        y={y}
+        fill={isDark ? "#ffffff" : "#111111"}
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="text-after-edge"
+        fontSize={14}
+      >
+        <tspan x={x} dy="0">
+          {payload.name}
+        </tspan>
+        <tspan x={x} dy="1.2em">{`${(percent * 100).toFixed(0)}%`}</tspan>
+      </text>
+    );
+  };
 
-  //   mediaQuery.addEventListener("change", handleThemeChange);
-
-  //   return () => {
-  //     mediaQuery.removeEventListener("change", handleThemeChange);
-  //   };
-  // }, []);
-
-  // Цвет текста в зависимости от темы
-  // const textColor = isDarkTheme ? "#ffffff" : "#000000";
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill={"darkgray"}
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="text-after-edge"
-      fontSize={14}
-    >
-      <tspan x={x} dy="0">
-        {payload.name}
-      </tspan>
-      <tspan x={x} dy="1.2em">{`${(percent * 100).toFixed(0)}%`}</tspan>
-    </text>
-  );
+  return Label;
 };
+
 
 export { isFromSite, normalizeResource, dateFilter, renderCustomizedLabel };

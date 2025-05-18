@@ -27,6 +27,7 @@ import {
 import EmptyData from "./EmptyData";
 import MobileCharts from "./MobileCharts";
 import ResourceRow from "./ResourceRow";
+import useCurrentTheme from "@/shared/hooks/useCurrentTheme";
 
 type StatusGroup = "inWork" | "positive" | "negative";
 
@@ -43,6 +44,7 @@ const defaultValuesCount = () => ({
 });
 
 const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
+  const isDarkMode = useCurrentTheme()
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -113,6 +115,8 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       setSelectedDate(getPeriodRange(param as DateRangeParams));
     }
   }, [router, searchParams]);
+
+
 
   if (deals.length === 0) return <EmptyData />;
 
@@ -201,7 +205,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                   cy="50%"
                   outerRadius={140}
                   labelLine
-                  label={renderCustomizedLabel}
+                  label={renderCustomizedLabel(isDarkMode)}
                 >
                   {data.map((_, index) => (
                     <Cell

@@ -2,11 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 
 import Image from "next/image";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { motion } from "motion/react";
 import { z } from "zod";
@@ -43,7 +43,7 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
 
   const [state, formAction] = useActionState(login, undefined);
   const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
-  // const [shouldRedirect, setShouldRedirect] = useState(false);
+  const router = useRouter();
 
   const { setDepartments } = useStoreDepartment();
 
@@ -55,41 +55,47 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
     formAction(formData);
   };
 
-
-
+  const redirectRef = useRef(false);
+  
   useEffect(() => {
-    if(!isAuth){
-      resetAllStores()
+    if (!isAuth) {
+      resetAllStores();
     }
+
     if (isAuth && departmentData) {
       setDepartments(departmentData);
-      // setShouldRedirect(true);
     }
-  }, [isAuth, departmentData, setDepartments]);
+
+    const hasRedirected = redirectRef.current;
+    if (hasRedirected) {
+      return;
+    }
+
+    const lastAppPath = localStorage.getItem("lastAppPath");
+    console.log(lastAppPath && lastAppPath !== "/login" && lastAppPath !== "/");
+
+    if (lastAppPath && lastAppPath !== "/login" && lastAppPath !== "/") {
+      router.push(lastAppPath);
+      localStorage.removeItem("lastAppPath");
+      redirectRef.current = true; 
+      return; 
+    }
+
+    const redirectUrl = redirectPathCore(authUser!.departmentId, authUser!.id);
+    router.push(redirectUrl);
+    redirectRef.current = true;
+  }, [isAuth, departmentData, setDepartments, authUser, router]);
 
   useEffect(() => {
     if (state && state?.error) {
       TOAST.ERROR(state.message);
     }
 
-    // const isRedirected = document.cookie.includes("auth_redirected=true");
-
-    // if (isRedirected) {
-    //   resetAllStores();
-    //   document.cookie = "auth_redirected=; Max-Age=0; path=/"; // Удаляем флаг из куки
-    // } else 
     if (state && state.data) {
       setAuthUser(state.data);
       setIsAuth(true);
     }
-  }, [state, setAuthUser, setIsAuth, isAuth]);
-
-
-  if (authUser) {
-    const redirectUrl = redirectPathCore(authUser!.departmentId, authUser!.id);
-    redirect(redirectUrl);
-  }
-  
+  }, [state, isAuth, setAuthUser, setIsAuth]);
 
   return (
     <motion.div

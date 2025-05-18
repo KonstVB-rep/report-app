@@ -18,9 +18,9 @@ async function sendNotificationsToTelegram(events: EventInputType[]) {
     if (!response.ok) {
         throw new Error(`Ошибка при отправке уведомления. Статус: ${response.status}`);
     }
-
     const data = await response.json();
     console.log("Уведомления отправлены: ", data);
+    return data
   } catch (error) {
     console.error('Ошибка при отправке уведомлений:', error);
   }

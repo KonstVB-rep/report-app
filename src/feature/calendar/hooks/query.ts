@@ -4,7 +4,7 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 
 import { getCalendarBotName, getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
 import { getTelegramBotInDb } from "@/feature/telegramBot/api";
-import { TOAST } from "@/shared/ui/Toast";
+// import { TOAST } from "@/shared/ui/Toast";
 
 export const useGetEventsCalendarUser = () => {
   const { authUser } = useStoreUser();
@@ -56,7 +56,9 @@ export const useGetInfoChat = (chatName: string) => {
 
         const botName = await getCalendarBotName();
 
-        if (!botName) return;
+        if (!botName) {
+          throw new Error("Название бота не найдено");
+        }
         const botInDb = await getTelegramBotInDb(
           botName,
           authUser.id,
@@ -66,10 +68,10 @@ export const useGetInfoChat = (chatName: string) => {
           return {botName, isActive: false, chatId: "", chatName: ""};
         }
 
-        return botInDb || null;
+        return botInDb || {};
       } catch (error) {
         console.log(error, "Ошибка useGetInfoChat");
-        TOAST.ERROR((error as Error).message);
+        // TOAST.ERROR((error as Error).message);
         throw error;
       }
     },

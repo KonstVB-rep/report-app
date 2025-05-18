@@ -95,6 +95,7 @@ export default async function middleware(request: NextRequest) {
           const url = redirectPathCore(Number(departmentId), userId as string);
           return NextResponse.redirect(new URL(url, request.url));
         }
+        return NextResponse.next()
       } catch (error) {
         console.log("Access token недействителен, оставляем на /login", error);
       }
@@ -125,7 +126,7 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/login",
+    // "/login",
     "/dashboard/:path*",
     "/table/:path*",
     "/profile/:path*",
@@ -133,6 +134,6 @@ export const config = {
     "/deal/:path*",
     "/statistics/:path*",
     "/calendar/:path*",
-    "/",
+    // "/",
   ],
 };
