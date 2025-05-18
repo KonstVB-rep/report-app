@@ -56,7 +56,7 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
   };
 
   const redirectRef = useRef(false);
-  
+
   useEffect(() => {
     if (!isAuth) {
       resetAllStores();
@@ -72,7 +72,6 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
     }
 
     const lastAppPath = localStorage.getItem("lastAppPath");
-    console.log(lastAppPath && lastAppPath !== "/login" && lastAppPath !== "/");
 
     if (lastAppPath && lastAppPath !== "/login" && lastAppPath !== "/") {
       router.push(lastAppPath);
