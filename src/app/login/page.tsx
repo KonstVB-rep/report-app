@@ -30,8 +30,6 @@ export default function LoginPage() {
 
     const redirectUrl = lastAppPath || redirectPathCore(authUser.departmentId, authUser.id);
 
-    console.log(redirectUrl)
-
     router.replace(redirectUrl);
 
 
