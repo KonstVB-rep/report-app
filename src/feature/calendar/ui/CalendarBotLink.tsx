@@ -96,6 +96,9 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     if (bot?.chatName && isActiveBot) {
        setIsRefech(false);
     }
+    if(isActiveBot){
+       setIsChecked(true)
+    }
   }, [bot, isActiveBot, isFetching, isPending]);
 
   if (isPending) return null;
