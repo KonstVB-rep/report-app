@@ -20,7 +20,6 @@ export const useGetEventsCalendarUser = () => {
         }
         return await getEventsCalendarUser();
       } catch (error) {
-        console.log(error, "Ошибка useGetAllRetails");
         throw error;
       }
     },
@@ -39,7 +38,6 @@ export const useGetEventsCalendarUserToday = () => {
         }
         return await getEventsCalendarUserToday();
       } catch (error) {
-        console.log(error, "Ошибка useGetAllRetails");
         throw error;
       }
     },

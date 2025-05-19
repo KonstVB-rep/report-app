@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -15,23 +15,29 @@ import Loading from "../loading";
 
 export default function LoginPage() {
   const { isAuth, authUser } = useStoreUser();
+  const[loading, setLoading] = useState(true)
   const router = useRouter();
 
   useEffect(() => {
     if (!isAuth) {
       resetAllStores();
+      setLoading(false)
     }
 
     if (!authUser) return;
 
     const lastAppPath = localStorage.getItem("lastAppPath");
 
-    const redirectUrl = redirectPathCore(authUser.departmentId, authUser.id);
+    const redirectUrl = lastAppPath || redirectPathCore(authUser.departmentId, authUser.id);
 
-    if (lastAppPath) {
-      router.replace(lastAppPath || redirectUrl);
-    }
+    console.log(redirectUrl)
+
+    router.replace(redirectUrl);
+
+
   }, [isAuth, authUser, router]);
+
+  if (loading) return <Loading />;
 
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
