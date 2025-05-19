@@ -17,7 +17,7 @@ type SelectFormFieldProps<T extends FieldValues> = {
   control: Control<T>;
   errorMessage?: string;
   onValueChange?: (value: string) => void | undefined;
-  className?: string
+  className?: string;
 } & React.ComponentProps<typeof SelectComponent>;
 
 const SelectFormField = <T extends FieldValues>({

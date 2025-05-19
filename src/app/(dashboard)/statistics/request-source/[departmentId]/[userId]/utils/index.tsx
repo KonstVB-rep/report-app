@@ -40,7 +40,8 @@ export const getPeriodRange = (
 
 const isFromSite = (resource?: string) =>
   typeof resource === "string" &&
-  (resource.endsWith(".ru") || resource.endsWith(".рф"));
+  (resource.endsWith(".ru") || resource.endsWith(".рф")) &&
+  !resource.includes("@");
 
 const normalizeResource = (resource: string): string =>
   resource
@@ -112,6 +113,5 @@ const renderCustomizedLabel = (isDark: boolean) => {
 
   return Label;
 };
-
 
 export { isFromSite, normalizeResource, dateFilter, renderCustomizedLabel };

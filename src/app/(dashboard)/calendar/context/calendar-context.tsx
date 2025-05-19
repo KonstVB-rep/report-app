@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import React, {
@@ -31,7 +32,7 @@ interface CalendareContextType {
   confirmDelModal: boolean;
   setConfirmDelModal: React.Dispatch<SetStateAction<boolean>>;
   editingId: string | null;
-  setEditingId: (id: string ) => void;
+  setEditingId: (id: string) => void;
   form: UseFormReturn<EventCalendarSchema>;
   handleResetAndClose: () => void;
   handleCloseModalAfterDeleteEvent: () => void;
@@ -56,7 +57,7 @@ export const useCalendarContext = (): CalendareContextType => {
 export const CalendarProvider = ({ children }: { children: ReactNode }) => {
   const [openModal, setOpenModal] = useState(false);
   const [confirmDelModal, setConfirmDelModal] = useState(false);
-  const [editingId, setEditingId] = useState<string>('');
+  const [editingId, setEditingId] = useState<string>("");
 
   const form = useForm<EventCalendarSchema>({
     resolver: zodResolver(EventCalendarFormSchema),
@@ -65,13 +66,13 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
 
   const handleResetAndClose = useCallback(() => {
     setOpenModal(false);
-    setEditingId('');
+    setEditingId("");
     form.reset();
   }, [form]);
-  
+
   const handleCloseModalAfterDeleteEvent = useCallback(() => {
     setConfirmDelModal(false);
-   
+
     handleResetAndClose();
   }, [handleResetAndClose]);
 
@@ -81,8 +82,8 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
     } else {
       setOpenModal(true);
     }
-  },[handleResetAndClose, openModal]);
-  
+  }, [handleResetAndClose, openModal]);
+
   return (
     <CalendarContext.Provider
       value={{
@@ -95,7 +96,7 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
         editingId,
         setEditingId,
         form,
-        closeModalForm
+        closeModalForm,
       }}
     >
       {children}

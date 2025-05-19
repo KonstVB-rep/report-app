@@ -17,7 +17,7 @@ import { EventInputType } from "../types";
 
 type EventsListTableProps<T extends EventInputType> = {
   table: ReactTable<T>;
-  handleRowClick?: (row:  T ) => void;
+  handleRowClick?: (row: T) => void;
 };
 
 const EventsListTable = <T extends EventInputType>({
@@ -28,10 +28,10 @@ const EventsListTable = <T extends EventInputType>({
     table
   ) as RefObject<HTMLTableElement>;
 
-  const handleClickRowEvent = (row: T ) => {
-   if(row.end < new Date(Date.now())) return;
-   handleRowClick?.(row)
-  }
+  const handleClickRowEvent = (row: T) => {
+    if (row.end < new Date(Date.now())) return;
+    handleRowClick?.(row);
+  };
 
   if (!table) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;

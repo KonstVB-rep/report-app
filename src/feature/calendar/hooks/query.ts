@@ -1,9 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-
-import { getCalendarBotName, getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
 import { getTelegramBotInDb } from "@/feature/telegramBot/api";
+
+import {
+  getCalendarBotName,
+  getEventsCalendarUser,
+  getEventsCalendarUserToday,
+} from "../api";
 
 export const useGetEventsCalendarUser = () => {
   const { authUser } = useStoreUser();
@@ -64,7 +68,7 @@ export const useGetInfoChat = (chatName: string) => {
           "calendarChat"
         );
         if (!botInDb) {
-          return {botName, isActive: false, chatId: "", chatName: ""};
+          return { botName, isActive: false, chatId: "", chatName: "" };
         }
 
         return botInDb || {};

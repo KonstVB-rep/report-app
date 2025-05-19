@@ -72,7 +72,10 @@ const ProfileDealsData = () => {
         ))}
       </div>
       <div className="relative">
-        <OverlayLocal isPending={isPendingData} className="rounded-md opacity-100"/>
+        <OverlayLocal
+          isPending={isPendingData}
+          className="rounded-md opacity-100"
+        />
         <div className="p-2 border flex justify-around rounded-md">
           <span>Проекты: {projectsCount?.length || 0}</span> /{" "}
           <span>Отказы: {retailsCount?.reject || 0}</span> /{" "}

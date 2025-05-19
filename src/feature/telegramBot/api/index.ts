@@ -1,14 +1,14 @@
-'use server'
+"use server";
 
 import prisma from "@/prisma/prisma-client";
-import { handleError } from "@/shared/api/handleError";;
+import { handleError } from "@/shared/api/handleError";
 
 export const createTelegramBot = async (botName: string, token: string) => {
   try {
     // await handleAuthorization();
 
     const bot = await prisma.telegramBot.findUnique({
-      where: { botName , token},
+      where: { botName, token },
       include: { chats: true },
     });
 
@@ -17,7 +17,7 @@ export const createTelegramBot = async (botName: string, token: string) => {
     }
 
     const newBot = await prisma.telegramBot.create({
-      data: { botName, token},
+      data: { botName, token },
     });
     return newBot;
   } catch (error) {
@@ -28,10 +28,12 @@ export const createTelegramBot = async (botName: string, token: string) => {
   }
 };
 
-export const getTelegramBotInDb = async (botName: string, userId: string, chatName: string) => {
-
-    try {
-
+export const getTelegramBotInDb = async (
+  botName: string,
+  userId: string,
+  chatName: string
+) => {
+  try {
     const bot = await prisma.telegramBot.findUnique({
       where: { botName },
     });
@@ -42,32 +44,36 @@ export const getTelegramBotInDb = async (botName: string, userId: string, chatNa
 
     // Ищем чат с этим chatId
     const chat = await prisma.userTelegramChat.findUnique({
-      where: { botId:bot.id, userId, chatName },
+      where: { botId: bot.id, userId, chatName },
     });
 
     if (!chat) {
       return null;
     }
 
-    return { ...bot, isActive: chat.isActive, chatId: chat.chatId ,chatName: chat.chatName};
+    return {
+      ...bot,
+      isActive: chat.isActive,
+      chatId: chat.chatId,
+      chatName: chat.chatName,
+    };
   } catch (error) {
     console.error(error);
     handleError(
       typeof error === "string" ? error : "Ошибка получения Telegram данных"
     );
   }
-  };
+};
 
 export const createUserTelegramChat = async (
-  userId:string,
+  userId: string,
   chatId: number,
   telegramUserId: number,
-  telegramUsername:string,
+  telegramUsername: string,
   chatName: string,
   botName: string,
   token: string
 ) => {
-
   try {
     // const data = await handleAuthorization();
     // const { userId } = data!;
@@ -83,9 +89,9 @@ export const createUserTelegramChat = async (
     const existingChat = await prisma.userTelegramChat.findUnique({
       where: {
         botId_telegramUserId: {
-            botId: bot.id,
-            telegramUserId: String(telegramUserId),
-          },
+          botId: bot.id,
+          telegramUserId: String(telegramUserId),
+        },
       },
     });
 
@@ -95,19 +101,19 @@ export const createUserTelegramChat = async (
           userId,
           botId: bot.id,
           chatId: String(chatId),
-          telegramUserId:  String(telegramUserId),
+          telegramUserId: String(telegramUserId),
           telegramUsername,
           chatName,
           isActive: true,
         },
       });
-    }else{
+    } else {
       await prisma.userTelegramChat.update({
         where: {
           userId,
           botId: bot.id,
           chatId: String(chatId),
-          telegramUserId:  String(telegramUserId),
+          telegramUserId: String(telegramUserId),
           telegramUsername,
           chatName,
         },
@@ -122,14 +128,18 @@ export const createUserTelegramChat = async (
   }
 };
 
-
-export const toggleSubscribeChatBot = async (chatName: string, isActive: boolean) => {
+export const toggleSubscribeChatBot = async (
+  chatName: string,
+  isActive: boolean
+) => {
   if (!chatName) {
     throw new Error("chatName не может быть пустым");
   }
 
   try {
-    const existingChat = await prisma.userTelegramChat.findUnique({ where: { chatName } });
+    const existingChat = await prisma.userTelegramChat.findUnique({
+      where: { chatName },
+    });
 
     if (!existingChat) {
       throw new Error(`Чат - ${chatName} не найден в базе`);
@@ -139,10 +149,10 @@ export const toggleSubscribeChatBot = async (chatName: string, isActive: boolean
       where: { chatName },
       data: { isActive },
     });
-    
+
     return updatedChat;
   } catch (error) {
     console.error("Ошибка отписки:", error);
     throw error;
   }
-}
+};

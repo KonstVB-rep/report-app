@@ -2,9 +2,10 @@ import { DateSelectArg, EventClickArg } from "@fullcalendar/core";
 
 import { UseFormReturn } from "react-hook-form";
 
+import { TOAST } from "@/shared/ui/Toast";
+
 import { EventCalendarSchema } from "../model/schema";
 import { EventInputType } from "../types";
-import { TOAST } from "@/shared/ui/Toast";
 
 export const handleDateSelect = (
   event: DateSelectArg,
@@ -32,7 +33,6 @@ export const handleDateSelect = (
     form.setValue("startTimeEvent", startTime);
     form.setValue("endTimeEvent", "23:59");
   } else {
-
     if (event.allDay) {
       const endDate = new Date(event.end.getTime() - 86400000);
       form.setValue("startTimeEvent", "00:00");
@@ -73,7 +73,7 @@ export const handleDateSelect = (
 export const handleEventClick = (
   clickInfo: EventClickArg,
   form: UseFormReturn<EventCalendarSchema>,
-  setEditingId: (id: string ) => void,
+  setEditingId: (id: string) => void,
   setOpenModal: (open: boolean) => void
 ) => {
   const event = clickInfo.event;
@@ -168,7 +168,7 @@ export const handleDateSelectOnEventsList = (
   if (!startDate) return;
 
   setOpenModal(false);
-  setEditingId("")
+  setEditingId("");
 
   const isToday =
     new Date(startDate).toDateString() === new Date().toDateString();

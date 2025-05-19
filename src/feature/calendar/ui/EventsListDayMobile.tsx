@@ -27,8 +27,6 @@ const EventsListDayMobile = ({
   handleEventClickOnEventsList,
   handleDateSelectOnEventsList,
 }: EventsListProps) => {
-
-
   const table = useReactTable({
     data: events,
     columns: columnsDataCalendar,

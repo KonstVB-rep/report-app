@@ -28,23 +28,29 @@ export const EventCalendarFormSchema = z
       z.date()
     ),
 
-    startTimeEvent: z.preprocess((val) => {
-      return (val as string).slice(0,5);
-    }, z
-      .string()
-      .regex(
-        /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
-        "Некорректный формат времени"
-      )),
+    startTimeEvent: z.preprocess(
+      (val) => {
+        return (val as string).slice(0, 5);
+      },
+      z
+        .string()
+        .regex(
+          /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
+          "Некорректный формат времени"
+        )
+    ),
 
-    endTimeEvent: z.preprocess((val) => {
-      return (val as string).slice(0,5);
-    }, z
-      .string()
-      .regex(
-        /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
-        "Некорректный формат времени"
-      )),
+    endTimeEvent: z.preprocess(
+      (val) => {
+        return (val as string).slice(0, 5);
+      },
+      z
+        .string()
+        .regex(
+          /^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/,
+          "Некорректный формат времени"
+        )
+    ),
   })
   .refine(
     (data) => {

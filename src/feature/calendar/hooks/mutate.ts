@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { toggleSubscribeChatBot } from "@/feature/telegramBot/api";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -8,7 +9,6 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
-import { toggleSubscribeChatBot } from "@/feature/telegramBot/api";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { authUser } = useStoreUser();
@@ -105,13 +105,12 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
   });
 };
 
-
 export const useUpdateChatBot = () => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (chatData : {chatName: string, isActive: boolean}) => {
+    mutationFn: async (chatData: { chatName: string; isActive: boolean }) => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
@@ -127,4 +126,4 @@ export const useUpdateChatBot = () => {
       TOAST.ERROR("Произошла ошибка при попытке удаления события");
     },
   });
-}
+};

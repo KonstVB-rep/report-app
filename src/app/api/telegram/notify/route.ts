@@ -6,22 +6,23 @@ import { EventInputType } from "@/feature/calendar/types";
 
 async function sendNotification(message: string, chatId: string) {
   try {
-    const response = await axios.post(`${process.env.TELEGRAM_API_URL}${process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
+    const response = await axios.post(
+      `${process.env.TELEGRAM_API_URL}${process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`
+    );
 
     return response;
   } catch (error) {
     console.error("Ошибка при отправке уведомления:", error);
   }
-};
+}
 
 export type EventInputTypeWithChatId = EventInputType & {
   chatId: string;
 };
 
-
 export async function POST(req: NextRequest) {
   try {
-    const events = await req.json(); 
+    const events = await req.json();
 
     if (!Array.isArray(events) || events.length === 0) {
       return NextResponse.json(
@@ -45,18 +46,14 @@ export async function POST(req: NextRequest) {
 
       const message = `Напоминание: через 30 минут ${title}`;
 
-
       try {
-
         // Отправляем уведомление в Telegram
         await sendNotification(message, chatId);
-
       } catch (error) {
         console.error(
           `Ошибка при отправке уведомления для события: ${title}`,
           error
         );
-
       }
     }
 
@@ -69,5 +66,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-

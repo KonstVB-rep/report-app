@@ -1,7 +1,13 @@
-'use server'
+"use server";
+
 import { NextResponse } from "next/server";
+
 import axios from "axios";
-import { createTelegramBot, createUserTelegramChat } from "@/feature/telegramBot/api";
+
+import {
+  createTelegramBot,
+  createUserTelegramChat,
+} from "@/feature/telegramBot/api";
 
 const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;
 
@@ -14,31 +20,40 @@ export async function POST(req: Request) {
       const chatId = chat.id;
 
       // Проверяем, что это команда `/start` и что у нее есть параметр
-      if (text.startsWith('/start')) {
-        const params = text.split(' '); 
+      if (text.startsWith("/start")) {
+        const params = text.split(" ");
         const action = params[1];
 
-        const userId = action.split('-')[0]
+        const userId = action.split("-")[0];
 
         if (!userId) {
-          throw new Error("Не удалось получить ID пользователя из Telegram команды");
+          throw new Error(
+            "Не удалось получить ID пользователя из Telegram команды"
+          );
         }
 
-        const botName = action.split('-')[1]
-        const nameChat = action.split('-')[2]
+        const botName = action.split("-")[1];
+        const nameChat = action.split("-")[2];
 
-        const token = process.env[`TELEGRAM_BOT_TOKEN_${botName.toUpperCase()}`];
+        const token =
+          process.env[`TELEGRAM_BOT_TOKEN_${botName.toUpperCase()}`];
 
         if (!token) {
           console.error(`Токен для бота ${botName} не найден в .env`);
-          return NextResponse.json({ status: "Токен бота не найден" }, { status: 500 });
+          return NextResponse.json(
+            { status: "Токен бота не найден" },
+            { status: 500 }
+          );
         }
 
-        const bot = await createTelegramBot(botName, token)
+        const bot = await createTelegramBot(botName, token);
 
         if (!bot) {
           console.error("Бот не найден или не удалось создать");
-          return NextResponse.json({ status: "Бот не найден или не удалось создать" }, { status: 500 });
+          return NextResponse.json(
+            { status: "Бот не найден или не удалось создать" },
+            { status: 500 }
+          );
         }
 
         const telegramUsername = from?.username ?? "Никнейм не указан";
@@ -59,10 +74,10 @@ export async function POST(req: Request) {
           telegramUsername,
           nameChat,
           bot.botName,
-          bot.token,
-        )
+          bot.token
+        );
 
-        return NextResponse.json({ status: "Пользователь зарегистрирован"});
+        return NextResponse.json({ status: "Пользователь зарегистрирован" });
       }
     }
 

@@ -1,20 +1,20 @@
-import { DealType, PermissionEnum } from "@prisma/client";
-
+// import { DealType, PermissionEnum } from "@prisma/client";
 import React from "react";
 
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { useGetUser } from "@/entities/user/hooks/query";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
-import HoverCardComponent from "@/shared/ui/HoverCard";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
+
+// import HoverCardComponent from "@/shared/ui/HoverCard";
+// import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import LinkToUserTable from "./LinkToUserTable";
 
-const SummaryTableLink = dynamic(() => import("./SummaryTableLink"), {
-  ssr: false,
-});
+// const SummaryTableLink = dynamic(() => import("./SummaryTableLink"), {
+//   ssr: false,
+// });
 
 const ButtonsGroupTable = () => {
   const { userId } = useParams();
@@ -30,7 +30,7 @@ const ButtonsGroupTable = () => {
       <div className="flex gap-2">
         <LinkToUserTable />
 
-        <ProtectedByPermissions
+        {/* <ProtectedByPermissions
           permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
         >
           <HoverCardComponent title="Сводная таблица">
@@ -38,7 +38,7 @@ const ButtonsGroupTable = () => {
 
             <SummaryTableLink type={DealType.RETAIL} />
           </HoverCardComponent>
-        </ProtectedByPermissions>
+        </ProtectedByPermissions> */}
       </div>
     </div>
   );

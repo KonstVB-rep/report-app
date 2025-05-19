@@ -30,7 +30,7 @@ const Overlay = ({
     <>
       {createPortal(
         <div
-          className={`fixed inset-0 z-[1000] flex cursor-pointer items-center justify-center bg-black/50 ${className}`}
+          className={`fixed inset-0 z-[1000] flex cursor-pointer items-center justify-center bg-black/70 ${className}`}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         />,

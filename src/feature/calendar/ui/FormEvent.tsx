@@ -104,7 +104,6 @@ const FormEvent = ({ events }: FormEventProps) => {
   const { createEvent, updateEvent, isLoading } = useEventActionContext();
   const allDay = form.watch("allDay");
 
-
   return (
     <>
       <Form {...form}>

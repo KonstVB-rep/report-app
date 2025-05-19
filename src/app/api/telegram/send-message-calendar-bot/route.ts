@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import axios from "axios";
 
 export async function POST(request: Request) {
@@ -14,8 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const resolvedBotName =
-      botName ?? "";
+    const resolvedBotName = botName ?? "";
 
     if (!resolvedBotName) {
       return NextResponse.json(

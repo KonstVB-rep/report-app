@@ -12,19 +12,19 @@ import { useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
+import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
 import {
   handleDateSelect,
   handleEventClick,
 } from "@/feature/calendar/utils/eventHandlers";
-import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
-import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
 
 const FullCalendarComponent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { events } = useEventActionContext()
-  const {form, setEditingId, setOpenModal} = useCalendarContext()
+  const { events } = useEventActionContext();
+  const { form, setEditingId, setOpenModal } = useCalendarContext();
 
   const defaultView = "dayGridMonth";
   const viewFromUrl = searchParams.get("view");
@@ -44,20 +44,18 @@ const FullCalendarComponent = () => {
     params.set("view", newView);
     const newUrl = `${window.location.pathname}?${params.toString()}`;
 
-
     if (window.location.search !== `?${params.toString()}`) {
       router.replace(newUrl, { scroll: false });
     }
   };
 
-  const handleEventClickFn=(clickInfo: EventClickArg) => handleEventClick(clickInfo, form, setEditingId, setOpenModal)
-              
- 
-  const handleDateSelectFn=(event: DateSelectArg) => {
-    setEditingId('')
-    handleDateSelect(event, form, setOpenModal)
-  }
-              
+  const handleEventClickFn = (clickInfo: EventClickArg) =>
+    handleEventClick(clickInfo, form, setEditingId, setOpenModal);
+
+  const handleDateSelectFn = (event: DateSelectArg) => {
+    setEditingId("");
+    handleDateSelect(event, form, setOpenModal);
+  };
 
   return (
     <div className="p-2 full-calendar">
@@ -112,7 +110,7 @@ const FullCalendarComponent = () => {
         datesSet={handleDatesSet}
         contentHeight="auto"
         handleWindowResize={false}
-        slotEventOverlap={false} 
+        slotEventOverlap={false}
       />
     </div>
   );

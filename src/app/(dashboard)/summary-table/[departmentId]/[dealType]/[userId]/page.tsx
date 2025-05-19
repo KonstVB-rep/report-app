@@ -1,11 +1,3 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-
-import { getQueryClient } from "@/app/provider/query-provider";
-import {
-  getAllProjectsByDepartmentQuery,
-  getAllRetailsByDepartmentQuery,
-} from "@/entities/deal/api/queryFn";
-
 import SummaryTableProject from "../ui/SummaryTableProject";
 import SummaryTableRetail from "../ui/SummaryTableRetail";
 
@@ -14,56 +6,13 @@ const SummaryTablePage = async ({
 }: {
   params: Promise<{ dealType: string; departmentId: string; userId: string }>;
 }) => {
-  const { dealType, departmentId } = await params;
-
-  const queryClient = getQueryClient();
+  const { dealType } = await params;
 
   switch (dealType) {
     case "projects":
-      await queryClient.prefetchQuery({
-        queryKey: ["all-projects", +departmentId],
-        queryFn: () => {
-          try {
-            return getAllProjectsByDepartmentQuery();
-          } catch (error) {
-            console.log(error);
-            throw error;
-          }
-        },
-      });
-      break;
+      return <SummaryTableProject />;
     case "retails":
-      await queryClient.prefetchQuery({
-        queryKey: ["all-retails", +departmentId],
-        queryFn: () => {
-          try {
-            return getAllRetailsByDepartmentQuery();
-          } catch (error) {
-            console.log(error);
-            throw error;
-          }
-        },
-      });
-      break;
-    default:
-      return null;
-  }
-
-  const dehydratedState = dehydrate(queryClient);
-
-  switch (dealType) {
-    case "projects":
-      return (
-        <HydrationBoundary state={dehydratedState}>
-          <SummaryTableProject />
-        </HydrationBoundary>
-      );
-    case "retails":
-      return (
-        <HydrationBoundary state={dehydratedState}>
-          <SummaryTableRetail />
-        </HydrationBoundary>
-      );
+      return <SummaryTableRetail />;
     default:
       return null;
   }

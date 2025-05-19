@@ -20,7 +20,8 @@ const useCalendarMobile = () => {
 
   const eventsDate =
     futureEvents?.filter(
-      (event) => new Date(event.start).toDateString() === selectedDate?.toDateString()
+      (event) =>
+        new Date(event.start).toDateString() === selectedDate?.toDateString()
     ) || [];
 
   const handleSelect = (date: Date | undefined) => {
@@ -47,12 +48,13 @@ const useCalendarMobile = () => {
     if (!selectedDate) return;
 
     const isExistEventInDate = futureEvents?.some(
-      (event) => new Date(event.start).toDateString() === selectedDate.toDateString()
+      (event) =>
+        new Date(event.start).toDateString() === selectedDate.toDateString()
     );
 
     if (!isExistEventInDate && openList) {
       setOpenList(false);
-    } 
+    }
   }, [events, futureEvents, openList, selectedDate]);
 
   return {

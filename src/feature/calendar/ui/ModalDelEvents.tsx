@@ -13,9 +13,7 @@ type ModalDelEventsType = {
   events: EventInputType[];
 };
 
-const ModalDelEvents = ({
-  events,
-}: ModalDelEventsType) => {
+const ModalDelEvents = ({ events }: ModalDelEventsType) => {
   const { deleteEvent, isPendingDelete } = useEventActionContext();
   const { confirmDelModal, setConfirmDelModal, editingId } =
     useCalendarContext();

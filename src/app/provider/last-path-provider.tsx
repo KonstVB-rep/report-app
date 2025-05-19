@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useEffect } from "react";
+
 import { usePathname } from "next/navigation";
 
 interface LastPathContextProps {
@@ -11,7 +12,9 @@ export const LastPathContext = createContext<LastPathContextProps>({
   lastPath: null,
 });
 
-export const LastPathProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LastPathProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -20,7 +23,12 @@ export const LastPathProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [pathname]);
 
-  const lastPath = typeof window !== "undefined" ? localStorage.getItem("lastAppPath") : null;
+  const lastPath =
+    typeof window !== "undefined" ? localStorage.getItem("lastAppPath") : null;
 
-  return <LastPathContext.Provider value={{ lastPath }}>{children}</LastPathContext.Provider>;
+  return (
+    <LastPathContext.Provider value={{ lastPath }}>
+      {children}
+    </LastPathContext.Provider>
+  );
 };

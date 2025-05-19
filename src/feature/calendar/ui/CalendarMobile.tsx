@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { ru } from "date-fns/locale";
 
+import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
 import { Calendar } from "@/components/ui/calendar";
 import EventsListDayMobile from "@/feature/calendar/ui/EventsListDayMobile";
 import DialogComponent from "@/shared/ui/DialogComponent";
@@ -16,7 +17,6 @@ import {
   handleEventClickOnEventsList,
 } from "../utils/eventHandlers";
 import CalendarFormModal from "./CalendarFormModal";
-import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
 
 const CalendarMobile = () => {
   const {
@@ -29,7 +29,8 @@ const CalendarMobile = () => {
     handleSelect,
   } = useCalendarMobile();
 
-  const {form,closeModalForm,setEditingId,setOpenModal} = useCalendarContext();
+  const { form, closeModalForm, setEditingId, setOpenModal } =
+    useCalendarContext();
 
   const handleDateSelect = (date: Date | undefined) => {
     const isExistEvents = handleSelect(date);
@@ -54,7 +55,7 @@ const CalendarMobile = () => {
         disabled={(date) => date < new Date(new Date().toDateString())}
         className="rounded-md border shadow"
       />
-      
+
       <DialogComponent
         trigger={undefined}
         open={openList}
@@ -73,15 +74,18 @@ const CalendarMobile = () => {
               )
             }
             handleDateSelectOnEventsList={() =>
-              handleDateSelectOnEventsList(selectedDate, form, setEditingId, closeModalForm)
+              handleDateSelectOnEventsList(
+                selectedDate,
+                form,
+                setEditingId,
+                closeModalForm
+              )
             }
           />
         </MotionDivY>
       </DialogComponent>
 
-      <CalendarFormModal
-        events={events}
-      />
+      <CalendarFormModal events={events} />
     </div>
   );
 };

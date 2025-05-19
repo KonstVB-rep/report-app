@@ -197,11 +197,13 @@ body {
 }
 
 .loader {
-  width: min(150px, 20%);
-  height: min(150px, 20%);
+  width: 150px; 
+  height: 150px;
   display: inline-block;
   position: relative;
   flex-shrink: 0;
+  max-width: 150px; 
+  max-height: 150px; 
 }
 
 .loader::after,
@@ -217,10 +219,10 @@ body {
   top: 0;
   animation: animloader 2s linear infinite;
 }
+
 .loader::after {
   animation-delay: 1s;
 }
-
 @keyframes animloader {
   0% {
     transform: scale(0);
@@ -643,7 +645,13 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 /*переключатель уведомлений TG*/
 .switch-telegram-notify,
 .switch-telegram-notify-fetching{
-  @apply h-[1.8rem] w-[3.6rem] dark:shadow-[inset_0_0_6px_0px_black,0_0_6px_0px_black] shadow-[inset_0_0_6px_0px_#444444,0_0_6px_0px_#444444] !bg-background;
+  @apply h-[1.8rem] w-[3.6rem] dark:shadow-[inset_0_0_3px_0px_#777777,0_0_3px_0px_#777777] shadow-[inset_0_0_6px_0px_#444444,0_0_6px_0px_#444444] !bg-background;
+}
+
+
+.switch-telegram-notify[data-state="checked"],
+.switch-telegram-notify-fetching[data-state="checked"]{
+  @apply dark:shadow-[inset_0_0_20px_10px_#1C93E3,0_0_3px_0px_#777777] shadow-[inset_0_0_20px_10px_#1C93E3,0_0_3px_0px_#444444] !bg-background;
 }
 
 
@@ -658,11 +666,13 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 .switch-telegram-notify span[data-state="unchecked"],
 .switch-telegram-notify-fetching span[data-state="unchecked"]{
   transform: translateX(1px)!important;
+  outline: 1px solid hsla(0, 0%, 100%, 0.3);
 }
 
 .switch-telegram-notify span[data-state="checked"],
 .switch-telegram-notify-fetching span[data-state="checked"]{
   transform: translateX(28px)!important;
+  outline: 1px solid hsla(0, 0%, 100%, 0.7);
 }
 
 .switch-telegram-notify span:before {

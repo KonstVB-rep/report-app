@@ -54,7 +54,7 @@ const TableComponent = <T extends Record<string, unknown>>({
           departmentId={departmentId as string}
         >
           <TableRow
-            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === "REJECT" && "bg-red-900/40"}`}
+            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === "REJECT" && "bg-red-900/40"} ${row.original.dealStatus === "PAID" && "bg-lime-200/20"}`}
             data-reject={`${row.original.dealStatus === "REJECT"}`}
           >
             {renderRowCells(row)}

@@ -243,7 +243,7 @@ export const useGetAllRetails = (
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
-    retry: 2,
+    placeholderData: undefined,
   });
 };
 
@@ -264,6 +264,7 @@ export const useGetRetailsUser = (userId: string | null) => {
       }
     },
     enabled: !!userId,
+    placeholderData: undefined,
   });
   return { data, isError, ...restData };
 };

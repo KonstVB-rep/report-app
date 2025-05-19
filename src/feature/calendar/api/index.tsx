@@ -197,7 +197,6 @@ export const sendNotification = async (
         },
       }
     );
-    
 
     return NextResponse.json({ status: "success" });
   } catch (error) {

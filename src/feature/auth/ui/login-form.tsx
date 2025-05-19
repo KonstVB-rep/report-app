@@ -2,11 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 import { motion } from "motion/react";
 import { z } from "zod";
@@ -17,8 +16,6 @@ import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { login } from "@/feature/auth/login";
-import { redirectPathCore } from "@/shared/lib/helpers/redirectPathCore";
-import { resetAllStores } from "@/shared/lib/helpers/сreate";
 import { cn } from "@/shared/lib/utils";
 import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
@@ -42,8 +39,7 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
   });
 
   const [state, formAction] = useActionState(login, undefined);
-  const { setAuthUser, setIsAuth, isAuth, authUser } = useStoreUser();
-  const router = useRouter();
+  const { setAuthUser, setIsAuth, isAuth } = useStoreUser();
 
   const { setDepartments } = useStoreDepartment();
 
@@ -55,35 +51,11 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
     formAction(formData);
   };
 
-  const redirectRef = useRef(false);
-
   useEffect(() => {
-    if (!isAuth) {
-      resetAllStores();
-    }
-
     if (isAuth && departmentData) {
       setDepartments(departmentData);
     }
-
-    const hasRedirected = redirectRef.current;
-    if (hasRedirected) {
-      return;
-    }
-
-    const lastAppPath = localStorage.getItem("lastAppPath");
-
-    if (lastAppPath && lastAppPath !== "/login" && lastAppPath !== "/") {
-      router.push(lastAppPath);
-      localStorage.removeItem("lastAppPath");
-      redirectRef.current = true; 
-      return; 
-    }
-
-    const redirectUrl = redirectPathCore(authUser!.departmentId, authUser!.id);
-    router.push(redirectUrl);
-    redirectRef.current = true;
-  }, [isAuth, departmentData, setDepartments, authUser, router]);
+  }, [isAuth, departmentData, setDepartments]);
 
   useEffect(() => {
     if (state && state?.error) {

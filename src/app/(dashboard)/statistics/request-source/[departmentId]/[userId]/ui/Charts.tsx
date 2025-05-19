@@ -12,6 +12,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { Button } from "@/components/ui/button";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { StatusesInWork } from "@/entities/deal/lib/constants";
+import useCurrentTheme from "@/shared/hooks/useCurrentTheme";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 
@@ -27,7 +28,6 @@ import {
 import EmptyData from "./EmptyData";
 import MobileCharts from "./MobileCharts";
 import ResourceRow from "./ResourceRow";
-import useCurrentTheme from "@/shared/hooks/useCurrentTheme";
 
 type StatusGroup = "inWork" | "positive" | "negative";
 
@@ -44,7 +44,7 @@ const defaultValuesCount = () => ({
 });
 
 const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
-  const isDarkMode = useCurrentTheme()
+  const isDarkMode = useCurrentTheme();
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -115,8 +115,6 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       setSelectedDate(getPeriodRange(param as DateRangeParams));
     }
   }, [router, searchParams]);
-
-
 
   if (deals.length === 0) return <EmptyData />;
 

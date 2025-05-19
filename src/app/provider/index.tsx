@@ -10,10 +10,10 @@ import { Toaster } from "sonner";
 
 import NotificationChecker from "@/feature/calendar/ui/NotificationChecker";
 
+import { LastPathProvider } from "./last-path-provider";
 import { NotificationProvider } from "./notification-provider";
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
-import { LastPathProvider } from "./last-path-provider";
 
 const ReactQueryDevtools = dynamic(
   () =>
