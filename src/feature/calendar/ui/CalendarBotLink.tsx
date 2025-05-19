@@ -24,17 +24,13 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     isFetching
   } = useGetInfoChat(chatName, isRefech, 1);
 
-
   const { mutate: updateStatusChatBot } = useUpdateChatBot();
-
-  const [isChecked, setIsChecked] = useState(false);
 
   const handleUnsubscribeChatBot = async (chatName: string, chatId: string) => {
     if (!bot?.botName) return;
 
     try {
       setIsFetch(true)
-      setIsChecked(false);
       updateStatusChatBot({
         chatName,
         isActive: false,
@@ -52,7 +48,6 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
         "Не удалось отписаться от уведомлений. Попробуйте еще раз или позже."
       );
       console.error("Ошибка при отписке от бота:", error);
-      setIsChecked(true);
     }finally{
       setIsFetch(false)
     }
@@ -96,9 +91,6 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     if (bot?.chatName && isActiveBot) {
        setIsRefech(false);
     }
-    if(isActiveBot){
-       setIsChecked(true)
-    }
   }, [bot, isActiveBot, isFetching, isPending]);
 
   if (isPending) return null;
@@ -124,7 +116,7 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
         )}
         <Label htmlFor="calendar-bot" className="flex gap-1">
           <span className="text-xs text-stone-600">
-            {isChecked ? "Включены" : "Выключены"}
+            {isActiveBot ? "Включены" : "Выключены"}
           </span>
         </Label>
       </div>
