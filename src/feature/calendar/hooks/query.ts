@@ -45,8 +45,9 @@ export const useGetEventsCalendarUserToday = () => {
   });
 };
 
-export const useGetInfoChat = (chatName: string) => {
+export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interval: number = 1) => {
   const { authUser } = useStoreUser();
+
   return useQuery({
     queryKey: ["chatInfo", authUser?.id, chatName],
     queryFn: async () => {
@@ -66,7 +67,7 @@ export const useGetInfoChat = (chatName: string) => {
           chatName
         );
         if (!botInDb) {
-          return { botName, isActive: false, chatId: "", chatName: "" };
+          return {id: null, botName, isActive: false, chatId: "", chatName: "" };
         }
 
         return botInDb || {};
@@ -74,6 +75,7 @@ export const useGetInfoChat = (chatName: string) => {
         throw error;
       }
     },
-    retry: !!authUser?.id,
+    enabled: !!authUser?.id,
+    refetchInterval:isNeedRefech ? interval * 1000 : false
   });
 };

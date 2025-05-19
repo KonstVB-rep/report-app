@@ -1,7 +1,5 @@
 "use server";
 
-import { NextResponse } from "next/server";
-
 import axios from "axios";
 import { endOfDay, startOfDay } from "date-fns";
 
@@ -147,8 +145,8 @@ export const getEventsCalendarUserToday = async (): Promise<
       where: {
         userId,
         start: {
-          gte: todayStart, // Начало дня
-          lte: todayEnd, // Конец дня
+          gte: todayStart, 
+          lte: todayEnd,
         },
       },
       orderBy: {
@@ -179,11 +177,9 @@ export const sendNotification = async (
   chatId: string,
   botName: string
 ) => {
-  console.log(
-    process.env.NEXT_PUBLIC_API_BASE_URL,
-    "process.env.NEXT_PUBLIC_API_BASE_URL"
-  );
+
   try {
+
     await axios.post(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/telegram/send-message-calendar-bot`,
       {
@@ -198,7 +194,7 @@ export const sendNotification = async (
       }
     );
 
-    return NextResponse.json({ status: "success" });
+    return { status: "success" };
   } catch (error) {
     console.error("Ошибка при отправке:", error);
   }

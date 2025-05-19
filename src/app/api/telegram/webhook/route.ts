@@ -19,7 +19,6 @@ export async function POST(req: Request) {
       const { chat, text, from } = body.message;
       const chatId = chat.id;
 
-      // Проверяем, что это команда `/start` и что у нее есть параметр
       if (text.startsWith("/start")) {
         const params = text.split(" ");
         const action = params[1];
@@ -68,8 +67,6 @@ export async function POST(req: Request) {
           bot.botName,
           bot.token
         );
-
-        // Допустим, вы хотите отправить приветственное сообщение
         await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
           chat_id: chatId,
           text: `Привет, ${telegramUsername}! Ты успешно зарегистрирован.

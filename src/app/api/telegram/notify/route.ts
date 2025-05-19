@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const message = `Напоминание: через 30 минут ${title}`;
+      const message = `‼️Напоминание: через 30 минут - ${title}`;
 
       try {
         // Отправляем уведомление в Telegram

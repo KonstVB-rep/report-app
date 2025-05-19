@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
 
-    const { message, chatId, botName } = data.body;
+    const { message, chatId, botName } = data;
 
     if (!message || !chatId) {
       return NextResponse.json(

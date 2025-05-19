@@ -8,7 +8,7 @@ export const TOAST = {
       position: "top-center",
       style: {
         border: "1px solid oklch(0.577 0.245 27.325)",
-        borderRadius: "30px",
+        borderRadius: "16px",
         height: "auto",
         color: "oklch(0.577 0.245 27.325)",
         backgroundColor: "#azure",
@@ -27,7 +27,7 @@ export const TOAST = {
       position: "top-center",
       style: {
         border: "2px solid oklch(0.723 0.219 149.579)",
-        borderRadius: "30px",
+        borderRadius: "16px",
         height: "auto",
         color: "green",
         backgroundColor: "#azure",
@@ -47,7 +47,7 @@ export const TOAST = {
         message: messageSuccess,
         style: {
           border: "1px solid oklch(0.723 0.219 149.579)",
-          borderRadius: "30px",
+          borderRadius: "16px",
           color: "green",
           maxWidth: "400px",
           display: "flex",
