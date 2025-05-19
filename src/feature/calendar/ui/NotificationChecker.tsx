@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { useNotification } from "@/app/provider/notification-provider";
 
@@ -30,35 +30,26 @@ async function sendNotificationsToTelegram(events: EventInputType[]) {
   }
 }
 
-export default function NotificationChecker({
-  chatName,
-}: {
-  chatName: string;
-}) {
+export default function NotificationChecker({ chatName }: { chatName: string }) {
   const { events } = useNotification();
-  const [state, setState] = useState<boolean>(true);
-
   const { data: bot } = useGetInfoChat(chatName);
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (!events?.length) {
+    if (!events?.length || !bot?.isActive || !bot.chatId) {
       return;
     }
 
-    if (!bot || !bot?.isActive || !bot.chatId) {
-      return;
-    }
-    console.log('interval')
-    const id = setInterval(() => {
+    console.log("⏰ Интервал запущен");
+
+    intervalIdRef.current = setInterval(() => {
       const now = new Date();
       now.setSeconds(0, 0);
       const chatId = Number(bot.chatId);
 
       const upcomingEvents = events.filter((event) => {
         const eventStartTime = new Date(event.start);
-        const thirtyMinutesBefore = new Date(
-          eventStartTime.getTime() - 31 * 60000
-        );
+        const thirtyMinutesBefore = new Date(eventStartTime.getTime() - 30 * 60000);
         thirtyMinutesBefore.setSeconds(0, 0);
 
         return (
@@ -73,20 +64,23 @@ export default function NotificationChecker({
           chatId,
         }));
 
+        console.log(upcomingEvents,'upcomingEvents')
+
         console.log(
-          `Отправляю уведомления для событий: ${upcomingEvents.map((e) => e.title).join(", ")}`
+          `🔔 Отправляю уведомления: ${upcomingEvents
+            .map((e) => e.title)
+            .join(", ")}`
         );
         sendNotificationsToTelegram(eventsWithChatId);
-        setState((prev) => !prev);
       }
     }, 60000);
-
     return () => {
-      if (id) {
-        clearInterval(id);
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
       }
     };
-  }, [bot?.isActive, events, state]);
+  }, [bot?.isActive, bot?.chatId, events]);
 
-  return null;
+  // Фиктивный рендер, чтобы React не "выкидывал" компонент
+  return <span style={{ display: "none" }}>NotificationChecker active</span>;
 }
