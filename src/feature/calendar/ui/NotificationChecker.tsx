@@ -46,10 +46,9 @@ export default function NotificationChecker({
     }
 
     if (!bot || !bot?.isActive || !bot.chatId) {
-      console.log("Нет бота или чат не активен");
       return;
     }
-
+    console.log('interval')
     const id = setInterval(() => {
       const now = new Date();
       now.setSeconds(0, 0);
@@ -87,7 +86,7 @@ export default function NotificationChecker({
         clearInterval(id);
       }
     };
-  }, [bot, bot?.isActive, events, state]);
+  }, [bot?.isActive, events, state]);
 
   return null;
 }

@@ -105,7 +105,7 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
   });
 };
 
-export const useUpdateChatBot = () => {
+export const useCreateChatBot = () => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
@@ -119,6 +119,32 @@ export const useUpdateChatBot = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data.chatName],
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      TOAST.ERROR("Произошла ошибка при попытке удаления события");
+    },
+  });
+};
+
+
+export const useUpdateChatBot = () => {
+  const { authUser } = useStoreUser();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (chatData: { chatName: string; isActive: boolean }) => {
+      if (!authUser?.id) {
+        throw new Error("Пользователь не авторизован");
+      }
+
+      if(!chatData.chatName) return
+      return await toggleSubscribeChatBot(chatData.chatName, chatData.isActive);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["chatInfo", authUser?.id, data?.chatName],
       });
     },
     onError: (error) => {

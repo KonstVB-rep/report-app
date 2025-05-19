@@ -41,7 +41,7 @@ const CalendarPage = () => {
           icon={<ListTodo />}
         />
 
-        <CalendarBotLink />
+        <CalendarBotLink chatName="calendarChat"/>
       </div>
       {isMobile ? (
         <CalendarMobile />

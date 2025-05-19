@@ -128,6 +128,36 @@ export const createUserTelegramChat = async (
   }
 };
 
+
+// export const createSubscribeChatBot = async (
+//   chatName: string,
+//   isActive: boolean
+// ) => {
+//   if (!chatName) {
+//     throw new Error("chatName не может быть пустым");
+//   }
+
+//   try {
+//     const existingChat = await prisma.userTelegramChat.findUnique({
+//       where: { chatName },
+//     });
+
+//     if (!existingChat) {
+//       throw new Error(`Чат - ${chatName} не найден в базе`);
+//     }
+
+//     const updatedChat = await prisma.userTelegramChat.update({
+//       where: { chatName },
+//       data: { isActive },
+//     });
+
+//     return updatedChat;
+//   } catch (error) {
+//     console.error("Ошибка отписки:", error);
+//     throw error;
+//   }
+// };
+
 export const toggleSubscribeChatBot = async (
   chatName: string,
   isActive: boolean

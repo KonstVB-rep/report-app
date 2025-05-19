@@ -63,7 +63,7 @@ export const useGetInfoChat = (chatName: string) => {
         const botInDb = await getTelegramBotInDb(
           botName,
           authUser.id,
-          "calendarChat"
+          chatName
         );
         if (!botInDb) {
           return { botName, isActive: false, chatId: "", chatName: "" };

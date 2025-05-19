@@ -672,7 +672,7 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 .switch-telegram-notify span[data-state="checked"],
 .switch-telegram-notify-fetching span[data-state="checked"]{
   transform: translateX(28px)!important;
-  outline: 1px solid hsla(0, 0%, 100%, 0.7);
+  outline: 1px solid hsla(0, 0%, 100%, 1);
 }
 
 .switch-telegram-notify span:before {

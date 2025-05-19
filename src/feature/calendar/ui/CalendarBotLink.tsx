@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -11,10 +11,11 @@ import { sendNotification } from "../api";
 import { useUpdateChatBot } from "../hooks/mutate";
 import { useGetInfoChat } from "../hooks/query";
 
-const CalendarBotLink = () => {
+const CalendarBotLink = ({chatName}: {chatName: string }) => {
   const { authUser } = useStoreUser();
 
-  const { data: bot, isPending } = useGetInfoChat("calendarChat");
+  const { data: bot, isPending, refetch } = useGetInfoChat(chatName);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { mutate: updateStatusChatBot } = useUpdateChatBot();
 
@@ -26,7 +27,7 @@ const CalendarBotLink = () => {
 
     try {
       setIsFetching(true);
-      // Делаем мутацию с ожиданием завершения
+
       setIsChecked(false);
       updateStatusChatBot({
         chatName,
@@ -34,7 +35,6 @@ const CalendarBotLink = () => {
       });
 
       if (chatId) {
-        // Делаем отправку уведомления
         await sendNotification(
           "Вы успешно отписались от уведомлений",
           chatId,
@@ -62,37 +62,62 @@ const CalendarBotLink = () => {
     window.open(url, "_blank");
   };
 
-  const handleChange = async () => {
-    if (!authUser || !bot) return;
+  const pollForChatName = useCallback(async () => {
+  
+      if(bot?.chatName && !isActiveBot){
+        updateStatusChatBot({ chatName: bot?.chatName, isActive: true });
+        return;
+      }
+    
+      await refetch(); 
+      timeoutRef.current = setTimeout(pollForChatName, 1000);
+  }, [bot?.chatName, isActiveBot, refetch, updateStatusChatBot]);
+  
 
+  const handleChange = async () => {
+
+    if (!authUser || !bot) return;
+    setIsFetching(true)
     try {
-      if (!isActiveBot && bot.chatName) {
+      if (!isActiveBot && bot.botName) {
         openTelegramLink(bot.botName, authUser.id);
-        updateStatusChatBot({ chatName: bot.chatName, isActive: true });
+
+        pollForChatName()
       } else {
         if (bot.chatName && bot.chatId) {
           await handleUnsubscribeChatBot(bot.chatName, bot.chatId);
         }
+      
       }
     } catch (error) {
       console.error("Ошибка при изменении статуса бота:", error);
       TOAST.ERROR("Не удалось изменить статус бота.");
-    }
+    } 
   };
 
   useEffect(() => {
+    if(bot?.chatName && !isActiveBot){
+      if(timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+   return () => {
+    if(timeoutRef.current) clearTimeout(timeoutRef.current)
+   }
+  }, [bot, isActiveBot])
+
+
+  useEffect(() => {
+
     if (isActiveBot) {
       setIsChecked(isActiveBot);
+      setIsFetching(false)
+      TOAST.SUCCESS("Вы успешно подписались на уведомления.");
     } else {
       setIsChecked(isActiveBot);
     }
-  }, [bot, isActiveBot]);
+  }, [isActiveBot]);
 
   if (isPending) return null;
 
-  if (!bot || !bot.botName || !authUser) {
-    return null;
-  }
 
   return (
     <>

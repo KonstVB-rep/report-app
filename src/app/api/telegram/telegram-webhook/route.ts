@@ -57,14 +57,6 @@ export async function POST(req: Request) {
         }
 
         const telegramUsername = from?.username ?? "Никнейм не указан";
-
-        // Допустим, вы хотите отправить приветственное сообщение
-        await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
-          chat_id: chatId,
-          text: `Привет, ${telegramUsername}! Ты успешно зарегистрирован.
-Уведомления будут приходить за 30 минут до события.`,
-        });
-
         const telegramUserId = from.id;
 
         await createUserTelegramChat(
@@ -76,6 +68,13 @@ export async function POST(req: Request) {
           bot.botName,
           bot.token
         );
+
+        // Допустим, вы хотите отправить приветственное сообщение
+        await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
+          chat_id: chatId,
+          text: `Привет, ${telegramUsername}! Ты успешно зарегистрирован.
+Уведомления будут приходить за 30 минут до события.`,
+        });
 
         return NextResponse.json({ status: "Пользователь зарегистрирован" });
       }
