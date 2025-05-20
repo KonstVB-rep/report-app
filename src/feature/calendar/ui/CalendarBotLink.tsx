@@ -2,26 +2,30 @@
 
 import { useEffect, useState } from "react";
 
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Loader } from "lucide-react";
+
+import { Toggle } from "@/components/ui/toggle";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { cn } from "@/shared/lib/utils";
 import { TOAST } from "@/shared/ui/Toast";
+import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 import { sendNotification } from "../api";
 import { useUpdateChatBot } from "../hooks/mutate";
 import { useGetInfoChat } from "../hooks/query";
+import TelegramIcon from "./TelegramIcon";
 
 const CalendarBotLink = ({ chatName }: { chatName: string }) => {
   const { authUser } = useStoreUser();
 
-  const [isRefech, setIsRefech] = useState(false)
+  const [isRefech, setIsRefech] = useState(false);
 
-  const [isFetch, setIsFetch] = useState(false)
+  const [isFetch, setIsFetch] = useState(false);
 
   const {
     data: bot,
     isPending,
-    isFetching
+    isFetching,
   } = useGetInfoChat(chatName, isRefech, 1);
 
   const { mutate: updateStatusChatBot } = useUpdateChatBot();
@@ -30,7 +34,7 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     if (!bot?.botName) return;
 
     try {
-      setIsFetch(true)
+      setIsFetch(true);
       updateStatusChatBot({
         chatName,
         isActive: false,
@@ -42,14 +46,13 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
           bot.botName
         );
       }
-
     } catch (error) {
       TOAST.ERROR(
         "Не удалось отписаться от уведомлений. Попробуйте еще раз или позже."
       );
       console.error("Ошибка при отписке от бота:", error);
-    }finally{
-      setIsFetch(false)
+    } finally {
+      setIsFetch(false);
     }
   };
 
@@ -63,17 +66,19 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
   const handleChange = async () => {
     if (!authUser || !bot) return;
     try {
-      setIsFetch(true)
+      setIsFetch(true);
       if (!bot.id && bot.botName) {
         openTelegramLink(bot.botName, authUser.id);
-        setIsRefech(true)
-        return
+        setIsRefech(true);
+        return;
       }
       if (!isActiveBot) {
         updateStatusChatBot({ chatName: bot?.chatName, isActive: true });
-        await sendNotification( "Вы успешно подписались на уведомления календаря",
+        await sendNotification(
+          "Вы успешно подписались на уведомления календаря",
           bot.chatId,
-          bot.botName)
+          bot.botName
+        );
       } else {
         if (bot.chatName && bot.chatId) {
           await handleUnsubscribeChatBot(bot.chatName, bot.chatId);
@@ -82,14 +87,14 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     } catch (error) {
       console.error("Ошибка при изменении статуса бота:", error);
       TOAST.ERROR("Не удалось изменить статус бота.");
-    } finally{
-      setIsFetch(false)
+    } finally {
+      setIsFetch(false);
     }
   };
 
   useEffect(() => {
     if (bot?.chatName && isActiveBot) {
-       setIsRefech(false);
+      setIsRefech(false);
     }
   }, [bot, isActiveBot, isFetching, isPending]);
 
@@ -97,28 +102,29 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
 
   return (
     <>
-      <div className="flex flex-col items-center space-x-2">
-        {isFetching || isFetch ? (
-          <Switch
-            id="calendar-bot"
-            checked={isActiveBot}
-            disabled={isFetching || isFetch}
-            className="switch-telegram-notify-fetching disabled:opacity-50 cursor-not-allowed"
-          />
-        ) : (
-          <Switch
-            id="calendar-bot"
-            checked={isActiveBot}
-            onCheckedChange={handleChange}
-            title="Уведомления в Telegram"
-            className="switch-telegram-notify"
-          />
-        )}
-        <Label htmlFor="calendar-bot" className="flex gap-1">
-          <span className="text-xs text-stone-600">
-            {isActiveBot ? "Включены" : "Выключены"}
-          </span>
-        </Label>
+      <div className="flex flex-col items-center">
+        <TooltipComponent
+          content={`Уведомления в Telegram ${isActiveBot ? "включены" : "выключены"}`}
+        >
+          <Toggle
+            aria-label="Вкл/Выкл уведомления в телеграмм"
+            pressed={isActiveBot}
+            onPressedChange={handleChange}
+            className={cn(
+              isActiveBot
+                ? "shadow-[0_0_0px_2px_#1C93E3]"
+                : "shadow-[0_0_0px_2px_#444444]",
+              isFetch && "cursor-not-allowed pointer-events-none"
+            )}
+            disabled={isFetch}
+          >
+            {isFetch ? (
+              <Loader className="animate animate-spin" />
+            ) : (
+              <TelegramIcon fill={isActiveBot ? "#1C93E3" : "#777777"} />
+            )}
+          </Toggle>
+        </TooltipComponent>
       </div>
     </>
   );

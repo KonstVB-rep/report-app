@@ -95,6 +95,7 @@ const AppSidebar = () => {
                     alt="logo"
                     width={16}
                     height={16}
+                    style={{ width: '16px', height: '16px' }}
                     className="drop-shadow-[0_0px_8px_rgba(255,255,255,1)] dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)]"
                   />
                 </div>
