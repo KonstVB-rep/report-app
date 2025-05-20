@@ -29,8 +29,6 @@ async function redirectToLogin(request: NextRequest) {
   response.cookies.delete("access_token");
   response.cookies.delete("refresh_token");
 
-  // response.cookies.set("auth_redirected", "true", { maxAge: 5 });
-
   return response;
 }
 

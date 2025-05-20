@@ -8,9 +8,6 @@ import {
 
 import React from "react";
 
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
-
 function toRenderedValue(value: unknown): string | number | null {
   if (value === null || value === undefined) return null;
   if (typeof value === "string" || typeof value === "number") return value;
@@ -24,14 +21,20 @@ interface ExcelCellContext<TData, TValue> {
   table: Table<TData>;
 }
 
-export const downloadToExcel = <
+export const downloadToExcel = async <
   TData extends Record<string, unknown>,
   TValue = unknown,
 >(
   table: Table<TData>,
   columns: ColumnDef<TData, TValue>[]
 ) => {
-  const workbook = new ExcelJS.Workbook();
+
+   const [{ Workbook }, { saveAs }] = await Promise.all([
+    import("exceljs"),
+    import("file-saver"),
+  ]);
+
+  const workbook = new Workbook();
   const worksheet = workbook.addWorksheet("Table Data");
 
   const allCols = columns.map((col) => ({ id: col.id, header: col.header }));

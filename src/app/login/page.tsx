@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -12,27 +11,27 @@ import { redirectPathCore } from "@/shared/lib/helpers/redirectPathCore";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
 import Loading from "./loading";
 
-
 export default function LoginPage() {
   const { isAuth, authUser } = useStoreUser();
   const router = useRouter();
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
-
-    if (!authUser) {
+    if (!isAuth) {
       resetAllStores();
-      return
-    };
+      return;
+    }
 
-    const lastAppPath = localStorage.getItem("lastAppPath");
+    if (isAuth && authUser && !hasRedirected) {
+      const lastAppPath = localStorage.getItem("lastAppPath");
+      const redirectUrl =
+        lastAppPath || redirectPathCore(authUser.departmentId, authUser.id);
+      setHasRedirected(true);
+      router.replace(redirectUrl);
+    }
+  }, [isAuth, authUser, hasRedirected, router]);
 
-    const redirectUrl = lastAppPath || redirectPathCore(authUser.departmentId, authUser.id);
-
-    router.replace(redirectUrl);
-
-  }, [isAuth, authUser, router]);
-
-  if(isAuth) return <Loading/>
+  if (isAuth) return <Loading />;
 
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">

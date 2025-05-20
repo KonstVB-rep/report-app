@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 const useCurrentTheme = () => {
   const { theme } = useTheme();
   const [isDark, setIsDark] = useState(false);
+  
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 

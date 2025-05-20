@@ -1,32 +1,31 @@
 import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
-/**
- * Оптимальный конфиг для уменьшения веса бандлов и улучшения Lighthouse
- */
 const nextConfig: NextConfig = {
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false, // лучше отключить в проде
 
-  // ✅ Отключаем React Dev Overlay в проде (чтобы не грузилось лишнее)
   reactStrictMode: true,
 
   experimental: {
-    // Оптимизация загрузки ресурсов
-    optimizeCss: true,
     scrollRestoration: true,
-    serverActions: {}
+    serverActions: {},
   },
 
+  turbopack: {},
+
   webpack: (config, { dev, isServer }) => {
-    // Убираем devtools из финального бандла
     if (!dev && !isServer) {
-      config.resolve.alias["react-dom"] = "react-dom";
       config.resolve.alias["react-devtools"] = false;
     }
 
@@ -34,7 +33,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Включаем анализатор бандлов только если задана переменная окружения
 const withBundleAnalyzerConfig = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });

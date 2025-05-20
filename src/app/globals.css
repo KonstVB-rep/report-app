@@ -188,7 +188,7 @@ body {
   @apply flex items-center gap-2 rounded-md border border-solid bg-background p-2 py-2 text-sidebar-accent-foreground hover:border-muted-foreground hover:bg-sidebar-accent focus-visible:border-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:outline-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
 }
 
-.tr:nth-child(even):not([data-reject = "true"]) {
+.tr:nth-child(even):not([data-reject="true"]):not([data-paid="true"]) {
   @apply bg-[hsl(var(--table-even-row))];
 }
 
@@ -237,11 +237,6 @@ body {
 .flex-item-contact {
   @apply min-w-[240px] flex-1;
 }
-
-/* .grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-} */
 
 .loader-table-content {
   width: 12px;
@@ -599,12 +594,6 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 .calendar-day-today{
   @apply border border-blue-700
 }
-
-/* .fc-event, .fc-timegrid-event-harness-inset .fc-timegrid-event{
-  @apply max-w-fit
-} */
-
-/* //.fc-timegrid-event-harness */
 
 @media (max-width:479px){
   #react-day-picker-2{

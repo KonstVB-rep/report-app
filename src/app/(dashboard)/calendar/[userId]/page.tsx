@@ -8,10 +8,13 @@ import { ListTodo } from "lucide-react";
 import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
 import { useSidebar } from "@/components/ui/sidebar";
 import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
-import FullCalendarComponent from "@/feature/calendar/ui/FullCalendarComponent";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
 import Loading from "./loading";
+
+const FullCalendarComponent = dynamic(
+  () => import("@/feature/calendar/ui/FullCalendarComponent")
+);
 
 const CalendarFormModal = dynamic(
   () => import("@/feature/calendar/ui/CalendarFormModal")
