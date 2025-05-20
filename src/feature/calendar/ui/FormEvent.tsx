@@ -20,6 +20,7 @@ import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
 import TextareaForm from "@/shared/ui/TextareaForm";
+import { TOAST } from "@/shared/ui/Toast";
 
 import { IsExistIntersectionEvents } from "../utils/eventHandlers";
 
@@ -67,6 +68,15 @@ export const handleSubmit = (
   } else {
     const [startH, startM] = startTimeEvent.split(":");
     const [endH, endM] = endTimeEvent.split(":");
+
+    if (
+      parseInt(startH, 10) === parseInt(endH, 10) &&
+      parseInt(startM, 10) === parseInt(endM, 10)
+    ) {
+      return TOAST.ERROR(
+        "Время окнчания события должно быть больше времени началаю!"
+      );
+    }
 
     startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
     endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));

@@ -77,6 +77,7 @@ export const handleEventClick = (
   setOpenModal: (open: boolean) => void
 ) => {
   const event = clickInfo.event;
+
   setOpenModal(true);
 
   form.setValue("eventTitle", event.title);
@@ -107,6 +108,7 @@ export const handleEventClick = (
     "startTimeEvent",
     event.start?.toTimeString().slice(0, 5) || ""
   );
+
   form.setValue("endTimeEvent", event.end?.toTimeString().slice(0, 5) || "");
 
   setEditingId(event.id);
@@ -154,6 +156,7 @@ export const handleEventClickOnEventsList = (
     "startTimeEvent",
     event.start?.toTimeString().slice(0, 5) || ""
   );
+
   form.setValue("endTimeEvent", event.end?.toTimeString().slice(0, 5) || "");
 
   setEditingId(event.id!);

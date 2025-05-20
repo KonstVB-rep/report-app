@@ -7,6 +7,7 @@ import { Loader } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { cn } from "@/shared/lib/utils";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import { TOAST } from "@/shared/ui/Toast";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 
@@ -14,7 +15,6 @@ import { sendNotification } from "../api";
 import { useUpdateChatBot } from "../hooks/mutate";
 import { useGetInfoChat } from "../hooks/query";
 import TelegramIcon from "./TelegramIcon";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
 const CalendarBotLink = ({ chatName }: { chatName: string }) => {
   const { authUser } = useStoreUser();
@@ -23,12 +23,9 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
 
   const [isFetch, setIsFetch] = useState(false);
 
-  const {
-    data: bot,
-    isFetching,
-  } = useGetInfoChat(chatName, isRefech, 1);
+  const { data: bot, isFetching } = useGetInfoChat(chatName, isRefech, 1);
 
-  const isFetchingRequest = isFetching || isFetch
+  const isFetchingRequest = isFetching || isFetch;
 
   const { mutate: updateStatusChatBot } = useUpdateChatBot();
 
@@ -100,33 +97,33 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     }
   }, [bot, isActiveBot]);
 
-  if(!chatName) return null;
+  if (!chatName) return null;
 
   return (
-      <MotionDivY className="flex flex-col items-center">
-        <TooltipComponent
-          content={`Уведомления в Telegram ${isActiveBot ? "включены" : "выключены"}`}
+    <MotionDivY className="flex flex-col items-center">
+      <TooltipComponent
+        content={`Уведомления в Telegram ${isActiveBot ? "включены" : "выключены"}`}
+      >
+        <Toggle
+          aria-label="Вкл/Выкл уведомления в телеграмм"
+          pressed={isActiveBot}
+          onPressedChange={handleChange}
+          className={cn(
+            isActiveBot
+              ? "shadow-[0_0_0px_2px_#1C93E3]"
+              : "shadow-[0_0_0px_2px_#444444]",
+            isFetchingRequest && "cursor-not-allowed pointer-events-none"
+          )}
+          disabled={isFetchingRequest}
         >
-          <Toggle
-            aria-label="Вкл/Выкл уведомления в телеграмм"
-            pressed={isActiveBot}
-            onPressedChange={handleChange}
-            className={cn(
-              isActiveBot
-                ? "shadow-[0_0_0px_2px_#1C93E3]"
-                : "shadow-[0_0_0px_2px_#444444]",
-              isFetchingRequest && "cursor-not-allowed pointer-events-none"
-            )}
-            disabled={isFetchingRequest}
-          >
-            {isFetchingRequest ? (
-              <Loader className="animate animate-spin" />
-            ) : (
-              <TelegramIcon fill={isActiveBot ? "#1C93E3" : "#777777"} />
-            )}
-          </Toggle>
-        </TooltipComponent>
-      </MotionDivY>
+          {isFetchingRequest ? (
+            <Loader className="animate animate-spin" />
+          ) : (
+            <TelegramIcon fill={isActiveBot ? "#1C93E3" : "#777777"} />
+          )}
+        </Toggle>
+      </TooltipComponent>
+    </MotionDivY>
   );
 };
 

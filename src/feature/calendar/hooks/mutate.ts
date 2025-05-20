@@ -120,6 +120,9 @@ export const useCreateChatBot = () => {
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data.chatName],
       });
+       queryClient.invalidateQueries({
+        queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
+      });
     },
     onError: (error) => {
       console.log(error);
@@ -145,6 +148,9 @@ export const useUpdateChatBot = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data?.chatName],
+      });
+       queryClient.invalidateQueries({
+        queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
       });
     },
     onError: (error) => {

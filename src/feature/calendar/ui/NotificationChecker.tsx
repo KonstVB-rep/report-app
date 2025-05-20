@@ -6,7 +6,8 @@ import { useGetEventsCalendarUserToday, useGetInfoChatNotificationChecked } from
 import { EventInputType } from "../types";
 import axiosInstance from "@/shared/api/axiosInstance";
 
-async function sendNotificationsToTelegram(events: EventInputType[]) {
+export async function sendNotificationsToTelegram(events: EventInputType[]) {
+
   try {
     const response = await axiosInstance.post("/telegram/notify", events,{
       headers: {
@@ -14,8 +15,8 @@ async function sendNotificationsToTelegram(events: EventInputType[]) {
       },
     });
 
-    console.log("Уведомления отправлены: ", response);
-    return response;
+    console.log(response.data.message);
+    return response.data.message;
   } catch (error) {
     console.error("Ошибка при отправке уведомлений:", error);
     throw error
@@ -29,15 +30,13 @@ export default function NotificationChecker({ chatName }: { chatName: string }) 
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+
     if (!events?.length || !bot?.isActive || !bot.chatId) {
       return;
     }
 
-    console.log("⏰ Интервал запущен");
-
     intervalIdRef.current = setInterval(() => {
-      
-    console.log("⏰ Интервал запущен------------------");
+      console.log("⏰ Интервал запущен");
       const now = new Date();
       now.setSeconds(0, 0);
       const chatId = Number(bot.chatId);
@@ -74,7 +73,7 @@ export default function NotificationChecker({ chatName }: { chatName: string }) 
         clearInterval(intervalIdRef.current);
       }
     };
-  }, [bot, events]);
+  }, [bot,bot?.isActive,events]);
 
 
   return <span style={{ display: "none" }}></span>;
