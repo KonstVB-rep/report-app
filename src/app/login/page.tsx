@@ -10,6 +10,7 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import { LoginForm } from "@/feature/auth/ui/login-form";
 import { redirectPathCore } from "@/shared/lib/helpers/redirectPathCore";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
+import Loading from "./loading";
 
 
 export default function LoginPage() {
@@ -17,11 +18,11 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuth) {
-      resetAllStores();
-    }
 
-    if (!authUser) return;
+    if (!authUser) {
+      resetAllStores();
+      return
+    };
 
     const lastAppPath = localStorage.getItem("lastAppPath");
 
@@ -29,9 +30,9 @@ export default function LoginPage() {
 
     router.replace(redirectUrl);
 
-
   }, [isAuth, authUser, router]);
 
+  if(isAuth) return <Loading/>
 
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
