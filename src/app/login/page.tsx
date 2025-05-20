@@ -11,17 +11,13 @@ import { LoginForm } from "@/feature/auth/ui/login-form";
 import { redirectPathCore } from "@/shared/lib/helpers/redirectPathCore";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
 
-import Loading from "../loading";
-
 export default function LoginPage() {
   const { isAuth, authUser } = useStoreUser();
-  const[loading, setLoading] = useState(true)
   const router = useRouter();
 
   useEffect(() => {
     if (!isAuth) {
       resetAllStores();
-      setLoading(false)
     }
 
     if (!authUser) return;
@@ -35,7 +31,6 @@ export default function LoginPage() {
 
   }, [isAuth, authUser, router]);
 
-  if (loading) return <Loading />;
 
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
