@@ -2,37 +2,30 @@
 
 import { useEffect, useRef } from "react";
 
-import { useNotification } from "@/app/provider/notification-provider";
-
-import { useGetInfoChat } from "../hooks/query";
+import { useGetEventsCalendarUserToday, useGetInfoChatNotificationChecked } from "../hooks/query";
 import { EventInputType } from "../types";
+import axiosInstance from "@/shared/api/axiosInstance";
 
 async function sendNotificationsToTelegram(events: EventInputType[]) {
   try {
-    const response = await fetch("/api/telegram/notify", {
-      method: "POST",
+    const response = await axiosInstance.post("/telegram/notify", events,{
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(events),
     });
 
-    if (!response.ok) {
-      throw new Error(
-        `Ошибка при отправке уведомления. Статус: ${response.status}`
-      );
-    }
-    const data = await response.json();
-    console.log("Уведомления отправлены: ", data);
-    return data;
+    console.log("Уведомления отправлены: ", response);
+    return response;
   } catch (error) {
     console.error("Ошибка при отправке уведомлений:", error);
+    throw error
   }
 }
 
 export default function NotificationChecker({ chatName }: { chatName: string }) {
-  const { events } = useNotification();
-  const { data: bot } = useGetInfoChat(chatName);
+
+  const { data: events } = useGetEventsCalendarUserToday()
+  const { data: bot } = useGetInfoChatNotificationChecked(chatName);
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -43,6 +36,8 @@ export default function NotificationChecker({ chatName }: { chatName: string }) 
     console.log("⏰ Интервал запущен");
 
     intervalIdRef.current = setInterval(() => {
+      
+    console.log("⏰ Интервал запущен------------------");
       const now = new Date();
       now.setSeconds(0, 0);
       const chatId = Number(bot.chatId);
@@ -58,13 +53,13 @@ export default function NotificationChecker({ chatName }: { chatName: string }) 
         );
       });
 
+       console.log(upcomingEvents,'upcomingEvents')
+
       if (upcomingEvents.length > 0) {
         const eventsWithChatId = upcomingEvents.map((event) => ({
           ...event,
           chatId,
         }));
-
-        console.log(upcomingEvents,'upcomingEvents')
 
         console.log(
           `🔔 Отправляю уведомления: ${upcomingEvents
@@ -79,8 +74,8 @@ export default function NotificationChecker({ chatName }: { chatName: string }) 
         clearInterval(intervalIdRef.current);
       }
     };
-  }, [bot?.isActive, bot?.chatId, events]);
+  }, [bot, events]);
 
-  // Фиктивный рендер, чтобы React не "выкидывал" компонент
-  return <span style={{ display: "none" }}>NotificationChecker active</span>;
+
+  return <span style={{ display: "none" }}></span>;
 }

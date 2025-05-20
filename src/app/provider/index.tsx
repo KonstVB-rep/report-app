@@ -11,7 +11,7 @@ import { Toaster } from "sonner";
 import NotificationChecker from "@/feature/calendar/ui/NotificationChecker";
 
 import { LastPathProvider } from "./last-path-provider";
-import { NotificationProvider } from "./notification-provider";
+
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 
@@ -42,12 +42,10 @@ const AppProvider = ({ children }: PropsWithChildren) => {
             {process.env.NODE_ENV === "development" && (
               <ReactQueryDevtools initialIsOpen={false} />
             )}
-            <Toaster position="top-center" />
-            <SpeedInsights />
-            <NotificationProvider>
+              <Toaster position="top-center" />
+              <SpeedInsights />
               <NotificationChecker chatName="calendarChat" />
               {children}
-            </NotificationProvider>
           </QueryProvider>
         </ThemeProvider>
       </LastPathProvider>

@@ -1,6 +1,5 @@
 "use server";
 
-import axios from "axios";
 import { endOfDay, startOfDay } from "date-fns";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
@@ -8,6 +7,7 @@ import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
 import { EventInputType } from "../types";
+import axiosInstance from "@/shared/api/axiosInstance";
 
 export const createEventCalendar = async (eventData: {
   title: string;
@@ -180,8 +180,8 @@ export const sendNotification = async (
 
   try {
 
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/telegram/send-message-calendar-bot`,
+    await axiosInstance.post(
+      `/telegram/send-message-calendar-bot`,
       {
         message,
         chatId,

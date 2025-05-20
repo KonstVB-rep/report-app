@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  productionBrowserSourceMaps: false, // лучше отключить в проде
+  productionBrowserSourceMaps: true, // лучше отключить в проде
 
   reactStrictMode: true,
 
@@ -21,8 +21,6 @@ const nextConfig: NextConfig = {
     scrollRestoration: true,
     serverActions: {},
   },
-
-  turbopack: {},
 
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {

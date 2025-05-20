@@ -1,37 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 import loginBg from "@/assets/login-bg";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { LoginForm } from "@/feature/auth/ui/login-form";
-import { redirectPathCore } from "@/shared/lib/helpers/redirectPathCore";
-import { resetAllStores } from "@/shared/lib/helpers/сreate";
-import Loading from "./loading";
+import Redirect from "@/shared/ui/Redirect";
 
 export default function LoginPage() {
-  const { isAuth, authUser } = useStoreUser();
-  const router = useRouter();
-  const [hasRedirected, setHasRedirected] = useState(false);
+  const { isAuth } = useStoreUser();
 
-  useEffect(() => {
-    if (!isAuth) {
-      resetAllStores();
-      return;
-    }
-
-    if (isAuth && authUser && !hasRedirected) {
-      const lastAppPath = localStorage.getItem("lastAppPath");
-      const redirectUrl =
-        lastAppPath || redirectPathCore(authUser.departmentId, authUser.id);
-      setHasRedirected(true);
-      router.replace(redirectUrl);
-    }
-  }, [isAuth, authUser, hasRedirected, router]);
-
-  if (isAuth) return <Loading />;
+  if (isAuth) return <Redirect />;
 
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">

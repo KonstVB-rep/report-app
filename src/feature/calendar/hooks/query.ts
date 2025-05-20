@@ -23,12 +23,13 @@ export const useGetEventsCalendarUser = () => {
         throw error;
       }
     },
-    retry: !!authUser?.id,
+    enabled: !!authUser?.id,
   });
 };
 
 export const useGetEventsCalendarUserToday = () => {
   const { authUser } = useStoreUser();
+
   return useQuery({
     queryKey: ["eventsCalendarToday", authUser?.id],
     queryFn: async () => {
@@ -36,12 +37,47 @@ export const useGetEventsCalendarUserToday = () => {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
+
         return await getEventsCalendarUserToday();
       } catch (error) {
         throw error;
       }
     },
-    retry: !!authUser?.id,
+    enabled: !!authUser?.id,
+  });
+};
+
+export const useGetInfoChatNotificationChecked = (chatName: string) => {
+  const { authUser } = useStoreUser();
+
+  return useQuery({
+    queryKey: ["chatInfoChecked", authUser?.id, chatName],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+        const botName = await getCalendarBotName();
+
+        if (!botName) {
+          throw new Error("Название бота не найдено");
+        }
+        const botInDb = await getTelegramBotInDb(
+          botName,
+          authUser.id,
+          chatName
+        );
+
+        if (!botInDb) {
+          return {id: null, botName, isActive: false, chatId: "", chatName: "" };
+        }
+   
+        return botInDb;
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authUser?.id,
   });
 };
 
@@ -55,22 +91,23 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-
         const botName = await getCalendarBotName();
 
         if (!botName) {
           throw new Error("Название бота не найдено");
         }
+
         const botInDb = await getTelegramBotInDb(
           botName,
           authUser.id,
           chatName
         );
+
         if (!botInDb) {
           return {id: null, botName, isActive: false, chatId: "", chatName: "" };
         }
 
-        return botInDb || {};
+        return botInDb;
       } catch (error) {
         throw error;
       }

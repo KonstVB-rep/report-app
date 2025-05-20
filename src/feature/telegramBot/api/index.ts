@@ -22,7 +22,7 @@ export const createTelegramBot = async (botName: string, token: string) => {
     return newBot;
   } catch (error) {
     console.error(error);
-    handleError(
+    throw handleError(
       typeof error === "string" ? error : "Ошибка записи Telegram данных"
     );
   }
@@ -59,7 +59,7 @@ export const getTelegramBotInDb = async (
     };
   } catch (error) {
     console.error(error);
-    handleError(
+    throw handleError(
       typeof error === "string" ? error : "Ошибка получения Telegram данных"
     );
   }

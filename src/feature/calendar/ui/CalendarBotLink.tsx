@@ -14,6 +14,7 @@ import { sendNotification } from "../api";
 import { useUpdateChatBot } from "../hooks/mutate";
 import { useGetInfoChat } from "../hooks/query";
 import TelegramIcon from "./TelegramIcon";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
 const CalendarBotLink = ({ chatName }: { chatName: string }) => {
   const { authUser } = useStoreUser();
@@ -24,9 +25,10 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
 
   const {
     data: bot,
-    isPending,
     isFetching,
   } = useGetInfoChat(chatName, isRefech, 1);
+
+  const isFetchingRequest = isFetching || isFetch
 
   const { mutate: updateStatusChatBot } = useUpdateChatBot();
 
@@ -96,13 +98,12 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     if (bot?.chatName && isActiveBot) {
       setIsRefech(false);
     }
-  }, [bot, isActiveBot, isFetching, isPending]);
+  }, [bot, isActiveBot]);
 
-  if (isPending) return null;
+  if(!chatName) return null;
 
   return (
-    <>
-      <div className="flex flex-col items-center">
+      <MotionDivY className="flex flex-col items-center">
         <TooltipComponent
           content={`Уведомления в Telegram ${isActiveBot ? "включены" : "выключены"}`}
         >
@@ -114,19 +115,18 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
               isActiveBot
                 ? "shadow-[0_0_0px_2px_#1C93E3]"
                 : "shadow-[0_0_0px_2px_#444444]",
-              isFetch && "cursor-not-allowed pointer-events-none"
+              isFetchingRequest && "cursor-not-allowed pointer-events-none"
             )}
-            disabled={isFetch}
+            disabled={isFetchingRequest}
           >
-            {isFetch ? (
+            {isFetchingRequest ? (
               <Loader className="animate animate-spin" />
             ) : (
               <TelegramIcon fill={isActiveBot ? "#1C93E3" : "#777777"} />
             )}
           </Toggle>
         </TooltipComponent>
-      </div>
-    </>
+      </MotionDivY>
   );
 };
 

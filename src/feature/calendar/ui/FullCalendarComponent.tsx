@@ -58,7 +58,7 @@ const FullCalendarComponent = () => {
   };
 
   return (
-    <div className="p-2 full-calendar">
+    <div className="full-calendar">
       <FullCalendar
         selectMirror={false}
         unselectAuto={true}

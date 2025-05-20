@@ -22,7 +22,8 @@ export type EventInputTypeWithChatId = EventInputType & {
 
 export async function POST(req: NextRequest) {
   try {
-    const events = await req.json();
+    const { data: events } = await req.json();
+
 
     if (!Array.isArray(events) || events.length === 0) {
       return NextResponse.json(
