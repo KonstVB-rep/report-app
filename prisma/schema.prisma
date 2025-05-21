@@ -176,6 +176,7 @@ model EventCalendar {
   allDay    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  notified  Boolean  @default(false)
 
   user      User     @relation(fields: [userId], references: [id])
 }

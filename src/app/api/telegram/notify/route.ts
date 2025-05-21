@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
 import { EventInputType } from "@/feature/calendar/types";
+import prisma from "@/prisma/prisma-client";
 
 async function sendNotification(message: string, chatId: string) {
   try {
@@ -44,11 +45,18 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const message = `‼️Напоминание: через 30 минут - ${title}`;
+      const message = `‼️Напоминание: в ${new Date(start).toLocaleString().split(', ')[1]} - ${title}`;
 
       try {
         // Отправляем уведомление в Telegram
-        await sendNotification(message, chatId);
+          const sent =await sendNotification(message, chatId);
+          
+          if (sent?.status === 200) {
+            await prisma.eventCalendar.update({
+              where: { id: event.id },
+              data: { notified: true },
+            });
+          }
       } catch (error) {
         console.error(
           `Ошибка при отправке уведомления для события: ${title}`,
