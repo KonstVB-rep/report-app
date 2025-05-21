@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/telegram/check-and-notify/route.ts": {
+      "schedule": "*/1 * * * *"
+    }
+  }
+}
