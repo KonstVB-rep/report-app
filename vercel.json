@@ -1,7 +1,9 @@
 {
-  "functions": {
-    "api/telegram/check-and-notify/route.ts": {
-      "schedule": "*/1 * * * *"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/telegram/check-and-notify/route.ts",
+      "schedule": "0 * * * *"
     }
-  }
+  ]
 }
