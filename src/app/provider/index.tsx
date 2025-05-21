@@ -8,8 +8,6 @@ import dynamic from "next/dynamic";
 
 import { Toaster } from "sonner";
 
-// import NotificationChecker from "@/feature/calendar/ui/NotificationChecker";
-
 import { LastPathProvider } from "./last-path-provider";
 
 import QueryProvider from "./query-provider";
@@ -44,7 +42,6 @@ const AppProvider = ({ children }: PropsWithChildren) => {
             )}
               <Toaster position="top-center" />
               <SpeedInsights />
-              {/* <NotificationChecker chatName="calendarChat" /> */}
               {children}
           </QueryProvider>
         </ThemeProvider>
