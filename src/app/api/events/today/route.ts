@@ -10,28 +10,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: "userId обязателен" }, { status: 400 });
   }
 
-  //   const now = new Date();
-  //   const startOfDay = new Date(now);
-  //   startOfDay.setHours(0, 0, 0, 0);
-
-  //   const endOfDay = new Date(now);
-  //   endOfDay.setHours(23, 59, 59, 999);
-
   const now = new Date();
-  const from = new Date(now.getTime() + 25 * 60 * 1000);
-  const to = new Date(now.getTime() + 30 * 60 * 1000);
+
+  const thirtyFiveMinutesLater = new Date(now.getTime() + 35 * 60000); // 35 минут = 35 * 60 * 1000 миллисекунд
+  thirtyFiveMinutesLater.setSeconds(0, 0); // Округляем до минут
 
   try {
     const events = await prisma.eventCalendar.findMany({
       where: {
+        userId,
         start: {
-          gte: from,
-          lte: to,
+          gte: thirtyFiveMinutesLater, // События, которые начинаются через 35 минут
+          lte: new Date(thirtyFiveMinutesLater.getTime() + 60000), // Плюс 1 минута для захвата окна
         },
-        notified: false,
+        notified: false, // Только те, которые ещё не были уведомлены
       },
       include: {
-        user: true, // подтягиваем данные пользователя
+        user: true,
       },
       orderBy: {
         start: "asc",
