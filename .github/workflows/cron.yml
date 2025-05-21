@@ -1,9 +1,9 @@
 name: Run Every Minute
 
 on:
-  schedule:
-    - cron: "* * * * *" # Каждую минуту
   workflow_dispatch: # Возможность ручного запуска
+  schedule:
+    - cron: "*/5 * * * *" # Каждую минуту
 
 jobs:
   notify:
