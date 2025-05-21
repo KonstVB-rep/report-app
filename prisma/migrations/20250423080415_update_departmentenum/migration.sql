@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Department` MODIFY `name` ENUM('SALES', 'TECHNICAL', 'MARKETING') NOT NULL;

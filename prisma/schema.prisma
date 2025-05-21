@@ -1,0 +1,298 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid())
+  username        String
+  email           String           @unique
+  phone           String           @unique
+  user_password   String
+  position        String
+  departmentId    Int
+  role            Role
+  lastlogin       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  directorOf      Department?      @relation("DepartmentDirector")
+  File            DealFile[]
+  projects        Project[]
+  retail          Retail[]
+  department      Department       @relation("DepartmentUsers", fields: [departmentId], references: [id])
+  login           UserLogin[]
+  permissions     UserPermission[]
+  userFilters     UserFilter[]
+  eventsCalendar  EventCalendar[]
+  chats           UserTelegramChat[]
+
+  @@index([departmentId])
+}
+
+model UserPermission {
+  id            String         @id @default(cuid())
+  userId        String
+  permissionId  String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission    Permission     @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "UserPermission_userId_fkey")
+  @@index([permissionId], map: "UserPermission_permissionId_fkey")
+}
+
+model Permission {
+  id              String          @id @default(cuid())
+  name            PermissionEnum  @unique
+  description     String?
+  userPermissions UserPermission[] // Добавлена связь с UserPermission
+}
+
+
+model Department {
+  id         Int            @id @default(autoincrement())
+  name       DepartmentEnum @unique
+  directorId String?        @unique
+  description String        @unique
+  director   User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
+  users      User[]         @relation("DepartmentUsers")
+}
+
+model Project {
+  id                    String           @id @default(cuid())
+  userId                String
+  type                  DealType         @default(PROJECT) // <-- Тип сделки
+  dateRequest           DateTime
+  nameDeal              String
+  nameObject            String
+  direction             DirectionProject
+  deliveryType          DeliveryProject?
+  contact               String
+  phone                 String?
+  email                 String?
+  amountCP              Decimal?          @db.Decimal(15, 2)
+  amountPurchase        Decimal?          @db.Decimal(15, 2)
+  amountWork            Decimal?          @db.Decimal(15, 2)
+  delta                 Decimal?          @db.Decimal(15, 2)
+  comments              String
+  dealStatus            StatusProject
+  plannedDateConnection DateTime?
+  resource              String?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  user                  User             @relation(fields: [userId], references: [id])
+  additionalContacts    AdditionalContact[] @relation("ProjectContacts")
+
+  @@index([userId], map: "Project_userId_fkey")
+}
+
+model Retail {
+  id                    String           @id @default(cuid())
+  userId                String
+  type                  DealType         @default(RETAIL) // <-- Тип сделки
+  dateRequest           DateTime
+  nameDeal              String
+  nameObject            String
+  direction             DirectionRetail
+  deliveryType          DeliveryRetail?
+  contact               String
+  phone                 String?
+  email                 String?
+  amountCP              Decimal?          @db.Decimal(15, 2)
+  delta                 Decimal?          @db.Decimal(15, 2)
+  dealStatus            StatusRetail
+  comments              String
+  plannedDateConnection DateTime?
+  resource              String?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  user                  User             @relation(fields: [userId], references: [id])
+  additionalContacts    AdditionalContact[] @relation("RetailContacts")
+
+  @@index([userId], map: "Retail_userId_fkey")
+}
+
+model AdditionalContact {
+  id           String    @id @default(cuid())
+  name         String 
+  phone        String?      
+  email        String?    
+  position     String?    
+
+  projects     Project[] @relation("ProjectContacts") // связь с несколькими проектами
+  retails      Retail[]  @relation("RetailContacts") // связь с несколькими розничными сделками
+}
+
+model UserLogin {
+  id      String   @id @default(cuid())
+  userId  String
+  loginAt DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "UserLogin_userId_fkey")
+}
+
+model DealFile {
+  id          String       @id @default(cuid())
+  name        String
+  localPath   String
+  storageType StorageType  @default(YANDEX_DISK)
+  userId      String
+  dealId      String       // Универсальный ID сделки (может быть как Project, так и Retail)
+  dealType    DealType     // PROJECT или RETAIL
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([dealId])
+  @@index([userId], map: "File_userId_fkey")
+}
+
+
+model UserFilter {
+  id           String    @id @default(cuid())
+  userId       String
+  filterName   String    
+  filterValue  String    @db.Text
+  isActive     Boolean   @default(false) 
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id])
+
+}
+
+model EventCalendar {
+  id        String   @id @default(cuid())
+  title     String
+  start     DateTime
+  end       DateTime
+  userId    String
+  allDay    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notified  Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model TelegramBot {
+  id        String    @id @default(cuid())  // Уникальный ID бота
+  botName   String    @unique
+  token     String    @unique        
+  createdAt DateTime  @default(now())               // Время создания
+  updatedAt DateTime  @updatedAt                    // Время последнего обновления
+
+  chats     UserTelegramChat[]      // Связь с таблицей чатов
+}
+
+model UserTelegramChat {
+  id               String      @id @default(cuid())           // Уникальный ID записи
+  userId           String                                   // ID пользователя
+  botId            String                                   // ID бота
+  chatId           String                                   // ID чата
+  telegramUserId   String
+  chatName         String      @unique
+  telegramUsername String?                                  // ID пользователя в Telegram
+  isActive         Boolean     @default(true)                   // Статус активности чата
+  createdAt        DateTime    @default(now())                 // Время создания записи
+  updatedAt        DateTime    @updatedAt                      // Время последнего обновления записи
+
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
+  bot            TelegramBot @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
+
+  @@unique([botId, telegramUserId])   // Уникальность для каждого пользователя, бота и чата
+}
+enum PermissionEnum {
+  VIEW_USER_REPORT
+  VIEW_UNION_REPORT
+  DOWNLOAD_REPORTS
+  USER_MANAGEMENT
+  DEAL_MANAGEMENT
+}
+
+enum DirectionProject {
+  PARKING
+  GLK
+  SKD
+  KATOK
+  MUSEUM
+  SPORT
+  FOK_BASIN
+  BPS
+  PPS
+  PARK_ATTRACTION
+  STADIUM_ARENA
+}
+
+enum DirectionRetail {
+  PARKING_EQUIPMENT
+  SCUD
+  IDS_CONSUMABLES
+  OTHER
+}
+
+enum DeliveryProject {
+  COMPLEX
+  EQUIPMENT_SUPPLY 
+  WORK_SERVICES
+  RENT
+  SOFTWARE_DELIVERY
+  OTHER
+}
+
+enum DeliveryRetail {
+  EXPENDABLE_MATERIALS 
+  SUPPLY
+  WORK
+}
+
+enum StatusProject {
+  INVOICE_ISSUED
+  ACTUAL
+  REJECT
+  PAID
+  APPROVAL
+  FIRST_CP_APPROVAL
+  CONTRACT_ADVANCE_PAYMENT
+  PROGRESS
+  DELIVERY_WORKS
+  SIGN_ACTS_PAYMENT
+  CLOSED
+}
+
+enum StatusRetail {
+  FIRST_CP_APPROVAL
+  APPROVAL
+  ACTUAL
+  REJECT
+  INVOICE_ISSUED
+  PROGRESS
+  PAID
+  CLOSED
+}
+
+enum DepartmentEnum {
+  SALES
+  TECHNICAL
+  MARKETING
+}
+
+enum Role {   
+  DIRECTOR          
+  EMPLOYEE 
+  ADMIN
+}
+
+enum DealType {
+  PROJECT
+  RETAIL
+}
+enum StorageType {
+  YANDEX_DISK
+}

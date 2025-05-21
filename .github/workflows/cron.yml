@@ -1,0 +1,14 @@
+name: Run Every Minute
+
+on:
+  schedule:
+    - cron: "* * * * *" # Каждую минуту
+  workflow_dispatch: # Возможность ручного запуска
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Notifications
+        run: |
+          curl -X GET https://report-app-ertel.vercel.app/api/telegram/check-and-notify 
