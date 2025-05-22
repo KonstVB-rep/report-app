@@ -150,6 +150,6 @@ export async function GET() {
     return NextResponse.json({ message: "Проверка завершена", data: eventsNofity });
   } catch (error) {
     console.error("Ошибка в check-and-notify:", error);
-    return NextResponse.json({ message: "Ошибка при проверке уведомлений" }, { status: 500, statusText: JSON.stringify(error) });
+    return NextResponse.json({ message: JSON.stringify(error) }, { status: 500, statusText: JSON.stringify(error) });
   }
 }
