@@ -7,7 +7,7 @@ import { ListTodo } from "lucide-react";
 
 import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
 import { useSidebar } from "@/components/ui/sidebar";
-import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
+// import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
 import Loading from "./loading";
@@ -45,7 +45,7 @@ const CalendarPage = () => {
           icon={<ListTodo />}
         />
 
-        <CalendarBotLink chatName="calendarChat"/>
+        {/* <CalendarBotLink chatName="calendarChat"/> */}
       </div>
       {isMobile ? (
         <CalendarMobile />
