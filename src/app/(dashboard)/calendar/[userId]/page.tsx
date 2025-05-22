@@ -11,8 +11,8 @@ import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
 import Loading from "./loading";
-// import axiosInstance from "@/shared/api/axiosInstance";
-// import { Button } from "@/components/ui/button";
+import axiosInstance from "@/shared/api/axiosInstance";
+import { Button } from "@/components/ui/button";
 
 const FullCalendarComponent = dynamic(
   () => import("@/feature/calendar/ui/FullCalendarComponent")
@@ -26,14 +26,14 @@ const CalendarMobile = dynamic(
   () => import("@/feature/calendar/ui/CalendarMobile")
 );
 
-// const func = async () => {
-//   try {
-//     console.log('click')
-//     return await axiosInstance.get('/telegram/check-and-notify')
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
+const func = async () => {
+  try {
+    console.log('click')
+    return await axiosInstance.get('/telegram/check-and-notify')
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const CalendarPage = () => {
   const pathName = usePathname();
@@ -63,7 +63,7 @@ const CalendarPage = () => {
         <div>
           <FullCalendarComponent />
 
-          {/* <Button onClick={func}>Click</Button> */}
+          <Button onClick={func}>Click</Button>
 
           <CalendarFormModal events={events} />
         </div>
