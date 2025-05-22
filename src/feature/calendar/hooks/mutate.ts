@@ -150,7 +150,7 @@ export const useUpdateChatBot = () => {
         queryKey: ["chatInfo", authUser?.id, data?.chatName],
       });
        queryClient.invalidateQueries({
-        queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
+        queryKey: ["chatInfoChecked", authUser?.id, data?.chatName],
       });
     },
     onError: (error) => {

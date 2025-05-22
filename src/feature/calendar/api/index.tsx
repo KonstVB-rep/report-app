@@ -67,6 +67,7 @@ export const updateEventCalendar = async (eventData: {
         start: new Date(start),
         end: new Date(end),
         allDay,
+        notified: false
       },
     });
 

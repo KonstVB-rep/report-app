@@ -13,22 +13,18 @@ export async function GET(req: NextRequest) {
   const now = new Date();
 
 // 35 минут от текущего времени
-const thirtyFiveMinutesLater = new Date(now.getTime() + 30 * 60000); 
-thirtyFiveMinutesLater.setSeconds(0, 0); // Округляем до начала минуты
-
-console.log('35 минут позже:', thirtyFiveMinutesLater.toISOString()); // Логируем ISO строку
-
-// 36 минут от текущего времени (на 1 минуту больше)
-const thirtySixMinutesLater = new Date(thirtyFiveMinutesLater.getTime() + 60000);
-console.log('36 минут позже:', thirtySixMinutesLater.toISOString()); // Логируем ISO строку
+const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000); 
+thirtyMinutesLater.setSeconds(0, 0); // Округляем до начала минуты
+//(на 1 минуту больше)
+const thirtyOneMinutesLater = new Date(thirtyMinutesLater.getTime() + 60000);
 
 try {
   const events = await prisma.eventCalendar.findMany({
     where: {
       userId,
       start: {
-        gte: thirtyFiveMinutesLater, // События, которые начинаются через 35 минут
-        lte: thirtySixMinutesLater, // И до 36 минут
+        gte: thirtyMinutesLater, // События, которые начинаются через 30 минут
+        lte: thirtyOneMinutesLater, // И до 31 минут
       },
       notified: false, // Только те, которые ещё не были уведомлены
     },
@@ -36,7 +32,6 @@ try {
       start: "asc",
     },
   });
-    console.log(events, 'events')
     return NextResponse.json(events);
   } catch (error) {
     console.error("❌ Ошибка при получении событий:", error);

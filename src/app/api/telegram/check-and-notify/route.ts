@@ -104,8 +104,6 @@ export async function GET() {
   try {
     const allChats = await getInfoChatNotificationChecked(); // Возвращает все активные чаты с chatId
 
-    console.log(allChats, 'allChats')
-
     if (!allChats.length) {
       return NextResponse.json({ message: "Нет активных чатов" });
     }
@@ -113,13 +111,11 @@ export async function GET() {
     const now = new Date();
     now.setSeconds(0, 0);
 
-    let eventsNofity: (EventInputType & { chatId: string })[] = [];
-
-
     for (const chat of allChats) {
       if (!chat.isActive || !chat.chatId || !chat.userId) continue;
 
       const events = await getEventsCalendarUserToday(chat.userId);
+
 
       if (!events?.length) continue;
 
@@ -136,8 +132,6 @@ export async function GET() {
           chatId: String(chat.chatId),
         }));
 
-        eventsNofity = eventsWithChatId
-
         console.log(
           `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
           eventsWithChatId.map((e) => e.title).join(", ")
@@ -146,8 +140,8 @@ export async function GET() {
         await sendNotificationsToTelegram(eventsWithChatId);
       }
     }
-    console.log(eventsNofity, 'eventsNofity')
-    return NextResponse.json({ message: "Проверка завершена", data: eventsNofity });
+
+    return NextResponse.json({ message: "Проверка завершена"});
   } catch (error) {
     console.error("Ошибка в check-and-notify:", error);
     return NextResponse.json({ message: "Ошибка при проверке уведомлений" }, { status: 500 });
