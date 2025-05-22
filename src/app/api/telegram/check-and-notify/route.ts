@@ -13,7 +13,7 @@ async function sendNotificationsToTelegram(
 ) {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/telegram/notify`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/telegram/notify`,
       events,
       {
         headers: {
