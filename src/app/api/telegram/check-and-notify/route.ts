@@ -111,10 +111,14 @@ export async function GET() {
     const now = new Date();
     now.setSeconds(0, 0);
 
+    let events:EventInputType[] = []
+
     for (const chat of allChats) {
       if (!chat.isActive || !chat.chatId || !chat.userId) continue;
 
-      const events = await getEventsCalendarUserToday(chat.userId);
+      events = await getEventsCalendarUserToday(chat.userId);
+
+      console.log(events, 'events')
       if (!events?.length) continue;
 
       const upcomingEvents = events.filter((event) => {
@@ -139,7 +143,7 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({ message: "Проверка завершена" });
+    return NextResponse.json({ message: "Проверка завершена", data: events });
   } catch (error) {
     console.error("Ошибка в check-and-notify:", error);
     return NextResponse.json({ message: "Ошибка при проверке уведомлений" }, { status: 500 });
