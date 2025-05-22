@@ -12,27 +12,31 @@ export async function GET(req: NextRequest) {
 
   const now = new Date();
 
-  const thirtyFiveMinutesLater = new Date(now.getTime() + 35 * 60000); // 35 минут = 35 * 60 * 1000 миллисекунд
-  thirtyFiveMinutesLater.setSeconds(0, 0); // Округляем до минут
+// 35 минут от текущего времени
+const thirtyFiveMinutesLater = new Date(now.getTime() + 30 * 60000); 
+thirtyFiveMinutesLater.setSeconds(0, 0); // Округляем до начала минуты
 
-  try {
-    const events = await prisma.eventCalendar.findMany({
-      where: {
-        userId,
-        start: {
-          gte: thirtyFiveMinutesLater, // События, которые начинаются через 35 минут
-          lte: new Date(thirtyFiveMinutesLater.getTime() + 60000), // Плюс 1 минута для захвата окна
-        },
-        notified: false, // Только те, которые ещё не были уведомлены
-      },
-      include: {
-        user: true,
-      },
-      orderBy: {
-        start: "asc",
-      },
-    });
+console.log('35 минут позже:', thirtyFiveMinutesLater.toISOString()); // Логируем ISO строку
 
+// 36 минут от текущего времени (на 1 минуту больше)
+const thirtySixMinutesLater = new Date(thirtyFiveMinutesLater.getTime() + 60000);
+console.log('36 минут позже:', thirtySixMinutesLater.toISOString()); // Логируем ISO строку
+
+try {
+  const events = await prisma.eventCalendar.findMany({
+    where: {
+      userId,
+      start: {
+        gte: thirtyFiveMinutesLater, // События, которые начинаются через 35 минут
+        lte: thirtySixMinutesLater, // И до 36 минут
+      },
+      notified: false, // Только те, которые ещё не были уведомлены
+    },
+    orderBy: {
+      start: "asc",
+    },
+  });
+    console.log(events, 'events')
     return NextResponse.json(events);
   } catch (error) {
     console.error("❌ Ошибка при получении событий:", error);

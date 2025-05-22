@@ -12,6 +12,5 @@ export async function getEventsCalendarUserToday(userId: string): Promise<EventI
     params: { userId },
   });
 
-  console.log(response.data)
   return response.data;
 }

@@ -104,6 +104,8 @@ export async function GET() {
   try {
     const allChats = await getInfoChatNotificationChecked(); // Возвращает все активные чаты с chatId
 
+    console.log(allChats, 'allChats')
+
     if (!allChats.length) {
       return NextResponse.json({ message: "Нет активных чатов" });
     }
@@ -111,14 +113,14 @@ export async function GET() {
     const now = new Date();
     now.setSeconds(0, 0);
 
-    let events:EventInputType[] = []
+    let eventsNofity: (EventInputType & { chatId: string })[] = [];
+
 
     for (const chat of allChats) {
       if (!chat.isActive || !chat.chatId || !chat.userId) continue;
 
-      events = await getEventsCalendarUserToday(chat.userId);
+      const events = await getEventsCalendarUserToday(chat.userId);
 
-      console.log(events, 'events')
       if (!events?.length) continue;
 
       const upcomingEvents = events.filter((event) => {
@@ -134,6 +136,8 @@ export async function GET() {
           chatId: String(chat.chatId),
         }));
 
+        eventsNofity = eventsWithChatId
+
         console.log(
           `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
           eventsWithChatId.map((e) => e.title).join(", ")
@@ -143,7 +147,7 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({ message: "Проверка завершена", data: events });
+    return NextResponse.json({ message: "Проверка завершена", data: eventsNofity });
   } catch (error) {
     console.error("Ошибка в check-and-notify:", error);
     return NextResponse.json({ message: "Ошибка при проверке уведомлений" }, { status: 500 });
