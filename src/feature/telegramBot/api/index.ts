@@ -28,25 +28,24 @@ export const createTelegramBot = async (botName: string, token: string) => {
   }
 };
 
-export const getTelegramBotInDb = async (
-  botName: string,
-  userId: string,
-  chatName: string
-) => {
+export const getTelegramBotInDb = async (botName: string, userId: string) => {
   try {
     const bot = await prisma.telegramBot.findUnique({
       where: { botName },
     });
 
-    console.log(bot, 'bot')
 
     if (!bot) {
       return null;
     }
 
-    // Ищем чат с этим chatId
     const chat = await prisma.userTelegramChat.findUnique({
-      where: { botId: bot.id, userId, chatName },
+      where: {
+        botId_userId: {
+          botId: bot.id,
+          userId,
+        },
+      },
     });
 
     if (!chat) {
@@ -77,8 +76,6 @@ export const createUserTelegramChat = async (
   token: string
 ) => {
   try {
-    // const data = await handleAuthorization();
-    // const { userId } = data!;
 
     const bot = await prisma.telegramBot.findUnique({
       where: { botName, token },
@@ -90,9 +87,9 @@ export const createUserTelegramChat = async (
 
     const existingChat = await prisma.userTelegramChat.findUnique({
       where: {
-        botId_telegramUserId: {
+        botId_userId: {
           botId: bot.id,
-          telegramUserId: String(telegramUserId),
+          userId,
         },
       },
     });
@@ -112,12 +109,10 @@ export const createUserTelegramChat = async (
     } else {
       await prisma.userTelegramChat.update({
         where: {
-          userId,
-          botId: bot.id,
-          chatId: String(chatId),
-          telegramUserId: String(telegramUserId),
-          telegramUsername,
-          chatName,
+          botId_userId: {
+            botId: bot.id,
+            userId,
+          },
         },
         data: { isActive: true },
       });
@@ -130,55 +125,36 @@ export const createUserTelegramChat = async (
   }
 };
 
-
-// export const createSubscribeChatBot = async (
-//   chatName: string,
-//   isActive: boolean
-// ) => {
-//   if (!chatName) {
-//     throw new Error("chatName не может быть пустым");
-//   }
-
-//   try {
-//     const existingChat = await prisma.userTelegramChat.findUnique({
-//       where: { chatName },
-//     });
-
-//     if (!existingChat) {
-//       throw new Error(`Чат - ${chatName} не найден в базе`);
-//     }
-
-//     const updatedChat = await prisma.userTelegramChat.update({
-//       where: { chatName },
-//       data: { isActive },
-//     });
-
-//     return updatedChat;
-//   } catch (error) {
-//     console.error("Ошибка отписки:", error);
-//     throw error;
-//   }
-// };
-
 export const toggleSubscribeChatBot = async (
-  chatName: string,
+  botId: string,
+  userId: string,
   isActive: boolean
 ) => {
-  if (!chatName) {
+  if (!botId) {
     throw new Error("chatName не может быть пустым");
   }
 
   try {
     const existingChat = await prisma.userTelegramChat.findUnique({
-      where: { chatName },
+      where: {
+        botId_userId: {
+          botId,
+          userId,
+        },
+      },
     });
 
     if (!existingChat) {
-      throw new Error(`Чат - ${chatName} не найден в базе`);
+      throw new Error(`Чат не найден в базе`);
     }
 
     const updatedChat = await prisma.userTelegramChat.update({
-      where: { chatName },
+      where: {
+        botId_userId: {
+          botId,
+          userId,
+        },
+      },
       data: { isActive },
     });
 

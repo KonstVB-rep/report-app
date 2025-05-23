@@ -198,7 +198,7 @@ model UserTelegramChat {
   botId            String                                   // ID бота
   chatId           String                                   // ID чата
   telegramUserId   String
-  chatName         String      @unique
+  chatName         String
   telegramUsername String?                                  // ID пользователя в Telegram
   isActive         Boolean     @default(true)                   // Статус активности чата
   createdAt        DateTime    @default(now())                 // Время создания записи
@@ -207,7 +207,7 @@ model UserTelegramChat {
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
   bot            TelegramBot @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
 
-  @@unique([botId, telegramUserId])   // Уникальность для каждого пользователя, бота и чата
+  @@unique([botId, userId])   // Уникальность для каждого пользователя, бота и чата
 }
 
 model Task {

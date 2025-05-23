@@ -92,6 +92,7 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
           throw new Error("Пользователь не авторизован");
         }
         const botName = await getCalendarBotName();
+        console.log(botName, 'botName')
 
         if (!botName) {
           throw new Error("Название бота не найдено");
@@ -99,8 +100,7 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
 
         const botInDb = await getTelegramBotInDb(
           botName,
-          authUser.id,
-          chatName
+          authUser.id
         );
         console.log(botInDb, 'botInDb')
         if (!botInDb) {

@@ -170,6 +170,7 @@ export const getEventsCalendarUserToday = async (): Promise<
 
 export async function getCalendarBotName(): Promise<string | null> {
   const botName = process.env.TELEGRAM_BOT_ERTEL_REPORT_APP_NAME;
+  
   return botName ?? null;
 }
 

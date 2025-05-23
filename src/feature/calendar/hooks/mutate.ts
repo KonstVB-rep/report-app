@@ -114,7 +114,7 @@ export const useCreateChatBot = () => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
-      return await toggleSubscribeChatBot(chatData.chatName, chatData.isActive);
+      return await toggleSubscribeChatBot(chatData.chatName,authUser.id, chatData.isActive);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
@@ -137,13 +137,13 @@ export const useUpdateChatBot = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (chatData: { chatName: string; isActive: boolean }) => {
+    mutationFn: async (chatData: { botId: string | null; isActive: boolean }) => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
 
-      if(!chatData.chatName) return
-      return await toggleSubscribeChatBot(chatData.chatName, chatData.isActive);
+      if(!chatData.botId) return
+      return await toggleSubscribeChatBot(chatData.botId,authUser.id, chatData.isActive);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({

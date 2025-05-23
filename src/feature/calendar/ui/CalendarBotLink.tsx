@@ -35,7 +35,7 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     try {
       setIsFetch(true);
       updateStatusChatBot({
-        chatName,
+        botId: bot.id,
         isActive: false,
       });
       if (chatId) {
@@ -62,7 +62,7 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     window.open(url, "_blank");
   };
 
-  console.log(bot, 'bot')
+  console.log(bot, 'bot************************')
 
   const handleChange = async () => {
     if (!authUser || !bot) return;
@@ -74,7 +74,7 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
         return;
       }
       if (!isActiveBot) {
-        updateStatusChatBot({ chatName: bot?.chatName, isActive: true });
+        updateStatusChatBot({ botId: bot.id, isActive: true });
         await sendNotification(
           "Вы успешно подписались на уведомления календаря",
           bot.chatId,
