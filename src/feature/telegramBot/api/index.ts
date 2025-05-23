@@ -38,6 +38,8 @@ export const getTelegramBotInDb = async (
       where: { botName },
     });
 
+    console.log(bot, 'bot')
+
     if (!bot) {
       return null;
     }

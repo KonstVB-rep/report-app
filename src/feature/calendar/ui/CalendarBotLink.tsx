@@ -62,6 +62,8 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     window.open(url, "_blank");
   };
 
+  console.log(bot, 'bot')
+
   const handleChange = async () => {
     if (!authUser || !bot) return;
     try {

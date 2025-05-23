@@ -102,7 +102,7 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
           authUser.id,
           chatName
         );
-
+        console.log(botInDb, 'botInDb')
         if (!botInDb) {
           return {id: null, botName, isActive: false, chatId: "", chatName: "" };
         }

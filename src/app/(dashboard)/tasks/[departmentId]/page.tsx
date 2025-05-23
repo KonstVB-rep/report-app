@@ -4,15 +4,30 @@ import { TaskPriority, TaskStatus } from "@prisma/client";
 
 import { useState } from "react";
 
-import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+
+import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useGetDepartmentWithUsersAndTasks } from "@/entities/department/hooks";
-import TaskTable from "@/feature/task-manager/ui/TaskTable";
-import { Plus } from "lucide-react";
-import Kanban from "@/feature/task-manager/ui/Kanban";
-import CalendarTask from "@/feature/task-manager/ui/CalendarTask";
+import LoadongView from "@/feature/task-manager/ui/LoadongView";
+import DialogComponent from "@/shared/ui/DialogComponent";
+import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
+
+const Kanban = dynamic(() => import("@/feature/task-manager/ui/Kanban"), {
+  ssr: false,
+  loading: () => <LoadongView />,
+});
+const CalendarTask = dynamic(
+  () => import("@/feature/task-manager/ui/CalendarTask"),
+  { ssr: false, loading: () => <LoadongView /> }
+);
+const TaskTable = dynamic(() => import("@/feature/task-manager/ui/TaskTable"), {
+  ssr: false,
+  loading: () => <LoadongView />,
+});
 
 // const departmentWithTasks = [
 //   {
@@ -315,7 +330,8 @@ const allTasks = [
     id: "task1",
     createdAt: new Date(),
     updatedAt: new Date(),
-    description: "Prepare sales report",
+    description:
+      "Prepare sales report Prepare sales report Prepare sales report",
     title: "Sales Report",
     taskStatus: TaskStatus.IN_PROGRESS,
     taskPriority: TaskPriority.HIGH,
@@ -429,46 +445,70 @@ const view = [
   { id: "table", value: "Таблица" },
   { id: "kanban", value: "Канбан" },
   { id: "calendar", value: "Календарь" },
-];
+] as const;
+
+type ViewType = (typeof view)[number]["id"];
 
 const TasksPage = () => {
   const { departmentId } = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const [viewType, setViewType] = useState("table");
+  const defaultView = searchParams.get("viewType") || "table";
+  const [currentView, setCurrentView] = useState<ViewType>(
+    defaultView as ViewType
+  );
 
   const { data } = useGetDepartmentWithUsersAndTasks(departmentId as string);
 
-  console.log(data, "data");
+  const handleViewChange = (value: ViewType) => {
+    if (value === currentView) return;
+    setCurrentView(value);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", value);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <section className="p-5">
       <h1 className="text-xl py-2">Все задачи</h1>
-      
+
       <Separator />
 
       <div className="p-2 flex justify-between gap-2">
-       <div className="flex gap-2">
-         {view.map((item) => {
-          return (
-            <Button
-              key={item.id}
-              variant="outline"
-              onClick={() => setViewType(item.id)}
-            >
-              {item.value}
-            </Button>
-          );
-        })}
-       </div>
+        <div className="flex gap-2">
+          {view.map((item) => {
+            return (
+              <Button
+                key={item.id}
+                variant="outline"
+                onClick={() => handleViewChange(item.id)}
+              >
+                {item.value}
+              </Button>
+            );
+          })}
+        </div>
 
-        <Button variant="default"><Plus/> Новая</Button>
+        <DialogComponent
+          trigger={
+            <Button variant="default">
+              <Plus /> Новая
+            </Button>
+          }
+        >
+          <></>
+        </DialogComponent>
       </div>
 
-      {viewType === 'table' && <TaskTable data={allTasks} />}
+      <MotionDivY>
+        {currentView === "table" && <TaskTable data={allTasks} />}
 
-      {viewType === 'kanban' && <Kanban />}
+        {currentView === "kanban" && <Kanban />}
 
-      {viewType === 'calendar' && <CalendarTask />}
-
+        {currentView === "calendar" && <CalendarTask />}
+      </MotionDivY>
     </section>
   );
 };

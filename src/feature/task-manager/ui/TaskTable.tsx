@@ -1,4 +1,4 @@
-import { TaskStatus } from "@prisma/client";
+// import { TaskStatus } from "@prisma/client";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -41,6 +41,8 @@ const TaskTable = <TData extends Record<string, unknown>>({
     unknown
   >[];
 
+  //  ${row.original.taskStatus === TaskStatus.IN_PROGRESS && "bg-blue-900/40"} ${row.original.taskStatus === TaskStatus.CANCELED && "bg-red-900/40"} ${row.original.taskStatus === TaskStatus.DONE && "bg-lime-200/20"
+
   const renderRowCells = useCallback((row: Row<TData>) => {
     return row.getVisibleCells().map((cell) => (
       <TableCell
@@ -58,8 +60,7 @@ const TaskTable = <TData extends Record<string, unknown>>({
       return (
         <TableRow
           key={row.id}
-          className={`tr hover:bg-zinc-600 hover:text-white  ${row.original.taskStatus === TaskStatus.IN_PROGRESS && "bg-blue-900/40"} ${row.original.taskStatus === TaskStatus.CANCELED && "bg-red-900/40"} ${row.original.taskStatus === TaskStatus.DONE && "bg-lime-200/20"}`}
-          data-task-status={`${["IN_PROGRESS", "DONE", "CANCELED"].includes(row.original.taskStatus as string)}`}
+          className={`tr hover:bg-zinc-600 hover:text-white`}
         >
           {renderRowCells(row)}
         </TableRow>
@@ -126,7 +127,7 @@ const TaskTable = <TData extends Record<string, unknown>>({
   );
 
   return (
-    <div>
+    <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
       <div className="flex items-center gap-2 p-2 border-b border-t mb-2">
         <div className="flex items-center">
           <FilterByUsers
@@ -146,13 +147,15 @@ const TaskTable = <TData extends Record<string, unknown>>({
           columnFilters={table.getState().columnFilters}
           setColumnFilters={setColumnFilters}
         />
-          <DateRangeFilter
-            onDateChange={handleDateChange}
-            onClearDateFilter={handleClearDateFilter}
-            value={value}
-          />
+        <DateRangeFilter
+          onDateChange={handleDateChange}
+          onClearDateFilter={handleClearDateFilter}
+          value={value}
+        />
       </div>
-      <TableTemplate table={table} renderRow={renderRow} />
+      <div className="rounded-lg overflow-hidden border">
+        <TableTemplate table={table} renderRow={renderRow} />
+      </div>
     </div>
   );
 };

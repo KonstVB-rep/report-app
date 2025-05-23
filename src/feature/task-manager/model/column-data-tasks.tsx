@@ -1,4 +1,4 @@
-import { Task, TaskPriority } from "@prisma/client";
+import { Task, TaskPriority, TaskStatus } from "@prisma/client";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { DateRange } from "react-day-picker";
@@ -10,13 +10,28 @@ export const columnsDataTask: ColumnDef<Task, unknown>[] = [
     id: "title",
     header: "Задача",
     cell: (info: CellContext<Task, unknown>) => info.getValue(),
-    accessorFn: (row: Task) => row.title,
+    accessorFn: (row: Task) => {
+      const bgColor =
+        row.taskStatus === TaskStatus.IN_PROGRESS 
+          ? "bg-blue-600"
+          : row.taskStatus === TaskStatus.CANCELED
+            ? "bg-red-600"
+            : row.taskStatus === TaskStatus.DONE
+              ? "bg-green-600"
+              : row.taskStatus === TaskStatus.OPEN ? "bg-gray-600" : "";
+      return (
+        <>
+          <span className={`abs-element absolute left-0 top-0 bottom-0 w-1 ${bgColor}`}/>
+          {row.title}
+        </>
+      );
+    },
   },
   {
     id: "description",
     header: "Описание",
     cell: (info: CellContext<Task, unknown>) => info.getValue(),
-    accessorFn: (row: Task) => row.description,
+    accessorFn: (row: Task) => <span className="truncate">{row.description}</span>,
   },
   {
     id: "taskStatus",
@@ -50,7 +65,7 @@ export const columnsDataTask: ColumnDef<Task, unknown>[] = [
               : "bg-red-600";
       return (
         <span
-          className={`p-2 rounded-md flex items-center justify-center ${bgColor}`}
+          className={`abs-element absolute inset-1 flex items-center justify-center ${bgColor}`}
         >
           {row.taskPriority}
         </span>

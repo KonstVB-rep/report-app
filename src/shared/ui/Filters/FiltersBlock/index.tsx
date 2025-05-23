@@ -57,11 +57,6 @@ const FiltersBlock = ({
 
   return (
     <MotionDivY className="min-h-0">
-      {/* {hasTable && <FilterByUser
-        columnFilters={table.getState().columnFilters}
-        setColumnFilters={setColumnFilters}
-        label="Менеджер"
-      />} */}
 
       <div className="py-2 flex flex-wrap justify-start gap-2">
         {hasTable && (

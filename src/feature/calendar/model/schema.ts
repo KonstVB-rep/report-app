@@ -1,16 +1,5 @@
 import { z } from "zod";
 
-// const normalizeTime = (time: string) => {
-//   // Если время не в формате HH:mm, пытаемся нормализовать
-//   if (!/^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$/.test(time)) {
-//     const date = new Date(time);
-//     const hours = String(date.getHours()).padStart(2, "0");
-//     const minutes = String(date.getMinutes()).padStart(2, "0");
-//     return `${hours}:${minutes}`;
-//   }
-//   return time;
-// };
-
 export const EventCalendarFormSchema = z
   .object({
     eventTitle: z.string({
@@ -64,12 +53,12 @@ export const EventCalendarFormSchema = z
 
       startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
       endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
-
+      now.setSeconds(0,0);
       return startDate <= endDate && startDate >= now && endDate > now;
     },
     {
       message:
-        "Проверьте корректность дат и времени — начало должно быть раньше конца и не в прошлом",
+        "Проверьте корректность дат и времени — начало не должно быть раньше настоящего времени ",
       path: ["dateError"],
     }
   );

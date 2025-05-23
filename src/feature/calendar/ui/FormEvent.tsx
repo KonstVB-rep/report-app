@@ -22,7 +22,7 @@ import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
 import TextareaForm from "@/shared/ui/TextareaForm";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { IsExistIntersectionEvents } from "../utils/eventHandlers";
+// import { IsExistIntersectionEvents } from "../utils/eventHandlers";
 
 type FormEventProps = {
   events: EventInputType[] | undefined;
@@ -30,7 +30,6 @@ type FormEventProps = {
 
 type HandleSubmitProps = {
   editingId?: string | null;
-  events: EventInputType[] | undefined;
   createEvent: (data: {
     title: string;
     start: string;
@@ -48,7 +47,7 @@ type HandleSubmitProps = {
 
 export const handleSubmit = (
   values: EventCalendarSchema,
-  { editingId, events, createEvent, updateEvent }: HandleSubmitProps
+  { editingId, createEvent, updateEvent }: HandleSubmitProps
 ) => {
   const {
     eventTitle,
@@ -71,10 +70,10 @@ export const handleSubmit = (
 
     if (
       parseInt(startH, 10) === parseInt(endH, 10) &&
-      parseInt(startM, 10) === parseInt(endM, 10)
+      parseInt(startM, 10) < parseInt(endM, 10)
     ) {
       return TOAST.ERROR(
-        "Время окнчания события должно быть больше времени началаю!"
+        "Время окнчания события не должно быть меньше времени начала!"
       );
     }
 
@@ -82,14 +81,14 @@ export const handleSubmit = (
     endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
   }
 
-  const isIntersections = IsExistIntersectionEvents(
-    startDate,
-    endDate,
-    events,
-    editingId
-  );
+  // const isIntersections = IsExistIntersectionEvents(
+  //   startDate,
+  //   endDate,
+  //   events,
+  //   editingId
+  // );
 
-  if (isIntersections) return;
+  // if (isIntersections) return;
 
   if (editingId) {
     updateEvent({
@@ -121,7 +120,6 @@ const FormEvent = ({ events }: FormEventProps) => {
           onSubmit={form.handleSubmit((values) =>
             handleSubmit(values, {
               editingId,
-              events,
               createEvent,
               updateEvent,
             })
