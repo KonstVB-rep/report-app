@@ -12,7 +12,7 @@ import { z } from "zod";
 
 import loginImg from "@/assets/login-img";
 import { Card, CardContent } from "@/components/ui/card";
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { login } from "@/feature/auth/login";
@@ -43,7 +43,7 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
 
   const { setDepartments } = useStoreDepartment();
 
-  const { data: departmentData } = useGetDepartmentsWithUsers(isAuth);
+  const { data: departmentData } = useGetDepartmentsWithUsers();
 
   const onSubmit = (formData: FormData) => {
     const isValidData = loginFormSchema.parse(Object.fromEntries(formData));

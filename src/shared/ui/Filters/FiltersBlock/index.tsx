@@ -4,7 +4,10 @@ import { ColumnDef, ColumnFiltersState, Table } from "@tanstack/react-table";
 import React, { Dispatch, SetStateAction } from "react";
 import { DateRange } from "react-day-picker";
 
+import { useParams, usePathname } from "next/navigation";
+
 import { LABELS } from "@/entities/deal/lib/constants";
+import useStoreUser from "@/entities/user/store/useStoreUser";
 
 import DateRangeFilter from "../../DateRangeFilter";
 import MotionDivY from "../../MotionComponents/MotionDivY";
@@ -44,34 +47,53 @@ const FiltersBlock = ({
   table,
   type,
 }: FiltersBlockProps) => {
+  const pathname = usePathname();
+  const { authUser } = useStoreUser();
+  const { dealType } = useParams();
+
+  const hasTable = pathname.includes(
+    `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
+  );
+
   return (
     <MotionDivY className="min-h-0">
-      <FilterByUser
+      {/* {hasTable && <FilterByUser
         columnFilters={table.getState().columnFilters}
         setColumnFilters={setColumnFilters}
-      />
+        label="Менеджер"
+      />} */}
 
-      <div className="mt-2 flex flex-wrap justify-between gap-2">
-        <DateRangeFilter
-          onDateChange={onDateChange}
-          onClearDateFilter={onClearDateFilter}
-          value={value}
-        />
+      <div className="py-2 flex flex-wrap justify-start gap-2">
+        {hasTable && (
+          <FilterByUser
+            columnFilters={table.getState().columnFilters}
+            setColumnFilters={setColumnFilters}
+            label="Менеджер"
+          />
+        )}
 
-        <MultiColumnFilter
-          columns={
-            table.getAllColumns() as ColumnDef<
-              Record<string, unknown>,
-              unknown
-            >[]
-          }
-          setColumnFilters={setColumnFilters}
-          includedColumns={includedColumns}
-          selectedColumns={selectedColumns}
-          setSelectedColumns={setSelectedColumns}
-          filterValueSearchByCol={filterValueSearchByCol}
-          setFilterValueSearchByCol={setFilterValueSearchByCol}
-        />
+        <div className="flex gap-2 justify-start flex-wrap">
+          <DateRangeFilter
+            onDateChange={onDateChange}
+            onClearDateFilter={onClearDateFilter}
+            value={value}
+          />
+
+          <MultiColumnFilter
+            columns={
+              table.getAllColumns() as ColumnDef<
+                Record<string, unknown>,
+                unknown
+              >[]
+            }
+            setColumnFilters={setColumnFilters}
+            includedColumns={includedColumns}
+            selectedColumns={selectedColumns}
+            setSelectedColumns={setSelectedColumns}
+            filterValueSearchByCol={filterValueSearchByCol}
+            setFilterValueSearchByCol={setFilterValueSearchByCol}
+          />
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 bg-background">

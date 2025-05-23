@@ -16,14 +16,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks.tsx";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import {
   DepartmentInfo,
   DepartmentListItemType,
   UnionTypeDepartmentsName,
 } from "@/entities/department/types";
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { UserResponse } from "@/entities/user/types";
 
 import { NavMain } from "./nav-main";
@@ -43,10 +42,9 @@ const urlPath = (depsId: number): Record<UnionTypeDepartmentsName, string> => ({
 
 const AppSidebar = () => {
   const { departments } = useStoreDepartment();
-  const { isAuth } = useStoreUser();
   const { setDepartments } = useStoreDepartment();
 
-  const { data: departmentData } = useGetDepartmentsWithUsers(isAuth);
+  const { data: departmentData } = useGetDepartmentsWithUsers();
 
   useEffect(() => {
     if (departmentData) {

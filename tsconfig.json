@@ -23,6 +23,6 @@
       "@/prisma/*": ["./prisma/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/entities/user/ui/PersonTableEdit.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/entities/user/ui/PersonTableEdit.tsx", "src/entities/department/hooks"],
   "exclude": []
 }

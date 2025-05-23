@@ -30,6 +30,7 @@ model User {
   userFilters     UserFilter[]
   eventsCalendar  EventCalendar[]
   chats           UserTelegramChat[]
+  tasks            Task[]
 
   @@index([departmentId])
 }
@@ -208,6 +209,25 @@ model UserTelegramChat {
 
   @@unique([botId, telegramUserId])   // Уникальность для каждого пользователя, бота и чата
 }
+
+model Task {
+  id              String      @id @default(cuid())  
+  title           String
+  description     String
+  taskStatus      TaskStatus
+  taskPriority    TaskPriority
+  assignerId      String
+  executorId      String
+  dueDate         DateTime
+  startDate       DateTime
+  createdAt       DateTime    @default(now())                
+  updatedAt       DateTime    @updatedAt      
+
+  user            User          @relation(fields: [executorId], references: [id]) 
+
+  @@unique([assignerId, executorId]) 
+}
+
 enum PermissionEnum {
   VIEW_USER_REPORT
   VIEW_UNION_REPORT
@@ -293,6 +313,21 @@ enum DealType {
   PROJECT
   RETAIL
 }
+
 enum StorageType {
   YANDEX_DISK
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+  CANCELED
+}
+
+enum TaskPriority {
+  LOW       // Не срочно, но нужно сделать (фоновые)
+  MEDIUM    // Важно, но не критично (обычные задачи)
+  HIGH      // Очень важно — сделать до средних
+  CRITICAL  // Экстренно — сделать первым
 }
