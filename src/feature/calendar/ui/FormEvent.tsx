@@ -70,10 +70,10 @@ export const handleSubmit = (
 
     if (
       parseInt(startH, 10) === parseInt(endH, 10) &&
-      parseInt(startM, 10) < parseInt(endM, 10)
+      parseInt(endM, 10) < parseInt(startM, 10)
     ) {
       return TOAST.ERROR(
-        "Время окнчания события не должно быть меньше времени начала!"
+        "Время окончания события не должно быть меньше времени начала!"
       );
     }
 

@@ -123,11 +123,11 @@ export async function GET() {
         const eventStartTime = new Date(event.start);
         const thirtyMinutesBefore = new Date(eventStartTime.getTime() - 30 * 60000);
         const fifteenMinutesBefore = new Date(eventStartTime.getTime() - 15 * 60000);
-        const fifteenNowBefore = new Date(eventStartTime.getTime());
+        const timeStartEvent = new Date(eventStartTime.getTime());
         thirtyMinutesBefore.setSeconds(0, 0);
         fifteenMinutesBefore.setSeconds(0, 0);
-        fifteenNowBefore.setSeconds(0, 0);
-        return (now.getTime() === thirtyMinutesBefore.getTime() || now.getTime() === fifteenMinutesBefore.getTime() || now.getTime() === fifteenNowBefore.getTime()) && now <= eventStartTime;
+        timeStartEvent.setSeconds(0, 0);
+        return (now.getTime() === thirtyMinutesBefore.getTime() || now.getTime() === fifteenMinutesBefore.getTime() || now.getTime() === timeStartEvent.getTime()) && now <= eventStartTime;
       });
 
       if (upcomingEvents.length > 0) {
