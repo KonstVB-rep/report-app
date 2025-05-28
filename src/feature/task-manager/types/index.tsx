@@ -1,16 +1,64 @@
-import { TaskPriority, TaskStatus } from "@prisma/client";
+import { UserResponse } from "@/entities/user/types";
+import { DepartmentEnum, Task, TaskPriority, TaskStatus } from "@prisma/client";
 
-export const LABEL_TASK_STATUS = {
-  [TaskStatus.OPEN]: 'Открыта',
-  [TaskStatus.IN_PROGRESS]: 'В работе',
-  [TaskStatus.DONE]: 'Завершена',
-  [TaskStatus.CANCELED]: 'Отменена',
+export type TaskFormType =  {
+    title: string;
+    departmentId:string,
+    description: string;
+    taskStatus: string;
+    taskPriority: string;
+    executorId: string;
+    dueDate: string;
+    startDate: string;
+    orderTask: number
 }
 
-
-export const LABEL_TASK_PRIORITY = {
-  [TaskPriority.LOW]: 'Низкий',
-  [TaskPriority.MEDIUM]: 'Средний',
-  [TaskPriority.HIGH]: 'Высокий',
-  [TaskPriority.CRITICAL]: 'Критичный',
+export type TaskFormTypeWithId =  {
+    id:string,
+    title: string;
+    departmentId:number,
+    description: string;
+    taskStatus: string;
+    taskPriority: string;
+    executorId: string;
+    dueDate: string;
+    startDate: string;
+    orderTask: number
 }
+
+export type UserShort  = Pick<UserResponse, 'id' | 'departmentId' | "position" | 'username'>
+
+export type UserShortWithTasks = UserShort & { tasksExecuted: Task[]}
+
+export type DepartmentWithUsersAndTasks = {
+  id: number;
+  name: DepartmentEnum;
+  directorId: string;
+  description: string;
+  users: UserShortWithTasks[];
+};
+
+type UserInTask = {
+  username: string;
+  position: string;
+  email: string;
+};
+
+export type TaskWithUserInfo = {
+  id: string;
+  title: string;
+  description: string;
+  taskStatus: TaskStatus;
+  taskPriority: TaskPriority;
+  assignerId: string;
+  executorId: string;
+  orderTask: number,
+  departmentId: number;
+  dueDate: Date;
+  startDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
+
+  assigner: UserInTask;
+  executor: UserInTask;
+};

@@ -15,23 +15,34 @@ import {
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 
+import { useParams, useSearchParams } from "next/navigation";
+
 import { TableCell, TableRow } from "@/components/ui/table";
+import ContextRowTable from "@/shared/ui/ContextRowTable/ContextRowTable";
 import DateRangeFilter from "@/shared/ui/DateRangeFilter";
 import FilterByUsers from "@/shared/ui/Filters/FilterByUsers";
 import FilterPopoverGroup from "@/shared/ui/Filters/FilterPopoverGroup";
 import TableTemplate from "@/shared/ui/Table/TableTemplate";
 
 import { columnsDataTask } from "../model/column-data-tasks";
-import { LABEL_TASK_STATUS } from "../types";
+import { LABEL_TASK_STATUS } from "../model/constants";
+import EditTaskDialog from "./Modals/EditTaskDialog";
+import DelTaskDialog from "./Modals/DelTaskDialog";
+import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 
 interface TaskTableProps<TData> {
   data: TData[];
 }
 
+const includedColumns: string[] | [] = []
+
 const TaskTable = <TData extends Record<string, unknown>>({
-  data,
+  data
 }: TaskTableProps<TData>) => {
+  const searchParams = useSearchParams();
+  const { departmentId } = useParams();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -47,8 +58,8 @@ const TaskTable = <TData extends Record<string, unknown>>({
     return row.getVisibleCells().map((cell) => (
       <TableCell
         key={cell.id}
-        className="td min-w-12 border-b border-r"
-        style={{ width: cell.column.getSize() }}
+        className="td min-w-12 border-b border-r h-[57px] !p-2"
+        // style={{ width: cell.column.getSize() }}
       >
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </TableCell>
@@ -57,16 +68,41 @@ const TaskTable = <TData extends Record<string, unknown>>({
 
   const renderRow = useCallback(
     (row: Row<TData>): ReactNode => {
+      // const bgColor =
+      //   row.original.taskStatus === TaskStatus.IN_PROGRESS
+      //     ? "!bg-blue-600/40"
+      //     : row.original.taskStatus === TaskStatus.CANCELED
+      //       ? "!bg-red-600/40"
+      //       : row.original.taskStatus === TaskStatus.DONE && "!bg-green-600/40";
       return (
-        <TableRow
+        <ContextRowTable
           key={row.id}
-          className={`tr hover:bg-zinc-600 hover:text-white`}
+          modals={(setOpenModal) => ({
+            edit: (
+              <EditTaskDialog
+                close={() => setOpenModal(null)}
+                id={row.original.id as string}
+              />
+            ),
+            delete: (
+              <DelTaskDialog
+                close={() => setOpenModal(null)}
+                id={row.original.id as string}
+              />
+            ),
+          })}
+          path={`/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}`}
         >
-          {renderRowCells(row)}
-        </TableRow>
+          <TableRow
+            key={row.id}
+            className={`tr hover:bg-zinc-600 hover:text-white`}
+          >
+            {renderRowCells(row)}
+          </TableRow>
+        </ContextRowTable>
       );
     },
-    [renderRowCells]
+    [departmentId, renderRowCells]
   );
 
   const table = useReactTable({
@@ -75,6 +111,7 @@ const TaskTable = <TData extends Record<string, unknown>>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -86,6 +123,7 @@ const TaskTable = <TData extends Record<string, unknown>>({
     state: {
       sorting,
       columnFilters,
+      rowSelection,
       columnVisibility: {
         ...columnVisibility,
         user: false,
@@ -104,36 +142,57 @@ const TaskTable = <TData extends Record<string, unknown>>({
     | DateRange
     | undefined;
 
-  const handleDateChange = useCallback(
-    (date: DateRange | undefined) => {
-      setColumnFilters((prev) => {
-        const newFilters = prev.filter((f) => f.id !== "dueDate");
-        return date?.from && date?.to
-          ? ([
-              ...newFilters,
-              { id: "dueDate", value: { from: date.from, to: date.to } },
-            ] as ColumnFiltersState)
-          : newFilters;
-      });
-    },
-    [setColumnFilters]
-  );
+  // const handleDateChange = useCallback(
+  //   (date: DateRange | undefined) => {
+  //     setColumnFilters((prev) => {
+  //       const newFilters = prev.filter((f) => f.id !== "dueDate");
+  //       return date?.from && date?.to
+  //         ? ([
+  //             ...newFilters,
+  //             { id: "dueDate", value: { from: date.from, to: date.to } },
+  //           ] as ColumnFiltersState)
+  //         : newFilters;
+  //     });
+  //   },
+  //   [setColumnFilters]
+  // );
 
-  const handleClearDateFilter = useCallback(
-    (columnId: string) => {
-      setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
-    },
-    [setColumnFilters]
-  );
+  // const handleClearDateFilter = useCallback(
+  //   (columnId: string) => {
+  //     setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
+  //   },
+  //   [setColumnFilters]
+  // );
+
+   const {
+    // selectedColumns,
+    // setSelectedColumns,
+    // filterValueSearchByCol,
+    // setFilterValueSearchByCol,
+    // openFilters,
+    // setOpenFilters,
+    handleDateChange,
+    handleClearDateFilter,
+  } = useDataTableFilters({
+    searchParams,
+    includedColumns,
+    setColumnFilters,
+    setColumnVisibility,
+    columnFilters,
+    columnVisibility,
+  });
+
+
 
   return (
-    <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
-      <div className="flex items-center gap-2 p-2 border-b border-t mb-2">
+    <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
+      <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
         <div className="flex items-center">
           <FilterByUsers
             columnFilters={table.getState().columnFilters}
             setColumnFilters={setColumnFilters}
             label="Исполнитель"
+            columnId="executorId"
           />
         </div>
         <FilterPopoverGroup
@@ -148,13 +207,13 @@ const TaskTable = <TData extends Record<string, unknown>>({
           setColumnFilters={setColumnFilters}
         />
         <DateRangeFilter
-          onDateChange={handleDateChange}
+          onDateChange={handleDateChange("dueDate")}
           onClearDateFilter={handleClearDateFilter}
           value={value}
         />
       </div>
-      <div className="rounded-lg overflow-hidden border">
-        <TableTemplate table={table} renderRow={renderRow} />
+      <div className="rounded-ee-md overflow-hidden border">
+        <TableTemplate table={table} renderRow={renderRow} className="rounded-ee-md"/>
       </div>
     </div>
   );

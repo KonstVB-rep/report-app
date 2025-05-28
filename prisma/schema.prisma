@@ -30,7 +30,8 @@ model User {
   userFilters     UserFilter[]
   eventsCalendar  EventCalendar[]
   chats           UserTelegramChat[]
-  tasks            Task[]
+  tasksAssigned Task[]       @relation("TaskAssigner")
+  tasksExecuted Task[]       @relation("TaskExecutor")
 
   @@index([departmentId])
 }
@@ -61,6 +62,7 @@ model Department {
   description String        @unique
   director   User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
   users      User[]         @relation("DepartmentUsers")
+  tasks       Task[]      @relation("DepartmentTask")
 }
 
 model Project {
@@ -214,18 +216,26 @@ model Task {
   id              String      @id @default(cuid())  
   title           String
   description     String
+  departmentId    Int
   taskStatus      TaskStatus
   taskPriority    TaskPriority
   assignerId      String
   executorId      String
+  orderTask           Int
   dueDate         DateTime
   startDate       DateTime
   createdAt       DateTime    @default(now())                
   updatedAt       DateTime    @updatedAt      
 
-  user            User          @relation(fields: [executorId], references: [id]) 
+  department   Department @relation("DepartmentTask", fields: [departmentId], references: [id])
 
-  @@unique([assignerId, executorId]) 
+  // Автор задачи (assigner)
+  assigner     User         @relation("TaskAssigner", fields: [assignerId], references: [id])
+
+  // Исполнитель задачи (executor)
+  executor     User         @relation("TaskExecutor", fields: [executorId], references: [id])
+
+  @@index([orderTask, taskStatus])
 }
 
 enum PermissionEnum {
@@ -234,6 +244,7 @@ enum PermissionEnum {
   DOWNLOAD_REPORTS
   USER_MANAGEMENT
   DEAL_MANAGEMENT
+  TASK_MANAGEMENT
 }
 
 enum DirectionProject {
@@ -321,6 +332,7 @@ enum StorageType {
 enum TaskStatus {
   OPEN
   IN_PROGRESS
+  // IN_REVIEW
   DONE
   CANCELED
 }

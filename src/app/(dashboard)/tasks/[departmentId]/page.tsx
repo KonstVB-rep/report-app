@@ -1,472 +1,324 @@
 "use client";
 
-import { TaskPriority, TaskStatus } from "@prisma/client";
 
 import { useState } from "react";
 
 import dynamic from "next/dynamic";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-
-import { Plus } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useGetDepartmentWithUsersAndTasks } from "@/entities/department/hooks";
-import LoadongView from "@/feature/task-manager/ui/LoadongView";
-import DialogComponent from "@/shared/ui/DialogComponent";
+import { useGetTasksDepartment } from "@/feature/task-manager/hooks/query";
+// import { TaskWithUserInfo } from "@/feature/task-manager/types";
+import LoadingView from "@/feature/task-manager/ui/LoadingView";
+import СreateTaskDialog from "@/feature/task-manager/ui/Modals/СreateTaskDialog";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
-const Kanban = dynamic(() => import("@/feature/task-manager/ui/Kanban"), {
-  ssr: false,
-  loading: () => <LoadongView />,
-});
-const CalendarTask = dynamic(
-  () => import("@/feature/task-manager/ui/CalendarTask"),
-  { ssr: false, loading: () => <LoadongView /> }
+const Kanban = dynamic(
+  () => import("@/feature/task-manager/ui/Kanban"),
+  { ssr: false, loading: () => <LoadingView /> }
 );
+
+// const CalendarTask = dynamic(
+//   () => import("@/feature/task-manager/ui/CalendarTask"),
+//   { ssr: false, loading: () => <LoadingView /> }
+// );
+
 const TaskTable = dynamic(() => import("@/feature/task-manager/ui/TaskTable"), {
   ssr: false,
-  loading: () => <LoadongView />,
+  loading: () => <LoadingView />,
 });
 
-// const departmentWithTasks = [
-//   {
-//     id: 1,
-//     name: "SALES",
-//     directorId: "director1",
-//     description: "Sales department responsible for increasing revenue.",
-//     users: [
-//       {
-//         id: "user1",
-//         departmentId: 1,
-//         username: "alice_smith",
-//         position: "Sales Manager",
-//         tasks: [
-//           {
-//             id: "task1",
-//             createdAt: new Date(),
-//             updatedAt: new Date(),
-//             description: "Prepare sales report",
-//             title: "Sales Report",
-//             taskStatus: TaskStatus.IN_PROGRESS,
-//             taskPriority: TaskPriority.HIGH,
-//             assignerId: "director1",
-//             executorId: "user1",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//       {
-//         id: "user2",
-//         departmentId: 1,
-//         username: "bob_jones",
-//         position: "Sales Representative",
-//         tasks: [],
-//       },
-//     ],
-//   },
-//   {
-//     id: 2,
-//     name: "SALES",
-//     directorId: "director2",
-//     description: "Technical team working on product development.",
-//     users: [
-//       {
-//         id: "user3",
-//         departmentId: 2,
-//         username: "carol_davis",
-//         position: "Lead Developer",
-//         tasks: [
-//           {
-//             id: "task2",
-//             description: "Fix critical bug",
-//             title: "Bug Fix",
-//             taskStatus: TaskStatus.DONE,
-//             taskPriority: TaskPriority.CRITICAL,
-//             assignerId: "director2",
-//             executorId: "user3",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//       {
-//         id: "user4",
-//         departmentId: 2,
-//         username: "david_evans",
-//         position: "Developer",
-//         tasks: [
-//           {
-//             id: "task3",
-//             description: "Implement new feature",
-//             title: "New Feature",
-//             taskStatus: TaskStatus.IN_PROGRESS,
-//             taskPriority: TaskPriority.MEDIUM,
-//             assignerId: "director2",
-//             executorId: "user4",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: 3,
-//     name: "SALES",
-//     directorId: "director3",
-//     description: "Marketing department focused on brand awareness.",
-//     users: [
-//       {
-//         id: "user5",
-//         departmentId: 3,
-//         username: "emma_clark",
-//         position: "Marketing Specialist",
-//         tasks: [
-//           {
-//             id: "task4",
-//             description: "Create marketing campaign",
-//             title: "Campaign",
-//             taskStatus: TaskStatus.OPEN,
-//             taskPriority: TaskPriority.LOW,
-//             assignerId: "director3",
-//             executorId: "user5",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: 4,
-//     name: "SALES",
-//     directorId: "director1",
-//     description: "Sales department focusing on product sales.",
-//     users: [
-//       {
-//         id: "user6",
-//         departmentId: 4,
-//         username: "frank_wilson",
-//         position: "Sales Manager",
-//         tasks: [],
-//       },
-//       {
-//         id: "user7",
-//         departmentId: 4,
-//         username: "grace_taylor",
-//         position: "Sales Representative",
-//         tasks: [
-//           {
-//             id: "task5",
-//             description: "Meet with potential clients",
-//             title: "Client Meeting",
-//             taskStatus: TaskStatus.CANCELED,
-//             taskPriority: TaskPriority.LOW,
-//             assignerId: "director1",
-//             executorId: "user7",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: 5,
-//     name: "SALES",
-//     directorId: "director2",
-//     description: "Technical support team working on client issues.",
-//     users: [
-//       {
-//         id: "user8",
-//         departmentId: 5,
-//         username: "hannah_lee",
-//         position: "Tech Support Specialist",
-//         tasks: [
-//           {
-//             id: "task6",
-//             description: "Resolve customer issue",
-//             title: "Issue Resolution",
-//             taskStatus: TaskStatus.DONE,
-//             taskPriority: TaskPriority.CRITICAL,
-//             assignerId: "director2",
-//             executorId: "user8",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: 6,
-//     name: "SALES",
-//     directorId: "director3",
-//     description: "Social media and digital marketing department.",
-//     users: [
-//       {
-//         id: "user9",
-//         departmentId: 6,
-//         username: "ian_hall",
-//         position: "Social Media Manager",
-//         tasks: [
-//           {
-//             id: "task7",
-//             description: "Run ad campaign",
-//             title: "Ad Campaign",
-//             taskStatus: TaskStatus.DONE,
-//             taskPriority: TaskPriority.HIGH,
-//             assignerId: "director3",
-//             executorId: "user9",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: 7,
-//     name: "SALES",
-//     directorId: "director1",
-//     description: "Sales department responsible for client relations.",
-//     users: [
-//       {
-//         id: "user10",
-//         departmentId: 7,
-//         username: "jack_martin",
-//         position: "Sales Representative",
-//         tasks: [],
-//       },
-//     ],
-//   },
-//   {
-//     id: 8,
-//     name: "SALES",
-//     directorId: "director2",
-//     description: "Back-end development team.",
-//     users: [
-//       {
-//         id: "user11",
-//         departmentId: 8,
-//         username: "karen_wood",
-//         position: "Back-End Developer",
-//         tasks: [
-//           {
-//             id: "task8",
-//             description: "Develop API",
-//             title: "API Development",
-//             taskStatus: TaskStatus.IN_PROGRESS,
-//             taskPriority: TaskPriority.LOW,
-//             assignerId: "director2",
-//             executorId: "user11",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: 9,
-//     name: "SALES",
-//     directorId: "director3",
-//     description: "Event planning and public relations.",
-//     users: [
-//       {
-//         id: "user12",
-//         departmentId: 9,
-//         username: "lucas_garcia",
-//         position: "Event Coordinator",
-//         tasks: [
-//           {
-//             id: "task9",
-//             description: "Organize company event",
-//             title: "Event Planning",
-//             taskStatus: TaskStatus.OPEN,
-//             taskPriority: TaskPriority.MEDIUM,
-//             assignerId: "director3",
-//             executorId: "user12",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   {
-//     id: 10,
-//     name: "SALES",
-//     directorId: "director1",
-//     description: "Sales department focused on international clients.",
-//     users: [
-//       {
-//         id: "user13",
-//         departmentId: 10,
-//         username: "mary_james",
-//         position: "Sales Manager",
-//         tasks: [
-//           {
-//             id: "task10",
-//             description: "Negotiate international deal",
-//             title: "International Deal",
-//             taskStatus: TaskStatus.IN_PROGRESS,
-//             taskPriority: TaskPriority.MEDIUM,
-//             assignerId: "director1",
-//             executorId: "user13",
-//             dueDate: new Date(),
-//             startDate: new Date(),
-//           },
-//         ],
-//       },
-//     ],
-//   },
-// ];
 
-const allTasks = [
-  {
-    id: "task1",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    description:
-      "Prepare sales report Prepare sales report Prepare sales report",
-    title: "Sales Report",
-    taskStatus: TaskStatus.IN_PROGRESS,
-    taskPriority: TaskPriority.HIGH,
-    assignerId: "director1",
-    executorId: "user1",
-    dueDate: new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task2",
-    description: "Fix critical bug",
-    title: "Bug Fix",
-    taskStatus: TaskStatus.DONE,
-    taskPriority: TaskPriority.CRITICAL,
-    assignerId: "director2",
-    executorId: "user3",
-    dueDate: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task3",
-    description: "Implement new feature",
-    title: "New Feature",
-    taskStatus: TaskStatus.IN_PROGRESS,
-    taskPriority: TaskPriority.MEDIUM,
-    assignerId: "director2",
-    executorId: "user4",
-    dueDate: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task4",
-    description: "Create marketing campaign",
-    title: "Campaign",
-    taskStatus: TaskStatus.OPEN,
-    taskPriority: TaskPriority.LOW,
-    assignerId: "director3",
-    executorId: "user5",
-    dueDate: new Date(new Date().getTime() + 4 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task5",
-    description: "Meet with potential clients",
-    title: "Client Meeting",
-    taskStatus: TaskStatus.CANCELED,
-    taskPriority: TaskPriority.LOW,
-    assignerId: "director1",
-    executorId: "user7",
-    dueDate: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task6",
-    description: "Resolve customer issue",
-    title: "Issue Resolution",
-    taskStatus: TaskStatus.DONE,
-    taskPriority: TaskPriority.CRITICAL,
-    assignerId: "director2",
-    executorId: "user8",
-    dueDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task7",
-    description: "Run ad campaign",
-    title: "Ad Campaign",
-    taskStatus: TaskStatus.DONE,
-    taskPriority: TaskPriority.HIGH,
-    assignerId: "director3",
-    executorId: "user9",
-    dueDate: new Date(new Date().getTime() + 4 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task8",
-    description: "Develop API",
-    title: "API Development",
-    taskStatus: TaskStatus.IN_PROGRESS,
-    taskPriority: TaskPriority.LOW,
-    assignerId: "director2",
-    executorId: "user11",
-    dueDate: new Date(new Date().getTime() + 3 * 24 * 60 * 60 * 1000),
-    startDate: new Date(),
-  },
-  {
-    id: "task9",
-    description: "Organize company event",
-    title: "Event Planning",
-    taskStatus: TaskStatus.OPEN,
-    taskPriority: TaskPriority.MEDIUM,
-    assignerId: "director3",
-    executorId: "user12",
-    dueDate: new Date(),
-    startDate: new Date(),
-  },
-  {
-    id: "task10",
-    description: "Negotiate international deal",
-    title: "International Deal",
-    taskStatus: TaskStatus.IN_PROGRESS,
-    taskPriority: TaskPriority.MEDIUM,
-    assignerId: "director1",
-    executorId: "user13",
-    dueDate: new Date(),
-    startDate: new Date(),
-  },
-];
+// const mockTasks: TaskWithUserInfo[] = [
+//   {
+//     id: "task1",
+//     title: "Разработка фичи",
+//     description: "Создать новую фичу для календаря",
+//     taskStatus: "OPEN",
+//     taskPriority: "HIGH",
+//     assignerId: "user1",
+//     executorId: "user2",
+//     departmentId: 1,
+//     orderTask:1,
+//     dueDate: new Date("2025-05-30T17:00:00Z"),
+//     startDate: new Date("2025-05-25T09:00:00Z"),
+//     createdAt: new Date("2025-05-24T10:00:00Z"),
+//     updatedAt: new Date("2025-05-24T10:00:00Z"),
+
+//     assigner: {
+//       username: "Алексей Иванов",
+//       position: "Тимлид",
+//       email: "alexei@ertel.ru"
+//     },
+//     executor: {
+//       username: "Мария Петрова",
+//       position: "Frontend Developer",
+//       email: "mariya@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task2",
+//     title: "Багфиксы в системе уведомлений",
+//     description: "Исправить ошибки в рассылке уведомлений",
+//     taskStatus: "IN_PROGRESS",
+//     taskPriority: "CRITICAL",
+//     assignerId: "user3",
+//     executorId: "user4",
+//     orderTask:1,
+//     departmentId: 2,
+//     dueDate: new Date("2025-06-05T17:00:00Z"),
+//     startDate: new Date("2025-06-01T09:00:00Z"),
+//     createdAt: new Date("2025-05-28T11:00:00Z"),
+//     updatedAt: new Date("2025-05-29T12:00:00Z"),
+
+//     assigner: {
+//       username: "Дмитрий Смирнов",
+//       position: "QA Lead",
+//       email: "dmitry@ertel.ru"
+//     },
+//     executor: {
+//       username: "Ольга Кузнецова",
+//       position: "Backend Developer",
+//       email: "olga@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task3",
+//     title: "Обновление документации",
+//     description: "Добавить недостающие разделы в документацию",
+//     taskStatus: "DONE",
+//     taskPriority: "MEDIUM",
+//     assignerId: "user5",
+//     executorId: "user6",
+//     orderTask:1,
+//     departmentId: 3,
+//     dueDate: new Date("2025-06-01T17:00:00Z"),
+//     startDate: new Date("2025-05-28T09:00:00Z"),
+//     createdAt: new Date("2025-05-27T10:00:00Z"),
+//     updatedAt: new Date("2025-05-30T14:00:00Z"),
+
+//     assigner: {
+//       username: "Сергей Васильев",
+//       position: "Tech Writer",
+//       email: "sergey@ertel.ru"
+//     },
+//     executor: {
+//       username: "Елена Новикова",
+//       position: "Technical Writer",
+//       email: "elena@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task4",
+//     title: "Настройка CI/CD",
+//     description: "Настроить деплой через GitHub Actions",
+//     taskStatus: "CANCELED",
+//     taskPriority: "LOW",
+//     assignerId: "user7",
+//     executorId: "user8",
+//     departmentId: 4,
+//     orderTask:1,
+//     dueDate: new Date("2025-06-10T17:00:00Z"),
+//     startDate: new Date("2025-06-05T09:00:00Z"),
+//     createdAt: new Date("2025-06-04T10:00:00Z"),
+//     updatedAt: new Date("2025-06-07T15:00:00Z"),
+
+//     assigner: {
+//       username: "Антон Борисов",
+//       position: "DevOps",
+//       email: "anton@ertel.ru"
+//     },
+//     executor: {
+//       username: "Владимир Тихонов",
+//       position: "System Administrator",
+//       email: "vladimir@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task5",
+//     title: "Подготовка отчёта по продажам",
+//     description: "Собрать данные за месяц и отправить отчёт",
+//     taskStatus: "IN_PROGRESS",
+//     taskPriority: "MEDIUM",
+//     assignerId: "user9",
+//     executorId: "user10",
+//     orderTask:2,
+//     departmentId: 5,
+//     dueDate: new Date("2025-06-12T17:00:00Z"),
+//     startDate: new Date("2025-06-10T09:00:00Z"),
+//     createdAt: new Date("2025-06-09T09:00:00Z"),
+//     updatedAt: new Date("2025-06-09T10:00:00Z"),
+
+//     assigner: {
+//       username: "Наталья Орлова",
+//       position: "Sales Manager",
+//       email: "natalia@ertel.ru"
+//     },
+//     executor: {
+//       username: "Виктор Максимов",
+//       position: "Junior Sales",
+//       email: "victor@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task6",
+//     title: "Редизайн главной страницы",
+//     description: "Обновить дизайн главной страницы",
+//     taskStatus: "IN_PROGRESS",
+//     taskPriority: "HIGH",
+//     assignerId: "user11",
+//     executorId: "user12",
+//     orderTask:3,
+//     departmentId: 6,
+//     dueDate: new Date("2025-06-15T17:00:00Z"),
+//     startDate: new Date("2025-06-10T09:00:00Z"),
+//     createdAt: new Date("2025-06-10T10:00:00Z"),
+//     updatedAt: new Date("2025-06-11T11:00:00Z"),
+
+//     assigner: {
+//       username: "Ксения Смирнова",
+//       position: "UX/UI Designer",
+//       email: "ksenia@ertel.ru"
+//     },
+//     executor: {
+//       username: "Андрей Лебедев",
+//       position: "Web Designer",
+//       email: "andrey@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task7",
+//     title: "Создание рекламной кампании",
+//     description: "Запустить новую email-кампанию",
+//     taskStatus: "DONE",
+//     taskPriority: "MEDIUM",
+//     assignerId: "user13",
+//     executorId: "user14",
+//     orderTask:2,
+//     departmentId: 7,
+//     dueDate: new Date("2025-06-14T17:00:00Z"),
+//     startDate: new Date("2025-06-10T09:00:00Z"),
+//     createdAt: new Date("2025-06-08T12:00:00Z"),
+//     updatedAt: new Date("2025-06-13T16:00:00Z"),
+
+//     assigner: {
+//       username: "Евгений Фёдоров",
+//       position: "Marketing Manager",
+//       email: "evgeny@ertel.ru"
+//     },
+//     executor: {
+//       username: "Алёна Соколова",
+//       position: "Marketing Analyst",
+//       email: "alena@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task8",
+//     title: "Обучение новой команды",
+//     description: "Провести обучение с новыми сотрудниками",
+//     taskStatus: "OPEN",
+//     taskPriority: "LOW",
+//     assignerId: "user15",
+//     executorId: "user16",
+//     orderTask:2,
+//     departmentId: 8,
+//     dueDate: new Date("2025-06-20T17:00:00Z"),
+//     startDate: new Date("2025-06-15T09:00:00Z"),
+//     createdAt: new Date("2025-06-14T11:00:00Z"),
+//     updatedAt: new Date("2025-06-14T11:00:00Z"),
+
+//     assigner: {
+//       username: "Игорь Комаров",
+//       position: "HR Manager",
+//       email: "igor@ertel.ru"
+//     },
+//     executor: {
+//       username: "Оксана Дмитриева",
+//       position: "Trainee",
+//       email: "oksana@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task9",
+//     title: "Тестирование новых функций",
+//     description: "Протестировать новые модули перед релизом",
+//     taskStatus: "IN_PROGRESS",
+//     taskPriority: "CRITICAL",
+//     assignerId: "user17",
+//     executorId: "user18",
+//     orderTask:4,
+//     departmentId: 9,
+//     dueDate: new Date("2025-06-18T17:00:00Z"),
+//     startDate: new Date("2025-06-15T09:00:00Z"),
+//     createdAt: new Date("2025-06-14T10:00:00Z"),
+//     updatedAt: new Date("2025-06-16T12:00:00Z"),
+
+//     assigner: {
+//       username: "Максим Горский",
+//       position: "QA Engineer",
+//       email: "maxim@ertel.ru"
+//     },
+//     executor: {
+//       username: "Татьяна Леонтьева",
+//       position: "Senior QA",
+//       email: "tatyana@ertel.ru"
+//     }
+//   },
+//   {
+//     id: "task10",
+//     title: "Поддержка пользователей",
+//     description: "Ответить на запросы клиентов",
+//     taskStatus: "DONE",
+//     taskPriority: "MEDIUM",
+//     assignerId: "user19",
+//     executorId: "user20",
+//     orderTask:3,
+//     departmentId: 10,
+//     dueDate: new Date("2025-06-15T17:00:00Z"),
+//     startDate: new Date("2025-06-10T09:00:00Z"),
+//     createdAt: new Date("2025-06-08T14:00:00Z"),
+//     updatedAt: new Date("2025-06-14T16:00:00Z"),
+
+//     assigner: {
+//       username: "Екатерина Романова",
+//       position: "Support Team Lead",
+//       email: "ekaterina@ertel.ru"
+//     },
+//     executor: {
+//       username: "Артём Алексеев",
+//       position: "Customer Support",
+//       email: "artem@ertel.ru"
+//     }
+//   }
+// ];
 
 const view = [
   { id: "table", value: "Таблица" },
   { id: "kanban", value: "Канбан" },
-  { id: "calendar", value: "Календарь" },
+  // { id: "calendar", value: "Календарь" },
 ] as const;
 
 type ViewType = (typeof view)[number]["id"];
 
 const TasksPage = () => {
-  const { departmentId } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const defaultView = searchParams.get("viewType") || "table";
+
   const [currentView, setCurrentView] = useState<ViewType>(
     defaultView as ViewType
   );
 
-  const { data } = useGetDepartmentWithUsersAndTasks(departmentId as string);
+  const { data } = useGetTasksDepartment();
 
   const handleViewChange = (value: ViewType) => {
     if (value === currentView) return;
     setCurrentView(value);
 
     const params = new URLSearchParams(searchParams.toString());
-    params.set("view", value);
+    params.set("viewType", value);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
@@ -476,7 +328,7 @@ const TasksPage = () => {
 
       <Separator />
 
-      <div className="p-2 flex justify-between gap-2">
+      <div className="p-2 flex flex-wrap-reverse justify-between gap-2">
         <div className="flex gap-2">
           {view.map((item) => {
             return (
@@ -491,23 +343,16 @@ const TasksPage = () => {
           })}
         </div>
 
-        <DialogComponent
-          trigger={
-            <Button variant="default">
-              <Plus /> Новая
-            </Button>
-          }
-        >
-          <></>
-        </DialogComponent>
+        <СreateTaskDialog/>
+
       </div>
 
       <MotionDivY>
-        {currentView === "table" && <TaskTable data={allTasks} />}
+        {currentView === "table" && data && <TaskTable data={data} />}
 
-        {currentView === "kanban" && <Kanban />}
+        {currentView === "kanban" && data && <Kanban data={data} />}
 
-        {currentView === "calendar" && <CalendarTask />}
+        {/* {currentView === "calendar" && <CalendarTask />} */}
       </MotionDivY>
     </section>
   );

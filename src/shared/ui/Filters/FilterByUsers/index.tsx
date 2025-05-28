@@ -14,10 +14,11 @@ type Props = {
   setColumnFilters?: (
     callback: (prev: ColumnFiltersState) => ColumnFiltersState
   ) => void;
-  label: string
+  label: string,
+  columnId?: string
 };
 
-const FilterByUser = ({ columnFilters, setColumnFilters, label }: Props) => {
+const FilterByUser = ({ columnFilters, setColumnFilters, label, columnId = "user" }: Props) => {
   const { authUser } = useStoreUser();
   const { deptsFormatted } = useStoreDepartment();
 
@@ -33,7 +34,7 @@ const FilterByUser = ({ columnFilters, setColumnFilters, label }: Props) => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
       <FilterPopover
-        columnId="user"
+        columnId={columnId}
         options={usersDepartment}
         label={label}
         columnFilters={columnFilters}

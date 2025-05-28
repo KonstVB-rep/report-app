@@ -10,7 +10,7 @@ import { utilsDataTable } from "../lib/utilsDataTable";
 
 type Props = {
   searchParams: URLSearchParams;
-  includedColumns: string[];
+  includedColumns: string[] | [];
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
   setColumnVisibility: React.Dispatch<React.SetStateAction<VisibilityState>>;
   columnFilters: ColumnFiltersState;
@@ -44,13 +44,13 @@ const useDataTableFilters = ({
   const [openFilters, setOpenFilters] = useState(false);
 
   const handleDateChange = useCallback(
-    (date: DateRange | undefined) => {
+    (columnId: string) => (date: DateRange | undefined) => {
       setColumnFilters((prev) => {
-        const newFilters = prev.filter((f) => f.id !== "dateRequest");
+        const newFilters = prev.filter((f) => f.id !== columnId);
         return date?.from && date?.to
           ? ([
               ...newFilters,
-              { id: "dateRequest", value: { from: date.from, to: date.to } },
+              { id: columnId, value: { from: date.from, to: date.to } },
             ] as ColumnFiltersState)
           : newFilters;
       });

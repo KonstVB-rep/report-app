@@ -100,6 +100,11 @@ async function sendNotificationsToTelegram(
 //   }
 // }
 
+import { NextResponse } from "next/server";
+import { getInfoChatNotificationChecked } from "@/shared/api/chat";
+import { getEventsCalendarUserToday } from "@/shared/api/calendar";
+import { sendNotificationsToTelegram } from "@/shared/api/telegram";
+
 export async function GET() {
   try {
     const allChats = await getInfoChatNotificationChecked(); // Возвращает все активные чаты с chatId
@@ -109,25 +114,30 @@ export async function GET() {
     }
 
     const now = new Date();
-    now.setSeconds(0, 0);
+    now.setSeconds(0, 0); // Убираем секунды и миллисекунды для точного сравнения
 
     for (const chat of allChats) {
       if (!chat.isActive || !chat.chatId || !chat.userId) continue;
 
       const events = await getEventsCalendarUserToday(chat.userId);
-
-
       if (!events?.length) continue;
 
       const upcomingEvents = events.filter((event) => {
         const eventStartTime = new Date(event.start);
-        const thirtyMinutesBefore = new Date(eventStartTime.getTime() - 30 * 60000);
-        const fifteenMinutesBefore = new Date(eventStartTime.getTime() - 15 * 60000);
-        const timeStartEvent = new Date(eventStartTime.getTime());
+        const thirtyMinutesBefore = new Date(eventStartTime.getTime() - 30 * 60 * 1000);
+        const fifteenMinutesBefore = new Date(eventStartTime.getTime() - 15 * 60 * 1000);
+        const exactStart = new Date(eventStartTime);
+
         thirtyMinutesBefore.setSeconds(0, 0);
         fifteenMinutesBefore.setSeconds(0, 0);
-        timeStartEvent.setSeconds(0, 0);
-        return (now.getTime() === thirtyMinutesBefore.getTime() || now.getTime() === fifteenMinutesBefore.getTime() || now.getTime() === timeStartEvent.getTime()) && now <= eventStartTime;
+        exactStart.setSeconds(0, 0);
+
+        return (
+          (now.getTime() === thirtyMinutesBefore.getTime() ||
+            now.getTime() === fifteenMinutesBefore.getTime() ||
+            now.getTime() === exactStart.getTime()) &&
+          now <= eventStartTime
+        );
       });
 
       if (upcomingEvents.length > 0) {
@@ -145,9 +155,10 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({ message: "Проверка завершена"});
+    return NextResponse.json({ message: "Проверка завершена" });
   } catch (error) {
     console.error("Ошибка в check-and-notify:", error);
     return NextResponse.json({ message: "Ошибка при проверке уведомлений" }, { status: 500 });
   }
 }
+

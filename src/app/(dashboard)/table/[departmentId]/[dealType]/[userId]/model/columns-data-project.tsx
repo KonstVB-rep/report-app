@@ -2,6 +2,7 @@
 
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
+import { ReactNode } from "react";
 import { DateRange } from "react-day-picker";
 
 import { endOfDay, startOfDay } from "date-fns";
@@ -73,14 +74,20 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "nameDeal",
     header: "Название сделки",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const value = info.getValue() as ReactNode;
+      return <span className="line-clamp-2">{value}</span>;
+    },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.nameDeal,
   },
   {
     id: "nameObject",
     header: "Название объекта",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const value = info.getValue() as ReactNode;
+      return <span className="line-clamp-2">{value}</span>;
+    },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.nameObject,
   },
@@ -209,7 +216,10 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "comments",
     header: "Комментарии",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const value = info.getValue() as ReactNode;
+      return <span className="line-clamp-2">{value}</span>;
+    },
     size: 300,
     minSize: 300,
     enableHiding: true,

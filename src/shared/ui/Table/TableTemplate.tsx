@@ -6,10 +6,11 @@ import React, { ReactNode, RefObject } from 'react'
 
 type TableTemplateProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
-  renderRow: (row: Row<T>) => ReactNode
+  renderRow: (row: Row<T>) => ReactNode,
+  className?: string
 };
 
-const TableTemplate = <T extends Record<string, unknown>>({table, renderRow}:TableTemplateProps<T>) => {
+const TableTemplate = <T extends Record<string, unknown>>({table, renderRow, className}:TableTemplateProps<T>) => {
 
 const ref = useScrollIntoViewBottom<T, HTMLTableElement>(
     table
@@ -18,7 +19,7 @@ const ref = useScrollIntoViewBottom<T, HTMLTableElement>(
 
   return (
      <Table
-        className="w-full border-separate border-spacing-0 border"
+        className={`w-full border-separate border-spacing-0 border ${className}`}
         ref={ref}
       >
         <TableHeader className="z-1 sticky top-0">
@@ -28,7 +29,7 @@ const ref = useScrollIntoViewBottom<T, HTMLTableElement>(
                 <TableHead
                   key={header.id}
                   colSpan={header.colSpan}
-                  className="border-r border-zinc-600 px-3 py-2 bg-white dark:bg-zinc-800"
+                  className="border-r border-zinc-600 !p-2 bg-white dark:bg-zinc-800"
                   style={{
                     position: "relative",
                     width: header.getSize(),

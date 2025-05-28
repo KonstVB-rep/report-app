@@ -1,8 +1,8 @@
 "use client";
 
-import { Project, Retail } from "@prisma/client";
+// import { Project, Retail } from "@prisma/client";
 
-import { memo, useState } from "react";
+import { Dispatch, Fragment, memo, SetStateAction, useState } from "react";
 
 import Link from "next/link";
 
@@ -15,24 +15,28 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
-import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
-import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+// import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
+// import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
 import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAffiliation";
 
-type ContextMenuTableProps<T> = {
+type ContextMenuTableProps = {
   children: React.ReactNode;
-  rowData: T;
   isExistActionDeal?: boolean;
-  departmentId: string;
+  modals?: (setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>) => {
+    edit?: React.ReactNode;
+    delete?: React.ReactNode;
+    [key: string]: React.ReactNode | undefined;
+  };
+  path?: string
 };
 
-const ContextRowTable = <T,>({
+const ContextRowTable =({
   children,
-  rowData,
   isExistActionDeal = true,
-  departmentId,
-}: ContextMenuTableProps<T>) => {
+  modals = () => ({}),
+  path = ''
+}: ContextMenuTableProps) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
 
   return (
@@ -43,14 +47,12 @@ const ContextRowTable = <T,>({
 
           <ContextMenuContent className="grid gap-1 bg-background">
             <ContextMenuItem className="flex gap-2 p-0">
-              <Link
+              {path && <Link
                 className="flex w-full items-center justify-start gap-2 p-2"
-                href={`/deal/${departmentId}/${(
-                  rowData as Project | Retail
-                ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
+                href={path}
               >
                 <FileText size="14" /> Подробнее
-              </Link>
+              </Link>}
             </ContextMenuItem>
 
             {isExistActionDeal && (
@@ -73,7 +75,14 @@ const ContextRowTable = <T,>({
           </ContextMenuContent>
         </ContextMenu>
 
-        {openModal === "edit" && (
+        {Object.entries(modals(setOpenModal)).map(([key, modal]) => {
+          if (key === openModal) {
+            return <Fragment key={key}>{modal}</Fragment>;
+          }
+          return null;
+        })}
+
+        {/* {openModal === "edit" && (
           <EditDealContextMenu
             close={() => setOpenModal(null)}
             id={(rowData as Project | Retail).id}
@@ -86,7 +95,7 @@ const ContextRowTable = <T,>({
             id={(rowData as Project | Retail).id}
             type={(rowData as Project | Retail).type}
           />
-        )}
+        )} */}
       </Dialog>
     </>
   );

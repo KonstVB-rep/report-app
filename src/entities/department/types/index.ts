@@ -1,4 +1,4 @@
-import type { DepartmentEnum, Task } from "@prisma/client";
+import type { DepartmentEnum} from "@prisma/client";
 
 import { ReactNode } from "react";
 
@@ -10,18 +10,6 @@ export type DepartmentInfo = {
   directorId: string;
   description: string;
   users: UserResponse[];
-};
-
-export type UserShort  = Pick<UserResponse, 'id' | 'departmentId' | "position" | 'username'>
-
-export type UserShortWithTasks = UserShort & { tasks: Task[]}
-
-export type DepartmentWithUsersAndTasks = {
-  id: number;
-  name: DepartmentEnum;
-  directorId: string;
-  description: string;
-  users: UserShortWithTasks[];
 };
 
 

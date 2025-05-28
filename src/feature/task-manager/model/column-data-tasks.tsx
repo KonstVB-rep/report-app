@@ -1,42 +1,100 @@
-import { Task, TaskPriority, TaskStatus } from "@prisma/client";
+import { TaskStatus } from "@prisma/client";
+// import { CheckedState } from "@radix-ui/react-checkbox";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
+
+import { Ban, CheckCircle2Icon, LoaderIcon, StickyNote } from 'lucide-react';
+import { ReactNode } from "react";
 import { DateRange } from "react-day-picker";
 
 import { endOfDay, startOfDay } from "date-fns";
 
-export const columnsDataTask: ColumnDef<Task, unknown>[] = [
+// import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+
+import { LABEL_TASK_PRIORITY, LABEL_TASK_STATUS, TASK_PRIORITY_COLOR_BG } from "../model/constants";
+import { TaskWithUserInfo } from "../types";
+
+export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
+  {
+    id: "rowNumber",
+    header: "№",
+    cell: ({ row }) => Number(row.index) + 1,
+    enableHiding: false,
+    enableSorting: false,
+    accessorFn: () => "",
+  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <div className="flex items-center justify-center">
+  //       <Checkbox
+  //         checked={
+  //           table.getIsAllPageRowsSelected() ||
+  //           (table.getIsSomePageRowsSelected() && "indeterminate")
+  //         }
+  //         onCheckedChange={(value: CheckedState) =>
+  //           table.toggleAllPageRowsSelected(!!value)
+  //         }
+  //         aria-label="Select all"
+  //       />
+  //     </div>
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="flex items-center justify-center">
+  //       <Checkbox
+  //         checked={row.getIsSelected()}
+  //         onCheckedChange={(value: CheckedState) => row.toggleSelected(!!value)}
+  //         aria-label="Select row"
+  //       />
+  //     </div>
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     id: "title",
     header: "Задача",
-    cell: (info: CellContext<Task, unknown>) => info.getValue(),
-    accessorFn: (row: Task) => {
-      const bgColor =
-        row.taskStatus === TaskStatus.IN_PROGRESS 
-          ? "bg-blue-600"
-          : row.taskStatus === TaskStatus.CANCELED
-            ? "bg-red-600"
-            : row.taskStatus === TaskStatus.DONE
-              ? "bg-green-600"
-              : row.taskStatus === TaskStatus.OPEN ? "bg-gray-600" : "";
-      return (
-        <>
-          <span className={`abs-element absolute left-0 top-0 bottom-0 w-1 ${bgColor}`}/>
-          {row.title}
-        </>
-      );
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
+      const value = info.getValue() as ReactNode;
+      return <span className="line-clamp-2">{value}</span>;
+    },
+    accessorFn: (row: TaskWithUserInfo) => {
+      return row.title;
     },
   },
   {
     id: "description",
     header: "Описание",
-    cell: (info: CellContext<Task, unknown>) => info.getValue(),
-    accessorFn: (row: Task) => <span className="truncate">{row.description}</span>,
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
+      const value = info.getValue() as ReactNode;
+      return <span className="line-clamp-2">{value}</span>;
+    },
+    accessorFn: (row: TaskWithUserInfo) => row.description,
   },
   {
     id: "taskStatus",
     header: "Статус",
-    cell: (info: CellContext<Task, unknown>) => info.getValue(),
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
+      const value = info.getValue() as keyof typeof LABEL_TASK_STATUS;
+      // return <span>{LABEL_TASK_STATUS[value]}</span>;
+      const icon = {
+        [TaskStatus.OPEN]: <StickyNote />,
+        [TaskStatus.IN_PROGRESS]: <LoaderIcon />,
+        // [TaskStatus.IN_REVIEW]:  <MessageCircleWarning />,
+        [TaskStatus.DONE]: <CheckCircle2Icon className="text-green-500 dark:text-green-400" />,
+        [TaskStatus.CANCELED]: <Ban className="text-red-500 dark:text-red-400"/>,
+      };
+      return(
+        <Badge
+          variant="outline"
+          className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
+        >
+          {icon[value]}
+          {LABEL_TASK_STATUS[value]}
+      </Badge>
+      )
+    },
     meta: {
       isMultiSelect: true,
     },
@@ -48,57 +106,59 @@ export const columnsDataTask: ColumnDef<Task, unknown>[] = [
       }
       return rowValue === value;
     },
-    accessorFn: (row: Task) => row.taskStatus,
+    accessorFn: (row: TaskWithUserInfo) => row.taskStatus,
   },
   {
     id: "taskPriority",
     header: "Приоритет",
-    cell: (info: CellContext<Task, unknown>) => info.getValue(),
-    accessorFn: (row: Task) => {
-      const bgColor =
-        row.taskPriority === TaskPriority.LOW
-          ? "bg-green-600"
-          : row.taskPriority === TaskPriority.MEDIUM
-            ? "bg-yellow-600"
-            : row.taskPriority === TaskPriority.HIGH
-              ? "bg-orange-600"
-              : "bg-red-600";
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
+      const value = info.getValue() as keyof typeof LABEL_TASK_PRIORITY;
+      // const bgColor =
+      //   value === TaskPriority.LOW
+      //     ? "bg-green-600"
+      //     : value === TaskPriority.MEDIUM
+      //       ? "bg-yellow-600"
+      //       : value === TaskPriority.HIGH
+      //         ? "bg-orange-600"
+      //         : "bg-red-600";
+
       return (
         <span
-          className={`abs-element absolute inset-1 flex items-center justify-center ${bgColor}`}
+          className={`abs-element absolute inset-4 flex items-center justify-center rounded-md ${TASK_PRIORITY_COLOR_BG[value]} line-clamp-2`}
         >
-          {row.taskPriority}
+          {LABEL_TASK_PRIORITY[value]}
         </span>
       );
     },
+    accessorFn: (row: TaskWithUserInfo) => row.taskPriority,
   },
-  {
-    id: "assignerId",
-    header: "Назначен",
-    cell: (info: CellContext<Task, unknown>) => info.getValue(),
-    accessorFn: (row: Task) => row.assignerId,
-  },
+  // {
+  //   id: "assignerId",
+  //   header: "Автор",
+  //   cell: (info: CellContext<Task, unknown>) => info.getValue(),
+  //   accessorFn: (row: Task) => row.assignerId,
+  // },
   {
     id: "executorId",
     header: "Исполнитель",
-    cell: (info: CellContext<Task, unknown>) => info.getValue(),
-    filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
-      if (!rowValue) return false;
-      if (Array.isArray(value)) {
-        return value.includes(rowValue);
-      }
-      return rowValue === value;
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => info.getValue(),
+    filterFn: (row, columnId, filterValues) => {
+        if (!filterValues || filterValues.length === 0) {
+          return true;
+        }
+
+        const userIdOfProject = row.original.executorId;
+        return filterValues.includes(userIdOfProject);
     },
     meta: {
       isMultiSelect: true,
     },
-    accessorFn: (row: Task) => row.executorId,
+    accessorFn: (row: TaskWithUserInfo) => <span className="capitalize">{row?.executor.username}</span>
   },
   {
     id: "dueDate",
-    header: "Срок",
-    cell: (info: CellContext<Task, unknown>) => {
+    header: "Срок до",
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
       const date = info.getValue() as Date;
       return date.toLocaleDateString("ru-RU");
     },
@@ -128,6 +188,6 @@ export const columnsDataTask: ColumnDef<Task, unknown>[] = [
 
       return true;
     },
-    accessorFn: (row: Task) => row.dueDate,
+    accessorFn: (row: TaskWithUserInfo) => row.dueDate,
   },
 ];

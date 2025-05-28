@@ -1,13 +1,13 @@
+import { DealType } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
 import { ReactNode, useCallback } from "react";
 
 import { useParams } from "next/navigation";
 
-import {
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
+import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
+import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import TableTemplate from "./TableTemplate";
@@ -41,9 +41,25 @@ const TableComponent = <T extends Record<string, unknown>>({
       return (
         <ContextRowTable
           key={row.id}
-          rowData={row.original}
           isExistActionDeal={isExistActionDeal}
-          departmentId={departmentId as string}
+          modals={(setOpenModal) => ({
+            edit: (
+              <EditDealContextMenu
+                close={() => setOpenModal(null)}
+                id={row.original.id as string}
+                type={row.original.type as DealType}
+              />
+            ),
+            delete: (
+              <DelDealContextMenu
+                close={() => setOpenModal(null)}
+                id={row.original.id as string}
+                type={row.original.type as DealType}
+              />
+            ),
+          })}
+          path={`/deal/${departmentId}/${
+                  (row.original.type as DealType).toLowerCase()}/${row.original.id}`}
         >
           <TableRow
             className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === "REJECT" && "bg-red-900/40"} ${row.original.dealStatus === "PAID" && "bg-lime-200/20"}`}
@@ -65,7 +81,7 @@ const TableComponent = <T extends Record<string, unknown>>({
           Количество выбранных заявок: {table.getRowModel().rows.length}
         </p>
       )}
-      <TableTemplate table={table} renderRow={renderRow}/>
+      <TableTemplate table={table} renderRow={renderRow} />
     </div>
   );
 };

@@ -180,7 +180,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
           <FiltersBlock
             columnFilters={columnFilters}
             setColumnFilters={setColumnFilters}
-            onDateChange={handleDateChange}
+            onDateChange={handleDateChange("dateRequest")}
             onClearDateFilter={handleClearDateFilter}
             value={value}
             columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
