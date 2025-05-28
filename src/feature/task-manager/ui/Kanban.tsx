@@ -5,15 +5,11 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { TaskStatus } from "@prisma/client";
-
 import React, { useCallback, useEffect, useState } from "react";
-
 import dynamic from "next/dynamic";
-
 import { CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-
 import { useUpdateTasksOrder } from "../hooks/mutate";
 import { TaskWithUserInfo } from "../types";
 import TaskKanbanCard from "./TaskKanbanCard";
@@ -47,26 +43,27 @@ export const StatusesTask = [
   },
 ] as const;
 
+// Хелпер для reorder внутри одного столбца
 const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
   const result = Array.from(list);
-
   const [removed] = result.splice(startIndex, 1);
-
   result.splice(endIndex, 0, removed);
-
   return result;
 };
 
 const Kanban = ({ data }: KanbanProps) => {
-
-  const [filteredTask, setFilteredTasks] = useState(data);
-
   const { mutate, isPending, isError } = useUpdateTasksOrder();
 
-  const onDragEnd = useCallback(
-    (result: DropResult<string>) => {
-      const { destination, source } = result;
+  // Локальный стейт задач для мгновенного UI-обновления
+  const [tasks, setTasks] = useState<TaskWithUserInfo[]>([]);
 
+  useEffect(() => {
+    setTasks(data);
+  }, [data]);
+
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      const { destination, source } = result;
       if (!destination) return;
 
       if (
@@ -74,100 +71,109 @@ const Kanban = ({ data }: KanbanProps) => {
         destination.index === source.index
       )
         return;
-      // const copyTasks = [...data]
-      const sourceList = [...filteredTask].filter(
+
+      const currentTasks = [...tasks];
+
+      const sourceTasks = currentTasks.filter(
         (task) => task.taskStatus === source.droppableId
       );
-      const destinationList = [...filteredTask].filter(
+      const destinationTasks = currentTasks.filter(
         (task) => task.taskStatus === destination.droppableId
       );
 
       if (source.droppableId === destination.droppableId) {
-        const reorderCards = reorder(
-          sourceList,
-          source.index,
-          destination.index
+        // Перемещение внутри одного столбца
+        const reordered = reorder(sourceTasks, source.index, destination.index);
+        reordered.forEach((task, i) => (task.orderTask = i));
+
+        const updated = currentTasks.map((task) =>
+          task.taskStatus === source.droppableId
+            ? reordered.find((t) => t.id === task.id) ?? task
+            : task
         );
 
-        reorderCards.forEach((card, i) => (card.orderTask = i));
+        setTasks(updated);
+        mutate({ updatedTasks: updated });
       } else {
-        const [movedCard] = sourceList.splice(source.index, 1);
-
+        // Перемещение между разными столбцами
+        const [movedCard] = sourceTasks.splice(source.index, 1);
         movedCard.taskStatus = destination.droppableId as TaskStatus;
-        destinationList.splice(destination.index, 0, movedCard);
+        destinationTasks.splice(destination.index, 0, movedCard);
 
-        sourceList.forEach((card, i) => (card.orderTask = i));
-        destinationList.forEach((card, i) => (card.orderTask = i));
+        sourceTasks.forEach((task, i) => (task.orderTask = i));
+        destinationTasks.forEach((task, i) => (task.orderTask = i));
+
+        const updated = currentTasks.map((task) => {
+          const inSource = sourceTasks.find((t) => t.id === task.id);
+          const inDest = destinationTasks.find((t) => t.id === task.id);
+          return inSource ?? inDest ?? task;
+        });
+
+        setTasks(updated);
+        mutate({ updatedTasks: updated });
       }
-
-      const sortedTasks = [...filteredTask].sort(
-        (a, b) => a.orderTask - b.orderTask
-      );
-
-      setFilteredTasks(sortedTasks);
-      mutate({ updatedTasks: sortedTasks });
     },
-    [filteredTask, mutate]
+    [tasks, mutate]
   );
-
-  useEffect(() => {
-    setFilteredTasks(data);
-  }, [data]);
-
-  console.log(isPending)
 
   return (
     <div className="relative grid gap-2">
       {isPending && <UpdateLoaderKanban />}
+
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-secondary rounded-md">
-          {StatusesTask.map((column) => (
-            <Droppable key={column.key} droppableId={column.key}>
-              {(provided) => (
-                <MotionDivY
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="space-y-2"
-                >
-                  <h3 className="flex gap-1 items-center justify-center font-semibold text-center text-sm p-3 rounded-md bg-card">
-                    {column.icon}
-                    {column.name}
-                  </h3>
+          {StatusesTask.map((column) => {
+            const columnTasks = tasks
+              .filter((task) => task.taskStatus === column.key)
+              .sort((a, b) => a.orderTask - b.orderTask);
 
-                  <div className="mt-40">
-                    {filteredTask
-                    ?.filter((task) => task.taskStatus === column.key)
-                    .map((task, index) => (
-                      <Draggable
-                        key={task.id}
-                        draggableId={task.id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
+            return (
+              <div key={column.key} className="space-y-2">
+                <h3 className="flex gap-1 items-center justify-center font-semibold text-center text-sm p-3 rounded-md bg-card">
+                  {column.icon}
+                  {column.name}
+                </h3>
+
+                <Droppable droppableId={column.key}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className="flex flex-col gap-2 min-h-[120px]"
+                    >
+                      <MotionDivY className="space-y-2 px-2 border-x border-dashed border-white">
+                        {columnTasks.map((task, index) => (
+                          <Draggable
+                            key={task.id}
+                            draggableId={task.id}
+                            index={index}
                           >
-                            <TaskKanbanCard task={task} />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  </div>
-                    
-                  {provided.placeholder}
-                </MotionDivY>
-              )}
-            </Droppable>
-          ))}
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <TaskKanbanCard task={task} />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </MotionDivY>
+                    </div>
+                  )}
+                </Droppable>
+              </div>
+            );
+          })}
         </div>
-        
-         {filteredTask.length === 0 && !isPending && !isError ? (
-            <div className="grid place-items-center p-4 bg-secondary rounded-md">
-              <p className="text-xl text-center">Нет данных</p>
-            </div>
-          ) : null}
+
+        {data.length === 0 && !isPending && !isError && (
+          <div className="grid place-items-center p-4 bg-secondary rounded-md">
+            <p className="text-xl text-center">Нет данных</p>
+          </div>
+        )}
       </DragDropContext>
     </div>
   );

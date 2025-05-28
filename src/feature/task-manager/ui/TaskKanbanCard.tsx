@@ -30,11 +30,10 @@ const cleanDistance = (date: Date) => {
 
 type TaskKanbanCardProps = {
   task: TaskWithUserInfo;
-  onDelete: () => {};
-  onUpdate: () => {};
+
 };
 
-const TaskKanbanCard = ({ task, onDelete, onUpdate }: TaskKanbanCardProps) => {
+const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
   if (!task) return;
 
   // const created = cleanDistance(new Date(task.createdAt))

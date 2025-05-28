@@ -15,6 +15,7 @@ type DatePickerFormFieldProps<T extends FieldValues> = {
   control: Control<T>;
   errorMessage?: string;
   placeholder?: string;
+  className?: string; 
 };
 
 export const DatePickerFormField = <T extends FieldValues>({
