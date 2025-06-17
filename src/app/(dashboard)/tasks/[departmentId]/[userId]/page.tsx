@@ -29,8 +29,6 @@ const TaskTable = dynamic(() => import("@/entities/task/ui/TaskTable"), {
 });
 
 
-
-
 const UserTasksPage = () => {
   const {authUser} =  useStoreUser()
 
@@ -63,7 +61,7 @@ const UserTasksPage = () => {
 
   return (
     <section className="p-5">
-      <h1 className="text-xl py-2">Все задачи</h1>
+      <h1 className="text-xl py-2">Мои задачи</h1>
 
       <Separator />
 

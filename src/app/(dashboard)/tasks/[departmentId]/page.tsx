@@ -60,8 +60,6 @@ const TasksPage = () => {
     );
   }
 
-
-
   return (
     <section className="p-5">
       <h1 className="text-xl py-2">Все задачи</h1>
