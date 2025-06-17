@@ -11,7 +11,7 @@ type Props = {
   id: string;
 };
 
-const DelTaskDialog = ({ id }: Props) => {
+const DelTaskDialogButton = ({ id }: Props) => {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   return (
@@ -32,4 +32,4 @@ const DelTaskDialog = ({ id }: Props) => {
   );
 };
 
-export default DelTaskDialog;
+export default DelTaskDialogButton;

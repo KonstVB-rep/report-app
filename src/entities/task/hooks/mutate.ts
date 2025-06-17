@@ -41,9 +41,15 @@ export const useUpdateTask = () => {
       }
       return await updateTask(taskTarget);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["task", authUser?.id, data?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userTasks", authUser?.id],
       });
     },
     onError: (error) => {
@@ -73,6 +79,12 @@ export const useDeleteTask = (close: () => void) => {
       console.log(authUser?.id, data?.departmentId, 'data')
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, data?.departmentId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["task", authUser?.id, data?.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userTasks", authUser?.id],
       });
 
       close();

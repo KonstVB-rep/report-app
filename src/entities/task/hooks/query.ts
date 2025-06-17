@@ -7,7 +7,7 @@ import { TOAST } from "@/shared/ui/Toast";
 export const useGetTask = ( taskId: string) => {
 const { authUser } = useStoreUser();
   return useQuery({
-    queryKey: ["task", taskId],
+    queryKey: ["task", authUser?.id, taskId],
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");

@@ -5,11 +5,15 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { TaskStatus } from "@prisma/client";
-import React, { useCallback, useEffect, useState } from "react";
+
+import { useCallback, useEffect, useState } from "react";
+
 import dynamic from "next/dynamic";
+
 import { CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
+
 import { useUpdateTasksOrder } from "../hooks/mutate";
 import { TaskWithUserInfo } from "../types";
 import TaskKanbanCard from "./TaskKanbanCard";
@@ -88,7 +92,7 @@ const Kanban = ({ data }: KanbanProps) => {
 
         const updated = currentTasks.map((task) =>
           task.taskStatus === source.droppableId
-            ? reordered.find((t) => t.id === task.id) ?? task
+            ? (reordered.find((t) => t.id === task.id) ?? task)
             : task
         );
 
@@ -121,52 +125,57 @@ const Kanban = ({ data }: KanbanProps) => {
       {isPending && <UpdateLoaderKanban />}
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-secondary rounded-md">
-          {StatusesTask.map((column) => {
-            const columnTasks = tasks
-              .filter((task) => task.taskStatus === column.key)
-              .sort((a, b) => a.orderTask - b.orderTask);
+        <div
+          className="@container inline-size w-full"
+          style={{ containerType: "inline-size" }}
+        >
+          <div className="grid grid-cols-1  gap-3 p-4 bg-secondary rounded-md custom-grid">
+            {StatusesTask.map((column) => {
+              const columnTasks = tasks
+                .filter((task) => task.taskStatus === column.key)
+                .sort((a, b) => a.orderTask - b.orderTask);
 
-            return (
-              <div key={column.key} className="space-y-2">
-                <h3 className="flex gap-1 items-center justify-center font-semibold text-center text-sm p-3 rounded-md bg-card">
-                  {column.icon}
-                  {column.name}
-                </h3>
+              return (
+                <div key={column.key} className="space-y-2">
+                  <h3 className="flex gap-1 items-center justify-center font-semibold text-center text-sm p-3 rounded-md bg-card">
+                    {column.icon}
+                    {column.name}
+                  </h3>
 
-                <Droppable droppableId={column.key}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="flex flex-col gap-2 min-h-[120px]"
-                    >
-                      <MotionDivY className="space-y-2 px-2 border-x border-dashed border-white">
-                        {columnTasks.map((task, index) => (
-                          <Draggable
-                            key={task.id}
-                            draggableId={task.id}
-                            index={index}
-                          >
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                <TaskKanbanCard task={task} />
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </MotionDivY>
-                    </div>
-                  )}
-                </Droppable>
-              </div>
-            );
-          })}
+                  <Droppable droppableId={column.key}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="flex flex-col gap-2 min-h-[120px]"
+                      >
+                        <MotionDivY className="space-y-2 px-2 border-x border-dashed border-secondary">
+                          {columnTasks.map((task, index) => (
+                            <Draggable
+                              key={task.id}
+                              draggableId={task.id}
+                              index={index}
+                            >
+                              {(provided) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <TaskKanbanCard task={task} />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </MotionDivY>
+                      </div>
+                    )}
+                  </Droppable>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {data.length === 0 && !isPending && !isError && (

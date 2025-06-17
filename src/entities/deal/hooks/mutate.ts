@@ -212,6 +212,8 @@ export const useMutationUpdateProject = (
         queryKey: ["project", dealId],
         exact: true,
       });
+
+      queryClient.invalidateQueries({ queryKey: ["contracts", userId], exact: true, });
     },
   });
 };

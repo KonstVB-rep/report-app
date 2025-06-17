@@ -7,9 +7,10 @@ import DialogComponent from "@/shared/ui/DialogComponent";
 
 import EditTaskForm from "../Forms/EditTaskForm";
 
-const EditTaskDialog = ({ id }: { id: string }) => {
+const EditTaskDialogButton = ({ id }: { id: string}) => {
   const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
+  const closeModal = () => setOpen(false);
+
   return (
     <DialogComponent
       open={open}
@@ -23,9 +24,9 @@ const EditTaskDialog = ({ id }: { id: string }) => {
         </Button>
       }
     >
-      <EditTaskForm close={close} taskId={id} />
+      <EditTaskForm close={closeModal} taskId={id} />
     </DialogComponent>
   );
 };
 
-export default EditTaskDialog;
+export default EditTaskDialogButton;

@@ -40,7 +40,7 @@ const CalendarComponent = ({
             )}
           >
             {selectedDate ? (
-              format(selectedDate, "dd.MM.yyyy")
+              format(selectedDate, "dd.MM.yyyy", { locale: ru })
             ) : (
               <span>Выберите дату</span>
             )}

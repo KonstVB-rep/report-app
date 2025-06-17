@@ -290,6 +290,27 @@ export const useGetProjectsUser = (userId: string | undefined) => {
   });
 };
 
+export const useGetContractsUser = (userId: string | undefined) => {
+  const { authUser } = useStoreUser();
+  return useQuery({
+    queryKey: ["contracts", userId],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+
+        return await getProjectsUser(userId as string);
+      } catch (error) {
+        console.log(error, "Ошибка useGetContactsUser");
+        TOAST.ERROR((error as Error).message);
+        throw error;
+      }
+    },
+    enabled: !!userId,
+  });
+};
+
 export const useGetDealsByDateRange = (
   userId: string,
   range: DateRange,

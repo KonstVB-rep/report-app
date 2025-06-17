@@ -119,7 +119,9 @@ export const DeliveryRetailLabels: Record<keyof typeof DeliveryRetail, string> =
     WORK: "Работы",
   } as const;
 
-export const StatusProjectLabels: Record<keyof typeof StatusProject, string> = {
+type StatusProjectLabelsType = Record<keyof typeof StatusProject, string>
+
+export const StatusProjectLabels: StatusProjectLabelsType = {
   INVOICE_ISSUED: "Выставлен счет",
   ACTUAL: "Актуально",
   REJECT: "Не актуально / Отказ",
@@ -166,6 +168,7 @@ export type AllStatusKeys =
   | keyof typeof StatusProject
   | keyof typeof StatusRetail;
 
+
 type ExcludedKeys = "PAID" | "CLOSED" | "REJECT";
 
 export type StatusesInWorkType = {
@@ -181,3 +184,13 @@ export const StatusesInWork: StatusesInWorkType = {
   DELIVERY_WORKS: "Поставка / Выполнение работ",
   SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
 };
+
+export type StatusContractLabelsType = Pick<StatusProjectLabelsType, "CONTRACT_ADVANCE_PAYMENT" | "PROGRESS" | "DELIVERY_WORKS" | "SIGN_ACTS_PAYMENT" | "CLOSED" >
+
+export const StatusContractLabels: StatusContractLabelsType = {
+  CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
+  PROGRESS: "Проект в работе / Закупка / Производство",
+  DELIVERY_WORKS: "Поставка / Выполнение работ",
+  SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
+  CLOSED: "Закрыт",
+} as const;

@@ -24,11 +24,11 @@ import FilterByUsers from "@/shared/ui/Filters/FilterByUsers";
 import FilterPopoverGroup from "@/shared/ui/Filters/FilterPopoverGroup";
 import TableTemplate from "@/shared/ui/Table/TableTemplate";
 
+import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { columnsDataTask } from "../model/column-data-tasks";
 import { LABEL_TASK_STATUS } from "../model/constants";
-import EditTaskDialog from "./Modals/EditTaskDialog";
-import DelTaskDialog from "./Modals/DelTaskDialog";
-import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
+import EditTaskDialogContextMenu from "./Modals/EditTaskDialogContextMenu";
+import DelTaskDialogContextMenu from "./Modals/DelTaskDialogContextMenu";
 
 interface TaskTableProps<TData> {
   data: TData[];
@@ -68,24 +68,18 @@ const TaskTable = <TData extends Record<string, unknown>>({
 
   const renderRow = useCallback(
     (row: Row<TData>): ReactNode => {
-      // const bgColor =
-      //   row.original.taskStatus === TaskStatus.IN_PROGRESS
-      //     ? "!bg-blue-600/40"
-      //     : row.original.taskStatus === TaskStatus.CANCELED
-      //       ? "!bg-red-600/40"
-      //       : row.original.taskStatus === TaskStatus.DONE && "!bg-green-600/40";
       return (
         <ContextRowTable
           key={row.id}
           modals={(setOpenModal) => ({
             edit: (
-              <EditTaskDialog
+              <EditTaskDialogContextMenu
                 close={() => setOpenModal(null)}
                 id={row.original.id as string}
               />
             ),
             delete: (
-              <DelTaskDialog
+              <DelTaskDialogContextMenu
                 close={() => setOpenModal(null)}
                 id={row.original.id as string}
               />

@@ -27,6 +27,7 @@ type DealsType = {
 const dealsSalesDepartment: DealsType[] = [
   { id: "projects", title: "Проекты" },
   { id: "retails", title: "Розница" },
+  { id: "contracts", title: "Договора" }
 ];
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];

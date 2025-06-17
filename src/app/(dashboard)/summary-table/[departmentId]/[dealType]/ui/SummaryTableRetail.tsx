@@ -2,7 +2,7 @@
 
 import { DealType, PermissionEnum } from "@prisma/client";
 
-import React, { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";

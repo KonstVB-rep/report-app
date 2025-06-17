@@ -18,14 +18,20 @@ export const LABEL_TASK_PRIORITY = {
 
 export const TASK_PRIORITY_COLOR_BG = {
   [TaskPriority.LOW]: 'bg-blue-600',
-  [TaskPriority.MEDIUM]: 'bg-yellow-400',
-  [TaskPriority.HIGH]: 'bg-orange-600',
-  [TaskPriority.CRITICAL]: 'bg-red-600',
+  [TaskPriority.MEDIUM]: 'bg-orange-400',
+  [TaskPriority.HIGH]: 'bg-red-500',
+  [TaskPriority.CRITICAL]: 'bg-red-900',
 }
 
 export const TASK_PRIORITY_COLOR_BORDER = {
   [TaskPriority.LOW]: 'border-blue-600',
-  [TaskPriority.MEDIUM]: 'border-yellow-400',
-  [TaskPriority.HIGH]: 'border-orange-600',
-  [TaskPriority.CRITICAL]: 'border-red-600',
+  [TaskPriority.MEDIUM]: 'border-orange-400',
+  [TaskPriority.HIGH]: 'border-red-500',
+  [TaskPriority.CRITICAL]: 'border-red-900',
 }
+
+export const viewType = [
+  { id: "table", value: "Таблица" },
+  { id: "kanban", value: "Канбан" },
+  // { id: "calendar", value: "Календарь" },
+] as const;

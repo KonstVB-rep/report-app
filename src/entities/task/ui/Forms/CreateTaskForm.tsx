@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useCreateTask } from '../../hooks/mutate';
 import { defaultTaskValues } from '../../model/defaultvaluesForm';
-import { TaskStatus } from '@prisma/client';
+import { TaskPriority, TaskStatus } from '@prisma/client';
 import { useParams } from 'next/navigation';
 import { addCorrectTimeInDates, formatDate } from '../../lib/helpers';
 import { TaskFormSchema, TaskSchema } from '../../model/schema';
@@ -23,10 +23,10 @@ const CreateTaskForm = () => {
   const { mutateAsync, isPending } = useCreateTask();
 
   const onSubmit = (task: TaskSchema) => {
-    const {startTime, endTime, startDate, dueDate, ...taskRest} = task;
+    const {startTime, endTime, startDate, dueDate,taskPriority, taskStatus, ...taskRest} = task;
     const [startDateWithTime, dueDateWithTime] = addCorrectTimeInDates(startTime, endTime,startDate, dueDate)
 
-    TOAST.PROMISE(mutateAsync({...taskRest, startDate: formatDate(startDateWithTime), dueDate: formatDate(dueDateWithTime), departmentId: departmentId as string}), "Задача добавлена");
+    TOAST.PROMISE(mutateAsync({...taskRest, taskPriority: taskPriority as TaskPriority, taskStatus: taskStatus as TaskStatus , startDate: formatDate(startDateWithTime), dueDate: formatDate(dueDateWithTime), departmentId: departmentId as string}), "Задача добавлена");
     form.reset();
   };
 

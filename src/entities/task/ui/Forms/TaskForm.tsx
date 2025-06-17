@@ -46,7 +46,7 @@ const TaskForm = <T extends FieldValues>({
 
   const {departments} = useStoreDepartment();
 
-  const usersList =  useMemo(() => {
+  const usersList = useMemo(() => {
     const currentDepartment = departments?.find((item: DepartmentInfo) => item.id === (departmentId ? +departmentId : ""));
     return  currentDepartment?.users.reduce((acc, user) => {
       acc.push([user.id, user.username])

@@ -3,6 +3,7 @@
 import {
   getAllProjectsByDepartment,
   getAllRetailsByDepartment,
+  getContractsUser,
   getProjectsUser,
   getRetailsUser,
 } from ".";
@@ -21,6 +22,16 @@ export const getProjectsUserQuery = async (userId: string) => {
     return await getProjectsUser(userId);
   } catch (error) {
     console.log(error, "Ошибка getProjectsUserQuery");
+    throw new Error((error as Error).message);
+  }
+};
+
+
+export const getContractsUserQuery = async (userId: string) => {
+  try {
+    return await getContractsUser(userId);
+  } catch (error) {
+    console.log(error, "Ошибка getContractsUserQuery");
     throw new Error((error as Error).message);
   }
 };

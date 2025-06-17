@@ -26,7 +26,7 @@ export const hasAccessToDataSummary = (
   const { authUser } = useStoreUser.getState();
 
   return (
-    RolesWithDefaultPermissions.includes(authUser?.role as string) ||
+    RolesWithDefaultPermissions.includes(authUser!.role as string) ||
     authUser?.permissions?.includes(permission)
   );
 };

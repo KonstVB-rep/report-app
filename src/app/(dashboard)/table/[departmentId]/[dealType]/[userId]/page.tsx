@@ -6,12 +6,14 @@ import {
 
 import { getQueryClient } from "@/app/provider/query-provider";
 import {
+  getContractsUserQuery,
   getProjectsUserQuery,
   getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn";
 
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
+import PersonTableContract from "../ui/PersonTableContract";
 
 const fetchData = async (
   queryClient: QueryClient,
@@ -29,6 +31,11 @@ const fetchData = async (
         queryKey: ["retails", userId],
         queryFn: () => getRetailsUserQuery(userId),
       });
+    case "contracts":
+      return queryClient.prefetchQuery({
+        queryKey: ["contracts", userId],
+        queryFn: () => getContractsUserQuery(userId),
+    });
     default:
       return null;
   }
@@ -56,6 +63,9 @@ const PersonTablePage = async ({
       break;
     case "retails":
       Component = PersonTableRetail;
+      break;
+    case "contracts":
+      Component = PersonTableContract;
       break;
     default:
       return null;

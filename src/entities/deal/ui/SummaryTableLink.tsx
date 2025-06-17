@@ -17,7 +17,7 @@ type Props = {
 
 const SummaryTableLink = ({
   type,
-  className = "btn_hover border-muted",
+  className = "",
   departmentId,
 }: Props) => {
   const { authUser } = useStoreUser();

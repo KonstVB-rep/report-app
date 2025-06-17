@@ -37,6 +37,9 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
 };
 
 const AddNewDeal = ({ type }: AddNewDealProps) => {
+  
+  if(!contentType[type]) return null;
+
   return (
     <ProtectedByDepartmentAffiliation>
       <DialogComponent
@@ -51,7 +54,7 @@ const AddNewDeal = ({ type }: AddNewDealProps) => {
           </Button>
         }
       >
-        {contentType[type].form}
+        {contentType[type]?.form}
       </DialogComponent>
     </ProtectedByDepartmentAffiliation>
   );

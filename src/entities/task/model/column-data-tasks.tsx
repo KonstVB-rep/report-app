@@ -12,7 +12,7 @@ import { endOfDay, startOfDay } from "date-fns";
 // import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
-import { LABEL_TASK_PRIORITY, LABEL_TASK_STATUS, TASK_PRIORITY_COLOR_BG } from "../model/constants";
+import { LABEL_TASK_PRIORITY, LABEL_TASK_STATUS, TASK_PRIORITY_COLOR_BG } from "./constants";
 import { TaskWithUserInfo } from "../types";
 
 export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [

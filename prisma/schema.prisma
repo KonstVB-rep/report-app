@@ -56,12 +56,12 @@ model Permission {
 
 
 model Department {
-  id         Int            @id @default(autoincrement())
-  name       DepartmentEnum @unique
-  directorId String?        @unique
+  id          Int            @id @default(autoincrement())
+  name        DepartmentEnum @unique
+  directorId  String?        @unique
   description String        @unique
-  director   User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
-  users      User[]         @relation("DepartmentUsers")
+  director    User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
+  users       User[]         @relation("DepartmentUsers")
   tasks       Task[]      @relation("DepartmentTask")
 }
 
@@ -118,6 +118,7 @@ model Retail {
 
   @@index([userId], map: "Retail_userId_fkey")
 }
+
 
 model AdditionalContact {
   id           String    @id @default(cuid())
@@ -296,6 +297,15 @@ enum StatusProject {
   SIGN_ACTS_PAYMENT
   CLOSED
 }
+
+enum StatusContract {
+  CONTRACT_ADVANCE_PAYMENT
+  PROGRESS
+  DELIVERY_WORKS
+  SIGN_ACTS_PAYMENT
+  CLOSED
+}
+
 
 enum StatusRetail {
   FIRST_CP_APPROVAL

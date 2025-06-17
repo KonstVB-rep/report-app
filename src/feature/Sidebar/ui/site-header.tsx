@@ -17,6 +17,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import HoverCardComponent from "@/shared/ui/HoverCard";
+import MobileMenu from "@/shared/ui/MobileMenu";
 
 const ProtectedByPermissions = dynamic(
   () => import("@/shared/ui/Protect/ProtectedByPermissions"),
@@ -45,8 +46,14 @@ export function SiteHeader() {
           </Button>
           <Separator orientation="vertical" className="mr-2 h-4" />
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="gap-2 items-center hidden md:flex">
           <div className="flex gap-2">
+            <Link href={`/tasks/${authUser?.departmentId}/${authUser?.id}`} className="btn_hover text-sm font-medium">Мои задачи</Link>
+            <ProtectedByPermissions
+                permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+              >
+                <Link href={`/tasks/${authUser?.departmentId}`} className="btn_hover text-sm font-medium">Все задачи</Link>
+            </ProtectedByPermissions>
             {!pathName?.includes("summary-table") && (
               <ProtectedByPermissions
                 permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
@@ -74,6 +81,8 @@ export function SiteHeader() {
           </Button>
           <ModeToggle />
         </div>
+
+        <MobileMenu/>
       </div>
     </header>
   );

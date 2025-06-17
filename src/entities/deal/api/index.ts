@@ -1,6 +1,11 @@
 "use server";
 
-import { DealType, PermissionEnum, Prisma } from "@prisma/client";
+import {
+  DealType,
+  PermissionEnum,
+  Prisma,
+  StatusContract,
+} from "@prisma/client";
 
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
@@ -10,6 +15,7 @@ import { handleError } from "@/shared/api/handleError";
 import { AllStatusKeys } from "../lib/constants";
 import {
   Contact,
+  ContractResponse,
   DateRange,
   ProjectResponse,
   ProjectResponseWithContactsAndFiles,
@@ -514,6 +520,58 @@ export const getProjectsUser = async (
           delta: deal.delta?.toString() || "",
         }))
       : [];
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
+export const getContractsUser = async (
+  idDealOwner: string
+): Promise<ContractResponse[] | null> => {
+  try {
+    const data = await handleAuthorization();
+    const { user, userId } = data!;
+
+    if (!idDealOwner) {
+      return handleError("Недостаточно данных");
+    }
+
+    const isOwner = userId === idDealOwner;
+    if (!isOwner) {
+      await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
+    }
+
+    const statuses = Object.keys(StatusContract) as Array<
+      keyof typeof StatusContract
+    >;
+
+    const deals = await prisma.project.findMany({
+      where: {
+        userId: idDealOwner,
+        dealStatus: {
+          in: statuses,
+        },
+      },
+      orderBy: {
+        dateRequest: "asc",
+      },
+    });
+
+     return deals.length
+      ? deals.map((deal) => {
+
+        const {amountCP,amountWork,amountPurchase,delta, ...restDeal } = deal;
+        return ({
+          ...restDeal,
+          amountCP: amountCP?.toString() || "",
+          amountWork: amountWork?.toString() || "",
+          amountPurchase: amountPurchase?.toString() || "",
+          delta: delta?.toString() || "",
+        })
+      })
+      : [];
+      
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

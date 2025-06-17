@@ -42,7 +42,7 @@ export function DateRangePicker({ className, value, onValueChange }: Props) {
             id="date"
             variant={"outline"}
             className={cn(
-              "w-max sm:w-[300px] justify-start text-left font-normal",
+              "w-max sm:w-[220px] justify-start text-left font-normal",
               !date && "text-muted-foreground"
             )}
           >
@@ -64,7 +64,7 @@ export function DateRangePicker({ className, value, onValueChange }: Props) {
                 </span>
               )
             ) : (
-              <span>Выберите диапазон дат заявок</span>
+              <span>Выберите диапазон дат</span>
             )}
           </Button>
         </PopoverTrigger>

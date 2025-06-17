@@ -3,8 +3,8 @@
 import {
   PermissionEnum,
   // Prisma,
-  TaskPriority,
-  TaskStatus,
+  // TaskPriority,
+  // TaskStatus,
 } from "@prisma/client";
 
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
@@ -16,13 +16,13 @@ import { handleError } from "@/shared/api/handleError";
 import { TaskFormType, TaskFormTypeWithId, TaskWithUserInfo } from "../types";
 // import { getDepartmentUsersWithTasks } from "./queryFn";
 
-export const getTasksDepartment = async (departmentId: number): Promise<TaskWithUserInfo[] | []> => {
+export const getTasksDepartment = async (departmentId: number): Promise<TaskWithUserInfo[] | [] | null>  => {
   try {
-    await handleAuthorization();
+    const {user} = await handleAuthorization();
 
-    // if(user!.departmentId !== +departmentId){
-    //   return checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT] )
-    // }
+    if(user!.departmentId !== +departmentId){
+      return checkUserPermissionByRole(user!, [PermissionEnum.TASK_MANAGEMENT] )
+    }
 
     return await prisma.task.findMany({
       where: {
@@ -66,7 +66,7 @@ export const getUserTasks = async (userId: string): Promise<TaskWithUserInfo[] |
         OR: [
           {assignerId: userId},
           {executorId: userId}
-        ] // укажи нужный ID департамента
+        ] 
       },
       include: {
         assigner: {
@@ -133,7 +133,7 @@ export const createTask = async (task: Omit<TaskFormType, 'orderTask'>) => {
     const lastTask = await prisma.task.findFirst({
       where: {
         departmentId: +task.departmentId,
-        taskStatus: task.taskStatus as TaskStatus
+        taskStatus: task.taskStatus
       }
     })
 
@@ -143,8 +143,6 @@ export const createTask = async (task: Omit<TaskFormType, 'orderTask'>) => {
       data: {
         ...task,
         departmentId: +task.departmentId,
-        taskStatus: task.taskStatus as TaskStatus,
-        taskPriority: task.taskPriority as TaskPriority,
         assignerId: userId,
         dueDate: new Date(task.dueDate),
         startDate: new Date(task.startDate),
@@ -198,9 +196,9 @@ export const updateTask = async (taskTarget: TaskFormTypeWithId) => {
     return await prisma.task.update({
       where: { id: taskTarget.id },
       data: {
-        ...task,
-        dueDate: new Date(task.dueDate),
-        startDate: new Date(task.startDate),
+        ...taskTarget,
+        dueDate: new Date(taskTarget.dueDate),
+        startDate: new Date(taskTarget.startDate),
       },
     });
 
@@ -240,27 +238,6 @@ export const deleteTask = async (taskId: string, idTaskOwner: string) => {
   }
 };
 
-// export const getUsersAndTasksQuery = async (departmentId: string) => {
-//   try {
-//     return await getDepartmentUsersWithTasks(departmentId);
-//   } catch (error) {
-//     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//       console.error("Prisma ошибка:", error.code);
-//       TOAST.ERROR("Ошибка cхемы Prisma");
-//     } else if (error instanceof Prisma.PrismaClientValidationError) {
-//       console.error("Ошибка валидации:", error.message);
-//       TOAST.ERROR("Ошибка валидации");
-//     } else if (error instanceof Prisma.PrismaClientInitializationError) {
-//       console.error("Ошибка подключения:", error.message);
-//       TOAST.ERROR("Ошибка подключения");
-//     } else {
-//       console.error("Другая ошибка:", (error as Error).message);
-//       TOAST.ERROR((error as Error).message);
-//     }
-//     throw error;
-//   }
-// };
-
 
 export const updateTasksOrder = async (updatedTasks: TaskWithUserInfo[]) => {
   try {
@@ -273,7 +250,7 @@ export const updateTasksOrder = async (updatedTasks: TaskWithUserInfo[]) => {
                 id: task.id
               },
               data: {
-                taskStatus: task.taskStatus as TaskStatus,
+                taskStatus: task.taskStatus,
                 orderTask: task.orderTask
               }
             })

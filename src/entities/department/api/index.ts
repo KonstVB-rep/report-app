@@ -9,8 +9,14 @@ export const getDepartmentsWithUsers = async (): Promise<DepartmentInfo[]> => {
   try {
     const departments = await prisma.department.findMany({
       include: {
-        users: true,
-      },
+        users: {
+          where: {
+            position: {
+              not: "руководитель организации"
+            }
+          }
+        }
+      }
     });
 
     return (departments as DepartmentInfo[]) || [];

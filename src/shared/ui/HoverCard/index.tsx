@@ -32,7 +32,7 @@ const HoverCardComponent = ({
       <HoverCardTrigger>
         <Button
           variant="outline"
-          className="h-auto w-full items-center first-letter:capitalize"
+          className="h-full w-full items-center first-letter:capitalize"
         >
           {title}
         </Button>
