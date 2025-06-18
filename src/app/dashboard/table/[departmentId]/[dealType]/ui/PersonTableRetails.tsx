@@ -30,7 +30,7 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
   );
 
   const getRowLink = useCallback(
-    (row: RetailResponse) => `/deal/retail/${row.id}`,
+    (row: RetailResponse) => `/dashboard/deal/retail/${row.id}`,
     []
   );
 

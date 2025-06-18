@@ -36,7 +36,7 @@ async function refreshAccessToken(
   refreshToken: string,
   cookiesStore: ReadonlyRequestCookies,
   request: NextRequest,
-  // pathname: string
+  pathname: string
 ) {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
@@ -60,9 +60,9 @@ async function refreshAccessToken(
       maxAge: 24 * 60 * 60,
     });
 
-    // if (pathname === "/") {
-    //   return NextResponse.redirect(new URL("/login", request.url));
-    // }
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
 
     return NextResponse.next();
   } catch (error) {
@@ -118,7 +118,7 @@ export default async function middleware(request: NextRequest) {
     refreshToken,
     cookiesStore,
     request,
-    // pathname
+    pathname
   );
 }
 
@@ -133,6 +133,6 @@ export const config = {
     "/statistics/:path*",
     "/calendar/:path*",
     "/tasks/:path*",
-    // "/",
+    "/",
   ],
 };

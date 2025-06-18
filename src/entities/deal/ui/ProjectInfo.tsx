@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 
 import { Building, Info } from "lucide-react";
 
-import Loading from "@/app/(dashboard)/deal/[departmentId]/[dealType]/[dealId]/loading";
+import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
 import { Separator } from "@/components/ui/separator";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";

@@ -43,7 +43,7 @@ export function NavUser() {
         >
           <div className="grid min-w-40 gap-1">
             <Link
-              href={`/profile/${authUser?.departmentId}/${authUser?.id}`}
+              href={`/dashboard/profile/${authUser?.departmentId}/${authUser?.id}`}
               className="btn_hover w-full justify-center text-sm"
             >
               <BadgeCheck className="h-4 w-4" />

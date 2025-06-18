@@ -12,7 +12,7 @@ import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
-import { columnsDataCalendar } from "../../../app/(dashboard)/calendar/[userId]/events-list/model/column-data-calendar";
+import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
 
 type EventsListProps = {
   events: EventInputType[];
@@ -36,9 +36,9 @@ const EventsList = ({ events }: EventsListProps) => {
   }
 
   return (
-    <>
+    <div className="grid gap-4">
       <ButtonLink
-        pathName={`/calendar/${authUser.id}`}
+        pathName={`/dashboard/calendar/${authUser.id}`}
         label="Календарь"
         icon={<CalendarFold />}
       />
@@ -46,7 +46,7 @@ const EventsList = ({ events }: EventsListProps) => {
       <div className="rounded-lg overflow-hidden border w-full">
         <EventsListTable<EventInputType> table={table} />
       </div>
-    </>
+    </div>
   );
 };
 

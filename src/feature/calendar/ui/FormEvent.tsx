@@ -2,8 +2,8 @@
 
 import { Path, UseFormReturn } from "react-hook-form";
 
-import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
-import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
+import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Form, FormControl,

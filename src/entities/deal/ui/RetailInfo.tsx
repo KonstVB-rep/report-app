@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 
 import { Building, Info } from "lucide-react";
 
-import Loading from "@/app/(dashboard)/deal/[departmentId]/[dealType]/[dealId]/loading";
+import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";

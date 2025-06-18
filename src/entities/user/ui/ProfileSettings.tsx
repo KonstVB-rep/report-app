@@ -31,7 +31,7 @@ export function ProfileSettings({ user }: Props) {
       }
     >
       <Link
-        href={`/profile/${user.departmentId}/${user.id}`}
+        href={`/dashboard/profile/${user.departmentId}/${user.id}`}
         className="btn_hover text-sm"
       >
         <UserRound size="16" /> <span>Профиль пользователя</span>

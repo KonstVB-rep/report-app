@@ -13,6 +13,7 @@ import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import UserCard from "@/shared/ui/UserCard";
 
 import ProfileDealsData from "./ProfileDealsData";
+import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,
@@ -128,7 +129,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <ProfileDealsData />
+      {(NOT_MANAGERS_POSITIONS_KEYS as string[]).includes(user.position) && <ProfileDealsData />}
     </section>
   );
 };

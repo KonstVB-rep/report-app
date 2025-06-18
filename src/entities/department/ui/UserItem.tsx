@@ -23,7 +23,7 @@ const UserItem = ({
       <>
         <li key={id} className="hidden sm:flex flex-wrap gap-2">
           <Link
-            href={`/profile/${departmentId}/${id}`}
+            href={`/dashboard/profile/${departmentId}/${id}`}
             className="flex w-full sm:w-60 flex-col items-center justify-center rounded-md border border-solid px-4 py-2"
             title={`${username.split(" ").join(" ").toUpperCase()} - Перейти в профиль`}
           >
@@ -41,7 +41,7 @@ const UserItem = ({
             <div className="flex gap-2 shrink-0 w-full sm:w-auto">
               <TooltipComponent content="Перейти к проектам">
                 <Link
-                  href={`/table/${departmentId}/projects/${id}`}
+                  href={`/dashboard/table/${departmentId}/projects/${id}`}
                   className="h-14 flex flex-1 sm:aspect-square sm:max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
                   rel="noopener noreferrer"
                 >
@@ -50,7 +50,7 @@ const UserItem = ({
               </TooltipComponent>
               <TooltipComponent content="Перейти к розничным сделкам">
                 <Link
-                  href={`/table/${departmentId}/retails/${id}`}
+                  href={`/dashboard/table/${departmentId}/retails/${id}`}
                   className="h-14 flex flex-1 sm:aspect-square sm:max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
                   rel="noopener noreferrer"
                 >
@@ -80,7 +80,7 @@ const UserItem = ({
             }
           >
             <Link
-              href={`/profile/${departmentId}/${id}`}
+              href={`/dashboard/profile/${departmentId}/${id}`}
               className="flex w-full sm:max-w-[300px] sm:w-60 flex-col items-center justify-center rounded-md border border-solid px-4 py-2"
               title={`${username.split(" ").join(" ").toUpperCase()} - Перейти в профиль`}
             >
@@ -95,7 +95,7 @@ const UserItem = ({
               <div className="flex gap-2 shrink-0 w-full sm:w-auto">
                 <TooltipComponent content="Перейти к проектам">
                   <Link
-                    href={`/table/${departmentId}/projects/${id}`}
+                    href={`/dashboard/table/${departmentId}/projects/${id}`}
                     className="h-14 flex flex-1 sm:aspect-square sm:max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
                     rel="noopener noreferrer"
                   >
@@ -104,7 +104,7 @@ const UserItem = ({
                 </TooltipComponent>
                 <TooltipComponent content="Перейти к розничным сделкам">
                   <Link
-                    href={`/table/${departmentId}/retails/${id}`}
+                    href={`/dashboard/table/${departmentId}/retails/${id}`}
                     className="h-14 flex flex-1 sm:aspect-square sm:max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
                     rel="noopener noreferrer"
                   >
@@ -123,7 +123,7 @@ const UserItem = ({
       <>
         <li key={id} className="hidden sm:flex flex-wrap gap-2">
           <Link
-            href={`/profile/${departmentId}/${id}`}
+            href={`/dashboard/profile/${departmentId}/${id}`}
             className="flex w-full sm:w-60 flex-col items-center justify-center rounded-md border border-solid px-4 py-2"
             title={`${username.split(" ").join(" ").toUpperCase()} - Перейти в профиль`}
           >
@@ -156,7 +156,7 @@ const UserItem = ({
             }
           >
             <Link
-              href={`/profile/${departmentId}/${id}`}
+              href={`/dashboard/profile/${departmentId}/${id}`}
               className="flex w-full sm:max-w-[300px] sm:w-60 flex-col items-center justify-center rounded-md border border-solid px-4 py-2"
               title={`${username.split(" ").join(" ").toUpperCase()} - Перейти в профиль`}
             >

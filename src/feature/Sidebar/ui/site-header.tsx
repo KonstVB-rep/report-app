@@ -48,11 +48,11 @@ export function SiteHeader() {
         </div>
         <div className="gap-2 items-center hidden md:flex">
           <div className="flex gap-2">
-            <Link href={`/tasks/${authUser?.departmentId}/${authUser?.id}`} className="btn_hover text-sm font-medium">Мои задачи</Link>
+            <Link href={`/dashboard/tasks/${authUser?.departmentId}/${authUser?.id}`} className="btn_hover text-sm font-medium">Мои задачи</Link>
             <ProtectedByPermissions
                 permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
               >
-                <Link href={`/tasks/${authUser?.departmentId}`} className="btn_hover text-sm font-medium">Все задачи</Link>
+                <Link href={`/dashboard/tasks/${authUser?.departmentId}`} className="btn_hover text-sm font-medium">Все задачи</Link>
             </ProtectedByPermissions>
             {!pathName?.includes("summary-table") && (
               <ProtectedByPermissions
@@ -75,7 +75,7 @@ export function SiteHeader() {
             )}
           </div>
           <Button variant="outline" asChild className="w-12 h-12">
-            <Link href={`/calendar/${authUser?.id}`} title="Календарь">
+            <Link href={`/dashboard/calendar/${authUser?.id}`} title="Календарь">
               <CalendarClock />
             </Link>
           </Button>

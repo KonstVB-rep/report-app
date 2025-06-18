@@ -35,9 +35,9 @@ const icons = {
 };
 
 const urlPath = (depsId: number): Record<UnionTypeDepartmentsName, string> => ({
-  SALES: `/table/${depsId}`,
+  SALES: `/dashboard/table/${depsId}`,
   TECHNICAL: "",
-  MARKETING: `/statistics/request-source`,
+  MARKETING: `/dashboard/statistics/request-source`,
 });
 
 const AppSidebar = () => {
@@ -60,7 +60,7 @@ const AppSidebar = () => {
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],
-      url: `/department/${dept.id}`,
+      url: `/dashboard/department/${dept.id}`,
       directorId: dept.directorId,
       items: dept.users.map((person: Omit<UserResponse, "email" | "role">) => ({
         id: person.id,

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { ListTodo } from "lucide-react";
 
-import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
+import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import { useSidebar } from "@/components/ui/sidebar";
 import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";

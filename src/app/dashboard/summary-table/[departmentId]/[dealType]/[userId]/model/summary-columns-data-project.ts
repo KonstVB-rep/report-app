@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { columnsDataProject } from "@/app/(dashboard)/table/[departmentId]/[dealType]/[userId]/model/columns-data-project";
+import { columnsDataProject } from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-project";
 import { ProjectResponse } from "@/entities/deal/types";
 
 export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] =

@@ -59,7 +59,7 @@ const TableComponent = <T extends Record<string, unknown>>({
               />
             ),
           })}
-          path={`/deal/${departmentId}/${
+          path={`/dashboard/deal/${departmentId}/${
                   (row.original.type as DealType).toLowerCase()}/${row.original.id}`}
         >
           <TableRow

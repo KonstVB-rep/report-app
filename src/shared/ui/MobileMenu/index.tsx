@@ -83,7 +83,7 @@ const MobileMenu = () => {
 
           <DropdownMenuItem className="p-0">
             <Link
-              href={`/tasks/${authUser?.departmentId}/${authUser?.id}`}
+              href={`/dashboard/tasks/${authUser?.departmentId}/${authUser?.id}`}
               className="w-full px-3 py-2 font-semibold hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary rounded-md"
             >
               Мои задачи
@@ -94,7 +94,7 @@ const MobileMenu = () => {
               permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
             >
               <Link
-                href={`/tasks/${authUser?.departmentId}`}
+                href={`/dashboard/tasks/${authUser?.departmentId}`}
                 className="w-full px-3 py-2 font-semibold hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary rounded-md"
               >
                 Все задачи

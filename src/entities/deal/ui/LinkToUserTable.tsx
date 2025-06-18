@@ -94,7 +94,7 @@ const LinkToUserTable = () => {
       {hasTable && (
         <Link
           className="btn_hover max-w-max border-muted px-4 text-sm"
-          href={`${hasTable.url}/${userId}`}
+          href={`/dashboard/${hasTable.url}/${userId}`}
           title={`Перейти на страницу - ${hasTable.title}`}
           onClick={handleClick}
         >
@@ -105,7 +105,7 @@ const LinkToUserTable = () => {
         <ProtectedByPermissions permissionArr={["VIEW_UNION_REPORT"]}>
           <Link
             className="btn_hover max-w-max border-muted px-4 text-sm"
-            href={`${hasSummaryTable.url}/${authUser.id}`}
+            href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}
             title={`Перейти на страницу - ${hasSummaryTable.title}`}
             onClick={handleClick}
           >

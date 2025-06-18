@@ -12,7 +12,7 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 
-import { columnsDataCalendar } from "../../../app/(dashboard)/calendar/[userId]/events-list/model/column-data-calendar";
+import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
 
 type EventsListProps = {
   events: EventInputType[];

@@ -14,8 +14,8 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 // import { RetailResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
+import { DealTypeLabels } from "../../../app/dashboard/table/[departmentId]/[dealType]/ui/PersonTable";
 import { columnsOrder } from "../model/columns-data-orders";
-import { DealTypeLabels } from "../../../app/(dashboard)/table/[departmentId]/[dealType]/ui/PersonTable";
 // import DataOrderTable from "./DataOrderTable";
 import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
@@ -40,27 +40,12 @@ const DataOrderTable = dynamic(() => import("./DataOrderTable"), {
 // );
 
 const OrdersTable = () => {
-  // const hasAccess = hasAccessToData(
-  //   userId as string,
-  //   PermissionEnum.VIEW_USER_REPORT
-  // );
-
+ 
   const { data: orders, isPending } = useGetOrders();
   const { userId, dealType } = useParams();
   const { authUser } = useStoreUser();
   const isPageAuthuser = userId === authUser?.id;
 
-  //   const getRowLink = useCallback(
-  //     (row: RetailResponse) => `/deal/retail/${row.id}`,
-  //     []
-  //   );
-
-  //   if (!hasAccess)
-  //     return (
-  //       <AccessDeniedMessage
-  //         error={{ message: "у вас нет доступа к этому разделу" }}
-  //       />
-  //     );
 
    if (isPending) return <DealsSkeleton />;
 

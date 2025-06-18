@@ -35,7 +35,7 @@ const SummaryTableLink = ({
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
       <Link
-        href={`/summary-table/${departmentIdValue}/${type.toLowerCase()}s/${authUser.id}`}
+        href={`/dashboard/summary-table/${departmentIdValue}/${type.toLowerCase()}s/${authUser.id}`}
         className={`${className} min-w-full max-w-max text-sm`}
         title="перейти на страницу сводной таблицы"
       >

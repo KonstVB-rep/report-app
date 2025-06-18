@@ -3,7 +3,7 @@
 
 import { ru } from "date-fns/locale";
 
-import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import { Calendar } from "@/components/ui/calendar";
 import EventsListDayMobile from "@/feature/calendar/ui/EventsListDayMobile";
 import DialogComponent from "@/shared/ui/DialogComponent";

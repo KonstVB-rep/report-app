@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { columnsDataRetail } from "@/app/(dashboard)/table/[departmentId]/[dealType]/[userId]/model/columns-data-retail";
+import { columnsDataRetail } from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-retail";
 import { RetailResponse } from "@/entities/deal/types";
 
 export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [

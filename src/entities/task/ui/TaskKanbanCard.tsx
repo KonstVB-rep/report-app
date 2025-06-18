@@ -64,7 +64,7 @@ const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
 
   return (
     <Card className="relative p-0 pb-3 grid gap-2 cursor-pointer drop-shadow-xl group">
-      <Link href={`/tasks/${departmentId}/${userId}/${task.id}`} className="group-hover:grid hidden place-items-center border-primary hover:border-2 absolute inset-0 bg-background/80 rounded-md">
+      <Link href={`/dashboard/tasks/${departmentId}/${userId}/${task.id}`} className="group-hover:grid hidden place-items-center border-primary hover:border-2 absolute inset-0 bg-background/80 rounded-md">
         <span className="hover:border-primary hover:border-2 p-2 rounded-md bg-background flex gap-2">Перейти к задаче<ExternalLink /></span>
       </Link>
       {isCanActionTask && <div className="group-hover:flex hidden flex-col absolute top-[2px] right-[2px] gap-2 bg-background p-1 rounded-md border">
