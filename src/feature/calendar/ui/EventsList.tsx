@@ -2,7 +2,6 @@
 
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import React from "react";
 
 import { useRouter } from "next/navigation";
 

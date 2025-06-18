@@ -120,6 +120,33 @@ model Retail {
 }
 
 
+model Order {
+  id                    String           @id @default(cuid())
+  type                  DealType         @default(ORDER) // <-- Тип сделки
+  dateRequest           DateTime
+  nameDeal              String
+  // nameObject            String
+  // direction             DirectionRetail
+  // deliveryType          DeliveryRetail?
+  contact               String
+  phone                 String?
+  email                 String?
+  manager               String
+  // amountCP              Decimal?          @db.Decimal(15, 2)
+  // delta                 Decimal?          @db.Decimal(15, 2)
+  // dealStatus            StatusRetail
+  comments              String
+  departmentId          Int
+  orderStatus           StatusOrder      @default(SUBMITTED_TO_WORK) 
+  // plannedDateConnection DateTime?
+  resource              String?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  @@index([id], map: "Order_id_fkey")
+}
+
+
 model AdditionalContact {
   id           String    @id @default(cuid())
   name         String 
@@ -196,19 +223,19 @@ model TelegramBot {
 }
 
 model UserTelegramChat {
-  id               String      @id @default(cuid())           // Уникальный ID записи
+  id               String     @id @default(cuid())           // Уникальный ID записи
   userId           String                                   // ID пользователя
   botId            String                                   // ID бота
   chatId           String                                   // ID чата
   telegramUserId   String
   chatName         String
   telegramUsername String?                                  // ID пользователя в Telegram
-  isActive         Boolean     @default(true)                   // Статус активности чата
-  createdAt        DateTime    @default(now())                 // Время создания записи
-  updatedAt        DateTime    @updatedAt                      // Время последнего обновления записи
+  isActive         Boolean    @default(true)                   // Статус активности чата
+  createdAt        DateTime   @default(now())                 // Время создания записи
+  updatedAt        DateTime   @updatedAt                      // Время последнего обновления записи
 
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
-  bot            TelegramBot @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
+  bot            TelegramBot  @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
 
   @@unique([botId, userId])   // Уникальность для каждого пользователя, бота и чата
 }
@@ -306,6 +333,10 @@ enum StatusContract {
   CLOSED
 }
 
+enum StatusOrder {
+  SUBMITTED_TO_WORK
+  AT_WORK
+}
 
 enum StatusRetail {
   FIRST_CP_APPROVAL
@@ -333,6 +364,7 @@ enum Role {
 enum DealType {
   PROJECT
   RETAIL
+  ORDER
 }
 
 enum StorageType {

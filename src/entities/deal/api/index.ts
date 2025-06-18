@@ -45,6 +45,7 @@ type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
 
 type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 
+
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
   const data = await handleAuthorization();
 
@@ -708,6 +709,7 @@ export const getAllRetailsByDepartment = async (
   }
 };
 
+
 type DealsListWithResource =
   | {
       deals: {
@@ -975,3 +977,4 @@ export const getDealsByDateRange = async (
     closed: closedDeals.length,
   };
 };
+

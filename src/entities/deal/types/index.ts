@@ -108,3 +108,4 @@ export interface ContractResponse {
   updatedAt: Date;
   type: DealType;
 }
+

@@ -21,6 +21,12 @@ const RetailForm = dynamic(() => import("../Forms/RetailForm"), {
   loading: () => <FormDealSkeleton />,
 });
 
+const OrderForm = dynamic(() => import("@/entities/order/ui/OrderForm"), {
+  ssr: false,
+  loading: () => <FormDealSkeleton />,
+});
+
+
 type AddNewDealProps = {
   type: string;
 };
@@ -33,6 +39,10 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
   retails: {
     title: "Добавить cделку по рознице",
     form: <RetailForm />,
+  },
+  orders: {
+    title: "Добавить заявку",
+    form: <OrderForm />,
   },
 };
 

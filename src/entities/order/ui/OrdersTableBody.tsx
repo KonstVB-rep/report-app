@@ -1,4 +1,4 @@
-import { DealType } from "@prisma/client";
+import { DealType, StatusOrder } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
 import { ReactNode, useCallback } from "react";
@@ -9,8 +9,8 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
-import ContextRowTable from "../ContextRowTable/ContextRowTable";
-import TableTemplate from "./TableTemplate";
+import ContextRowTable from "@/shared/ui/ContextRowTable/ContextRowTable";
+import TableTemplate from "@/shared/ui/Table/TableTemplate";
 
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -18,7 +18,7 @@ type TableComponentProps<T> = {
   isExistActionDeal?: boolean;
 };
 
-const TableComponent = <T extends Record<string, unknown>>({
+const OrdersTableBody = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
@@ -38,7 +38,7 @@ const TableComponent = <T extends Record<string, unknown>>({
 
   const renderRow = useCallback(
     (row: Row<T>): ReactNode => {
-      console.log(row.original)
+      console.log(row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK, row.original.orderStatus, StatusOrder.SUBMITTED_TO_WORK, "row.original.orderStatus")
       return (
         <ContextRowTable
           key={row.id}
@@ -63,9 +63,9 @@ const TableComponent = <T extends Record<string, unknown>>({
                   (row.original.type as DealType).toLowerCase()}/${row.original.id}`}
         >
           <TableRow
-            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === "REJECT" && "bg-red-900/40"} ${row.original.dealStatus === "PAID" && "bg-lime-200/20"}`}
-            data-reject={`${row.original.dealStatus === "REJECT"}`}
-            data-success={`${row.original.dealStatus === "PAID"}`}
+            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK && "bg-red-900/40"} ${row.original.orderStatus === StatusOrder.AT_WORK && "bg-lime-200/20"}`}
+            data-reject={`${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK}`}
+            data-success={`${row.original.orderStatus === StatusOrder.AT_WORK}`}
           >
             {renderRowCells(row)}
           </TableRow>
@@ -87,4 +87,4 @@ const TableComponent = <T extends Record<string, unknown>>({
   );
 };
 
-export default TableComponent;
+export default OrdersTableBody;

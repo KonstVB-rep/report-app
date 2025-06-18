@@ -2,7 +2,6 @@
 
 import { Separator } from "@radix-ui/react-separator";
 
-import React from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -18,10 +17,10 @@ import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetRetailById } from "../hooks/query";
 import {
-  DealTypeLabels,
-  DeliveryRetailLabels,
-  DirectionRetailLabels,
-  StatusRetailLabels,
+    DealTypeLabels,
+    DeliveryRetailLabels,
+    DirectionRetailLabels,
+    StatusRetailLabels,
 } from "../lib/constants";
 import RowInfoDealProp from "./RowInfoDealProp";
 

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -18,10 +17,10 @@ import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetProjectById } from "../hooks/query";
 import {
-  DealTypeLabels,
-  DeliveryProjectLabels,
-  DirectionProjectLabels,
-  StatusProjectLabels,
+    DealTypeLabels,
+    DeliveryProjectLabels,
+    DirectionProjectLabels,
+    StatusProjectLabels,
 } from "../lib/constants";
 import IntoDealItem from "./IntoDealItem";
 import RowInfoDealProp from "./RowInfoDealProp";

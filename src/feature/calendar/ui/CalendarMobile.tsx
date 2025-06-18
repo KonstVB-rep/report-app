@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 
 import { ru } from "date-fns/locale";
 
@@ -13,8 +12,8 @@ import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import useCalendarMobile from "../hooks/useCalendarMobile";
 import { EventInputType } from "../types";
 import {
-  handleDateSelectOnEventsList,
-  handleEventClickOnEventsList,
+    handleDateSelectOnEventsList,
+    handleEventClickOnEventsList,
 } from "../utils/eventHandlers";
 import CalendarFormModal from "./CalendarFormModal";
 

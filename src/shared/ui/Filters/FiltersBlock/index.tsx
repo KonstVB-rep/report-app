@@ -55,6 +55,8 @@ const FiltersBlock = ({
     `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
   );
 
+  const safeType = type as Exclude<DealType, "ORDER">;
+
   return (
     <MotionDivY className="min-h-0">
 
@@ -98,17 +100,17 @@ const FiltersBlock = ({
               {
                 label: "Статус",
                 columnId: "dealStatus",
-                options: LABELS[type].STATUS,
+                options: LABELS[safeType].STATUS,
               },
               {
                 label: "Направление",
                 columnId: "direction",
-                options: LABELS[type].DIRECTION,
+                options: LABELS[safeType].DIRECTION,
               },
               {
                 label: "Тип поставки",
                 columnId: "deliveryType",
-                options: LABELS[type].DELIVERY,
+                options: LABELS[safeType].DELIVERY,
               },
             ]}
             columnFilters={table.getState().columnFilters}

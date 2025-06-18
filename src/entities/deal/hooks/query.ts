@@ -132,21 +132,27 @@ export const useGetDealById = <
       id: string,
       userId: string
     ) => Promise<RetailResponseWithContactsAndFiles>,
+
   };
 
   const fetchFn = async (): Promise<T | undefined> => {
-    try {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      const entity = await fetchFunctions[type](dealId, authUser.id);
-      return entity as T | undefined;
-    } catch (error) {
-      console.log(error, "Ошибка useGetDealById");
-      TOAST.ERROR((error as Error).message);
-      throw error;
+  try {
+    if (!authUser?.id) {
+      throw new Error("Пользователь не авторизован");
     }
-  };
+
+    if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
+      throw new Error(`Нет функции для типа сделки: ${type}`);
+    }
+
+    const entity = await fetchFunctions[type](dealId, authUser.id);
+    return entity as T | undefined;
+  } catch (error) {
+    console.log(error, "Ошибка useGetDealById");
+    TOAST.ERROR((error as Error).message);
+    throw error;
+  }
+};
 
   return useQuery<T | undefined, Error>({
     queryKey,
@@ -176,6 +182,7 @@ export const useGetAllDealsByDepartmentByType = (
     [DealType.RETAIL]: getAllRetailsByDepartment as () => Promise<
       RetailResponse[]
     >,
+
   };
 
   return useQuery({
@@ -185,6 +192,11 @@ export const useGetAllDealsByDepartmentByType = (
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
+
+         if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
+          throw new Error(`Нет функции для типа сделки: ${type}`);
+        }
+
         return await fetchFunctions[type]();
       } catch (error) {
         console.log(error, "Ошибка useGetAllDealsByDepartmentByType");

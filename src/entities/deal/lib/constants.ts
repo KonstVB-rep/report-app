@@ -37,6 +37,7 @@ export enum DeliveryRetail {
 export enum DealType {
   PROJECT = "Проект",
   RETAIL = "Розница",
+  ORDER = "Заявки"
 }
 
 export enum StatusProject {
@@ -138,6 +139,7 @@ export const StatusProjectLabels: StatusProjectLabelsType = {
 export const DealTypeLabels: Record<keyof typeof DealType, string> = {
   PROJECT: "Проект",
   RETAIL: "Розница",
+  ORDER: "Заявки"
 } as const;
 
 export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
@@ -194,3 +196,4 @@ export const StatusContractLabels: StatusContractLabelsType = {
   SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
 } as const;
+

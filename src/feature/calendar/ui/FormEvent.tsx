@@ -5,13 +5,12 @@ import { Path, UseFormReturn } from "react-hook-form";
 import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
 import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Form } from "@/components/ui/form";
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form, FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
 } from "@/components/ui/form";
 import { EventCalendarSchema } from "@/feature/calendar/model/schema";
 import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";

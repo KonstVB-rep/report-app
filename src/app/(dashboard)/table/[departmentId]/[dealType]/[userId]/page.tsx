@@ -1,40 +1,48 @@
 import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
+    dehydrate,
+    HydrationBoundary,
+    QueryClient,
 } from "@tanstack/react-query";
 
 import { getQueryClient } from "@/app/provider/query-provider";
 import {
-  getContractsUserQuery,
-  getProjectsUserQuery,
-  getRetailsUserQuery,
+    getContractsUserQuery,
+    getProjectsUserQuery,
+    getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn";
 
+import OrdersTable from "../../../../../../entities/order/ui/OrdersTable";
+import PersonTableContract from "../ui/PersonTableContract";
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
-import PersonTableContract from "../ui/PersonTableContract";
+
+const DealsInWork = ["projects", "retails", "contracts"]
 
 const fetchData = async (
   queryClient: QueryClient,
   dealType: string,
-  userId: string
+  id: string
 ) => {
   switch (dealType) {
     case "projects":
       return queryClient.prefetchQuery({
-        queryKey: ["projects", userId],
-        queryFn: () => getProjectsUserQuery(userId),
+        queryKey: ["projects", id],
+        queryFn: () => getProjectsUserQuery(id),
       });
     case "retails":
       return queryClient.prefetchQuery({
-        queryKey: ["retails", userId],
-        queryFn: () => getRetailsUserQuery(userId),
+        queryKey: ["retails", id],
+        queryFn: () => getRetailsUserQuery(id),
       });
     case "contracts":
       return queryClient.prefetchQuery({
-        queryKey: ["contracts", userId],
-        queryFn: () => getContractsUserQuery(userId),
+        queryKey: ["contracts", id],
+        queryFn: () => getContractsUserQuery(id),
+    });
+    case "orders":
+      return queryClient.prefetchQuery({
+        queryKey: ["orders", id],
+        queryFn: () => getContractsUserQuery(id),
     });
     default:
       return null;
@@ -44,13 +52,15 @@ const fetchData = async (
 const PersonTablePage = async ({
   params,
 }: {
-  params: Promise<{ dealType: string; userId: string }>;
+  params: Promise<{ dealType: string; userId: string, departmentId: string }>;
 }) => {
-  const { dealType, userId } = await params;
+  const { dealType, userId, departmentId } = await params;
   const queryClient = getQueryClient();
-
   try {
-    await fetchData(queryClient, dealType, userId);
+
+    const id = DealsInWork.includes(dealType) ? userId : departmentId;
+
+    await fetchData(queryClient, dealType, id);
   } catch (error) {
     console.log(error, "ErrorPersonTablePage");
     throw new Error((error as Error).message);
@@ -66,6 +76,9 @@ const PersonTablePage = async ({
       break;
     case "contracts":
       Component = PersonTableContract;
+      break;
+    case "orders":
+      Component = OrdersTable;
       break;
     default:
       return null;

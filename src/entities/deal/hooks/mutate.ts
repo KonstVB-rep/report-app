@@ -20,7 +20,7 @@ import {
   createRetail,
   deleteDeal,
   updateProject,
-  updateRetail,
+  updateRetail
 } from "../api";
 import {
   defaultProjectValues,

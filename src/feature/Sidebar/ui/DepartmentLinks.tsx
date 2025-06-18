@@ -18,17 +18,26 @@ import { DepartmentUserItem } from "@/entities/department/types";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import MarketActiveItemSidebar from "./MarketActiveItemSidebar";
+import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants";
 
 type DealsType = {
   id: string;
   title: string;
 };
 
+
 const dealsSalesDepartment: DealsType[] = [
   { id: "projects", title: "Проекты" },
   { id: "retails", title: "Розница" },
-  { id: "contracts", title: "Договора" }
+  { id: "contracts", title: "Договора" },
 ];
+
+const table: {
+  [key in string] : DealsType
+} = {
+  orders: { id: "orders", title: "Заявки" }
+};
+
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
 
@@ -89,11 +98,16 @@ export const DepartmentLinks = memo(
     dealType,
     pathName,
   }: DepartmentLinksProps) => {
-    const getDealLinks = useMemo(
-      () =>
-        departmentId === 1 ? dealsSalesDepartment : pagesMarkretingDepartment,
-      [departmentId]
-    );
+    const getDealLinks = useMemo(() => {
+      switch (departmentId) {
+        case 1:
+          return dealsSalesDepartment;
+        case 2:
+          return pagesMarkretingDepartment;
+        default:
+          return [];
+      }
+    }, [departmentId]);
 
     const renderLinks = useMemo(
       () =>
@@ -116,6 +130,23 @@ export const DepartmentLinks = memo(
         }),
       [dealType, user.id, user.url, userId, getDealLinks, departmentId]
     );
+    
+    if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) {
+      return null;
+    }
+
+    if (user.position === NOT_MANAGERS_POSITIONS.ASSIATANT_MANAGER) {
+      return (
+        <LinkItem
+          key={user.id}
+          href={`${user.url}/orders/${user.id}`}
+          title={table.orders.title}
+          icon={departmentId === 1 ? BookText : ChartColumnBig}
+          isActive={departmentId === user.departmentId && user.id === userId && dealType === table.orders.id}
+          onClick={(e) => e.stopPropagation()}
+        />
+      );
+    }
 
     if (departmentId === 2) {
       return (

@@ -1,17 +1,18 @@
 "use client";
 
-import { DealType } from "@prisma/client";
+// import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import React from "react";
 
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
-import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
+// import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import DataOrderTable from "./DataOrderTable";
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
@@ -20,27 +21,28 @@ export const DealTypeLabels: Record<string, string> = {
   orders: "Заявки"
  }
 
-const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
-  ssr: false,
-  loading: () => <TableRowsSkeleton />,
-});
+// const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
+//   ssr: false,
+//   loading: () => <TableRowsSkeleton />,
+// });
 
 interface PersonTableProps<T> {
   data: T[];
-  type: DealType;
+  // type: DealType;
   columns: ColumnDef<T>[];
-  getRowLink?: (row: T, type: string) => string;
+  // getRowLink?: (row: T, type: string) => string;
 }
 
-const PersonTable = <T extends { id: string }>({
+const OrdersTemplateTable = <T extends { id: string }>({
   data,
-  type,
+  // type,
   columns,
-  getRowLink,
+  // getRowLink,
 }: PersonTableProps<T>) => {
   const { userId, dealType } = useParams();
   const { authUser } = useStoreUser();
   const isPageAuthuser = userId === authUser?.id;
+
 
   return (
     <DealTableTemplate>
@@ -50,17 +52,17 @@ const PersonTable = <T extends { id: string }>({
         </div>
 
         {isPageAuthuser && <ButtonsGroupTable />}
-        <DataTable
+        <DataOrderTable
           columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
           data={data as Record<string, unknown>[]}
-          getRowLink={
-            getRowLink as (row: Record<string, unknown>, type: string) => string
-          }
-          type={type}
+          // getRowLink={
+          //   getRowLink as (row: Record<string, unknown>, type: string) => string
+          // }
+          // type={type}
         />
       </>
     </DealTableTemplate>
   );
 };
 
-export default PersonTable;
+export default OrdersTemplateTable;

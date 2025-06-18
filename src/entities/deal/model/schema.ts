@@ -137,3 +137,4 @@ export const RetailFormSchema = z
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;
 export type RetailSchema = z.infer<typeof RetailFormSchema>;
 export type ContactSchema = z.infer<typeof ContactFormSchema>;
+

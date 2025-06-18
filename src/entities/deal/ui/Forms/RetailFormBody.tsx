@@ -74,6 +74,8 @@ const RetailFormBody = <T extends FieldValues>({
 
   const currentContacts = form.getValues(contactsKey as Path<T>);
 
+  console.log(statusOptions, 'statusOptions')
+
   useEffect(() => {
     if (contactsKey) {
       const value = form.getValues(contactsKey as Path<T>);
