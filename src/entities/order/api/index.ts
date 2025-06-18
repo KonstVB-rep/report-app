@@ -1,3 +1,5 @@
+'use server'
+
 import prisma from "@/prisma/prisma-client";
 import { OrderCreateData, OrderResponse } from "../types";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
