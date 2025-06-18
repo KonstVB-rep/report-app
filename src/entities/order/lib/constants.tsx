@@ -1,3 +1,5 @@
+import { StatusOrder } from "@prisma/client";
+
 export const STATUS_ORDER = {
   SUBMITTED_TO_WORK: "Передано в работу",
   AT_WORK: "В работе"
@@ -11,5 +13,6 @@ export const defaultOrderValues = {
     manager: "",
     comments: "",
     phone: "",
-    resource: ""
+    resource: "",
+    orderStatus: StatusOrder.SUBMITTED_TO_WORK 
 }

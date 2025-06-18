@@ -1,72 +1,77 @@
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { DeliveryRetail, DirectionRetail, StatusOrder, StatusRetail } from "@prisma/client";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// import React, { Dispatch, SetStateAction, useEffect } from "react";
-// import { useForm } from "react-hook-form";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
-// import { formatterCurrency } from "@/shared/lib/utils";
-// import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/ui/Toast";
 
-// // import { useMutationUpdateRetail } from "../../hooks/mutate";
-// // import { useGetRetailById } from "../../hooks/query";
+// import { useMutationUpdateRetail } from "../../hooks/mutate";
+// import { useGetRetailById } from "../../hooks/query";
 
-// import OrderFormBody from "./OrderFormBody";
-// import { RetailSchema } from "@/entities/deal/model/schema";
-// import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
-// import { defaultOrderValues } from "../lib/constants";
-// import { OrderSchema, OrderFormSchema } from "../model/shema";
+import OrderFormBody from "./OrderFormBody";
+import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
+import { defaultOrderValues } from "../lib/constants";
+import { OrderSchema, OrderFormSchema } from "../model/shema";
+import { useGetOrderById } from "../hooks/query";
+import { useUpdateOrder } from "../hooks/mutate";
 
-// const formatCurrency = (value: string | null | undefined): string => {
-//   return formatterCurrency.format(parseFloat(value || "0"));
-// };
 
-// const EditOrderForm = ({
-//   close,
-//   dealId,
-// }: {
-//   close: Dispatch<SetStateAction<void>>;
-//   dealId: string;
-// }) => {
-//   const { data, isPending: isLoading } = useGetRetailById(dealId, false);
 
-//   const form = useForm<OrderSchema>({
-//     resolver: zodResolver(OrderFormSchema),
-//     defaultValues: defaultOrderValues,
-//   });
+const EditOrderForm = ({
+  close,
+  dealId,
+}: {
+  close: Dispatch<SetStateAction<void>>;
+  dealId: string;
+}) => {
+  const { data, isPending: isLoading } = useGetOrderById(dealId, true);
 
-//   const { mutateAsync, isPending } = useMutationUpdateRetail(
-//     dealId,
-//     data?.userId ?? "",
-//     close
-//   );
+  const form = useForm<OrderSchema>({
+    resolver: zodResolver(OrderFormSchema),
+    defaultValues: defaultOrderValues,
+  });
 
-//   const onSubmit = (data: RetailSchema) => {
-//     TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-//   };
+  const { mutateAsync, isPending } = useUpdateOrder(
+    close
+  );
 
-//   useEffect(() => {
-//     if (data && !isLoading) {
-//       form.reset({
-//         ...data,
-//         phone: data.phone ?? undefined,
-//         email: data.email ?? undefined,
-//         dateRequest: data.dateRequest?.toISOString(),
-//         orderStarus: data.orderStatus as StatusOrder,
-//         resource: data.resource ?? "",
-//         contacts: data?.additionalContacts ?? [],
-//       });
-//     }
-//   }, [form, data, isLoading]);
+const onSubmit = (formData: OrderSchema) => {
+  if (!data) return; // На всякий случай
 
-//   if (isLoading) <FormDealSkeleton />;
+  TOAST.PROMISE(
+    mutateAsync({
+      orderId: data.id,
+      order: {
+        ...data,
+        ...formData,
+        dateRequest: formData.dateRequest ? new Date(formData.dateRequest) : new Date(),
+      }
+    }),
+    "Данные обновлены"
+  );
+};
 
-//   return (
-//     <OrderFormBody
-//       form={form}
-//       onSubmit={onSubmit}
-//       isPending={isPending}
-//     />
-//   );
-// };
+  useEffect(() => {
+    if (data && !isLoading) {
+      form.reset({
+        ...data,
+        phone: data.phone ?? undefined,
+        email: data.email ?? undefined,
+        dateRequest: data.dateRequest?.toISOString(),
+        resource: data.resource ?? "",
+      });
+    }
+  }, [form, data, isLoading]);
 
-// export default EditOrderForm;
+  if (isLoading) <FormDealSkeleton />;
+
+  return (
+    <OrderFormBody
+      form={form}
+      onSubmit={onSubmit}
+      isPending={isPending}
+    />
+  );
+};
+
+export default EditOrderForm;

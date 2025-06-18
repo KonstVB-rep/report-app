@@ -15,6 +15,7 @@ import OrdersTable from "../../../../../../entities/order/ui/OrdersTable";
 import PersonTableContract from "../ui/PersonTableContract";
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
+import { getAllOrder } from "@/entities/order/api";
 
 const DealsInWork = ["projects", "retails", "contracts"]
 
@@ -42,7 +43,7 @@ const fetchData = async (
     case "orders":
       return queryClient.prefetchQuery({
         queryKey: ["orders", id],
-        queryFn: () => getContractsUserQuery(id),
+        queryFn: () => getAllOrder(id),
     });
     default:
       return null;

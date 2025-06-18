@@ -14,7 +14,7 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 // import { RetailResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-import { columnsOrder } from "../../../app/(dashboard)/table/[departmentId]/[dealType]/[userId]/model/columns-data-orders";
+import { columnsOrder } from "../model/columns-data-orders";
 import { DealTypeLabels } from "../../../app/(dashboard)/table/[departmentId]/[dealType]/ui/PersonTable";
 // import DataOrderTable from "./DataOrderTable";
 import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";

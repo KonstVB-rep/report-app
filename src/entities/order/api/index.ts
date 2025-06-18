@@ -76,58 +76,126 @@ export const createOrder = async (order: OrderCreateData): Promise<OrderResponse
 };
 
 
-// export const getOrderById = async (
-//   dealId: string,
-//   idDealOwner: string
-// ): Promise<OrderResponse | null> => {
-//   try {
-//     const data = await handleAuthorization();
+export const getOrderById = async (
+  orderId: string,
+): Promise<OrderResponse | null> => {
+  try {
+    await handleAuthorization();
 
-//     const { user, userId } = data!;
+    // const { user, userId } = data!;
 
-//     if (!dealId || !idDealOwner) {
-//       handleError("Недостаточно данных");
-//     }
+    if (!orderId) {
+      handleError("Недостаточно данных");
+    }
 
-//     const userOwnerProject = await prisma.user.findUnique({
-//       where: { id: userId },
-//       select: { role: true, departmentId: true },
-//     });
+    // const userOwnerProject = await prisma.user.findUnique({
+    //   where: { id: userId },
+    //   select: { role: true, departmentId: true },
+    // });
 
-//     if (!userOwnerProject) {
-//       return handleError("Пользователь не найден");
-//     }
+    // if (!userOwnerProject) {
+    //   return handleError("Пользователь не найден");
+    // }
 
-//     const isOwner = userId === idDealOwner;
+    // const isOwner = userId === idDealOwner;
 
-//     if (!isOwner && user) {
-//       await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-//     }
+    // if (!isOwner && user) {
+    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    // }
 
-//     const deal = await prisma.project.findUnique({
-//       where: { id: dealId },
-//     });
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
 
-//     if (!deal) {
-//       return null;
-//     }
+    if (!order) {
+      return null;
+    }
 
-//     const dealFiles = await prisma.dealFile.findMany({
-//       where: { dealId: dealId }, // Фильтруем по dealId
-//     });
+    return order;
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
 
-//     const formattedProject = {
-//       ...deal,
-//       amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-//       amountWork: deal.amountWork ? deal.amountWork.toString() : "",
-//       amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
-//       delta: deal.delta ? deal.delta.toString() : "",
-//       dealFiles,
-//     };
+export const delOrder = async (
+  orderId: string,
+): Promise<OrderResponse | null> => {
+  try {
+    await handleAuthorization();
 
-//     return formattedProject;
-//   } catch (error) {
-//     console.error(error);
-//     return handleError((error as Error).message);
-//   }
-// };
+    // const { user, userId } = data!;
+
+    if (!orderId) {
+      handleError("Недостаточно данных");
+    }
+
+    // const userOwnerProject = await prisma.user.findUnique({
+    //   where: { id: userId },
+    //   select: { role: true, departmentId: true },
+    // });
+
+    // if (!userOwnerProject) {
+    //   return handleError("Пользователь не найден");
+    // }
+
+    // const isOwner = userId === idDealOwner;
+
+    // if (!isOwner && user) {
+    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    // }
+
+        // Проверим, что заказ существует
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return handleError("Заказ не найден");
+    }
+
+    // Удаляем заказ
+    const deletedOrder = await prisma.order.delete({
+      where: { id: orderId },
+    });
+
+    return deletedOrder;
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
+
+export const updateOrder = async (
+  orderId: string,
+  data: Partial<Omit<OrderResponse, "id">> // данные для обновления (кроме id)
+): Promise<OrderResponse | null> => {
+  try {
+    await handleAuthorization();
+
+    if (!orderId || !data || Object.keys(data).length === 0) {
+      return handleError("Недостаточно данных для обновления");
+    }
+
+    // Проверим, что заказ существует
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return handleError("Заказ не найден");
+    }
+
+    // Обновляем заказ
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data,
+    });
+
+    return updatedOrder;
+  } catch (error) {
+    console.error("Ошибка обновления заказа:", error);
+    return handleError((error as Error).message);
+  }
+};

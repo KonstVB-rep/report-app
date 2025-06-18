@@ -1,16 +1,18 @@
-import { DealType, StatusOrder } from "@prisma/client";
+import { StatusOrder } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
 import { ReactNode, useCallback } from "react";
 
-import { useParams } from "next/navigation";
+// import { useParams } from "next/navigation";
 
 import { TableCell, TableRow } from "@/components/ui/table";
-import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
-import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+// import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
 import ContextRowTable from "@/shared/ui/ContextRowTable/ContextRowTable";
 import TableTemplate from "@/shared/ui/Table/TableTemplate";
+import DelOrderContextMenu from "./DelOrderContextMenu";
+import EditOrderContectMenu from "./EditOrderContectMenu";
+
 
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -22,7 +24,7 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
-  const { departmentId } = useParams();
+  // const { departmentId } = useParams();
 
   const renderRowCells = useCallback((row: Row<T>) => {
     return row.getVisibleCells().map((cell) => (
@@ -38,29 +40,26 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
 
   const renderRow = useCallback(
     (row: Row<T>): ReactNode => {
-      console.log(row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK, row.original.orderStatus, StatusOrder.SUBMITTED_TO_WORK, "row.original.orderStatus")
       return (
         <ContextRowTable
           key={row.id}
           isExistActionDeal={isExistActionDeal}
           modals={(setOpenModal) => ({
             edit: (
-              <EditDealContextMenu
+              <EditOrderContectMenu
                 close={() => setOpenModal(null)}
                 id={row.original.id as string}
-                type={row.original.type as DealType}
               />
             ),
             delete: (
-              <DelDealContextMenu
+              <DelOrderContextMenu
                 close={() => setOpenModal(null)}
                 id={row.original.id as string}
-                type={row.original.type as DealType}
               />
             ),
           })}
-          path={`/deal/${departmentId}/${
-                  (row.original.type as DealType).toLowerCase()}/${row.original.id}`}
+          // path={`/deal/${departmentId}/${
+          //         (row.original.type as DealType).toLowerCase()}/${row.original.id}`}
         >
           <TableRow
             className={`tr hover:bg-zinc-600 hover:text-white ${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK && "bg-red-900/40"} ${row.original.orderStatus === StatusOrder.AT_WORK && "bg-lime-200/20"}`}
@@ -72,7 +71,7 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
         </ContextRowTable>
       );
     },
-    [isExistActionDeal, departmentId, renderRowCells]
+    [isExistActionDeal, renderRowCells]
   );
 
   return (
