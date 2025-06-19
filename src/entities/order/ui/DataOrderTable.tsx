@@ -253,7 +253,7 @@ const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
         />
       ) : (
         <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
-          Сделки не найдены
+          Заявок нет
         </h1>
       )}
     </div>

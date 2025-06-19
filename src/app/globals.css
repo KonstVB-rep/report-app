@@ -642,3 +642,18 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Sonner */
+
+[data-sonner-toast][data-x-position=right][data-y-position=bottom]{
+  display: grid;
+  gap: 10px
+}
+
+[data-sonner-toast][data-styled=true] [data-button]{
+  height: auto!important;
+  padding: 5px 10px!important;
+  background: hsl(var(--foreground))!important;
+  color: hsl(var(--background))!important;
+}
+

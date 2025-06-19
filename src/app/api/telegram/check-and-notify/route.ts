@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 
 import axios from "axios";
 
-import { EventInputType } from "@/feature/calendar/types";
 import {
   getEventsCalendarUserToday,
   getInfoChatNotificationChecked,
-} from "@/feature/telegramBot/server";
+} from "@/feature/calendar/api/calendar-bot/server";
+import { EventInputType } from "@/feature/calendar/types";
 
 async function sendNotificationsToTelegram(
   events: (EventInputType & { chatId: string })[]

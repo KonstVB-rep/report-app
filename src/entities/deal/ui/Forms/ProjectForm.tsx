@@ -11,14 +11,17 @@ import { useCreateProject } from "../../hooks/mutate";
 import { defaultProjectValues } from "../../model/defaultvaluesForm";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
 import ProjectFormBody from "./ProjectFormBody";
+import { useParams } from "next/navigation";
 
 const ProjectForm = () => {
+  const { userId } =  useParams();
+  
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
     defaultValues: defaultProjectValues,
   });
 
-  const { mutateAsync, isPending } = useCreateProject(form);
+  const { mutateAsync, isPending } = useCreateProject(form, userId as string);
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Проект создан");

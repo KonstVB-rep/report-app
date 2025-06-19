@@ -1,3 +1,5 @@
+import { StatusContract } from "@prisma/client";
+
 export enum DirectionProject {
   PARKING = "Парковка",
   GLK = "ГЛК",
@@ -46,12 +48,13 @@ export enum StatusProject {
   REJECT = "Не актуально / Отказ",
   PAID = "Оплачено",
   APPROVAL = "Согласование договора",
+  UNDER_APPROVAL = "На согласовании",
   FIRST_CP_APPROVAL = "1-е КП на согласовании",
   CONTRACT_ADVANCE_PAYMENT = "Договор / Авансирование",
-  PROGRESS = "Проект в работе / Закупка / Производство",
-  DELIVERY_WORKS = "Поставка / Выполнение работ",
-  SIGN_ACTS_PAYMENT = "Подписание актов / Оплата",
-  CLOSED = "Закрыт",
+  // PROGRESS = "Проект в работе / Закупка / Производство",
+  // DELIVERY_WORKS = "Поставка / Выполнение работ",
+  // SIGN_ACTS_PAYMENT = "Подписание актов / Оплата",
+  // CLOSED = "Закрыт",
 }
 
 export enum StatusRetail {
@@ -128,12 +131,13 @@ export const StatusProjectLabels: StatusProjectLabelsType = {
   REJECT: "Не актуально / Отказ",
   PAID: "Оплачено",
   APPROVAL: "Согласование договора",
+  UNDER_APPROVAL: "На согласовании",
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
-  PROGRESS: "Проект в работе / Закупка / Производство",
-  DELIVERY_WORKS: "Поставка / Выполнение работ",
-  SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
-  CLOSED: "Закрыт",
+  // PROGRESS: "Проект в работе / Закупка / Производство",
+  // DELIVERY_WORKS: "Поставка / Выполнение работ",
+  // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
+  // CLOSED: "Закрыт",
 } as const;
 
 export const DealTypeLabels: Record<keyof typeof DealType, string> = {
@@ -182,12 +186,20 @@ export const StatusesInWork: StatusesInWorkType = {
   APPROVAL: "Согласование договора",
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
-  PROGRESS: "Проект в работе / Закупка / Производство",
-  DELIVERY_WORKS: "Поставка / Выполнение работ",
-  SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
+  // PROGRESS: "Проект в работе / Закупка / Производство",
+  // DELIVERY_WORKS: "Поставка / Выполнение работ",
+  // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
 };
 
-export type StatusContractLabelsType = Pick<StatusProjectLabelsType, "CONTRACT_ADVANCE_PAYMENT" | "PROGRESS" | "DELIVERY_WORKS" | "SIGN_ACTS_PAYMENT" | "CLOSED" >
+export const StatusesContract ={
+    CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
+    PROGRESS: "Проект в работе / Закупка / Производство",
+    DELIVERY_WORKS: "Поставка / Выполнение работ",
+    SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
+    CLOSED: "Закрыт",
+}
+
+export type StatusContractLabelsType = Record<keyof typeof StatusContract, string>
 
 export const StatusContractLabels: StatusContractLabelsType = {
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",

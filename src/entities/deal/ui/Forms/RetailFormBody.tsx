@@ -33,6 +33,7 @@ import {
 } from "../../lib/constants";
 import { Contact } from "../../types";
 import ContactDeal from "../Modals/ContactDeal";
+import AddManagerToDeal from "../Modals/AddManagerToDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -73,8 +74,6 @@ const RetailFormBody = <T extends FieldValues>({
   } = useSendDealInfo<T>(onSubmit);
 
   const currentContacts = form.getValues(contactsKey as Path<T>);
-
-  console.log(statusOptions, 'statusOptions')
 
   useEffect(() => {
     if (contactsKey) {
@@ -246,7 +245,8 @@ const RetailFormBody = <T extends FieldValues>({
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <Button
+           <div className="flex gap-2">
+             <Button
               type="button"
               variant="outline"
               onClick={toggleAddContact}
@@ -254,6 +254,10 @@ const RetailFormBody = <T extends FieldValues>({
             >
               {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
             </Button>
+
+            <AddManagerToDeal/>
+           </div>
+
             <SubmitFormButton
               title="Сохранить"
               isPending={isPending}

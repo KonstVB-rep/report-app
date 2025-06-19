@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { toggleSubscribeChatBot } from "@/feature/telegramBot/api";
+import { toggleSubscribeChatBot } from "@/feature/calendar/api/calendar-bot/api";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {

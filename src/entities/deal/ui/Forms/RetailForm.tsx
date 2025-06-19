@@ -11,14 +11,16 @@ import { useCreateRetail } from "../../hooks/mutate";
 import { defaultRetailValues } from "../../model/defaultvaluesForm";
 import { RetailFormSchema, RetailSchema } from "../../model/schema";
 import RetailFormBody from "./RetailFormBody";
+import { useParams } from "next/navigation";
 
 const RetailForm = () => {
+  const {userId} = useParams()
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema),
     defaultValues: defaultRetailValues,
   });
 
-  const { mutateAsync, isPending } = useCreateRetail(form);
+  const { mutateAsync, isPending } = useCreateRetail(form, userId as string);
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Сделка по рознице добавлена");

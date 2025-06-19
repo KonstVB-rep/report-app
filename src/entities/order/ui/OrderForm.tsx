@@ -29,7 +29,6 @@ const OrderForm = () => {
       form={form}
       onSubmit={onSubmit}
       isPending={isPending}
-      // contactsKey="contacts"
     />
   );
 };

@@ -139,7 +139,7 @@ export const DepartmentLinks = memo(
       return (
         <LinkItem
           key={user.id}
-          href={`/dashboard/${user.url}/orders/${user.id}`}
+          href={`${user.url}/orders/${user.id}`}
           title={table.orders.title}
           icon={departmentId === 1 ? BookText : ChartColumnBig}
           isActive={departmentId === user.departmentId && user.id === userId && dealType === table.orders.id}

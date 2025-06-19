@@ -65,6 +65,7 @@
     "react-hook-form": "^7.54.2",
     "react-imask": "^7.6.1",
     "react-scan": "^0.0.44",
+    "react-starfield": "^1.0.3",
     "recharts": "^2.15.3",
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.2",
@@ -90,7 +91,7 @@
     "postcss": "^8",
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "prisma": "^6.10.0",
+    "prisma": "^6.10.1",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3"

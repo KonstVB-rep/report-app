@@ -5,17 +5,12 @@ import { useForm } from "react-hook-form";
 
 import { TOAST } from "@/shared/ui/Toast";
 
-// import { useMutationUpdateRetail } from "../../hooks/mutate";
-// import { useGetRetailById } from "../../hooks/query";
-
 import OrderFormBody from "./OrderFormBody";
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
 import { defaultOrderValues } from "../lib/constants";
 import { OrderSchema, OrderFormSchema } from "../model/shema";
 import { useGetOrderById } from "../hooks/query";
 import { useUpdateOrder } from "../hooks/mutate";
-
-
 
 const EditOrderForm = ({
   close,
@@ -59,6 +54,7 @@ const onSubmit = (formData: OrderSchema) => {
         email: data.email ?? undefined,
         dateRequest: data.dateRequest?.toISOString(),
         resource: data.resource ?? "",
+        manager: data.manager 
       });
     }
   }, [form, data, isLoading]);

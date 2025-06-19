@@ -11,6 +11,7 @@ import DialogComponent from "@/shared/ui/DialogComponent";
 import ProtectedByDepartmentAffiliation from "@/shared/ui/Protect/ProtectedByDepartmentAffiliation";
 
 import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
+import FormOrderSkeleton from "@/entities/order/ui/FormOrderSkeleton";
 
 const ProjectForm = dynamic(() => import("../Forms/ProjectForm"), {
   ssr: false,
@@ -23,7 +24,7 @@ const RetailForm = dynamic(() => import("../Forms/RetailForm"), {
 
 const OrderForm = dynamic(() => import("@/entities/order/ui/OrderForm"), {
   ssr: false,
-  loading: () => <FormDealSkeleton />,
+  loading: () => <FormOrderSkeleton />,
 });
 
 

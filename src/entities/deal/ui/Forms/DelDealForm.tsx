@@ -53,7 +53,7 @@ const DelDealForm = ({ id, type, close }: Props) => {
         <p className="text-center">
           Вы точно уверены что хотите удалить данные
         </p>
-        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
+        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold break-all">
           &quot;{deal?.nameObject}&quot;?
         </p>
         <p className="text-center">Их нельзя будет восстановить!</p>

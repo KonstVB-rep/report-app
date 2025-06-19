@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { getTelegramBotInDb } from "@/feature/telegramBot/api";
+
 
 import {
   getCalendarBotName,
   getEventsCalendarUser,
   getEventsCalendarUserToday,
 } from "../api";
+import { getTelegramBotInDb } from "@/shared/api/getTelegramBotInDb";
 
 export const useGetEventsCalendarUser = () => {
   const { authUser } = useStoreUser();

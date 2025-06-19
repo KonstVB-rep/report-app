@@ -16,11 +16,9 @@ type Props = {
 };
 
 const DelOrderForm = ({ id, close }: Props) => {
-  const { data: order } = useGetOrderById(id);
+  const { data: order, isPending:isLoading } = useGetOrderById(id);
 
   const { mutate: delDeal, isPending } = useDelOrder(close)
-
-  const isLoading = isPending;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,12 +29,12 @@ const DelOrderForm = ({ id, close }: Props) => {
 
   return (
     <MotionDivY>
-      <Overlay isPending={isLoading} />
+      <Overlay isPending={isPending} />
       <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
         <p className="text-center">
           Вы точно уверены что хотите удалить данные
         </p>
-        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
+        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold break-all">
           &quot;{order?.nameDeal}&quot;?
         </p>
         <p className="text-center">Их нельзя будет восстановить!</p>
@@ -48,7 +46,7 @@ const DelOrderForm = ({ id, close }: Props) => {
           </DialogClose>
           <SubmitFormButton
             type="submit"
-            isPending={isLoading}
+            isPending={isPending}
             title="Удалить"
           />
         </div>

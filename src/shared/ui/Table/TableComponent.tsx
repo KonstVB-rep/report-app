@@ -38,7 +38,6 @@ const TableComponent = <T extends Record<string, unknown>>({
 
   const renderRow = useCallback(
     (row: Row<T>): ReactNode => {
-      console.log(row.original)
       return (
         <ContextRowTable
           key={row.id}

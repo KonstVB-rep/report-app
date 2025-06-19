@@ -26,9 +26,9 @@ const LogoutDialog = () => {
     setLoading(true);
 
     try {
-      router.replace("/login");
       await logout();
       resetAllStores();
+      router.replace("/login");
     } catch (error) {
       console.error("Ошибка при выходе:", error);
     } finally {

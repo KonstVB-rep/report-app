@@ -464,12 +464,22 @@ export const getAllDealsRequestSourceByDepartment = async (
 };
 
 /******************************************Создать *********************************************************/
-export const createProject = async (data: ProjectWithoutId) => {
+export const createProject = async (data: ProjectWithoutId, ownerId: string) => {
   try {
     if (!data) {
-      return handleError("Ошибка: data не переданы в createProject");
+      return handleError("Ошибка: данные не переданы");
     }
-    const { userId } = await checkAuthAndDataFill(data);
+
+    const { userId, user } = await checkAuthAndDataFill(data);
+
+    let idOwnerDeal = userId
+
+    const isOwner = userId === ownerId;
+
+    if (!isOwner) {
+      await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
+      idOwnerDeal = ownerId;
+    }
 
     const {
       amountCP,
@@ -488,7 +498,7 @@ export const createProject = async (data: ProjectWithoutId) => {
     const newDeal = await prisma.project.create({
       data: {
         ...(dealData as ProjectResponse),
-        userId,
+        userId: idOwnerDeal,
         amountCP: safeAmountCP,
         delta: safeDelta,
         amountWork: safeAmountWork,
@@ -519,12 +529,22 @@ export const createProject = async (data: ProjectWithoutId) => {
   }
 };
 
-export const createRetail = async (data: RetailWithoutId) => {
+export const createRetail = async (data: RetailWithoutId, ownerId: string) => {
   try {
-    if (!data) {
-      return handleError("Ошибка: data не переданы в createProject");
+   if (!data) {
+      return handleError("Ошибка: данные не переданы");
     }
-    const { userId } = await checkAuthAndDataFill(data);
+
+    const { userId, user } = await checkAuthAndDataFill(data);
+
+    let idOwnerDeal = userId
+
+    const isOwner = userId === ownerId;
+
+    if (!isOwner) {
+      await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
+      idOwnerDeal = ownerId;
+    }
 
     const { amountCP, delta, contacts, ...dealData } = data;
 
@@ -534,7 +554,7 @@ export const createRetail = async (data: RetailWithoutId) => {
     const newDeal = await prisma.retail.create({
       data: {
         ...(dealData as RetailResponse),
-        userId,
+        userId: idOwnerDeal,
         amountCP: safeamountCP,
         delta: safeDelta,
         additionalContacts: {
@@ -779,7 +799,7 @@ export const updateRetail = async (data: RetailWithoutDateCreateAndUpdate) => {
 };
 
 
-// /* Удалить проект */
+/******************************************************* Удалить проект *********************************************/
 
 export const deleteDeal = async (
   dealId: string,

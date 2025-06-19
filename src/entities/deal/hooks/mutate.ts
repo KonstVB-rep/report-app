@@ -354,7 +354,7 @@ export const useMutationUpdateRetail = (
   });
 };
 
-export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
+export const useCreateProject = (form: UseFormReturn<ProjectSchema>, ownerId: string) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({
@@ -367,7 +367,6 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        userId: authUser.id,
         deliveryType:
           data.deliveryType === ""
             ? null
@@ -398,16 +397,15 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
           : "0",
-      });
+      }, ownerId);
     },
 
     onSuccess: (data) => {
       if (data) {
-        // setOpen(false);
         form.reset(defaultProjectValues);
 
         queryClient.invalidateQueries({
-          queryKey: ["projects", authUser?.id],
+          queryKey: ["projects", data.userId],
           exact: true,
         });
       }
@@ -418,21 +416,20 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
   });
 };
 
-export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
+export const useCreateRetail = (form: UseFormReturn<RetailSchema>, ownerId: string) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
 
   return useMutation({
     mutationFn: (data: RetailSchema) => {
       if (!authUser?.id) {
-        throw new Error("User ID is missing");
+        throw new Error("Пользователь не авторизован");
       }
 
       return createRetail({
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        userId: authUser.id,
         deliveryType:
           data.deliveryType === ""
             ? null
@@ -453,18 +450,18 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
           : "0",
-      });
+      }, ownerId);
     },
     onError: (error) => {
-      console.error("Ошибка при создании проекта:", error);
-      TOAST.ERROR("Ошибка при создании проекта");
+      console.error("Ошибка при создании сделки:", error);
+      TOAST.ERROR("Ошибка при создании сделки");
     },
     onSuccess: (data) => {
       if (data) {
         form.reset(defaultRetailValues);
 
         queryClient.invalidateQueries({
-          queryKey: ["retails", authUser?.id],
+          queryKey: ["retails", data.userId],
           exact: true,
         });
       }
