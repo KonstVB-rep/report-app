@@ -34,7 +34,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
       className={`w-full border-separate border-spacing-0 border ${className}`}
       ref={ref}
     >
-      <TableHeader className="z-1 sticky top-0">
+      <TableHeader className="z-10 sticky top-0">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
