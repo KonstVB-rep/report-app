@@ -203,7 +203,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
         />
       ) : (
         <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
-          Сделки не найдены
+          Нет данных
         </h1>
       )}
     </div>

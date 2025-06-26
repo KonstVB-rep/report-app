@@ -2,6 +2,8 @@
 
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 
+import cuid from "cuid";
+
 // import { ArrowLeft } from "lucide-react";
 
 // import { Button } from "@/components/ui/button";
@@ -14,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { getManagers } from "@/entities/department/lib/utils";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
@@ -23,14 +26,10 @@ import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
 import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
-import { getManagers } from "@/entities/department/lib/utils";
-
-
 type OrderFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
-
 };
 
 const setSelectValue = <T extends FieldValues>(
@@ -49,13 +48,10 @@ const OrderFormBody = <T extends FieldValues>({
   form,
   onSubmit,
   isPending,
-
 }: OrderFormBodyProps<T>) => {
-
   const handleSubmit = (data: T) => {
-    onSubmit(data);
+    onSubmit({ ...data, id: cuid() });
   };
-
 
   const error = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
@@ -78,6 +74,7 @@ const OrderFormBody = <T extends FieldValues>({
                 label="Дата запроса"
                 control={form.control}
                 errorMessage={error("dateRequest")}
+                required
               />
 
               <InputTextForm
@@ -89,13 +86,11 @@ const OrderFormBody = <T extends FieldValues>({
                 placeholder="Название..."
               />
 
-
               <InputTextForm
                 name={"contact" as Path<T>}
                 label="Контакты"
                 control={form.control}
                 errorMessage={error("contact")}
-                required
                 placeholder="Имя контакта"
               />
 
@@ -118,12 +113,19 @@ const OrderFormBody = <T extends FieldValues>({
                 className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
               />
 
+              {/* <InputTextForm
+                name={"dealType" as Path<T>}
+                label="Тип сделки"
+                control={form.control}
+                errorMessage={error("dealType")}
+                placeholder=""
+              /> */}
+
               <InputTextForm
                 name={"resource" as Path<T>}
                 label="Источник"
                 control={form.control}
                 errorMessage={error("resource")}
-                required
                 placeholder="Откуда пришёл клиент"
               />
 
@@ -149,25 +151,21 @@ const OrderFormBody = <T extends FieldValues>({
                 )}
               />
 
-
-               <SelectFormField
+              <SelectFormField
                 name={"manager" as Path<T>}
                 label="Менеджер"
                 control={form.control}
                 errorMessage={error("manager")}
                 options={transformObjValueToArr(managers)}
                 placeholder="Выберите исполнителя"
-                onValueChange={(selected) =>{
-                  return setSelectValue(form, "manager", selected)
+                onValueChange={(selected) => {
+                  return setSelectValue(form, "manager", selected);
                 }}
                 className="capitalize"
                 required
-              /> 
-
+              />
             </div>
           </div>
-
-          
 
           <div className="flex items-center justify-between flex-wrap gap-2">
             <SubmitFormButton
@@ -177,7 +175,6 @@ const OrderFormBody = <T extends FieldValues>({
             />
           </div>
         </form>
-
       </Form>
     </MotionDivY>
   );

@@ -23,14 +23,20 @@ const InputPhoneForm = <T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field }) => {
+          const fieldProps = {
+          ...field,
+          ref: undefined, // Убираем стандартный ref
+          inputRef: field.ref // Используем inputRef для IMaskInput
+        };
+        return (
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <PhoneInput
               placeholder="Введите телефон пользователя"
               onAccept={field.onChange}
-              {...field}
+              {...fieldProps}
               {...rest}
               value={field.value as string}
             />
@@ -39,7 +45,7 @@ const InputPhoneForm = <T extends FieldValues>({
             <FormMessage className="text-red-500">{errorMessage}</FormMessage>
           )}
         </FormItem>
-      )}
+      )}}
     />
   );
 };

@@ -4,6 +4,7 @@ import * as React from "react";
 import { memo, useEffect, useMemo } from "react";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react";
 
@@ -93,14 +94,17 @@ const AppSidebar = () => {
                     alt="logo"
                     width={16}
                     height={16}
-                    style={{ width: '16px', height: '16px' }}
+                    style={{ width: "16px", height: "16px" }}
                     className="drop-shadow-[0_0px_8px_rgba(255,255,255,1)] dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)]"
                   />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate text-lg font-semibold italic">
+                  <Link
+                    href="/dashboard"
+                    className="truncate text-lg font-semibold italic cursor-pointer"
+                  >
                     Ertel
-                  </span>
+                  </Link>
                 </div>
               </div>
             </SidebarMenuButton>

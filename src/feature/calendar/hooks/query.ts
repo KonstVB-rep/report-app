@@ -1,14 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-
+import { getTelegramBotInDb } from "@/shared/api/getTelegramBotInDb";
 
 import {
   getCalendarBotName,
   getEventsCalendarUser,
   getEventsCalendarUserToday,
 } from "../api";
-import { getTelegramBotInDb } from "@/shared/api/getTelegramBotInDb";
 
 export const useGetEventsCalendarUser = () => {
   const { authUser } = useStoreUser();
@@ -72,7 +71,7 @@ export const useGetEventsCalendarUserToday = () => {
 //         if (!botInDb) {
 //           return {id: null, botName, isActive: false, chatId: "", chatName: "" };
 //         }
-   
+
 //         return botInDb;
 //       } catch (error) {
 //         throw error;
@@ -82,7 +81,11 @@ export const useGetEventsCalendarUserToday = () => {
 //   });
 // };
 
-export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interval: number = 1) => {
+export const useGetInfoChat = (
+  chatName: string,
+  isNeedRefech?: boolean,
+  interval: number = 1
+) => {
   const { authUser } = useStoreUser();
 
   return useQuery({
@@ -98,13 +101,16 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
           throw new Error("Название бота не найдено");
         }
 
-        const botInDb = await getTelegramBotInDb(
-          botName,
-          authUser.id
-        );
+        const botInDb = await getTelegramBotInDb(botName, authUser.id);
 
         if (!botInDb) {
-          return {id: null, botName, isActive: false, chatId: "", chatName: "" };
+          return {
+            id: null,
+            botName,
+            isActive: false,
+            chatId: "",
+            chatName: "",
+          };
         }
 
         return botInDb;
@@ -113,6 +119,6 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
       }
     },
     enabled: !!authUser?.id,
-    refetchInterval:isNeedRefech ? interval * 1000 : false
+    refetchInterval: isNeedRefech ? interval * 1000 : false,
   });
 };

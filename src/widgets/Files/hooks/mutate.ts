@@ -38,7 +38,11 @@ export const useUploadFileYdxDisk = () => {
     },
     onError: (error) => {
       console.log(error);
-      TOAST.ERROR((error as Error).message);
+      if ((error as Error).message === "Failed to fetch") {
+            TOAST.ERROR("Не удалось получить данные");
+        } else {
+            TOAST.ERROR((error as Error).message);
+        }
     },
   });
 };
@@ -60,7 +64,11 @@ export const useDownLoadFile = () => {
       return saveBlobToFile(response, name);
     },
     onError: (error) => {
-      TOAST.ERROR((error as Error).message);
+      if ((error as Error).message === "Failed to fetch") {
+            TOAST.ERROR("Не удалось получить данные");
+        } else {
+            TOAST.ERROR((error as Error).message);
+        }
     },
   });
 };
@@ -101,7 +109,11 @@ export const useDeleteFiles = (
       handleCloseDialog?.();
     },
     onError: (error) => {
-      TOAST.ERROR((error as Error).message);
+      if ((error as Error).message === "Failed to fetch") {
+            TOAST.ERROR("Не удалось получить данные");
+        } else {
+            TOAST.ERROR((error as Error).message);
+        }
     },
   });
 };

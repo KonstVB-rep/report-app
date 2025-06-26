@@ -1,13 +1,11 @@
 import React, { Dispatch, SetStateAction } from "react";
 
-
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 
 import EditTaskForm from "../Forms/EditTaskForm";
 
@@ -18,7 +16,6 @@ type Props = {
 
 const EditTaskDialogContextMenu = ({ id, close }: Props) => {
   return (
-
     <DialogContent className="sm:max-w-[600px]">
       <DialogHeader>
         <DialogTitle className="sr-only">Удалить проект</DialogTitle>

@@ -6,12 +6,12 @@ const MotionDivY = ({
   children,
   keyValue,
   className = "",
-  ref
+  ref,
 }: {
   children: React.ReactNode;
   keyValue?: string;
   className?: string;
-  ref?: Ref<HTMLDivElement>
+  ref?: Ref<HTMLDivElement>;
 }) => {
   return (
     <motion.div

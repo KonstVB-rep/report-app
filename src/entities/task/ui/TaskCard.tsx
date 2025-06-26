@@ -70,15 +70,17 @@ const TaskCard = ({ task }: TaskCardProps) => {
       )}
 
       <div className="flex flex-wrap gap-3">
-        <Badge variant="outline" className="text-lg p-3 flex gap-3">Статус: {LABEL_TASK_STATUS[task.taskStatus]}</Badge>
+        <Badge variant="outline" className="text-lg p-3 flex gap-3">
+          Статус: {LABEL_TASK_STATUS[task.taskStatus]}
+        </Badge>
         <Badge variant="outline" className="text-lg p-3 flex gap-3">
           Приоритет: {LABEL_TASK_PRIORITY[task.taskPriority]}
         </Badge>
       </div>
-      <Card className={`relative p-0 pb-3 grid gap-3 cursor-pointer drop-shadow-xl max-w-xl border-4 ${TASK_PRIORITY_COLOR_BORDER[task.taskPriority]}`}>
-        <CardHeader
-          className="pt-3 text-lg px-3 py-2 rounded-lg"
-        >
+      <Card
+        className={`relative p-0 pb-3 grid gap-3 cursor-pointer drop-shadow-xl max-w-xl border-4 ${TASK_PRIORITY_COLOR_BORDER[task.taskPriority]}`}
+      >
+        <CardHeader className="pt-3 text-lg px-3 py-2 rounded-lg">
           Наименование: {task.title}
         </CardHeader>
         <CardDescription className="px-3 py-0 text-lg">

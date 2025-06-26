@@ -1,24 +1,24 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
-  FieldValues,
-  Path,
-  PathValue,
-  UseFormReturn,
-  useWatch,
+    FieldValues,
+    Path,
+    PathValue,
+    UseFormReturn,
+    useWatch,
 } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
@@ -33,11 +33,12 @@ import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {
-  DeliveryProjectLabels,
-  DirectionProjectLabels,
-  StatusProjectLabels,
+    DeliveryProjectLabels,
+    DirectionProjectLabels,
+    StatusProjectLabels,
 } from "../../lib/constants";
 import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
+import AddManagerToDeal from "../Modals/AddManagerToDeal";
 import ContactDeal from "../Modals/ContactDeal";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
@@ -45,6 +46,7 @@ type ProjectFormBodyProps<T extends FieldValues> = {
   onSubmit: (data: T) => void;
   isPending: boolean;
   contactsKey?: keyof T;
+  managerId: string | undefined;
 };
 
 const directionOptions = transformObjValueToArr(DirectionProjectLabels);
@@ -66,6 +68,7 @@ const ProjectFormBody = <T extends FieldValues>({
   onSubmit,
   isPending,
   contactsKey,
+  managerId = "",
 }: ProjectFormBodyProps<T>) => {
   const {
     contacts,
@@ -76,7 +79,11 @@ const ProjectFormBody = <T extends FieldValues>({
     handleSubmit,
     isAddContact,
     toggleAddContact,
-  } = useSendDealInfo<T>(onSubmit);
+    managers,
+    setManagers,
+    firstManager, 
+    setFirstManager
+  } = useSendDealInfo<T>(onSubmit, managerId);
 
   const currentContacts = form.getValues(contactsKey as Path<T>);
 
@@ -85,7 +92,14 @@ const ProjectFormBody = <T extends FieldValues>({
     name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const managersIds = form.getValues("managersIds" as Path<T>);
+    if (managersIds.length > 0) {
+      setManagers(managersIds);
+    }
+  }, [form, setManagers]);
+
+  useEffect(() => {
     if (!watchedValues) return;
 
     const [amountCP = "0", amountWork = "0", amountPurchase = "0"] =
@@ -121,7 +135,8 @@ const ProjectFormBody = <T extends FieldValues>({
       const contacts = form.getValues(contactsKey as Path<T>);
       setContacts(contacts);
     }
-  }, [contactsKey, form, currentContacts, setContacts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contactsKey, currentContacts]);
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -129,7 +144,7 @@ const ProjectFormBody = <T extends FieldValues>({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto trаnsform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
           <div className="text-center font-semibold uppercase">
             Форма добавления проекта
@@ -311,24 +326,24 @@ const ProjectFormBody = <T extends FieldValues>({
               </div>
             </div>
             <div className="flex items-center justify-between flex-wrap gap-2">
-              {isAddContact ? (
+              <div className="flex gap-2">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={toggleAddContact}
-                  size="icon"
+                  size={isAddContact ? "icon" : undefined}
                 >
-                  <ArrowLeft />
+                  {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
                 </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={toggleAddContact}
-                >
-                  Добавить доп.контакт
-                </Button>
-              )}
+
+                <AddManagerToDeal
+                  setManagers={setManagers}
+                  managers={managers}
+                  firstManager={firstManager}
+                  setFirstManager={setFirstManager}
+                />
+              </div>
+
               <SubmitFormButton
                 title="Сохранить"
                 isPending={isPending}

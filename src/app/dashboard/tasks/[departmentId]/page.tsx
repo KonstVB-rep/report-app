@@ -1,5 +1,6 @@
 "use client";
 
+import { PermissionEnum } from "@prisma/client";
 
 import { useMemo } from "react";
 
@@ -10,28 +11,26 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { useGetTasksDepartment } from "@/entities/task/hooks/query";
+import useViewType from "@/entities/task/hooks/useViewType";
+import { viewType } from "@/entities/task/model/constants";
 import LoadingView from "@/entities/task/ui/LoadingView";
 import СreateTaskDialog from "@/entities/task/ui/Modals/СreateTaskDialog";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import RedirectToPath from "@/shared/ui/Redirect/RedirectToPath";
-import { PermissionEnum } from "@prisma/client";
-import { viewType } from "@/entities/task/model/constants";
-import useViewType from "@/entities/task/hooks/useViewType";
 
-const Kanban = dynamic(
-  () => import("@/entities/task/ui/Kanban"),
-  { ssr: false, loading: () => <LoadingView /> }
-);
+const Kanban = dynamic(() => import("@/entities/task/ui/Kanban"), {
+  ssr: false,
+  loading: () => <LoadingView />,
+});
 
 const TaskTable = dynamic(() => import("@/entities/task/ui/TaskTable"), {
   ssr: false,
   loading: () => <LoadingView />,
 });
 
-
 const TasksPage = () => {
-  const {authUser} = useStoreUser()
+  const { authUser } = useStoreUser();
 
   const hasAccess = useMemo(
     () =>
@@ -44,19 +43,17 @@ const TasksPage = () => {
     [authUser?.id]
   );
 
-  const {departmentId} = useParams()
+  const { departmentId } = useParams();
 
   const { data } = useGetTasksDepartment();
-  
-  const {handleViewChange, currentView} = useViewType()
 
-  if(!authUser) return;
+  const { handleViewChange, currentView } = useViewType();
+
+  if (!authUser) return;
 
   if (!hasAccess) {
-     return (
-      <RedirectToPath
-        to={`/tasks/${departmentId as string}/${authUser.id}`}
-      />
+    return (
+      <RedirectToPath to={`/tasks/${departmentId as string}/${authUser.id}`} />
     );
   }
 
@@ -81,8 +78,7 @@ const TasksPage = () => {
           })}
         </div>
 
-        <СreateTaskDialog/>
-
+        <СreateTaskDialog />
       </div>
 
       <MotionDivY>

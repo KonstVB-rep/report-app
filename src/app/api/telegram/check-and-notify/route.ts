@@ -49,8 +49,12 @@ export async function GET() {
 
       const upcomingEvents = events.filter((event) => {
         const eventStartTime = new Date(event.start);
-        const thirtyMinutesBefore = new Date(eventStartTime.getTime() - 30 * 60 * 1000);
-        const fifteenMinutesBefore = new Date(eventStartTime.getTime() - 15 * 60 * 1000);
+        const thirtyMinutesBefore = new Date(
+          eventStartTime.getTime() - 30 * 60 * 1000
+        );
+        const fifteenMinutesBefore = new Date(
+          eventStartTime.getTime() - 15 * 60 * 1000
+        );
         const exactStart = new Date(eventStartTime);
 
         thirtyMinutesBefore.setSeconds(0, 0);
@@ -71,10 +75,10 @@ export async function GET() {
           chatId: String(chat.chatId),
         }));
 
-        console.log(
-          `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
-          eventsWithChatId.map((e) => e.title).join(", ")
-        );
+        // console.log(
+        //   `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
+        //   eventsWithChatId.map((e) => e.title).join(", ")
+        // );
 
         await sendNotificationsToTelegram(eventsWithChatId);
       }
@@ -83,7 +87,9 @@ export async function GET() {
     return NextResponse.json({ message: "Проверка завершена" });
   } catch (error) {
     console.error("Ошибка в check-and-notify:", error);
-    return NextResponse.json({ message: "Ошибка при проверке уведомлений" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Ошибка при проверке уведомлений" },
+      { status: 500 }
+    );
   }
 }
-

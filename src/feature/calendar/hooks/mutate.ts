@@ -114,13 +114,17 @@ export const useCreateChatBot = () => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
-      return await toggleSubscribeChatBot(chatData.chatName,authUser.id, chatData.isActive);
+      return await toggleSubscribeChatBot(
+        chatData.chatName,
+        authUser.id,
+        chatData.isActive
+      );
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data.chatName],
       });
-       queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
       });
     },
@@ -131,25 +135,31 @@ export const useCreateChatBot = () => {
   });
 };
 
-
 export const useUpdateChatBot = () => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (chatData: { botId: string | null; isActive: boolean }) => {
+    mutationFn: async (chatData: {
+      botId: string | null;
+      isActive: boolean;
+    }) => {
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
 
-      if(!chatData.botId) return
-      return await toggleSubscribeChatBot(chatData.botId,authUser.id, chatData.isActive);
+      if (!chatData.botId) return;
+      return await toggleSubscribeChatBot(
+        chatData.botId,
+        authUser.id,
+        chatData.isActive
+      );
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data?.chatName],
       });
-       queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["chatInfoChecked", authUser?.id, data?.chatName],
       });
     },

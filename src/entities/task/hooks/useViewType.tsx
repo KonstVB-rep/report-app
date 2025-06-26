@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
+
 import { ViewType } from "../types";
-
-
 
 const useViewType = () => {
   const searchParams = useSearchParams();
@@ -33,7 +32,7 @@ const useViewType = () => {
     setCurrentView(defaultView);
     router.push(`?${params.toString()}`, { scroll: false });
   }, [defaultView, router, searchParams]);
-  
+
   return {
     handleViewChange,
     currentView,

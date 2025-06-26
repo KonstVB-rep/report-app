@@ -28,6 +28,7 @@ export const ContactFormSchema = z.object({
 
 export const ProjectFormSchema = z
   .object({
+    id: z.string().optional(),
     dateRequest: z.preprocess(
       (val) => (val instanceof Date ? val.toISOString() : val || ""),
       z.string()
@@ -50,7 +51,7 @@ export const ProjectFormSchema = z
       .nullable(),
     contact: z.string(),
     phone: z.string().optional(),
-    email: z.string().email().or(z.literal("")),
+    email: z.string().email("Некорректный email").or(z.literal("")).optional(),
 
     amountCP: z.string().optional(),
     amountWork: z.string().optional(),
@@ -65,8 +66,14 @@ export const ProjectFormSchema = z
       (val) => (val instanceof Date ? val.toISOString() : val || ""),
       z.string()
     ),
+    orderId: z.string().optional(),
     resource: z.string().optional(),
     contacts: z.array(SingleContactSchema),
+    managersIds: z.array(
+      z.object({
+        userId: z.string(),
+      })
+    ),
   })
   .superRefine((data, ctx) => {
     if (
@@ -79,20 +86,43 @@ export const ProjectFormSchema = z
         message: "Укажите планируемую дату подключения",
       });
     }
+    const hasPhone = !!data.phone?.trim();
+    const hasEmail = !!data.email?.trim();
+
+    if (!hasPhone && !hasEmail) {
+      // Добавляем ошибки для обоих полей
+      ctx.addIssue({
+        path: ["phone"],
+        code: z.ZodIssueCode.custom,
+        message: "Укажите телефон или email",
+      });
+      ctx.addIssue({
+        path: ["email"],
+        code: z.ZodIssueCode.custom,
+        message: "Укажите телефон или email",
+      });
+    }
   });
 
 export const RetailFormSchema = z
   .object({
+    id: z.string().optional(),
     dateRequest: z.preprocess(
       (val) => (val instanceof Date ? val.toISOString() : val || ""),
       z.string()
     ),
-    nameDeal: z.string({
-      message: "Введите название сделки",
-    }),
-    nameObject: z.string({
-      message: "Введите название объекта",
-    }),
+    nameDeal: z
+      .string({
+        required_error: "Введите название сделки", // Если undefined
+        invalid_type_error: "Название сделки должно быть строкой", // Если не string
+      })
+      .min(1, "Название объекта не может быть пустым"),
+    nameObject: z
+      .string({
+        required_error: "Введите название объекта", // Если undefined
+        invalid_type_error: "Название объекта должно быть строкой", // Если не string
+      })
+      .min(1, "Название объекта не может быть пустым"),
     direction: z.enum(
       Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]],
       {
@@ -105,7 +135,7 @@ export const RetailFormSchema = z
       .nullable(),
     contact: z.string(),
     phone: z.string().optional(),
-    email: z.string().email().or(z.literal("")),
+    email: z.string().email("Некорректный email").or(z.literal("")).optional(),
 
     amountCP: z.string().optional(),
     delta: z.string().optional(),
@@ -118,8 +148,14 @@ export const RetailFormSchema = z
       (val) => (val instanceof Date ? val.toISOString() : val || ""),
       z.string()
     ),
+    orderId: z.string().optional(),
     resource: z.string().optional(),
     contacts: z.array(SingleContactSchema),
+    managersIds: z.array(
+      z.object({
+        userId: z.string(),
+      })
+    ),
   })
   .superRefine((data, ctx) => {
     if (
@@ -132,9 +168,25 @@ export const RetailFormSchema = z
         message: "Укажите планируемую дату подключения",
       });
     }
+
+    const hasPhone = !!data.phone?.trim();
+    const hasEmail = !!data.email?.trim();
+
+    if (!hasPhone && !hasEmail) {
+      // Добавляем ошибки для обоих полей
+      ctx.addIssue({
+        path: ["phone"],
+        code: z.ZodIssueCode.custom,
+        message: "Укажите телефон или email",
+      });
+      ctx.addIssue({
+        path: ["email"],
+        code: z.ZodIssueCode.custom,
+        message: "Укажите телефон или email",
+      });
+    }
   });
 
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;
 export type RetailSchema = z.infer<typeof RetailFormSchema>;
 export type ContactSchema = z.infer<typeof ContactFormSchema>;
-

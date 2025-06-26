@@ -5,26 +5,40 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 
+import { useParams } from "next/navigation";
+
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useCreateProject } from "../../hooks/mutate";
 import { defaultProjectValues } from "../../model/defaultvaluesForm";
 import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
 import ProjectFormBody from "./ProjectFormBody";
-import { useParams } from "next/navigation";
 
-const ProjectForm = () => {
-  const { userId } =  useParams();
-  
+const ProjectForm = ({
+  orderId,
+  managerId,
+}: {
+  orderId?: string;
+  managerId?: string;
+}) => {
+  const { userId } = useParams();
+
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
-    defaultValues: defaultProjectValues,
+    defaultValues: {
+      ...defaultProjectValues,
+      managersIds: [{ userId: managerId ?? (userId as string) }],
+    },
   });
 
-  const { mutateAsync, isPending } = useCreateProject(form, userId as string);
+  const { mutateAsync, isPending } = useCreateProject(
+    form,
+    managerId || (userId as string)
+  );
 
   const onSubmit = (data: ProjectSchema) => {
-    TOAST.PROMISE(mutateAsync(data), "Проект создан");
+    const dataForm = orderId ? { ...data, orderId: orderId } : data;
+    TOAST.PROMISE(mutateAsync(dataForm), "Проект создан");
   };
 
   return (
@@ -32,6 +46,7 @@ const ProjectForm = () => {
       form={form}
       onSubmit={onSubmit}
       isPending={isPending}
+      managerId={managerId}
       contactsKey="contacts"
     />
   );

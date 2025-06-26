@@ -1,5 +1,7 @@
 "use client";
 
+import { PermissionEnum } from "@prisma/client";
+
 import { useEffect, useState } from "react";
 
 import Link from "next/link";
@@ -102,7 +104,9 @@ const LinkToUserTable = () => {
         </Link>
       )}
       {hasSummaryTable && (
-        <ProtectedByPermissions permissionArr={["VIEW_UNION_REPORT"]}>
+        <ProtectedByPermissions
+          permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+        >
           <Link
             className="btn_hover max-w-max border-muted px-4 text-sm"
             href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}

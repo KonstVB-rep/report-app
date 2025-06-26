@@ -22,7 +22,7 @@ const dataValue = (
         className={cn("whitespace-nowrap hover:underline", classNameData)}
       >
         {ICONS.phone}
-        <span className="prop-deal-value w-fit h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+        <span className="break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
           {data}
         </span>
       </a>
@@ -33,7 +33,7 @@ const dataValue = (
         className={cn("whitespace-nowrap hover:underline", classNameData)}
       >
         {ICONS.email}
-        <span className="prop-deal-value w-fit h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+        <span className="break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
           {data}
         </span>
       </a>
@@ -41,7 +41,7 @@ const dataValue = (
     name: (
       <span className={classNameData}>
         {ICONS.name}
-        <span className="prop-deal-value w-fit h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+        <span className="break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
           {data}
         </span>
       </span>

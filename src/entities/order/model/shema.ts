@@ -1,47 +1,40 @@
 import { z } from "zod";
 
-
 export const OrderFormSchema = z
   .object({
     dateRequest: z.preprocess(
-      (val) => (val instanceof Date ? val.toISOString() : val || ""),
-      z.string()
+      (val) => (val instanceof Date ? val.toISOString() : val),
+      z.string().min(1)
     ),
     nameDeal: z.string({
       message: "Введите название сделки",
     }),
-    // nameObject: z.string({
-    //   message: "Введите название объекта",
-    // }),
-    // direction: z.enum(
-    //   Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]],
-    //   {
-    //     message: "Выберите направление",
-    //   }
-    // ),
-    // deliveryType: z
-    //   .enum(Object.values(DeliveryRetail) as [string, ...string[]])
-    //   .optional()
-    //   .nullable(),
-    contact: z.string(),
+    contact: z.string().optional(),
     phone: z.string().optional(),
-    email: z.string().email().or(z.literal("")),
+    email: z.string().email("Некорректный email").or(z.literal("")).optional(),
     manager: z.string(),
-
-    // amountCP: z.string().optional(),
-    // delta: z.string().optional(),
-
-    // dealStatus: z.enum(Object.values(StatusRetail) as [string, ...string[]], {
-    //   message: "Выберите статус проекта",
-    // }),
-    comments: z.string(),
-    // plannedDateConnection: z.preprocess(
-    //   (val) => (val instanceof Date ? val.toISOString() : val || ""),
-    //   z.string()
-    // ),
+    comments: z.string().optional(),
+    projectId: z.string().optional(),
+    retailId: z.string().optional(),
+    dealType: z.string().optional(),
     resource: z.string().optional(),
-    // contacts: z.array(SingleContactSchema),
   })
+  .superRefine((data, ctx) => {
+    const hasPhone = !!data.phone?.trim();
+    const hasEmail = !!data.email?.trim();
 
+    if (!hasPhone && !hasEmail) {
+      ctx.addIssue({
+        path: ["phone"],
+        code: z.ZodIssueCode.custom,
+        message: "Укажите телефон или email",
+      });
+      ctx.addIssue({
+        path: ["email"],
+        code: z.ZodIssueCode.custom,
+        message: "Укажите телефон или email",
+      });
+    }
+  });
 
 export type OrderSchema = z.infer<typeof OrderFormSchema>;

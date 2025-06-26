@@ -9,13 +9,12 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import { redirectPathCore } from "../../lib/helpers/redirectPathCore";
 import { resetAllStores } from "../../lib/helpers/сreate";
 
-const RedirectLastPath = ({children}:{children:ReactNode}) => {
+const RedirectLastPath = ({ children }: { children: ReactNode }) => {
   const { isAuth, authUser } = useStoreUser();
   const router = useRouter();
   const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
-
     if (!isAuth) {
       resetAllStores();
       return;

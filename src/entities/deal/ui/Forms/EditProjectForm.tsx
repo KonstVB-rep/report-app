@@ -8,6 +8,7 @@ import {
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useMutationUpdateProject } from "../../hooks/mutate";
@@ -25,6 +26,7 @@ const EditProjectForm = ({
   dealId: string;
 }) => {
   const { data, isPending: isLoading } = useGetProjectById(dealId, false);
+  const { authUser } = useStoreUser();
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema),
@@ -58,6 +60,9 @@ const EditProjectForm = ({
         delta: data.delta,
         resource: data.resource ?? "",
         contacts: data.additionalContacts ?? [],
+        managersIds: Array.isArray(data.managers)
+          ? data.managers.map((manager) => ({ userId: manager.id }))
+          : [],
       });
     }
   }, [data, form, isLoading]);
@@ -70,6 +75,7 @@ const EditProjectForm = ({
       onSubmit={onSubmit}
       isPending={isPending}
       contactsKey="contacts"
+      managerId={data?.userId || authUser?.id}
     />
   );
 };

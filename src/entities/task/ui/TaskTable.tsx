@@ -18,31 +18,31 @@ import { DateRange } from "react-day-picker";
 import { useParams, useSearchParams } from "next/navigation";
 
 import { TableCell, TableRow } from "@/components/ui/table";
+import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import ContextRowTable from "@/shared/ui/ContextRowTable/ContextRowTable";
 import DateRangeFilter from "@/shared/ui/DateRangeFilter";
 import FilterByUsers from "@/shared/ui/Filters/FilterByUsers";
 import FilterPopoverGroup from "@/shared/ui/Filters/FilterPopoverGroup";
 import TableTemplate from "@/shared/ui/Table/TableTemplate";
 
-import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { columnsDataTask } from "../model/column-data-tasks";
 import { LABEL_TASK_STATUS } from "../model/constants";
-import EditTaskDialogContextMenu from "./Modals/EditTaskDialogContextMenu";
 import DelTaskDialogContextMenu from "./Modals/DelTaskDialogContextMenu";
+import EditTaskDialogContextMenu from "./Modals/EditTaskDialogContextMenu";
 
 interface TaskTableProps<TData> {
   data: TData[];
 }
 
-const includedColumns: string[] | [] = []
+const includedColumns: string[] | [] = [];
 
 const TaskTable = <TData extends Record<string, unknown>>({
-  data
+  data,
 }: TaskTableProps<TData>) => {
   const searchParams = useSearchParams();
   const { departmentId } = useParams();
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({})
+  const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -158,7 +158,7 @@ const TaskTable = <TData extends Record<string, unknown>>({
   //   [setColumnFilters]
   // );
 
-   const {
+  const {
     // selectedColumns,
     // setSelectedColumns,
     // filterValueSearchByCol,
@@ -175,8 +175,6 @@ const TaskTable = <TData extends Record<string, unknown>>({
     columnFilters,
     columnVisibility,
   });
-
-
 
   return (
     <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
@@ -207,7 +205,11 @@ const TaskTable = <TData extends Record<string, unknown>>({
         />
       </div>
       <div className="rounded-ee-md overflow-hidden border">
-        <TableTemplate table={table} renderRow={renderRow} className="rounded-ee-md"/>
+        <TableTemplate
+          table={table}
+          renderRow={renderRow}
+          className="rounded-ee-md"
+        />
       </div>
     </div>
   );

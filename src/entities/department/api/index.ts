@@ -12,11 +12,11 @@ export const getDepartmentsWithUsers = async (): Promise<DepartmentInfo[]> => {
         users: {
           where: {
             position: {
-              not: "руководитель организации"
-            }
-          }
-        }
-      }
+              not: "руководитель организации",
+            },
+          },
+        },
+      },
     });
 
     return (departments as DepartmentInfo[]) || [];
@@ -25,4 +25,3 @@ export const getDepartmentsWithUsers = async (): Promise<DepartmentInfo[]> => {
     return handleError("Ошибка при получении отделов");
   }
 };
-

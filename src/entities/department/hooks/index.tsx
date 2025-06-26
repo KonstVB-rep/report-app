@@ -18,8 +18,12 @@ export const useGetDepartmentsWithUsers = () => {
         return await getDepartmentsWithUsersQuery();
       } catch (error) {
         console.log(error, "Ошибка useGetDepartmentsWithUsers");
-        TOAST.ERROR((error as Error).message)
-        return null
+        if ((error as Error).message === "Failed to fetch") {
+            TOAST.ERROR("Не удалось получить данные");
+        } else {
+            TOAST.ERROR((error as Error).message);
+        }
+        return null;
       }
     },
     enabled: isAuth,

@@ -1,8 +1,9 @@
+import { NextResponse } from "next/server";
+
 import axios from "axios";
 
-import { getTelegramBotInDb } from "@/shared/api/getTelegramBotInDb";
-import { NextResponse } from "next/server";
 import axiosInstance from "@/shared/api/axiosInstance";
+import { getTelegramBotInDb } from "@/shared/api/getTelegramBotInDb";
 
 export async function sendTelegramMessage(
   botToken: string,
@@ -51,18 +52,25 @@ export async function notifyOrder(
   }
 }
 
-
-export async function sendNotification(botName: string, userId: string, message: string) {
+export async function sendNotification(
+  botName: string,
+  userId: string,
+  message: string
+) {
   try {
-    await axiosInstance.post('/telegram/order-queue-bot', { botName, userId, message }, { 
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    await axiosInstance.post(
+      "/telegram/order-queue-bot",
+      { botName, userId, message },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Ошибка запроса:', err);
+    console.error("Ошибка запроса:", err);
     return NextResponse.json({ success: false });
   }
 }

@@ -3,16 +3,12 @@ import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
 import { ReactNode, useCallback } from "react";
 
-// import { useParams } from "next/navigation";
-
 import { TableCell, TableRow } from "@/components/ui/table";
-// import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
-
 import ContextRowTable from "@/shared/ui/ContextRowTable/ContextRowTable";
 import TableTemplate from "@/shared/ui/Table/TableTemplate";
+
 import DelOrderContextMenu from "./DelOrderContextMenu";
 import EditOrderContectMenu from "./EditOrderContectMenu";
-
 
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -24,8 +20,6 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
-  // const { departmentId } = useParams();
-
   const renderRowCells = useCallback((row: Row<T>) => {
     return row.getVisibleCells().map((cell) => (
       <TableCell
@@ -40,6 +34,23 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
 
   const renderRow = useCallback(
     (row: Row<T>): ReactNode => {
+      const isNotAtWork =
+        row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK;
+
+      const tableRow = (
+        <TableRow
+          key={row.id}
+          className={`tr hover:bg-zinc-600 hover:text-white ${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK && "bg-red-900/40"} ${row.original.orderStatus === StatusOrder.AT_WORK && "bg-lime-200/20"}`}
+          data-reject={`${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK}`}
+          data-success={`${row.original.orderStatus === StatusOrder.AT_WORK}`}
+        >
+          {renderRowCells(row)}
+        </TableRow>
+      );
+
+      if (!isNotAtWork) {
+        return tableRow;
+      }
       return (
         <ContextRowTable
           key={row.id}
@@ -61,13 +72,7 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
           // path={`/deal/${departmentId}/${
           //         (row.original.type as DealType).toLowerCase()}/${row.original.id}`}
         >
-          <TableRow
-            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK && "bg-red-900/40"} ${row.original.orderStatus === StatusOrder.AT_WORK && "bg-lime-200/20"}`}
-            data-reject={`${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK}`}
-            data-success={`${row.original.orderStatus === StatusOrder.AT_WORK}`}
-          >
-            {renderRowCells(row)}
-          </TableRow>
+          {tableRow}
         </ContextRowTable>
       );
     },

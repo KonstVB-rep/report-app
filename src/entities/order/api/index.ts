@@ -1,12 +1,13 @@
 "use server";
 
+import { StatusOrder } from "@prisma/client";
+
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
 import { OrderCreateData, OrderResponse } from "../types";
 import { sendNotification } from "./telegram";
-import { StatusOrder } from "@prisma/client";
 
 /*****************************************************Получить************************************************************/
 
@@ -16,11 +17,6 @@ export const getAllOrder = async (
   try {
     const { user } = await handleAuthorization();
 
-    // const permissionError = await checkUserPermissionByRole(user!, [
-    //   PermissionEnum.VIEW_UNION_REPORT,
-    // ]);
-
-    // if (permissionError) return permissionError;
     const departmentIdValue =
       departmentId !== undefined ? +departmentId : +user!.departmentId;
 
@@ -82,7 +78,6 @@ export const getOrderById = async (
   }
 };
 
-
 export const getOrdersByUserId = async (
   userId: string
 ): Promise<OrderResponse[]> => {
@@ -125,7 +120,7 @@ export const getOrdersByUserId = async (
 
 export const createOrder = async (
   order: OrderCreateData
-): Promise<{ order: OrderResponse, telegramError: string | undefined }> => {
+): Promise<{ order: OrderResponse; telegramError: string | undefined }> => {
   try {
     const data = await handleAuthorization();
     const { user } = data!;
@@ -134,12 +129,26 @@ export const createOrder = async (
     }
 
     // Например, деструктурируем и приводим типы, если надо
-    const { dateRequest, nameDeal, contact, comments, manager, ...rest } = order;
+    const { dateRequest, nameDeal, contact, comments, manager, ...rest } =
+      order;
 
     // Проверяем обязательные поля
     if (!dateRequest || !nameDeal || !contact || !comments || !manager) {
       return handleError("Отсутствуют обязательные поля");
     }
+
+    // const x = new Date(dateRequest)
+
+    // const [hour,min] = new Date().toLocaleTimeString("Ru-ru", {hour: "2-digit", minute:"2-digit"}).split(":")
+    // console.log(hour, min)
+    // x.setHours(hour)
+    // x.setMinutes(min)
+
+    // console.log(format(x.toString(), "yyyy.MM.d HH:mm", {
+    //     locale: ru,
+    //   }))
+
+    // new Date().toLocaleTimeString("Ru-ru", {hour: "2-digit", minute:"2-digit"})
 
     const newOrder = await prisma.order.create({
       data: {
@@ -154,16 +163,16 @@ export const createOrder = async (
     });
 
     const botName = "ErtelOrderQueueBot";
-    const userId = manager; 
+    const userId = manager;
     const phoneText = newOrder.phone ? newOrder.phone : "отсутствует";
     const emailText = newOrder.email ? newOrder.email : "отсутствует";
     const commentsText = comments ? comments : "отсутствуют";
 
-   const message = `<b>Новая заявка</b>: ${nameDeal}
-<b>Контакты</b>: ${contact}
-<b>Телефон</b>: ${phoneText}
-<b>Email</b>: ${emailText}
-<b>Комментарии</b>: ${commentsText}`;
+    const message = `<b>Новая заявка</b>: ${nameDeal}
+  <b>Контакты</b>: ${contact}
+  <b>Телефон</b>: ${phoneText}
+  <b>Email</b>: ${emailText}
+  <b>Комментарии</b>: ${commentsText}`;
 
     // Вызов отправки уведомления (можно await, если нужно дождаться)
     let telegramError: string | undefined = undefined;
@@ -172,7 +181,8 @@ export const createOrder = async (
       const sendData = await sendNotification(botName, userId, message);
       const sendJson = await sendData.json();
       if (!sendData.ok) {
-        telegramError = sendJson.error || "Ошибка при отправке уведомления в Telegram";
+        telegramError =
+          sendJson.error || "Ошибка при отправке уведомления в Telegram";
       }
     } catch (notifyError) {
       console.error("Ошибка отправки уведомления:", notifyError);
@@ -186,12 +196,14 @@ export const createOrder = async (
   }
 };
 
-
 /*****************************************************Удалить************************************************************/
 
 export const delOrder = async (
   orderId: string
-): Promise<OrderResponse | null> => {
+): Promise<{
+  order: OrderResponse;
+  telegramError: string | undefined;
+} | null> => {
   try {
     await handleAuthorization();
 
@@ -230,7 +242,28 @@ export const delOrder = async (
       where: { id: orderId },
     });
 
-    return deletedOrder;
+    const botName = "ErtelOrderQueueBot";
+    const userId = deletedOrder.manager;
+
+    const message = `<b>Заявка удалена</b>: ${deletedOrder.nameDeal}
+      Обрабатывать не надо`;
+
+    // Вызов отправки уведомления (можно await, если нужно дождаться)
+    let telegramError: string | undefined = undefined;
+
+    try {
+      const sendData = await sendNotification(botName, userId, message);
+      const sendJson = await sendData.json();
+      if (!sendData.ok) {
+        telegramError =
+          sendJson.error || "Ошибка при отправке уведомления в Telegram";
+      }
+    } catch (notifyError) {
+      console.error("Ошибка отправки уведомления:", notifyError);
+      telegramError = (notifyError as Error).message;
+    }
+
+    return { order: deletedOrder, telegramError };
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -242,7 +275,7 @@ export const delOrder = async (
 export const updateOrder = async (
   orderId: string,
   data: OrderResponse // данные для обновления (кроме id)
-): Promise<{ order: OrderResponse, telegramError: string | undefined }> => {
+): Promise<{ order: OrderResponse; telegramError: string | undefined }> => {
   try {
     await handleAuthorization();
 
@@ -252,7 +285,6 @@ export const updateOrder = async (
     if (!dateRequest || !nameDeal || !contact || !comments || !manager) {
       return handleError("Отсутствуют обязательные поля");
     }
-
 
     // Проверим, что заказ существует
     const order = await prisma.order.findUnique({
@@ -266,20 +298,20 @@ export const updateOrder = async (
     // Обновляем заказ
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
-      data:{...data},
+      data: { ...data },
     });
 
     const botName = "ErtelOrderQueueBot";
-    const userId = manager; 
+    const userId = manager;
     const phoneText = updatedOrder.phone ? updatedOrder.phone : "отсутствует";
     const emailText = updatedOrder.email ? updatedOrder.email : "отсутствует";
     const commentsText = comments ? comments : "отсутствуют";
 
     const message = `Скорректированная заявка: ${nameDeal}
-                     Контакты: ${contact}
-                     Телефон: ${phoneText}
-                     Email: ${emailText}
-                     Комментарии: ${commentsText}`;
+    Контакты: ${contact}
+    Телефон: ${phoneText}
+    Email: ${emailText}
+    Комментарии: ${commentsText}`;
 
     // Вызов отправки уведомления (можно await, если нужно дождаться)
     let telegramError: string | undefined = undefined;
@@ -289,7 +321,8 @@ export const updateOrder = async (
       const sendJson = await sendData.json();
 
       if (!sendData.ok) {
-        telegramError = sendJson.error || "Ошибка при отправке уведомления в Telegram";
+        telegramError =
+          sendJson.error || "Ошибка при отправке уведомления в Telegram";
       }
     } catch (notifyError) {
       console.error("Ошибка отправки уведомления:", notifyError);
@@ -303,10 +336,9 @@ export const updateOrder = async (
   }
 };
 
-
 export const updateOrderOnly = async (
   data: OrderResponse // данные для обновления (кроме id)
-): Promise<OrderResponse | undefined > => {
+): Promise<OrderResponse | undefined> => {
   try {
     await handleAuthorization();
 
@@ -316,7 +348,6 @@ export const updateOrderOnly = async (
     if (!dateRequest || !nameDeal || !contact || !comments || !manager) {
       return handleError("Отсутствуют обязательные поля");
     }
-
 
     // Проверим, что заказ существует
     const order = await prisma.order.findUnique({
@@ -330,10 +361,9 @@ export const updateOrderOnly = async (
     // Обновляем заказ
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data:{...data},
+      data: { ...data },
     });
 
-    
     return updatedOrder;
   } catch (error) {
     console.error("Ошибка обновления заказа:", error);

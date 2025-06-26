@@ -155,7 +155,7 @@ const MultiColumnFilter = <
           asChild
           className={`border-muted-foreground ${selectedColumns.length > 0 ? "border-solid" : "border-dashed"}`}
         >
-          <Button variant="outline" className="relative">
+          <Button variant="outline" className="relative h-auto">
             <Filter className="mr-2 h-4 w-4" />
             <span>Поиск в колонках</span>
             {selectedColumns.length > 0 && (

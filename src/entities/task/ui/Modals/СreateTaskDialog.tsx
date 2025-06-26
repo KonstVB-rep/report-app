@@ -1,9 +1,11 @@
 import React from "react";
 
-import CreateTaskForm from "../Forms/CreateTaskForm";
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
+
+import CreateTaskForm from "../Forms/CreateTaskForm";
 
 const СreateTaskDialog = () => {
   return (

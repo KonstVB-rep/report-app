@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
@@ -27,19 +27,20 @@ import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {
-  DeliveryRetailLabels,
-  DirectionRetailLabels,
-  StatusRetailLabels,
+    DeliveryRetailLabels,
+    DirectionRetailLabels,
+    StatusRetailLabels,
 } from "../../lib/constants";
 import { Contact } from "../../types";
-import ContactDeal from "../Modals/ContactDeal";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
+import ContactDeal from "../Modals/ContactDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
   contactsKey?: keyof T;
+  managerId: string | undefined;
 };
 
 const setSelectValue = <T extends FieldValues>(
@@ -61,6 +62,7 @@ const RetailFormBody = <T extends FieldValues>({
   onSubmit,
   isPending,
   contactsKey,
+  managerId = "",
 }: RetailFormBodyProps<T>) => {
   const {
     contacts,
@@ -71,9 +73,20 @@ const RetailFormBody = <T extends FieldValues>({
     handleSubmit,
     isAddContact,
     toggleAddContact,
-  } = useSendDealInfo<T>(onSubmit);
+    managers,
+    setManagers,
+    firstManager, 
+    setFirstManager
+  } = useSendDealInfo<T>(onSubmit, managerId);
 
   const currentContacts = form.getValues(contactsKey as Path<T>);
+
+  useEffect(() => {
+    const managersIds = form.getValues("managersIds" as Path<T>);
+    if (managersIds.length > 0) {
+      setManagers(managersIds);
+    }
+  }, [form, setManagers]);
 
   useEffect(() => {
     if (contactsKey) {
@@ -94,7 +107,7 @@ const RetailFormBody = <T extends FieldValues>({
           className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
           <div className="text-center font-semibold uppercase">
-            Форма добавления розничной сделки
+            Создать розничную сделку
           </div>
           <div className="grid gap-2 p-2 sm:grid-cols-2">
             <div className="flex flex-col gap-1">
@@ -245,18 +258,23 @@ const RetailFormBody = <T extends FieldValues>({
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-2">
-           <div className="flex gap-2">
-             <Button
-              type="button"
-              variant="outline"
-              onClick={toggleAddContact}
-              size={isAddContact ? "icon" : undefined}
-            >
-              {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={toggleAddContact}
+                size={isAddContact ? "icon" : undefined}
+              >
+                {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
+              </Button>
 
-            <AddManagerToDeal/>
-           </div>
+              <AddManagerToDeal 
+                setManagers={setManagers} 
+                managers={managers} 
+                firstManager={firstManager}
+                setFirstManager={setFirstManager}
+              />
+            </div>
 
             <SubmitFormButton
               title="Сохранить"

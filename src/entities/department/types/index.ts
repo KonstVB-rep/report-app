@@ -1,4 +1,4 @@
-import type { DepartmentEnum} from "@prisma/client";
+import type { DepartmentEnum } from "@prisma/client";
 
 import { ReactNode } from "react";
 
@@ -11,7 +11,6 @@ export type DepartmentInfo = {
   description: string;
   users: UserResponse[];
 };
-
 
 export type DepartmentUserItem = {
   id: string;

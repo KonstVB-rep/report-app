@@ -7,7 +7,7 @@ import DialogComponent from "@/shared/ui/DialogComponent";
 
 import EditTaskForm from "../Forms/EditTaskForm";
 
-const EditTaskDialogButton = ({ id }: { id: string}) => {
+const EditTaskDialogButton = ({ id }: { id: string }) => {
   const [open, setOpen] = useState(false);
   const closeModal = () => setOpen(false);
 

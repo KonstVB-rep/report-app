@@ -2,7 +2,6 @@
 
 import { Separator } from "@radix-ui/react-separator";
 
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
@@ -17,11 +16,12 @@ import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetRetailById } from "../hooks/query";
 import {
-    DealTypeLabels,
-    DeliveryRetailLabels,
-    DirectionRetailLabels,
-    StatusRetailLabels,
+  DealTypeLabels,
+  DeliveryRetailLabels,
+  DirectionRetailLabels,
+  StatusRetailLabels,
 } from "../lib/constants";
+import ManagersListByDeal from "./ManagersListByDeal";
 import RowInfoDealProp from "./RowInfoDealProp";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
@@ -104,9 +104,13 @@ const RetailItemInfo = () => {
 
       <Separator />
 
+      <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
+
+      <Separator />
+
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
         <div className="grid-rows-auto grid gap-2">
-          <div className="grid min-w-72 gap-4">
+          <div className="grid min-w-64 gap-4">
             <IntoDealItem title={"Объект"}>
               <div className="flex w-full items-center justify-start gap-4 text-lg">
                 <Building
@@ -114,7 +118,7 @@ const RetailItemInfo = () => {
                   strokeWidth={1}
                   className="icon-deal_info"
                 />
-                <p className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                   {dealInfo.nameObject}
                 </p>
               </div>
@@ -127,7 +131,7 @@ const RetailItemInfo = () => {
                       className="icon-deal_info"
                     />
                     <TooltipComponent content="Статус сделки">
-                      <span className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                      <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                         {dealInfo.status}
                       </span>
                     </TooltipComponent>

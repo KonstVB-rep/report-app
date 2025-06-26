@@ -18,7 +18,11 @@ export const useGetUser = (
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
         return await getUser(userId as string, permissions as PermissionEnum[]);
       } catch (error) {
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },

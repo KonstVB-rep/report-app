@@ -12,7 +12,7 @@ import {
 type SelectComponentProps = {
   placeholder: string;
   options: [string, string][]; // Это массив кортежей [key, value]
-  className?:string
+  className?: string;
 } & React.ComponentProps<typeof Select>;
 
 const SelectComponent = ({
@@ -23,7 +23,6 @@ const SelectComponent = ({
   className,
   ...props
 }: SelectComponentProps) => {
-
   return (
     <Select
       value={value}

@@ -1,6 +1,5 @@
 "use client";
 
-
 import { ru } from "date-fns/locale";
 
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
@@ -12,8 +11,8 @@ import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import useCalendarMobile from "../hooks/useCalendarMobile";
 import { EventInputType } from "../types";
 import {
-    handleDateSelectOnEventsList,
-    handleEventClickOnEventsList,
+  handleDateSelectOnEventsList,
+  handleEventClickOnEventsList,
 } from "../utils/eventHandlers";
 import CalendarFormModal from "./CalendarFormModal";
 

@@ -8,6 +8,5 @@ export const defaultTaskValues = {
   dueDate: undefined,
   startDate: undefined,
   startTime: "",
-  endTime:"",
+  endTime: "",
 };
-

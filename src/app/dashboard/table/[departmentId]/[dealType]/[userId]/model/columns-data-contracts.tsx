@@ -224,5 +224,5 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     minSize: 300,
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.comments,
-  }
+  },
 ];

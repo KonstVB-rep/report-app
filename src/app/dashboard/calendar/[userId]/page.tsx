@@ -24,7 +24,6 @@ const CalendarMobile = dynamic(
   () => import("@/feature/calendar/ui/CalendarMobile")
 );
 
-
 const CalendarPage = () => {
   const pathName = usePathname();
 
@@ -45,7 +44,7 @@ const CalendarPage = () => {
           icon={<ListTodo />}
         />
 
-        <CalendarBotLink chatName="calendarChat"/>
+        <CalendarBotLink chatName="calendarChat" />
       </div>
       {isMobile ? (
         <CalendarMobile />

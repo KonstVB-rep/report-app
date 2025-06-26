@@ -1,23 +1,24 @@
 import {
-    dehydrate,
-    HydrationBoundary,
-    QueryClient,
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
 } from "@tanstack/react-query";
 
 import { getQueryClient } from "@/app/provider/query-provider";
 import {
-    getContractsUserQuery,
-    getProjectsUserQuery,
-    getRetailsUserQuery,
+  getContractsUserQuery,
+  getProjectsUserQuery,
+  getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn";
 
-import OrdersTable from "../../../../../../entities/order/ui/OrdersTable";
+// import OrdersTable from "../../../../../../entities/order/ui/OrdersTable";
 import PersonTableContract from "../ui/PersonTableContract";
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
-import { getAllOrder } from "@/entities/order/api";
 
-const DealsInWork = ["projects", "retails", "contracts"]
+// import { getAllOrder } from "@/entities/order/api";
+
+const DealsInWork = ["projects", "retails", "contracts"];
 
 const fetchData = async (
   queryClient: QueryClient,
@@ -39,12 +40,12 @@ const fetchData = async (
       return queryClient.prefetchQuery({
         queryKey: ["contracts", id],
         queryFn: () => getContractsUserQuery(id),
-    });
-    case "orders":
-      return queryClient.prefetchQuery({
-        queryKey: ["orders", id],
-        queryFn: () => getAllOrder(id),
-    });
+      });
+    // case "orders":
+    //   return queryClient.prefetchQuery({
+    //     queryKey: ["orders", id],
+    //     queryFn: () => getAllOrder(id),
+    // });
     default:
       return null;
   }
@@ -53,12 +54,11 @@ const fetchData = async (
 const PersonTablePage = async ({
   params,
 }: {
-  params: Promise<{ dealType: string; userId: string, departmentId: string }>;
+  params: Promise<{ dealType: string; userId: string; departmentId: string }>;
 }) => {
   const { dealType, userId, departmentId } = await params;
   const queryClient = getQueryClient();
   try {
-
     const id = DealsInWork.includes(dealType) ? userId : departmentId;
 
     await fetchData(queryClient, dealType, id);
@@ -78,9 +78,9 @@ const PersonTablePage = async ({
     case "contracts":
       Component = PersonTableContract;
       break;
-    case "orders":
-      Component = OrdersTable;
-      break;
+    // case "orders":
+    //   Component = OrdersTable;
+    //   break;
     default:
       return null;
   }

@@ -28,7 +28,6 @@ export const createTelegramBot = async (botName: string, token: string) => {
   }
 };
 
-
 export const createUserTelegramChat = async (
   userId: string,
   chatId: number,
@@ -39,7 +38,6 @@ export const createUserTelegramChat = async (
   token: string
 ) => {
   try {
-
     const bot = await prisma.telegramBot.findUnique({
       where: { botName, token },
     });

@@ -3,11 +3,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
 
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+
+import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { StatusOrder } from "@prisma/client";
-import { createOrder, delOrder, updateOrder, updateOrderOnly } from "../api";
+import { createOrder, delOrder, updateOrder } from "../api";
 import { defaultOrderValues } from "../lib/constants";
 import { OrderSchema } from "../model/shema";
 import { OrderResponse } from "./../types";
@@ -22,12 +25,26 @@ export const useCreateOrder = (form: UseFormReturn<OrderSchema>) => {
         throw new Error("User ID is missing");
       }
 
+      const orderDate = new Date(data.dateRequest);
+
+      const [hour, min] = new Date()
+        .toLocaleTimeString("Ru-ru", { hour: "2-digit", minute: "2-digit" })
+        .split(":");
+      orderDate.setHours(Number(hour));
+      orderDate.setMinutes(Number(min));
+
+      const formattDateReq = format(orderDate.toString(), "yyyy.MM.d HH:mm", {
+        locale: ru,
+      });
+
       return createOrder({
         ...data,
+        contact: data.contact || "",
         email: data.email || "",
         phone: data.phone || "",
-        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dateRequest: data.dateRequest ? new Date(formattDateReq) : new Date(),
         resource: data.resource ?? null,
+        comments: data.comments || null,
       });
     },
     onError: (error) => {
@@ -43,15 +60,11 @@ export const useCreateOrder = (form: UseFormReturn<OrderSchema>) => {
           exact: true,
         });
 
-        queryClient.invalidateQueries({
-          queryKey: ["orders-not-at-work-user", authUser?.id],
-          exact: true,
-        });
-      // if(!NOT_MANAGERS_POSITIONS_KEYS.includes(authUser?.position as string))
-      //   queryClient.invalidateQueries({
-      //     queryKey: ["orders-not-at-work-user", authUser?.id],
-      //     exact: true,
-      //   });
+        if (!NOT_MANAGERS_POSITIONS_KEYS.includes(authUser?.position as string))
+          queryClient.invalidateQueries({
+            queryKey: ["orders-not-at-work-user", authUser?.id],
+            exact: true,
+          });
       }
 
       if (data.telegramError) {
@@ -77,14 +90,28 @@ export const useDelOrder = (closeModalFn: Dispatch<SetStateAction<void>>) => {
 
       return await delOrder(orderId);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`orders`, authUser?.departmentId],
-      });
+    onSuccess: (data) => {
+      if (data) {
+        queryClient.invalidateQueries({
+          queryKey: [`orders`, authUser?.departmentId],
+        });
+
+        if (data.telegramError) {
+          TOAST.ERROR(`Ошибка уведомления: ${data.telegramError}`);
+          console.warn(
+            "Ошибка отправки уведомления в Telegram:",
+            data.telegramError
+          );
+        }
+      }
       closeModalFn();
     },
     onError: (error) => {
-      TOAST.ERROR((error as Error).message);
+      if ((error as Error).message === "Failed to fetch") {
+        TOAST.ERROR("Не удалось получить данные");
+      } else {
+        TOAST.ERROR((error as Error).message);
+      }
     },
   });
 };
@@ -122,44 +149,45 @@ export const useUpdateOrder = (
       }
     },
     onError: (error) => {
-      TOAST.ERROR((error as Error).message);
+      if ((error as Error).message === "Failed to fetch") {
+        TOAST.ERROR("Не удалось получить данные");
+      } else {
+        TOAST.ERROR((error as Error).message);
+      }
     },
   });
 };
 
+// export const useUpdateOrderStatusAtWork = () => {
+//   const queryClient = useQueryClient();
+//   const { authUser } = useStoreUser();
 
-export const useUpdateOrderStatusAtWork = () => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+//   return useMutation({
+//     mutationFn: async (data: OrderResponse) => {
+//       if (!authUser?.id) {
+//         throw new Error("Пользователь не авторизован");
+//       }
 
-  return useMutation({
-    mutationFn: async (data: OrderResponse) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
+//       return await updateOrderOnly({
+//         ...data,
+//         orderStatus: StatusOrder.AT_WORK,
+//       });
+//     },
+//     onSuccess: (data) => {
+//       if (data) {
+//         queryClient.invalidateQueries({
+//           queryKey: [`orders`, authUser?.departmentId],
+//         });
+//       }
 
-      return await updateOrderOnly({...data, orderStatus: StatusOrder.AT_WORK});
-    },
-    onSuccess: (data) => {
-      if (data) {
-        queryClient.invalidateQueries({
-          queryKey: [`orders`, authUser?.departmentId],
-        });
-      }
-
-         queryClient.invalidateQueries({
-          queryKey: ["orders-not-at-work-user", authUser?.id],
-          exact: true,
-        });
-
-       // if(!NOT_MANAGERS_POSITIONS_KEYS.includes(authUser?.position as string))
-      //   queryClient.invalidateQueries({
-      //     queryKey: ["orders-not-at-work-user", authUser?.id],
-      //     exact: true,
-      //   });
-    },
-    onError: (error) => {
-      TOAST.ERROR((error as Error).message);
-    },
-  });
-};
+//       if(!NOT_MANAGERS_POSITIONS_KEYS.includes(authUser?.position as string))
+//         queryClient.invalidateQueries({
+//           queryKey: ["orders-not-at-work-user", authUser?.id],
+//           exact: true,
+//         });
+//     },
+//     onError: (error) => {
+//       TOAST.ERROR((error as Error).message);
+//     },
+//   });
+// };

@@ -20,7 +20,10 @@ type Props = {
 };
 
 const DelDealForm = ({ id, type, close }: Props) => {
-  const { data: deal } = useGetDealById(id, type);
+  const { data: deal, isPending: isLoadInfoAboutDeal } = useGetDealById(
+    id,
+    type
+  );
 
   const { mutate: delDeal, isPending } = useDelDeal(
     () => {
@@ -44,7 +47,7 @@ const DelDealForm = ({ id, type, close }: Props) => {
     delDeal(id);
   };
 
-  if (isLoading) return <DelDealSkeleton />;
+  if (isLoadInfoAboutDeal) return <DelDealSkeleton />;
 
   return (
     <MotionDivY>

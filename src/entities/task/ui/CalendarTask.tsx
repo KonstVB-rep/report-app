@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const CalendarTask = () => {
-  return (
-    <div>CalendarTask</div>
-  )
-}
+  return <div>CalendarTask</div>;
+};
 
-export default CalendarTask
+export default CalendarTask;

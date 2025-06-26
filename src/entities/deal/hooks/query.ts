@@ -54,7 +54,11 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
           (error as Error).message,
           "❌ Ошибка в useGetProjectById"
         );
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -90,7 +94,11 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
         return deal;
       } catch (error) {
         console.error(error, "❌ Ошибка в useGetRetailById");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -132,27 +140,30 @@ export const useGetDealById = <
       id: string,
       userId: string
     ) => Promise<RetailResponseWithContactsAndFiles>,
-
   };
 
   const fetchFn = async (): Promise<T | undefined> => {
-  try {
-    if (!authUser?.id) {
-      throw new Error("Пользователь не авторизован");
-    }
+    try {
+      if (!authUser?.id) {
+        throw new Error("Пользователь не авторизован");
+      }
 
-    if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
-      throw new Error(`Нет функции для типа сделки: ${type}`);
-    }
+      if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
+        throw new Error(`Нет функции для типа сделки: ${type}`);
+      }
 
-    const entity = await fetchFunctions[type](dealId, authUser.id);
-    return entity as T | undefined;
-  } catch (error) {
-    console.log(error, "Ошибка useGetDealById");
-    TOAST.ERROR((error as Error).message);
-    throw error;
-  }
-};
+      const entity = await fetchFunctions[type](dealId, authUser.id);
+      return entity as T | undefined;
+    } catch (error) {
+      console.log(error, "Ошибка useGetDealById");
+      if ((error as Error).message === "Failed to fetch") {
+        TOAST.ERROR("Не удалось получить данные");
+      } else {
+        TOAST.ERROR((error as Error).message);
+      }
+      throw error;
+    }
+  };
 
   return useQuery<T | undefined, Error>({
     queryKey,
@@ -182,7 +193,6 @@ export const useGetAllDealsByDepartmentByType = (
     [DealType.RETAIL]: getAllRetailsByDepartment as () => Promise<
       RetailResponse[]
     >,
-
   };
 
   return useQuery({
@@ -193,14 +203,18 @@ export const useGetAllDealsByDepartmentByType = (
           throw new Error("Пользователь не авторизован");
         }
 
-         if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
+        if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
           throw new Error(`Нет функции для типа сделки: ${type}`);
         }
 
         return await fetchFunctions[type]();
       } catch (error) {
         console.log(error, "Ошибка useGetAllDealsByDepartmentByType");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -225,7 +239,11 @@ export const useGetAllProjects = (
         return await getAllProjectsByDepartmentQuery(departmentId);
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -250,7 +268,11 @@ export const useGetAllRetails = (
         return await getAllRetailsByDepartmentQuery(departmentId);
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -271,7 +293,11 @@ export const useGetRetailsUser = (userId: string | null) => {
         return await getRetailsUser(userId as string);
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -294,7 +320,11 @@ export const useGetProjectsUser = (userId: string | undefined) => {
         return await getProjectsUser(userId as string);
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -315,7 +345,11 @@ export const useGetContractsUser = (userId: string | undefined) => {
         return await getProjectsUser(userId as string);
       } catch (error) {
         console.log(error, "Ошибка useGetContactsUser");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -346,7 +380,11 @@ export const useGetDealsByDateRange = (
         );
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },

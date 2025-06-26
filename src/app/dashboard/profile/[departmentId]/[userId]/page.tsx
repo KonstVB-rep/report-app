@@ -5,6 +5,7 @@ import { PermissionEnum } from "@prisma/client";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
+import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 import { DepartmentLabels } from "@/entities/department/types";
 import { useGetUser } from "@/entities/user/hooks/query";
 import { RolesUser } from "@/entities/user/model/objectTypes";
@@ -13,7 +14,6 @@ import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import UserCard from "@/shared/ui/UserCard";
 
 import ProfileDealsData from "./ProfileDealsData";
-import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,
@@ -129,7 +129,17 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {(NOT_MANAGERS_POSITIONS_KEYS as string[]).includes(user.position) && <ProfileDealsData />}
+      <ProtectedByPermissions
+        permissionArr={[
+          "DEAL_MANAGEMENT",
+          "VIEW_USER_REPORT",
+          "VIEW_UNION_REPORT",
+        ]}
+      >
+        {!(NOT_MANAGERS_POSITIONS_KEYS as string[]).includes(user.position) && (
+          <ProfileDealsData />
+        )}
+      </ProtectedByPermissions>
     </section>
   );
 };

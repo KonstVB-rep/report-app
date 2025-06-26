@@ -2,7 +2,6 @@
 
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-
 import { useRouter } from "next/navigation";
 
 import { CalendarFold } from "lucide-react";

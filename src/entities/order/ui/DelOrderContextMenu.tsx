@@ -1,5 +1,3 @@
-
-
 import React, { Dispatch, SetStateAction } from "react";
 
 import dynamic from "next/dynamic";
@@ -11,7 +9,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
-
 
 const DelOrderForm = dynamic(() => import("./DelOrderForm"), {
   ssr: false,

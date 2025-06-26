@@ -6,11 +6,12 @@ import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-co
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-    Form, FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { EventCalendarSchema } from "@/feature/calendar/model/schema";
 import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";
@@ -67,13 +68,14 @@ export const handleSubmit = (
     const [startH, startM] = startTimeEvent.split(":");
     const [endH, endM] = endTimeEvent.split(":");
 
-    const startDay = new Date(startDate.toDateString())
-    const endDay = new Date(endDate.toDateString())
+    const startDay = new Date(startDate.toDateString());
+    const endDay = new Date(endDate.toDateString());
 
     if (
       (startDay <= endDay &&
-      parseInt(startH, 10) <= parseInt(endH, 10) &&
-      parseInt(endM, 10) < parseInt(startM, 10)) || endDate < startDay
+        parseInt(startH, 10) <= parseInt(endH, 10) &&
+        parseInt(endM, 10) < parseInt(startM, 10)) ||
+      endDate < startDay
     ) {
       return TOAST.ERROR(
         "Время окончания события не должно быть меньше времени начала!"

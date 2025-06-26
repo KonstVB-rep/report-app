@@ -15,11 +15,7 @@ type Props = {
   departmentId?: string;
 };
 
-const SummaryTableLink = ({
-  type,
-  className = "",
-  departmentId,
-}: Props) => {
+const SummaryTableLink = ({ type, className = "", departmentId }: Props) => {
   const { authUser } = useStoreUser();
 
   if (!authUser) return null;

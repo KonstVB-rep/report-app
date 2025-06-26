@@ -7,10 +7,9 @@ import { DateRange } from "react-day-picker";
 import { endOfDay, startOfDay } from "date-fns";
 
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { STATUS_ORDER } from "@/entities/order/lib/constants";
+import { OrderType, STATUS_ORDER } from "@/entities/order/lib/constants";
 import { OrderResponse, StatusKey } from "@/entities/order/types";
-
+import useStoreUser from "@/entities/user/store/useStoreUser";
 
 export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
   {
@@ -120,8 +119,8 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
     size: 150,
     minSize: 150,
     cell: (info: CellContext<OrderResponse, unknown>) => {
-      const status = info.getValue() as string
-      return STATUS_ORDER[status as StatusKey]
+      const status = info.getValue() as string;
+      return STATUS_ORDER[status as StatusKey];
     }, //тег
     enableSorting: false,
     enableHiding: true,
@@ -134,14 +133,14 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
     size: 240,
     minSize: 240,
     cell: (info) => {
-      const authUser = useStoreUser.getState().authUser; 
+      const authUser = useStoreUser.getState().authUser;
       const deps = useStoreDepartment.getState().deptsFormatted; // ✅ так можно
 
-      const users = deps?.find(d => d.id === authUser?.departmentId)?.users
+      const users = deps?.find((d) => d.id === authUser?.departmentId)?.users;
 
       const userId = info.getValue() as string;
 
-      const userObj = users?.find(u => u.hasOwnProperty(userId));
+      const userObj = users?.find((u) => u.hasOwnProperty(userId));
 
       const userName = userObj ? userObj[userId] : userId;
 
@@ -160,6 +159,17 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
       return filterValues.includes(userIdOfProject);
     },
     accessorFn: (row: OrderResponse) => row.manager,
+  },
+  {
+    id: "dealType",
+    accessorKey: "dealType",
+    header: "Тип сделки",
+    cell: (info: CellContext<OrderResponse, unknown>) => {
+      const dealType = info.getValue() as keyof typeof OrderType;
+      return OrderType[dealType];
+    },
+    enableHiding: true,
+    accessorFn: (row: OrderResponse) => row.type,
   },
   {
     id: "resource",

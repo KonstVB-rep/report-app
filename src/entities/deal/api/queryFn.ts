@@ -26,7 +26,6 @@ export const getProjectsUserQuery = async (userId: string) => {
   }
 };
 
-
 export const getContractsUserQuery = async (userId: string) => {
   try {
     return await getContractsUser(userId);

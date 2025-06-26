@@ -85,7 +85,7 @@ const FilterPopover = React.memo(
             filterValues.length > 0 ? "border-solid" : "border-dashed"
           } border-muted-foreground`}
         >
-          <Button variant="outline" className="relative">
+          <Button variant="outline" className="relative h-auto">
             <Filter className="mr-2 h-4 w-4" />
             {label}
             {filterValues.length > 0 && (

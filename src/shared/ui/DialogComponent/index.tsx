@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 
 import {
   Dialog,
@@ -13,13 +13,13 @@ import TooltipComponent from "../TooltipComponent";
 
 type DialogComponentProps = {
   contentTooltip?: string;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   children: React.ReactNode;
   showX?: boolean;
   open?: boolean;
   dialogTitle?: string;
   footer?: React.ReactNode;
-  onOpenChange?: Dispatch<SetStateAction<boolean>>;
+  onOpenChange?: (value: boolean) => void;
   classNameContent?: string;
   disableClose?: boolean;
 };
@@ -46,7 +46,7 @@ const DialogComponent = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {contentTooltip ? (
         <TooltipComponent content={contentTooltip}>
-          <DialogTrigger asChild>{trigger}</DialogTrigger>
+          {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
         </TooltipComponent>
       ) : (
         <DialogTrigger asChild>{trigger}</DialogTrigger>

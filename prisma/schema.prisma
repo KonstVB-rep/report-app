@@ -61,10 +61,10 @@ model Department {
   id          Int            @id @default(autoincrement())
   name        DepartmentEnum @unique
   directorId  String?        @unique
-  description String        @unique
+  description String         @unique
   director    User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
   users       User[]         @relation("DepartmentUsers")
-  tasks       Task[]      @relation("DepartmentTask")
+  tasks       Task[]         @relation("DepartmentTask")
 }
 
 model Project {
@@ -93,6 +93,9 @@ model Project {
   projectManagers       ProjectManager[]
   additionalContacts    AdditionalContact[] @relation("ProjectContacts")
 
+  orderId               String?          @unique
+
+
   @@index([userId], map: "Project_userId_fkey")
 }
 
@@ -120,6 +123,8 @@ model Retail {
   retailManagers        RetailManager[]
   additionalContacts    AdditionalContact[] @relation("RetailContacts")
 
+  orderId               String?          @unique
+
   @@index([userId], map: "Retail_userId_fkey")
 }
 
@@ -129,25 +134,41 @@ model Order {
   type                  DealType         @default(ORDER) // <-- Тип сделки
   dateRequest           DateTime
   nameDeal              String
-  // nameObject            String
-  // direction             DirectionRetail
-  // deliveryType          DeliveryRetail?
   contact               String
   phone                 String?
   email                 String?
   manager               String
-  // amountCP              Decimal?          @db.Decimal(15, 2)
-  // delta                 Decimal?          @db.Decimal(15, 2)
-  // dealStatus            StatusRetail
-  comments              String
+  comments              String?
   departmentId          Int
   orderStatus           StatusOrder      @default(SUBMITTED_TO_WORK) 
-  // plannedDateConnection DateTime?
   resource              String?
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
 
-  @@index([id], map: "Order_id_fkey")
+  retailId              String?          @unique 
+  projectId             String?          @unique
+
+
+}
+
+model ProjectManager {
+  dealId      String
+  userId      String
+
+  project     Project   @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([dealId, userId]) // составной ключ — один и тот же менеджер не может повторно быть в заказе
+}
+
+model RetailManager {
+  dealId String
+  userId  String
+
+  retail  Retail   @relation(fields: [dealId],references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([dealId, userId])
 }
 
 
@@ -182,7 +203,7 @@ model DealFile {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id])
 
   @@index([dealId])
   @@index([userId], map: "File_userId_fkey")
@@ -253,7 +274,7 @@ model Task {
   taskPriority    TaskPriority
   assignerId      String
   executorId      String
-  orderTask           Int
+  orderTask       Int
   dueDate         DateTime
   startDate       DateTime
   createdAt       DateTime    @default(now())                
@@ -270,25 +291,6 @@ model Task {
   @@index([orderTask, taskStatus])
 }
 
-model ProjectManager {
-  dealId String
-  userId  String
-
-  project   Project   @relation(fields: [dealId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
-
-  @@id([dealId, userId]) // составной ключ — один и тот же менеджер не может повторно быть в заказе
-}
-
-model RetailManager {
-  dealId String
-  userId  String
-
-  retail  Retail   @relation(fields: [dealId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
-
-  @@id([dealId, userId]) // составной ключ — один и тот же менеджер не может повторно быть в заказе
-}
 
 enum PermissionEnum {
   VIEW_USER_REPORT
@@ -361,6 +363,7 @@ enum StatusContract {
 enum StatusOrder {
   SUBMITTED_TO_WORK
   AT_WORK
+  CLOSED
 }
 
 enum StatusRetail {

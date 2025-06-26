@@ -1,66 +1,8 @@
-// import { z } from "zod";
-
-// import { TaskPriority, TaskStatus } from "@prisma/client";
-
-// export const TaskFormSchema = z.object({
-//   title: z.string(),
-//   description: z.string(),
-//   taskStatus: z.enum(
-//     Object.values(TaskStatus) as [string, ...string[]],
-//     {
-//       message: "Выберите статус",
-//     }
-//   ),
-//   taskPriority: z.enum(
-//     Object.values(TaskPriority) as [string, ...string[]],
-//     {
-//       message: "Выберите приоритет",
-//     }
-//   ),
-//   executorId: z.string(),
-//    startDate: z.preprocess(
-//     (val) => (val instanceof Date ? val.toISOString() : val || ""),
-//     z.string()
-//   ),
-//   startTime: z.string(),
-//   dueDate: z.preprocess(
-//     (val) => (val instanceof Date ? val.toISOString() : val || ""),
-//     z.string()
-//   ),
-//   endTime: z.string()
-// }).superRefine(({ dueDate, startTime, startDate }, ctx) => {
-//     // superRefine позволяет проверять поля вместе
-//     if (!dueDate || !startTime) return;
-//     console.log(dueDate < startDate, dueDate, startDate)
-//     if(dueDate < startDate){
-//       ctx.addIssue({
-//         code: z.ZodIssueCode.custom,
-//         message: "Дата и время не могут быть в прошлом",
-//         path: ["dueDate"]
-//       });
-//     }
-
-//     // const now = new Date();
-//     // const selectedDate = new Date(dueDate);
-//     // selectedDate.setHours(...startTime.split(":").map(Number), 0, 0);
-
-//     // if (selectedDate < now) {
-//     //   ctx.addIssue({
-//     //     code: z.ZodIssueCode.custom,
-//     //     message: "Дата и время не могут быть в прошлом",
-//     //     path: ["dueDate"]
-//     //   });
-//     // }
-//   });
-
-
-// export type TaskSchema = z.infer<typeof TaskFormSchema>;
-
-import { z } from "zod";
 import { TaskPriority, TaskStatus } from "@prisma/client";
-import { isBefore, isEqual, startOfToday, parseISO, format } from "date-fns";
 
-// 👇 Простой хелпер для сравнения времени
+import { format, isBefore, isEqual, parseISO, startOfToday } from "date-fns";
+import { z } from "zod";
+
 const isTimeBefore = (timeA: string, timeB: string) => {
   return timeA < timeB;
 };
@@ -150,7 +92,7 @@ export const TaskFormSchema = z
     }
   });
 
-  export const TaskFormSchemaUpdate = z
+export const TaskFormSchemaUpdate = z
   .object({
     title: z.string(),
     description: z.string(),
@@ -235,6 +177,6 @@ export const TaskFormSchema = z
     }
   });
 
-  export type TaskSchemaUpdate = z.infer<typeof TaskFormSchemaUpdate>
+export type TaskSchemaUpdate = z.infer<typeof TaskFormSchemaUpdate>;
 
-  export type TaskSchema = z.infer<typeof TaskFormSchema>
+export type TaskSchema = z.infer<typeof TaskFormSchema>;

@@ -15,6 +15,12 @@ export type DeliveryType = DeliveryProject;
 
 export type StatusType = StatusProject;
 
+export type ManagerShortInfo = {
+  id: string;
+  managerName: string;
+  position: string;
+};
+
 export interface ProjectResponse {
   [key: string]: unknown;
   id: string;
@@ -38,6 +44,7 @@ export interface ProjectResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+  managers?: ManagerShortInfo[];
 }
 
 export type ProjectResponseWithContactsAndFiles = ProjectResponse & {
@@ -66,6 +73,7 @@ export interface RetailResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+  managers?: ManagerShortInfo[];
 }
 
 export type RetailResponseWithContactsAndFiles = RetailResponse & {
@@ -108,4 +116,3 @@ export interface ContractResponse {
   updatedAt: Date;
   type: DealType;
 }
-

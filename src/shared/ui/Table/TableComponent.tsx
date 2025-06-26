@@ -58,13 +58,15 @@ const TableComponent = <T extends Record<string, unknown>>({
               />
             ),
           })}
-          path={`/dashboard/deal/${departmentId}/${
-                  (row.original.type as DealType).toLowerCase()}/${row.original.id}`}
+          path={`/dashboard/deal/${departmentId}/${(
+            row.original.type as DealType
+          ).toLowerCase()}/${row.original.id}`}
         >
           <TableRow
-            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === "REJECT" && "bg-red-900/40"} ${row.original.dealStatus === "PAID" && "bg-lime-200/20"}`}
+            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === "CLOSED" && "bg-green-950/80"} ${row.original.dealStatus === "REJECT" && "bg-red-900/40 opacity-60"} ${row.original.dealStatus === "PAID" && "bg-lime-200/20"}`}
             data-reject={`${row.original.dealStatus === "REJECT"}`}
             data-success={`${row.original.dealStatus === "PAID"}`}
+            data-closed={`${row.original.dealStatus === "CLOSED"}`}
           >
             {renderRowCells(row)}
           </TableRow>

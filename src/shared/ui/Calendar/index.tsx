@@ -22,11 +22,7 @@ type CalendarComponentProps = {
   field: FieldValues;
 };
 
-const CalendarComponent = ({
-  required = false,
-  field,
-  ...props
-}: CalendarComponentProps) => {
+const CalendarComponent = ({ field, ...props }: CalendarComponentProps) => {
   const selectedDate = field.value ? new Date(field.value) : undefined;
   return (
     <Popover>
@@ -36,7 +32,7 @@ const CalendarComponent = ({
             variant={"outline"}
             className={cn(
               "w-full text-left font-normal",
-              !field.value && "text-muted-foreground",
+              !field.value && "text-muted-foreground"
             )}
           >
             {selectedDate ? (
@@ -53,7 +49,7 @@ const CalendarComponent = ({
           mode="single"
           selected={selectedDate}
           onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
-          required={required}
+          required={props.required}
           locale={ru}
           {...props}
         />

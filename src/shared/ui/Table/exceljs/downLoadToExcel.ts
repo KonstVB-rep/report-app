@@ -28,8 +28,7 @@ export const downloadToExcel = async <
   table: Table<TData>,
   columns: ColumnDef<TData, TValue>[]
 ) => {
-
-   const [{ Workbook }, { saveAs }] = await Promise.all([
+  const [{ Workbook }, { saveAs }] = await Promise.all([
     import("exceljs"),
     import("file-saver"),
   ]);

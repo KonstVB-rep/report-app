@@ -14,17 +14,16 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
+import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants";
 import { DepartmentUserItem } from "@/entities/department/types";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import MarketActiveItemSidebar from "./MarketActiveItemSidebar";
-import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants";
 
 type DealsType = {
   id: string;
   title: string;
 };
-
 
 const dealsSalesDepartment: DealsType[] = [
   { id: "projects", title: "Проекты" },
@@ -33,11 +32,10 @@ const dealsSalesDepartment: DealsType[] = [
 ];
 
 const table: {
-  [key in string] : DealsType
+  [key in string]: DealsType;
 } = {
-  orders: { id: "orders", title: "Заявки" }
+  orders: { id: "orders", title: "Заявки" },
 };
-
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
 
@@ -130,19 +128,23 @@ export const DepartmentLinks = memo(
         }),
       [dealType, user.id, user.url, userId, getDealLinks, departmentId]
     );
-    
+
     if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) {
       return null;
     }
 
-    if (user.position === NOT_MANAGERS_POSITIONS.ASSIATANT_MANAGER) {
+    if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) {
       return (
         <LinkItem
           key={user.id}
-          href={`${user.url}/orders/${user.id}`}
+          href={`${user.url}/orders`}
           title={table.orders.title}
           icon={departmentId === 1 ? BookText : ChartColumnBig}
-          isActive={departmentId === user.departmentId && user.id === userId && dealType === table.orders.id}
+          isActive={
+            departmentId === user.departmentId &&
+            user.id === userId &&
+            dealType === table.orders.id
+          }
           onClick={(e) => e.stopPropagation()}
         />
       );

@@ -6,11 +6,11 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 import { TOAST } from "@/shared/ui/Toast";
-import { OrderFormSchema, OrderSchema } from "../model/shema";
+
 import { useCreateOrder } from "../hooks/mutate";
 import { defaultOrderValues } from "../lib/constants";
+import { OrderFormSchema, OrderSchema } from "../model/shema";
 import OrderFormBody from "./OrderFormBody";
-
 
 const OrderForm = () => {
   const form = useForm<OrderSchema>({
@@ -25,11 +25,7 @@ const OrderForm = () => {
   };
 
   return (
-    <OrderFormBody
-      form={form}
-      onSubmit={onSubmit}
-      isPending={isPending}
-    />
+    <OrderFormBody form={form} onSubmit={onSubmit} isPending={isPending} />
   );
 };
 

@@ -1,7 +1,6 @@
 "use client";
 
 // import { Project, Retail } from "@prisma/client";
-
 import { Dispatch, Fragment, memo, SetStateAction, useState } from "react";
 
 import Link from "next/link";
@@ -15,6 +14,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
+
 // import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 // import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
@@ -23,19 +23,21 @@ import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAf
 type ContextMenuTableProps = {
   children: React.ReactNode;
   isExistActionDeal?: boolean;
-  modals?: (setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>) => {
+  modals?: (
+    setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>
+  ) => {
     edit?: React.ReactNode;
     delete?: React.ReactNode;
     [key: string]: React.ReactNode | undefined;
   };
-  path?: string
+  path?: string;
 };
 
-const ContextRowTable =({
+const ContextRowTable = ({
   children,
   isExistActionDeal = true,
   modals = () => ({}),
-  path = ''
+  path = "",
 }: ContextMenuTableProps) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
 
@@ -47,12 +49,14 @@ const ContextRowTable =({
 
           <ContextMenuContent className="grid gap-1 bg-background">
             <ContextMenuItem className="flex gap-2 p-0">
-              {path && <Link
-                className="flex w-full items-center justify-start gap-2 p-2"
-                href={path}
-              >
-                <FileText size="14" /> Подробнее
-              </Link>}
+              {path && (
+                <Link
+                  className="flex w-full items-center justify-start gap-2 p-2"
+                  href={path}
+                >
+                  <FileText size="14" /> Подробнее
+                </Link>
+              )}
             </ContextMenuItem>
 
             {isExistActionDeal && (

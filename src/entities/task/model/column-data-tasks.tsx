@@ -2,18 +2,21 @@ import { TaskStatus } from "@prisma/client";
 // import { CheckedState } from "@radix-ui/react-checkbox";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
-
-import { Ban, CheckCircle2Icon, LoaderIcon, StickyNote } from 'lucide-react';
 import { ReactNode } from "react";
 import { DateRange } from "react-day-picker";
 
 import { endOfDay, startOfDay } from "date-fns";
+import { Ban, CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 
 // import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
-import { LABEL_TASK_PRIORITY, LABEL_TASK_STATUS, TASK_PRIORITY_COLOR_BG } from "./constants";
 import { TaskWithUserInfo } from "../types";
+import {
+  LABEL_TASK_PRIORITY,
+  LABEL_TASK_STATUS,
+  TASK_PRIORITY_COLOR_BG,
+} from "./constants";
 
 export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
   {
@@ -82,18 +85,22 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
         [TaskStatus.OPEN]: <StickyNote />,
         [TaskStatus.IN_PROGRESS]: <LoaderIcon />,
         // [TaskStatus.IN_REVIEW]:  <MessageCircleWarning />,
-        [TaskStatus.DONE]: <CheckCircle2Icon className="text-green-500 dark:text-green-400" />,
-        [TaskStatus.CANCELED]: <Ban className="text-red-500 dark:text-red-400"/>,
+        [TaskStatus.DONE]: (
+          <CheckCircle2Icon className="text-green-500 dark:text-green-400" />
+        ),
+        [TaskStatus.CANCELED]: (
+          <Ban className="text-red-500 dark:text-red-400" />
+        ),
       };
-      return(
+      return (
         <Badge
           variant="outline"
           className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
         >
           {icon[value]}
           {LABEL_TASK_STATUS[value]}
-      </Badge>
-      )
+        </Badge>
+      );
     },
     meta: {
       isMultiSelect: true,
@@ -143,17 +150,19 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     header: "Исполнитель",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => info.getValue(),
     filterFn: (row, columnId, filterValues) => {
-        if (!filterValues || filterValues.length === 0) {
-          return true;
-        }
+      if (!filterValues || filterValues.length === 0) {
+        return true;
+      }
 
-        const userIdOfProject = row.original.executorId;
-        return filterValues.includes(userIdOfProject);
+      const userIdOfProject = row.original.executorId;
+      return filterValues.includes(userIdOfProject);
     },
     meta: {
       isMultiSelect: true,
     },
-    accessorFn: (row: TaskWithUserInfo) => <span className="capitalize">{row?.executor.username}</span>
+    accessorFn: (row: TaskWithUserInfo) => (
+      <span className="capitalize">{row?.executor.username}</span>
+    ),
   },
   {
     id: "dueDate",

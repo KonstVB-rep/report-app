@@ -15,8 +15,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import {
-    handleDateSelect,
-    handleEventClick,
+  handleDateSelect,
+  handleEventClick,
 } from "@/feature/calendar/utils/eventHandlers";
 
 const FullCalendarComponent = () => {

@@ -1,11 +1,14 @@
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { useQuery } from "@tanstack/react-query";
-import { getTask, getTasksDepartment, getUserTasks } from "../api";
+
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/ui/Toast";
+
+import { getTask, getTasksDepartment, getUserTasks } from "../api";
+
 // import { getDepartmentTasks } from "../api/queryFn";
 
-export const useGetTask = ( taskId: string) => {
-const { authUser } = useStoreUser();
+export const useGetTask = (taskId: string) => {
+  const { authUser } = useStoreUser();
   return useQuery({
     queryKey: ["task", authUser?.id, taskId],
     queryFn: async () => {
@@ -13,19 +16,21 @@ const { authUser } = useStoreUser();
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
 
         return await getTask(taskId as string);
-        
       } catch (error) {
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!(taskId && authUser?.id),
   });
-}
-
+};
 
 export const useGetUserTasks = () => {
-const { authUser } = useStoreUser();
+  const { authUser } = useStoreUser();
   return useQuery({
     queryKey: ["userTasks", authUser?.id],
     queryFn: async () => {
@@ -33,32 +38,40 @@ const { authUser } = useStoreUser();
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
         return await getUserTasks(authUser?.id);
       } catch (error) {
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
-    enabled: !!(authUser?.id),
+    enabled: !!authUser?.id,
   });
-}
+};
 
 export const useGetTasksDepartment = () => {
-const { authUser } = useStoreUser();
+  const { authUser } = useStoreUser();
   return useQuery({
     queryKey: ["tasks", authUser?.id, authUser?.departmentId],
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
 
-        const departmentId = authUser?.departmentId
+        const departmentId = authUser?.departmentId;
         return await getTasksDepartment(departmentId);
       } catch (error) {
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!(authUser?.departmentId && authUser?.id),
   });
-}
+};
 
 // export const useGetDepartmentTasks = (departmentId: string) => {
 //   const { authUser, isAuth } = useStoreUser();
@@ -80,4 +93,3 @@ const { authUser } = useStoreUser();
 //     enabled: !!(isAuth && departmentId),
 //   });
 // };
-

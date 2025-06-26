@@ -1,7 +1,11 @@
-import React, {useMemo} from "react";
+import React, { useMemo } from "react";
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 
+import { useParams } from "next/navigation";
+
 import { Form } from "@/components/ui/form";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import { DepartmentInfo } from "@/entities/department/types";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
@@ -11,9 +15,6 @@ import Overlay from "@/shared/ui/Overlay";
 import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import { LABEL_TASK_PRIORITY, LABEL_TASK_STATUS } from "../../model/constants";
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
-import { useParams } from "next/navigation";
-import { DepartmentInfo } from "@/entities/department/types";
 
 type TaskFormProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -34,27 +35,29 @@ const setSelectValue = <T extends FieldValues>(
   }
 };
 
-
 const TaskForm = <T extends FieldValues>({
   form,
   onSubmit,
   isPending,
 }: TaskFormProps<T>) => {
-
   const { departmentId } = useParams();
   const error = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
 
-  const {departments} = useStoreDepartment();
+  const { departments } = useStoreDepartment();
 
   const usersList = useMemo(() => {
-    const currentDepartment = departments?.find((item: DepartmentInfo) => item.id === (departmentId ? +departmentId : ""));
-    return  currentDepartment?.users.reduce((acc, user) => {
-      acc.push([user.id, user.username])
-      return acc
-    }, [] as [string,string][]);
+    const currentDepartment = departments?.find(
+      (item: DepartmentInfo) => item.id === (departmentId ? +departmentId : "")
+    );
+    return currentDepartment?.users.reduce(
+      (acc, user) => {
+        acc.push([user.id, user.username]);
+        return acc;
+      },
+      [] as [string, string][]
+    );
   }, [departmentId, departments]);
-
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -109,7 +112,7 @@ const TaskForm = <T extends FieldValues>({
               required
             />
 
-             <SelectFormField
+            <SelectFormField
               name={"executorId" as Path<T>}
               label="Исполнитель"
               control={form.control}
@@ -122,7 +125,7 @@ const TaskForm = <T extends FieldValues>({
               }
               required
             />
-            
+
             <div className="flex flex-wrap gap-2 items-end">
               <DatePickerFormField<UseFormReturn<T>>
                 name={"startDate" as Path<T>}
@@ -144,15 +147,15 @@ const TaskForm = <T extends FieldValues>({
               />
             </div>
 
-             <div className="flex flex-wrap gap-2 items-end">
-               <DatePickerFormField<UseFormReturn<T>>
+            <div className="flex flex-wrap gap-2 items-end">
+              <DatePickerFormField<UseFormReturn<T>>
                 name={"dueDate" as Path<T>}
                 label="Конец"
                 control={form.control}
                 errorMessage={error("dueDate")}
                 className="basis-1/3"
                 required
-            />
+              />
 
               <InputTextForm
                 name={"endTime" as Path<T>}

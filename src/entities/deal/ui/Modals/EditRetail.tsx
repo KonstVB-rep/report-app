@@ -27,7 +27,7 @@ const EditRetail = ({
 }) => {
   return (
     <DialogContent
-      className="max-h-[85vh] overflow-y-auto sm:max-w-[825px]"
+      className="max-h-[90vh] overflow-y-auto sm:max-w-[825px]"
       showX={true}
     >
       <DialogHeader>

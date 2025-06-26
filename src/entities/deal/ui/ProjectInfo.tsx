@@ -1,6 +1,5 @@
 "use client";
 
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
@@ -17,12 +16,13 @@ import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetProjectById } from "../hooks/query";
 import {
-    DealTypeLabels,
-    DeliveryProjectLabels,
-    DirectionProjectLabels,
-    StatusProjectLabels,
+  DealTypeLabels,
+  DeliveryProjectLabels,
+  DirectionProjectLabels,
+  StatusProjectLabels,
 } from "../lib/constants";
 import IntoDealItem from "./IntoDealItem";
+import ManagersListByDeal from "./ManagersListByDeal";
 import RowInfoDealProp from "./RowInfoDealProp";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
@@ -89,10 +89,14 @@ const ProjectItemInfo = () => {
 
       <Separator />
 
+      <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
+
+      <Separator />
+
       <div className="grid gap-2">
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
           <div className="grid-rows-auto grid gap-2">
-            <div className="grid min-w-72 gap-4">
+            <div className="grid min-w-64 gap-4">
               <IntoDealItem title="Объект">
                 <div className="grid w-full gap-2">
                   <div className="flex w-full items-start justify-start gap-4 text-lg">
@@ -101,7 +105,7 @@ const ProjectItemInfo = () => {
                       strokeWidth={1}
                       className="icon-deal_info"
                     />
-                    <p className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                    <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                       {deal.nameObject}
                     </p>
                   </div>
@@ -115,7 +119,7 @@ const ProjectItemInfo = () => {
                           className="icon-deal_info"
                         />
                         <TooltipComponent content="Статус сделки">
-                          <span className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                          <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                             {StatusProjectLabels[
                               deal.dealStatus as keyof typeof StatusProjectLabels
                             ] || "Нет данных"}

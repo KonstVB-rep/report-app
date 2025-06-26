@@ -2,15 +2,15 @@
 
 import { PermissionEnum } from "@prisma/client";
 import {
-    ColumnDef,
-    ColumnFiltersState,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    SortingState,
-    Table,
-    useReactTable,
-    VisibilityState,
+  ColumnDef,
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
+  Table,
+  useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 
 import { useMemo, useState } from "react";
@@ -19,32 +19,41 @@ import { DateRange } from "react-day-picker";
 import dynamic from "next/dynamic";
 import { useParams, useSearchParams } from "next/navigation";
 
-// import { Loader } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
-// import { DealTypeLabels } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
-import DateRangeFilter from "@/shared/ui/DateRangeFilter";
-// import TableComponent from "@/shared/ui/Table/TableComponent";
-import FilterPopover from "@/shared/ui/Filters/FilterPopover";
-import MultiColumnFilter from "@/shared/ui/MultiColumnFilter";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
 import { STATUS_ORDER } from "../lib/constants";
+import LoadFilterItem from "./LoadFilterItem";
 import OrdersTableBody from "./OrdersTableBody";
 
 const FilterByUsers = dynamic(
   () => import("@/shared/ui/Filters/FilterByUsers"),
   {
     ssr: false,
-    // loading: () => (
-    //   <div className="flex justify-center items-center h-20 bg-muted rounded-md">
-    //     <Loader className="animate-spin" />
-    //   </div>
-    // ),
+    loading: () => <LoadFilterItem />,
+  }
+);
+
+const DateRangeFilter = dynamic(() => import("@/shared/ui/DateRangeFilter"), {
+  ssr: false,
+  loading: () => <LoadFilterItem />,
+});
+const MultiColumnFilter = dynamic(
+  () => import("@/shared/ui/MultiColumnFilter"),
+  {
+    ssr: false,
+    loading: () => <LoadFilterItem />,
+  }
+);
+const FilterPopover = dynamic(
+  () => import("@/shared/ui/Filters/FilterPopover"),
+  {
+    ssr: false,
+    loading: () => <LoadFilterItem />,
   }
 );
 
@@ -60,8 +69,6 @@ const includedColumns = [
 interface DataTableProps<TData, TValue = unknown> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  // getRowLink?: (row: TData & { id: string }, type: string) => string;
-  // type: keyof typeof DealTypeLabels;
   isExistActionDeal?: boolean;
 }
 
@@ -81,7 +88,6 @@ const handleExport = async <
 const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
   columns,
   data,
-  // getRowLink,
   isExistActionDeal = true,
 }: DataTableProps<TData, TValue>) => {
   const searchParams = useSearchParams();
@@ -186,21 +192,6 @@ const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
         className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
       >
         {memoizedData.length > 0 && openFilters && (
-          //   <FiltersBlock
-          //     columnFilters={columnFilters}
-          //     setColumnFilters={setColumnFilters}
-          //     onDateChange={handleDateChange("dateRequest")}
-          //     onClearDateFilter={handleClearDateFilter}
-          //     value={value}
-          //     columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-          //     includedColumns={includedColumns}
-          //     selectedColumns={selectedColumns}
-          //     setSelectedColumns={setSelectedColumns}
-          //     filterValueSearchByCol={filterValueSearchByCol}
-          //     setFilterValueSearchByCol={setFilterValueSearchByCol}
-          //     type={type}
-          //     table={table as Table<Record<string, unknown>>}
-          //   />
           <>
             <div className="py-2 flex flex-wrap justify-start gap-2">
               <FilterByUsers
@@ -246,11 +237,7 @@ const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
       </div>
 
       {data?.length ? (
-        <OrdersTableBody
-          table={table}
-          // getRowLink={getRowLink}
-          isExistActionDeal={isExistActionDeal}
-        />
+        <OrdersTableBody table={table} isExistActionDeal={isExistActionDeal} />
       ) : (
         <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
           Заявок нет

@@ -18,5 +18,5 @@ export const PermissionUser = {
   DOWNLOAD_REPORTS: "Скачивание отчетов",
   USER_MANAGEMENT: "Управление пользователями",
   DEAL_MANAGEMENT: "Редактирование/удаление сделок",
-  TASK_MANAGEMENT: "Редактирование/удаление задач"
+  TASK_MANAGEMENT: "Редактирование/удаление задач",
 } as const;

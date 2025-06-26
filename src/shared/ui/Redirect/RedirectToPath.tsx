@@ -1,10 +1,15 @@
 // src/shared/ui/Redirect.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const  RedirectToPath = ({ to }: { to: string }) => {
+import { useRouter } from "next/navigation";
+
+// src/shared/ui/Redirect.tsx
+
+// src/shared/ui/Redirect.tsx
+
+const RedirectToPath = ({ to }: { to: string }) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -12,6 +17,6 @@ const  RedirectToPath = ({ to }: { to: string }) => {
   }, [to, router]);
 
   return null;
-}
+};
 
 export default RedirectToPath;

@@ -1,16 +1,28 @@
-import React, { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
+
+import { useParams } from "next/navigation";
 
 import { ContactSchema } from "../model/schema";
 
 const useSetContactsToDeal = <T extends FieldValues>(
-  onSubmit: (data: T) => void
+  onSubmit: (data: T) => void,
+  managerId: string
 ) => {
-  const [contacts, setContacts] = React.useState<ContactSchema["contacts"]>([]);
-  const [selectedContacts, setSelectedContacts] = React.useState<
+
+  const { userId } = useParams();
+
+  const firstManagerId = managerId || userId;
+
+  const [contacts, setContacts] = useState<ContactSchema["contacts"]>([]);
+  const [managers, setManagers] = useState<{ userId: string }[]>([
+    { userId: firstManagerId as string },
+  ]);
+  const [firstManager, setFirstManager] = useState<string>('')
+  const [selectedContacts, setSelectedContacts] = useState<
     ContactSchema["contacts"]
   >([]);
-  const [isAddContact, setIsAddContact] = React.useState(false);
+  const [isAddContact, setIsAddContact] = useState(false);
 
   const handleDeleteContact = useCallback((id: string) => {
     setSelectedContacts((prevContacts) =>
@@ -25,11 +37,16 @@ const useSetContactsToDeal = <T extends FieldValues>(
   const handleSubmit = (data: T) => {
     const fullData = {
       ...data,
+      userId: firstManager,
       contacts: selectedContacts,
+      managersIds: managers,
     };
-
     onSubmit(fullData);
   };
+
+  useEffect(() => {
+    setFirstManager(firstManagerId as string)
+  }, [firstManagerId])
 
   return {
     contacts,
@@ -40,6 +57,10 @@ const useSetContactsToDeal = <T extends FieldValues>(
     handleSubmit,
     isAddContact,
     toggleAddContact,
+    setManagers,
+    managers,
+    firstManager, 
+    setFirstManager
   };
 };
 

@@ -4,6 +4,7 @@ import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import { formatterCurrency } from "@/shared/lib/utils";
 import { TOAST } from "@/shared/ui/Toast";
 
@@ -26,6 +27,7 @@ const EditRetailForm = ({
   dealId: string;
 }) => {
   const { data, isPending: isLoading } = useGetRetailById(dealId, false);
+  const { authUser } = useStoreUser();
 
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema),
@@ -57,11 +59,14 @@ const EditRetailForm = ({
         delta: formatCurrency(data.delta),
         resource: data.resource ?? "",
         contacts: data?.additionalContacts ?? [],
+        managersIds: Array.isArray(data.managers)
+          ? data.managers.map((manager) => ({ userId: manager.id }))
+          : [],
       });
     }
   }, [form, data, isLoading]);
 
-  if (isLoading) <FormDealSkeleton />;
+  if (isLoading) return <FormDealSkeleton />;
 
   return (
     <RetailFormBody
@@ -69,6 +74,7 @@ const EditRetailForm = ({
       onSubmit={onSubmit}
       isPending={isPending}
       contactsKey="contacts"
+      managerId={data?.userId || authUser?.id}
     />
   );
 };

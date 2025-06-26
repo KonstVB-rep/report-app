@@ -11,17 +11,21 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
+
 // import { TOAST } from "@/shared/ui/Toast";
 
 import { TaskFormType, TaskFormTypeWithId, TaskWithUserInfo } from "../types";
+
 // import { getDepartmentUsersWithTasks } from "./queryFn";
 
-export const getTasksDepartment = async (departmentId: number): Promise<TaskWithUserInfo[] | [] | null>  => {
+export const getTasksDepartment = async (
+  departmentId: number
+): Promise<TaskWithUserInfo[] | [] | null> => {
   try {
-    const {user} = await handleAuthorization();
+    const { user } = await handleAuthorization();
 
-    if(user!.departmentId !== +departmentId){
-      return checkUserPermissionByRole(user!, [PermissionEnum.TASK_MANAGEMENT] )
+    if (user!.departmentId !== +departmentId) {
+      return checkUserPermissionByRole(user!, [PermissionEnum.TASK_MANAGEMENT]);
     }
 
     return await prisma.task.findMany({
@@ -44,7 +48,7 @@ export const getTasksDepartment = async (departmentId: number): Promise<TaskWith
           },
         },
       },
-      orderBy: [{taskStatus: 'asc'}, {orderTask:"asc"}]
+      orderBy: [{ taskStatus: "asc" }, { orderTask: "asc" }],
     });
   } catch (error) {
     console.error(error);
@@ -52,8 +56,9 @@ export const getTasksDepartment = async (departmentId: number): Promise<TaskWith
   }
 };
 
-
-export const getUserTasks = async (userId: string): Promise<TaskWithUserInfo[] | []> => {
+export const getUserTasks = async (
+  userId: string
+): Promise<TaskWithUserInfo[] | []> => {
   try {
     await handleAuthorization();
 
@@ -63,10 +68,7 @@ export const getUserTasks = async (userId: string): Promise<TaskWithUserInfo[] |
 
     return await prisma.task.findMany({
       where: {
-        OR: [
-          {assignerId: userId},
-          {executorId: userId}
-        ] 
+        OR: [{ assignerId: userId }, { executorId: userId }],
       },
       include: {
         assigner: {
@@ -84,7 +86,7 @@ export const getUserTasks = async (userId: string): Promise<TaskWithUserInfo[] |
           },
         },
       },
-      orderBy: [{taskStatus: 'asc'}, {orderTask:"asc"}]
+      orderBy: [{ taskStatus: "asc" }, { orderTask: "asc" }],
     });
   } catch (error) {
     console.error(error);
@@ -125,7 +127,7 @@ export const getTask = async (taskId: string) => {
   }
 };
 
-export const createTask = async (task: Omit<TaskFormType, 'orderTask'>) => {
+export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -133,9 +135,9 @@ export const createTask = async (task: Omit<TaskFormType, 'orderTask'>) => {
     const lastTask = await prisma.task.findFirst({
       where: {
         departmentId: +task.departmentId,
-        taskStatus: task.taskStatus
-      }
-    })
+        taskStatus: task.taskStatus,
+      },
+    });
 
     const newOrder = lastTask ? lastTask.orderTask + 1 : 0;
 
@@ -146,7 +148,7 @@ export const createTask = async (task: Omit<TaskFormType, 'orderTask'>) => {
         assignerId: userId,
         dueDate: new Date(task.dueDate),
         startDate: new Date(task.startDate),
-        orderTask:newOrder
+        orderTask: newOrder,
       },
       include: {
         assigner: {
@@ -201,7 +203,6 @@ export const updateTask = async (taskTarget: TaskFormTypeWithId) => {
         startDate: new Date(taskTarget.startDate),
       },
     });
-
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -238,28 +239,27 @@ export const deleteTask = async (taskId: string, idTaskOwner: string) => {
   }
 };
 
-
 export const updateTasksOrder = async (updatedTasks: TaskWithUserInfo[]) => {
   try {
-      await handleAuthorization();
+    await handleAuthorization();
 
-      const tasks = await prisma.$transaction(async (prisma) => {
-        for(const task of updatedTasks){
-            await prisma.task.update({
-              where: {
-                id: task.id
-              },
-              data: {
-                taskStatus: task.taskStatus,
-                orderTask: task.orderTask
-              }
-            })
-        }
-      })
+    const tasks = await prisma.$transaction(async (prisma) => {
+      for (const task of updatedTasks) {
+        await prisma.task.update({
+          where: {
+            id: task.id,
+          },
+          data: {
+            taskStatus: task.taskStatus,
+            orderTask: task.orderTask,
+          },
+        });
+      }
+    });
 
-    return {success: true, data: tasks }
+    return { success: true, data: tasks };
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
   }
-}
+};

@@ -2,13 +2,13 @@ import React, { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
+import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
 
-import { useGetOrderById } from "../hooks/query";
 import { useDelOrder } from "../hooks/mutate";
-import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
+import { useGetOrderById } from "../hooks/query";
 
 type Props = {
   id: string;
@@ -16,9 +16,9 @@ type Props = {
 };
 
 const DelOrderForm = ({ id, close }: Props) => {
-  const { data: order, isPending:isLoading } = useGetOrderById(id);
+  const { data: order, isPending: isLoading } = useGetOrderById(id);
 
-  const { mutate: delDeal, isPending } = useDelOrder(close)
+  const { mutate: delDeal, isPending } = useDelOrder(close);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -2,7 +2,6 @@
 
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-
 import { useRouter } from "next/navigation";
 
 import { Plus } from "lucide-react";

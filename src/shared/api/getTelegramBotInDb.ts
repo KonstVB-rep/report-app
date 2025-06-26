@@ -1,4 +1,5 @@
 import prisma from "@/prisma/prisma-client";
+
 import { handleError } from "./handleError";
 
 export const getTelegramBotInDb = async (botName: string, userId: string) => {
@@ -6,7 +7,6 @@ export const getTelegramBotInDb = async (botName: string, userId: string) => {
     const bot = await prisma.telegramBot.findUnique({
       where: { botName },
     });
-
 
     if (!bot) {
       return null;

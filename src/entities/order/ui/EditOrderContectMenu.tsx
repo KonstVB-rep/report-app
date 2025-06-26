@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
 
-
 const EditOrderForm = dynamic(() => import("./EditOrderForm"), {
   ssr: false,
   loading: () => <FormDealSkeleton />,
@@ -31,9 +30,7 @@ const EditOrderContectMenu = ({
       showX={true}
     >
       <DialogHeader>
-        <DialogTitle className="sr-only">
-          Редактировать заявку
-        </DialogTitle>
+        <DialogTitle className="sr-only">Редактировать заявку</DialogTitle>
         <DialogDescription></DialogDescription>
       </DialogHeader>
       <EditOrderForm close={close} dealId={id} />

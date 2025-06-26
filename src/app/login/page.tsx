@@ -7,7 +7,6 @@ import { LoginForm } from "@/feature/auth/ui/login-form";
 import RedirectLastPath from "@/shared/ui/Redirect/RedirectLastPath";
 
 export default function LoginPage() {
-
   return (
     <RedirectLastPath>
       <div className="relative flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">

@@ -39,7 +39,7 @@ export enum DeliveryRetail {
 export enum DealType {
   PROJECT = "Проект",
   RETAIL = "Розница",
-  ORDER = "Заявки"
+  ORDER = "Заявки",
 }
 
 export enum StatusProject {
@@ -123,7 +123,7 @@ export const DeliveryRetailLabels: Record<keyof typeof DeliveryRetail, string> =
     WORK: "Работы",
   } as const;
 
-type StatusProjectLabelsType = Record<keyof typeof StatusProject, string>
+type StatusProjectLabelsType = Record<keyof typeof StatusProject, string>;
 
 export const StatusProjectLabels: StatusProjectLabelsType = {
   INVOICE_ISSUED: "Выставлен счет",
@@ -143,7 +143,7 @@ export const StatusProjectLabels: StatusProjectLabelsType = {
 export const DealTypeLabels: Record<keyof typeof DealType, string> = {
   PROJECT: "Проект",
   RETAIL: "Розница",
-  ORDER: "Заявки"
+  ORDER: "Заявки",
 } as const;
 
 export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
@@ -174,7 +174,6 @@ export type AllStatusKeys =
   | keyof typeof StatusProject
   | keyof typeof StatusRetail;
 
-
 type ExcludedKeys = "PAID" | "CLOSED" | "REJECT";
 
 export type StatusesInWorkType = {
@@ -191,15 +190,18 @@ export const StatusesInWork: StatusesInWorkType = {
   // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
 };
 
-export const StatusesContract ={
-    CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
-    PROGRESS: "Проект в работе / Закупка / Производство",
-    DELIVERY_WORKS: "Поставка / Выполнение работ",
-    SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
-    CLOSED: "Закрыт",
-}
+export const StatusesContract = {
+  CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
+  PROGRESS: "Проект в работе / Закупка / Производство",
+  DELIVERY_WORKS: "Поставка / Выполнение работ",
+  SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
+  CLOSED: "Закрыт",
+};
 
-export type StatusContractLabelsType = Record<keyof typeof StatusContract, string>
+export type StatusContractLabelsType = Record<
+  keyof typeof StatusContract,
+  string
+>;
 
 export const StatusContractLabels: StatusContractLabelsType = {
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
@@ -208,4 +210,3 @@ export const StatusContractLabels: StatusContractLabelsType = {
   SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
 } as const;
-

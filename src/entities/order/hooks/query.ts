@@ -1,9 +1,12 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/ui/Toast";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { getAllOrder, getOrderById, getOrdersByUserId } from "../api";
 import { OrderResponse } from "../types";
-// import { OrderResponse } from "../types";
+
 
 export const useGetOrders = () => {
   const { authUser } = useStoreUser();
@@ -18,8 +21,12 @@ export const useGetOrders = () => {
 
         return await getAllOrder(String(authUser?.departmentId));
       } catch (error) {
-        console.log(error, "Ошибка useGetAllProjects");
-        TOAST.ERROR((error as Error).message);
+        console.log(error, "Ошибка useGetAllOrder");
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -28,14 +35,14 @@ export const useGetOrders = () => {
   });
 };
 
-
 export const useGetOrderById = (orderId: string, useCache: boolean = true) => {
   const { authUser } = useStoreUser();
   const queryClient = useQueryClient();
 
-  const cachedDeals = queryClient.getQueryData<
-    OrderResponse[]
-  >(["orders", authUser?.departmentId]);
+  const cachedDeals = queryClient.getQueryData<OrderResponse[]>([
+    "orders",
+    authUser?.departmentId,
+  ]);
   const cachedDeal = cachedDeals?.find((p) => p.id === orderId);
 
   return useQuery<OrderResponse | null, Error>({
@@ -58,7 +65,11 @@ export const useGetOrderById = (orderId: string, useCache: boolean = true) => {
           (error as Error).message,
           "❌ Ошибка в useGetProjectById"
         );
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
@@ -68,26 +79,23 @@ export const useGetOrderById = (orderId: string, useCache: boolean = true) => {
   });
 };
 
-export const useGetOrdersNotAtWorkByUserId = (useCache: boolean = true) => {
+export const useGetOrdersNotAtWorkByUserId = () => {
   const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
-
-  const cachedOrders = queryClient.getQueryData<
-    OrderResponse[]
-  >(["orders-not-at-work-user", authUser?.id]);
-  const cachedOrder = cachedOrders?.filter((p) => p.manager === authUser?.id);
 
   return useQuery<OrderResponse[], Error>({
     queryKey: ["orders-not-at-work-user", authUser?.id],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
-
-        // if(!NOT_MANAGERS_POSITIONS_KEYS.includes(authUser?.position as string)){
-        //   return []
+        // if (!authUser?.id) {
+        //   // throw new Error("Пользователь не авторизован");
+        //   return
         // }
+
+        if (
+          !NOT_MANAGERS_POSITIONS_KEYS.includes(authUser?.position as string)
+        ) {
+          return [];
+        }
 
         const orders = await getOrdersByUserId(authUser.id);
 
@@ -95,14 +103,15 @@ export const useGetOrdersNotAtWorkByUserId = (useCache: boolean = true) => {
       } catch (error) {
         console.error(
           (error as Error).message,
-          "❌ Ошибка в useGetProjectById"
+          "❌ Ошибка в useGetOrdersNotAtWorkByUserId"
         );
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
-    enabled: !useCache || !cachedOrder, // Запрос если нет в кэше ИЛИ useCache = false
-    placeholderData: useCache ? cachedOrder : undefined, // Берем из кэша только если useCache = true
-    staleTime: useCache ? 60 * 1000 : 0,
   });
 };

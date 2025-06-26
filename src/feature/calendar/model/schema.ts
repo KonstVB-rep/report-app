@@ -53,7 +53,7 @@ export const EventCalendarFormSchema = z
 
       startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
       endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
-      now.setSeconds(0,0);
+      now.setSeconds(0, 0);
       return startDate <= endDate && startDate >= now && endDate > now;
     },
     {

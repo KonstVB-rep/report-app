@@ -12,21 +12,22 @@ import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 // import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+
 import DataOrderTable from "./DataOrderTable";
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
   retails: "Розничные сделки",
   // contracts: "Договора",
-  orders: "Заявки"
- }
+  orders: "Заявки",
+};
 
 // const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
 //   ssr: false,
 //   loading: () => <TableRowsSkeleton />,
 // });
 
-interface PersonTableProps<T> {
+interface OrdersTemplateTableProps<T> {
   data: T[];
   // type: DealType;
   columns: ColumnDef<T>[];
@@ -38,17 +39,21 @@ const OrdersTemplateTable = <T extends { id: string }>({
   // type,
   columns,
   // getRowLink,
-}: PersonTableProps<T>) => {
+}: OrdersTemplateTableProps<T>) => {
   const { userId, dealType } = useParams();
   const { authUser } = useStoreUser();
   const isPageAuthuser = userId === authUser?.id;
-
 
   return (
     <DealTableTemplate>
       <>
         <div className="flex flex-wrap justify-between gap-3 w-full">
-          <p className="border rounded-md p-2">{DealTypeLabels[dealType as string]}</p><p className="border rounded-md p-2">Общее количество заявок: {data.length}</p>
+          <p className="border rounded-md p-2">
+            {DealTypeLabels[dealType as string]}
+          </p>
+          <p className="border rounded-md p-2">
+            Общее количество заявок: {data.length}
+          </p>
         </div>
 
         {isPageAuthuser && <ButtonsGroupTable />}
