@@ -19,9 +19,9 @@ export const useGetDepartmentsWithUsers = () => {
       } catch (error) {
         console.log(error, "Ошибка useGetDepartmentsWithUsers");
         if ((error as Error).message === "Failed to fetch") {
-            TOAST.ERROR("Не удалось получить данные");
+          TOAST.ERROR("Не удалось получить данные");
         } else {
-            TOAST.ERROR((error as Error).message);
+          TOAST.ERROR((error as Error).message);
         }
         return null;
       }

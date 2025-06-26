@@ -57,7 +57,7 @@ export const useDelDeal = (
       closeModalFn();
     },
     onError: (error) => {
-       if ((error as Error).message === "Failed to fetch") {
+      if ((error as Error).message === "Failed to fetch") {
         TOAST.ERROR("Не удалось получить данные");
       } else {
         TOAST.ERROR((error as Error).message);
@@ -191,7 +191,7 @@ export const useMutationUpdateRetail = (
         managersIds: data.managersIds,
       });
     },
-  
+
     onError: (_error) => {
       TOAST.ERROR((_error as Error).message);
     },

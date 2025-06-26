@@ -9,7 +9,6 @@ const useSetContactsToDeal = <T extends FieldValues>(
   onSubmit: (data: T) => void,
   managerId: string
 ) => {
-
   const { userId } = useParams();
 
   const firstManagerId = managerId || userId;
@@ -18,7 +17,7 @@ const useSetContactsToDeal = <T extends FieldValues>(
   const [managers, setManagers] = useState<{ userId: string }[]>([
     { userId: firstManagerId as string },
   ]);
-  const [firstManager, setFirstManager] = useState<string>('')
+  const [firstManager, setFirstManager] = useState<string>("");
   const [selectedContacts, setSelectedContacts] = useState<
     ContactSchema["contacts"]
   >([]);
@@ -45,8 +44,8 @@ const useSetContactsToDeal = <T extends FieldValues>(
   };
 
   useEffect(() => {
-    setFirstManager(firstManagerId as string)
-  }, [firstManagerId])
+    setFirstManager(firstManagerId as string);
+  }, [firstManagerId]);
 
   return {
     contacts,
@@ -59,8 +58,8 @@ const useSetContactsToDeal = <T extends FieldValues>(
     toggleAddContact,
     setManagers,
     managers,
-    firstManager, 
-    setFirstManager
+    firstManager,
+    setFirstManager,
   };
 };
 

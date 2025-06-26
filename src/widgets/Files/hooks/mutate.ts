@@ -39,10 +39,10 @@ export const useUploadFileYdxDisk = () => {
     onError: (error) => {
       console.log(error);
       if ((error as Error).message === "Failed to fetch") {
-            TOAST.ERROR("Не удалось получить данные");
-        } else {
-            TOAST.ERROR((error as Error).message);
-        }
+        TOAST.ERROR("Не удалось получить данные");
+      } else {
+        TOAST.ERROR((error as Error).message);
+      }
     },
   });
 };
@@ -65,10 +65,10 @@ export const useDownLoadFile = () => {
     },
     onError: (error) => {
       if ((error as Error).message === "Failed to fetch") {
-            TOAST.ERROR("Не удалось получить данные");
-        } else {
-            TOAST.ERROR((error as Error).message);
-        }
+        TOAST.ERROR("Не удалось получить данные");
+      } else {
+        TOAST.ERROR((error as Error).message);
+      }
     },
   });
 };
@@ -110,10 +110,10 @@ export const useDeleteFiles = (
     },
     onError: (error) => {
       if ((error as Error).message === "Failed to fetch") {
-            TOAST.ERROR("Не удалось получить данные");
-        } else {
-            TOAST.ERROR((error as Error).message);
-        }
+        TOAST.ERROR("Не удалось получить данные");
+      } else {
+        TOAST.ERROR((error as Error).message);
+      }
     },
   });
 };

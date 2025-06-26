@@ -12,7 +12,6 @@ interface Props {
 }
 
 export default function Starfield(props: Props) {
-
   const {
     speedFactor = 0.05,
     backgroundColor = "black",

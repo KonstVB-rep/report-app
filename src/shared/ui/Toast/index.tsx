@@ -40,7 +40,7 @@ export const TOAST = {
         margin: "auto",
       },
     }),
-    INFO: (message: string) =>
+  INFO: (message: string) =>
     toast.info(message, {
       duration: 2000,
       position: "top-center",
@@ -50,7 +50,7 @@ export const TOAST = {
         fontSize: "14px",
         height: "auto",
         color: "#333",
-        textAlign:"center",
+        textAlign: "center",
         backgroundColor: "#azure",
         maxWidth: "400px",
         minWidth: "12rem",

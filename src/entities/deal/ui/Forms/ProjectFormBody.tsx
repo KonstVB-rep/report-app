@@ -2,23 +2,23 @@
 
 import { useEffect } from "react";
 import {
-    FieldValues,
-    Path,
-    PathValue,
-    UseFormReturn,
-    useWatch,
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormReturn,
+  useWatch,
 } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
@@ -33,9 +33,9 @@ import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {
-    DeliveryProjectLabels,
-    DirectionProjectLabels,
-    StatusProjectLabels,
+  DeliveryProjectLabels,
+  DirectionProjectLabels,
+  StatusProjectLabels,
 } from "../../lib/constants";
 import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
@@ -81,8 +81,8 @@ const ProjectFormBody = <T extends FieldValues>({
     toggleAddContact,
     managers,
     setManagers,
-    firstManager, 
-    setFirstManager
+    firstManager,
+    setFirstManager,
   } = useSendDealInfo<T>(onSubmit, managerId);
 
   const currentContacts = form.getValues(contactsKey as Path<T>);

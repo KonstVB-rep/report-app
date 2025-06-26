@@ -7,7 +7,6 @@ import { TOAST } from "@/shared/ui/Toast";
 import { getAllOrder, getOrderById, getOrdersByUserId } from "../api";
 import { OrderResponse } from "../types";
 
-
 export const useGetOrders = () => {
   const { authUser } = useStoreUser();
 

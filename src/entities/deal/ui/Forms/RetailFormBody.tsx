@@ -7,12 +7,12 @@ import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
@@ -27,9 +27,9 @@ import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {
-    DeliveryRetailLabels,
-    DirectionRetailLabels,
-    StatusRetailLabels,
+  DeliveryRetailLabels,
+  DirectionRetailLabels,
+  StatusRetailLabels,
 } from "../../lib/constants";
 import { Contact } from "../../types";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
@@ -75,8 +75,8 @@ const RetailFormBody = <T extends FieldValues>({
     toggleAddContact,
     managers,
     setManagers,
-    firstManager, 
-    setFirstManager
+    firstManager,
+    setFirstManager,
   } = useSendDealInfo<T>(onSubmit, managerId);
 
   const currentContacts = form.getValues(contactsKey as Path<T>);
@@ -268,9 +268,9 @@ const RetailFormBody = <T extends FieldValues>({
                 {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
               </Button>
 
-              <AddManagerToDeal 
-                setManagers={setManagers} 
-                managers={managers} 
+              <AddManagerToDeal
+                setManagers={setManagers}
+                managers={managers}
                 firstManager={firstManager}
                 setFirstManager={setFirstManager}
               />
