@@ -27,12 +27,14 @@ const DataOrderTable = dynamic(() => import("./DataOrderTable"), {
 }) => JSX.Element;
 
 const OrdersTable = () => {
-  const { data: orders, isPending } = useGetOrders();
+  const { data: orders, isPending, isFetching } = useGetOrders();
   const { userId, dealType } = useParams();
   const { authUser } = useStoreUser();
   const isPageAuthUser = userId === authUser?.id;
 
-  if (isPending) return <DealsSkeleton />;
+  if (isFetching) return <DealsSkeleton />; // Показываем skeleton, если данные ещё в процессе загрузки
+
+  if (isPending || !orders) return <DealsSkeleton />; // Показываем skeleton, если данных нет
 
   return (
     <DealTableTemplate>

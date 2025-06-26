@@ -74,8 +74,7 @@ const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
 };
 /********************************************** Получить ****************************************************************/
 export const getProjectById = async (
-  dealId: string,
-  idDealOwner: string
+  dealId: string
 ): Promise<
   | (ProjectResponseWithContactsAndFiles & { managers: ManagerShortInfo[] })
   | null
@@ -85,31 +84,9 @@ export const getProjectById = async (
 
     const { user, userId } = data!;
 
-    if (!dealId || !idDealOwner) {
+    if (!dealId) {
       handleError("Недостаточно данных");
     }
-
-    const userOwnerProject = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true, departmentId: true },
-    });
-
-    if (!userOwnerProject) {
-      return handleError("Пользователь не найден");
-    }
-
-    const isOwner = userId === idDealOwner;
-
-    if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    }
-
-    // const deal = await prisma.project.findUnique({
-    //   where: { id: dealId },
-    //   include: {
-    //     additionalContacts: true,
-    //   },
-    // });
 
     const deal = await prisma.project.findUnique({
       where: { id: dealId },
@@ -123,6 +100,23 @@ export const getProjectById = async (
 
     if (!deal) {
       return null;
+    }
+
+    const userOwnerProject = await prisma.user.findUnique({
+      where: { id: deal.userId },
+      select: { role: true, departmentId: true },
+    });
+
+    if (!userOwnerProject) {
+      return handleError(
+        "Пользователь не найден илил у вас нет прав на операцию"
+      );
+    }
+
+    const isOwner = userId === deal.userId;
+
+    if (!isOwner && user) {
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
     const { projectManagers, ...rest } = deal;
@@ -155,8 +149,7 @@ export const getProjectById = async (
 };
 
 export const getRetailById = async (
-  dealId: string,
-  idDealOwner: string
+  dealId: string
 ): Promise<
   (RetailResponseWithContactsAndFiles & { managers: ManagerShortInfo[] }) | null
 > => {
@@ -165,31 +158,9 @@ export const getRetailById = async (
 
     const { user, userId } = data!;
 
-    if (!dealId || !idDealOwner) {
+    if (!dealId) {
       return handleError("Недостаточно данных");
     }
-
-    const userOwnerProject = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { role: true, departmentId: true },
-    });
-
-    if (!userOwnerProject) {
-      return handleError("Пользователь не найден");
-    }
-
-    const isOwner = userId === idDealOwner;
-
-    if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    }
-
-    // const deal = await prisma.retail.findUnique({
-    //   where: { id: dealId },
-    //   include: {
-    //     additionalContacts: true,
-    //   },
-    // });
 
     const deal = await prisma.retail.findUnique({
       where: { id: dealId },
@@ -203,6 +174,23 @@ export const getRetailById = async (
 
     if (!deal) {
       return null;
+    }
+
+    const userOwnerProject = await prisma.user.findUnique({
+      where: { id: deal.userId },
+      select: { role: true, departmentId: true },
+    });
+
+    if (!userOwnerProject) {
+      return handleError(
+        "Пользователь не найден или у вас нет прав на операцию"
+      );
+    }
+
+    const isOwner = userId === deal.userId;
+
+    if (!isOwner && user) {
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
     const { retailManagers, ...rest } = deal;
@@ -740,8 +728,7 @@ export const getDealsByDateRange = async (
 
 /******************************************Создать *********************************************************/
 export const createProject = async (
-  data: ProjectWithoutId & { managersIds: { userId: string }[] },
-  ownerId: string
+  data: ProjectWithoutId & { managersIds: { userId: string }[] }
 ) => {
   try {
     if (!data) {
@@ -750,13 +737,10 @@ export const createProject = async (
 
     const { userId, user } = await checkAuthAndDataFill(data);
 
-    let idOwnerDeal = userId;
-
-    const isOwner = userId === ownerId;
+    const isOwner = userId === data.userId;
 
     if (!isOwner) {
       await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
-      idOwnerDeal = ownerId;
     }
 
     const {
@@ -786,7 +770,7 @@ export const createProject = async (
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
       email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (idOwnerDeal as string) ?? "", // Приводим к типу string
+      manager: (data.userId as string) ?? "", // Приводим к типу string
       contact: (dealData.contact as string) ?? "", // Приводим к типу string
       phone: (dealData.phone as string) ?? "", // Приводим к типу string
       comments: (dealData.comments as string) ?? "", // Приводим к типу string
@@ -838,7 +822,7 @@ export const createProject = async (
       data: {
         ...(dealData as ProjectResponse),
         id: idDeal,
-        userId: idOwnerDeal,
+        userId: data.userId as string,
         amountCP: safeAmountCP,
         delta: safeDelta,
         orderId: (dealData?.orderId as string | undefined) || idOrder,
@@ -876,8 +860,7 @@ export const createProject = async (
 };
 
 export const createRetail = async (
-  data: RetailWithoutId & { managersIds: { userId: string }[] },
-  ownerId: string
+  data: RetailWithoutId & { managersIds: { userId: string }[] }
 ) => {
   try {
     if (!data) {
@@ -886,13 +869,10 @@ export const createRetail = async (
 
     const { userId, user } = await checkAuthAndDataFill(data);
 
-    let idOwnerDeal = userId;
-
-    const isOwner = userId === ownerId;
+    const isOwner = userId === data.userId;
 
     if (!isOwner) {
       await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
-      idOwnerDeal = ownerId;
     }
 
     const { amountCP, delta, contacts, managersIds, ...dealData } = data;
@@ -912,7 +892,7 @@ export const createRetail = async (
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
       email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (idOwnerDeal as string) ?? "", // Приводим к типу string
+      manager: (data.userId as string) ?? "", // Приводим к типу string
       contact: (dealData.contact as string) ?? "", // Приводим к типу string
       phone: (dealData.phone as string) ?? "", // Приводим к типу string
       comments: (dealData.comments as string) ?? "", // Приводим к типу string
@@ -962,7 +942,7 @@ export const createRetail = async (
       data: {
         ...(dealData as RetailResponse),
         id: idDeal,
-        userId: idOwnerDeal,
+        userId: data.userId as string,
         amountCP: safeamountCP,
         delta: safeDelta,
         orderId: (dealData.orderId as string) || idOrder,
@@ -998,7 +978,6 @@ export const createRetail = async (
 /********************************************************* Обновить проект ********************************************/
 export const updateProject = async (
   data: ProjectWithManagersIds
-  // managersIds: { userId: string }[] = []
 ): Promise<ProjectWithoutDateCreateAndUpdate | null> => {
   try {
     const { userId, user } = await checkAuthAndDataFill(data);
@@ -1024,7 +1003,9 @@ export const updateProject = async (
       return null;
     }
 
-    const isOwner = deal.userId === userId;
+    const isOwner =
+      deal.userId === userId ||
+      managersIds.find((item) => item.userId === userId);
 
     if (!isOwner && user) {
       await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT]);
@@ -1046,7 +1027,7 @@ export const updateProject = async (
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
       email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (dealData.manager as string) ?? "", // Приводим к типу string
+      manager: (data.userId as string) ?? "", // Приводим к типу string
       contact: (dealData.contact as string) ?? "", // Приводим к типу string
       phone: (dealData.phone as string) ?? "", // Приводим к типу string
       comments: (dealData.comments as string) ?? "", // Приводим к типу string
@@ -1086,7 +1067,6 @@ export const updateProject = async (
       where: { id: deal.id },
       data: {
         ...dealData,
-        // userId: deal.userId,
         amountCP: safeAmountCP,
         delta: safeDelta,
         amountWork: safeAmountWork,
@@ -1194,14 +1174,11 @@ export const updateProject = async (
 
 export const updateRetail = async (
   data: RetailWithManagersIds
-  // managersIds: { userId: string }[] = []
 ): Promise<RetailWithoutDateCreateAndUpdate | null> => {
   try {
     const { userId, user } = await checkAuthAndDataFill(data);
 
     const { id, amountCP, delta, contacts, managersIds, ...dealData } = data;
-
-    let idOwnerDeal = userId;
 
     const deal = await prisma.retail.findUnique({
       where: { id: id as string },
@@ -1220,7 +1197,6 @@ export const updateRetail = async (
 
     if (!isOwner) {
       await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
-      idOwnerDeal = deal.userId;
     }
 
     const safeAmountCP = new Prisma.Decimal(amountCP as string);
@@ -1237,13 +1213,13 @@ export const updateRetail = async (
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
       email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (idOwnerDeal as string) ?? "", // Приводим к типу string
+      manager: (data.userId as string) ?? "", // Приводим к типу string
       contact: (dealData.contact as string) ?? "", // Приводим к типу string
       phone: (dealData.phone as string) ?? "", // Приводим к типу string
       comments: (dealData.comments as string) ?? "", // Приводим к типу string
       resource: (dealData.resource as string) ?? "", // Если resource null или не определено, присваиваем null
       type: DealType.RETAIL,
-      retailId: (id as string) ?? "", // Приводим к типу string для retailId
+      retailId: (id as string) ?? "",
       // Преобразуем dateRequest в Date, если он существует, иначе ставим текущую дату
       dateRequest: dealData.dateRequest
         ? new Date(dealData.dateRequest as string)
@@ -1430,12 +1406,17 @@ export const deleteDeal = async (
     // Собираем ID контактов
     contactIdsToCheck = deal.additionalContacts.map((c) => c.id);
 
+    let managers: { dealId: string; userId: string }[] = [];
     // Удаляем связи
     await prisma.$transaction(async (tx) => {
       if (type === DealType.PROJECT) {
         await tx.project.update({
           where: { id: dealId },
           data: { additionalContacts: { set: [] } },
+        });
+
+        managers = await tx.projectManager.findMany({
+          where: { dealId: dealId },
         });
 
         await tx.projectManager.deleteMany({
@@ -1502,7 +1483,7 @@ export const deleteDeal = async (
       );
     });
 
-    return { data: null, message, error: false };
+    return { managers, message, error: false };
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

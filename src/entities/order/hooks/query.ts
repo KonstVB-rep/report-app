@@ -85,10 +85,10 @@ export const useGetOrdersNotAtWorkByUserId = () => {
     queryKey: ["orders-not-at-work-user", authUser?.id],
     queryFn: async () => {
       try {
-        // if (!authUser?.id) {
-        //   // throw new Error("Пользователь не авторизован");
-        //   return
-        // }
+        if (!authUser?.id) {
+          // throw new Error("Пользователь не авторизован");
+          return [];
+        }
 
         if (
           !NOT_MANAGERS_POSITIONS_KEYS.includes(authUser?.position as string)
@@ -96,7 +96,7 @@ export const useGetOrdersNotAtWorkByUserId = () => {
           return [];
         }
 
-        const orders = await getOrdersByUserId(authUser.id);
+        const orders = await getOrdersByUserId(authUser?.id);
 
         return orders ?? [];
       } catch (error) {

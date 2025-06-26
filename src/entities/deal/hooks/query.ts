@@ -42,7 +42,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        const deal = await getProjectById(dealId, authUser.id);
+        const deal = await getProjectById(dealId);
 
         if (!deal) {
           return null;
@@ -85,7 +85,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        const deal = await getRetailById(dealId, authUser.id);
+        const deal = await getRetailById(dealId);
 
         if (!deal) {
           return null;
@@ -133,12 +133,12 @@ export const useGetDealById = <
   // Функции для запроса данных
   const fetchFunctions = {
     [DealType.PROJECT]: getProjectById as (
-      id: string,
-      userId: string
+      id: string
+      // userId: string
     ) => Promise<ProjectResponseWithContactsAndFiles>,
     [DealType.RETAIL]: getRetailById as (
-      id: string,
-      userId: string
+      id: string
+      // userId: string
     ) => Promise<RetailResponseWithContactsAndFiles>,
   };
 
@@ -152,7 +152,7 @@ export const useGetDealById = <
         throw new Error(`Нет функции для типа сделки: ${type}`);
       }
 
-      const entity = await fetchFunctions[type](dealId, authUser.id);
+      const entity = await fetchFunctions[type](dealId);
       return entity as T | undefined;
     } catch (error) {
       console.log(error, "Ошибка useGetDealById");

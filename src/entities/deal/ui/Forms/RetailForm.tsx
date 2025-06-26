@@ -31,10 +31,7 @@ const RetailForm = ({
     },
   });
 
-  const { mutateAsync, isPending } = useCreateRetail(
-    form,
-    managerId || (userId as string)
-  );
+  const { mutateAsync, isPending } = useCreateRetail(form);
 
   const onSubmit = (data: RetailSchema) => {
     const dataForm = orderId ? { ...data, orderId: orderId } : data;

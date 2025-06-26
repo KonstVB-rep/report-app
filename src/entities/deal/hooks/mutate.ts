@@ -13,7 +13,6 @@ import { Dispatch, SetStateAction } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { arraysEqual } from "@/shared/lib/helpers/arraysEqual";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -46,12 +45,23 @@ export const useDelDeal = (
 
       return await deleteDeal(nealId, ownerId, type);
     },
-    onSuccess: (_, dealId) => {
+    onSuccess: (data, dealId) => {
+      data.managers.forEach((manager) => {
+        queryClient.invalidateQueries({
+          queryKey: [`${type.toLowerCase()}s`, manager.userId],
+        });
+      });
+
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, ownerId],
       });
+
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}`, dealId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["orders", Number(authUser?.departmentId)],
       });
 
       closeModalFn();
@@ -81,11 +91,9 @@ export const useMutationUpdateProject = (
 
       return updateProject({
         ...data,
-        id: dealId,
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        userId,
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
@@ -120,7 +128,6 @@ export const useMutationUpdateProject = (
     },
     onSuccess: (_, variables) => {
       close();
-      TOAST.SUCCESS("Данные обновлены");
 
       const previousData = queryClient.getQueryData<ProjectResponse>([
         "project",
@@ -133,23 +140,20 @@ export const useMutationUpdateProject = (
       const currManagers =
         variables.managersIds?.map((m) => m.userId).sort() || [];
 
-      //  сравнение
-      const managersChanged = !arraysEqual(prevManagers, currManagers);
-
       // Обязательная инвалидация
       queryClient.invalidateQueries({ queryKey: ["project", dealId] });
-      queryClient.invalidateQueries({ queryKey: ["contracts", userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["orders", Number(authUser?.departmentId)],
+      });
 
-      // Условная инвалидация менеджеров
-      if (managersChanged) {
-        const allManagers = [
-          ...new Set([...prevManagers, ...currManagers, userId]),
-        ];
+      const allManagers = [
+        ...new Set([...prevManagers, ...currManagers, userId]),
+      ];
 
-        allManagers.forEach((id) => {
-          queryClient.invalidateQueries({ queryKey: ["projects", id] });
-        });
-      }
+      allManagers.forEach((id) => {
+        queryClient.invalidateQueries({ queryKey: ["projects", id] });
+        queryClient.invalidateQueries({ queryKey: ["contracts", id] });
+      });
     },
   });
 };
@@ -206,26 +210,23 @@ export const useMutationUpdateRetail = (
         previousData?.managers?.map((m) => m.id).sort() || [];
       const currManagers =
         variables.managersIds?.map((m) => m.userId).sort() || [];
-      const managersChanged = !arraysEqual(prevManagers, currManagers);
 
       queryClient.invalidateQueries({ queryKey: ["retail", dealId] }); // ✅ Обязательная инвалидация
+      queryClient.invalidateQueries({
+        queryKey: ["orders", Number(authUser?.departmentId)],
+      });
 
-      if (managersChanged) {
-        const allManagers = [
-          ...new Set([...prevManagers, ...currManagers, userId]),
-        ];
-        allManagers.forEach((id) => {
-          queryClient.invalidateQueries({ queryKey: ["retails", id] }); // ✅ Условная инвалидация
-        });
-      }
+      const allManagers = [
+        ...new Set([...prevManagers, ...currManagers, userId]),
+      ];
+      allManagers.forEach((id) => {
+        queryClient.invalidateQueries({ queryKey: ["retails", id] }); // ✅ Условная инвалидация
+      });
     },
   });
 };
 
-export const useCreateProject = (
-  form: UseFormReturn<ProjectSchema>,
-  ownerId: string
-) => {
+export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({
@@ -234,55 +235,55 @@ export const useCreateProject = (
         throw new Error("User ID is missing");
       }
 
-      return createProject(
-        {
-          ...data,
-          email: data.email || "",
-          phone: data.phone || "",
-          deliveryType:
-            data.deliveryType === ""
-              ? null
-              : (data.deliveryType as DeliveryProject),
-          dateRequest: data.dateRequest
-            ? new Date(data.dateRequest)
-            : new Date(),
-          dealStatus: data.dealStatus as StatusProject,
-          plannedDateConnection: data.plannedDateConnection
-            ? new Date(data.plannedDateConnection)
-            : null,
-          direction: data.direction as DirectionProject,
-          amountCP: data.amountCP
-            ? parseFloat(
-                data.amountCP.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          amountPurchase: data.amountPurchase
-            ? parseFloat(
-                data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          amountWork: data.amountWork
-            ? parseFloat(
-                data.amountWork.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          delta: data.delta
-            ? parseFloat(
-                data.delta.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          managersIds: data.managersIds,
-        },
-        ownerId
-      );
+      return createProject({
+        ...data,
+        email: data.email || "",
+        phone: data.phone || "",
+        deliveryType:
+          data.deliveryType === ""
+            ? null
+            : (data.deliveryType as DeliveryProject),
+        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dealStatus: data.dealStatus as StatusProject,
+        plannedDateConnection: data.plannedDateConnection
+          ? new Date(data.plannedDateConnection)
+          : null,
+        direction: data.direction as DirectionProject,
+        amountCP: data.amountCP
+          ? parseFloat(
+              data.amountCP.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        amountPurchase: data.amountPurchase
+          ? parseFloat(
+              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        amountWork: data.amountWork
+          ? parseFloat(
+              data.amountWork.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        delta: data.delta
+          ? parseFloat(
+              data.delta.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        managersIds: data.managersIds,
+      });
     },
 
     onSuccess: (data) => {
       if (data) {
         form.reset(defaultProjectValues);
 
+        // queryClient.invalidateQueries({
+        //   queryKey: ["projects", data.userId],
+        //   exact: true,
+        // });
+
         queryClient.invalidateQueries({
-          queryKey: ["projects", data.userId],
+          queryKey: ["projects", authUser?.id],
           exact: true,
         });
 
@@ -302,10 +303,7 @@ export const useCreateProject = (
   });
 };
 
-export const useCreateRetail = (
-  form: UseFormReturn<RetailSchema>,
-  ownerId: string
-) => {
+export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
 
@@ -315,37 +313,32 @@ export const useCreateRetail = (
         throw new Error("Пользователь не авторизован");
       }
 
-      return createRetail(
-        {
-          ...data,
-          email: data.email || "",
-          phone: data.phone || "",
-          deliveryType:
-            data.deliveryType === ""
-              ? null
-              : (data.deliveryType as DeliveryRetail),
-          dateRequest: data.dateRequest
-            ? new Date(data.dateRequest)
-            : new Date(),
-          dealStatus: data.dealStatus as StatusRetail,
-          plannedDateConnection: data.plannedDateConnection
-            ? new Date(data.plannedDateConnection)
-            : null,
-          direction: data.direction as DirectionRetail,
-          amountCP: data.amountCP
-            ? parseFloat(
-                data.amountCP.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          delta: data.delta
-            ? parseFloat(
-                data.delta.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          managersIds: data.managersIds,
-        },
-        ownerId
-      );
+      return createRetail({
+        ...data,
+        email: data.email || "",
+        phone: data.phone || "",
+        deliveryType:
+          data.deliveryType === ""
+            ? null
+            : (data.deliveryType as DeliveryRetail),
+        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dealStatus: data.dealStatus as StatusRetail,
+        plannedDateConnection: data.plannedDateConnection
+          ? new Date(data.plannedDateConnection)
+          : null,
+        direction: data.direction as DirectionRetail,
+        amountCP: data.amountCP
+          ? parseFloat(
+              data.amountCP.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        delta: data.delta
+          ? parseFloat(
+              data.delta.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        managersIds: data.managersIds,
+      });
     },
     onError: (error) => {
       console.error("Ошибка при создании сделки:", error);
@@ -355,10 +348,16 @@ export const useCreateRetail = (
       if (data) {
         form.reset(defaultRetailValues);
 
+        // queryClient.invalidateQueries({
+        //   queryKey: ["retails", data.userId],
+        //   exact: true,
+        // });
+
         queryClient.invalidateQueries({
-          queryKey: ["retails", data.userId],
+          queryKey: ["retails", authUser?.id],
           exact: true,
         });
+
         queryClient.invalidateQueries({
           queryKey: ["orders", authUser?.departmentId],
           exact: true,

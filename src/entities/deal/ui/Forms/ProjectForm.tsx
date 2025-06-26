@@ -31,10 +31,7 @@ const ProjectForm = ({
     },
   });
 
-  const { mutateAsync, isPending } = useCreateProject(
-    form,
-    managerId || (userId as string)
-  );
+  const { mutateAsync, isPending } = useCreateProject(form);
 
   const onSubmit = (data: ProjectSchema) => {
     const dataForm = orderId ? { ...data, orderId: orderId } : data;
