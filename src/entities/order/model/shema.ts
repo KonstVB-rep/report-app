@@ -13,7 +13,7 @@ export const OrderFormSchema = z
     phone: z.string().optional(),
     email: z.string().email("Некорректный email").or(z.literal("")).optional(),
     manager: z.string(),
-    comments: z.string().optional(),
+    comments: z.string().nullable().optional(),
     projectId: z.string().optional(),
     retailId: z.string().optional(),
     dealType: z.string().optional(),

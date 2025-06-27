@@ -66,7 +66,7 @@ export const ProjectFormSchema = z
       (val) => (val instanceof Date ? val.toISOString() : val || ""),
       z.string()
     ),
-    orderId: z.string().optional(),
+    orderId: z.string().nullable().optional(),
     resource: z.string().optional(),
     contacts: z.array(SingleContactSchema),
     managersIds: z.array(
@@ -148,7 +148,7 @@ export const RetailFormSchema = z
       (val) => (val instanceof Date ? val.toISOString() : val || ""),
       z.string()
     ),
-    orderId: z.string().optional(),
+    orderId: z.string().nullable().optional(),
     resource: z.string().optional(),
     contacts: z.array(SingleContactSchema),
     managersIds: z.array(

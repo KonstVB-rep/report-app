@@ -34,6 +34,7 @@ const useSetContactsToDeal = <T extends FieldValues>(
   };
 
   const handleSubmit = (data: T) => {
+    console.log('click')
     const fullData = {
       ...data,
       userId: firstManager,

@@ -55,6 +55,7 @@ const EditOrderForm = ({
         dateRequest: data.dateRequest?.toISOString(),
         resource: data.resource ?? "",
         manager: data.manager,
+        comments: data.comments ?? null,
       });
     }
   }, [form, data, isLoading]);

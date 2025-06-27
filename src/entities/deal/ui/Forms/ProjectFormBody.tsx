@@ -138,6 +138,8 @@ const ProjectFormBody = <T extends FieldValues>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contactsKey, currentContacts]);
 
+  console.log(form.formState.errors, "error")
+
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
       <Overlay isPending={isPending} />
