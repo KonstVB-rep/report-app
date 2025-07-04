@@ -11,12 +11,14 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useGetOrdersNotAtWorkByUserId } from "@/entities/order/hooks/query";
 import { OrderResponse } from "@/entities/order/types";
 import TabsDealTypeForms from "@/entities/order/ui/TabsDealTypeForms";
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
 import PageTransitionY from "@/shared/ui/MotionComponents/PageTransitionY";
 
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
+  const { authUser } = useStoreUser();
 
   const { data: ordersNotInProgress, refetch } =
     useGetOrdersNotAtWorkByUserId();
@@ -55,6 +57,14 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
       refetch();
     }
   };
+
+  if (!authUser) {
+    return (
+      <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
+        <p className="text-3xl opacity-30">Вы вышли из приложения</p>
+      </div>
+    );
+  }
 
   return (
     <>

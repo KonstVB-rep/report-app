@@ -220,6 +220,8 @@ export const useGetAllDealsByDepartmentByType = (
     },
     enabled: !!userId && !!authUser?.departmentId,
     retry: 2,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
@@ -249,6 +251,8 @@ export const useGetAllProjects = (
     },
     enabled: !!userId && !!authUser?.departmentId,
     retry: 2,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
@@ -278,6 +282,8 @@ export const useGetAllRetails = (
     },
     enabled: !!userId && !!authUser?.departmentId,
     placeholderData: undefined,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
@@ -303,6 +309,8 @@ export const useGetRetailsUser = (userId: string | null) => {
     },
     enabled: !!userId,
     placeholderData: undefined,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
   return { data, isError, ...restData };
 };
@@ -329,6 +337,8 @@ export const useGetProjectsUser = (userId: string | undefined) => {
       }
     },
     enabled: !!userId,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
@@ -354,6 +364,8 @@ export const useGetContractsUser = (userId: string | undefined) => {
       }
     },
     enabled: !!userId,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
@@ -389,5 +401,7 @@ export const useGetDealsByDateRange = (
       }
     },
     enabled: !!userId,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };

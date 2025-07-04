@@ -34,6 +34,7 @@ const AppProvider = ({ children }: PropsWithChildren) => {
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          storageKey="theme"
         >
           <QueryProvider>
             {process.env.NODE_ENV === "development" && (

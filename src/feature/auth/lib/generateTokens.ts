@@ -32,13 +32,13 @@ export const generateTokens = async (
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 24 * 60 * 60,
+    maxAge: 24 * 60 * 60 *30,
   });
   cookiesStore.set("refresh_token", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 60 * 24 * 60 * 60,
   });
 
   return { accessToken, refreshToken };

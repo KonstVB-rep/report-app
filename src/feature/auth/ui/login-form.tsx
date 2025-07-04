@@ -46,8 +46,8 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
   const { data: departmentData } = useGetDepartmentsWithUsers();
 
   const onSubmit = (formData: FormData) => {
-    const isValidData = loginFormSchema.parse(Object.fromEntries(formData));
-    if (!isValidData) return;
+    const parsed = loginFormSchema.safeParse(Object.fromEntries(formData));
+    if (!parsed.success) return;
     formAction(formData);
   };
 

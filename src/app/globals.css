@@ -154,7 +154,7 @@
 }
 
 body {
-  background-color: hsl(var(--background))!important;
+  background-color: hsl(var(--background));
 }
 
 @layer base {
@@ -162,7 +162,7 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-all duration-1000;
   }
 }
 
