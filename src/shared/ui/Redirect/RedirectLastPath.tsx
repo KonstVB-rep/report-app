@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
-import { redirectPathCore } from "../../lib/helpers/redirectPathCore";
 import { resetAllStores } from "../../lib/helpers/сreate";
 
 const RedirectLastPath = ({ children }: { children: ReactNode }) => {
@@ -23,7 +22,7 @@ const RedirectLastPath = ({ children }: { children: ReactNode }) => {
     if (isAuth && authUser && !hasRedirected) {
       const lastAppPath = localStorage.getItem("lastAppPath");
       const redirectUrl =
-        lastAppPath || redirectPathCore(authUser.departmentId, authUser.id);
+        lastAppPath || '/dashboard';
       setHasRedirected(true);
       router.replace(redirectUrl);
     }
