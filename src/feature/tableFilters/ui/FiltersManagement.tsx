@@ -10,8 +10,9 @@ import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-const FiltersManagmentContent = dynamic(
-  () => import("./FiltersManagmentContent"),
+
+const FiltersManagementContent = dynamic(
+  () => import("./FiltersManagementContent"),
   { ssr: false }
 );
 
@@ -26,7 +27,7 @@ type FilterManagmentProps = {
   setSelectedColumns: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-const FiltersManagment = ({
+const FiltersManagement = ({
   setColumnFilters,
   setColumnVisibility,
   openFilters,
@@ -55,7 +56,7 @@ const FiltersManagment = ({
         )}
       </div>
       {columnFilters.length > 0 && (
-        <FiltersManagmentContent
+        <FiltersManagementContent
           setColumnFilters={setColumnFilters}
           setColumnVisibility={setColumnVisibility}
           columnFilters={columnFilters}
@@ -67,4 +68,4 @@ const FiltersManagment = ({
   );
 };
 
-export default FiltersManagment;
+export default FiltersManagement;

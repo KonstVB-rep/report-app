@@ -22,7 +22,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
+import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
@@ -154,7 +154,7 @@ const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
   });
 
   return (
-    <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
+    <div className="relative grid w-full overflow-auto rounded-lg border bg-background p-2 auto-rows-max">
       <div className="flex items-center justify-between gap-2 pb-2">
         {memoizedData.length > 0 && (
           <ProtectedByPermissions
@@ -173,7 +173,7 @@ const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
 
         {memoizedData.length > 0 && (
           <div className="flex flex-1 items-center justify-between gap-2">
-            <FiltersManagment
+            <FiltersManagement
               setColumnFilters={setColumnFilters}
               setColumnVisibility={setColumnVisibility}
               setSelectedColumns={setSelectedColumns}

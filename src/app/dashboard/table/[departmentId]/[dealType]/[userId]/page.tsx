@@ -11,12 +11,9 @@ import {
   getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn";
 
-// import OrdersTable from "../../../../../../entities/order/ui/OrdersTable";
 import PersonTableContract from "../ui/PersonTableContract";
 import PersonTableProject from "../ui/PersonTableProject";
 import PersonTableRetail from "../ui/PersonTableRetails";
-
-// import { getAllOrder } from "@/entities/order/api";
 
 const DealsInWork = ["projects", "retails", "contracts"];
 
@@ -41,11 +38,6 @@ const fetchData = async (
         queryKey: ["contracts", id],
         queryFn: () => getContractsUserQuery(id),
       });
-    // case "orders":
-    //   return queryClient.prefetchQuery({
-    //     queryKey: ["orders", id],
-    //     queryFn: () => getAllOrder(id),
-    // });
     default:
       return null;
   }
@@ -58,6 +50,7 @@ const PersonTablePage = async ({
 }) => {
   const { dealType, userId, departmentId } = await params;
   const queryClient = getQueryClient();
+
   try {
     const id = DealsInWork.includes(dealType) ? userId : departmentId;
 
@@ -78,9 +71,6 @@ const PersonTablePage = async ({
     case "contracts":
       Component = PersonTableContract;
       break;
-    // case "orders":
-    //   Component = OrdersTable;
-    //   break;
     default:
       return null;
   }

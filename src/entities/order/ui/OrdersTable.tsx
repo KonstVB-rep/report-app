@@ -3,7 +3,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import { JSX } from "react";
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
@@ -30,26 +29,25 @@ const OrdersTable = () => {
   const { data: orders, isPending, isFetching } = useGetOrders();
   const { userId, dealType } = useParams();
   const { authUser } = useStoreUser();
+
   const isPageAuthUser = userId === authUser?.id;
+  const isLoading = isPending || isFetching || !orders;
+  const dealTypeLabel = DealTypeLabels[dealType as string];
 
-  if (isFetching) return <DealsSkeleton />; // Показываем skeleton, если данные ещё в процессе загрузки
-
-  if (isPending || !orders) return <DealsSkeleton />; // Показываем skeleton, если данных нет
+  if (isLoading) return <DealsSkeleton />;
 
   return (
     <DealTableTemplate>
       <>
         <div className="flex flex-wrap justify-between gap-3 w-full">
+          <p className="border rounded-md p-2">{dealTypeLabel}</p>
           <p className="border rounded-md p-2">
-            {DealTypeLabels[dealType as string]}
-          </p>
-          <p className="border rounded-md p-2">
-            Общее количество заявок: {orders?.length}
+            Общее количество заявок: {orders.length}
           </p>
         </div>
 
         {isPageAuthUser && <ButtonsGroupTable />}
-        <DataOrderTable columns={columnsOrder} data={orders ?? []} />
+        <DataOrderTable columns={columnsOrder} data={orders} />
       </>
     </DealTableTemplate>
   );

@@ -49,9 +49,7 @@ const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
 
   const { authUser } = useStoreUser();
 
-  if (!authUser) return;
-
-  if (!task) return;
+ if (!authUser || !task) return null;
 
   const duedate = cleanDistance(new Date(task.dueDate));
 
@@ -62,7 +60,7 @@ const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
     locale: ru,
   });
 
-  const isCanActionTask = task.assignerId === authUser.id;
+ const canEditOrDelete = task.assignerId === authUser.id;
 
   return (
     <Card className="relative p-0 pb-3 grid gap-2 cursor-pointer drop-shadow-xl group">
@@ -75,7 +73,7 @@ const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
           <ExternalLink />
         </span>
       </Link>
-      {isCanActionTask && (
+      {canEditOrDelete && (
         <div className="group-hover:flex hidden flex-col absolute top-[2px] right-[2px] gap-2 bg-background p-1 rounded-md border">
           <EditTaskDialogButton id={task.id} />
           <DelTaskDialogButton id={task.id} />

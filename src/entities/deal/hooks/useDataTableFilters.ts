@@ -1,7 +1,6 @@
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
-import { startTransition } from "react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { startTransition, useCallback, useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -69,7 +68,7 @@ const useDataTableFilters = ({
     const initialFilters = utilsDataTable.parsedParams(
       decodeURIComponent(searchParams.get("filters") || "")
     );
-    const initialVisibility = utilsDataTable.parsedHoddenColsFilter(
+    const initialVisibility = utilsDataTable.parsedHiddenColsFilter(
       decodeURIComponent(searchParams.get("hidden") || "")
     );
 

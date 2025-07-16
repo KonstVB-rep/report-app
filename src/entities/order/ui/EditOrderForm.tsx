@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useUpdateOrder } from "../hooks/mutate";
@@ -16,7 +17,7 @@ const EditOrderForm = ({
   close,
   dealId,
 }: {
-  close: Dispatch<SetStateAction<void>>;
+  close: () => void;
   dealId: string;
 }) => {
   const { data, isPending: isLoading } = useGetOrderById(dealId, true);
@@ -28,8 +29,8 @@ const EditOrderForm = ({
 
   const { mutateAsync, isPending } = useUpdateOrder(close);
 
-  const onSubmit = (formData: OrderSchema) => {
-    if (!data) return; // На всякий случай
+  const onSubmit = withAuthCheck(async (formData: OrderSchema) => {
+    if (!data) return;
 
     TOAST.PROMISE(
       mutateAsync({
@@ -44,11 +45,13 @@ const EditOrderForm = ({
       }),
       "Данные обновлены"
     );
-  };
+  });
+
+   const { reset } = form;
 
   useEffect(() => {
     if (data && !isLoading) {
-      form.reset({
+      reset({
         ...data,
         phone: data.phone ?? undefined,
         email: data.email ?? undefined,
@@ -58,7 +61,7 @@ const EditOrderForm = ({
         comments: data.comments ?? null,
       });
     }
-  }, [form, data, isLoading]);
+  }, [reset, data, isLoading]);
 
   if (isLoading) <FormDealSkeleton />;
 

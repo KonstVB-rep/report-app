@@ -17,28 +17,28 @@ export const generateTokens = async (
   // Генерация access token
   const accessToken = await new SignJWT({ userId, departmentId })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("1d") // 1 день
+    .setExpirationTime("7d") // 1 день
     .sign(new TextEncoder().encode(process.env.JWT_SECRET_KEY)); // Подпись токена с секретом
 
   // Генерация refresh token
   const refreshToken = await new SignJWT({ userId, departmentId })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("7d")
+    .setExpirationTime("30d")
     .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)); // Подпись токена с секретом
 
   const cookiesStore = await cookies();
 
-  cookiesStore.set("access_token", accessToken, {
+  cookiesStore.set("accessToken", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 24 * 60 * 60 *30,
+    maxAge: 60 * 60 * 24,
   });
-  cookiesStore.set("refresh_token", refreshToken, {
+  cookiesStore.set("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 60 * 24 * 60 * 60,
+    maxAge: 60 * 60 * 24 * 30,
   });
 
   return { accessToken, refreshToken };

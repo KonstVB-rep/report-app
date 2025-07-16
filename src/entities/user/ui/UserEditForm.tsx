@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DepartmentLabels } from "@/entities/department/types";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
@@ -55,13 +56,15 @@ const UserEditForm = ({
 
   const { mutateAsync, isPending } = useUpdateUser(user!, setOpen);
 
-  const onSubmit = (data: userEditSchema) => {
+  const onSubmit = withAuthCheck(async (data: userEditSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Изменения сохранены");
-  };
+  });
+
+   const { reset } = form;
 
   useEffect(() => {
     if (user) {
-      form.reset({
+      reset({
         username: user.username,
         email: user.email,
         phone: user.phone,
@@ -71,7 +74,7 @@ const UserEditForm = ({
         permissions: user.permissions as string[],
       });
     }
-  }, [form, user]);
+  }, [reset, user]);
 
   return (
     <>

@@ -166,23 +166,27 @@ export const DepartmentLinks = memo(
                   </p>
                 </AccordionTrigger>
                 <AccordionContent className="grid w-full gap-1 pl-5 relative">
-                  {namePagesByDealType.map((type, index) => (
-                    <Fragment key={type}>
-                      <div className="relative rounded-sm overflow-hidden">
-                        {pathName?.includes("summary-table") &&
-                          pathName?.includes(type.toLocaleLowerCase()) &&
-                          user.id === userId && <MarketActiveItemSidebar />}
-                        <SummaryTableLink
-                          type={type}
-                          departmentId="1"
-                          className="flex border p-3 text-primary dark:text-stone-400 border-solid border-transparent rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground"
-                        />
-                      </div>
-                      {index !== namePagesByDealType.length - 1 && (
-                        <Separator className="my-[1px] h-[1px] bg-stone-600" />
-                      )}
-                    </Fragment>
-                  ))}
+                  {namePagesByDealType.map((type, index) => {
+                    const isActiveSummaryTable =
+                      pathName?.includes("summary-table") &&
+                      pathName?.includes(type.toLocaleLowerCase()) &&
+                      user.id === userId;
+                    return (
+                      <Fragment key={type}>
+                        <div className="relative rounded-sm overflow-hidden">
+                          {isActiveSummaryTable && <MarketActiveItemSidebar />}
+                          <SummaryTableLink
+                            type={type}
+                            departmentId="1"
+                            className="flex border p-3 text-primary dark:text-stone-400 border-solid border-transparent rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground"
+                          />
+                        </div>
+                        {index !== namePagesByDealType.length - 1 && (
+                          <Separator className="my-[1px] h-[1px] bg-stone-600" />
+                        )}
+                      </Fragment>
+                    );
+                  })}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

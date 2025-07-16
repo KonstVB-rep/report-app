@@ -4,6 +4,7 @@ import { TaskPriority, TaskStatus } from "@prisma/client";
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useUpdateTask } from "../../hooks/mutate";
@@ -28,7 +29,7 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
 
   const { mutateAsync, isPending } = useUpdateTask();
 
-  const onSubmit = (updatedTask: TaskSchemaUpdate) => {
+  const onSubmit = withAuthCheck(async (updatedTask: TaskSchemaUpdate) => {
     if (!task) return;
 
     const {
@@ -67,11 +68,13 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
     );
 
     close();
-  };
+  });
+
+   const { reset } = form;
 
   useEffect(() => {
     if (task && !isLoading) {
-      form.reset({
+      reset({
         title: task.title,
         description: task.description,
         taskStatus: task.taskStatus as TaskStatus,
@@ -91,7 +94,7 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
         }),
       });
     }
-  }, [form, task, isLoading]);
+  }, [reset, task, isLoading]);
 
   // if (isLoading) <FormDealSkeleton />;
 

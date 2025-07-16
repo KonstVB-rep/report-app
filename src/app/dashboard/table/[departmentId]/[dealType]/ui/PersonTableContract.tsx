@@ -2,8 +2,6 @@
 
 import { DealType, PermissionEnum } from "@prisma/client";
 
-import { useCallback } from "react";
-
 import dynamic from "next/dynamic";
 
 import { useGetContractsUser } from "@/entities/deal/hooks/query";
@@ -25,14 +23,11 @@ const PersonTableContract = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  const { data: contracts } = useGetContractsUser(
-    hasAccess && (userId as string | undefined) ? (userId as string) : undefined
+   const { data: contracts } = useGetContractsUser(
+    hasAccess ? (userId as string) : undefined
   );
 
-  const getRowLink = useCallback(
-    (row: ContractResponse) => `/deal/project/${row.id}`,
-    []
-  );
+  const getRowLink = (row: ContractResponse) => `/deal/project/${row.id}`;
 
   if (!hasAccess)
     return (

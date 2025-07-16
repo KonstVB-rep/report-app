@@ -5,8 +5,6 @@ import { TOAST } from "@/shared/ui/Toast";
 
 import { getTask, getTasksDepartment, getUserTasks } from "../api";
 
-// import { getDepartmentTasks } from "../api/queryFn";
-
 export const useGetTask = (taskId: string) => {
   const { authUser } = useStoreUser();
   return useQuery({
@@ -72,24 +70,3 @@ export const useGetTasksDepartment = () => {
     enabled: !!(authUser?.departmentId && authUser?.id),
   });
 };
-
-// export const useGetDepartmentTasks = (departmentId: string) => {
-//   const { authUser, isAuth } = useStoreUser();
-
-//   return useQuery({
-//     queryKey: ["depsWithUsers", departmentId],
-//     queryFn: async () => {
-//       try {
-//         if (!authUser?.id) {
-//           throw new Error("Пользователь не авторизован");
-//         }
-//         return await getDepartmentTasks(departmentId);
-//       } catch (error) {
-//         console.log(error, "Ошибка useGetDepartmentsWithUsers");
-//         TOAST.ERROR((error as Error).message);
-//         return null
-//       }
-//     },
-//     enabled: !!(isAuth && departmentId),
-//   });
-// };

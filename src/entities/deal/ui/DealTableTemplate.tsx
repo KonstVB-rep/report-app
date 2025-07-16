@@ -1,8 +1,6 @@
-import { PermissionEnum } from "@prisma/client";
-
 import React from "react";
-
 import { useParams } from "next/navigation";
+import { PermissionEnum } from "@prisma/client";
 
 import { useGetUser } from "@/entities/user/hooks/query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
@@ -10,30 +8,29 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import DealsSkeleton from "./DealsSkeleton";
 import ErrorMessageTable from "./ErrorMessageTable";
 
-const DealTableTemplate = ({ children }: { children: React.ReactNode }) => {
-  const { userId } = useParams();
+type DealTableTemplateProps = {
+  children: React.ReactNode;
+};
 
+const DealTableTemplate = ({ children }: DealTableTemplateProps) => {
+  const { userId } = useParams();
   const { authUser } = useStoreUser();
 
-  const id = userId ?? authUser?.id;
+  const currentUserId = userId ?? authUser?.id;
 
   const {
     data: user,
     error,
     isPending,
-  } = useGetUser(id as string, [PermissionEnum.VIEW_USER_REPORT]);
+  } = useGetUser(currentUserId as string, [PermissionEnum.VIEW_USER_REPORT]);
 
   if (isPending) return <DealsSkeleton />;
 
-  return (
-    <section className="h-full p-4">
-      {user ? (
-        <div className="grid gap-2">{children}</div>
-      ) : (
-        <ErrorMessageTable message={error?.message} />
-      )}
-    </section>
-  );
+  if (!user) {
+    return <ErrorMessageTable message={error?.message || "Пользователь не найден"} />;
+  }
+
+  return <section className="h-full p-4 grid gap-2 content-start">{children}</section>;
 };
 
 export default DealTableTemplate;

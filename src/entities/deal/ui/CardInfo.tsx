@@ -1,5 +1,4 @@
 import React from "react";
-
 import { ContactRound, Mail, PhoneOutgoing } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
@@ -9,67 +8,71 @@ const ICONS = {
   phone: <PhoneOutgoing className="icon-deal_info" />,
   email: <Mail className="icon-deal_info" />,
   name: <ContactRound className="icon-deal_info" />,
-} as const;
+};
 
-const dataValue = (
+type CardInfoType = "phone" | "email" | "name";
+
+const renderValue = (
+  type: CardInfoType,
   classNameData: string | undefined,
-  data: string | undefined | null
+  data: string
 ) => {
-  return {
-    phone: (
+  const baseClasses =
+    "break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold";
+
+  const content = (
+    <>
+      {ICONS[type]}
+      <span className={baseClasses}>{data}</span>
+    </>
+  );
+
+  if (type === "phone") {
+    return (
       <a
-        href={`tel:${data?.replace(/[^0-9]/g, "")}`}
+        href={`tel:${data.replace(/[^0-9]/g, "")}`}
         className={cn("whitespace-nowrap hover:underline", classNameData)}
       >
-        {ICONS.phone}
-        <span className="break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-          {data}
-        </span>
+        {content}
       </a>
-    ),
-    email: (
+    );
+  }
+
+  if (type === "email") {
+    return (
       <a
         href={`mailto:${data}`}
         className={cn("whitespace-nowrap hover:underline", classNameData)}
       >
-        {ICONS.email}
-        <span className="break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-          {data}
-        </span>
+        {content}
       </a>
-    ),
-    name: (
-      <span className={classNameData}>
-        {ICONS.name}
-        <span className="break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-          {data}
-        </span>
-      </span>
-    ),
-  };
+    );
+  }
+
+  return <span className={classNameData}>{content}</span>;
 };
 
-const CardInfo = ({
+type CardInfoProps = {
+  data?: string | null;
+  title: string;
+  classNameData?: string;
+  type?: CardInfoType;
+};
+
+const CardInfo: React.FC<CardInfoProps> = ({
   data,
   title,
   classNameData,
   type = "name",
-}: {
-  data: string | undefined | null;
-  title: string;
-  classNameData?: string | undefined;
-  type?: "phone" | "email" | "name";
 }) => {
+  if (!data) return null;
+
   return (
-    <>
-      {data ? (
-        <TooltipComponent content={title}>
-          <p className="flex flex-col gap-2 w-full">
-            {dataValue(classNameData, data)[type]}
-          </p>
-        </TooltipComponent>
-      ) : null}
-    </>
+    <TooltipComponent content={title}>
+      <p className="flex flex-col gap-2 w-full">
+        {renderValue(type, classNameData, data)}
+      </p>
+    </TooltipComponent>
   );
 };
 

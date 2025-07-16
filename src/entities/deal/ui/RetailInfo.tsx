@@ -50,22 +50,28 @@ const RetailItemInfo = () => {
   const { dealId } = useParams();
   const { data: deal, isLoading } = useGetRetailById(dealId as string, false);
 
+  const statusLabel =
+    StatusRetailLabels[deal?.dealStatus as keyof typeof StatusRetailLabels] ||
+    "Нет данных";
+  const directionLabel =
+    DirectionRetailLabels[
+      deal?.direction as keyof typeof DirectionRetailLabels
+    ] || "Нет данных";
+  const deliveryLabel =
+    DeliveryRetailLabels[
+      deal?.deliveryType as keyof typeof DeliveryRetailLabels
+    ] || "Нет данных";
+  const typeLabel =
+    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
+
   const dealInfo = {
     nameDeal: deal?.nameDeal,
     nameObject: deal?.nameObject,
-    status:
-      StatusRetailLabels[deal?.dealStatus as keyof typeof StatusRetailLabels] ||
-      "Нет данных",
-    dealType: DealTypeLabels[deal?.type as keyof typeof DealTypeLabels],
+    status:statusLabel,
+    dealType: typeLabel,
     dateRequest: deal?.dateRequest?.toLocaleDateString(),
-    direction:
-      DirectionRetailLabels[
-        deal?.direction as keyof typeof DirectionRetailLabels
-      ],
-    deliveryType:
-      DeliveryRetailLabels[
-        deal?.deliveryType as keyof typeof DeliveryRetailLabels
-      ],
+    direction:directionLabel,
+    deliveryType:deliveryLabel,
     delta: deal?.delta ? formatterCurrency.format(+deal.delta) : "0,00",
     amountCP: deal?.amountCP
       ? formatterCurrency.format(+deal.amountCP)

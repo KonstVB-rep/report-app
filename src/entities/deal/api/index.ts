@@ -236,13 +236,6 @@ export const getProjectsUser = async (
       await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
-    // const deals = await prisma.project.findMany({
-    //   where: { userId: idDealOwner },
-    //   orderBy: {
-    //     dateRequest: "asc",
-    //   },
-    // });
-
     const deals = await prisma.project.findMany({
       where: {
         projectManagers: {
@@ -350,13 +343,6 @@ export const getRetailsUser = async (
       await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
     }
 
-    // const deals = await prisma.retail.findMany({
-    //   where: { userId: idDealOwner },
-    //   orderBy: {
-    //     dateRequest: "asc",
-    //   },
-    // });
-
     const deals = await prisma.retail.findMany({
       where: {
         retailManagers: {
@@ -425,11 +411,6 @@ export const getAllProjectsByDepartment = async (
           },
         },
       },
-      //     include: {
-      //   projectManagers: {
-      //     include: { user: true }
-      //   }
-      // },
       orderBy: {
         dateRequest: "asc",
       },
@@ -727,6 +708,7 @@ export const getDealsByDateRange = async (
 };
 
 /******************************************Создать *********************************************************/
+
 export const createProject = async (
   data: ProjectWithoutId & { managersIds: { userId: string }[] }
 ) => {
@@ -763,24 +745,24 @@ export const createProject = async (
 
     const isExistOrder = await prisma.order.findUnique({
       where: {
-        id: (dealData.orderId as string) || idOrder, // или dealData.orderId, если заказ уже есть и связан с проектом
+        id: (dealData.orderId as string) || idOrder,
       },
     });
 
     const orderData = {
-      nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
-      email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (data.userId as string) ?? "", // Приводим к типу string
-      contact: (dealData.contact as string) ?? "", // Приводим к типу string
-      phone: (dealData.phone as string) ?? "", // Приводим к типу string
-      comments: (dealData.comments as string) ?? "", // Приводим к типу string
-      resource: (dealData.resource as string) ?? "", // Если resource null или не определено, присваиваем null
+      nameDeal: (dealData.nameDeal as string) ?? "",
+      email: (dealData.email as string) ?? "",
+      manager: (data.userId as string) ?? "",
+      contact: (dealData.contact as string) ?? "",
+      phone: (dealData.phone as string) ?? "",
+      comments: (dealData.comments as string) ?? "",
+      resource: (dealData.resource as string) ?? "",
       type: DealType.PROJECT,
-      projectId: (dealData.id as string) || idDeal, // Приводим к типу string для retailId
+      projectId: (dealData.id as string) || idDeal,
       dateRequest: dealData.dateRequest
         ? new Date(dealData.dateRequest as string)
         : new Date(),
-      departmentId: user?.departmentId ?? 0, // Если departmentId не определен, ставим 0
+      departmentId: user?.departmentId ?? 0,
       orderStatus:
         dealData.dealStatus !== StatusProject.CLOSED
           ? StatusOrder.AT_WORK
@@ -792,7 +774,7 @@ export const createProject = async (
     if (isExistOrder) {
       await prisma.order.update({
         where: {
-          id: isExistOrder.id as string, // указываем уникальный идентификатор заказа
+          id: isExistOrder.id as string,
         },
         data: {
           nameDeal: orderData.nameDeal,
@@ -885,24 +867,24 @@ export const createRetail = async (
 
     const isExistOrder = await prisma.order.findUnique({
       where: {
-        id: (dealData.orderId as string) || idOrder, // Или ищем по полю id
+        id: (dealData.orderId as string) || idOrder,
       },
     });
 
     const orderData = {
-      nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
-      email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (data.userId as string) ?? "", // Приводим к типу string
-      contact: (dealData.contact as string) ?? "", // Приводим к типу string
-      phone: (dealData.phone as string) ?? "", // Приводим к типу string
-      comments: (dealData.comments as string) ?? "", // Приводим к типу string
-      resource: (dealData.resource as string) ?? "", // Если resource null или не определено, присваиваем null
+      nameDeal: (dealData.nameDeal as string) ?? "",
+      email: (dealData.email as string) ?? "",
+      manager: (data.userId as string) ?? "",
+      contact: (dealData.contact as string) ?? "",
+      phone: (dealData.phone as string) ?? "",
+      comments: (dealData.comments as string) ?? "",
+      resource: (dealData.resource as string) ?? "",
       type: DealType.RETAIL,
-      retailId: (dealData.id as string) || idDeal, // Приводим к типу string для retailId
+      retailId: (dealData.id as string) || idDeal,
       dateRequest: dealData.dateRequest
         ? new Date(dealData.dateRequest as string)
         : new Date(),
-      departmentId: user?.departmentId ?? 0, // Если departmentId не определен, ставим 0
+      departmentId: user?.departmentId ?? 0,
       orderStatus:
         dealData.dealStatus !== StatusRetail.CLOSED
           ? StatusOrder.AT_WORK
@@ -912,7 +894,7 @@ export const createRetail = async (
     if (isExistOrder) {
       await prisma.order.update({
         where: {
-          id: isExistOrder.id as string, // указываем уникальный идентификатор заказа
+          id: isExistOrder.id as string,
         },
         data: {
           nameDeal: orderData.nameDeal,
@@ -995,7 +977,7 @@ export const updateProject = async (
     const deal = await prisma.project.findUnique({
       where: { id: id as string },
       include: {
-        additionalContacts: true, // Включаем контакты проекта
+        additionalContacts: true,
       },
     });
 
@@ -1025,19 +1007,19 @@ export const updateProject = async (
     });
 
     const orderData = {
-      nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
-      email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (data.userId as string) ?? "", // Приводим к типу string
-      contact: (dealData.contact as string) ?? "", // Приводим к типу string
-      phone: (dealData.phone as string) ?? "", // Приводим к типу string
-      comments: (dealData.comments as string) ?? "", // Приводим к типу string
-      resource: (dealData.resource as string) ?? "", // Если resource null или не определено, присваиваем null
+      nameDeal: (dealData.nameDeal as string) ?? "",
+      email: (dealData.email as string) ?? "",
+      manager: (data.userId as string) ?? "",
+      contact: (dealData.contact as string) ?? "",
+      phone: (dealData.phone as string) ?? "",
+      comments: (dealData.comments as string) ?? "",
+      resource: (dealData.resource as string) ?? "",
       type: DealType.PROJECT,
-      projectId: id as string, // Приводим к типу string для retailId
+      projectId: id as string,
       dateRequest: dealData.dateRequest
         ? new Date(dealData.dateRequest as string)
         : new Date(),
-      departmentId: user?.departmentId ?? 0, // Если departmentId не определен, ставим 0
+      departmentId: user?.departmentId ?? 0,
       orderStatus:
         dealData.dealStatus !== StatusProject.CLOSED
           ? StatusOrder.AT_WORK
@@ -1078,7 +1060,7 @@ export const updateProject = async (
     if (isExistOrder) {
       await prisma.order.update({
         where: {
-          projectId: deal.id as string, // указываем уникальный идентификатор заказа
+          projectId: deal.id as string,
         },
         data: {
           nameDeal: orderData.nameDeal,
@@ -1104,13 +1086,12 @@ export const updateProject = async (
       });
     }
 
-    // Если контакты переданы, делаем работу с ними
     if (contacts && (contacts as Contact[]).length > 0) {
       // Удаление старых контактов
       await prisma.additionalContact.deleteMany({
         where: {
           projects: {
-            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+            some: { id: updatedDeal.id },
           },
         },
       });
@@ -1211,20 +1192,19 @@ export const updateRetail = async (
     });
 
     const orderData = {
-      nameDeal: (dealData.nameDeal as string) ?? "", // Приводим к типу string, если nameDeal существует
-      email: (dealData.email as string) ?? "", // Приводим к типу string
-      manager: (data.userId as string) ?? "", // Приводим к типу string
-      contact: (dealData.contact as string) ?? "", // Приводим к типу string
-      phone: (dealData.phone as string) ?? "", // Приводим к типу string
-      comments: (dealData.comments as string) ?? "", // Приводим к типу string
-      resource: (dealData.resource as string) ?? "", // Если resource null или не определено, присваиваем null
+      nameDeal: (dealData.nameDeal as string) ?? "",
+      email: (dealData.email as string) ?? "",
+      manager: (data.userId as string) ?? "",
+      contact: (dealData.contact as string) ?? "",
+      phone: (dealData.phone as string) ?? "",
+      comments: (dealData.comments as string) ?? "",
+      resource: (dealData.resource as string) ?? "",
       type: DealType.RETAIL,
       retailId: (id as string) ?? "",
-      // Преобразуем dateRequest в Date, если он существует, иначе ставим текущую дату
       dateRequest: dealData.dateRequest
         ? new Date(dealData.dateRequest as string)
         : new Date(),
-      departmentId: user?.departmentId ?? 0, // Если departmentId не определен, ставим 0
+      departmentId: user?.departmentId ?? 0,
       orderStatus:
         dealData.dealStatus !== StatusRetail.CLOSED
           ? StatusOrder.AT_WORK
@@ -1264,7 +1244,7 @@ export const updateRetail = async (
       // Обновляем существующий заказ
       await prisma.order.update({
         where: {
-          retailId: deal.id as string, // Указываем уникальный идентификатор заказа для поиска
+          retailId: deal.id as string,
         },
         data: {
           nameDeal: orderData.nameDeal,
@@ -1279,14 +1259,13 @@ export const updateRetail = async (
           dateRequest: orderData.dateRequest,
           departmentId: orderData.departmentId,
           orderStatus: orderData.orderStatus,
-        }, // Используем непосредственно orderData без id
+        },
       });
     } else {
-      // Создаем новый заказ
       await prisma.order.create({
         data: {
           ...orderData,
-          id: idOrder, // Указываем id только при создании нового заказа
+          id: idOrder,
         },
       });
     }
@@ -1296,7 +1275,7 @@ export const updateRetail = async (
       await prisma.additionalContact.deleteMany({
         where: {
           retails: {
-            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+            some: { id: updatedDeal.id },
           },
         },
       });
@@ -1308,11 +1287,10 @@ export const updateRetail = async (
         email: contact.email ?? null,
         position: contact.position ?? null,
         retails: {
-          connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
+          connect: { id: updatedDeal.id },
         },
       }));
 
-      // Используем create вместо createMany
       for (const contact of newContacts) {
         await prisma.additionalContact.create({
           data: contact,
@@ -1323,7 +1301,7 @@ export const updateRetail = async (
       await prisma.additionalContact.deleteMany({
         where: {
           retails: {
-            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+            some: { id: updatedDeal.id },
           },
         },
       });

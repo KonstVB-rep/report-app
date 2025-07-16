@@ -8,7 +8,7 @@ import { EventInputType } from "../types";
 import FormEvent from "./FormEvent";
 
 type CalendarFormModalProps = {
-  events: EventInputType[] | undefined;
+  events?: EventInputType[];
 };
 
 const CalendarFormModal = ({ events }: CalendarFormModalProps) => {

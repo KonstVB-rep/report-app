@@ -9,6 +9,7 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
+import { logout } from "@/feature/auth/logout";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { authUser } = useStoreUser();
@@ -36,9 +37,21 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
       });
       TOAST.SUCCESS("Событие успешно добавлено в календарь");
     },
-    onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при добавлении события");
+        onError: (error) => {
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при добавлении события";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -70,9 +83,21 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
       });
       TOAST.SUCCESS("Событие успешно обновлено");
     },
-    onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при обновлении события");
+       onError: (error) => {
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при обновлении события";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -98,9 +123,21 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
       });
       TOAST.SUCCESS("Событие успешно удалено");
     },
-    onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке удаления события");
+        onError: (error) => {
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при удалении события";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -128,9 +165,21 @@ export const useCreateChatBot = () => {
         queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
       });
     },
-    onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке удаления события");
+        onError: (error) => {
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при подписке на чат бот";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -163,9 +212,21 @@ export const useUpdateChatBot = () => {
         queryKey: ["chatInfoChecked", authUser?.id, data?.chatName],
       });
     },
-    onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке удаления события");
-    },
+       onError: (error) => {
+         const err = error as Error & { status?: number };
+   
+         if (err.status === 401 || err.message === "Сессия истекла") {
+           TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+           logout();
+           return;
+         }
+   
+         const errorMessage =
+           err.message === "Failed to fetch"
+             ? "Ошибка соединения"
+             : "Ошибка при обновлении статуса бота";
+   
+         TOAST.ERROR(errorMessage);
+       },
   });
 };

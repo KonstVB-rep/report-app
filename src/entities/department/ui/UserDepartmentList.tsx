@@ -22,6 +22,11 @@ const UserDepartmentList = () => {
     (dept) => dept.id.toString() === departmentId
   );
 
+  if (!currentDepartment) {
+    return <p>Отдел не найден</p>;
+  }
+
+
   return (
     <>
       <h1 className="p-4 text-center text-2xl font-bold">

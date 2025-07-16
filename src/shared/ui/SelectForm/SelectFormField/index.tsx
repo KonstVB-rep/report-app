@@ -28,6 +28,7 @@ const SelectFormField = <T extends FieldValues>({
   errorMessage,
   ...rest
 }: SelectFormFieldProps<T>) => {
+
   return (
     <FormField
       control={control}
@@ -35,7 +36,6 @@ const SelectFormField = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-
           <FormControl>
             <SelectComponent
               value={field.value || ""}

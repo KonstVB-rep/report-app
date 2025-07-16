@@ -61,7 +61,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
   if (!authUser) {
     return (
       <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
-        <p className="text-3xl opacity-30">Вы вышли из приложения</p>
+        <p className="text-3xl opacity-30">Выход...</p>
       </div>
     );
   }

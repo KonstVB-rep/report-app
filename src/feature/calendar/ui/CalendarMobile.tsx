@@ -30,11 +30,31 @@ const CalendarMobile = () => {
   const { form, closeModalForm, setEditingId, setOpenModal } =
     useCalendarContext();
 
-  const handleDateSelect = (date: Date | undefined) => {
-    const isExistEvents = handleSelect(date);
-    if (!isExistEvents) {
+  const onDateSelect = (date: Date | undefined) => {
+    const hasEvents = handleSelect(date);
+    if (!hasEvents) {
       handleDateSelectOnEventsList(date, form, setEditingId, closeModalForm);
     }
+  };
+
+  // Обработчик клика по событию в списке
+  const onEventClick = (eventCalendar: EventInputType) => {
+    handleEventClickOnEventsList(
+      eventCalendar,
+      form,
+      setEditingId,
+      setOpenModal
+    );
+  };
+
+  // Обработчик добавления нового события из списка
+  const onAddEventClick = () => {
+    handleDateSelectOnEventsList(
+      selectedDate,
+      form,
+      setEditingId,
+      closeModalForm
+    );
   };
 
   return (
@@ -42,8 +62,8 @@ const CalendarMobile = () => {
       <Calendar
         mode="single"
         selected={selectedDate}
-        onSelect={handleDateSelect}
-        onDayClick={handleDateSelect}
+        onSelect={onDateSelect}
+        onDayClick={onDateSelect}
         modifiers={{ highlighted: eventDates }}
         modifiersClassNames={{
           highlighted: "calendar-day-highlighted",
@@ -63,22 +83,8 @@ const CalendarMobile = () => {
         <MotionDivY className="max-h-[82vh] overflow-y-auto flex flex-col gap-2 overflow-x-hidden pt-10">
           <EventsListDayMobile
             events={eventsDate}
-            handleEventClickOnEventsList={(eventCalendar: EventInputType) =>
-              handleEventClickOnEventsList(
-                eventCalendar,
-                form,
-                setEditingId,
-                setOpenModal
-              )
-            }
-            handleDateSelectOnEventsList={() =>
-              handleDateSelectOnEventsList(
-                selectedDate,
-                form,
-                setEditingId,
-                closeModalForm
-              )
-            }
+            handleEventClickOnEventsList={onEventClick}
+            handleDateSelectOnEventsList={onAddEventClick}
           />
         </MotionDivY>
       </DialogComponent>

@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Menu } from "lucide-react";
+import { Check, Menu } from "lucide-react";
 
 import {
   Accordion,
@@ -28,21 +28,36 @@ import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
+import { cn } from "@/shared/lib/utils";
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
 
-const ThemeValues: {
-  [key in string]: string;
-} = {
+const ThemeValues: Record<string, string> = {
   light: "Светлая",
   dark: "Темная",
   system: "Системная",
 };
 
+const Themes = [
+  { id: "light", value: "Светлая" },
+  { id: "dark", value: "Темная" },
+  { id: "system", value: "Системная" },
+];
+
 const MobileMenu = () => {
   const pathName = usePathname();
   const { authUser } = useStoreUser();
   const { setTheme, theme } = useTheme();
+
+  const isSummaryTable = pathName?.includes("summary-table");
+
+  const handleCheckTheme = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    const id = e.currentTarget.id;
+    setTheme(id);
+  };
+
   return (
     <div className="md:hidden">
       <DropdownMenu>
@@ -52,7 +67,7 @@ const MobileMenu = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56 md:hidden" align="start">
-          {!pathName?.includes("summary-table") && (
+          {!isSummaryTable && (
             <>
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="p-0">
@@ -113,30 +128,21 @@ const MobileMenu = () => {
                 </span>
               </AccordionTrigger>
               <AccordionContent className="flex pt-2 pl-3 flex-col gap-1 text-balance rounded-md ">
-                <DropdownMenuItem
-                  onClick={() => setTheme("light")}
-                  className="p-0"
-                >
-                  <div className="w-full px-3 py-2 cursor-pointer capitalize rounded-md hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary">
-                    Светлая
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("dark")}
-                  className="p-0"
-                >
-                  <div className="w-full px-3 py-2 cursor-pointer capitalize rounded-md hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary">
-                    Темная
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("system")}
-                  className="p-0"
-                >
-                  <div className="w-full px-3 py-2 cursor-pointer capitalize rounded-md hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary">
-                    Системная
-                  </div>
-                </DropdownMenuItem>
+                {Themes.map((item) => {
+                  const isCurrentTheme = theme === item.id
+                  return (
+                  <DropdownMenuItem
+                    key={item.id}
+                    id={item.id}
+                    onClick={handleCheckTheme}
+                    className="p-0"
+                  >
+                    <div className={cn("w-full px-3 py-2 cursor-pointer capitalize rounded-md hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary",isCurrentTheme && "flex items-center justify-between")}>
+                      {item.value}
+                      {isCurrentTheme && <Check />}
+                    </div>
+                  </DropdownMenuItem>
+                )})}
               </AccordionContent>
             </AccordionItem>
           </Accordion>

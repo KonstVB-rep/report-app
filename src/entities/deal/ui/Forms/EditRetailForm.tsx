@@ -5,6 +5,7 @@ import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { formatterCurrency } from "@/shared/lib/utils";
 import { TOAST } from "@/shared/ui/Toast";
 
@@ -40,36 +41,41 @@ const EditRetailForm = ({
     close
   );
 
-  const onSubmit = (data: RetailSchema) => {
+  const onSubmit = withAuthCheck(async (data: RetailSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-  };
+  });
 
-  useEffect(() => {
-    if (data && !isLoading) {
-      form.reset({
-        ...data,
-        phone: data.phone ?? undefined,
-        email: data.email ?? undefined,
-        dateRequest: data.dateRequest?.toISOString(),
-        deliveryType: data.deliveryType as DeliveryRetail,
-        dealStatus: data.dealStatus as StatusRetail,
-        direction: data.direction as DirectionRetail,
-        plannedDateConnection: data.plannedDateConnection?.toISOString(),
-        amountCP: formatCurrency(data.amountCP),
-        delta: formatCurrency(data.delta),
-        resource: data.resource ?? "",
-        contacts: data?.additionalContacts ?? [],
-        managersIds: Array.isArray(data.managers)
-          ? data.managers.map((manager) => ({ userId: manager.id }))
-          : [],
-      });
-    }
-  }, [form, data, isLoading]);
+  const { reset } = form;
+
+useEffect(() => {
+  if (data && !isLoading) {
+    const formattedData = {
+      ...data,
+      phone: data.phone ?? undefined,
+      email: data.email ?? undefined,
+      dateRequest: data.dateRequest?.toISOString(),
+      deliveryType: data.deliveryType as DeliveryRetail,
+      dealStatus: data.dealStatus as StatusRetail,
+      direction: data.direction as DirectionRetail,
+      plannedDateConnection: data.plannedDateConnection?.toISOString(),
+      amountCP: formatCurrency(data.amountCP),
+      delta: formatCurrency(data.delta),
+      resource: data.resource ?? "",
+      contacts: data?.additionalContacts ?? [],
+      managersIds: Array.isArray(data.managers)
+        ? data.managers.map((manager) => ({ userId: manager.id }))
+        : [],
+    };
+    reset(formattedData);
+  }
+}, [reset, data, isLoading]);
 
   if (isLoading) return <FormDealSkeleton />;
+  if (!data) return null;  
 
   return (
     <RetailFormBody
+      key={dealId}
       form={form}
       onSubmit={onSubmit}
       isPending={isPending}

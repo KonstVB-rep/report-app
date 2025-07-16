@@ -57,6 +57,7 @@ const FiltersBlock = ({
 
   const safeType = type as Exclude<DealType, "ORDER">;
 
+
   return (
     <MotionDivY className="min-h-0">
       <div className="py-2 flex flex-wrap justify-start gap-2">

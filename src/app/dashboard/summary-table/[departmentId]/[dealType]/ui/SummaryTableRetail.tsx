@@ -12,17 +12,39 @@ import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { RetailResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-import Loading from "../[userId]/loading";
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
-import SummaryTableTemplate from "./SummaryTableTemplate";
+import { ColumnDef } from "@tanstack/react-table";
+// import SummaryTableTemplate from "./SummaryTableTemplate";
 
+const Loading = dynamic(() => import("../[userId]/loading"), { ssr: false });
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),
   { ssr: false }
 );
 
+type SummaryTableProps = {
+  columns: ColumnDef<RetailResponse, unknown>[];
+  data: RetailResponse[];
+  getRowLink: (row: RetailResponse, type: DealType) => string;
+  type: DealType;
+  isError: boolean;
+  error: Error | null;
+};
+
+const SummaryTableTemplate = dynamic<SummaryTableProps>(
+  () => import("./SummaryTableTemplate"),
+  {
+    ssr: false,
+    loading: () => <Loading />,
+  }
+);
+
+
 const SummaryTableRetail = () => {
-  const { userId, departmentId } = useParams();
+    const { userId, departmentId } = useParams<{
+    userId: string;
+    departmentId: string;
+  }>();
 
   const hasAccess = useMemo(
     () =>
@@ -41,8 +63,8 @@ const SummaryTableRetail = () => {
     isError,
     isPending,
   } = useGetAllRetails(
-    hasAccess ? (userId as string) : null,
-    departmentId as string
+    hasAccess ? userId : null,
+    departmentId
   );
 
   const getRowLink = useCallback(

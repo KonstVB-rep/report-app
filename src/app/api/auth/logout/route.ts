@@ -7,8 +7,8 @@ export async function POST() {
       { status: 200 }
     );
 
-    response.cookies.delete("access_token");
-    response.cookies.delete("refresh_token");
+    response.cookies.delete("accessToken");
+    response.cookies.delete("refreshToken");
 
     return response;
   } catch (error) {

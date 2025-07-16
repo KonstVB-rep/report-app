@@ -12,11 +12,12 @@ import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 
 import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
+import { useEffect } from "react";
 
 type EventsListProps = {
   events: EventInputType[];
   showLinkCalendar?: boolean;
-  handleEventClickOnEventsList?: (evenetCalendar: EventInputType) => void;
+  handleEventClickOnEventsList?: (eventCalendar: EventInputType) => void;
   handleDateSelectOnEventsList: () => void;
 };
 
@@ -34,10 +35,13 @@ const EventsListDayMobile = ({
   const { authUser } = useStoreUser();
   const router = useRouter();
 
-  if (!authUser) {
-    router.replace("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!authUser) {
+      router.replace("/login");
+    }
+  }, [authUser, router]);
+
+  if (!authUser) return null;
 
   return (
     <>

@@ -16,10 +16,8 @@ const СreateTaskDialog = () => {
         </Button>
       }
     >
-      <div>
-        <h3 className="text-center font-semibold">Создать задачу</h3>
-        <CreateTaskForm />
-      </div>
+      <h3 className="text-center font-semibold">Создать задачу</h3>
+      <CreateTaskForm />
     </DialogComponent>
   );
 };

@@ -4,29 +4,41 @@ import { RolesWithDefaultPermissions } from "@/entities/user/model/objectTypes";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { PermissionType } from "@/entities/user/types";
 
-export const hasAccessToData = (userId: string, permission: PermissionType) => {
+const hasDefaultRole = (role?: string) =>
+  role ? RolesWithDefaultPermissions.includes(role) : false;
+
+const hasPermission = (permissions: PermissionType[] | undefined, permission: PermissionType) =>
+  permissions ? permissions.includes(permission) : false;
+
+export const hasAccessToData = (userId: string, permission: PermissionType): boolean => {
   if (!userId) return false;
 
   const { authUser } = useStoreUser.getState();
 
-  return (
-    (userId !== authUser?.id &&
-      (RolesWithDefaultPermissions.includes(authUser?.role as string) ||
-        authUser?.permissions?.includes(permission))) ||
-    userId === authUser?.id
-  );
+  if (!authUser) return false;
+
+  if (userId === authUser.id) return true;
+
+  if (hasDefaultRole(authUser.role)) return true;
+
+  if (hasPermission(authUser.permissions, permission)) return true;
+
+  return false;
 };
 
 export const hasAccessToDataSummary = (
   userId: string,
   permission: PermissionType
-) => {
+): boolean => {
   if (!userId) return false;
 
   const { authUser } = useStoreUser.getState();
 
-  return (
-    RolesWithDefaultPermissions.includes(authUser!.role as string) ||
-    authUser?.permissions?.includes(permission)
-  );
+  if (!authUser) return false;
+
+  if (hasDefaultRole(authUser.role)) return true;
+
+  if (hasPermission(authUser.permissions, permission)) return true;
+
+  return false;
 };

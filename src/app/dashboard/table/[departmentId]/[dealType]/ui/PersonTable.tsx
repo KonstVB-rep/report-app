@@ -17,7 +17,7 @@ import NotFoundByPosition from "@/shared/ui/Redirect/NotFoundByPosition";
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
   retails: "Розничные сделки",
-  // contracts: "Договора",
+  contracts: "Договора",
   orders: "Заявки",
 };
 

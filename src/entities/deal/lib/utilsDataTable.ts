@@ -15,6 +15,7 @@ export const utilsDataTable = {
    */
   parsedParams: (str: string): ColumnFiltersState => {
     if (!str) return [];
+    console.log(str, 'str')
     return str.split("&").map((item) => {
       const [filterName, filterValue] = item.split("=");
       try {
@@ -43,7 +44,7 @@ export const utilsDataTable = {
   /**
    * Разбирает строку URL в объект видимости колонок.
    */
-  parsedHoddenColsFilter: (str: string): VisibilityState => {
+  parsedHiddenColsFilter: (str: string): VisibilityState => {
     if (!str) return {};
     return Object.fromEntries(str.split(",").map((key) => [key, false]));
   },

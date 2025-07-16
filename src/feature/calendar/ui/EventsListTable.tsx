@@ -29,10 +29,10 @@ const EventsListTable = <T extends EventInputType>({
   ) as RefObject<HTMLTableElement>;
 
   const handleClickRowEvent = (row: T) => {
-    if (row.end < new Date(Date.now())) return;
+    const now = new Date();
+    if (row.end < now) return;
     handleRowClick?.(row);
   };
-
   if (!table) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;
   }

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useCreateTask } from "../../hooks/mutate";
@@ -23,8 +24,9 @@ const CreateTaskForm = () => {
   });
 
   const { mutateAsync, isPending } = useCreateTask();
+   const { reset } = form;
 
-  const onSubmit = (task: TaskSchema) => {
+  const onSubmit = withAuthCheck(async (task: TaskSchema) => {
     const {
       startTime,
       endTime,
@@ -52,10 +54,9 @@ const CreateTaskForm = () => {
       }),
       "Задача добавлена"
     );
-    form.reset();
-  };
+    reset();
+  });
 
-  // if (isLoading) <FormDealSkeleton />;
 
   return <TaskForm form={form} isPending={isPending} onSubmit={onSubmit} />;
 };

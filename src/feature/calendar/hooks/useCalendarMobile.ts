@@ -55,7 +55,7 @@ const useCalendarMobile = () => {
     if (!isExistEventInDate && openList) {
       setOpenList(false);
     }
-  }, [events, futureEvents, openList, selectedDate]);
+  }, [futureEvents, openList, selectedDate]);
 
   return {
     events,

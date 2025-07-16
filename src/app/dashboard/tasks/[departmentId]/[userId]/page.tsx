@@ -2,8 +2,6 @@
 
 import { PermissionEnum } from "@prisma/client";
 
-import { useMemo } from "react";
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
@@ -32,15 +30,12 @@ const TaskTable = dynamic(() => import("@/entities/task/ui/TaskTable"), {
 const UserTasksPage = () => {
   const { authUser } = useStoreUser();
 
-  const { userId, departmentId } = useParams();
+   const { userId, departmentId } = useParams<{
+    userId: string;
+    departmentId: string;
+  }>();
 
-  const hasAccess = useMemo(
-    () =>
-      userId
-        ? hasAccessToData(userId as string, PermissionEnum.TASK_MANAGEMENT)
-        : false,
-    [userId]
-  );
+  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT);
 
   const { data } = useGetUserTasks();
 

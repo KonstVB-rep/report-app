@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Dispatch, SetStateAction } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { DeepPartial } from "react-hook-form";
 
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -14,8 +14,9 @@ import { createOrder, delOrder, updateOrder } from "../api";
 import { defaultOrderValues } from "../lib/constants";
 import { OrderSchema } from "../model/shema";
 import { OrderResponse } from "./../types";
+import { logout } from "@/feature/auth/logout";
 
-export const useCreateOrder = (form: UseFormReturn<OrderSchema>) => {
+export const useCreateOrder = (reset: (values?: DeepPartial<OrderSchema>) => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
 
@@ -48,12 +49,24 @@ export const useCreateOrder = (form: UseFormReturn<OrderSchema>) => {
       });
     },
     onError: (error) => {
-      console.error("Ошибка при создании проекта:", error);
-      TOAST.ERROR("Ошибка при создании проекта");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при создании заявки";
+
+      TOAST.ERROR(errorMessage);
     },
     onSuccess: (data) => {
       if (data) {
-        form.reset(defaultOrderValues);
+        reset(defaultOrderValues);
 
         queryClient.invalidateQueries({
           queryKey: ["orders", authUser?.departmentId],
@@ -107,17 +120,26 @@ export const useDelOrder = (closeModalFn: Dispatch<SetStateAction<void>>) => {
       closeModalFn();
     },
     onError: (error) => {
-      if ((error as Error).message === "Failed to fetch") {
-        TOAST.ERROR("Не удалось получить данные");
-      } else {
-        TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
       }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при удалении заявки";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
 
 export const useUpdateOrder = (
-  closeModalFn: Dispatch<SetStateAction<void>>
+  closeModalFn:() => void
 ) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
@@ -149,11 +171,20 @@ export const useUpdateOrder = (
       }
     },
     onError: (error) => {
-      if ((error as Error).message === "Failed to fetch") {
-        TOAST.ERROR("Не удалось получить данные");
-      } else {
-        TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
       }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при обновлении заявки";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };

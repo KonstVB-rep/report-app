@@ -16,13 +16,13 @@ const RedirectLastPath = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!isAuth) {
       resetAllStores();
+      setHasRedirected(false);
       return;
     }
 
     if (isAuth && authUser && !hasRedirected) {
       const lastAppPath = localStorage.getItem("lastAppPath");
-      const redirectUrl =
-        lastAppPath || '/dashboard';
+      const redirectUrl = lastAppPath || "/dashboard";
       setHasRedirected(true);
       router.replace(redirectUrl);
     }

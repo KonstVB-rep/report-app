@@ -13,6 +13,7 @@ import Overlay from "@/shared/ui/Overlay";
 
 import { useDeleteFiles } from "../../hooks/mutate";
 import FormDeleteFileSkeleton from "./ui/FormDeleteFileSkeleton";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 
 const FormDeleteFile = dynamic(() => import("./ui/FormDeleteFile"), {
   ssr: false,
@@ -47,14 +48,14 @@ const DeleteFile = ({
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = withAuthCheck(async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (selectedFilesForDelete.length === 0)
       return alert("Выберите файлы для удаления!");
 
     mutate(selectedFilesForDelete);
-  };
+  });
 
   return (
     <>

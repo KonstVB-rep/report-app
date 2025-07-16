@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 import { useDownLoadFile } from "../../hooks/mutate";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 
 type DownloadFileProps = {
   className: string;
@@ -26,6 +27,10 @@ const DownLoadOrCheckFile = ({
 }: DownloadFileProps) => {
   const { mutate: handleDownload, isPending } = useDownLoadFile();
 
+  const handleDelete = withAuthCheck(async () => {
+    handleDownload({ localPath, name })
+  });
+
   return (
     <>
       {isPending && (
@@ -36,7 +41,7 @@ const DownLoadOrCheckFile = ({
       >
         <TooltipComponent content={`Скачать файл - ${fileName}`}>
           <Button
-            onClick={() => handleDownload({ localPath, name })}
+            onClick={handleDelete}
             className={`h-10 w-10 p-1 disabled:cursor-not-allowed ${isPending && "animate-bounce opacity-100! scale-125!"}`}
             disabled={isPending}
           >

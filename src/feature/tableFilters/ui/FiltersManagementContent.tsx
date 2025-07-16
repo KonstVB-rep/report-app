@@ -4,11 +4,11 @@ import { UserFilter } from "@prisma/client";
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
 import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useState,
 } from "react";
 
 import { useSearchParams } from "next/navigation";
@@ -27,7 +27,7 @@ import { useGetUserFilters } from "../hooks/query";
 import SaveFilter from "./SaveFilter";
 import UserFiltersChange from "./UserFiltersChange";
 
-type FiltersManagmentContentProps = {
+type FiltersManagementContentProps = {
   columnFilters: ColumnFiltersState;
   setColumnFilters: Dispatch<SetStateAction<ColumnFiltersState>>;
   columnVisibility: VisibilityState;
@@ -35,13 +35,13 @@ type FiltersManagmentContentProps = {
   setSelectedColumns: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-const FiltersManagmentContent = ({
+const FiltersManagementContent = ({
   setColumnFilters,
   setColumnVisibility,
   columnFilters,
   columnVisibility,
   setSelectedColumns,
-}: FiltersManagmentContentProps) => {
+}: FiltersManagementContentProps) => {
   const { data: userFilters = [] } = useGetUserFilters();
   const { mutate: disableSavedFilters, isPending } = useDisableSavedFilters();
   const { mutate: selectFilter, isPending: isPendingSelect } =
@@ -194,4 +194,4 @@ const FiltersManagmentContent = ({
   );
 };
 
-export default FiltersManagmentContent;
+export default FiltersManagementContent;

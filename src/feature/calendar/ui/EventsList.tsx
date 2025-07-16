@@ -12,11 +12,10 @@ import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
 import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
+import { useEffect } from "react";
 
 type EventsListProps = {
   events: EventInputType[];
-  showLinkCalendar?: boolean;
-  handleEventClickOnEventsList?: (evenetCalendar: EventInputType) => void;
 };
 
 const EventsList = ({ events }: EventsListProps) => {
@@ -29,10 +28,16 @@ const EventsList = ({ events }: EventsListProps) => {
   const { authUser } = useStoreUser();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!authUser) {
+      router.replace("/login");
+    }
+  }, [authUser, router]);
+
   if (!authUser) {
-    router.replace("/login");
     return null;
   }
+
 
   return (
     <div className="grid gap-4">

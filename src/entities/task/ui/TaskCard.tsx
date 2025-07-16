@@ -44,9 +44,7 @@ type TaskCardProps = {
 const TaskCard = ({ task }: TaskCardProps) => {
   const { authUser } = useStoreUser();
 
-  if (!authUser) return;
-
-  if (!task) return;
+  if (!authUser || !task) return null;
 
   const duedate = cleanDistance(new Date(task.dueDate));
 

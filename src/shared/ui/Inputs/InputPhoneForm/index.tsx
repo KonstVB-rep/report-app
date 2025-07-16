@@ -26,8 +26,8 @@ const InputPhoneForm = <T extends FieldValues>({
       render={({ field }) => {
         const fieldProps = {
           ...field,
-          ref: undefined, // Убираем стандартный ref
-          inputRef: field.ref, // Используем inputRef для IMaskInput
+          ref: undefined, 
+          inputRef: field.ref, 
         };
         return (
           <FormItem>

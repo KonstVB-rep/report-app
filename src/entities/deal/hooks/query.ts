@@ -48,7 +48,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
           return null;
         }
 
-        return deal;
+        return deal ?? {};
       } catch (error) {
         console.error(
           (error as Error).message,
@@ -91,7 +91,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
           return null;
         }
 
-        return deal;
+        return deal ?? {};
       } catch (error) {
         console.error(error, "❌ Ошибка в useGetRetailById");
         if ((error as Error).message === "Failed to fetch") {
@@ -207,7 +207,7 @@ export const useGetAllDealsByDepartmentByType = (
           throw new Error(`Нет функции для типа сделки: ${type}`);
         }
 
-        return await fetchFunctions[type]();
+        return (await fetchFunctions[type]()) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAllDealsByDepartmentByType");
         if ((error as Error).message === "Failed to fetch") {
@@ -238,7 +238,7 @@ export const useGetAllProjects = (
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getAllProjectsByDepartmentQuery(departmentId);
+        return (await getAllProjectsByDepartmentQuery(departmentId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
         if ((error as Error).message === "Failed to fetch") {
@@ -269,7 +269,7 @@ export const useGetAllRetails = (
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getAllRetailsByDepartmentQuery(departmentId);
+        return (await getAllRetailsByDepartmentQuery(departmentId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
         if ((error as Error).message === "Failed to fetch") {
@@ -287,7 +287,7 @@ export const useGetAllRetails = (
   });
 };
 
-export const useGetRetailsUser = (userId: string | null) => {
+export const useGetRetailsUser = (userId: string | undefined) => {
   const { authUser } = useStoreUser();
   const { data, isError, ...restData } = useQuery({
     queryKey: ["retails", userId],
@@ -296,7 +296,7 @@ export const useGetRetailsUser = (userId: string | null) => {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getRetailsUser(userId as string);
+        return (await getRetailsUser(userId as string)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -325,7 +325,7 @@ export const useGetProjectsUser = (userId: string | undefined) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        return await getProjectsUser(userId as string);
+        return (await getProjectsUser(userId as string)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -352,7 +352,7 @@ export const useGetContractsUser = (userId: string | undefined) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        return await getProjectsUser(userId as string);
+        return (await getProjectsUser(userId as string)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetContactsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -384,11 +384,13 @@ export const useGetDealsByDateRange = (
           throw new Error("Пользователь не авторизован");
         }
 
-        return await getDealsByDateRange(
-          userId as string,
-          range,
-          dealType,
-          departmentId
+        return (
+          (await getDealsByDateRange(
+            userId as string,
+            range,
+            dealType,
+            departmentId
+          )) ?? []
         );
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");

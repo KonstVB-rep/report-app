@@ -10,9 +10,10 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Dispatch, SetStateAction } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { DeepPartial } from "react-hook-form";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { logout } from "@/feature/auth/logout";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -67,11 +68,19 @@ export const useDelDeal = (
       closeModalFn();
     },
     onError: (error) => {
-      if ((error as Error).message === "Failed to fetch") {
-        TOAST.ERROR("Не удалось получить данные");
-      } else {
-        TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
       }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -123,8 +132,19 @@ export const useMutationUpdateProject = (
         managersIds: data.managersIds,
       });
     },
-    onError: (_error) => {
-      TOAST.ERROR((_error as Error).message);
+    onError: (error) => {
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
     onSuccess: (_, variables) => {
       close();
@@ -196,8 +216,20 @@ export const useMutationUpdateRetail = (
       });
     },
 
-    onError: (_error) => {
-      TOAST.ERROR((_error as Error).message);
+    onError: (error) => {
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
     onSuccess: (_, variables) => {
       close();
@@ -226,84 +258,97 @@ export const useMutationUpdateRetail = (
   });
 };
 
-export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
+export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
+  // const router = useRouter(); // Добавляем useRouter для навигации
+
   return useMutation({
-    mutationFn: (data: ProjectSchema) => {
+    mutationFn: async (data: ProjectSchema) => {
       if (!authUser?.id) {
         throw new Error("User ID is missing");
       }
 
-      return createProject({
-        ...data,
-        email: data.email || "",
-        phone: data.phone || "",
-        deliveryType:
-          data.deliveryType === ""
-            ? null
-            : (data.deliveryType as DeliveryProject),
-        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
-        dealStatus: data.dealStatus as StatusProject,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
-          : null,
-        direction: data.direction as DirectionProject,
-        amountCP: data.amountCP
-          ? parseFloat(
-              data.amountCP.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
-        amountPurchase: data.amountPurchase
-          ? parseFloat(
-              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
-        amountWork: data.amountWork
-          ? parseFloat(
-              data.amountWork.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
-        delta: data.delta
-          ? parseFloat(
-              data.delta.replace(/\s/g, "").replace(",", ".")
-            ).toString()
-          : "0",
-        managersIds: data.managersIds,
-      });
+      try {
+        return await createProject({
+          ...data,
+          email: data.email || "",
+          phone: data.phone || "",
+          deliveryType:
+            data.deliveryType === ""
+              ? null
+              : (data.deliveryType as DeliveryProject),
+          dateRequest: data.dateRequest
+            ? new Date(data.dateRequest)
+            : new Date(),
+          dealStatus: data.dealStatus as StatusProject,
+          plannedDateConnection: data.plannedDateConnection
+            ? new Date(data.plannedDateConnection)
+            : null,
+          direction: data.direction as DirectionProject,
+          amountCP: data.amountCP
+            ? parseFloat(
+                data.amountCP.replace(/\s/g, "").replace(",", ".")
+              ).toString()
+            : "0",
+          amountPurchase: data.amountPurchase
+            ? parseFloat(
+                data.amountPurchase.replace(/\s/g, "").replace(",", ".")
+              ).toString()
+            : "0",
+          amountWork: data.amountWork
+            ? parseFloat(
+                data.amountWork.replace(/\s/g, "").replace(",", ".")
+              ).toString()
+            : "0",
+          delta: data.delta
+            ? parseFloat(
+                data.delta.replace(/\s/g, "").replace(",", ".")
+              ).toString()
+            : "0",
+          managersIds: data.managersIds,
+        });
+      } catch (error) {
+        console.error("Error in mutationFn:", error);
+        throw error;
+      }
     },
 
     onSuccess: (data) => {
-      if (data) {
-        form.reset(defaultProjectValues);
+      if (!data) return;
 
-        // queryClient.invalidateQueries({
-        //   queryKey: ["projects", data.userId],
-        //   exact: true,
-        // });
+      reset(defaultProjectValues);
 
-        queryClient.invalidateQueries({
-          queryKey: ["projects", authUser?.id],
-          exact: true,
-        });
+      queryClient.invalidateQueries({
+        queryKey: ["projects", authUser?.id],
+        exact: true,
+      });
 
-        queryClient.invalidateQueries({
-          queryKey: ["orders", authUser?.departmentId],
-          exact: true,
-        });
-      }
+      queryClient.invalidateQueries({
+        queryKey: ["orders", authUser?.departmentId],
+        exact: true,
+      });
     },
+
     onError: (error) => {
-      if ((error as Error).message === "Failed to fetch") {
-        TOAST.ERROR("Не удалось получить данные");
-      } else {
-        TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
       }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
 
-export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
+export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
 
@@ -341,12 +386,23 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
       });
     },
     onError: (error) => {
-      console.error("Ошибка при создании сделки:", error);
-      TOAST.ERROR("Ошибка при создании сделки");
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
     onSuccess: (data) => {
       if (data) {
-        form.reset(defaultRetailValues);
+        reset(defaultRetailValues);
 
         // queryClient.invalidateQueries({
         //   queryKey: ["retails", data.userId],

@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useCreateRetail } from "../../hooks/mutate";
@@ -31,12 +32,12 @@ const RetailForm = ({
     },
   });
 
-  const { mutateAsync, isPending } = useCreateRetail(form);
+  const { mutateAsync, isPending } = useCreateRetail(form.reset);
 
-  const onSubmit = (data: RetailSchema) => {
+  const onSubmit = withAuthCheck(async (data: RetailSchema) => {
     const dataForm = orderId ? { ...data, orderId: orderId } : data;
     TOAST.PROMISE(mutateAsync(dataForm), "Сделка по рознице добавлена");
-  };
+  });
 
   return (
     <RetailFormBody

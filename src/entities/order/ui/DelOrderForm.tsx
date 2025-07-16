@@ -1,8 +1,9 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
@@ -12,7 +13,7 @@ import { useGetOrderById } from "../hooks/query";
 
 type Props = {
   id: string;
-  close: Dispatch<SetStateAction<void>>;
+  close: () => void;
 };
 
 const DelOrderForm = ({ id, close }: Props) => {
@@ -20,10 +21,12 @@ const DelOrderForm = ({ id, close }: Props) => {
 
   const { mutate: delDeal, isPending } = useDelOrder(close);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    delDeal(id);
-  };
+  const handleSubmit = withAuthCheck(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      delDeal(id);
+    }
+  );
 
   if (isLoading) return <DelDealSkeleton />;
 

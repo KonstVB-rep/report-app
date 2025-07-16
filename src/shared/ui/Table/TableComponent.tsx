@@ -1,7 +1,7 @@
 import { DealType } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
-import { ReactNode, useCallback } from "react";
+import { ReactNode } from "react";
 
 import { useParams } from "next/navigation";
 
@@ -18,63 +18,71 @@ type TableComponentProps<T> = {
   isExistActionDeal?: boolean;
 };
 
+const getRowClassName = (dealStatus?: string) => {
+  const baseClass = "tr hover:bg-zinc-600 hover:text-white";
+  if (!dealStatus) return baseClass;
+
+  return `${baseClass} ${
+    dealStatus === "CLOSED"
+      ? "bg-green-950/80"
+      : dealStatus === "REJECT"
+        ? "bg-red-900/40 opacity-60"
+        : dealStatus === "PAID"
+          ? "bg-lime-200/20"
+          : ""
+  }`;
+};
+
 const TableComponent = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
   const { departmentId } = useParams();
 
-  const renderRowCells = useCallback((row: Row<T>) => {
-    return row.getVisibleCells().map((cell) => (
-      <TableCell
-        key={cell.id}
-        className="td min-w-12 border-b border-r"
-        style={{ width: cell.column.getSize() }}
+  const renderRow = (row: Row<T>): ReactNode => {
+    return (
+      <ContextRowTable
+        key={row.id}
+        isExistActionDeal={isExistActionDeal}
+        modals={(setOpenModal) => ({
+          edit: (
+            <EditDealContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+              type={row.original.type as DealType}
+            />
+          ),
+          delete: (
+            <DelDealContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+              type={row.original.type as DealType}
+            />
+          ),
+        })}
+        path={`/dashboard/deal/${departmentId}/${(
+          row.original.type as DealType
+        ).toLowerCase()}/${row.original.id}`}
       >
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-      </TableCell>
-    ));
-  }, []);
-
-  const renderRow = useCallback(
-    (row: Row<T>): ReactNode => {
-      return (
-        <ContextRowTable
-          key={row.id}
-          isExistActionDeal={isExistActionDeal}
-          modals={(setOpenModal) => ({
-            edit: (
-              <EditDealContextMenu
-                close={() => setOpenModal(null)}
-                id={row.original.id as string}
-                type={row.original.type as DealType}
-              />
-            ),
-            delete: (
-              <DelDealContextMenu
-                close={() => setOpenModal(null)}
-                id={row.original.id as string}
-                type={row.original.type as DealType}
-              />
-            ),
-          })}
-          path={`/dashboard/deal/${departmentId}/${(
-            row.original.type as DealType
-          ).toLowerCase()}/${row.original.id}`}
+        <TableRow
+          className={getRowClassName(row.original.dealStatus as string)}
+          data-reject={`${row.original.dealStatus === "REJECT"}`}
+          data-success={`${row.original.dealStatus === "PAID"}`}
+          data-closed={`${row.original.dealStatus === "CLOSED"}`}
         >
-          <TableRow
-            className={`tr hover:bg-zinc-600 hover:text-white ${row.original.dealStatus === "CLOSED" && "bg-green-950/80"} ${row.original.dealStatus === "REJECT" && "bg-red-900/40 opacity-60"} ${row.original.dealStatus === "PAID" && "bg-lime-200/20"}`}
-            data-reject={`${row.original.dealStatus === "REJECT"}`}
-            data-success={`${row.original.dealStatus === "PAID"}`}
-            data-closed={`${row.original.dealStatus === "CLOSED"}`}
-          >
-            {renderRowCells(row)}
-          </TableRow>
-        </ContextRowTable>
-      );
-    },
-    [isExistActionDeal, departmentId, renderRowCells]
-  );
+          {row.getVisibleCells().map((cell) => (
+            <TableCell
+              key={cell.id}
+              className="td min-w-12 border-b border-r"
+              style={{ width: cell.column.getSize() }}
+            >
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      </ContextRowTable>
+    );
+  };
 
   return (
     <div className="rounded-lg overflow-hidden border">

@@ -2,8 +2,6 @@
 
 import { DealType, PermissionEnum } from "@prisma/client";
 
-import { useCallback } from "react";
-
 import dynamic from "next/dynamic";
 
 import { useGetProjectsUser } from "@/entities/deal/hooks/query";
@@ -26,13 +24,11 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
   );
 
   const { data: deals } = useGetProjectsUser(
-    hasAccess && (userId as string | undefined) ? (userId as string) : undefined
+    hasAccess ? (userId as string) : undefined
   );
 
-  const getRowLink = useCallback(
-    (row: ProjectResponse) => `/deal/project/${row.id}`,
-    []
-  );
+  const getRowLink = (row: ProjectResponse) => `/deal/project/${row.id}`;
+
 
   if (!hasAccess)
     return (

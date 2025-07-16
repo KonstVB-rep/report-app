@@ -2,6 +2,7 @@ import { DealFile } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { logout } from "@/feature/auth/logout";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { deleteFile, downloadFile, uploadFile } from "../api/action_route";
@@ -37,12 +38,20 @@ export const useUploadFileYdxDisk = () => {
       });
     },
     onError: (error) => {
-      console.log(error);
-      if ((error as Error).message === "Failed to fetch") {
-        TOAST.ERROR("Не удалось получить данные");
-      } else {
-        TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
       }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при загрузки файлов на Яндекс диск";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -64,11 +73,20 @@ export const useDownLoadFile = () => {
       return saveBlobToFile(response, name);
     },
     onError: (error) => {
-      if ((error as Error).message === "Failed to fetch") {
-        TOAST.ERROR("Не удалось получить данные");
-      } else {
-        TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
       }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при загрузки файлов";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -109,11 +127,20 @@ export const useDeleteFiles = (
       handleCloseDialog?.();
     },
     onError: (error) => {
-      if ((error as Error).message === "Failed to fetch") {
-        TOAST.ERROR("Не удалось получить данные");
-      } else {
-        TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
       }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при удалении файла";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };

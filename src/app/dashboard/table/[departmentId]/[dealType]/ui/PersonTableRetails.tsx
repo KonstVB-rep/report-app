@@ -2,8 +2,6 @@
 
 import { DealType, PermissionEnum } from "@prisma/client";
 
-import { useCallback } from "react";
-
 import dynamic from "next/dynamic";
 
 import { useGetRetailsUser } from "@/entities/deal/hooks/query";
@@ -26,13 +24,11 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
   );
 
   const { data: deals } = useGetRetailsUser(
-    hasAccess ? (userId as string) : null
+    hasAccess ? (userId as string) : undefined
   );
 
-  const getRowLink = useCallback(
-    (row: RetailResponse) => `/dashboard/deal/retail/${row.id}`,
-    []
-  );
+  const getRowLink = (row: RetailResponse) => `/dashboard/deal/retail/${row.id}`;
+
 
   if (!hasAccess)
     return (

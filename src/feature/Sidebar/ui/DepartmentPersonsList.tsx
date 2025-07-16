@@ -1,9 +1,7 @@
 "use client";
 
-import { memo, useState } from "react";
-
+import { memo, useState, useCallback } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-
 import clsx from "clsx";
 import { ChevronRight } from "lucide-react";
 
@@ -39,13 +37,19 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
 
   const [open, setOpen] = useState(false);
 
+  // Простая проверка — мемоизация не нужна, так как простое сравнение
   const isActiveDepartment = item.id === Number(params.departmentId);
 
-  const handleDepartmentClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    router.push(item.url);
-  };
+  // Мемоизируем обработчик, чтобы не создавать новую функцию на каждый рендер
+  // и избежать лишних ререндеров дочерних компонентов, которые принимают эту функцию
+  const handleDepartmentClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      router.push(item.url);
+    },
+    [router, item.url]
+  );
 
   return (
     <Collapsible
@@ -57,7 +61,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
         <SidebarMenuButton
           asChild
           tooltip={item.title}
-          onClick={handleDepartmentClick}
+          onClick={handleDepartmentClick} // Используем мемоизированную функцию
           className={clsx(
             "h-max border-2",
             isActiveDepartment &&

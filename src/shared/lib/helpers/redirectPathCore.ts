@@ -1,5 +1,5 @@
 export const redirectPathCore = (
-  departmentId: number,
+  departmentId: number
   // userId: string
 ): string => {
   switch (departmentId) {

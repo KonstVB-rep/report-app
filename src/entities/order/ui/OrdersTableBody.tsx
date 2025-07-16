@@ -20,6 +20,10 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
+
+  const rowCount = table.getRowModel().rows.length;
+  const hasRows = rowCount > 0;
+
   const renderRowCells = useCallback((row: Row<T>) => {
     return row.getVisibleCells().map((cell) => (
       <TableCell
@@ -36,13 +40,15 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
     (row: Row<T>): ReactNode => {
       const isNotAtWork =
         row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK;
+      const isAtWork =
+        row.original.orderStatus === StatusOrder.AT_WORK;
 
       const tableRow = (
         <TableRow
           key={row.id}
-          className={`tr hover:bg-zinc-600 hover:text-white ${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK && "bg-red-900/40"} ${row.original.orderStatus === StatusOrder.AT_WORK && "bg-lime-200/20"}`}
-          data-reject={`${row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK}`}
-          data-success={`${row.original.orderStatus === StatusOrder.AT_WORK}`}
+          className={`tr hover:bg-zinc-600 hover:text-white ${isNotAtWork && "bg-red-900/40"} ${isAtWork && "bg-lime-200/20"}`}
+          data-reject={`${isNotAtWork}`}
+          data-success={`${isAtWork}`}
         >
           {renderRowCells(row)}
         </TableRow>
@@ -81,9 +87,9 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
 
   return (
     <div className="rounded-lg overflow-hidden border">
-      {table.getRowModel().rows.length > 0 && (
+      {hasRows && (
         <p className="border rounded-md px-2 py-1 m-1 w-fit bg-stone-700 text-white dark:bg-black">
-          Количество выбранных заявок: {table.getRowModel().rows.length}
+          Количество выбранных заявок: {rowCount}
         </p>
       )}
       <TableTemplate table={table} renderRow={renderRow} />

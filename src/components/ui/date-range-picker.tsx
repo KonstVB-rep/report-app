@@ -19,19 +19,21 @@ import { cn } from "@/shared/lib/utils";
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   value?: DateRange;
-  onValueChange: (value: DateRange | undefined) => void;
+  onValueChange?: (value: DateRange | undefined) => void;
 };
 
 export function DateRangePicker({ className, value, onValueChange }: Props) {
   const [date, setDate] = React.useState<DateRange | undefined>(value);
 
+  const stableValue = React.useMemo(() => ({ from: value?.from, to:value?.to }), [value?.from, value?.to]);
+
   useEffect(() => {
-    setDate(value);
-  }, [value?.from, value?.to]);
+    setDate(stableValue);
+  }, [stableValue]);
 
   const handleSelect = (date: DateRange | undefined) => {
     setDate(date);
-    onValueChange(date);
+    onValueChange?.(date);
   };
 
   return (
@@ -42,7 +44,7 @@ export function DateRangePicker({ className, value, onValueChange }: Props) {
             id="date"
             variant={"outline"}
             className={cn(
-              "w-max sm:w-[220px] justify-start text-left font-normal",
+              "w-max sm:w-fit justify-start text-left font-normal",
               !date && "text-muted-foreground"
             )}
           >

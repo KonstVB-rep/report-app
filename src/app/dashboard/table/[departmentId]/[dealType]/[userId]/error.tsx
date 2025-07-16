@@ -11,12 +11,13 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const handleErrorRef = useRef(false);
+  const didHandleError = useRef(false);
+
   useEffect(() => {
-    console.error(error);
-    return () => {
-      handleErrorRef.current = true;
-    };
+    if (!didHandleError.current) {
+      console.error(error);
+      didHandleError.current = true;
+    }
   }, [error]);
 
   return (

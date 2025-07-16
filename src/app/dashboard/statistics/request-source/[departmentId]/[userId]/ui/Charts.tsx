@@ -5,7 +5,7 @@ import { DateRange } from "react-day-picker";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { X } from "lucide-react";
+import { ChartColumnBig, ChartPie, X } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
@@ -26,6 +26,7 @@ import {
   renderCustomizedLabel,
 } from "../utils";
 import EmptyData from "./EmptyData";
+import Graph from "./Graph";
 import MobileCharts from "./MobileCharts";
 import ResourceRow from "./ResourceRow";
 
@@ -51,33 +52,31 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const [dateRangeState, setDateRangeState] = useState<DateRangeParams | null>(
     null
   );
+  const [typeDataDisplay, setTypeDataDisplay] = useState<string>("");
+
+  const isGraph = typeDataDisplay === "graph";
+  const isCircleGraph = typeDataDisplay === "circle";
 
   const { data, countsStatuses } = useMemo(() => {
     const countsStatuses: CountItem = {};
-
     const filteredDate = deals.filter(({ dateRequest }) =>
       dateFilter(dateRequest, selectedDate)
     );
 
-    if (filteredDate.length === 0) {
-      return { data: [], countsStatuses };
-    }
+    if (filteredDate.length === 0) return { data: [], countsStatuses };
 
     filteredDate.forEach(({ resource, dealStatus }) => {
       const key = isFromSite(resource)
         ? normalizeResource(resource)
         : emptyResourceKey;
-
-      if (!countsStatuses[key]) {
-        countsStatuses[key] = defaultValuesCount();
-      }
+      countsStatuses[key] ??= defaultValuesCount(); // Используем оператор ??=
 
       if (dealStatus in StatusesInWork) {
-        countsStatuses[key].inWork += 1;
+        countsStatuses[key].inWork++;
       } else if (["PAID", "CLOSED"].includes(dealStatus)) {
-        countsStatuses[key].positive += 1;
+        countsStatuses[key].positive++;
       } else if (dealStatus === "REJECT") {
-        countsStatuses[key].negative += 1;
+        countsStatuses[key].negative++;
       }
     });
 
@@ -92,29 +91,37 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
 
   const dataCountByDate = data.reduce((acc, item) => (acc += item.value), 0);
 
-  const handleClick = (
-    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
-    obj: DateRange
-  ) => {
+  const handleClick = (e: MouseEvent<HTMLButtonElement>, obj: DateRange) => {
+    const id = e.currentTarget.id as DateRangeParams;
     setSelectedDate(obj);
-    const params = new URLSearchParams(searchParams.toString());
+    setDateRangeState(id);
 
-    if (e.currentTarget.id) {
-      params.set("dateRange", e.currentTarget.id);
-      setDateRangeState(e.currentTarget.id as DateRangeParams);
-
-      router.push(`?${params.toString()}`);
-    }
+    const params = new URLSearchParams(searchParams);
+    params.set("dateRange", id);
+    router.replace(`?${params.toString()}`);
   };
 
   useEffect(() => {
-    const param = searchParams.get("dateRange");
+    const param = searchParams.get("dateRange") as DateRangeParams | null;
+    const displayType = searchParams.get(
+      "displayType"
+    ) as DateRangeParams | null;
     if (param) {
-      setDateRangeState(param as DateRangeParams);
-      router.push(`?dateRange=${param.toString()}`);
-      setSelectedDate(getPeriodRange(param as DateRangeParams));
+      setDateRangeState(param);
+      setSelectedDate(getPeriodRange(param));
     }
-  }, [router, searchParams]);
+    setTypeDataDisplay(displayType || "circle");
+  }, [searchParams]);
+
+  const handleChoiceDataDisplay: React.MouseEventHandler<HTMLButtonElement> = (
+    e
+  ) => {
+    const type = e.currentTarget.id;
+    setTypeDataDisplay(type);
+    const params = new URLSearchParams(searchParams);
+    params.set("displayType", type);
+    router.replace(`?${params.toString()}`);
+  };
 
   if (deals.length === 0) return <EmptyData />;
 
@@ -123,12 +130,34 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       <h1 className="text-2xl font-semibold text-center">
         Статистика заявок по источникам
       </h1>
-      <h2 className="text-lg flex gap-2 p-2 items-center w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
-        <span>Общее количество заявок: </span>
-        <span className="grid place-items-center aspect-square p-2 border border-solid rounded-md ">
-          {totalDealsCount}
-        </span>
-      </h2>
+      <div className="flex gap-2 items-start justify-between">
+        <h2 className="text-lg flex gap-2 p-2 items-center w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
+          <span>Общее количество заявок: </span>
+          <span className="grid place-items-center aspect-square p-2 border border-solid rounded-md ">
+            {totalDealsCount}
+          </span>
+        </h2>
+        <div className="flex gap-2">
+          <Button
+            id="circle"
+            variant={isCircleGraph ? "default" : "outline"}
+            onClick={handleChoiceDataDisplay}
+            size={"icon"}
+            title="Круговая диаграмма"
+          >
+            <ChartPie />
+          </Button>
+          <Button
+            id="graph"
+            variant={isGraph ? "default" : "outline"}
+            onClick={handleChoiceDataDisplay}
+            size={"icon"}
+            title="График"
+          >
+            <ChartColumnBig />
+          </Button>
+        </div>
+      </div>
       <div className="flex gap-2 justify-between items-end flex-wrap">
         <div className="grid gap-2">
           <div className="flex gap-2 flex-wrap">
@@ -172,6 +201,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
           />
           {selectedDate && (
             <Button
+              aria-label="Сбросить дату"
               variant="outline"
               onClick={() => setSelectedDate(undefined)}
             >
@@ -187,42 +217,48 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
             keyValue={`chart-${JSON.stringify(selectedDate)}`}
             className="grid-charts gap-4 items-center"
           >
-            <ResponsiveContainer
-              width={600}
-              minWidth={480}
-              height={400}
-              className="hidden sm:block justify-self-center"
-            >
-              <PieChart>
-                <Pie
-                  minAngle={10}
-                  data={data}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="40%"
-                  cy="50%"
-                  outerRadius={140}
-                  labelLine
-                  label={renderCustomizedLabel(isDarkMode)}
-                >
-                  {data.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {isCircleGraph && (
+              <ResponsiveContainer
+                width={640}
+                minWidth={480}
+                height={420}
+                className="hidden sm:block justify-self-center w-full h-auto"
+              >
+                <PieChart>
+                  <Pie
+                    minAngle={10}
+                    data={data}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="40%"
+                    cy="50%"
+                    outerRadius={140}
+                    labelLine
+                    label={renderCustomizedLabel(isDarkMode)}
+                  >
+                    {data.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+
+            {isGraph && (
+              <Graph data={data} className="block w-full h-[430px]" />
+            )}
 
             <MobileCharts data={data} />
 
-            <div className="flex gap-2 w-full md:w-auto">
+            <div className="flex gap-2 w-full md:w-auto flex-1 min-w-max">
               <ul className="grid gap-2 flex-shrink-0 flex-1">
                 {data.map((item, index) => (
                   <ResourceRow
-                    key={index}
+                    key={item.name}
                     item={item}
                     color={COLORS[index % COLORS.length]}
                     status={countsStatuses[item.name]}

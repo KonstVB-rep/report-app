@@ -41,16 +41,24 @@ const DialogComponent = ({
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
+  
+  const renderTrigger =() => {
+    const triggerElement = trigger ? (
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    ) : null;
+
+    return contentTooltip ? (
+      <TooltipComponent content={contentTooltip}>
+        {triggerElement}
+      </TooltipComponent>
+    ) : (
+      triggerElement
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {contentTooltip ? (
-        <TooltipComponent content={contentTooltip}>
-          {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-        </TooltipComponent>
-      ) : (
-        <DialogTrigger asChild>{trigger}</DialogTrigger>
-      )}
+      {renderTrigger()}
       <DialogContent
         className={`max-w-[90vw] sm:max-w-[825px] ${classNameContent}`}
         showX={showX}

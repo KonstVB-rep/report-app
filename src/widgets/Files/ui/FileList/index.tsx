@@ -15,6 +15,7 @@ import ICONS_TYPE_FILE from "../../libs/iconsTypeFile";
 import DeleteFile from "../DeleteFile";
 import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
 import SkeletonFiles from "../SkeletonFiles";
+import { FileInfo } from "../../types";
 
 type FileListProps = {
   data: {
@@ -24,20 +25,80 @@ type FileListProps = {
   } | null;
 };
 
-const imageFormat = [
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".gif",
-  ".bmp",
-  ".tiff",
-  ".webp",
-  ".svg",
-  ".ico",
-];
-const excelFormat = [".xls", ".xlsx", ".csv"];
-const pdfFormat = [".pdf"];
-const text = [".txt"];
+const FILE_FORMATS = {
+  IMAGE: [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg", ".ico"],
+  EXCEL: [".xls", ".xlsx", ".csv"],
+  PDF: [".pdf"],
+  TEXT: [".txt"]
+};
+
+const getFileType = (format: string) => {
+  if (FILE_FORMATS.IMAGE.includes(format)) return 'image';
+  if (FILE_FORMATS.EXCEL.includes(format)) return 'excel';
+  if (FILE_FORMATS.PDF.includes(format)) return 'pdf';
+  if (FILE_FORMATS.TEXT.includes(format)) return 'text';
+  return 'other';
+};
+
+const fileTypeIcons = {
+  image: ICONS_TYPE_FILE[".img"](),
+  excel: ICONS_TYPE_FILE[".xls"](),
+  pdf: ICONS_TYPE_FILE[".pdf"](),
+  text: ICONS_TYPE_FILE[".txt"](),
+  other: ICONS_TYPE_FILE["default"]()
+};
+
+// const imageFormat = [
+//   ".jpg",
+//   ".jpeg",
+//   ".png",
+//   ".gif",
+//   ".bmp",
+//   ".tiff",
+//   ".webp",
+//   ".svg",
+//   ".ico",
+// ];
+// const excelFormat = [".xls", ".xlsx", ".csv"];
+// const pdfFormat = [".pdf"];
+// const text = [".txt"];
+
+
+const FileItem = ({ file, selected, onSelect }: { 
+  file: FileInfo, 
+  selected: boolean, 
+  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void 
+}) => {
+  const formatFile = getFormatFile(file.name);
+  const fileType = getFileType(formatFile);
+  const fileName = getFileNameWithoutUuid(file.name);
+
+  return (
+    <motion.li
+      layoutId={file.name}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.2, ease: "easeInOut" }}
+      className="group relative grid w-20 min-w-20 max-w-20 flex-1 gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
+    >
+      <p className="flex items-center justify-center">
+       {fileTypeIcons[fileType]}
+      </p>
+      <p className="truncate text-xs">{fileName}</p>
+      <div className="absolute inset-0 -z-[1] h-full w-full rounded-md bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
+      <DownLoadOrCheckFile
+        className="absolute inset-0 z-10 h-full w-full items-center justify-center"
+        fileName={fileName}
+        localPath={file.localPath}
+        name={file.name}
+        id={file.name}
+        onChange={onSelect}
+        checked={selected}
+      />
+    </motion.li>
+  );
+};
 
 const FileList = ({ data }: FileListProps) => {
   const {
@@ -99,6 +160,16 @@ const FileList = ({ data }: FileListProps) => {
 
             <motion.ul layout className="flex flex-wrap gap-2">
               <AnimatePresence>
+                {files.map((file) => (
+                  <FileItem
+                    key={file.name}
+                    file={file}
+                    selected={selectedFiles.has(file.name)}
+                    onSelect={handleSelectFile}
+                  />
+                ))}
+              </AnimatePresence>
+              {/* <AnimatePresence>
                 {files.map((file) => {
                   const formatFile = getFormatFile(
                     file.name
@@ -148,7 +219,7 @@ const FileList = ({ data }: FileListProps) => {
                     </motion.li>
                   );
                 })}
-              </AnimatePresence>
+              </AnimatePresence> */}
             </motion.ul>
           </MotionDivY>
         )}

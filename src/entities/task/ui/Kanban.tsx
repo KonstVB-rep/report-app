@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 
 import { CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 
+import { cn } from "@/shared/lib/utils";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
 import { useUpdateTasksOrder } from "../hooks/mutate";
@@ -47,7 +48,6 @@ export const StatusesTask = [
   },
 ] as const;
 
-// Хелпер для reorder внутри одного столбца
 const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
@@ -56,9 +56,8 @@ const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
 };
 
 const Kanban = ({ data }: KanbanProps) => {
-  const { mutate, isPending, isError } = useUpdateTasksOrder();
+  const { mutate, isPending } = useUpdateTasksOrder();
 
-  // Локальный стейт задач для мгновенного UI-обновления
   const [tasks, setTasks] = useState<TaskWithUserInfo[]>([]);
 
   useEffect(() => {
@@ -147,28 +146,38 @@ const Kanban = ({ data }: KanbanProps) => {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className="flex flex-col gap-2 min-h-[120px]"
+                        className={cn(
+                          "flex flex-col gap-2 min-h-[120px]",
+                          columnTasks.length <= 0 &&
+                            "border border-dashed rounded-sm border-primary grid place-content-center"
+                        )}
                       >
-                        <MotionDivY className="space-y-2 px-2 border-x border-dashed border-secondary">
-                          {columnTasks.map((task, index) => (
-                            <Draggable
-                              key={task.id}
-                              draggableId={task.id}
-                              index={index}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <TaskKanbanCard task={task} />
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </MotionDivY>
+                        {columnTasks.length > 0 ? (
+                          <MotionDivY className="space-y-2 px-2 border-x border-dashed border-secondary">
+                            {columnTasks.map((task, index) => (
+                              <Draggable
+                                key={task.id}
+                                draggableId={task.id}
+                                index={index}
+                              >
+                                {(provided) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                  >
+                                    <TaskKanbanCard task={task} />
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </MotionDivY>
+                        ) : (
+                          <div className="w-full h-full">
+                            <p>Нет задач</p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </Droppable>
@@ -178,11 +187,6 @@ const Kanban = ({ data }: KanbanProps) => {
           </div>
         </div>
 
-        {data.length === 0 && !isPending && !isError && (
-          <div className="grid place-items-center p-4 bg-secondary rounded-md">
-            <p className="text-xl text-center">Нет данных</p>
-          </div>
-        )}
       </DragDropContext>
     </div>
   );

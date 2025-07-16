@@ -18,7 +18,7 @@ const OrderForm = () => {
     defaultValues: defaultOrderValues,
   });
 
-  const { mutateAsync, isPending } = useCreateOrder(form);
+  const { mutateAsync, isPending } = useCreateOrder(form.reset);
 
   const onSubmit = (data: OrderSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Заявка добавлена");

@@ -5,18 +5,27 @@ import { Loader } from "lucide-react";
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import { Button } from "@/components/ui/button";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import DialogComponent from "@/shared/ui/DialogComponent";
 
 import { EventInputType } from "../types";
 
-type ModalDelEventsType = {
+type ModalDelEventsProps = {
   events: EventInputType[];
 };
 
-const ModalDelEvents = ({ events }: ModalDelEventsType) => {
+const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
   const { deleteEvent, isPendingDelete } = useEventActionContext();
   const { confirmDelModal, setConfirmDelModal, editingId } =
     useCalendarContext();
+
+    const eventTitle = events.find((e) => e.id === editingId)?.title ?? "Неизвестное событие";
+
+  const handleDelete = withAuthCheck(async () => {
+    if (editingId) {
+      deleteEvent(editingId);
+    }
+  });
 
   if (!editingId) return null;
   return (
@@ -34,8 +43,7 @@ const ModalDelEvents = ({ events }: ModalDelEventsType) => {
         <div className="text-center grid gap-4">
           <p>Вы уверены что хотите удалить событие?</p>
           <p className="p-2 border border-solid rounded-md break-all">
-            {events.find((item) => item.id === editingId)?.title ??
-              "Неизвестное событие"}
+            {eventTitle}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -44,9 +52,9 @@ const ModalDelEvents = ({ events }: ModalDelEventsType) => {
               Отмена
             </Button>
           </DialogClose>
-          <Button onClick={() => deleteEvent(editingId)}>
+          <Button onClick={handleDelete} disabled={isPendingDelete}>
             {isPendingDelete ? (
-              <span className="flex gap-2">
+              <span className="flex gap-2 items-center">
                 <Loader className="animate-spin w-5 h-5" /> Удаление...
               </span>
             ) : (

@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import React from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -14,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DepartmentLabels } from "@/entities/department/types";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
@@ -45,7 +45,7 @@ const UserCreateForm = () => {
     },
   });
 
-  const onSubmit = (data: userSchema) => {
+  const onSubmit = withAuthCheck(async (data: userSchema) => {
     try {
       TOAST.PROMISE(mutateAsync(data), "Пользователь сохранен");
       form.reset();
@@ -54,7 +54,7 @@ const UserCreateForm = () => {
       console.error("Error creating user:", error);
       TOAST.ERROR("Ошибка при создании пользователя");
     }
-  };
+  });
 
   return (
     <>

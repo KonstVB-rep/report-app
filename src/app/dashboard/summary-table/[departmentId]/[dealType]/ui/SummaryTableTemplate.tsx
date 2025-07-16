@@ -23,23 +23,23 @@ const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   type: DealType;
 }) => JSX.Element;
 
-type SummaryTableTemplateProps<T extends { id: string }> = {
-  columns: ColumnDef<T, unknown>[];
-  data: T[];
-  getRowLink: (row: T, type: DealType) => string;
+export interface SummaryTableTemplateProps<TData extends { id: string }> {
+  columns: ColumnDef<TData, unknown>[];
+  data: TData[];
+  getRowLink: (row: TData, type: DealType) => string;
   type: DealType;
   isError: boolean;
   error: Error | null;
-};
+}
 
-const SummaryTableTemplate = <T extends { id: string }>({
+const SummaryTableTemplate = <TData extends { id: string }>({
   columns,
   data,
   getRowLink,
   type,
   isError,
   error,
-}: SummaryTableTemplateProps<T>) => {
+}: SummaryTableTemplateProps<TData>) => {
   return (
     <DealTableTemplate>
       {isError && <ErrorMessageTable message={error?.message} />}

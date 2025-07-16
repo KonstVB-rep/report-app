@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 
 import { Toggle } from "@/components/ui/toggle";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { cn } from "@/shared/lib/utils";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import { TOAST } from "@/shared/ui/Toast";
@@ -29,31 +30,33 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
 
   const { mutate: updateStatusChatBot } = useUpdateChatBot();
 
-  const handleUnsubscribeChatBot = async (chatName: string, chatId: string) => {
-    if (!bot?.botName) return;
+  const handleUnsubscribeChatBot = withAuthCheck(
+    async (chatName: string, chatId: string) => {
+      if (!bot?.botName) return;
 
-    try {
-      setIsFetch(true);
-      updateStatusChatBot({
-        botId: bot.id,
-        isActive: false,
-      });
-      if (chatId) {
-        await sendNotification(
-          "Вы успешно отписались от уведомлений",
-          chatId,
-          bot.botName
+      try {
+        setIsFetch(true);
+        updateStatusChatBot({
+          botId: bot.id,
+          isActive: false,
+        });
+        if (chatId) {
+          await sendNotification(
+            "Вы успешно отписались от уведомлений",
+            chatId,
+            bot.botName
+          );
+        }
+      } catch (error) {
+        TOAST.ERROR(
+          "Не удалось отписаться от уведомлений. Попробуйте еще раз или позже."
         );
+        console.error("Ошибка при отписке от бота:", error);
+      } finally {
+        setIsFetch(false);
       }
-    } catch (error) {
-      TOAST.ERROR(
-        "Не удалось отписаться от уведомлений. Попробуйте еще раз или позже."
-      );
-      console.error("Ошибка при отписке от бота:", error);
-    } finally {
-      setIsFetch(false);
     }
-  };
+  );
 
   const isActiveBot = bot ? bot.isActive : false;
 

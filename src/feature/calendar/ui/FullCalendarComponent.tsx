@@ -19,6 +19,8 @@ import {
   handleEventClick,
 } from "@/feature/calendar/utils/eventHandlers";
 
+const defaultView = "dayGridMonth";
+
 const FullCalendarComponent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,17 +28,13 @@ const FullCalendarComponent = () => {
   const { events } = useEventActionContext();
   const { form, setEditingId, setOpenModal } = useCalendarContext();
 
-  const defaultView = "dayGridMonth";
   const viewFromUrl = searchParams.get("view");
   const [currentView, setCurrentView] = useState(viewFromUrl || defaultView);
 
-  const capitalizeTitle = () => {
+  const handleDatesSet = (arg: { view: { type: string } }) => {
     const titleEl = document.querySelector(".fc-toolbar-title");
     titleEl?.classList.add("title-calendar");
-  };
 
-  const handleDatesSet = (arg: { view: { type: string } }) => {
-    capitalizeTitle();
     const newView = arg.view.type;
     setCurrentView(newView);
 

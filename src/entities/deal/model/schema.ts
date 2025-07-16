@@ -46,7 +46,9 @@ export const ProjectFormSchema = z
       }
     ),
     deliveryType: z
-      .enum(Object.values(DeliveryProject) as [string, ...string[]])
+      .enum(Object.values(DeliveryProject) as [string, ...string[]], {
+        message: "Выберите тип поставки",
+      })
       .optional()
       .nullable(),
     contact: z.string(),
@@ -130,7 +132,9 @@ export const RetailFormSchema = z
       }
     ),
     deliveryType: z
-      .enum(Object.values(DeliveryRetail) as [string, ...string[]])
+      .enum(Object.values(DeliveryRetail) as [string, ...string[]], {
+        message: "Выберите тип поставки",
+      })
       .optional()
       .nullable(),
     contact: z.string(),

@@ -4,6 +4,7 @@ import React, { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
@@ -25,27 +26,33 @@ const DelDealForm = ({ id, type, close }: Props) => {
     type
   );
 
+  const userId = deal?.userId ?? "";
+  const dealFiles = deal?.dealFiles ?? [];
+  const hasFiles = dealFiles.length > 0;
+
   const { mutate: delDeal, isPending } = useDelDeal(
     () => {
-      if (!deal?.dealFiles?.length) {
+      if (!hasFiles) {
         close();
         return;
       }
 
-      mutate(deal.dealFiles);
+      mutate(dealFiles);
     },
     type,
-    deal?.userId ?? ""
+    userId
   );
 
   const { mutate, isPending: isPendingDelete } = useDeleteFiles(() => close);
 
   const isLoading = isPending || isPendingDelete;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    delDeal(id);
-  };
+  const handleSubmit = withAuthCheck(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      delDeal(id);
+    }
+  );
 
   if (isLoadInfoAboutDeal) return <DelDealSkeleton />;
 

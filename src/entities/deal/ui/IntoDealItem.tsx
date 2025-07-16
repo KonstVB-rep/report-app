@@ -14,8 +14,7 @@ const IntoDealItem = ({
   title,
   children,
   className = "",
-}: IntoDealItemProps) => {
-  return (
+}: IntoDealItemProps) =>  (
     <div className={cn("overflow-hidden rounded-md border", className)}>
       <p className="break-all first-letter:capitalize bg-stone-300 dark:bg-black/40 p-4 font-medium">
         {title}
@@ -23,6 +22,6 @@ const IntoDealItem = ({
       <div className="flex-1 p-3 grid gap-2">{children}</div>
     </div>
   );
-};
+
 
 export default IntoDealItem;

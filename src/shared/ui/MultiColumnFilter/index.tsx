@@ -12,7 +12,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Filter } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import DebouncedInput from "../DebouncedInput";
 
@@ -72,15 +72,16 @@ const MultiColumnFilter = <
     [columns, includedColumns]
   );
 
+  const filterName = new URLSearchParams(searchParams.toString())
+    .get("filters")
+    ?.split("=")[0];
+
   useEffect(() => {
     const newParams = new URLSearchParams(searchParams.toString());
 
-    // Формируем строку с фильтрами
     if (selectedColumns.length > 0 && filterValueSearchByCol) {
-      // Получаем текущие фильтры
       const existingFilters = newParams.get("filters");
 
-      // Если фильтры есть
       if (existingFilters) {
         const filterArray = existingFilters.split("&");
         let filterUpdated = false;
@@ -88,31 +89,25 @@ const MultiColumnFilter = <
         const updatedFilters = filterArray.map((filter) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const [key, value] = filter.split("=");
-
-          // Если фильтр для этого столбца, обновляем его
           if (selectedColumns.includes(key)) {
-            filterUpdated = true; // Фильтр обновлен
-            return `${key}="${encodeURIComponent(filterValueSearchByCol)}"`;
+            filterUpdated = true;
+            return `${key}=${encodeURIComponent(filterValueSearchByCol)}`;
           }
 
-          // Если фильтр для другого столбца, оставляем без изменений
           return filter;
         });
 
-        // Если фильтра для этого столбца не было, добавляем новый
         if (!filterUpdated) {
           updatedFilters.push(
-            `${selectedColumns[0]}="${encodeURIComponent(filterValueSearchByCol)}"`
+            `${selectedColumns[0]}=${encodeURIComponent(filterValueSearchByCol)}`
           );
         }
 
-        // Преобразуем обновленные фильтры обратно в строку
         newParams.set("filters", updatedFilters.join("&"));
       } else {
-        // Если фильтров нет, просто добавляем их
         newParams.set(
           "filters",
-          `${selectedColumns[0]}="${encodeURIComponent(filterValueSearchByCol)}"`
+          `${selectedColumns[0]}=${encodeURIComponent(filterValueSearchByCol)}`
         );
       }
     }
@@ -134,20 +129,30 @@ const MultiColumnFilter = <
     );
   };
 
-  const handleCheckboxChange = (columnId: string) => {
-    setSelectedColumns((prev: string[]) =>
-      prev.includes(columnId)
-        ? prev.filter((id) => id !== columnId)
-        : [...prev, columnId]
-    );
+const handleRadioChange = (columnId: string) => {
+  setSelectedColumns([columnId]); // ← выбираем только один столбец
+};
 
-    if (selectedColumns.includes(columnId)) {
-      setColumnFilters((prevFilters) =>
-        prevFilters.filter((filter) => filter.id !== columnId)
-      );
+  useEffect(() => {
+    const raw = new URLSearchParams(searchParams.toString()).get("filters");
+    console.log(raw, 'raw')
+    if (!raw) return;
+
+    const paramsArr = raw.split("&").map(item => item.split("=")[0]);
+    const isThisFilter = includedColumns.filter(item => paramsArr.includes(item))
+
+    // if(!isThisFilter.length) return;
+    const pair = raw.split("&").find(item => item.includes(isThisFilter[0]))
+    const [col, encoded = ""] = pair ? pair?.split("=") : [];
+    console.log(col, encoded, 'col, encoded')
+    const value = decodeURIComponent(encoded.replace(/^"|"$/g, ""));
+
+    if (col && value) {
+      setSelectedColumns([col]); // ← важно!
+      setFilterValueSearchByCol(value); // слово в инпут
     }
-  };
-
+  }, [searchParams, setSelectedColumns, setFilterValueSearchByCol, includedColumns]);
+  console.log(selectedColumns, 'selectedColumns')
   return (
     <div className="flex gap-2">
       <Popover>
@@ -174,7 +179,11 @@ const MultiColumnFilter = <
               placeholder="Поиск..."
               className="w-36 rounded border shadow"
             />
-            <div className="grid grid-cols-1 items-center gap-1">
+            <RadioGroup
+              value={filterName}
+              className="grid grid-cols-1 items-center gap-1"
+              onValueChange={handleRadioChange}
+            >
               {filteredColumns.map(({ id }) => {
                 if (!id) return null;
                 return (
@@ -182,14 +191,9 @@ const MultiColumnFilter = <
                     key={id}
                     className="flex w-fit items-center gap-1 px-1 text-sm"
                   >
-                    <Checkbox
-                      key={`checkbox-${id}`}
-                      id={id}
-                      checked={selectedColumns.includes(id)}
-                      onCheckedChange={() => handleCheckboxChange(id)}
-                    />
+                    <RadioGroupItem id={`radio-${id}`} value={id} />
                     <label
-                      htmlFor={id}
+                      htmlFor={`radio-${id}`}
                       className="ml-2 cursor-pointer text-sm font-medium leading-none"
                     >
                       {filtersByColLabel[id as FilterKeys]}
@@ -197,7 +201,7 @@ const MultiColumnFilter = <
                   </div>
                 );
               })}
-            </div>
+            </RadioGroup>
             {selectedColumns.length > 0 && (
               <Button
                 onClick={handleClear}

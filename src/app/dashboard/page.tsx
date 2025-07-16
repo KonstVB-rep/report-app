@@ -5,7 +5,6 @@ import React from "react";
 import { useTheme } from "next-themes";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import RedirectToPath from "@/shared/ui/Redirect/RedirectToPath";
 import Starfield from "@/shared/ui/StarField";
 
 type TypeOptionsTheme = {
@@ -39,18 +38,14 @@ const Dashboard = () => {
   const { authUser } = useStoreUser();
   const { theme, systemTheme } = useTheme();
 
-  if (!authUser) {
-    return <RedirectToPath to="/login" />;
-  }
-
   const currentTheme = (theme ?? "dark") as "dark" | "light" | "system";
 
   const currentThemeOptions =
     currentTheme === "system"
       ? systemTheme
         ? Themes["system"][systemTheme]
-        : Themes["dark"] // если systemTheme undefined, используем dark по умолчанию
-      : Themes[currentTheme]; // если тема не system, просто используем её
+        : Themes["dark"]
+      : Themes[currentTheme];
 
   return (
     <div className="min-h-[calc(100svh-var(--header-height)-2px)] grid place-items-center relative overflow-hidden ">

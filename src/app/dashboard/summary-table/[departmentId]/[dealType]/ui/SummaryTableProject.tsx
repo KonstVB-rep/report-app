@@ -12,17 +12,38 @@ import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { ProjectResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-import Loading from "../[userId]/loading";
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
-import SummaryTableTemplate from "./SummaryTableTemplate";
+import { ColumnDef } from "@tanstack/react-table";
 
+const Loading = dynamic(() => import("../[userId]/loading"), { ssr: false });
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),
   { ssr: false }
 );
 
+type SummaryTableProps = {
+  columns: ColumnDef<ProjectResponse, unknown>[];
+  data: ProjectResponse[];
+  getRowLink: (row: ProjectResponse, type: DealType) => string;
+  type: DealType;
+  isError: boolean;
+  error: Error | null;
+};
+
+const SummaryTableTemplate = dynamic<SummaryTableProps>(
+  () => import("./SummaryTableTemplate"),
+  {
+    ssr: false,
+    loading: () => <Loading />,
+  }
+);
+
+
 const SummaryTableProject = () => {
-  const { userId, departmentId } = useParams();
+    const { userId, departmentId } = useParams<{
+    userId: string;
+    departmentId: string;
+  }>();
 
   const hasAccess = useMemo(
     () =>
@@ -41,8 +62,8 @@ const SummaryTableProject = () => {
     isError,
     isPending,
   } = useGetAllProjects(
-    hasAccess ? (userId as string) : null,
-    departmentId as string
+    hasAccess ? userId : null,
+    departmentId
   );
 
   const getRowLink = useCallback(
@@ -52,12 +73,13 @@ const SummaryTableProject = () => {
     []
   );
 
-  if (!hasAccess)
+  if (!hasAccess) {
     return (
       <AccessDeniedMessage
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
     );
+  }
 
   if (isPending) return <Loading />;
 

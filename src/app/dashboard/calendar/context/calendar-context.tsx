@@ -64,11 +64,13 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
     defaultValues: defaultValuesForm,
   });
 
+  const { reset } = form;
+
   const handleResetAndClose = useCallback(() => {
     setOpenModal(false);
     setEditingId("");
-    form.reset();
-  }, [form]);
+    reset();
+  }, [reset]);
 
   const handleCloseModalAfterDeleteEvent = useCallback(() => {
     setConfirmDelModal(false);

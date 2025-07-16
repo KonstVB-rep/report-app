@@ -2,7 +2,7 @@
 
 import { PermissionEnum } from "@prisma/client";
 
-import React, { useMemo } from "react";
+import React from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -15,38 +15,30 @@ import RedirectToPath from "@/shared/ui/Redirect/RedirectToPath";
 
 import Loading from "./loading";
 
-const TaskCard = dynamic(() => import("@/entities/task/ui/TaskCard"));
+const TaskCard = dynamic(() => import("@/entities/task/ui/TaskCard"),{
+  loading: () => <Loading />,
+  ssr: false, 
+});
 
 const TaskPage = () => {
   const { authUser } = useStoreUser();
-  const { taskId } = useParams();
 
-  const { userId, departmentId } = useParams();
+   const { taskId, userId, departmentId } = useParams<{
+    taskId: string;
+    userId: string;
+    departmentId: string;
+  }>();
 
-  const { data, isPending } = useGetTask(taskId as string);
+  const { data, isPending } = useGetTask(taskId);
 
-  const hasAccess = useMemo(
-    () =>
-      userId
-        ? hasAccessToData(userId as string, PermissionEnum.TASK_MANAGEMENT)
-        : false,
-    [userId]
-  );
+  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT);
 
-  if (!hasAccess)
-    return (
-      <RedirectToPath to={`/tasks/${departmentId as string}/${authUser?.id}`} />
-    );
-
-  if (isPending) {
-    return <Loading />;
+   if (!hasAccess) {
+    return <RedirectToPath to={`/tasks/${departmentId}/${authUser?.id}`} />;
   }
 
-  if (!data) {
-    return (
-      <h1 className="p-5 pt-20 text-2xl text-center">Задача не найдена</h1>
-    );
-  }
+  if (isPending) return <Loading />;
+  if (!data) return <h1 className="p-5 pt-20 text-2xl text-center">Задача не найдена</h1>;
 
   return (
     <div className="p-5">

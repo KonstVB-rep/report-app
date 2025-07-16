@@ -14,6 +14,7 @@ import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DialogComponent from "@/shared/ui/DialogComponent";
 
 import { useSaveFilter } from "../hooks/mutate";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 
 const SaveFilter = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -24,7 +25,7 @@ const SaveFilter = () => {
 
   const { mutate, isPending } = useSaveFilter(() => setOpen(false));
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = withAuthCheck(async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputRef.current) {
       mutate({
@@ -36,7 +37,7 @@ const SaveFilter = () => {
         },
       });
     }
-  };
+  });
 
   return (
     <DialogComponent

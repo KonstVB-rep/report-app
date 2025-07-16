@@ -50,6 +50,11 @@ const ProjectItemInfo = () => {
 
   const { data: deal, isLoading } = useGetProjectById(dealId, false);
 
+const statusLabel = StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] || "Нет данных";
+const directionLabel = DirectionProjectLabels[deal?.direction as keyof typeof DirectionProjectLabels] || "Нет данных";
+const deliveryLabel = DeliveryProjectLabels[deal?.deliveryType as keyof typeof DeliveryProjectLabels] || "Нет данных";
+const typeLabel = DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
+
   if (isLoading) return <Loading />;
   if (!deal) return <NotFoundDeal />;
 
@@ -120,9 +125,7 @@ const ProjectItemInfo = () => {
                         />
                         <TooltipComponent content="Статус сделки">
                           <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-                            {StatusProjectLabels[
-                              deal.dealStatus as keyof typeof StatusProjectLabels
-                            ] || "Нет данных"}
+                              {statusLabel} 
                           </span>
                         </TooltipComponent>
                       </p>
@@ -157,8 +160,7 @@ const ProjectItemInfo = () => {
                 <RowInfoDealProp
                   label="Тип сделки:"
                   value={
-                    DealTypeLabels[deal.type as keyof typeof DealTypeLabels] ||
-                    "Нет данных"
+                   typeLabel 
                   }
                   direction="column"
                 />
@@ -173,17 +175,13 @@ const ProjectItemInfo = () => {
                 <RowInfoDealProp
                   label="Направление:"
                   value={
-                    DirectionProjectLabels[
-                      deal.direction as keyof typeof DirectionProjectLabels
-                    ] || "Нет данных"
+                      directionLabel 
                   }
                 />
                 <RowInfoDealProp
                   label="Тип поставки:"
                   value={
-                    DeliveryProjectLabels[
-                      deal.deliveryType as keyof typeof DeliveryProjectLabels
-                    ] || "Нет данных"
+                      deliveryLabel
                   }
                 />
               </IntoDealItem>

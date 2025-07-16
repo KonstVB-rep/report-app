@@ -10,7 +10,6 @@ import { useParams } from "next/navigation";
 
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
-// import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
 import DataOrderTable from "./DataOrderTable";

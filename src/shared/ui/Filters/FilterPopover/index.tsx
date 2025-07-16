@@ -28,6 +28,7 @@ const FilterPopover = React.memo(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, startTransition] = useTransition();
     const [open, setOpen] = useState(false);
+    console.log(columnFilters, 'columnFilters')
 
     const existingFilter: ColumnFilter | undefined = columnFilters?.find(
       (f) => f.id === columnId

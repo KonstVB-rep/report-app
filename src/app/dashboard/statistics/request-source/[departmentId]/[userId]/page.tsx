@@ -1,8 +1,9 @@
 import React from "react";
 
 import { getAllDealsRequestSourceByDepartment } from "@/entities/deal/api";
+import dynamic from "next/dynamic";
 
-import Charts from "./ui/Charts";
+const Charts = dynamic(() => import("./ui/Charts"));
 
 const RequestSourcePage = async () => {
   const data = await getAllDealsRequestSourceByDepartment(1);

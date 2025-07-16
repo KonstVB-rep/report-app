@@ -52,14 +52,11 @@ const TaskTable = <TData extends Record<string, unknown>>({
     unknown
   >[];
 
-  //  ${row.original.taskStatus === TaskStatus.IN_PROGRESS && "bg-blue-900/40"} ${row.original.taskStatus === TaskStatus.CANCELED && "bg-red-900/40"} ${row.original.taskStatus === TaskStatus.DONE && "bg-lime-200/20"
-
   const renderRowCells = useCallback((row: Row<TData>) => {
     return row.getVisibleCells().map((cell) => (
       <TableCell
         key={cell.id}
         className="td min-w-12 border-b border-r h-[57px] !p-2"
-        // style={{ width: cell.column.getSize() }}
       >
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </TableCell>

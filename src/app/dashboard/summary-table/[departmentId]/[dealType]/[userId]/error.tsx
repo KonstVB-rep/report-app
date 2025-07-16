@@ -11,21 +11,22 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const handleErrorRef = useRef(false);
+  const didHandleError = useRef(false);
+
   useEffect(() => {
-    console.error(error);
-    return () => {
-      handleErrorRef.current = true;
-    };
+    if (!didHandleError.current) {
+      console.error(error);
+      didHandleError.current = true;
+    }
   }, [error]);
 
   return (
-    <section className="grid h-full place-items-center content-center gap-4">
-      <h2 className="text-2xl">Что-то пошло не так!!!</h2>
-      <h3 className="lg">
+    <section className="grid h-full place-items-center content-center gap-4 text-center">
+      <h2 className="text-2xl font-semibold">Что-то пошло не так</h2> 
+      <p className="text-muted-foreground">
         Попробуйте повторить запрос или перезагрузите страницу.
-      </h3>
-      <Button variant="outline" onClick={() => reset()}>
+      </p>
+      <Button variant="outline" onClick={reset}>
         Повторить запрос
       </Button>
     </section>

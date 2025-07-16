@@ -23,6 +23,9 @@ export const getAllOrder = async (
     const orders = await prisma.order.findMany({
       where: {
         departmentId: departmentIdValue,
+        orderStatus: {
+          not: StatusOrder.CLOSED,
+        },
       },
       orderBy: {
         dateRequest: "asc",
@@ -42,26 +45,9 @@ export const getOrderById = async (
   try {
     await handleAuthorization();
 
-    // const { user, userId } = data!;
-
     if (!orderId) {
       handleError("Недостаточно данных");
     }
-
-    // const userOwnerProject = await prisma.user.findUnique({
-    //   where: { id: userId },
-    //   select: { role: true, departmentId: true },
-    // });
-
-    // if (!userOwnerProject) {
-    //   return handleError("Пользователь не найден");
-    // }
-
-    // const isOwner = userId === idDealOwner;
-
-    // if (!isOwner && user) {
-    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    // }
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
@@ -84,26 +70,9 @@ export const getOrdersByUserId = async (
   try {
     await handleAuthorization();
 
-    // const { user, userId } = data!;
-
     if (!userId) {
       handleError("Недостаточно данных");
     }
-
-    // const userOwnerProject = await prisma.user.findUnique({
-    //   where: { id: userId },
-    //   select: { role: true, departmentId: true },
-    // });
-
-    // if (!userOwnerProject) {
-    //   return handleError("Пользователь не найден");
-    // }
-
-    // const isOwner = userId === idDealOwner;
-
-    // if (!isOwner && user) {
-    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    // }
 
     const orders = await prisma.order.findMany({
       where: { manager: userId, orderStatus: StatusOrder.SUBMITTED_TO_WORK },
@@ -128,27 +97,12 @@ export const createOrder = async (
       return handleError("Ошибка: данные не переданы в createOrder");
     }
 
-    // Например, деструктурируем и приводим типы, если надо
     const { dateRequest, nameDeal, contact, comments, manager, ...rest } =
       order;
 
-    // Проверяем обязательные поля
     if (!dateRequest || !nameDeal || !contact || !comments || !manager) {
       return handleError("Отсутствуют обязательные поля");
     }
-
-    // const x = new Date(dateRequest)
-
-    // const [hour,min] = new Date().toLocaleTimeString("Ru-ru", {hour: "2-digit", minute:"2-digit"}).split(":")
-    // console.log(hour, min)
-    // x.setHours(hour)
-    // x.setMinutes(min)
-
-    // console.log(format(x.toString(), "yyyy.MM.d HH:mm", {
-    //     locale: ru,
-    //   }))
-
-    // new Date().toLocaleTimeString("Ru-ru", {hour: "2-digit", minute:"2-digit"})
 
     const newOrder = await prisma.order.create({
       data: {

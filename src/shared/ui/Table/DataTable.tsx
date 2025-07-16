@@ -13,7 +13,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 
 import dynamic from "next/dynamic";
@@ -25,11 +25,12 @@ import { Button } from "@/components/ui/button";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { DealTypeLabels } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
+
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 import TableComponent from "./TableComponent";
+import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
 
 const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
   ssr: false,
@@ -138,8 +139,9 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     columnVisibility,
   });
 
+
   return (
-    <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
+    <div className="relative grid w-full overflow-auto rounded-lg border bg-background p-2 auto-rows-max">
       <div className="flex items-center justify-between gap-2 pb-2">
         {memoizedData.length > 0 && (
           <ProtectedByPermissions
@@ -158,7 +160,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
 
         {memoizedData.length > 0 && (
           <div className="flex flex-1 items-center justify-between gap-2">
-            <FiltersManagment
+            <FiltersManagement
               setColumnFilters={setColumnFilters}
               setColumnVisibility={setColumnVisibility}
               setSelectedColumns={setSelectedColumns}

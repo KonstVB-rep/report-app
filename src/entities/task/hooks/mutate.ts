@@ -5,6 +5,7 @@ import { TOAST } from "@/shared/ui/Toast";
 
 import { createTask, deleteTask, updateTask, updateTasksOrder } from "../api";
 import { TaskFormType, TaskFormTypeWithId, TaskWithUserInfo } from "../types";
+import { logout } from "@/feature/auth/logout";
 
 export const useCreateTask = () => {
   const { authUser } = useStoreUser();
@@ -21,10 +22,25 @@ export const useCreateTask = () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
       });
+       queryClient.invalidateQueries({
+        queryKey: ["userTasks", authUser?.id],
+      });
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке создания задачи");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при создании задачи";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -52,8 +68,20 @@ export const useUpdateTask = () => {
       });
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке обновления задачи");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при обновлении задачи";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -89,8 +117,20 @@ export const useDeleteTask = (close: () => void) => {
       TOAST.SUCCESS("Задача удалена");
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке удаления задачи");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при удалении задачи";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -110,10 +150,25 @@ export const useUpdateTasksOrder = () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
       });
+       queryClient.invalidateQueries({
+        queryKey: ["userTasks", authUser?.id],
+      });
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке обновления задачи");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при обновлении статуса задачи";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };

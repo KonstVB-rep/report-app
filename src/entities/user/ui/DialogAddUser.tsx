@@ -1,11 +1,8 @@
 "use client";
 
 import { PermissionEnum } from "@prisma/client";
-
 import React from "react";
-
 import dynamic from "next/dynamic";
-
 import { SquarePlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,14 +21,18 @@ const DialogAddUser = () => {
     <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
       <DialogComponent
         trigger={
-          <Button variant={"outline"} className="btn_hover w-full">
+          <Button
+            variant="outline"
+            className="btn_hover w-full"
+            aria-label="Добавить нового пользователя"
+          >
             <SquarePlus size={16} />
-            <span className="whitespace-nowrap text-sm">
+            <span className="ml-2 whitespace-nowrap text-sm">
               Добавить пользователя
             </span>
           </Button>
         }
-        dialogTitle={"Форма добавления пользователя"}
+        dialogTitle="Форма добавления пользователя"
         classNameContent="sm:max-w-[600px]"
       >
         <UserCreateForm />

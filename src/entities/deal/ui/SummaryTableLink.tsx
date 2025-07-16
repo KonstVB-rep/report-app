@@ -15,15 +15,15 @@ type Props = {
   departmentId?: string;
 };
 
+const DEAL_TYPE = {
+  [DealType.PROJECT]: "Проекты",
+  [DealType.RETAIL]: "Розничные сделки",
+};
+
 const SummaryTableLink = ({ type, className = "", departmentId }: Props) => {
   const { authUser } = useStoreUser();
 
   if (!authUser) return null;
-
-  const name = {
-    [DealType.PROJECT]: "Проекты",
-    [DealType.RETAIL]: "Розничные сделки",
-  };
 
   const departmentIdValue =
     departmentId !== undefined ? departmentId : authUser.departmentId;
@@ -36,7 +36,7 @@ const SummaryTableLink = ({ type, className = "", departmentId }: Props) => {
         title="перейти на страницу сводной таблицы"
       >
         <span className="first-letter:capitalize">
-          {name[type as keyof typeof name] as string}
+          {DEAL_TYPE[type as keyof typeof DEAL_TYPE] as string}
         </span>
       </Link>
     </ProtectedByPermissions>

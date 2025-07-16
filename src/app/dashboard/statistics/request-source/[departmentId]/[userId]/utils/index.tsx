@@ -87,8 +87,8 @@ const renderCustomizedLabel = (isDark: boolean) => {
   }: CustomizedLabelProps & { width?: number }) => {
     const padding = 16;
     const dynamicRadius = Math.min(
-      outerRadius + 24,
-      (width ?? 400) / 2 - padding
+      outerRadius + 30,
+      (width ?? 600) / 2 - padding
     );
 
     const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN);

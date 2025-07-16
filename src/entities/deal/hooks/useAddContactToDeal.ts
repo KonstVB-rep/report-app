@@ -27,8 +27,10 @@ const useAddContactToDeal = (
     },
   });
 
+  const { reset } = form;
+
   useEffect(() => {
-    form.reset({
+    reset({
       contacts:
         contacts.length > 0
           ? [...contacts]
@@ -42,7 +44,7 @@ const useAddContactToDeal = (
               },
             ],
     });
-  }, [contacts, form]);
+  }, [contacts, reset]);
 
   const { fields, append, remove, replace } = useFieldArray({
     control: form.control,

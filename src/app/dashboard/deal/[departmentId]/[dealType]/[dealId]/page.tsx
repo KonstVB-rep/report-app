@@ -1,9 +1,7 @@
 "use client";
 
 import { DealType } from "@prisma/client";
-
 import React from "react";
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
@@ -18,7 +16,9 @@ const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
   ssr: false,
 });
 
-const switchCase = (dealType: string) => {
+function renderDealInfoByType(dealType?: string) {
+  if (!dealType) return <NotFoundDeal />;
+
   switch (dealType.toUpperCase()) {
     case DealType.PROJECT:
       return <ProjectItemInfo />;
@@ -27,12 +27,11 @@ const switchCase = (dealType: string) => {
     default:
       return <NotFoundDeal />;
   }
-};
+}
 
 const DealPageInfo = () => {
   const { dealType } = useParams();
-
-  return switchCase(dealType as string);
+  return renderDealInfoByType(dealType as string);
 };
 
 export default DealPageInfo;

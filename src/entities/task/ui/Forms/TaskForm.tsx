@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
+import React from "react";
+import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
@@ -25,39 +25,21 @@ type TaskFormProps<T extends FieldValues> = {
 const taskStatusOptions = transformObjValueToArr(LABEL_TASK_STATUS);
 const taskPriorityOptions = transformObjValueToArr(LABEL_TASK_PRIORITY);
 
-const setSelectValue = <T extends FieldValues>(
-  form: UseFormReturn<T>,
-  name: keyof T,
-  selected: unknown
-) => {
-  if (selected) {
-    form.setValue(name as Path<T>, selected as PathValue<T, Path<T>>);
-  }
-};
-
 const TaskForm = <T extends FieldValues>({
   form,
   onSubmit,
   isPending,
 }: TaskFormProps<T>) => {
   const { departmentId } = useParams();
-  const error = (name: keyof T) =>
-    form.formState.errors[name]?.message as string;
+  const getError = (name: keyof T) =>
+    form.formState.errors[name]?.message as string | undefined;
 
   const { departments } = useStoreDepartment();
 
-  const usersList = useMemo(() => {
-    const currentDepartment = departments?.find(
-      (item: DepartmentInfo) => item.id === (departmentId ? +departmentId : "")
-    );
-    return currentDepartment?.users.reduce(
-      (acc, user) => {
-        acc.push([user.id, user.username]);
-        return acc;
-      },
-      [] as [string, string][]
-    );
-  }, [departmentId, departments]);
+  const usersList =
+    departments
+      ?.find((item: DepartmentInfo) => item.id === Number(departmentId))
+      ?.users.map((user) => [user.id, user.username]) || [];
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -72,7 +54,7 @@ const TaskForm = <T extends FieldValues>({
               name={"title" as Path<T>}
               label="Название сделки"
               control={form.control}
-              errorMessage={error("title")}
+              errorMessage={getError("title")}
               required
               placeholder="Название..."
             />
@@ -81,7 +63,7 @@ const TaskForm = <T extends FieldValues>({
               name={"description" as Path<T>}
               label="Описание"
               control={form.control}
-              errorMessage={error("description")}
+              errorMessage={getError("description")}
               required
               placeholder="Описание..."
             />
@@ -90,12 +72,9 @@ const TaskForm = <T extends FieldValues>({
               name={"taskStatus" as Path<T>}
               label="Статус"
               control={form.control}
-              errorMessage={error("taskStatus")}
+              errorMessage={getError("taskStatus")}
               options={taskStatusOptions}
               placeholder="Выберите направление"
-              onValueChange={(selected) =>
-                setSelectValue(form, "taskStatus", selected)
-              }
               required
             />
 
@@ -103,12 +82,9 @@ const TaskForm = <T extends FieldValues>({
               name={"taskPriority" as Path<T>}
               label="Приоритет"
               control={form.control}
-              errorMessage={error("taskPriority")}
+              errorMessage={getError("taskPriority")}
               options={taskPriorityOptions}
               placeholder="Приоритет задачи"
-              onValueChange={(selected) =>
-                setSelectValue(form, "taskPriority", selected)
-              }
               required
             />
 
@@ -116,13 +92,10 @@ const TaskForm = <T extends FieldValues>({
               name={"executorId" as Path<T>}
               label="Исполнитель"
               control={form.control}
-              errorMessage={error("executorId")}
+              errorMessage={getError("executorId")}
               options={usersList}
               className="capitalize"
               placeholder="Выберите исполнителя"
-              onValueChange={(selected) =>
-                setSelectValue(form, "executorId", selected)
-              }
               required
             />
 
@@ -131,7 +104,7 @@ const TaskForm = <T extends FieldValues>({
                 name={"startDate" as Path<T>}
                 label="Начало"
                 control={form.control}
-                errorMessage={error("startDate")}
+                errorMessage={getError("startDate")}
                 className="basis-1/3"
                 required
               />
@@ -140,7 +113,7 @@ const TaskForm = <T extends FieldValues>({
                 name={"startTime" as Path<T>}
                 label=""
                 control={form.control}
-                errorMessage={error("startTime")}
+                errorMessage={getError("startTime")}
                 type="time"
                 required
                 placeholder="Описание..."
@@ -152,7 +125,7 @@ const TaskForm = <T extends FieldValues>({
                 name={"dueDate" as Path<T>}
                 label="Конец"
                 control={form.control}
-                errorMessage={error("dueDate")}
+                errorMessage={getError("dueDate")}
                 className="basis-1/3"
                 required
               />
@@ -161,7 +134,7 @@ const TaskForm = <T extends FieldValues>({
                 name={"endTime" as Path<T>}
                 label=""
                 control={form.control}
-                errorMessage={error("endTime")}
+                errorMessage={getError("endTime")}
                 type="time"
                 required
                 placeholder="Описание..."

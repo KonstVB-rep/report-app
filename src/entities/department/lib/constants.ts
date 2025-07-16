@@ -1,5 +1,5 @@
 export const NOT_MANAGERS_POSITIONS = {
-  // DEVELOPER: "разработчик",
+  DEVELOPER: "разработчик",
   ASSISTANT_MANAGER: "помощник руководителя",
 };
 

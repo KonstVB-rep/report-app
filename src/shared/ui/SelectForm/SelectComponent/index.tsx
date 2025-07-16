@@ -23,8 +23,10 @@ const SelectComponent = ({
   className,
   ...props
 }: SelectComponentProps) => {
+
   return (
     <Select
+      key={value}
       value={value}
       onValueChange={(val) => onValueChange?.(val)}
       {...props}

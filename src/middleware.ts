@@ -1,155 +1,12 @@
-// import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-// import { cookies } from "next/headers";
-// import { NextRequest, NextResponse } from "next/server";
-
-// import { JWTPayload, jwtVerify } from "jose";
-
-// import { redirectPathCore } from "./shared/lib/helpers/redirectPathCore";
-
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-// const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
-
-// async function verifyToken(token: string): Promise<JWTPayload | null> {
-//   try {
-//     const { payload } = await jwtVerify(token, secretKey);
-//     return payload;
-//   } catch (error) {
-//     console.error("Token verification failed:", error);
-//     return null;
-//   }
-// }
-
-// async function redirectToLogin(request: NextRequest) {
-//   if (request.nextUrl.pathname.startsWith("/login")) {
-//     return NextResponse.next();
-//   }
-
-//   const response = NextResponse.redirect(new URL("/login", request.url));
-
-//   response.cookies.delete("access_token");
-//   response.cookies.delete("refresh_token");
-
-//   return response;
-// }
-
-// async function refreshAccessToken(
-//   refreshToken: string,
-//   cookiesStore: ReadonlyRequestCookies,
-//   request: NextRequest,
-//   pathname: string
-// ) {
-//   try {
-//     const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ refresh_token: refreshToken }),
-//       credentials: "include",
-//     });
-
-//     if (!res.ok) throw new Error("Ошибка запроса");
-
-//     const data = await res.json();
-//     console.log("Новый access token получен");
-
-//     cookiesStore.set("access_token", data.accessToken, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV !== "development",
-//       sameSite: "strict",
-//       maxAge: 24 * 60 * 60,
-//     });
-
-//     if (pathname === "/") {
-//       return NextResponse.redirect(new URL("/login", request.url));
-//     }
-
-//     return NextResponse.next();
-//   } catch (error) {
-//     console.log("Ошибка обновления access token:", error);
-//     return redirectToLogin(request);
-//   }
-// }
-
-// export default async function middleware(request: NextRequest) {
-//   const { pathname } = request.nextUrl;
-//   const cookiesStore = await cookies();
-//   const accessToken = cookiesStore.get("access_token")?.value;
-//   const refreshToken = cookiesStore.get("refresh_token")?.value;
-
-//   if (!accessToken && !refreshToken) {
-//     return redirectToLogin(request);
-//   }
-
-//   const requestHeaders = new Headers(request.headers);
-//   requestHeaders.delete("x-middleware-subrequest");
-
-//   if (pathname === "/login" || pathname === "/") {
-//     if (accessToken) {
-//       try {
-//         const payload = await verifyToken(accessToken);
-//         if (payload) {
-//           const { userId, departmentId } = payload;
-//           const url = redirectPathCore(Number(departmentId), userId as string);
-//           return NextResponse.redirect(new URL(url, request.url));
-//         }
-//         return NextResponse.next();
-//       } catch (error) {
-//         console.log("Access token недействителен, оставляем на /login", error);
-//       }
-//     }
-//     return NextResponse.next();
-//   }
-
-//   if (accessToken) {
-//     try {
-//       await jwtVerify(accessToken, secretKey);
-//       return NextResponse.next({
-//         request: { headers: requestHeaders },
-//       });
-//     } catch (error) {
-//       console.log("Access token истёк, пробуем обновить...", error);
-//     }
-//   }
-
-//   if (!refreshToken) return redirectToLogin(request);
-
-//   return await refreshAccessToken(
-//     refreshToken,
-//     cookiesStore,
-//     request,
-//     pathname
-//   );
-// }
-
-// export const config = {
-//   matcher: [
-//     "/login",
-//     "/dashboard/:path*",
-//     "/table/:path*",
-//     "/profile/:path*",
-//     "/summary-table/:path*",
-//     "/deal/:path*",
-//     "/statistics/:path*",
-//     "/calendar/:path*",
-//     "/tasks/:path*",
-//     "/",
-//   ],
-// };
-
-
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-import { JWTPayload, jwtVerify } from "jose";
-
-// import { redirectPathCore } from "./shared/lib/helpers/redirectPathCore";
+import { jwtVerify } from "jose";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
-async function verifyToken(token: string): Promise<JWTPayload | null> {
+export async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, secretKey);
     return payload;
@@ -159,71 +16,79 @@ async function verifyToken(token: string): Promise<JWTPayload | null> {
   }
 }
 
-async function redirectToLogin(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/login")) {
-    return NextResponse.next();
-  }
-
-  const response = NextResponse.redirect(new URL("/login", request.url));
-
-  response.cookies.delete("access_token");
-  response.cookies.delete("refresh_token");
-
-  return response;
-}
-
-async function refreshAccessToken(
+export async function refreshAccessToken(
   refreshToken: string,
-  cookiesStore: ReadonlyRequestCookies,
-  request: NextRequest,
+  request: NextRequest
 ) {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify({ refresh_token: refreshToken }),
-      credentials: "include",
+      body: JSON.stringify({ refreshToken: refreshToken }),
     });
 
-    if (!res.ok) throw new Error("Ошибка запроса");
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-    const { accessToken } = await res.json();
-    console.log("Новый access token получен");
-
-    // cookiesStore.set("access_token", data.accessToken, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV !== "development",
-    //   sameSite: "strict",
-    //   maxAge: 24 * 60 * 60,
-    // });
+    const { accessToken, refreshToken: newRefreshToken } = await res.json();
 
     const response = NextResponse.next();
-    response.cookies.set("access_token", accessToken, {
+
+    response.cookies.set("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 30,
-      path: "/", // Важно указать путь
+      maxAge: 60 * 1,
+      path: "/",
     });
 
-    return response;
+    if (newRefreshToken) {
+      response.cookies.set("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "strict",
+        maxAge: 60 * 5,
+        path: "/",
+      });
+    }
 
-    // return NextResponse.next();
+    return response;
   } catch (error) {
-    console.log("Ошибка обновления access token:", error);
+    console.error("Refresh token error:", error);
     return redirectToLogin(request);
   }
+}
+
+async function redirectToLogin(request: NextRequest) {
+  const loginUrl = new URL("/login", request.url);
+
+  const response = NextResponse.redirect(loginUrl);
+
+  response.cookies.set("accessToken", "", { path: "/", maxAge: 0 });
+  response.cookies.set("refreshToken", "", { path: "/", maxAge: 0 });
+
+  return response;
 }
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const cookiesStore = await cookies();
-  const accessToken = cookiesStore.get("access_token")?.value;
-  const refreshToken = cookiesStore.get("refresh_token")?.value;
+  const accessToken = cookiesStore.get("accessToken")?.value;
+  const refreshToken = cookiesStore.get("refreshToken")?.value;
 
-   if (['/login'].includes(pathname)) {
+  if (pathname === "/login" || pathname === "/") {
+    if (accessToken) {
+      try {
+        await jwtVerify(accessToken, secretKey);
+
+        return NextResponse.redirect(new URL("/dashboard", request.url)); // Редирект на /dashboard
+      } catch (err) {
+        console.log(err, "middleware error");
+        return NextResponse.next();
+      }
+    }
     return NextResponse.next();
   }
 
@@ -231,44 +96,56 @@ export default async function middleware(request: NextRequest) {
     return redirectToLogin(request);
   }
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.delete("x-middleware-subrequest");
-
-  if (pathname === "/login" || pathname === "/") {
-    if (accessToken) {
-      try {
-        const payload = await verifyToken(accessToken);
-        if (payload) {
-          // const { userId, departmentId } = payload;
-          const url = "/dashboard";
-          return NextResponse.redirect(new URL(url, request.url));
-        }
-        return NextResponse.next();
-      } catch (error) {
-        console.log("Access token недействителен, оставляем на /login", error);
-      }
-    }
-    return NextResponse.next();
-  }
-
   if (accessToken) {
     try {
       await jwtVerify(accessToken, secretKey);
-      return NextResponse.next({
-        request: { headers: requestHeaders },
-      });
+      return NextResponse.next();
     } catch (error) {
-      console.log("Access token истёк, пробуем обновить...", error);
+      console.log("Access token недействителен", error);
     }
   }
 
-  if (!refreshToken) return redirectToLogin(request);
+  if (refreshToken) {
+    try {
+  
+      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken: refreshToken }),
+      });
 
-  return await refreshAccessToken(
-    refreshToken,
-    cookiesStore,
-    request,
-  );
+      if (!res.ok) throw new Error("Ошибка обновления токенов");
+
+      const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+        await res.json();
+
+      const response = NextResponse.next();
+      response.cookies.set("accessToken", newAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24,
+        path: "/",
+      });
+
+      if (newRefreshToken) {
+        response.cookies.set("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV !== "development",
+          sameSite: "strict",
+          maxAge: 60 * 60 * 24 * 30,
+          path: "/",
+        });
+      }
+
+      return response;
+    } catch (error) {
+      console.log("Ошибка обновления токенов:", error);
+      return redirectToLogin(request);
+    }
+  }
+
+  return redirectToLogin(request);
 }
 
 export const config = {

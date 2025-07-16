@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 
 import { useUpdateFilter } from "../hooks/mutate";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 
 const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
   const searchParams = useSearchParams();
@@ -35,7 +36,7 @@ const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
   const handleChange = () => {
     setIsUpdateParams(!isUpdateParams);
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = withAuthCheck(async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!filter?.userId) {
       throw new Error("Не найден идентификатор пользователя фильтра");
@@ -51,7 +52,7 @@ const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
         isActive: false,
       },
     });
-  };
+  });
 
   return (
     <Card>
