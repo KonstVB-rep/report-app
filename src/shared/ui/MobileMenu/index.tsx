@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { cn } from "@/shared/lib/utils";
 
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
-import { cn } from "@/shared/lib/utils";
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
 
@@ -129,20 +129,26 @@ const MobileMenu = () => {
               </AccordionTrigger>
               <AccordionContent className="flex pt-2 pl-3 flex-col gap-1 text-balance rounded-md ">
                 {Themes.map((item) => {
-                  const isCurrentTheme = theme === item.id
+                  const isCurrentTheme = theme === item.id;
                   return (
-                  <DropdownMenuItem
-                    key={item.id}
-                    id={item.id}
-                    onClick={handleCheckTheme}
-                    className="p-0"
-                  >
-                    <div className={cn("w-full px-3 py-2 cursor-pointer capitalize rounded-md hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary",isCurrentTheme && "flex items-center justify-between")}>
-                      {item.value}
-                      {isCurrentTheme && <Check />}
-                    </div>
-                  </DropdownMenuItem>
-                )})}
+                    <DropdownMenuItem
+                      key={item.id}
+                      id={item.id}
+                      onClick={handleCheckTheme}
+                      className="p-0"
+                    >
+                      <div
+                        className={cn(
+                          "w-full px-3 py-2 cursor-pointer capitalize rounded-md hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary",
+                          isCurrentTheme && "flex items-center justify-between"
+                        )}
+                      >
+                        {item.value}
+                        {isCurrentTheme && <Check />}
+                      </div>
+                    </DropdownMenuItem>
+                  );
+                })}
               </AccordionContent>
             </AccordionItem>
           </Accordion>

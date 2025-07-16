@@ -1,16 +1,17 @@
 "use client";
 
 import { DealType, PermissionEnum } from "@prisma/client";
+
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import { CalendarClock, SidebarIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { useSidebar } from "@/components/ui/sidebar";
-
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import HoverCardComponent from "@/shared/ui/HoverCard";
@@ -57,7 +58,9 @@ export function SiteHeader() {
             Мои задачи
           </Link>
 
-          <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
+          <ProtectedByPermissions
+            permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+          >
             <Link
               href={`/dashboard/tasks/${departmentId}`}
               className="btn_hover text-sm font-medium"
@@ -67,10 +70,15 @@ export function SiteHeader() {
           </ProtectedByPermissions>
 
           {!pathName?.includes("summary-table") && (
-            <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
+            <ProtectedByPermissions
+              permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+            >
               <HoverCardComponent title="Сводные таблицы">
                 {namePagesByDealType.map((type) => (
-                  <div key={type} className="relative overflow-hidden rounded-sm">
+                  <div
+                    key={type}
+                    className="relative overflow-hidden rounded-sm"
+                  >
                     <SummaryTableLink
                       type={type}
                       departmentId="1"

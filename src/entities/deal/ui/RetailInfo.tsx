@@ -67,11 +67,11 @@ const RetailItemInfo = () => {
   const dealInfo = {
     nameDeal: deal?.nameDeal,
     nameObject: deal?.nameObject,
-    status:statusLabel,
+    status: statusLabel,
     dealType: typeLabel,
     dateRequest: deal?.dateRequest?.toLocaleDateString(),
-    direction:directionLabel,
-    deliveryType:deliveryLabel,
+    direction: directionLabel,
+    deliveryType: deliveryLabel,
     delta: deal?.delta ? formatterCurrency.format(+deal.delta) : "0,00",
     amountCP: deal?.amountCP
       ? formatterCurrency.format(+deal.amountCP)

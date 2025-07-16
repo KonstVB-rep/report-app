@@ -13,7 +13,7 @@ import { User } from "../types";
 
 const PersonEdit = dynamic(() => import("./PersonTableEdit"), {
   ssr: false,
-  loading: () => <div className="btn_hover animate-pulse h-10 text-center"/>,
+  loading: () => <div className="btn_hover animate-pulse h-10 text-center" />,
 });
 
 type Props = {

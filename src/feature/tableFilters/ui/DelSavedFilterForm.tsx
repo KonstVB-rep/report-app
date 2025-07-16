@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 
 import { useDeleteFilter } from "../hooks/mutate";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 
 const DelSavedFilterForm = ({
   filterName,
@@ -21,10 +21,12 @@ const DelSavedFilterForm = ({
 }) => {
   const { mutate, isPending } = useDeleteFilter();
 
-  const handleSubmit = withAuthCheck(async(e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate(filterId);
-  });
+  const handleSubmit = withAuthCheck(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      mutate(filterId);
+    }
+  );
 
   return (
     <Card>

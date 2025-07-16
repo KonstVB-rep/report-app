@@ -1,6 +1,7 @@
 "use client";
 
 import { DealType, PermissionEnum } from "@prisma/client";
+import { ColumnDef } from "@tanstack/react-table";
 
 import { useCallback, useMemo } from "react";
 
@@ -13,7 +14,7 @@ import { RetailResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
-import { ColumnDef } from "@tanstack/react-table";
+
 // import SummaryTableTemplate from "./SummaryTableTemplate";
 
 const Loading = dynamic(() => import("../[userId]/loading"), { ssr: false });
@@ -39,9 +40,8 @@ const SummaryTableTemplate = dynamic<SummaryTableProps>(
   }
 );
 
-
 const SummaryTableRetail = () => {
-    const { userId, departmentId } = useParams<{
+  const { userId, departmentId } = useParams<{
     userId: string;
     departmentId: string;
   }>();
@@ -62,10 +62,7 @@ const SummaryTableRetail = () => {
     error,
     isError,
     isPending,
-  } = useGetAllRetails(
-    hasAccess ? userId : null,
-    departmentId
-  );
+  } = useGetAllRetails(hasAccess ? userId : null, departmentId);
 
   const getRowLink = useCallback(
     (row: RetailResponse & { id: string }, type: string) => {

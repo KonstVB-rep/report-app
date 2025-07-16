@@ -3,8 +3,12 @@
 import React from "react";
 
 const Loading = () => {
-  const largeBlock = <div className="h-52 animate-pulse rounded-xl bg-muted/50" />;
-  const smallBlock = <div className="h-32 animate-pulse rounded-xl bg-muted/50" />;
+  const largeBlock = (
+    <div className="h-52 animate-pulse rounded-xl bg-muted/50" />
+  );
+  const smallBlock = (
+    <div className="h-32 animate-pulse rounded-xl bg-muted/50" />
+  );
 
   return (
     <section className="grid p-4">

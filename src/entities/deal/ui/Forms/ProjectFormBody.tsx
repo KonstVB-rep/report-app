@@ -80,7 +80,7 @@ const ProjectFormBody = <T extends FieldValues>({
     name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
   });
 
-  const {getValues} = form;
+  const { getValues } = form;
 
   useEffect(() => {
     const ids = getValues("managersIds" as Path<T>);

@@ -70,7 +70,7 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
     close();
   });
 
-   const { reset } = form;
+  const { reset } = form;
 
   useEffect(() => {
     if (task && !isLoading) {

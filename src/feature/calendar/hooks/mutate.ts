@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { logout } from "@/feature/auth/logout";
 import { toggleSubscribeChatBot } from "@/feature/calendar/api/calendar-bot/api";
 import { TOAST } from "@/shared/ui/Toast";
 
@@ -9,7 +10,6 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
-import { logout } from "@/feature/auth/logout";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { authUser } = useStoreUser();
@@ -37,7 +37,7 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
       });
       TOAST.SUCCESS("Событие успешно добавлено в календарь");
     },
-        onError: (error) => {
+    onError: (error) => {
       const err = error as Error & { status?: number };
 
       if (err.status === 401 || err.message === "Сессия истекла") {
@@ -83,7 +83,7 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
       });
       TOAST.SUCCESS("Событие успешно обновлено");
     },
-       onError: (error) => {
+    onError: (error) => {
       const err = error as Error & { status?: number };
 
       if (err.status === 401 || err.message === "Сессия истекла") {
@@ -123,7 +123,7 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
       });
       TOAST.SUCCESS("Событие успешно удалено");
     },
-        onError: (error) => {
+    onError: (error) => {
       const err = error as Error & { status?: number };
 
       if (err.status === 401 || err.message === "Сессия истекла") {
@@ -165,7 +165,7 @@ export const useCreateChatBot = () => {
         queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
       });
     },
-        onError: (error) => {
+    onError: (error) => {
       const err = error as Error & { status?: number };
 
       if (err.status === 401 || err.message === "Сессия истекла") {
@@ -212,21 +212,21 @@ export const useUpdateChatBot = () => {
         queryKey: ["chatInfoChecked", authUser?.id, data?.chatName],
       });
     },
-       onError: (error) => {
-         const err = error as Error & { status?: number };
-   
-         if (err.status === 401 || err.message === "Сессия истекла") {
-           TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-           logout();
-           return;
-         }
-   
-         const errorMessage =
-           err.message === "Failed to fetch"
-             ? "Ошибка соединения"
-             : "Ошибка при обновлении статуса бота";
-   
-         TOAST.ERROR(errorMessage);
-       },
+    onError: (error) => {
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при обновлении статуса бота";
+
+      TOAST.ERROR(errorMessage);
+    },
   });
 };

@@ -37,7 +37,9 @@ const EventActionContext = createContext<EventsActionContextType | undefined>(
 export const useEventActionContext = (): EventsActionContextType => {
   const context = useContext(EventActionContext);
   if (!context) {
-   throw new Error("useEventActionContext must be used within EventsActionProvider");
+    throw new Error(
+      "useEventActionContext must be used within EventsActionProvider"
+    );
   }
   return context;
 };

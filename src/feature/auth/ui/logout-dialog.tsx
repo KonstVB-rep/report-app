@@ -56,7 +56,9 @@ const LogoutDialog = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-8 py-4">
-            <p className="text-center text-base font-medium">Вы уверены что хотите выйти?</p>
+            <p className="text-center text-base font-medium">
+              Вы уверены что хотите выйти?
+            </p>
             <div className="flex justify-between gap-4">
               <Button onClick={handleLogout} className="flex-1">
                 {loading ? "Выход..." : "Да, выйти"}

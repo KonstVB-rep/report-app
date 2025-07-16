@@ -23,7 +23,6 @@ const SelectComponent = ({
   className,
   ...props
 }: SelectComponentProps) => {
-
   return (
     <Select
       key={value}

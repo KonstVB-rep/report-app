@@ -258,7 +258,9 @@ export const useMutationUpdateRetail = (
   });
 };
 
-export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) => void) => {
+export const useCreateProject = (
+  reset: (values?: DeepPartial<ProjectSchema>) => void
+) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   // const router = useRouter(); // Добавляем useRouter для навигации
@@ -348,7 +350,9 @@ export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) =>
   });
 };
 
-export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => void) => {
+export const useCreateRetail = (
+  reset: (values?: DeepPartial<RetailSchema>) => void
+) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
 

@@ -1,7 +1,8 @@
 import React from "react";
 
-import { getAllDealsRequestSourceByDepartment } from "@/entities/deal/api";
 import dynamic from "next/dynamic";
+
+import { getAllDealsRequestSourceByDepartment } from "@/entities/deal/api";
 
 const Charts = dynamic(() => import("./ui/Charts"));
 

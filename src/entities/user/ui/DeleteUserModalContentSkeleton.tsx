@@ -11,9 +11,7 @@ const Skeleton = ({ className }: { className?: string }) => (
 const DeleteUserModalContentSkeleton = () => {
   return (
     <div className="grid gap-5">
-
       <Skeleton className="h-6 w-1/2 m-auto" />
-
 
       <div className="grid gap-2">
         <Skeleton className="h-6 w-full" />

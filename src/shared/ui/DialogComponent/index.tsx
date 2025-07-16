@@ -41,8 +41,8 @@ const DialogComponent = ({
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
-  
-  const renderTrigger =() => {
+
+  const renderTrigger = () => {
     const triggerElement = trigger ? (
       <DialogTrigger asChild>{trigger}</DialogTrigger>
     ) : null;

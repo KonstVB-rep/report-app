@@ -1,10 +1,21 @@
-import React from 'react'
-import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { COLORS } from '../lib/constants';
+import React from "react";
+
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+import { COLORS } from "../lib/constants";
 
 type DataType = { name: string; value: number }[];
 
-const Graph= ({ data, className }: { data: DataType, className: string }) => {
+const Graph = ({ data, className }: { data: DataType; className: string }) => {
   return (
     <div className={className}>
       <ResponsiveContainer width="100%" height="100%">
@@ -38,6 +49,6 @@ const Graph= ({ data, className }: { data: DataType, className: string }) => {
       </ResponsiveContainer>
     </div>
   );
-}
+};
 
 export default Graph;

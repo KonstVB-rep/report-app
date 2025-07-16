@@ -23,7 +23,7 @@ const PersonTableContract = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-   const { data: contracts } = useGetContractsUser(
+  const { data: contracts } = useGetContractsUser(
     hasAccess ? (userId as string) : undefined
   );
 

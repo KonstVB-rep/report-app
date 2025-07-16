@@ -4,11 +4,11 @@ import { UserFilter } from "@prisma/client";
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
 import React, {
-    Dispatch,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useState,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
 } from "react";
 
 import { useSearchParams } from "next/navigation";

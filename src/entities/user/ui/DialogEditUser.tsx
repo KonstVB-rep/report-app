@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
+
 import { UserPen } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
+import { TOAST } from "@/shared/ui/Toast";
+
 import { useGetUser } from "../hooks/query";
 import { UserWithdepartmentName } from "../types";
 import UserFormSkeleton from "./UserFormSkeleton";
-import { TOAST } from "@/shared/ui/Toast";
 
 const UserEditForm = dynamic(() => import("./UserEditForm"), {
   ssr: false,
@@ -23,10 +27,9 @@ const DialogEditUser = () => {
   const { data, isLoading, isError } = useGetUser(userId);
   const [open, setOpen] = useState(false);
 
-
   useEffect(() => {
     if (isError) {
-      TOAST.ERROR("Ошибка при загрузке данных пользователя")
+      TOAST.ERROR("Ошибка при загрузке данных пользователя");
       console.error("Ошибка при загрузке данных пользователя");
     }
   }, [isError]);

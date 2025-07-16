@@ -30,7 +30,7 @@ const TaskTable = dynamic(() => import("@/entities/task/ui/TaskTable"), {
 const UserTasksPage = () => {
   const { authUser } = useStoreUser();
 
-   const { userId, departmentId } = useParams<{
+  const { userId, departmentId } = useParams<{
     userId: string;
     departmentId: string;
   }>();

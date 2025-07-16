@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { logout } from "@/feature/auth/logout";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { createTask, deleteTask, updateTask, updateTasksOrder } from "../api";
 import { TaskFormType, TaskFormTypeWithId, TaskWithUserInfo } from "../types";
-import { logout } from "@/feature/auth/logout";
 
 export const useCreateTask = () => {
   const { authUser } = useStoreUser();
@@ -22,7 +22,7 @@ export const useCreateTask = () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
       });
-       queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["userTasks", authUser?.id],
       });
     },
@@ -150,7 +150,7 @@ export const useUpdateTasksOrder = () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
       });
-       queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["userTasks", authUser?.id],
       });
     },

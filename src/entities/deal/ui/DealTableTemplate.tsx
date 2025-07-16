@@ -1,6 +1,8 @@
-import React from "react";
-import { useParams } from "next/navigation";
 import { PermissionEnum } from "@prisma/client";
+
+import React from "react";
+
+import { useParams } from "next/navigation";
 
 import { useGetUser } from "@/entities/user/hooks/query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
@@ -27,10 +29,16 @@ const DealTableTemplate = ({ children }: DealTableTemplateProps) => {
   if (isPending) return <DealsSkeleton />;
 
   if (!user) {
-    return <ErrorMessageTable message={error?.message || "Пользователь не найден"} />;
+    return (
+      <ErrorMessageTable message={error?.message || "Пользователь не найден"} />
+    );
   }
 
-  return <section className="h-full p-4 grid gap-2 content-start">{children}</section>;
+  return (
+    <section className="h-full p-4 grid gap-2 content-start">
+      {children}
+    </section>
+  );
 };
 
 export default DealTableTemplate;

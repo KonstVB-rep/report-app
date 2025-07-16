@@ -7,10 +7,15 @@ import { PermissionType } from "@/entities/user/types";
 const hasDefaultRole = (role?: string) =>
   role ? RolesWithDefaultPermissions.includes(role) : false;
 
-const hasPermission = (permissions: PermissionType[] | undefined, permission: PermissionType) =>
-  permissions ? permissions.includes(permission) : false;
+const hasPermission = (
+  permissions: PermissionType[] | undefined,
+  permission: PermissionType
+) => (permissions ? permissions.includes(permission) : false);
 
-export const hasAccessToData = (userId: string, permission: PermissionType): boolean => {
+export const hasAccessToData = (
+  userId: string,
+  permission: PermissionType
+): boolean => {
   if (!userId) return false;
 
   const { authUser } = useStoreUser.getState();

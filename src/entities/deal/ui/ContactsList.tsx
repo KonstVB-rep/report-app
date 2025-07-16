@@ -16,14 +16,14 @@ const ContactsList = ({ contacts, handleDeleteContact }: ContactsListProps) => {
     <div className="overflow-y-auto max-h-[82vh] pr-1">
       <div className="grid gap-2 rounded-md p-2 overflow-y-auto overflow-x-hidden">
         {contacts.map((contact) => {
-            return (
-              <ContactCardInForm
-                key={contact.id}
-                contact={contact}
-                onDelete={handleDeleteContact}
-              />
-            );
-          })}
+          return (
+            <ContactCardInForm
+              key={contact.id}
+              contact={contact}
+              onDelete={handleDeleteContact}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -15,7 +15,6 @@ export const utilsDataTable = {
    */
   parsedParams: (str: string): ColumnFiltersState => {
     if (!str) return [];
-    console.log(str, 'str')
     return str.split("&").map((item) => {
       const [filterName, filterValue] = item.split("=");
       try {

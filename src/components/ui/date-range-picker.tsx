@@ -25,7 +25,10 @@ type Props = React.HTMLAttributes<HTMLDivElement> & {
 export function DateRangePicker({ className, value, onValueChange }: Props) {
   const [date, setDate] = React.useState<DateRange | undefined>(value);
 
-  const stableValue = React.useMemo(() => ({ from: value?.from, to:value?.to }), [value?.from, value?.to]);
+  const stableValue = React.useMemo(
+    () => ({ from: value?.from, to: value?.to }),
+    [value?.from, value?.to]
+  );
 
   useEffect(() => {
     setDate(stableValue);

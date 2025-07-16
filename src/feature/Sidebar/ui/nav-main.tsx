@@ -2,6 +2,7 @@
 
 import { SidebarGroup, SidebarMenu } from "@/components/ui/sidebar";
 import { DepartmentListItemType } from "@/entities/department/types";
+
 import DepartmentPersonsList from "./DepartmentPersonsList";
 
 export function NavMain({ items }: { items: DepartmentListItemType[] }) {

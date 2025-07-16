@@ -30,9 +30,12 @@ const TaskTable = dynamic(() => import("@/entities/task/ui/TaskTable"), {
 const TasksPage = () => {
   const { authUser } = useStoreUser();
 
-  const hasAccess =  hasAccessToDataSummary(authUser?.id as string,PermissionEnum.TASK_MANAGEMENT);
-      
-  const { departmentId } =  useParams<{
+  const hasAccess = hasAccessToDataSummary(
+    authUser?.id as string,
+    PermissionEnum.TASK_MANAGEMENT
+  );
+
+  const { departmentId } = useParams<{
     departmentId: string;
   }>();
 
@@ -43,9 +46,7 @@ const TasksPage = () => {
   if (!authUser) return null;
 
   if (!hasAccess) {
-    return (
-      <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />
-    );
+    return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />;
   }
 
   return (

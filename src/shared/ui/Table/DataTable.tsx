@@ -25,12 +25,11 @@ import { Button } from "@/components/ui/button";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { DealTypeLabels } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-
+import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 import TableComponent from "./TableComponent";
-import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
 
 const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
   ssr: false,
@@ -138,7 +137,6 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     columnFilters,
     columnVisibility,
   });
-
 
   return (
     <div className="relative grid w-full overflow-auto rounded-lg border bg-background p-2 auto-rows-max">

@@ -22,7 +22,7 @@ export default function Error({
 
   return (
     <section className="grid h-full place-items-center content-center gap-4 text-center">
-      <h2 className="text-2xl font-semibold">Что-то пошло не так</h2> 
+      <h2 className="text-2xl font-semibold">Что-то пошло не так</h2>
       <p className="text-muted-foreground">
         Попробуйте повторить запрос или перезагрузите страницу.
       </p>

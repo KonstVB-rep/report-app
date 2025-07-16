@@ -47,7 +47,7 @@ const EditOrderForm = ({
     );
   });
 
-   const { reset } = form;
+  const { reset } = form;
 
   useEffect(() => {
     if (data && !isLoading) {

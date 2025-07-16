@@ -27,8 +27,8 @@ const PersonTableRetail = ({ userId }: { userId: string }) => {
     hasAccess ? (userId as string) : undefined
   );
 
-  const getRowLink = (row: RetailResponse) => `/dashboard/deal/retail/${row.id}`;
-
+  const getRowLink = (row: RetailResponse) =>
+    `/dashboard/deal/retail/${row.id}`;
 
   if (!hasAccess)
     return (

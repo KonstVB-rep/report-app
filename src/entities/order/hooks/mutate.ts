@@ -8,15 +8,17 @@ import { ru } from "date-fns/locale";
 
 import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { logout } from "@/feature/auth/logout";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { createOrder, delOrder, updateOrder } from "../api";
 import { defaultOrderValues } from "../lib/constants";
 import { OrderSchema } from "../model/shema";
 import { OrderResponse } from "./../types";
-import { logout } from "@/feature/auth/logout";
 
-export const useCreateOrder = (reset: (values?: DeepPartial<OrderSchema>) => void) => {
+export const useCreateOrder = (
+  reset: (values?: DeepPartial<OrderSchema>) => void
+) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
 
@@ -138,9 +140,7 @@ export const useDelOrder = (closeModalFn: Dispatch<SetStateAction<void>>) => {
   });
 };
 
-export const useUpdateOrder = (
-  closeModalFn:() => void
-) => {
+export const useUpdateOrder = (closeModalFn: () => void) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
 

@@ -22,12 +22,9 @@ import ProjectFormBody from "./ProjectFormBody";
 type Props = {
   close: Dispatch<SetStateAction<void>>;
   dealId: string;
-}
+};
 
-const EditProjectForm = ({
-  close,
-  dealId,
-}: Props) => {
+const EditProjectForm = ({ close, dealId }: Props) => {
   const { data, isPending: isLoading } = useGetProjectById(dealId, false);
   const { authUser } = useStoreUser();
 

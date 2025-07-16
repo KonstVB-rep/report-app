@@ -22,7 +22,9 @@ const DialogDeleteUser = () => {
   const params = useParams();
   const userId = String(params.userId);
 
-  const { data, isFetching } = useGetUser(userId, [PermissionEnum.USER_MANAGEMENT]);
+  const { data, isFetching } = useGetUser(userId, [
+    PermissionEnum.USER_MANAGEMENT,
+  ]);
 
   const { mutate, isPending } = useDeleteUser(userId);
 

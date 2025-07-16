@@ -13,7 +13,7 @@ const LinkProfile = ({ user }: { user: DepartmentUserItem }) => {
 
   const id = user.id;
   const departmentId = user.departmentId;
-  
+
   return (
     <Link
       href={`/dashboard/profile/${departmentId}/${id}`}

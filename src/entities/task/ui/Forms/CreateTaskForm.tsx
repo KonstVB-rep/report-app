@@ -24,7 +24,7 @@ const CreateTaskForm = () => {
   });
 
   const { mutateAsync, isPending } = useCreateTask();
-   const { reset } = form;
+  const { reset } = form;
 
   const onSubmit = withAuthCheck(async (task: TaskSchema) => {
     const {
@@ -56,7 +56,6 @@ const CreateTaskForm = () => {
     );
     reset();
   });
-
 
   return <TaskForm form={form} isPending={isPending} onSubmit={onSubmit} />;
 };

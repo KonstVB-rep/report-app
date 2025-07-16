@@ -29,7 +29,6 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
 
   const getRowLink = (row: ProjectResponse) => `/deal/project/${row.id}`;
 
-
   if (!hasAccess)
     return (
       <AccessDeniedMessage

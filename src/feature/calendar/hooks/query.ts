@@ -46,8 +46,6 @@ export const useGetEventsCalendarUserToday = () => {
     enabled: !!authUser?.id,
   });
 };
-;
-
 export const useGetInfoChat = (
   chatName: string,
   isNeedRefetch?: boolean,

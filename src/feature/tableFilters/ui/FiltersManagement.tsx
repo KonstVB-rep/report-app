@@ -10,7 +10,6 @@ import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-
 const FiltersManagementContent = dynamic(
   () => import("./FiltersManagementContent"),
   { ssr: false }

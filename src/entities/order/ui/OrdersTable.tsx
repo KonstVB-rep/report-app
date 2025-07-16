@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import { JSX } from "react";
+
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 

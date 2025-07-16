@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm from "@/entities/deal/ui/Forms/ProjectForm";
 import RetailForm from "@/entities/deal/ui/Forms/RetailForm";
 import DialogComponent from "@/shared/ui/DialogComponent";
+
 import { OrderResponse } from "../types";
 
 type TabsDealTypeForms = {
@@ -49,7 +50,7 @@ const TabsDealTypeForms = ({
           <TabsTrigger value="retail">Розница</TabsTrigger>
           <TabsTrigger value="project">Проект</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="retail">
           <Card>
             <CardHeader className="p-3 border">

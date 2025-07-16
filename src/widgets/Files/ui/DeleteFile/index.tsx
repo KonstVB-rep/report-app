@@ -8,12 +8,12 @@ import { FileX } from "lucide-react";
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import Overlay from "@/shared/ui/Overlay";
 
 import { useDeleteFiles } from "../../hooks/mutate";
 import FormDeleteFileSkeleton from "./ui/FormDeleteFileSkeleton";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 
 const FormDeleteFile = dynamic(() => import("./ui/FormDeleteFile"), {
   ssr: false,
@@ -48,14 +48,16 @@ const DeleteFile = ({
     });
   };
 
-  const handleSubmit = withAuthCheck(async(e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = withAuthCheck(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    if (selectedFilesForDelete.length === 0)
-      return alert("Выберите файлы для удаления!");
+      if (selectedFilesForDelete.length === 0)
+        return alert("Выберите файлы для удаления!");
 
-    mutate(selectedFilesForDelete);
-  });
+      mutate(selectedFilesForDelete);
+    }
+  );
 
   return (
     <>

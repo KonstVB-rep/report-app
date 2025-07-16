@@ -1,6 +1,7 @@
 "use client";
 
 import { DealType, PermissionEnum } from "@prisma/client";
+import { ColumnDef } from "@tanstack/react-table";
 
 import { useCallback, useMemo } from "react";
 
@@ -13,7 +14,6 @@ import { ProjectResponse } from "@/entities/deal/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
-import { ColumnDef } from "@tanstack/react-table";
 
 const Loading = dynamic(() => import("../[userId]/loading"), { ssr: false });
 const AccessDeniedMessage = dynamic(
@@ -38,9 +38,8 @@ const SummaryTableTemplate = dynamic<SummaryTableProps>(
   }
 );
 
-
 const SummaryTableProject = () => {
-    const { userId, departmentId } = useParams<{
+  const { userId, departmentId } = useParams<{
     userId: string;
     departmentId: string;
   }>();
@@ -61,10 +60,7 @@ const SummaryTableProject = () => {
     error,
     isError,
     isPending,
-  } = useGetAllProjects(
-    hasAccess ? userId : null,
-    departmentId
-  );
+  } = useGetAllProjects(hasAccess ? userId : null, departmentId);
 
   const getRowLink = useCallback(
     (row: ProjectResponse & { id: string }, type: string) => {

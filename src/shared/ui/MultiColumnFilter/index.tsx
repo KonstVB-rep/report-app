@@ -5,7 +5,7 @@ import {
 } from "@radix-ui/react-popover";
 import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -63,6 +63,7 @@ const MultiColumnFilter = <
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [col, setCol] = useState("");
 
   const filteredColumns = useMemo(
     () =>
@@ -72,44 +73,38 @@ const MultiColumnFilter = <
     [columns, includedColumns]
   );
 
-  const filterName = new URLSearchParams(searchParams.toString())
-    .get("filters")
-    ?.split("=")[0];
-
   useEffect(() => {
     const newParams = new URLSearchParams(searchParams.toString());
 
     if (selectedColumns.length > 0 && filterValueSearchByCol) {
-      const existingFilters = newParams.get("filters");
+      // Всегда сохраняем как массив в JSON
+      const filterValue = JSON.stringify([filterValueSearchByCol]);
+      const encodedValue = encodeURIComponent(filterValue);
 
-      if (existingFilters) {
-        const filterArray = existingFilters.split("&");
-        let filterUpdated = false;
+      if (newParams.has("filters")) {
+        const existingFilters = newParams.get("filters")?.split("&") || [];
 
-        const updatedFilters = filterArray.map((filter) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const [key, value] = filter.split("=");
-          if (selectedColumns.includes(key)) {
-            filterUpdated = true;
-            return `${key}=${encodeURIComponent(filterValueSearchByCol)}`;
-          }
+        // Удаляем старые фильтры для выбранных колонок
+        const filtered = existingFilters.filter(
+          (filter) => !selectedColumns.includes(filter.split("=")[0])
+        );
 
-          return filter;
-        });
-
-        if (!filterUpdated) {
-          updatedFilters.push(
-            `${selectedColumns[0]}=${encodeURIComponent(filterValueSearchByCol)}`
-          );
-        }
+        // Добавляем новые
+        const updatedFilters = [
+          ...filtered,
+          ...selectedColumns.map((col) => {
+            setCol(col);
+            return `${col}=${encodedValue}`;
+          }),
+        ];
 
         newParams.set("filters", updatedFilters.join("&"));
       } else {
-        newParams.set(
-          "filters",
-          `${selectedColumns[0]}=${encodeURIComponent(filterValueSearchByCol)}`
-        );
+        newParams.set("filters", `${selectedColumns[0]}=${encodedValue}`);
       }
+    } else if (selectedColumns.length === 0) {
+      // Очищаем фильтры если нет выбранных колонок
+      newParams.delete("filters");
     }
 
     const newUrl = `${pathname}?${newParams.toString()}`;
@@ -127,32 +122,55 @@ const MultiColumnFilter = <
     setColumnFilters((prevFilters) =>
       prevFilters.filter((filter) => !selectedColumns.includes(filter.id))
     );
+    setCol("");
   };
 
-const handleRadioChange = (columnId: string) => {
-  setSelectedColumns([columnId]); // ← выбираем только один столбец
-};
+  const handleRadioChange = (columnId: string) => {
+    setSelectedColumns([columnId]); // ← выбираем только один столбец
+    setCol(columnId);
+  };
 
   useEffect(() => {
-    const raw = new URLSearchParams(searchParams.toString()).get("filters");
-    console.log(raw, 'raw')
-    if (!raw) return;
-
-    const paramsArr = raw.split("&").map(item => item.split("=")[0]);
-    const isThisFilter = includedColumns.filter(item => paramsArr.includes(item))
-
-    // if(!isThisFilter.length) return;
-    const pair = raw.split("&").find(item => item.includes(isThisFilter[0]))
-    const [col, encoded = ""] = pair ? pair?.split("=") : [];
-    console.log(col, encoded, 'col, encoded')
-    const value = decodeURIComponent(encoded.replace(/^"|"$/g, ""));
-
-    if (col && value) {
-      setSelectedColumns([col]); // ← важно!
-      setFilterValueSearchByCol(value); // слово в инпут
+    const rawFilters = new URLSearchParams(searchParams.toString()).get(
+      "filters"
+    );
+    if (!rawFilters) {
+      setSelectedColumns([]);
+      setFilterValueSearchByCol("");
+      return;
     }
-  }, [searchParams, setSelectedColumns, setFilterValueSearchByCol, includedColumns]);
-  console.log(selectedColumns, 'selectedColumns')
+
+    const filters = rawFilters.split("&");
+    const activeFilters = filters.filter((filter) => {
+      const [col] = filter.split("=");
+      return includedColumns.includes(col);
+    });
+
+    if (activeFilters.length > 0) {
+      const [firstFilter] = activeFilters;
+      const [col, encoded = ""] = firstFilter.split("=");
+
+      try {
+        const decoded = decodeURIComponent(encoded);
+        const value = JSON.parse(decoded);
+        setSelectedColumns([col]);
+        setFilterValueSearchByCol(Array.isArray(value) ? value[0] : value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        setSelectedColumns([col]);
+        setFilterValueSearchByCol(decodeURIComponent(encoded));
+      }
+    } else {
+      setSelectedColumns([]);
+      setFilterValueSearchByCol("");
+    }
+  }, [
+    searchParams,
+    includedColumns,
+    setSelectedColumns,
+    setFilterValueSearchByCol,
+  ]);
+
   return (
     <div className="flex gap-2">
       <Popover>
@@ -180,7 +198,7 @@ const handleRadioChange = (columnId: string) => {
               className="w-36 rounded border shadow"
             />
             <RadioGroup
-              value={filterName}
+              value={col}
               className="grid grid-cols-1 items-center gap-1"
               onValueChange={handleRadioChange}
             >

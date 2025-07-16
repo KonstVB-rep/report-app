@@ -50,10 +50,19 @@ const ProjectItemInfo = () => {
 
   const { data: deal, isLoading } = useGetProjectById(dealId, false);
 
-const statusLabel = StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] || "Нет данных";
-const directionLabel = DirectionProjectLabels[deal?.direction as keyof typeof DirectionProjectLabels] || "Нет данных";
-const deliveryLabel = DeliveryProjectLabels[deal?.deliveryType as keyof typeof DeliveryProjectLabels] || "Нет данных";
-const typeLabel = DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
+  const statusLabel =
+    StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] ||
+    "Нет данных";
+  const directionLabel =
+    DirectionProjectLabels[
+      deal?.direction as keyof typeof DirectionProjectLabels
+    ] || "Нет данных";
+  const deliveryLabel =
+    DeliveryProjectLabels[
+      deal?.deliveryType as keyof typeof DeliveryProjectLabels
+    ] || "Нет данных";
+  const typeLabel =
+    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
 
   if (isLoading) return <Loading />;
   if (!deal) return <NotFoundDeal />;
@@ -125,7 +134,7 @@ const typeLabel = DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "
                         />
                         <TooltipComponent content="Статус сделки">
                           <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-                              {statusLabel} 
+                            {statusLabel}
                           </span>
                         </TooltipComponent>
                       </p>
@@ -159,9 +168,7 @@ const typeLabel = DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "
                 />
                 <RowInfoDealProp
                   label="Тип сделки:"
-                  value={
-                   typeLabel 
-                  }
+                  value={typeLabel}
                   direction="column"
                 />
                 <RowInfoDealProp
@@ -172,18 +179,8 @@ const typeLabel = DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "
               </IntoDealItem>
 
               <IntoDealItem title="Детали" className="flex-item-contact">
-                <RowInfoDealProp
-                  label="Направление:"
-                  value={
-                      directionLabel 
-                  }
-                />
-                <RowInfoDealProp
-                  label="Тип поставки:"
-                  value={
-                      deliveryLabel
-                  }
-                />
+                <RowInfoDealProp label="Направление:" value={directionLabel} />
+                <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
               </IntoDealItem>
 
               <IntoDealItem title="Финансы" className="flex-item-contact">

@@ -47,31 +47,31 @@ const EditRetailForm = ({
 
   const { reset } = form;
 
-useEffect(() => {
-  if (data && !isLoading) {
-    const formattedData = {
-      ...data,
-      phone: data.phone ?? undefined,
-      email: data.email ?? undefined,
-      dateRequest: data.dateRequest?.toISOString(),
-      deliveryType: data.deliveryType as DeliveryRetail,
-      dealStatus: data.dealStatus as StatusRetail,
-      direction: data.direction as DirectionRetail,
-      plannedDateConnection: data.plannedDateConnection?.toISOString(),
-      amountCP: formatCurrency(data.amountCP),
-      delta: formatCurrency(data.delta),
-      resource: data.resource ?? "",
-      contacts: data?.additionalContacts ?? [],
-      managersIds: Array.isArray(data.managers)
-        ? data.managers.map((manager) => ({ userId: manager.id }))
-        : [],
-    };
-    reset(formattedData);
-  }
-}, [reset, data, isLoading]);
+  useEffect(() => {
+    if (data && !isLoading) {
+      const formattedData = {
+        ...data,
+        phone: data.phone ?? undefined,
+        email: data.email ?? undefined,
+        dateRequest: data.dateRequest?.toISOString(),
+        deliveryType: data.deliveryType as DeliveryRetail,
+        dealStatus: data.dealStatus as StatusRetail,
+        direction: data.direction as DirectionRetail,
+        plannedDateConnection: data.plannedDateConnection?.toISOString(),
+        amountCP: formatCurrency(data.amountCP),
+        delta: formatCurrency(data.delta),
+        resource: data.resource ?? "",
+        contacts: data?.additionalContacts ?? [],
+        managersIds: Array.isArray(data.managers)
+          ? data.managers.map((manager) => ({ userId: manager.id }))
+          : [],
+      };
+      reset(formattedData);
+    }
+  }, [reset, data, isLoading]);
 
   if (isLoading) return <FormDealSkeleton />;
-  if (!data) return null;  
+  if (!data) return null;
 
   return (
     <RetailFormBody

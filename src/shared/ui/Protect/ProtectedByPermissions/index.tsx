@@ -9,13 +9,16 @@ type ProtectedProps = {
   children: React.ReactNode;
 };
 
-const ProtectedByPermissions = ({ children, permissionArr }: ProtectedProps) => {
+const ProtectedByPermissions = ({
+  children,
+  permissionArr,
+}: ProtectedProps) => {
   const { hasPermissionByRole, authUser } = useStoreUser();
 
   if (!authUser) return null;
   if (hasPermissionByRole) return children;
-  
-  const hasPermissions = permissionArr?.every(p => 
+
+  const hasPermissions = permissionArr?.every((p) =>
     authUser.permissions?.includes(p)
   );
 

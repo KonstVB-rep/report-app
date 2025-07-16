@@ -28,7 +28,6 @@ const SelectFormField = <T extends FieldValues>({
   errorMessage,
   ...rest
 }: SelectFormFieldProps<T>) => {
-
   return (
     <FormField
       control={control}

@@ -2,6 +2,8 @@
 
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
+import { useEffect } from "react";
+
 import { useRouter } from "next/navigation";
 
 import { Plus } from "lucide-react";
@@ -12,7 +14,6 @@ import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 
 import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
-import { useEffect } from "react";
 
 type EventsListProps = {
   events: EventInputType[];

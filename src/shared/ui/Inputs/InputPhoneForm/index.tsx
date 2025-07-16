@@ -26,8 +26,8 @@ const InputPhoneForm = <T extends FieldValues>({
       render={({ field }) => {
         const fieldProps = {
           ...field,
-          ref: undefined, 
-          inputRef: field.ref, 
+          ref: undefined,
+          inputRef: field.ref,
         };
         return (
           <FormItem>

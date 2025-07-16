@@ -1,10 +1,12 @@
 "use client";
 
 import { PermissionEnum } from "@prisma/client";
-import { useState, useMemo } from "react";
+
+import { useMemo, useState } from "react";
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+
 import { Redo2 } from "lucide-react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
@@ -45,13 +47,19 @@ const LinkToUserTable = () => {
 
   const hasTable = useMemo(() => {
     if (!dealType || !userId || !departmentId) return null;
-    if (!pathname.includes(`/table/${departmentId}/${dealType}/${userId}`)) return null;
+    if (!pathname.includes(`/table/${departmentId}/${dealType}/${userId}`))
+      return null;
     return linksPersonTable(departmentId as string)[dealType as DealsUnionType];
   }, [pathname, dealType, departmentId, userId]);
 
   const hasSummaryTable = useMemo(() => {
     if (!authUser || !dealType) return null;
-    if (!pathname.includes(`/summary-table/${authUser.departmentId}/${dealType}/${authUser.id}`)) return null;
+    if (
+      !pathname.includes(
+        `/summary-table/${authUser.departmentId}/${dealType}/${authUser.id}`
+      )
+    )
+      return null;
     return linksSummaryTable(authUser.departmentId)[dealType as DealsUnionType];
   }, [pathname, dealType, authUser]);
 
@@ -72,7 +80,9 @@ const LinkToUserTable = () => {
       )}
 
       {hasSummaryTable && (
-        <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
+        <ProtectedByPermissions
+          permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+        >
           <Link
             href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}
             className="btn_hover max-w-max border-muted px-4 text-sm"

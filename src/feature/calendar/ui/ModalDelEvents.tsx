@@ -19,7 +19,8 @@ const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
   const { confirmDelModal, setConfirmDelModal, editingId } =
     useCalendarContext();
 
-    const eventTitle = events.find((e) => e.id === editingId)?.title ?? "Неизвестное событие";
+  const eventTitle =
+    events.find((e) => e.id === editingId)?.title ?? "Неизвестное событие";
 
   const handleDelete = withAuthCheck(async () => {
     if (editingId) {

@@ -60,4 +60,4 @@ export const NavUser = () => {
       </SidebarMenuItem>
     </SidebarMenu>
   );
-}
+};

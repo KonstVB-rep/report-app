@@ -20,7 +20,6 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
-
   const rowCount = table.getRowModel().rows.length;
   const hasRows = rowCount > 0;
 
@@ -40,8 +39,7 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
     (row: Row<T>): ReactNode => {
       const isNotAtWork =
         row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK;
-      const isAtWork =
-        row.original.orderStatus === StatusOrder.AT_WORK;
+      const isAtWork = row.original.orderStatus === StatusOrder.AT_WORK;
 
       const tableRow = (
         <TableRow

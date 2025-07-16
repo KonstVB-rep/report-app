@@ -186,7 +186,6 @@ const Kanban = ({ data }: KanbanProps) => {
             })}
           </div>
         </div>
-
       </DragDropContext>
     </div>
   );

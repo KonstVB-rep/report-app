@@ -12,10 +12,10 @@ import { useGetHrefFilesDealFromDB } from "../../hooks/query";
 import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
 import { getFormatFile } from "../../libs/helpers/getFormatFile";
 import ICONS_TYPE_FILE from "../../libs/iconsTypeFile";
+import { FileInfo } from "../../types";
 import DeleteFile from "../DeleteFile";
 import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
 import SkeletonFiles from "../SkeletonFiles";
-import { FileInfo } from "../../types";
 
 type FileListProps = {
   data: {
@@ -26,18 +26,28 @@ type FileListProps = {
 };
 
 const FILE_FORMATS = {
-  IMAGE: [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg", ".ico"],
+  IMAGE: [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".tiff",
+    ".webp",
+    ".svg",
+    ".ico",
+  ],
   EXCEL: [".xls", ".xlsx", ".csv"],
   PDF: [".pdf"],
-  TEXT: [".txt"]
+  TEXT: [".txt"],
 };
 
 const getFileType = (format: string) => {
-  if (FILE_FORMATS.IMAGE.includes(format)) return 'image';
-  if (FILE_FORMATS.EXCEL.includes(format)) return 'excel';
-  if (FILE_FORMATS.PDF.includes(format)) return 'pdf';
-  if (FILE_FORMATS.TEXT.includes(format)) return 'text';
-  return 'other';
+  if (FILE_FORMATS.IMAGE.includes(format)) return "image";
+  if (FILE_FORMATS.EXCEL.includes(format)) return "excel";
+  if (FILE_FORMATS.PDF.includes(format)) return "pdf";
+  if (FILE_FORMATS.TEXT.includes(format)) return "text";
+  return "other";
 };
 
 const fileTypeIcons = {
@@ -45,7 +55,7 @@ const fileTypeIcons = {
   excel: ICONS_TYPE_FILE[".xls"](),
   pdf: ICONS_TYPE_FILE[".pdf"](),
   text: ICONS_TYPE_FILE[".txt"](),
-  other: ICONS_TYPE_FILE["default"]()
+  other: ICONS_TYPE_FILE["default"](),
 };
 
 // const imageFormat = [
@@ -63,11 +73,14 @@ const fileTypeIcons = {
 // const pdfFormat = [".pdf"];
 // const text = [".txt"];
 
-
-const FileItem = ({ file, selected, onSelect }: { 
-  file: FileInfo, 
-  selected: boolean, 
-  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void 
+const FileItem = ({
+  file,
+  selected,
+  onSelect,
+}: {
+  file: FileInfo;
+  selected: boolean;
+  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const formatFile = getFormatFile(file.name);
   const fileType = getFileType(formatFile);
@@ -83,7 +96,7 @@ const FileItem = ({ file, selected, onSelect }: {
       className="group relative grid w-20 min-w-20 max-w-20 flex-1 gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
     >
       <p className="flex items-center justify-center">
-       {fileTypeIcons[fileType]}
+        {fileTypeIcons[fileType]}
       </p>
       <p className="truncate text-xs">{fileName}</p>
       <div className="absolute inset-0 -z-[1] h-full w-full rounded-md bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />

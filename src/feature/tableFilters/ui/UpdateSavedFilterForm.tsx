@@ -14,10 +14,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 
 import { useUpdateFilter } from "../hooks/mutate";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 
 const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
   const searchParams = useSearchParams();
@@ -36,23 +36,25 @@ const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
   const handleChange = () => {
     setIsUpdateParams(!isUpdateParams);
   };
-  const handleSubmit = withAuthCheck(async(e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!filter?.userId) {
-      throw new Error("Не найден идентификатор пользователя фильтра");
+  const handleSubmit = withAuthCheck(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!filter?.userId) {
+        throw new Error("Не найден идентификатор пользователя фильтра");
+      }
+      mutate({
+        data: {
+          id: filter.id,
+          userId: filter.userId,
+          filterName,
+          filterValue: isUpdateParams
+            ? searchParams.toString()
+            : filter.filterValue,
+          isActive: false,
+        },
+      });
     }
-    mutate({
-      data: {
-        id: filter.id,
-        userId: filter.userId,
-        filterName,
-        filterValue: isUpdateParams
-          ? searchParams.toString()
-          : filter.filterValue,
-        isActive: false,
-      },
-    });
-  });
+  );
 
   return (
     <Card>

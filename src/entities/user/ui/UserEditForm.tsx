@@ -60,7 +60,7 @@ const UserEditForm = ({
     TOAST.PROMISE(mutateAsync(data), "Изменения сохранены");
   });
 
-   const { reset } = form;
+  const { reset } = form;
 
   useEffect(() => {
     if (user) {
