@@ -3,7 +3,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@radix-ui/react-popover";
-import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 
 import React, { useEffect, useMemo, useState } from "react";
 
@@ -13,6 +12,7 @@ import { Filter } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
 
 import DebouncedInput from "../DebouncedInput";
 
@@ -33,33 +33,17 @@ const filtersByColLabel: Record<FilterKeys, string> = {
   comments: "Комментарии",
 };
 
-type MultiColumnFilterProps<
-  TData extends Record<string, unknown>,
-  TValue = unknown,
-> = {
-  columns: ColumnDef<TData, TValue>[];
-  includedColumns: string[];
-  selectedColumns: string[];
-  setSelectedColumns: React.Dispatch<React.SetStateAction<string[]>>;
-  filterValueSearchByCol: string;
-  setFilterValueSearchByCol: React.Dispatch<React.SetStateAction<string>>;
-  setColumnFilters: (
-    callback: (prev: ColumnFiltersState) => ColumnFiltersState
-  ) => void;
-};
+const MultiColumnFilter = () => {
+  const {
+    includedColumns = [],
+    selectedColumns,
+    setSelectedColumns,
+    filterValueSearchByCol,
+    setFilterValueSearchByCol,
+    setColumnFilters,
+    columns,
+  } = useDataTableFiltersContext();
 
-const MultiColumnFilter = <
-  TData extends Record<string, unknown>,
-  TValue = unknown,
->({
-  columns,
-  includedColumns = [],
-  selectedColumns,
-  setSelectedColumns,
-  filterValueSearchByCol,
-  setFilterValueSearchByCol,
-  setColumnFilters,
-}: MultiColumnFilterProps<TData, TValue>) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

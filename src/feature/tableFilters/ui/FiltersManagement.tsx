@@ -1,14 +1,14 @@
 "use client";
 
-import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
-
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 
 import dynamic from "next/dynamic";
 
 import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+
+import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext";
 
 const FiltersManagementContent = dynamic(
   () => import("./FiltersManagementContent"),
@@ -17,24 +17,10 @@ const FiltersManagementContent = dynamic(
 
 type FilterManagmentProps = {
   openFilters: boolean;
-  setOpenFilters: React.Dispatch<React.SetStateAction<boolean>>;
-  columnFilters: ColumnFiltersState;
-  setColumnFilters: Dispatch<SetStateAction<ColumnFiltersState>>;
-  columnVisibility: VisibilityState;
-  setColumnVisibility: Dispatch<React.SetStateAction<VisibilityState>>;
-  selectedColumns: string[];
-  setSelectedColumns: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-const FiltersManagement = ({
-  setColumnFilters,
-  setColumnVisibility,
-  openFilters,
-  setOpenFilters,
-  columnFilters,
-  columnVisibility,
-  setSelectedColumns,
-}: FilterManagmentProps) => {
+const FiltersManagement = ({ openFilters }: FilterManagmentProps) => {
+  const { setOpenFilters, columnFilters } = useDataTableFiltersContext();
   return (
     <>
       <div className="flex items-center gap-2">
@@ -54,15 +40,7 @@ const FiltersManagement = ({
           </div>
         )}
       </div>
-      {columnFilters.length > 0 && (
-        <FiltersManagementContent
-          setColumnFilters={setColumnFilters}
-          setColumnVisibility={setColumnVisibility}
-          columnFilters={columnFilters}
-          columnVisibility={columnVisibility}
-          setSelectedColumns={setSelectedColumns}
-        />
-      )}
+      {columnFilters.length > 0 && <FiltersManagementContent />}
     </>
   );
 };

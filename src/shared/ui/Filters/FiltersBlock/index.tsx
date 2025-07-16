@@ -1,13 +1,14 @@
 import { DealType } from "@prisma/client";
-import { ColumnDef, ColumnFiltersState, Table } from "@tanstack/react-table";
+import { Table } from "@tanstack/react-table";
 
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { DateRange } from "react-day-picker";
 
 import { useParams, usePathname } from "next/navigation";
 
 import { LABELS } from "@/entities/deal/lib/constants";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
 
 import DateRangeFilter from "../../DateRangeFilter";
 import MotionDivY from "../../MotionComponents/MotionDivY";
@@ -17,39 +18,18 @@ import FilterByUser from "../FilterByUsers";
 import FilterPopoverGroup from "../FilterPopoverGroup";
 
 type FiltersBlockProps = {
-  columnFilters: ColumnFiltersState;
-  setColumnFilters: (
-    callback: (prev: ColumnFiltersState) => ColumnFiltersState
-  ) => void;
-  columns: ColumnDef<Record<string, unknown>, unknown>[];
-  includedColumns: string[];
-  selectedColumns: string[];
-  setSelectedColumns: Dispatch<SetStateAction<string[]>>;
-  filterValueSearchByCol: string;
-  setFilterValueSearchByCol: Dispatch<SetStateAction<string>>;
   value?: DateRange;
-  onDateChange: (date: DateRange | undefined) => void;
-  onClearDateFilter: (columnId: string) => void;
   table: Table<Record<string, unknown>>;
   type: DealType;
 };
 
-const FiltersBlock = ({
-  setColumnFilters,
-  includedColumns,
-  selectedColumns,
-  setSelectedColumns,
-  filterValueSearchByCol,
-  setFilterValueSearchByCol,
-  value,
-  onDateChange,
-  onClearDateFilter,
-  table,
-  type,
-}: FiltersBlockProps) => {
+const FiltersBlock = ({ value, table, type }: FiltersBlockProps) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
   const { dealType } = useParams();
+
+  const { setColumnFilters, handleDateChange, handleClearDateFilter } =
+    useDataTableFiltersContext();
 
   const hasTable = pathname.includes(
     `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
@@ -60,35 +40,16 @@ const FiltersBlock = ({
   return (
     <MotionDivY className="min-h-0">
       <div className="py-2 flex flex-wrap justify-start gap-2">
-        {hasTable && (
-          <FilterByUser
-            columnFilters={table.getState().columnFilters}
-            setColumnFilters={setColumnFilters}
-            label="Менеджер"
-          />
-        )}
+        {hasTable && <FilterByUser label="Менеджер" />}
 
         <div className="flex gap-2 justify-start flex-wrap">
           <DateRangeFilter
-            onDateChange={onDateChange}
-            onClearDateFilter={onClearDateFilter}
+            onDateChange={handleDateChange("dateRequest")}
+            onClearDateFilter={handleClearDateFilter}
             value={value}
           />
 
-          <MultiColumnFilter
-            columns={
-              table.getAllColumns() as ColumnDef<
-                Record<string, unknown>,
-                unknown
-              >[]
-            }
-            setColumnFilters={setColumnFilters}
-            includedColumns={includedColumns}
-            selectedColumns={selectedColumns}
-            setSelectedColumns={setSelectedColumns}
-            filterValueSearchByCol={filterValueSearchByCol}
-            setFilterValueSearchByCol={setFilterValueSearchByCol}
-          />
+          <MultiColumnFilter />
         </div>
       </div>
 

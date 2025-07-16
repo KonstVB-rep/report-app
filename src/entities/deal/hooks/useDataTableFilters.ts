@@ -1,36 +1,29 @@
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
-import React, {
-  startTransition,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { utilsDataTable } from "../lib/utilsDataTable";
 
-type Props = {
-  searchParams: URLSearchParams;
-  includedColumns: string[] | [];
-  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
-  setColumnVisibility: React.Dispatch<React.SetStateAction<VisibilityState>>;
-  columnFilters: ColumnFiltersState;
-  columnVisibility: VisibilityState;
-};
+const includedColumns = [
+  "nameObject",
+  "nameDeal",
+  "contact",
+  "phone",
+  "email",
+  "comments",
+];
 
-const useDataTableFilters = ({
-  searchParams,
-  includedColumns,
-  setColumnFilters,
-  setColumnVisibility,
-  columnFilters,
-  columnVisibility,
-}: Props) => {
+const useDataTableFilters = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
   const [selectedColumns, setSelectedColumns] = useState<string[]>(() =>
     utilsDataTable.transformParamsListToSFiltersObj(
       searchParams.toString(),
@@ -118,6 +111,11 @@ const useDataTableFilters = ({
     setOpenFilters,
     handleDateChange,
     handleClearDateFilter,
+    columnFilters,
+    setColumnFilters,
+    columnVisibility,
+    setColumnVisibility,
+    includedColumns,
   };
 };
 
