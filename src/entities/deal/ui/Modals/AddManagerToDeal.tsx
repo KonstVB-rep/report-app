@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { getManagers } from "@/entities/department/lib/utils";
 import { cn } from "@/shared/lib/utils";
 import DialogComponent from "@/shared/ui/DialogComponent";
-
-const managersList = getManagers();
+import useMananagersStore from "@/widgets/Files/hooks/useMananagersStore";
 
 const AddManagerToDeal = ({
   managers,
@@ -23,6 +21,8 @@ const AddManagerToDeal = ({
   firstManager: string;
   setFirstManager: React.Dispatch<React.SetStateAction<string>>;
 }) => {
+  const managersList = useMananagersStore();
+
   const handleChange = (value: { userId: string }) => {
     setManagers((prevManagers) => {
       const isSelected = prevManagers.some(
@@ -50,6 +50,8 @@ const AddManagerToDeal = ({
     // Обновляем ответственного менеджера
     setFirstManager(value);
   };
+
+  if (Object.keys(managersList).length === 0) return null;
 
   return (
     <DialogComponent

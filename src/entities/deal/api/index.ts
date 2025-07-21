@@ -717,7 +717,7 @@ export const createProject = async (
       return handleError("Ошибка: данные не переданы");
     }
 
-    const {user } = await checkAuthAndDataFill(data);
+    const { user } = await checkAuthAndDataFill(data);
 
     const {
       amountCP,
@@ -844,7 +844,6 @@ export const createRetail = async (
     }
 
     const { user } = await checkAuthAndDataFill(data);
-
 
     const { amountCP, delta, contacts, managersIds, ...dealData } = data;
 

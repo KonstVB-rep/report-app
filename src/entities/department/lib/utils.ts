@@ -1,3 +1,5 @@
+"use client";
+
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
 import useStoreDepartment, { DeptFormatted } from "../store/useStoreDepartment";
