@@ -717,13 +717,7 @@ export const createProject = async (
       return handleError("Ошибка: данные не переданы");
     }
 
-    const { userId, user } = await checkAuthAndDataFill(data);
-
-    const isOwner = userId === data.userId;
-
-    if (!isOwner) {
-      await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
-    }
+    const {user } = await checkAuthAndDataFill(data);
 
     const {
       amountCP,
@@ -849,13 +843,8 @@ export const createRetail = async (
       return handleError("Ошибка: данные не переданы");
     }
 
-    const { userId, user } = await checkAuthAndDataFill(data);
+    const { user } = await checkAuthAndDataFill(data);
 
-    const isOwner = userId === data.userId;
-
-    if (!isOwner) {
-      await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
-    }
 
     const { amountCP, delta, contacts, managersIds, ...dealData } = data;
 
