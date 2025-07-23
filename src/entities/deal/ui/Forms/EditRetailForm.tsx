@@ -1,3 +1,4 @@
+'use client'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
 
@@ -20,13 +21,19 @@ const formatCurrency = (value: string | null | undefined): string => {
   return formatterCurrency.format(parseFloat(value || "0"));
 };
 
+type Props = {
+  close: Dispatch<SetStateAction<void>>;
+  dealId: string;
+  isInvalidate :boolean
+  titleForm: string
+};
+
 const EditRetailForm = ({
   close,
   dealId,
-}: {
-  close: Dispatch<SetStateAction<void>>;
-  dealId: string;
-}) => {
+  isInvalidate =false,
+  titleForm
+}: Props) => {
   const { data, isPending: isLoading } = useGetRetailById(dealId, false);
   const { authUser } = useStoreUser();
 
@@ -35,10 +42,12 @@ const EditRetailForm = ({
     defaultValues: defaultRetailValues,
   });
 
+
   const { mutateAsync, isPending } = useMutationUpdateRetail(
     dealId,
     data?.userId ?? "",
-    close
+    close,
+    isInvalidate
   );
 
   const onSubmit = withAuthCheck(async (data: RetailSchema) => {
@@ -81,6 +90,7 @@ const EditRetailForm = ({
       isPending={isPending}
       contactsKey="contacts"
       managerId={data?.userId || authUser?.id}
+      titleForm={titleForm}
     />
   );
 };

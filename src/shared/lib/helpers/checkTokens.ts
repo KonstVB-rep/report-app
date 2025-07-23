@@ -2,7 +2,7 @@ import { logout } from "@/feature/auth/logout";
 import axiosInstance from "@/shared/api/axiosInstance";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { AuthError } from "./authError";
+import { AuthError } from "./customErrors";
 
 export interface TokenCheckResponse {
   isValid: boolean;

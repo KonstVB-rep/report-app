@@ -15,6 +15,8 @@ import {
 import { Dialog } from "@/components/ui/dialog";
 
 import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAffiliation";
+import { PermissionEnum } from "@prisma/client";
+import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 
 type ContextMenuTableProps = {
   children: React.ReactNode;
@@ -66,12 +68,13 @@ const ContextRowTable = ({
                   <FilePenLine size="14" /> Редактировать
                 </ContextMenuItem>
 
-                <ContextMenuItem
+                <ProtectedByPermissions permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}><ContextMenuItem
                   onClick={() => setOpenModal("delete")}
                   className="flex cursor-pointer gap-2"
                 >
                   <Trash2 size="14" /> Удалить
                 </ContextMenuItem>
+                </ProtectedByPermissions>
               </ProtectedByDepartmentAffiliation>
             )}
           </ContextMenuContent>

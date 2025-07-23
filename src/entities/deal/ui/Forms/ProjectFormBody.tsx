@@ -47,6 +47,7 @@ type ProjectFormBodyProps<T extends FieldValues> = {
   isPending: boolean;
   contactsKey?: keyof T;
   managerId: string | undefined;
+  titleForm:string
 };
 
 const directionOptions = transformObjValueToArr(DirectionProjectLabels);
@@ -59,6 +60,7 @@ const ProjectFormBody = <T extends FieldValues>({
   isPending,
   contactsKey,
   managerId = "",
+  titleForm
 }: ProjectFormBodyProps<T>) => {
   const {
     contacts,
@@ -136,7 +138,7 @@ const ProjectFormBody = <T extends FieldValues>({
           className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
           <div className="text-center font-semibold uppercase">
-            Форма добавления проекта
+           { titleForm }
           </div>
           <div className="grid gap-2 px-2">
             <div className="grid sm:grid-cols-2 gap-2">

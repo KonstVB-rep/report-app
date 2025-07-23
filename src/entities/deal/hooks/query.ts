@@ -65,6 +65,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
     placeholderData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
     staleTime: useCache ? 60 * 1000 : 0,
+    retry: 2
   });
 };
 
@@ -105,6 +106,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
     enabled: !useCache || !cachedDeal,
     placeholderData: useCache ? cachedDeal : undefined,
     staleTime: useCache ? 60 * 1000 : 0,
+    retry: 2
   });
 };
 

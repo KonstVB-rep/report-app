@@ -22,9 +22,11 @@ import ProjectFormBody from "./ProjectFormBody";
 type Props = {
   close: Dispatch<SetStateAction<void>>;
   dealId: string;
+  isInvalidate :boolean
+  titleForm: string
 };
 
-const EditProjectForm = ({ close, dealId }: Props) => {
+const EditProjectForm = ({ close, dealId, isInvalidate = false,  titleForm }: Props) => {
   const { data, isPending: isLoading } = useGetProjectById(dealId, false);
   const { authUser } = useStoreUser();
 
@@ -33,10 +35,12 @@ const EditProjectForm = ({ close, dealId }: Props) => {
     defaultValues: defaultProjectValues,
   });
 
+
   const { mutateAsync, isPending } = useMutationUpdateProject(
     dealId,
     data?.userId ?? "",
-    close
+    close,
+    isInvalidate
   );
 
   const onSubmit = withAuthCheck(async (data: ProjectSchema) => {
@@ -78,6 +82,7 @@ const EditProjectForm = ({ close, dealId }: Props) => {
       isPending={isPending}
       contactsKey="contacts"
       managerId={data?.userId || authUser?.id}
+      titleForm={titleForm}
     />
   );
 };

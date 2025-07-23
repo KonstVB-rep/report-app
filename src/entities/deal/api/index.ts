@@ -47,7 +47,7 @@ type ProjectWithManagersIds = Omit<
   "createdAt" | "updatedAt" | "managers"
 > & { managersIds: { userId: string }[] };
 
-type RetailWithoutDateCreateAndUpdate = Omit<
+export type RetailWithoutDateCreateAndUpdate = Omit<
   RetailResponse,
   "createdAt" | "updatedAt"
 >;
@@ -113,12 +113,6 @@ export const getProjectById = async (
       );
     }
 
-    const isOwner = userId === deal.userId;
-
-    if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    }
-
     const { projectManagers, ...rest } = deal;
 
     const managers = projectManagers.map((pm) => ({
@@ -126,6 +120,22 @@ export const getProjectById = async (
       managerName: pm.user.username,
       position: pm.user.position,
     }));
+
+    const isExistUserInManagersList = managers.some(
+      (man) => man.id === userId
+    );
+
+    const isOwner = userId === deal.userId;
+
+    if (!user) {
+      return handleError(
+        "Пользователь не найден или у вас нет прав на операцию"
+      );
+    }
+
+    if (!isOwner && !isExistUserInManagersList) {
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    }
 
     const dealFiles = await prisma.dealFile.findMany({
       where: { dealId: dealId }, // Фильтруем по dealId
@@ -187,12 +197,6 @@ export const getRetailById = async (
       );
     }
 
-    const isOwner = userId === deal.userId;
-
-    if (!isOwner && user) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    }
-
     const { retailManagers, ...rest } = deal;
 
     const managers = retailManagers.map((rm) => ({
@@ -200,6 +204,23 @@ export const getRetailById = async (
       managerName: rm.user.username,
       position: rm.user.position,
     }));
+
+    const isExistUserInManagersList = managers.some(
+      (man) => man.id === userId
+    );
+
+    const isOwner = userId === deal.userId;
+
+
+    if (!user) {
+      return handleError(
+        "Пользователь не найден или у вас нет прав на операцию"
+      );
+    }
+
+    if (!isOwner && !isExistUserInManagersList) {
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    }
 
     const dealFiles = await prisma.dealFile.findMany({
       where: { dealId: dealId }, // Фильтруем по dealId
@@ -966,6 +987,9 @@ export const updateProject = async (
       where: { id: id as string },
       include: {
         additionalContacts: true,
+        projectManagers: {
+          include: { user: true },
+        },
       },
     });
 
@@ -973,11 +997,38 @@ export const updateProject = async (
       return null;
     }
 
+    const userOwnerProject = await prisma.user.findUnique({
+      where: { id: deal.userId },
+      select: { role: true, departmentId: true },
+    });
+
+    if (!userOwnerProject) {
+      return handleError(
+        "Пользователь не найден илил у вас нет прав на операцию"
+      );
+    }
+
+    const managers = deal.projectManagers.map((pm) => ({
+      id: pm.user.id,
+      managerName: pm.user.username,
+      position: pm.user.position,
+    }));
+
+    const isExistUserInManagersList = managers.some(
+      (man) => man.id === userId
+    );
+
     const isOwner =
       deal.userId === userId ||
       managersIds.find((item) => item.userId === userId);
 
-    if (!isOwner && user) {
+    if (!user) {
+      return handleError(
+        "Пользователь не найден или у вас нет прав на операцию"
+      );
+    }
+
+    if (!isOwner && !isExistUserInManagersList) {
       await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT]);
     }
 
@@ -1153,6 +1204,9 @@ export const updateRetail = async (
       where: { id: id as string },
       include: {
         additionalContacts: true, // Включаем контакты проекта
+        retailManagers: {
+          include: { user: true },
+        },
       },
     });
 
@@ -1160,11 +1214,27 @@ export const updateRetail = async (
       return null;
     }
 
+    const managers = deal.retailManagers.map((rm) => ({
+      id: rm.user.id,
+      managerName: rm.user.username,
+      position: rm.user.position,
+    }));
+
+    const isExistUserInManagersList = managers.some(
+      (man) => man.id === userId
+    );
+
+    if (!user) {
+      return handleError(
+        "Пользователь не найден или у вас нет прав на операцию"
+      );
+    }
+
     const isOwner =
       deal.userId === userId ||
       managersIds.find((item) => item.userId === userId);
 
-    if (!isOwner) {
+    if (!isOwner && !isExistUserInManagersList) {
       await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
     }
 

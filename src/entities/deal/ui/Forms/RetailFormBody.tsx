@@ -41,6 +41,7 @@ type RetailFormBodyProps<T extends FieldValues> = {
   isPending: boolean;
   contactsKey?: keyof T;
   managerId: string | undefined;
+  titleForm: string
 };
 
 const directionOptions = transformObjValueToArr(DirectionRetailLabels);
@@ -53,6 +54,7 @@ const RetailFormBody = <T extends FieldValues>({
   isPending,
   contactsKey,
   managerId = "",
+  titleForm
 }: RetailFormBodyProps<T>) => {
   const {
     contacts,
@@ -94,7 +96,7 @@ const RetailFormBody = <T extends FieldValues>({
           className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
           <div className="text-center font-semibold uppercase">
-            Создать розничную сделку
+            {titleForm}
           </div>
           <div className="grid gap-2 p-2 sm:grid-cols-2">
             <div className="flex flex-col gap-1">

@@ -13,7 +13,7 @@ export const checkUserPermissionByRole = async (
 
   if (!hasUserPermission) {
     console.error("Ошибка прав доступа. Пользователь не имеет разрешения.");
-    throw new Error("У вас нет прав для получения запрашиваемых данных");
+    throw new Error("У вас нет доступа к запрашиваемым данным");
   }
   return null;
 };

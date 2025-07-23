@@ -1,3 +1,5 @@
+'use client'
+
 import {
   DealType,
   DeliveryProject,
@@ -20,6 +22,7 @@ import {
   createProject,
   createRetail,
   deleteDeal,
+  RetailWithoutDateCreateAndUpdate,
   updateProject,
   updateRetail,
 } from "../api";
@@ -88,7 +91,8 @@ export const useDelDeal = (
 export const useMutationUpdateProject = (
   dealId: string,
   userId: string,
-  close: () => void
+  close: () => void,
+   isInvalidate: boolean = false
 ) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
@@ -160,8 +164,12 @@ export const useMutationUpdateProject = (
       const currManagers =
         variables.managersIds?.map((m) => m.userId).sort() || [];
 
-      // Обязательная инвалидация
-      queryClient.invalidateQueries({ queryKey: ["project", dealId] });
+
+      if(isInvalidate){
+          queryClient.invalidateQueries({ queryKey: ["project", dealId] });
+      }
+
+        // Обязательная инвалидаци
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
       });
@@ -181,15 +189,22 @@ export const useMutationUpdateProject = (
 export const useMutationUpdateRetail = (
   dealId: string,
   userId: string,
-  close: () => void
+  close: () => void,
+ isInvalidate: boolean = false
 ) => {
   const queryClient = useQueryClient();
   const { authUser } = useStoreUser();
   return useMutation({
-    mutationFn: (data: RetailSchema) => {
+    mutationFn: (data: RetailSchema): Promise<RetailWithoutDateCreateAndUpdate | null> => {
       if (!authUser?.id) {
         throw new Error("User ID is missing");
       }
+
+      // const isStillManager = data?.managersIds.some(m => m.userId === userId);
+      // console.log(!isStillManager,authUser?.id, userId, 'isStillManager')
+      // if (!isStillManager && authUser?.id !== userId) {
+      //    return Promise.resolve(null);
+      // }
 
       return updateRetail({
         ...data,
@@ -243,7 +258,10 @@ export const useMutationUpdateRetail = (
       const currManagers =
         variables.managersIds?.map((m) => m.userId).sort() || [];
 
-      queryClient.invalidateQueries({ queryKey: ["retail", dealId] }); // ✅ Обязательная инвалидация
+      if(isInvalidate){
+        queryClient.invalidateQueries({ queryKey: ["retail", dealId] }); 
+      }
+
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
       });

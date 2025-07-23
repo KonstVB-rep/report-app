@@ -9,25 +9,48 @@ import { handleError } from "@/shared/api/handleError";
 
 import { FileInfo } from "../types";
 
-const checkingAccessRight = async (fileUserId: string) => {
+const checkingAccessRight = async (
+  fileUserId: string,
+  dealType: DealType,
+  dealId: string
+) => {
   try {
     if (!fileUserId) {
       handleError("Недостаточно данных");
     }
 
-    const { user } = await handleAuthorization();
+    const { user, userId } = await handleAuthorization();
 
     const userOwnerProject = await prisma.user.findUnique({
       where: { id: fileUserId },
       select: { role: true, departmentId: true },
     });
 
-    if (!userOwnerProject) {
+    if (!userOwnerProject || !user) {
       return handleError("Пользователь не найден");
     }
 
+    let isExistUserInManagersList: boolean = false;
+
+    if (dealType === DealType.PROJECT) {
+      const managers = await prisma.projectManager.findMany({
+        where: { dealId },
+      });
+      isExistUserInManagersList = managers.some(
+        (deal) => deal.userId === userId
+      );
+    }
+    if (dealType === DealType.RETAIL) {
+      const managers = await prisma.retailManager.findMany({
+        where: { dealId },
+      });
+      isExistUserInManagersList = managers.some(
+        (deal) => deal.userId === userId
+      );
+    }
     const isOwner = fileUserId === user?.id;
-    if (!isOwner && user) {
+
+    if (!isOwner && !isExistUserInManagersList) {
       await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
     }
     return true;
@@ -70,7 +93,7 @@ export const writeHrefDownloadFileInDB = async (data: {
       throw new Error("Некоторые поля отсутствуют в formData");
     }
 
-    await checkingAccessRight(userId as string);
+    await checkingAccessRight(userId as string, dealType, dealId);
 
     const fileInfo: Omit<FileInfo, "id" | "storageType"> = {
       name: fileName as string,
@@ -104,15 +127,17 @@ export const writeHrefDownloadFileInDB = async (data: {
 };
 
 export const deleteFileFromDB = async (
-  fileInfo: Pick<FileInfo, "id" | "dealType" | "userId">
+  fileInfo: Pick<FileInfo, "id" | "dealType" | "userId" | "dealId">
 ) => {
   try {
-    await checkingAccessRight(fileInfo.userId);
+
+    const {id, userId, dealType, dealId} = fileInfo
+    await checkingAccessRight(userId, dealType, dealId);
 
     const isExistFile = await prisma.dealFile.findUnique({
       where: {
-        id: fileInfo.id,
-        dealType: fileInfo.dealType,
+        id,
+        dealType,
       },
     });
 
@@ -140,7 +165,7 @@ export const getAllFilesDealFromDb = async (
   dealType: DealType
 ) => {
   try {
-    await checkingAccessRight(userId);
+    await checkingAccessRight(userId, dealType, dealId);
 
     const files = await prisma.dealFile.findMany({
       where: {

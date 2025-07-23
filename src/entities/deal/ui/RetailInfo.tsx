@@ -50,6 +50,7 @@ const RetailItemInfo = () => {
   const { dealId } = useParams();
   const { data: deal, isLoading } = useGetRetailById(dealId as string, false);
 
+
   const statusLabel =
     StatusRetailLabels[deal?.dealStatus as keyof typeof StatusRetailLabels] ||
     "Нет данных";

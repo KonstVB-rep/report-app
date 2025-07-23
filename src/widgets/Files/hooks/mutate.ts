@@ -102,8 +102,8 @@ export const useDeleteFiles = (
       if (!isAuth) throw new Error("Пользователь не авторизован");
 
       const responses = await Promise.all(
-        data.map(({ localPath: filePath, id, dealType, userId }) =>
-          deleteFile({ id, filePath, dealType, userId })
+        data.map(({ localPath: filePath, id, dealType, userId,dealId }) =>
+          deleteFile({ id, filePath, dealType, userId,dealId })
         )
       );
 

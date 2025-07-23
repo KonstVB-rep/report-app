@@ -21,9 +21,12 @@ const EditProjectForm = dynamic(() => import("../Forms/EditProjectForm"), {
 const EditProject = ({
   close,
   id,
+  isInvalidate = false,
+  titleForm = "Создать проект"
 }: {
   close: Dispatch<SetStateAction<void>>;
   id: string;
+  isInvalidate:boolean
 }) => {
   return (
     <DialogContent
@@ -34,7 +37,7 @@ const EditProject = ({
         <DialogTitle className="sr-only">Редактировать проект</DialogTitle>
         <DialogDescription></DialogDescription>
       </DialogHeader>
-      <EditProjectForm close={close} dealId={id} />
+      <EditProjectForm close={close} dealId={id} isInvalidate={isInvalidate} titleForm={titleForm}/>
     </DialogContent>
   );
 };

@@ -14,7 +14,7 @@ import TooltipComponent from "@/shared/ui/TooltipComponent";
 const EditProject = dynamic(() => import("./EditProject"), { ssr: false });
 const EditRetail = dynamic(() => import("./EditRetail"), { ssr: false });
 
-const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
+const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType}) => {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -24,12 +24,12 @@ const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
         <Dialog open={open} onOpenChange={setOpen}>
           <TooltipComponent content="Редактировать">
             <DialogTrigger asChild onClick={() => setOpen(true)}>
-              <Button size="icon" variant={"outline"} className="btn_hover">
+              <Button size="icon" variant={"outline"} className="btn_hover" >
                 <FilePenLine />
               </Button>
             </DialogTrigger>
           </TooltipComponent>
-          <EditProject close={close} id={id} />
+          <EditProject close={close} id={id} isInvalidate titleForm="Редактировать сделку"/>
         </Dialog>
       );
     case DealType.RETAIL:
@@ -42,7 +42,7 @@ const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
               </Button>
             </DialogTrigger>
           </TooltipComponent>
-          <EditRetail close={close} id={id} />
+          <EditRetail close={close} id={id} isInvalidate titleForm="Редактировать проект"/>
         </Dialog>
       );
     default:
