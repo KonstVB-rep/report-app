@@ -6,7 +6,7 @@ export const STATUS_ORDER = {
 } as const;
 
 export const defaultOrderValues = {
-  dateRequest: "",
+  dateRequest: undefined,
   nameDeal: "",
   contact: "",
   email: "",
@@ -16,6 +16,7 @@ export const defaultOrderValues = {
   resource: "",
   orderStatus: StatusOrder.SUBMITTED_TO_WORK,
 };
+
 export const OrderType = {
   [DealType.PROJECT]: "Проект",
   [DealType.RETAIL]: "Розница",

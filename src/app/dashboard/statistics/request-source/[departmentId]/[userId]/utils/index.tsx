@@ -77,13 +77,13 @@ const dateFilter = (date: Date, filterValue?: DateRange): boolean => {
 
 const renderCustomizedLabel = (isDark: boolean) => {
   const Label = ({
-    cx,
-    cy,
-    midAngle,
-    outerRadius,
-    percent,
-    payload,
-    width,
+    cx = 0,
+    cy = 0,
+    midAngle = 0,
+    outerRadius = 0,
+    percent = 0,
+    payload = { name: "", value: 0 }, // Значение по умолчанию
+    width = 600, // Значение по умолчанию
   }: CustomizedLabelProps & { width?: number }) => {
     const padding = 16;
     const dynamicRadius = Math.min(
@@ -91,8 +91,10 @@ const renderCustomizedLabel = (isDark: boolean) => {
       (width ?? 600) / 2 - padding
     );
 
-    const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN);
-    const y = cy + dynamicRadius * Math.sin(-midAngle * RADIAN);
+    const angle = midAngle ?? 0;
+
+    const x = cx + dynamicRadius * Math.cos(-angle * RADIAN);
+    const y = cy + dynamicRadius * Math.sin(-angle * RADIAN);
 
     return (
       <text
@@ -104,7 +106,7 @@ const renderCustomizedLabel = (isDark: boolean) => {
         fontSize={14}
       >
         <tspan x={x} dy="0">
-          {payload.name}
+          {payload?.name}
         </tspan>
         <tspan x={x} dy="1.2em">{`${(percent * 100).toFixed(0)}%`}</tspan>
       </text>

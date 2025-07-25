@@ -2,11 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TaskPriority, TaskStatus } from "@prisma/client";
 
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useCreateTask } from "../../hooks/mutate";
@@ -19,14 +18,14 @@ const CreateTaskForm = () => {
   const { departmentId } = useParams();
 
   const form = useForm<TaskSchema>({
-    resolver: zodResolver(TaskFormSchema),
+    resolver: zodResolver(TaskFormSchema) as Resolver<TaskSchema>,
     defaultValues: { ...defaultTaskValues, taskStatus: TaskStatus.OPEN },
   });
 
   const { mutateAsync, isPending } = useCreateTask();
   const { reset } = form;
 
-  const onSubmit = withAuthCheck(async (task: TaskSchema) => {
+  const onSubmit = (task: TaskSchema) => {
     const {
       startTime,
       endTime,
@@ -55,7 +54,7 @@ const CreateTaskForm = () => {
       "Задача добавлена"
     );
     reset();
-  });
+  };
 
   return <TaskForm form={form} isPending={isPending} onSubmit={onSubmit} />;
 };

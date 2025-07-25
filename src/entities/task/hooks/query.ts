@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { getTask, getTasksDepartment, getUserTasks } from "../api";
@@ -11,7 +12,7 @@ export const useGetTask = (taskId: string) => {
     queryKey: ["task", authUser?.id, taskId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) throw new Error("Пользователь не авторизован");
+        await checkAuthorization(authUser?.id);
 
         return await getTask(taskId as string);
       } catch (error) {
@@ -33,8 +34,9 @@ export const useGetUserTasks = () => {
     queryKey: ["userTasks", authUser?.id],
     queryFn: async () => {
       try {
-        if (!authUser?.id) throw new Error("Пользователь не авторизован");
-        return await getUserTasks(authUser?.id);
+        await checkAuthorization(authUser?.id);
+
+        return await getUserTasks(authUser!.id);
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
@@ -54,9 +56,9 @@ export const useGetTasksDepartment = () => {
     queryKey: ["tasks", authUser?.id, authUser?.departmentId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) throw new Error("Пользователь не авторизован");
+        await checkAuthorization(authUser?.id);
 
-        const departmentId = authUser?.departmentId;
+        const departmentId = authUser!.departmentId;
         return await getTasksDepartment(departmentId);
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {

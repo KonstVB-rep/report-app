@@ -7,6 +7,91 @@ const isTimeBefore = (timeA: string, timeB: string) => {
   return timeA < timeB;
 };
 
+const checkCtx = (
+  ctx: z.core.ParsePayload<{
+    title: string;
+    description: string;
+    taskStatus: string;
+    taskPriority: string;
+    executorId: string;
+    dueDate: Date;
+    startDate: Date;
+    startTime: string;
+    endTime: string;
+  }>
+) => {
+  const data = ctx.value;
+  const now = new Date();
+  const today = startOfToday();
+  const nowTime = format(now, "HH:mm");
+
+  // ❌ Нельзя выбрать прошлые даты
+  if (isBefore(data.startDate, today)) {
+    ctx.issues.push({
+      code: "custom",
+      message: "Дата начала не может быть в прошлом",
+      path: ["startDate"],
+      input: data.startDate,
+    });
+  }
+
+  if (isBefore(data.dueDate, today)) {
+    ctx.issues.push({
+      code: "custom",
+      message: "Дата окончания не может быть в прошлом",
+      path: ["dueDate"],
+      input: data.dueDate,
+    });
+  }
+
+  // ❌ dueDate < startDate
+  if (isBefore(data.dueDate, data.startDate)) {
+    ctx.issues.push({
+      code: "custom",
+      message: "Дата окончания не может быть раньше даты начала",
+      path: ["dueDate"],
+      input: data.dueDate,
+    });
+  }
+
+  // ❌ если дата одинаковая — startTime < endTime
+  if (isEqual(data.startDate, data.dueDate)) {
+    if (!isTimeBefore(data.startTime, data.endTime)) {
+      ctx.issues.push({
+        code: "custom",
+        message: "Время начала должно быть раньше времени окончания",
+        path: ["startTime"],
+        input: data.startTime,
+      });
+    }
+  }
+
+  // ❌ если дата = сегодня — время не должно быть в прошлом
+  const todayStr = format(today, "yyyy-MM-dd");
+
+  if (format(data.startDate, "yyyy-MM-dd") === todayStr) {
+    if (isTimeBefore(data.startTime, nowTime)) {
+      ctx.issues.push({
+        code: "custom",
+        message: "Время начала не может быть в прошлом",
+        path: ["startTime"],
+        input: data.startTime,
+      });
+    }
+  }
+
+  if (format(data.dueDate, "yyyy-MM-dd") === todayStr) {
+    if (isTimeBefore(data.endTime, nowTime)) {
+      ctx.issues.push({
+        code: "custom",
+        message: "Время окончания не может быть в прошлом",
+        path: ["endTime"],
+        input: data.endTime,
+      });
+    }
+  }
+};
+
 export const TaskFormSchema = z
   .object({
     title: z.string(),
@@ -26,71 +111,7 @@ export const TaskFormSchema = z
     startTime: z.string().regex(/^\d{2}:\d{2}$/),
     endTime: z.string().regex(/^\d{2}:\d{2}$/),
   })
-  .superRefine((data, ctx) => {
-    const now = new Date();
-    const today = startOfToday();
-    const nowTime = format(now, "HH:mm");
-
-    // ❌ Нельзя выбрать прошлые даты
-    if (isBefore(data.startDate, today)) {
-      ctx.addIssue({
-        path: ["startDate"],
-        code: "custom",
-        message: "Дата начала не может быть в прошлом",
-      });
-    }
-
-    if (isBefore(data.dueDate, today)) {
-      ctx.addIssue({
-        path: ["dueDate"],
-        code: "custom",
-        message: "Дата окончания не может быть в прошлом",
-      });
-    }
-
-    // ❌ dueDate < startDate
-    if (isBefore(data.dueDate, data.startDate)) {
-      ctx.addIssue({
-        path: ["dueDate"],
-        code: "custom",
-        message: "Дата окончания не может быть раньше даты начала",
-      });
-    }
-
-    // ❌ если дата одинаковая — startTime < endTime
-    if (isEqual(data.startDate, data.dueDate)) {
-      if (!isTimeBefore(data.startTime, data.endTime)) {
-        ctx.addIssue({
-          path: ["startTime"],
-          code: "custom",
-          message: "Время начала должно быть раньше времени окончания",
-        });
-      }
-    }
-
-    // ❌ если дата = сегодня — время не должно быть в прошлом
-    const todayStr = format(today, "yyyy-MM-dd");
-
-    if (format(data.startDate, "yyyy-MM-dd") === todayStr) {
-      if (isTimeBefore(data.startTime, nowTime)) {
-        ctx.addIssue({
-          path: ["startTime"],
-          code: "custom",
-          message: "Время начала не может быть в прошлом",
-        });
-      }
-    }
-
-    if (format(data.dueDate, "yyyy-MM-dd") === todayStr) {
-      if (isTimeBefore(data.endTime, nowTime)) {
-        ctx.addIssue({
-          path: ["endTime"],
-          code: "custom",
-          message: "Время окончания не может быть в прошлом",
-        });
-      }
-    }
-  });
+  .check(checkCtx);
 
 export const TaskFormSchemaUpdate = z
   .object({
@@ -111,71 +132,7 @@ export const TaskFormSchemaUpdate = z
     startTime: z.string().regex(/^\d{2}:\d{2}$/),
     endTime: z.string().regex(/^\d{2}:\d{2}$/),
   })
-  .superRefine((data, ctx) => {
-    const now = new Date();
-    const today = startOfToday();
-    const nowTime = format(now, "HH:mm");
-
-    // // ❌ Нельзя выбрать прошлые даты
-    // if (isBefore(data.startDate, today)) {
-    //   ctx.addIssue({
-    //     path: ["startDate"],
-    //     code: "custom",
-    //     message: "Дата начала не может быть в прошлом",
-    //   });
-    // }
-
-    if (isBefore(data.dueDate, today)) {
-      ctx.addIssue({
-        path: ["dueDate"],
-        code: "custom",
-        message: "Дата окончания не может быть в прошлом",
-      });
-    }
-
-    // ❌ dueDate < startDate
-    if (isBefore(data.dueDate, data.startDate)) {
-      ctx.addIssue({
-        path: ["dueDate"],
-        code: "custom",
-        message: "Дата окончания не может быть раньше даты начала",
-      });
-    }
-
-    // ❌ если дата одинаковая — startTime < endTime
-    if (isEqual(data.startDate, data.dueDate)) {
-      if (!isTimeBefore(data.startTime, data.endTime)) {
-        ctx.addIssue({
-          path: ["startTime"],
-          code: "custom",
-          message: "Время начала должно быть раньше времени окончания",
-        });
-      }
-    }
-
-    // ❌ если дата = сегодня — время не должно быть в прошлом
-    const todayStr = format(today, "yyyy-MM-dd");
-
-    if (format(data.startDate, "yyyy-MM-dd") === todayStr) {
-      if (isTimeBefore(data.startTime, nowTime)) {
-        ctx.addIssue({
-          path: ["startTime"],
-          code: "custom",
-          message: "Время начала не может быть в прошлом",
-        });
-      }
-    }
-
-    if (format(data.dueDate, "yyyy-MM-dd") === todayStr) {
-      if (isTimeBefore(data.endTime, nowTime)) {
-        ctx.addIssue({
-          path: ["endTime"],
-          code: "custom",
-          message: "Время окончания не может быть в прошлом",
-        });
-      }
-    }
-  });
+  .check(checkCtx);
 
 export type TaskSchemaUpdate = z.infer<typeof TaskFormSchemaUpdate>;
 

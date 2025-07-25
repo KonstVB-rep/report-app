@@ -12,7 +12,6 @@ import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDa
 
 import DateRangeFilter from "../../DateRangeFilter";
 import MotionDivY from "../../MotionComponents/MotionDivY";
-import MultiColumnFilter from "../../MultiColumnFilter";
 import SelectColumns from "../../SelectColumns";
 import FilterByUser from "../FilterByUsers";
 import FilterPopoverGroup from "../FilterPopoverGroup";
@@ -49,7 +48,6 @@ const FiltersBlock = ({ value, table, type }: FiltersBlockProps) => {
             value={value}
           />
 
-          <MultiColumnFilter />
         </div>
       </div>
 

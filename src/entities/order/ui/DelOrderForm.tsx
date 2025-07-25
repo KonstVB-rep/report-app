@@ -3,7 +3,6 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
@@ -21,12 +20,10 @@ const DelOrderForm = ({ id, close }: Props) => {
 
   const { mutate: delDeal, isPending } = useDelOrder(close);
 
-  const handleSubmit = withAuthCheck(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      delDeal(id);
-    }
-  );
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    delDeal(id);
+  };
 
   if (isLoading) return <DelDealSkeleton />;
 

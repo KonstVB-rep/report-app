@@ -2,6 +2,7 @@
 
 import {
   PermissionEnum,
+  Task,
   // Prisma,
   // TaskPriority,
   // TaskStatus,
@@ -14,7 +15,12 @@ import { handleError } from "@/shared/api/handleError";
 
 // import { TOAST } from "@/shared/ui/Toast";
 
-import { TaskFormType, TaskFormTypeWithId, TaskWithUserInfo } from "../types";
+import {
+  DeleteTaskData,
+  TaskFormType,
+  TaskFormTypeWithId,
+  TaskWithUserInfo,
+} from "../types";
 
 // import { getDepartmentUsersWithTasks } from "./queryFn";
 
@@ -176,7 +182,9 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
   }
 };
 
-export const updateTask = async (taskTarget: TaskFormTypeWithId) => {
+export const updateTask = async (
+  taskTarget: TaskFormTypeWithId
+): Promise<Task> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
@@ -209,10 +217,12 @@ export const updateTask = async (taskTarget: TaskFormTypeWithId) => {
   }
 };
 
-export const deleteTask = async (taskId: string, idTaskOwner: string) => {
+export const deleteTask = async (taskData: DeleteTaskData): Promise<Task> => {
   try {
     const data = await handleAuthorization();
     const { user, userId } = data!;
+
+    const { taskId, idTaskOwner } = taskData;
 
     if (!idTaskOwner) {
       return handleError("Недостаточно данных");

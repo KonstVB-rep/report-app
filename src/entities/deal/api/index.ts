@@ -25,8 +25,14 @@ import {
   ManagerShortInfo,
   ProjectResponse,
   ProjectResponseWithContactsAndFiles,
+  ProjectWithManagersIds,
+  ProjectWithoutDateCreateAndUpdate,
+  ProjectWithoutId,
   RetailResponse,
   RetailResponseWithContactsAndFiles,
+  RetailWithManagersIds,
+  RetailWithoutDateCreateAndUpdate,
+  RetailWithoutId,
 } from "../types";
 
 const requiredFields = [
@@ -36,30 +42,6 @@ const requiredFields = [
   "contact",
   "dealStatus",
 ];
-
-type ProjectWithoutDateCreateAndUpdate = Omit<
-  ProjectResponse,
-  "createdAt" | "updatedAt"
->;
-
-type ProjectWithManagersIds = Omit<
-  ProjectResponse,
-  "createdAt" | "updatedAt" | "managers"
-> & { managersIds: { userId: string }[] };
-
-export type RetailWithoutDateCreateAndUpdate = Omit<
-  RetailResponse,
-  "createdAt" | "updatedAt"
->;
-
-type RetailWithManagersIds = Omit<
-  RetailResponse,
-  "createdAt" | "updatedAt" | "managers"
-> & { managersIds: { userId: string }[] };
-
-type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
-
-type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
   const data = await handleAuthorization();
@@ -121,9 +103,7 @@ export const getProjectById = async (
       position: pm.user.position,
     }));
 
-    const isExistUserInManagersList = managers.some(
-      (man) => man.id === userId
-    );
+    const isExistUserInManagersList = managers.some((man) => man.id === userId);
 
     const isOwner = userId === deal.userId;
 
@@ -205,12 +185,9 @@ export const getRetailById = async (
       position: rm.user.position,
     }));
 
-    const isExistUserInManagersList = managers.some(
-      (man) => man.id === userId
-    );
+    const isExistUserInManagersList = managers.some((man) => man.id === userId);
 
     const isOwner = userId === deal.userId;
-
 
     if (!user) {
       return handleError(
@@ -732,7 +709,7 @@ export const getDealsByDateRange = async (
 
 export const createProject = async (
   data: ProjectWithoutId & { managersIds: { userId: string }[] }
-) => {
+): Promise<ProjectResponse> => {
   try {
     if (!data) {
       return handleError("Ошибка: данные не переданы");
@@ -1014,9 +991,7 @@ export const updateProject = async (
       position: pm.user.position,
     }));
 
-    const isExistUserInManagersList = managers.some(
-      (man) => man.id === userId
-    );
+    const isExistUserInManagersList = managers.some((man) => man.id === userId);
 
     const isOwner =
       deal.userId === userId ||
@@ -1220,9 +1195,7 @@ export const updateRetail = async (
       position: rm.user.position,
     }));
 
-    const isExistUserInManagersList = managers.some(
-      (man) => man.id === userId
-    );
+    const isExistUserInManagersList = managers.some((man) => man.id === userId);
 
     if (!user) {
       return handleError(

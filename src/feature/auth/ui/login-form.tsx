@@ -1,22 +1,19 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { animated, useSpring } from "@react-spring/web";
 
 import { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import Image from "next/image";
 
-import { motion } from "motion/react";
 import { z } from "zod";
 
 import loginImg from "@/assets/login-img";
 import { Card, CardContent } from "@/components/ui/card";
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { login } from "@/feature/auth/login";
-import { cn } from "@/shared/lib/utils";
 import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
@@ -25,11 +22,11 @@ import { TOAST } from "@/shared/ui/Toast";
 import { Form } from "../../../components/ui/form";
 
 export const loginFormSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(6).max(30),
 });
 
-export function LoginForm({ className }: React.ComponentProps<"div">) {
+const LoginForm = ({ className }: React.ComponentProps<"div">) => {
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -39,21 +36,20 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
   });
 
   const [state, formAction] = useActionState(login, undefined);
-  const { setAuthUser, setIsAuth, isAuth } = useStoreUser();
-  const { setDepartments } = useStoreDepartment();
-  const { data: departmentData } = useGetDepartmentsWithUsers();
+  const { setAuthUser, setIsAuth } = useStoreUser();
+
+  const styles = useSpring({
+    opacity: 1,
+    transform: "translateY(0px)",
+    from: { opacity: 0, transform: "translateY(20px)" },
+    config: { duration: 350, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Эквивалент "easeOut"
+  });
 
   const onSubmit = (formData: FormData) => {
     const parsed = loginFormSchema.safeParse(Object.fromEntries(formData));
     if (!parsed.success) return;
     formAction(formData);
   };
-
-  useEffect(() => {
-    if (isAuth && departmentData) {
-      setDepartments(departmentData);
-    }
-  }, [isAuth, departmentData, setDepartments]);
 
   useEffect(() => {
     if (state?.error) {
@@ -64,18 +60,12 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
       setAuthUser(state.data);
       setIsAuth(true);
     }
-  }, [state, isAuth, setAuthUser, setIsAuth]);
+  }, [setAuthUser, setIsAuth, state]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      className={cn("flex flex-col gap-6", className)}
-    >
+    <animated.div style={styles} className={`flex flex-col gap-6 ${className}`}>
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
-          {/* Используем форму */}
           <Form {...form}>
             <form className="p-6 md:p-8" action={onSubmit}>
               <div className="flex flex-col gap-6">
@@ -124,6 +114,8 @@ export function LoginForm({ className }: React.ComponentProps<"div">) {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </animated.div>
   );
-}
+};
+
+export default LoginForm;

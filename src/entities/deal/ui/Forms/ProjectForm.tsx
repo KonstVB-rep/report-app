@@ -3,11 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useCreateProject } from "../../hooks/mutate";
@@ -25,7 +24,7 @@ const ProjectForm = ({
   const { userId } = useParams();
 
   const form = useForm<ProjectSchema>({
-    resolver: zodResolver(ProjectFormSchema),
+    resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,
     defaultValues: {
       ...defaultProjectValues,
       managersIds: [{ userId: managerId ?? (userId as string) }],
@@ -34,10 +33,10 @@ const ProjectForm = ({
 
   const { mutateAsync, isPending } = useCreateProject(form.reset);
 
-  const onSubmit = withAuthCheck(async (data: ProjectSchema) => {
+  const onSubmit = (data: ProjectSchema) => {
     const dataForm = orderId ? { ...data, orderId: orderId } : data;
     TOAST.PROMISE(mutateAsync(dataForm), "Проект создан");
-  });
+  };
 
   return (
     <ProjectFormBody
@@ -46,6 +45,7 @@ const ProjectForm = ({
       isPending={isPending}
       managerId={managerId}
       contactsKey="contacts"
+      titleForm={"создать проект"}
     />
   );
 };

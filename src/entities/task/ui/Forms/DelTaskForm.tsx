@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction } from "react";
 
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
@@ -22,13 +21,11 @@ const DelTaskForm = ({ id, close }: Props) => {
 
   const isLoading = isPending;
 
-  const handleSubmit = withAuthCheck(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (!task) return;
-      delTask({ taskId: task.id, idTaskOwner: task?.assignerId });
-    }
-  );
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!task) return;
+    delTask({ taskId: task.id, idTaskOwner: task?.assignerId });
+  };
 
   return (
     <MotionDivY>

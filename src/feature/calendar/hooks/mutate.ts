@@ -1,8 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { logout } from "@/feature/auth/logout";
 import { toggleSubscribeChatBot } from "@/feature/calendar/api/calendar-bot/api";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -10,22 +11,26 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
+import {
+  ChatBotType,
+  ChatType,
+  EventData,
+  EventInputType,
+  EventResponse,
+  ResponseChatBotType,
+} from "../types";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: (eventData: {
-      title: string;
-      start: string;
-      end: string;
-      allDay?: boolean;
-    }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return createEventCalendar(eventData);
+    mutationFn: (eventData: EventData) => {
+      return handleMutationWithAuthCheck<EventData, EventResponse>(
+        createEventCalendar,
+        eventData,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       closeModal();
@@ -57,21 +62,16 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
 };
 
 export const useUpdateEventCalendar = (closeModal: () => void) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: (eventData: {
-      id: string;
-      title: string;
-      start: string;
-      end: string;
-      allDay?: boolean;
-    }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return updateEventCalendar(eventData);
+    mutationFn: (eventData: EventInputType) => {
+      return handleMutationWithAuthCheck<EventInputType, EventResponse>(
+        updateEventCalendar,
+        eventData,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       closeModal();
@@ -103,15 +103,16 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
 };
 
 export const useDeleteEventCalendar = (closeModal: () => void) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return deleteEventCalendar(id);
+      return handleMutationWithAuthCheck<{ id: string }, EventResponse>(
+        deleteEventCalendar,
+        { id },
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       closeModal();
@@ -143,21 +144,27 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
 };
 
 export const useCreateChatBot = () => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: async (chatData: { chatName: string; isActive: boolean }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return await toggleSubscribeChatBot(
-        chatData.chatName,
-        authUser.id,
-        chatData.isActive
+    mutationFn: async (chatData: ChatType) => {
+      const data = {
+        chatName: chatData.chatName,
+        userId: authUser?.id || "",
+        isActive: chatData.isActive,
+      };
+
+      return handleMutationWithAuthCheck<ChatBotType, ResponseChatBotType>(
+        toggleSubscribeChatBot,
+        data,
+        authUser,
+        isSubmittingRef
       );
     },
     onSuccess: (data) => {
+      if (!data) {
+        return;
+      }
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data.chatName],
       });
@@ -185,23 +192,25 @@ export const useCreateChatBot = () => {
 };
 
 export const useUpdateChatBot = () => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (chatData: {
       botId: string | null;
       isActive: boolean;
     }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-
       if (!chatData.botId) return;
-      return await toggleSubscribeChatBot(
-        chatData.botId,
-        authUser.id,
-        chatData.isActive
+
+      const data = {
+        chatName: chatData.botId,
+        userId: authUser?.id || "",
+        isActive: chatData.isActive,
+      };
+      return handleMutationWithAuthCheck<ChatBotType, ResponseChatBotType>(
+        toggleSubscribeChatBot,
+        data,
+        authUser,
+        isSubmittingRef
       );
     },
     onSuccess: (data) => {

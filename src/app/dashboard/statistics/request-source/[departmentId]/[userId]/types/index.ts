@@ -13,14 +13,23 @@ export type Props = {
   };
 };
 
-export type CustomizedLabelProps = {
+type PieLabelRenderProps = {
   cx: number;
   cy: number;
-  midAngle: number;
+  midAngle?: number;
   innerRadius: number;
   outerRadius: number;
-  percent: number;
-  name: string;
-  index: number;
-  payload: { name: string };
+  percent?: number;
+  index?: number;
+  payload?: {
+    name: string;
+    value: number;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+export type CustomizedLabelProps = PieLabelRenderProps & {
+  width?: number;
+  isDark?: boolean;
 };

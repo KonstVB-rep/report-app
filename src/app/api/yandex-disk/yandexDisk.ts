@@ -180,7 +180,7 @@ const deleteFileOrFolderFromYandexDiskAnDB = async (file: {
   id: string;
   dealType: DealType;
   userId: string;
-  dealId: string
+  dealId: string;
 }) => {
   try {
     const { filePath, id, dealType, userId, dealId } = file;

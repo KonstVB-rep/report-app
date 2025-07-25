@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useUpdateOrder } from "../hooks/mutate";
@@ -23,13 +22,13 @@ const EditOrderForm = ({
   const { data, isPending: isLoading } = useGetOrderById(dealId, true);
 
   const form = useForm<OrderSchema>({
-    resolver: zodResolver(OrderFormSchema),
+    resolver: zodResolver(OrderFormSchema) as Resolver<OrderSchema>,
     defaultValues: defaultOrderValues,
   });
 
   const { mutateAsync, isPending } = useUpdateOrder(close);
 
-  const onSubmit = withAuthCheck(async (formData: OrderSchema) => {
+  const onSubmit = (formData: OrderSchema) => {
     if (!data) return;
 
     TOAST.PROMISE(
@@ -45,7 +44,7 @@ const EditOrderForm = ({
       }),
       "Данные обновлены"
     );
-  });
+  };
 
   const { reset } = form;
 

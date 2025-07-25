@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -11,22 +11,24 @@ import { resetAllStores } from "../../lib/helpers/сreate";
 const RedirectLastPath = ({ children }: { children: ReactNode }) => {
   const { isAuth, authUser } = useStoreUser();
   const router = useRouter();
-  const [hasRedirected, setHasRedirected] = useState(false);
+  const hasRedirectedRef = useRef(false);
 
   useEffect(() => {
-    if (!isAuth) {
-      resetAllStores();
-      setHasRedirected(false);
-      return;
-    }
-
-    if (isAuth && authUser && !hasRedirected) {
+    if (!isAuth || !authUser) return;
+    // Если пользователь авторизован, редиректим
+    if (isAuth && authUser && !hasRedirectedRef.current) {
       const lastAppPath = localStorage.getItem("lastAppPath");
       const redirectUrl = lastAppPath || "/dashboard";
-      setHasRedirected(true);
-      router.replace(redirectUrl);
+      hasRedirectedRef.current = true;
+      router.push(redirectUrl);
     }
-  }, [isAuth, authUser, hasRedirected, router]);
+
+    // Сбрасываем флаг при разлогине
+    if (!isAuth) {
+      hasRedirectedRef.current = false;
+      resetAllStores();
+    }
+  }, [isAuth, authUser, router]);
 
   return <>{children}</>;
 };

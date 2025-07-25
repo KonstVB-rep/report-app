@@ -1,5 +1,7 @@
-import SummaryTableProject from "../ui/SummaryTableProject";
-import SummaryTableRetail from "../ui/SummaryTableRetail";
+import dynamic from "next/dynamic";
+
+const SummaryTableProject = dynamic(() => import("../ui/SummaryTableProject"));
+const SummaryTableRetail = dynamic(() => import("../ui/SummaryTableRetail"));
 
 const SummaryTablePage = async ({
   params,

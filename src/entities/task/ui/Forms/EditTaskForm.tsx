@@ -2,9 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TaskPriority, TaskStatus } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useUpdateTask } from "../../hooks/mutate";
@@ -23,13 +22,13 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
   const { data: task, isPending: isLoading } = useGetTask(taskId);
 
   const form = useForm<TaskSchemaUpdate>({
-    resolver: zodResolver(TaskFormSchemaUpdate),
+    resolver: zodResolver(TaskFormSchemaUpdate) as Resolver<TaskSchemaUpdate>,
     defaultValues: defaultTaskValues,
   });
 
   const { mutateAsync, isPending } = useUpdateTask();
 
-  const onSubmit = withAuthCheck(async (updatedTask: TaskSchemaUpdate) => {
+  const onSubmit = (updatedTask: TaskSchemaUpdate) => {
     if (!task) return;
 
     const {
@@ -68,7 +67,7 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
     );
 
     close();
-  });
+  };
 
   const { reset } = form;
 

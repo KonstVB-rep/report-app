@@ -24,6 +24,7 @@ type CalendarComponentProps = {
 
 const CalendarComponent = ({ field, ...props }: CalendarComponentProps) => {
   const selectedDate = field.value ? new Date(field.value) : undefined;
+
   return (
     <Popover>
       <PopoverTrigger asChild>

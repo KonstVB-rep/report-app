@@ -1,7 +1,9 @@
 import { DealType } from "@prisma/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -26,8 +28,7 @@ import {
 } from "../types";
 
 export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser } = useFormSubmission();
 
   const cachedDeals = queryClient.getQueryData<
     ProjectResponseWithContactsAndFiles[]
@@ -38,9 +39,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
     queryKey: ["project", dealId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
 
         const deal = await getProjectById(dealId);
 
@@ -65,13 +64,12 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
     placeholderData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
     staleTime: useCache ? 60 * 1000 : 0,
-    retry: 2
+    retry: 2,
   });
 };
 
 export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser } = useFormSubmission();
 
   const cachedDeals = queryClient.getQueryData<
     RetailResponseWithContactsAndFiles[]
@@ -82,9 +80,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
     queryKey: ["retail", dealId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
 
         const deal = await getRetailById(dealId);
 
@@ -106,7 +102,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
     enabled: !useCache || !cachedDeal,
     placeholderData: useCache ? cachedDeal : undefined,
     staleTime: useCache ? 60 * 1000 : 0,
-    retry: 2
+    retry: 2,
   });
 };
 
@@ -118,8 +114,7 @@ export const useGetDealById = <
   dealId: string,
   type: DealType
 ) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser } = useFormSubmission();
 
   const queryKey = [type.toLowerCase(), dealId];
 
@@ -146,9 +141,7 @@ export const useGetDealById = <
 
   const fetchFn = async (): Promise<T | undefined> => {
     try {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
+      await checkAuthorization(authUser?.id);
 
       if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
         throw new Error(`Нет функции для типа сделки: ${type}`);
@@ -179,7 +172,7 @@ export const useGetAllDealsByDepartmentByType = (
   userId: string,
   type: DealType
 ) => {
-  const { authUser } = useStoreUser();
+  const { authUser } = useFormSubmission();
 
   const queryKeys = {
     [type]: [
@@ -201,9 +194,7 @@ export const useGetAllDealsByDepartmentByType = (
     queryKey: queryKeys[type],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
 
         if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
           throw new Error(`Нет функции для типа сделки: ${type}`);
@@ -237,9 +228,8 @@ export const useGetAllProjects = (
     queryKey: ["all-projects", authUser?.departmentId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
+
         return (await getAllProjectsByDepartmentQuery(departmentId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
@@ -268,9 +258,8 @@ export const useGetAllRetails = (
     queryKey: ["all-retails", authUser?.departmentId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
+
         return (await getAllRetailsByDepartmentQuery(departmentId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
@@ -295,9 +284,8 @@ export const useGetRetailsUser = (userId: string | undefined) => {
     queryKey: ["retails", userId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
+
         return (await getRetailsUser(userId as string)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
@@ -323,9 +311,7 @@ export const useGetProjectsUser = (userId: string | undefined) => {
     queryKey: ["projects", userId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
 
         return (await getProjectsUser(userId as string)) ?? [];
       } catch (error) {
@@ -350,9 +336,7 @@ export const useGetContractsUser = (userId: string | undefined) => {
     queryKey: ["contracts", userId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
 
         return (await getProjectsUser(userId as string)) ?? [];
       } catch (error) {
@@ -382,9 +366,7 @@ export const useGetDealsByDateRange = (
     queryKey: ["dealsByRange", userId, range, dealType, departmentId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
+        await checkAuthorization(authUser?.id);
 
         return (
           (await getDealsByDateRange(

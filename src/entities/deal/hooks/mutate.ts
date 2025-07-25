@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   DealType,
@@ -9,20 +9,21 @@ import {
   StatusProject,
   StatusRetail,
 } from "@prisma/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { Dispatch, SetStateAction } from "react";
 import { DeepPartial } from "react-hook-form";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { logout } from "@/feature/auth/logout";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
   createProject,
   createRetail,
   deleteDeal,
-  RetailWithoutDateCreateAndUpdate,
   updateProject,
   updateRetail,
 } from "../api";
@@ -31,21 +32,26 @@ import {
   defaultRetailValues,
 } from "../model/defaultvaluesForm";
 import { ProjectSchema, RetailSchema } from "../model/schema";
-import { ProjectResponse, RetailResponse } from "../types";
+import {
+  ProjectResponse,
+  ProjectWithManagersIds,
+  ProjectWithoutDateCreateAndUpdate,
+  ProjectWithoutId,
+  RetailResponse,
+  RetailWithManagersIds,
+  RetailWithoutDateCreateAndUpdate,
+  RetailWithoutId,
+} from "../types";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
   type: DealType,
   ownerId: string
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
-
+  const { queryClient, authUser } = useFormSubmission();
   return useMutation({
     mutationFn: async (nealId: string) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
+      await checkAuthorization(authUser?.id);
 
       return await deleteDeal(nealId, ownerId, type);
     },
@@ -92,17 +98,13 @@ export const useMutationUpdateProject = (
   dealId: string,
   userId: string,
   close: () => void,
-   isInvalidate: boolean = false
+  isInvalidate: boolean = false
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+
   return useMutation({
     mutationFn: (data: ProjectSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      return updateProject({
+      const formData = {
         ...data,
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
@@ -134,7 +136,12 @@ export const useMutationUpdateProject = (
             ).toString()
           : "0",
         managersIds: data.managersIds,
-      });
+      };
+
+      return handleMutationWithAuthCheck<
+        ProjectWithManagersIds,
+        ProjectWithoutDateCreateAndUpdate | null
+      >(updateProject, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
       const err = error as Error & { status?: number };
@@ -164,12 +171,11 @@ export const useMutationUpdateProject = (
       const currManagers =
         variables.managersIds?.map((m) => m.userId).sort() || [];
 
-
-      if(isInvalidate){
-          queryClient.invalidateQueries({ queryKey: ["project", dealId] });
+      if (isInvalidate) {
+        queryClient.invalidateQueries({ queryKey: ["project", dealId] });
       }
 
-        // Обязательная инвалидаци
+      // Обязательная инвалидаци
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
       });
@@ -190,23 +196,14 @@ export const useMutationUpdateRetail = (
   dealId: string,
   userId: string,
   close: () => void,
- isInvalidate: boolean = false
+  isInvalidate: boolean = false
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
-    mutationFn: (data: RetailSchema): Promise<RetailWithoutDateCreateAndUpdate | null> => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      // const isStillManager = data?.managersIds.some(m => m.userId === userId);
-      // console.log(!isStillManager,authUser?.id, userId, 'isStillManager')
-      // if (!isStillManager && authUser?.id !== userId) {
-      //    return Promise.resolve(null);
-      // }
-
-      return updateRetail({
+    mutationFn: (
+      data: RetailSchema
+    ): Promise<RetailWithoutDateCreateAndUpdate | null | undefined> => {
+      const formData = {
         ...data,
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
@@ -228,7 +225,12 @@ export const useMutationUpdateRetail = (
             ).toString()
           : "0",
         managersIds: data.managersIds,
-      });
+      };
+
+      return handleMutationWithAuthCheck<
+        RetailWithManagersIds,
+        RetailWithoutDateCreateAndUpdate | null
+      >(updateRetail, formData, authUser, isSubmittingRef);
     },
 
     onError: (error) => {
@@ -258,8 +260,8 @@ export const useMutationUpdateRetail = (
       const currManagers =
         variables.managersIds?.map((m) => m.userId).sort() || [];
 
-      if(isInvalidate){
-        queryClient.invalidateQueries({ queryKey: ["retail", dealId] }); 
+      if (isInvalidate) {
+        queryClient.invalidateQueries({ queryKey: ["retail", dealId] });
       }
 
       queryClient.invalidateQueries({
@@ -279,59 +281,50 @@ export const useMutationUpdateRetail = (
 export const useCreateProject = (
   reset: (values?: DeepPartial<ProjectSchema>) => void
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
-  // const router = useRouter(); // Добавляем useRouter для навигации
-
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
     mutationFn: async (data: ProjectSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
+      const formData = {
+        ...data,
+        email: data.email || "",
+        phone: data.phone || "",
+        deliveryType:
+          data.deliveryType === ""
+            ? null
+            : (data.deliveryType as DeliveryProject),
+        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dealStatus: data.dealStatus as StatusProject,
+        plannedDateConnection: data.plannedDateConnection
+          ? new Date(data.plannedDateConnection)
+          : null,
+        direction: data.direction as DirectionProject,
+        amountCP: data.amountCP
+          ? parseFloat(
+              data.amountCP.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        amountPurchase: data.amountPurchase
+          ? parseFloat(
+              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        amountWork: data.amountWork
+          ? parseFloat(
+              data.amountWork.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        delta: data.delta
+          ? parseFloat(
+              data.delta.replace(/\s/g, "").replace(",", ".")
+            ).toString()
+          : "0",
+        managersIds: data.managersIds,
+      };
 
-      try {
-        return await createProject({
-          ...data,
-          email: data.email || "",
-          phone: data.phone || "",
-          deliveryType:
-            data.deliveryType === ""
-              ? null
-              : (data.deliveryType as DeliveryProject),
-          dateRequest: data.dateRequest
-            ? new Date(data.dateRequest)
-            : new Date(),
-          dealStatus: data.dealStatus as StatusProject,
-          plannedDateConnection: data.plannedDateConnection
-            ? new Date(data.plannedDateConnection)
-            : null,
-          direction: data.direction as DirectionProject,
-          amountCP: data.amountCP
-            ? parseFloat(
-                data.amountCP.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          amountPurchase: data.amountPurchase
-            ? parseFloat(
-                data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          amountWork: data.amountWork
-            ? parseFloat(
-                data.amountWork.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          delta: data.delta
-            ? parseFloat(
-                data.delta.replace(/\s/g, "").replace(",", ".")
-              ).toString()
-            : "0",
-          managersIds: data.managersIds,
-        });
-      } catch (error) {
-        console.error("Error in mutationFn:", error);
-        throw error;
-      }
+      return handleMutationWithAuthCheck<
+        ProjectWithoutId & { managersIds: { userId: string }[] },
+        ProjectResponse
+      >(createProject, formData, authUser, isSubmittingRef);
     },
 
     onSuccess: (data) => {
@@ -340,7 +333,7 @@ export const useCreateProject = (
       reset(defaultProjectValues);
 
       queryClient.invalidateQueries({
-        queryKey: ["projects", authUser?.id],
+        queryKey: ["projects", data?.userId],
         exact: true,
       });
 
@@ -371,8 +364,7 @@ export const useCreateProject = (
 export const useCreateRetail = (
   reset: (values?: DeepPartial<RetailSchema>) => void
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: (data: RetailSchema) => {
@@ -380,7 +372,7 @@ export const useCreateRetail = (
         throw new Error("Пользователь не авторизован");
       }
 
-      return createRetail({
+      const formData = {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
@@ -405,7 +397,12 @@ export const useCreateRetail = (
             ).toString()
           : "0",
         managersIds: data.managersIds,
-      });
+      };
+
+      return handleMutationWithAuthCheck<
+        RetailWithoutId & { managersIds: { userId: string }[] },
+        RetailResponse
+      >(createRetail, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
       const err = error as Error & { status?: number };
@@ -426,13 +423,8 @@ export const useCreateRetail = (
       if (data) {
         reset(defaultRetailValues);
 
-        // queryClient.invalidateQueries({
-        //   queryKey: ["retails", data.userId],
-        //   exact: true,
-        // });
-
         queryClient.invalidateQueries({
-          queryKey: ["retails", authUser?.id],
+          queryKey: ["retails", data.userId],
           exact: true,
         });
 

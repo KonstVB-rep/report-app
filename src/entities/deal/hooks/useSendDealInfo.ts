@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 
 import { ContactSchema } from "../model/schema";
 
-const useSetContactsToDeal = <T extends FieldValues>(
+const useSendDealInfo = <T extends FieldValues>(
   onSubmit: (data: T) => void,
   managerId: string
 ) => {
@@ -63,4 +63,4 @@ const useSetContactsToDeal = <T extends FieldValues>(
   };
 };
 
-export default useSetContactsToDeal;
+export default useSendDealInfo;

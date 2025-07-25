@@ -60,7 +60,7 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     header: "Задача",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
       const value = info.getValue() as ReactNode;
-      return <span className="line-clamp-2">{value}</span>;
+      return value;
     },
     accessorFn: (row: TaskWithUserInfo) => {
       return row.title;
@@ -71,7 +71,7 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     header: "Описание",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
       const value = info.getValue() as ReactNode;
-      return <span className="line-clamp-2">{value}</span>;
+      return value;
     },
     accessorFn: (row: TaskWithUserInfo) => row.description,
   },
@@ -131,7 +131,7 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
 
       return (
         <span
-          className={`abs-element absolute inset-4 flex items-center justify-center rounded-md ${TASK_PRIORITY_COLOR_BG[value]} line-clamp-2`}
+          className={`abs-element absolute inset-4 flex items-center justify-center rounded-md ${TASK_PRIORITY_COLOR_BG[value]} `}
         >
           {LABEL_TASK_PRIORITY[value]}
         </span>

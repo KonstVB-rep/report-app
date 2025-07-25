@@ -5,7 +5,6 @@ import { Loader } from "lucide-react";
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import { Button } from "@/components/ui/button";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import DialogComponent from "@/shared/ui/DialogComponent";
 
 import { EventInputType } from "../types";
@@ -22,11 +21,11 @@ const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
   const eventTitle =
     events.find((e) => e.id === editingId)?.title ?? "Неизвестное событие";
 
-  const handleDelete = withAuthCheck(async () => {
+  const handleDelete = () => {
     if (editingId) {
       deleteEvent(editingId);
     }
-  });
+  };
 
   if (!editingId) return null;
   return (

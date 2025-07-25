@@ -22,12 +22,12 @@ const EditRetail = ({
   close,
   id,
   isInvalidate = false,
-  titleForm = "Создать розничную сделку"
+  titleForm = "Создать розничную сделку",
 }: {
   close: Dispatch<SetStateAction<void>>;
   id: string;
-  isInvalidate: boolean,
-  titleForm: string
+  isInvalidate: boolean;
+  titleForm: string;
 }) => {
   return (
     <DialogContent
@@ -40,7 +40,12 @@ const EditRetail = ({
         </DialogTitle>
         <DialogDescription></DialogDescription>
       </DialogHeader>
-      <EditRetailForm close={close} dealId={id} isInvalidate={isInvalidate} titleForm={titleForm}/>
+      <EditRetailForm
+        close={close}
+        dealId={id}
+        isInvalidate={isInvalidate}
+        titleForm={titleForm}
+      />
     </DialogContent>
   );
 };

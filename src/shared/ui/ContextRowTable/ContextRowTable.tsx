@@ -1,5 +1,7 @@
 "use client";
 
+import { PermissionEnum } from "@prisma/client";
+
 import { Fragment, memo, useState } from "react";
 
 import Link from "next/link";
@@ -15,7 +17,6 @@ import {
 import { Dialog } from "@/components/ui/dialog";
 
 import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAffiliation";
-import { PermissionEnum } from "@prisma/client";
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 
 type ContextMenuTableProps = {
@@ -68,12 +69,15 @@ const ContextRowTable = ({
                   <FilePenLine size="14" /> Редактировать
                 </ContextMenuItem>
 
-                <ProtectedByPermissions permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}><ContextMenuItem
-                  onClick={() => setOpenModal("delete")}
-                  className="flex cursor-pointer gap-2"
+                <ProtectedByPermissions
+                  permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}
                 >
-                  <Trash2 size="14" /> Удалить
-                </ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={() => setOpenModal("delete")}
+                    className="flex cursor-pointer gap-2"
+                  >
+                    <Trash2 size="14" /> Удалить
+                  </ContextMenuItem>
                 </ProtectedByPermissions>
               </ProtectedByDepartmentAffiliation>
             )}

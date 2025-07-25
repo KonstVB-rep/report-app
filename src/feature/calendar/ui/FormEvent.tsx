@@ -16,7 +16,6 @@ import {
 import { EventCalendarSchema } from "@/feature/calendar/model/schema";
 import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";
 import { EventInputType } from "@/feature/calendar/ui/types";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
@@ -44,66 +43,64 @@ type HandleSubmitProps = {
   }) => void;
 };
 
-export const handleSubmit = withAuthCheck(
-  async (
-    values: EventCalendarSchema,
-    { editingId, createEvent, updateEvent }: HandleSubmitProps
-  ) => {
-    const {
-      eventTitle,
-      startDateEvent,
-      endDateEvent,
-      startTimeEvent,
-      endTimeEvent,
-      allDay,
-    } = values;
+export const handleSubmit = (
+  values: EventCalendarSchema,
+  { editingId, createEvent, updateEvent }: HandleSubmitProps
+) => {
+  const {
+    eventTitle,
+    startDateEvent,
+    endDateEvent,
+    startTimeEvent,
+    endTimeEvent,
+    allDay,
+  } = values;
 
-    const startDate = new Date(startDateEvent);
-    const endDate = new Date(endDateEvent);
+  const startDate = new Date(startDateEvent);
+  const endDate = new Date(endDateEvent);
 
-    if (allDay) {
-      startDate.setHours(0, 0);
-      endDate.setHours(23, 59);
-    } else {
-      const [startH, startM] = startTimeEvent.split(":");
-      const [endH, endM] = endTimeEvent.split(":");
+  if (allDay) {
+    startDate.setHours(0, 0);
+    endDate.setHours(23, 59);
+  } else {
+    const [startH, startM] = startTimeEvent.split(":");
+    const [endH, endM] = endTimeEvent.split(":");
 
-      const startDay = new Date(startDate.toDateString());
-      const endDay = new Date(endDate.toDateString());
+    const startDay = new Date(startDate.toDateString());
+    const endDay = new Date(endDate.toDateString());
 
-      if (
-        (startDay <= endDay &&
-          parseInt(startH, 10) <= parseInt(endH, 10) &&
-          parseInt(endM, 10) < parseInt(startM, 10)) ||
-        endDate < startDay
-      ) {
-        return TOAST.ERROR(
-          "Время окончания события не должно быть меньше времени начала!"
-        );
-      }
-
-      startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
-      endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
+    if (
+      (startDay <= endDay &&
+        parseInt(startH, 10) <= parseInt(endH, 10) &&
+        parseInt(endM, 10) < parseInt(startM, 10)) ||
+      endDate < startDay
+    ) {
+      return TOAST.ERROR(
+        "Время окончания события не должно быть меньше времени начала!"
+      );
     }
 
-    if (editingId) {
-      updateEvent({
-        id: editingId,
-        title: eventTitle,
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-        allDay,
-      });
-    } else {
-      createEvent({
-        title: eventTitle,
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-        allDay,
-      });
-    }
+    startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
+    endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
   }
-);
+
+  if (editingId) {
+    updateEvent({
+      id: editingId,
+      title: eventTitle,
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      allDay,
+    });
+  } else {
+    createEvent({
+      title: eventTitle,
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      allDay,
+    });
+  }
+};
 
 const FormEvent = ({ events }: FormEventProps) => {
   const { editingId, form } = useCalendarContext();

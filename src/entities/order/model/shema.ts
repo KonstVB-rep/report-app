@@ -11,7 +11,7 @@ export const OrderFormSchema = z
     }),
     contact: z.string().optional(),
     phone: z.string().optional(),
-    email: z.string().email("Некорректный email").or(z.literal("")).optional(),
+    email: z.email("Некорректный email").or(z.literal("")).optional(),
     manager: z.string(),
     comments: z.string().nullable().optional(),
     projectId: z.string().optional(),
@@ -19,20 +19,23 @@ export const OrderFormSchema = z
     dealType: z.string().optional(),
     resource: z.string().optional(),
   })
-  .superRefine((data, ctx) => {
+  .check((ctx) => {
+    const data = ctx.value;
     const hasPhone = !!data.phone?.trim();
     const hasEmail = !!data.email?.trim();
 
     if (!hasPhone && !hasEmail) {
-      ctx.addIssue({
+      ctx.issues.push({
+        code: "custom",
+        message: "Укажите телефон или email",
         path: ["phone"],
-        code: z.ZodIssueCode.custom,
-        message: "Укажите телефон или email",
+        input: data.phone,
       });
-      ctx.addIssue({
-        path: ["email"],
-        code: z.ZodIssueCode.custom,
+      ctx.issues.push({
+        code: "custom",
         message: "Укажите телефон или email",
+        path: ["email"],
+        input: data.email,
       });
     }
   });

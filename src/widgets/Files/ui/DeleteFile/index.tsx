@@ -1,14 +1,13 @@
 import { DealFile } from "@prisma/client";
+import { animated, useSpring } from "@react-spring/web";
 
 import { useState } from "react";
 
 import dynamic from "next/dynamic";
 
 import { FileX } from "lucide-react";
-import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import Overlay from "@/shared/ui/Overlay";
 
@@ -40,6 +39,13 @@ const DeleteFile = ({
 
   const { mutate, isPending } = useDeleteFiles(handleCloseDialog);
 
+  const styles = useSpring({
+    opacity: 1,
+    scale: 1,
+    from: { opacity: 0, scale: 0.5 },
+    config: { duration: 200 }, // Длительность анимации 0.2s
+  });
+
   const handleDeleteFromListSelected = (fileName: string) => {
     setSelectedFiles((prev) => {
       const updated = new Set(prev);
@@ -48,27 +54,19 @@ const DeleteFile = ({
     });
   };
 
-  const handleSubmit = withAuthCheck(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-      if (selectedFilesForDelete.length === 0)
-        return alert("Выберите файлы для удаления!");
+    if (selectedFilesForDelete.length === 0)
+      return alert("Выберите файлы для удаления!");
 
-      mutate(selectedFilesForDelete);
-    }
-  );
+    mutate(selectedFilesForDelete);
+  };
 
   return (
     <>
       <Overlay isPending={isPending} />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.5 }}
-        transition={{ duration: 0.2 }}
-        className={`flex gap-2 ${className}`}
-      >
+      <animated.div style={styles} className={`flex gap-2 ${className}`}>
         <DialogComponent
           open={open}
           onOpenChange={setOpen}
@@ -93,7 +91,7 @@ const DeleteFile = ({
             isPending={isPending}
           />
         </DialogComponent>
-      </motion.div>
+      </animated.div>
     </>
   );
 };

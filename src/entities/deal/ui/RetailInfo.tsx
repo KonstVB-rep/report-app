@@ -8,6 +8,11 @@ import { useParams } from "next/navigation";
 import { Building, Info } from "lucide-react";
 
 import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
+import {
+  typeofDelivery,
+  typeofDirections,
+  typeofStatus,
+} from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-retail";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
@@ -50,18 +55,12 @@ const RetailItemInfo = () => {
   const { dealId } = useParams();
   const { data: deal, isLoading } = useGetRetailById(dealId as string, false);
 
-
   const statusLabel =
-    StatusRetailLabels[deal?.dealStatus as keyof typeof StatusRetailLabels] ||
-    "Нет данных";
+    StatusRetailLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
   const directionLabel =
-    DirectionRetailLabels[
-      deal?.direction as keyof typeof DirectionRetailLabels
-    ] || "Нет данных";
+    DirectionRetailLabels[deal?.direction as typeofDirections] || "Нет данных";
   const deliveryLabel =
-    DeliveryRetailLabels[
-      deal?.deliveryType as keyof typeof DeliveryRetailLabels
-    ] || "Нет данных";
+    DeliveryRetailLabels[deal?.deliveryType as typeofDelivery] || "Нет данных";
   const typeLabel =
     DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
 

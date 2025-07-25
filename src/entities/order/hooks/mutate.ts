@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { Dispatch, SetStateAction } from "react";
 import { DeepPartial } from "react-hook-form";
@@ -7,27 +7,29 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { logout } from "@/feature/auth/logout";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { createOrder, delOrder, updateOrder } from "../api";
 import { defaultOrderValues } from "../lib/constants";
 import { OrderSchema } from "../model/shema";
-import { OrderResponse } from "./../types";
+import {
+  OrderCreateData,
+  OrderDataReturn,
+  OrderResponse,
+  UpdateOrderData,
+} from "./../types";
 
 export const useCreateOrder = (
   reset: (values?: DeepPartial<OrderSchema>) => void
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: (data: OrderSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
+    mutationFn: async (data: OrderSchema) => {
       const orderDate = new Date(data.dateRequest);
 
       const [hour, min] = new Date()
@@ -40,7 +42,7 @@ export const useCreateOrder = (
         locale: ru,
       });
 
-      return createOrder({
+      const formData = {
         ...data,
         contact: data.contact || "",
         email: data.email || "",
@@ -48,7 +50,12 @@ export const useCreateOrder = (
         dateRequest: data.dateRequest ? new Date(formattDateReq) : new Date(),
         resource: data.resource ?? null,
         comments: data.comments || null,
-      });
+      };
+
+      return handleMutationWithAuthCheck<
+        OrderCreateData,
+        { order: OrderResponse; telegramError: string | undefined }
+      >(createOrder, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
       const err = error as Error & { status?: number };
@@ -82,7 +89,7 @@ export const useCreateOrder = (
           });
       }
 
-      if (data.telegramError) {
+      if (data?.telegramError) {
         TOAST.ERROR(`Ошибка уведомления: ${data.telegramError}`);
         console.warn(
           "Ошибка отправки уведомления в Telegram:",
@@ -94,14 +101,11 @@ export const useCreateOrder = (
 };
 
 export const useDelOrder = (closeModalFn: Dispatch<SetStateAction<void>>) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (orderId: string) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
+      await checkAuthorization(authUser?.id);
 
       return await delOrder(orderId);
     },
@@ -141,8 +145,7 @@ export const useDelOrder = (closeModalFn: Dispatch<SetStateAction<void>>) => {
 };
 
 export const useUpdateOrder = (closeModalFn: () => void) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (data: { orderId: string; order: OrderResponse }) => {
@@ -152,7 +155,14 @@ export const useUpdateOrder = (closeModalFn: () => void) => {
 
       const { orderId, order } = data;
 
-      return await updateOrder(orderId, order);
+      const formData = { orderId, data: order };
+
+      return handleMutationWithAuthCheck<UpdateOrderData, OrderDataReturn>(
+        updateOrder,
+        formData,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: (data) => {
       if (data) {
@@ -162,7 +172,7 @@ export const useUpdateOrder = (closeModalFn: () => void) => {
         closeModalFn();
       }
 
-      if (data.telegramError) {
+      if (data?.telegramError) {
         TOAST.ERROR(`Ошибка уведомления: ${data.telegramError}`);
         console.warn(
           "Ошибка отправки уведомления в Telegram:",

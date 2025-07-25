@@ -7,14 +7,11 @@ import prisma from "@/prisma/prisma-client";
 import axiosInstance from "@/shared/api/axiosInstance";
 import { handleError } from "@/shared/api/handleError";
 
-import { EventInputType } from "../types";
+import { EventData, EventInputType, EventResponse } from "../types";
 
-export const createEventCalendar = async (eventData: {
-  title: string;
-  start: string;
-  end: string;
-  allDay?: boolean;
-}) => {
+export const createEventCalendar = async (
+  eventData: EventData
+): Promise<EventResponse> => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -36,13 +33,9 @@ export const createEventCalendar = async (eventData: {
   }
 };
 
-export const updateEventCalendar = async (eventData: {
-  id: string;
-  title: string;
-  start: string;
-  end: string;
-  allDay?: boolean;
-}) => {
+export const updateEventCalendar = async (
+  eventData: EventInputType
+): Promise<EventResponse> => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -78,11 +71,15 @@ export const updateEventCalendar = async (eventData: {
   }
 };
 
-export const deleteEventCalendar = async (id: string) => {
+export const deleteEventCalendar = async (dataEvent: {
+  id: string;
+}): Promise<EventResponse> => {
   try {
     const data = await handleAuthorization();
     if (!data) throw new Error("Не авторизован");
     const { userId } = data;
+
+    const { id } = dataEvent;
 
     const existingEvent = await prisma.eventCalendar.findFirst({
       where: {

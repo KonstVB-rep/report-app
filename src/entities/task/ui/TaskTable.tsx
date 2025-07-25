@@ -1,7 +1,6 @@
 // import { TaskStatus } from "@prisma/client";
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -9,16 +8,17 @@ import {
   Row,
   SortingState,
   useReactTable,
-  VisibilityState,
 } from "@tanstack/react-table";
 
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 import { TableCell, TableRow } from "@/components/ui/table";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
+import { DataTableFiltersProvider } from "@/feature/tableFilters/context/DataTableFiltersProvider";
+import { DataTableFiltersContextType } from "@/feature/tableFilters/context/useDataTableFiltersContext";
 import ContextRowTable from "@/shared/ui/ContextRowTable/ContextRowTable";
 import DateRangeFilter from "@/shared/ui/DateRangeFilter";
 import FilterByUsers from "@/shared/ui/Filters/FilterByUsers";
@@ -34,23 +34,34 @@ interface TaskTableProps<TData> {
   data: TData[];
 }
 
-const includedColumns: string[] | [] = [];
-
 const TaskTable = <TData extends Record<string, unknown>>({
   data,
 }: TaskTableProps<TData>) => {
-  const searchParams = useSearchParams();
   const { departmentId } = useParams();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
   const memoizedData = useMemo(() => data, [data]);
-  const memoizedColumns = useMemo(() => columnsDataTask, []) as ColumnDef<
-    TData,
-    unknown
-  >[];
+  const memoizedColumns = useMemo(
+    () => columnsDataTask,
+    []
+  ) as ColumnDef<TData>[];
+
+  const {
+    selectedColumns,
+    setSelectedColumns,
+    filterValueSearchByCol,
+    setFilterValueSearchByCol,
+    openFilters,
+    setOpenFilters,
+    handleDateChange,
+    handleClearDateFilter,
+    columnFilters,
+    setColumnFilters,
+    columnVisibility,
+    setColumnVisibility,
+    includedColumns,
+  } = useDataTableFilters();
 
   const renderRowCells = useCallback((row: Row<TData>) => {
     return row.getVisibleCells().map((cell) => (
@@ -82,7 +93,7 @@ const TaskTable = <TData extends Record<string, unknown>>({
               />
             ),
           })}
-          path={`/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}`}
+          path={`/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}/`}
         >
           <TableRow
             key={row.id}
@@ -155,60 +166,56 @@ const TaskTable = <TData extends Record<string, unknown>>({
   //   [setColumnFilters]
   // );
 
-  const {
-    // selectedColumns,
-    // setSelectedColumns,
-    // filterValueSearchByCol,
-    // setFilterValueSearchByCol,
-    // openFilters,
-    // setOpenFilters,
+  const filtersContextValue: DataTableFiltersContextType<TData> = {
+    selectedColumns,
+    setSelectedColumns,
+    filterValueSearchByCol,
+    setFilterValueSearchByCol,
+    openFilters,
+    setOpenFilters,
     handleDateChange,
     handleClearDateFilter,
-  } = useDataTableFilters({
-    searchParams,
-    includedColumns,
-    setColumnFilters,
-    setColumnVisibility,
     columnFilters,
     columnVisibility,
-  });
+    setColumnFilters,
+    setColumnVisibility,
+    includedColumns,
+    columns: memoizedColumns,
+  };
 
   return (
-    <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
-      <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
-        <div className="flex items-center">
-          <FilterByUsers
+    <DataTableFiltersProvider<TData> value={filtersContextValue}>
+      <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
+        <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
+          <div className="flex items-center">
+            <FilterByUsers label="Исполнитель" columnId="executorId" />
+          </div>
+          <FilterPopoverGroup
+            options={[
+              {
+                label: "Статус",
+                columnId: "taskStatus",
+                options: LABEL_TASK_STATUS,
+              },
+            ]}
             columnFilters={table.getState().columnFilters}
             setColumnFilters={setColumnFilters}
-            label="Исполнитель"
-            columnId="executorId"
+          />
+          <DateRangeFilter
+            onDateChange={handleDateChange("dueDate")}
+            onClearDateFilter={handleClearDateFilter}
+            value={value}
           />
         </div>
-        <FilterPopoverGroup
-          options={[
-            {
-              label: "Статус",
-              columnId: "taskStatus",
-              options: LABEL_TASK_STATUS,
-            },
-          ]}
-          columnFilters={table.getState().columnFilters}
-          setColumnFilters={setColumnFilters}
-        />
-        <DateRangeFilter
-          onDateChange={handleDateChange("dueDate")}
-          onClearDateFilter={handleClearDateFilter}
-          value={value}
-        />
+        <div className="rounded-ee-md overflow-hidden border">
+          <TableTemplate
+            table={table}
+            renderRow={renderRow}
+            className="rounded-ee-md"
+          />
+        </div>
       </div>
-      <div className="rounded-ee-md overflow-hidden border">
-        <TableTemplate
-          table={table}
-          renderRow={renderRow}
-          className="rounded-ee-md"
-        />
-      </div>
-    </div>
+    </DataTableFiltersProvider>
   );
 };
 

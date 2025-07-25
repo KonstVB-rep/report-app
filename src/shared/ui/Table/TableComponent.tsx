@@ -1,7 +1,7 @@
 import { DealType } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 
-import { ReactNode } from "react";
+import { Fragment, ReactNode, useState } from "react";
 
 import { useParams } from "next/navigation";
 
@@ -10,6 +10,7 @@ import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
+import RowInfoDialog from "./RowInfoDialog";
 import TableTemplate from "./TableTemplate";
 
 type TableComponentProps<T> = {
@@ -19,7 +20,7 @@ type TableComponentProps<T> = {
 };
 
 const getRowClassName = (dealStatus?: string) => {
-  const baseClass = "tr hover:bg-zinc-600 hover:text-white";
+  const baseClass = "tr hover:bg-zinc-600 hover:text-white relative";
   if (!dealStatus) return baseClass;
 
   return `${baseClass} ${
@@ -33,11 +34,31 @@ const getRowClassName = (dealStatus?: string) => {
   }`;
 };
 
+const renderSubComponent = <T,>({ row }: { row: Row<T> }) => {
+  return (
+    <pre style={{ fontSize: '10px' }}>
+      <code>{JSON.stringify(row.original, null, 2)}</code>
+    </pre>
+  )
+}
+
+
 const TableComponent = <T extends Record<string, unknown>>({
   table,
   isExistActionDeal = true,
 }: TableComponentProps<T>) => {
   const { departmentId } = useParams();
+  const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null); // Храним состояние для каждой ячейки
+
+  const handleOpenInfo = (cellId: string) => {
+    if (openFullInfoCell === cellId) {
+      // Если окно уже открыто для этой ячейки, закрываем его
+      setOpenFullInfoCell(null);
+    } else {
+      // Открываем окно для этой ячейки
+      setOpenFullInfoCell(cellId);
+    }
+  };
 
   const renderRow = (row: Row<T>): ReactNode => {
     return (
@@ -64,6 +85,7 @@ const TableComponent = <T extends Record<string, unknown>>({
           row.original.type as DealType
         ).toLowerCase()}/${row.original.id}`}
       >
+         <Fragment >
         <TableRow
           className={getRowClassName(row.original.dealStatus as string)}
           data-reject={`${row.original.dealStatus === "REJECT"}`}
@@ -75,11 +97,34 @@ const TableComponent = <T extends Record<string, unknown>>({
               key={cell.id}
               className="td min-w-12 border-b border-r"
               style={{ width: cell.column.getSize() }}
+              onDoubleClick={() => handleOpenInfo(cell.id)} // При двойном клике открываем только для этой ячейки
             >
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              <span className="line-clamp-2 text-center">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </span>
+
+              {openFullInfoCell === cell.id && (
+                <RowInfoDialog
+                  isActive={!!openFullInfoCell}
+                  text={flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                  closeFn={() => setOpenFullInfoCell(null)}
+                />
+              )}
             </TableCell>
           ))}
         </TableRow>
+         {row.getIsExpanded() && (
+                  <TableRow>
+                    {/* 2nd row is a custom 1 cell row */}
+                    <TableCell colSpan={row.getVisibleCells().length}>
+                      {renderSubComponent({ row })}
+                    </TableCell>
+                  </TableRow>
+                )}
+        </Fragment>
       </ContextRowTable>
     );
   };

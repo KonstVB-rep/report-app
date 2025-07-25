@@ -3,9 +3,12 @@
 import { PermissionEnum } from "@prisma/client";
 import {
   ColumnDef,
+  FilterFn,
   getCoreRowModel,
+  getExpandedRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  Row,
   SortingState,
   Table,
   useReactTable,
@@ -30,6 +33,11 @@ import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 import TableComponent from "./TableComponent";
+import {
+  RankingInfo,
+  rankItem,
+} from '@tanstack/match-sorter-utils'
+import DebouncedInput from "../DebouncedInput";
 
 const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
   ssr: false,
@@ -57,15 +65,40 @@ interface DataTableProps<TData, TValue = unknown> {
   isExistActionDeal?: boolean;
 }
 
+const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value)
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  })
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed
+}
+
+// declare module '@tanstack/react-table' {
+//   //add fuzzy filter to the filterFns
+//   interface FilterFns {
+//     fuzzy: FilterFn<unknown>
+//   }
+//   interface FilterMeta {
+//     itemRank: RankingInfo
+//   }
+// }
+
+
 const handleExport = async <
   TData extends Record<string, unknown>,
   TValue = unknown,
 >(
   table: Table<TData>,
-  columns: ColumnDef<TData, TValue>[]
+  columns: ColumnDef<TData, TValue>[],
+  tableType?: string
 ) => {
   const { downloadToExcel } = await import("./exceljs/downLoadToExcel");
-  downloadToExcel(table, columns);
+  downloadToExcel(table, columns, { tableType });
 };
 
 const DataTable = <TData extends Record<string, unknown>, TValue>({
@@ -96,6 +129,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     columnVisibility,
     setColumnVisibility,
     includedColumns,
+    globalFilter, setGlobalFilter
   } = useDataTableFilters();
 
   const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
@@ -105,6 +139,9 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
   const table = useReactTable({
     data: memoizedData,
     columns: memoizedColumns,
+    filterFns: {
+      fuzzy: fuzzyFilter, 
+    },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
@@ -113,12 +150,15 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     getCoreRowModel: getCoreRowModel(),
     enableColumnResizing: true,
     columnResizeMode: "onChange",
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: 'includesString',
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
     state: {
       sorting,
       columnFilters,
+      globalFilter,
       columnVisibility: {
         ...columnVisibility,
         user: false,
@@ -147,7 +187,7 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
     setColumnFilters,
     setColumnVisibility,
     includedColumns,
-    columns,
+    columns: memoizedColumns,
   };
 
   return (
@@ -160,7 +200,9 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
             >
               <Button
                 variant={"ghost"}
-                onClick={() => handleExport<TData, TValue>(table, columns)}
+                onClick={() =>
+                  handleExport<TData, TValue>(table, columns, type)
+                }
                 className="w-fit border p-2 hover:bg-slate-700"
                 title="Export to XLSX"
               >
@@ -168,6 +210,15 @@ const DataTable = <TData extends Record<string, unknown>, TValue>({
               </Button>
             </ProtectedByPermissions>
           )}
+
+          <div>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              className="p-2 font-lg shadow border border-block"
+              placeholder="Search all columns..."
+            />
+          </div>
 
           {memoizedData.length > 0 && (
             <div className="flex flex-1 items-center justify-between gap-2">

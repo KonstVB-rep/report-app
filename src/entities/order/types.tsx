@@ -32,3 +32,13 @@ export type OrderCreateData = {
   comments: string | null;
   resource: string | null;
 };
+
+export type UpdateOrderData = {
+  orderId: string;
+  data: OrderResponse;
+};
+
+export type OrderDataReturn = {
+  order: OrderResponse;
+  telegramError: string | undefined;
+};

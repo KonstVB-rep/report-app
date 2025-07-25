@@ -31,11 +31,11 @@ const dealsSalesDepartment: DealsType[] = [
   { id: "contracts", title: "Договора" },
 ];
 
-const table: {
-  [key in string]: DealsType;
-} = {
-  orders: { id: "orders", title: "Заявки" },
-};
+// const table: {
+//   [key in string]: DealsType;
+// } = {
+//   orders: { id: "orders", title: "Заявки" },
+// };
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
 
@@ -134,20 +134,21 @@ export const DepartmentLinks = memo(
     }
 
     if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) {
-      return (
-        <LinkItem
-          key={user.id}
-          href={`${user.url}/orders`}
-          title={table.orders.title}
-          icon={departmentId === 1 ? BookText : ChartColumnBig}
-          isActive={
-            departmentId === user.departmentId &&
-            user.id === userId &&
-            dealType === table.orders.id
-          }
-          onClick={(e) => e.stopPropagation()}
-        />
-      );
+      // return (
+      //   <LinkItem
+      //     key={user.id}
+      //     href={`${user.url}/orders`}
+      //     title={table.orders.title}
+      //     icon={departmentId === 1 ? BookText : ChartColumnBig}
+      //     isActive={
+      //       departmentId === user.departmentId &&
+      //       user.id === userId &&
+      //       dealType === table.orders.id
+      //     }
+      //     onClick={(e) => e.stopPropagation()}
+      //   />
+      // );
+      return null;
     }
 
     if (departmentId === 2) {

@@ -1,5 +1,6 @@
 "use server";
 
+import { ChatBotType } from "@/feature/calendar/types";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
@@ -86,12 +87,9 @@ export const createUserTelegramChat = async (
   }
 };
 
-export const toggleSubscribeChatBot = async (
-  botId: string,
-  userId: string,
-  isActive: boolean
-) => {
-  if (!botId) {
+export const toggleSubscribeChatBot = async (chatBotData: ChatBotType) => {
+  const { chatName, userId, isActive } = chatBotData;
+  if (!chatName) {
     throw new Error("chatName не может быть пустым");
   }
 
@@ -99,7 +97,7 @@ export const toggleSubscribeChatBot = async (
     const existingChat = await prisma.userTelegramChat.findUnique({
       where: {
         botId_userId: {
-          botId,
+          botId: chatName,
           userId,
         },
       },
@@ -112,7 +110,7 @@ export const toggleSubscribeChatBot = async (
     const updatedChat = await prisma.userTelegramChat.update({
       where: {
         botId_userId: {
-          botId,
+          botId: chatName,
           userId,
         },
       },

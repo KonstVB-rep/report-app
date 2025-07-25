@@ -6,6 +6,11 @@ import { useParams } from "next/navigation";
 import { Building, Info } from "lucide-react";
 
 import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
+import {
+  typeofDelivery,
+  typeofDirections,
+  typeofStatus,
+} from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-project";
 import { Separator } from "@/components/ui/separator";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
@@ -51,16 +56,11 @@ const ProjectItemInfo = () => {
   const { data: deal, isLoading } = useGetProjectById(dealId, false);
 
   const statusLabel =
-    StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] ||
-    "Нет данных";
+    StatusProjectLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
   const directionLabel =
-    DirectionProjectLabels[
-      deal?.direction as keyof typeof DirectionProjectLabels
-    ] || "Нет данных";
+    DirectionProjectLabels[deal?.direction as typeofDirections] || "Нет данных";
   const deliveryLabel =
-    DeliveryProjectLabels[
-      deal?.deliveryType as keyof typeof DeliveryProjectLabels
-    ] || "Нет данных";
+    DeliveryProjectLabels[deal?.deliveryType as typeofDelivery] || "Нет данных";
   const typeLabel =
     DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
 

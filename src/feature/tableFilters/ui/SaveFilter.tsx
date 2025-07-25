@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DialogComponent from "@/shared/ui/DialogComponent";
 
@@ -25,21 +24,19 @@ const SaveFilter = () => {
 
   const { mutate, isPending } = useSaveFilter(() => setOpen(false));
 
-  const handleSubmit = withAuthCheck(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (inputRef.current) {
-        mutate({
-          ownerId: userId as string,
-          data: {
-            filterName: inputRef.current.value,
-            filterValue: searchParams.toString(),
-            isActive: false,
-          },
-        });
-      }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (inputRef.current) {
+      mutate({
+        ownerId: userId as string,
+        data: {
+          filterName: inputRef.current.value,
+          filterValue: searchParams.toString(),
+          isActive: false,
+        },
+      });
     }
-  );
+  };
 
   return (
     <DialogComponent

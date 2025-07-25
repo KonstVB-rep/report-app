@@ -4,16 +4,14 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
+import dynamic from "next/dynamic";
+
 import { getQueryClient } from "@/app/provider/query-provider";
 import {
   getContractsUserQuery,
   getProjectsUserQuery,
   getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn";
-
-import PersonTableContract from "../ui/PersonTableContract";
-import PersonTableProject from "../ui/PersonTableProject";
-import PersonTableRetail from "../ui/PersonTableRetails";
 
 const DealsInWork = ["projects", "retails", "contracts"];
 
@@ -63,13 +61,13 @@ const PersonTablePage = async ({
   let Component;
   switch (dealType) {
     case "projects":
-      Component = PersonTableProject;
+      Component = dynamic(() => import("../ui/PersonTableProjects"));
       break;
     case "retails":
-      Component = PersonTableRetail;
+      Component = dynamic(() => import("../ui/PersonTableRetails"));
       break;
     case "contracts":
-      Component = PersonTableContract;
+      Component = dynamic(() => import("../ui/PersonTableContracts"));
       break;
     default:
       return null;

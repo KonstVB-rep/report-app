@@ -130,8 +130,7 @@ export const deleteFileFromDB = async (
   fileInfo: Pick<FileInfo, "id" | "dealType" | "userId" | "dealId">
 ) => {
   try {
-
-    const {id, userId, dealType, dealId} = fileInfo
+    const { id, userId, dealType, dealId } = fileInfo;
     await checkingAccessRight(userId, dealType, dealId);
 
     const isExistFile = await prisma.dealFile.findUnique({

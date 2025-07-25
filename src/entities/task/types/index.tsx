@@ -70,3 +70,7 @@ export type TaskWithUserInfo = {
 };
 
 export type ViewType = (typeof viewType)[number]["id"];
+
+export type CreateTaskReturn = { error: boolean; message: string; data: null };
+
+export type DeleteTaskData = { taskId: string; idTaskOwner: string };

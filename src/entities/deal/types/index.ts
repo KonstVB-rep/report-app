@@ -116,3 +116,27 @@ export interface ContractResponse {
   updatedAt: Date;
   type: DealType;
 }
+
+export type ProjectWithoutDateCreateAndUpdate = Omit<
+  ProjectResponse,
+  "createdAt" | "updatedAt"
+>;
+
+export type ProjectWithManagersIds = Omit<
+  ProjectResponse,
+  "createdAt" | "updatedAt" | "managers"
+> & { managersIds: { userId: string }[] };
+
+export type RetailWithoutDateCreateAndUpdate = Omit<
+  RetailResponse,
+  "createdAt" | "updatedAt"
+>;
+
+export type RetailWithManagersIds = Omit<
+  RetailResponse,
+  "createdAt" | "updatedAt" | "managers"
+> & { managersIds: { userId: string }[] };
+
+export type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
+
+export type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;

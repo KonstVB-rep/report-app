@@ -12,13 +12,13 @@ import { z } from "zod";
 export const SingleContactSchema = z
   .object({
     id: z.string(),
-    name: z.string().min(1, "Имя обязательно"),
+    name: z.string().min(1, { error: "Имя обязательно" }),
     phone: z.string().nullable().optional(),
     email: z.string().nullable().optional(),
     position: z.string().nullable().optional(),
   })
   .refine((contact) => contact.phone?.trim() || contact.email?.trim(), {
-    message: "Укажите либо телефон, либо email",
+    error: "Укажите либо телефон, либо email",
     path: ["_common"],
   });
 
@@ -29,31 +29,32 @@ export const ContactFormSchema = z.object({
 export const ProjectFormSchema = z
   .object({
     id: z.string().optional(),
-    dateRequest: z.preprocess(
-      (val) => (val instanceof Date ? val.toISOString() : val || ""),
-      z.string()
-    ),
+    dateRequest: z.preprocess((val) => {
+      if (val instanceof Date) return val.toISOString();
+      if (!val) return ""; // или return null/undefined если нужно другое поведение
+      return val;
+    }, z.string()),
     nameDeal: z.string({
-      message: "Введите название сделки",
+      error: "Введите название сделки",
     }),
     nameObject: z.string({
-      message: "Введите название объекта",
+      error: "Введите название объекта",
     }),
     direction: z.enum(
       Object.values(DirectionProject).filter(Boolean) as [string, ...string[]],
       {
-        message: "Выберите направление",
+        error: "Выберите направление",
       }
     ),
     deliveryType: z
       .enum(Object.values(DeliveryProject) as [string, ...string[]], {
-        message: "Выберите тип поставки",
+        error: "Выберите тип поставки",
       })
       .optional()
       .nullable(),
     contact: z.string(),
     phone: z.string().optional(),
-    email: z.string().email("Некорректный email").or(z.literal("")).optional(),
+    email: z.email("Некорректный email").or(z.literal("")).optional(),
 
     amountCP: z.string().optional(),
     amountWork: z.string().optional(),
@@ -64,10 +65,11 @@ export const ProjectFormSchema = z
       message: "Выберите статус проекта",
     }),
     comments: z.string(),
-    plannedDateConnection: z.preprocess(
-      (val) => (val instanceof Date ? val.toISOString() : val || ""),
-      z.string()
-    ),
+    plannedDateConnection: z.preprocess((val) => {
+      if (val instanceof Date) return val.toISOString();
+      if (!val) return null;
+      return val;
+    }, z.string()),
     orderId: z.string().nullable().optional(),
     resource: z.string().optional(),
     contacts: z.array(SingleContactSchema),
@@ -77,31 +79,37 @@ export const ProjectFormSchema = z
       })
     ),
   })
-  .superRefine((data, ctx) => {
+  .check((ctx) => {
+    const data = ctx.value;
+
     if (
       data.dealStatus !== StatusProject.REJECT &&
       !data.plannedDateConnection?.trim()
     ) {
-      ctx.addIssue({
-        path: ["plannedDateConnection"],
-        code: z.ZodIssueCode.custom,
+      ctx.issues.push({
+        code: "custom",
         message: "Укажите планируемую дату подключения",
+        path: ["plannedDateConnection"],
+        input: data.plannedDateConnection,
       });
     }
+
     const hasPhone = !!data.phone?.trim();
     const hasEmail = !!data.email?.trim();
 
     if (!hasPhone && !hasEmail) {
-      // Добавляем ошибки для обоих полей
-      ctx.addIssue({
+      ctx.issues.push({
+        code: "custom",
+        message: "Укажите телефон или email",
         path: ["phone"],
-        code: z.ZodIssueCode.custom,
-        message: "Укажите телефон или email",
+        input: data.phone,
       });
-      ctx.addIssue({
-        path: ["email"],
-        code: z.ZodIssueCode.custom,
+
+      ctx.issues.push({
+        code: "custom",
         message: "Укажите телефон или email",
+        path: ["email"],
+        input: data.email,
       });
     }
   });
@@ -109,49 +117,49 @@ export const ProjectFormSchema = z
 export const RetailFormSchema = z
   .object({
     id: z.string().optional(),
-    dateRequest: z.preprocess(
-      (val) => (val instanceof Date ? val.toISOString() : val || ""),
-      z.string()
-    ),
+    dateRequest: z.preprocess((val) => {
+      if (val instanceof Date) return val.toISOString();
+      if (!val) return ""; // или return null/undefined если нужно другое поведение
+      return val;
+    }, z.string()),
     nameDeal: z
       .string({
-        required_error: "Введите название сделки", // Если undefined
-        invalid_type_error: "Название сделки должно быть строкой", // Если не string
+        error: "Название сделки должно быть строкой", // Если не string
       })
       .min(1, "Название объекта не может быть пустым"),
     nameObject: z
       .string({
-        required_error: "Введите название объекта", // Если undefined
-        invalid_type_error: "Название объекта должно быть строкой", // Если не string
+        error: "Название объекта должно быть строкой", // Если не string
       })
       .min(1, "Название объекта не может быть пустым"),
     direction: z.enum(
       Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]],
       {
-        message: "Выберите направление",
+        error: "Выберите направление",
       }
     ),
     deliveryType: z
       .enum(Object.values(DeliveryRetail) as [string, ...string[]], {
-        message: "Выберите тип поставки",
+        error: "Выберите тип поставки",
       })
       .optional()
       .nullable(),
     contact: z.string(),
     phone: z.string().optional(),
-    email: z.string().email("Некорректный email").or(z.literal("")).optional(),
+    email: z.email("Некорректный email").or(z.literal("")).optional(),
 
     amountCP: z.string().optional(),
     delta: z.string().optional(),
 
     dealStatus: z.enum(Object.values(StatusRetail) as [string, ...string[]], {
-      message: "Выберите статус проекта",
+      error: "Выберите статус проекта",
     }),
     comments: z.string(),
-    plannedDateConnection: z.preprocess(
-      (val) => (val instanceof Date ? val.toISOString() : val || ""),
-      z.string()
-    ),
+    plannedDateConnection: z.preprocess((val) => {
+      if (val instanceof Date) return val.toISOString();
+      if (!val) return "";
+      return val;
+    }, z.string()),
     orderId: z.string().nullable().optional(),
     resource: z.string().optional(),
     contacts: z.array(SingleContactSchema),
@@ -161,15 +169,18 @@ export const RetailFormSchema = z
       })
     ),
   })
-  .superRefine((data, ctx) => {
+  .check((ctx) => {
+    const data = ctx.value;
+
     if (
-      data.dealStatus !== StatusRetail.REJECT &&
+      data.dealStatus !== StatusProject.REJECT &&
       !data.plannedDateConnection?.trim()
     ) {
-      ctx.addIssue({
-        path: ["plannedDateConnection"],
-        code: z.ZodIssueCode.custom,
+      ctx.issues.push({
+        code: "custom",
         message: "Укажите планируемую дату подключения",
+        path: ["plannedDateConnection"],
+        input: data.plannedDateConnection,
       });
     }
 
@@ -177,16 +188,18 @@ export const RetailFormSchema = z
     const hasEmail = !!data.email?.trim();
 
     if (!hasPhone && !hasEmail) {
-      // Добавляем ошибки для обоих полей
-      ctx.addIssue({
+      ctx.issues.push({
+        code: "custom",
+        message: "Укажите телефон или email",
         path: ["phone"],
-        code: z.ZodIssueCode.custom,
-        message: "Укажите телефон или email",
+        input: data.phone,
       });
-      ctx.addIssue({
-        path: ["email"],
-        code: z.ZodIssueCode.custom,
+
+      ctx.issues.push({
+        code: "custom",
         message: "Укажите телефон или email",
+        path: ["email"],
+        input: data.email,
       });
     }
   });

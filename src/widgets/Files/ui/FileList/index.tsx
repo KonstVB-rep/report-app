@@ -1,12 +1,11 @@
 import { DealType } from "@prisma/client";
+import { animated, useTransition } from "@react-spring/web";
 
 import React, { useState } from "react";
 
 import { FileWarning } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
 import { useGetHrefFilesDealFromDB } from "../../hooks/query";
 import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
@@ -58,21 +57,6 @@ const fileTypeIcons = {
   other: ICONS_TYPE_FILE["default"](),
 };
 
-// const imageFormat = [
-//   ".jpg",
-//   ".jpeg",
-//   ".png",
-//   ".gif",
-//   ".bmp",
-//   ".tiff",
-//   ".webp",
-//   ".svg",
-//   ".ico",
-// ];
-// const excelFormat = [".xls", ".xlsx", ".csv"];
-// const pdfFormat = [".pdf"];
-// const text = [".txt"];
-
 const FileItem = ({
   file,
   selected,
@@ -86,13 +70,18 @@ const FileItem = ({
   const fileType = getFileType(formatFile);
   const fileName = getFileNameWithoutUuid(file.name);
 
-  return (
-    <motion.li
-      layoutId={file.name}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2, ease: "easeInOut" }}
+  const transitions = useTransition(file, {
+    keys: (file) => file.name, // Идентификатор для каждого файла
+    from: { opacity: 0, transform: "translateY(20px)" },
+    enter: { opacity: 1, transform: "translateY(0)" },
+    leave: { opacity: 0, transform: "translateY(-20px)" },
+    config: { duration: 200, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Эквивалент "easeInOut"
+  });
+
+  return transitions((styles, item) => (
+    <animated.li
+      style={styles} // Применяем стили анимации
+      key={item.name}
       className="group relative grid w-20 min-w-20 max-w-20 flex-1 gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
     >
       <p className="flex items-center justify-center">
@@ -109,8 +98,8 @@ const FileItem = ({
         onChange={onSelect}
         checked={selected}
       />
-    </motion.li>
-  );
+    </animated.li>
+  ));
 };
 
 const FileList = ({ data }: FileListProps) => {
@@ -140,103 +129,81 @@ const FileList = ({ data }: FileListProps) => {
     });
   };
 
+  const pendingTransition = useTransition(isPending, {
+    from: { opacity: 0, transform: "translateY(20px)" },
+    enter: { opacity: 1, transform: "translateY(0)" },
+    leave: { opacity: 0, transform: "translateY(-20px)" },
+    config: { duration: 200 },
+  });
+
+  // Анимация для ошибки
+  const errorTransition = useTransition(isError, {
+    from: { opacity: 0, transform: "translateY(20px)" },
+    enter: { opacity: 1, transform: "translateY(0)" },
+    leave: { opacity: 0, transform: "translateY(-20px)" },
+    config: { duration: 200 },
+  });
+
+  // Анимация для файлов
+  const filesTransition = useTransition(files || [], {
+    keys: (file) => file?.id ?? file?.name ?? "", // Используем уникальные ключи
+    from: { opacity: 0, transform: "translateY(20px)" },
+    enter: { opacity: 1, transform: "translateY(0)" },
+    leave: { opacity: 0, transform: "translateY(-20px)" },
+    config: { duration: 200 },
+  });
+
   if (!files || !files?.length) return null;
 
   return (
     <IntoDealItem title="Файлы" className="relative">
-      <AnimatePresence mode="wait">
-        {isPending && (
-          <MotionDivY keyValue="loading">
+      {pendingTransition((styles, item) =>
+        item ? (
+          <animated.div style={styles}>
             <SkeletonFiles />
-          </MotionDivY>
-        )}
+          </animated.div>
+        ) : null
+      )}
 
-        {isError && (
-          <MotionDivY
-            keyValue="error"
+      {errorTransition((styles, item) =>
+        item ? (
+          <animated.div
+            style={styles}
             className="flex items-center justify-center gap-2 p-2 text-red-600"
           >
             <FileWarning size="40" strokeWidth={1} className="text-red-600" />
             <span className="text-lg">Ошибка загрузки файлов</span>
-          </MotionDivY>
-        )}
+          </animated.div>
+        ) : null
+      )}
 
-        {files && files.length > 0 && (
-          <MotionDivY keyValue="files">
-            {selectedFiles.size > 0 && (
-              <DeleteFile
-                setSelectedFiles={setSelectedFiles}
-                selectedFilesForDelete={selectedFilesForDelete}
-                className="absolute right-2 top-2 z-10"
-              />
-            )}
+      {files && files.length > 0 && (
+        <animated.div>
+          {selectedFiles.size > 0 && (
+            <DeleteFile
+              setSelectedFiles={setSelectedFiles}
+              selectedFilesForDelete={selectedFilesForDelete}
+              className="absolute right-2 top-2 z-10"
+            />
+          )}
 
-            <motion.ul layout className="flex flex-wrap gap-2">
-              <AnimatePresence>
-                {files.map((file) => (
+          <animated.ul className="flex flex-wrap gap-2">
+            {filesTransition((styles, file) =>
+              file ? (
+                <animated.li style={styles} key={file.id}>
+                  {" "}
+                  {/* Используем file.id как ключ */}
                   <FileItem
-                    key={file.name}
                     file={file}
                     selected={selectedFiles.has(file.name)}
                     onSelect={handleSelectFile}
                   />
-                ))}
-              </AnimatePresence>
-              {/* <AnimatePresence>
-                {files.map((file) => {
-                  const formatFile = getFormatFile(
-                    file.name
-                  ) as keyof typeof ICONS_TYPE_FILE;
-
-                  const isImg = imageFormat.includes(formatFile);
-                  const isExcel = excelFormat.includes(formatFile);
-                  const isPdf = pdfFormat.includes(formatFile);
-                  const isText = text.includes(formatFile);
-                  const anotherFormat = !isImg && !isExcel && !isPdf && !isText;
-
-                  const fileName = getFileNameWithoutUuid(file.name);
-
-                  return (
-                    <motion.li
-                      layout
-                      layoutId={file.name}
-                      key={file.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.2, ease: "easeInOut" }}
-                      tabIndex={0}
-                      className="group flex-1 w-20 min-w-20 max-w-20 relative grid gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
-                    >
-                      <p className="flex items-center justify-center">
-                        {isImg && ICONS_TYPE_FILE[".img"]()}
-                        {isExcel && ICONS_TYPE_FILE[".xls"]()}
-                        {isPdf && ICONS_TYPE_FILE[".pdf"]()}
-                        {isText && ICONS_TYPE_FILE[".txt"]()}
-                        {anotherFormat && ICONS_TYPE_FILE["default"]()}
-                      </p>
-
-                      <p className="truncate text-xs">{fileName}</p>
-
-                      <div className="absolute inset-0 -z-[1] h-full w-full bg-black/80 group-hover:z-[1] group-focus-visible:z-[1] rounded-md" />
-
-                      <DownLoadOrCheckFile
-                        className="absolute inset-0 z-10 h-full w-full items-center justify-center"
-                        fileName={fileName}
-                        localPath={file.localPath}
-                        name={file.name}
-                        id={file.name}
-                        onChange={handleSelectFile}
-                        checked={selectedFiles.has(file.name)}
-                      />
-                    </motion.li>
-                  );
-                })}
-              </AnimatePresence> */}
-            </motion.ul>
-          </MotionDivY>
-        )}
-      </AnimatePresence>
+                </animated.li>
+              ) : null
+            )}
+          </animated.ul>
+        </animated.div>
+      )}
     </IntoDealItem>
   );
 };

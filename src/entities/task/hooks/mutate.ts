@@ -1,22 +1,29 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Task } from "@prisma/client";
+import { useMutation } from "@tanstack/react-query";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import { logout } from "@/feature/auth/logout";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { createTask, deleteTask, updateTask, updateTasksOrder } from "../api";
-import { TaskFormType, TaskFormTypeWithId, TaskWithUserInfo } from "../types";
+import {
+  CreateTaskReturn,
+  DeleteTaskData,
+  TaskFormType,
+  TaskFormTypeWithId,
+  TaskWithUserInfo,
+} from "../types";
 
 export const useCreateTask = () => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (task: Omit<TaskFormType, "orderTask">) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return await createTask(task);
+      return handleMutationWithAuthCheck<
+        Omit<TaskFormType, "orderTask">,
+        CreateTaskReturn
+      >(createTask, task, authUser, isSubmittingRef);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -46,15 +53,16 @@ export const useCreateTask = () => {
 };
 
 export const useUpdateTask = () => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: async (taskTarget: TaskFormTypeWithId) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return await updateTask(taskTarget);
+    mutationFn: async (task: TaskFormTypeWithId) => {
+      return handleMutationWithAuthCheck<TaskFormTypeWithId, Task>(
+        updateTask,
+        task,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
@@ -87,20 +95,21 @@ export const useUpdateTask = () => {
 };
 
 export const useDeleteTask = (close: () => void) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (data: { taskId: string; idTaskOwner: string }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-
-      if (authUser.id !== data.idTaskOwner) {
+      if (authUser?.id !== data.idTaskOwner) {
         TOAST.ERROR("Удалить задание может только ее автор");
         return;
       }
-      return await deleteTask(data.taskId, data.idTaskOwner);
+      const dataRemove = { taskId: data.taskId, idTaskOwner: data.idTaskOwner };
+      return handleMutationWithAuthCheck<DeleteTaskData, Task>(
+        deleteTask,
+        dataRemove,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
@@ -136,14 +145,10 @@ export const useDeleteTask = (close: () => void) => {
 };
 
 export const useUpdateTasksOrder = () => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (data: { updatedTasks: TaskWithUserInfo[] }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
       return await updateTasksOrder(data.updatedTasks);
     },
     onSuccess: () => {

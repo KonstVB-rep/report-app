@@ -6,7 +6,12 @@ import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
-import { OrderCreateData, OrderResponse } from "../types";
+import {
+  OrderCreateData,
+  OrderDataReturn,
+  OrderResponse,
+  UpdateOrderData,
+} from "../types";
 import { sendNotification } from "./telegram";
 
 /*****************************************************Получить************************************************************/
@@ -89,7 +94,7 @@ export const getOrdersByUserId = async (
 
 export const createOrder = async (
   order: OrderCreateData
-): Promise<{ order: OrderResponse; telegramError: string | undefined }> => {
+): Promise<OrderDataReturn> => {
   try {
     const data = await handleAuthorization();
     const { user } = data!;
@@ -154,10 +159,7 @@ export const createOrder = async (
 
 export const delOrder = async (
   orderId: string
-): Promise<{
-  order: OrderResponse;
-  telegramError: string | undefined;
-} | null> => {
+): Promise<OrderDataReturn | null> => {
   try {
     await handleAuthorization();
 
@@ -227,11 +229,12 @@ export const delOrder = async (
 /***********************************************Обновить***************************************************/
 
 export const updateOrder = async (
-  orderId: string,
-  data: OrderResponse // данные для обновления (кроме id)
-): Promise<{ order: OrderResponse; telegramError: string | undefined }> => {
+  orderData: UpdateOrderData // данные для обновления (кроме id)
+): Promise<OrderDataReturn> => {
   try {
     await handleAuthorization();
+
+    const { data, orderId } = orderData;
 
     const { dateRequest, nameDeal, contact, comments, manager } = data;
 

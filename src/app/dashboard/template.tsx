@@ -1,16 +1,19 @@
 "use client";
 
-import { PropsWithChildren, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { PropsWithChildren, useEffect } from "react";
+
+// import { createPortal } from "react-dom";
 
 import { usePathname } from "next/navigation";
 
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useGetOrdersNotAtWorkByUserId } from "@/entities/order/hooks/query";
-import { OrderResponse } from "@/entities/order/types";
-import TabsDealTypeForms from "@/entities/order/ui/TabsDealTypeForms";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+// import { useGetOrdersNotAtWorkByUserId } from "@/entities/order/hooks/query";
+// import { OrderResponse } from "@/entities/order/types";
+// import TabsDealTypeForms from "@/entities/order/ui/TabsDealTypeForms";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
@@ -19,44 +22,54 @@ import PageTransitionY from "@/shared/ui/MotionComponents/PageTransitionY";
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
+  const { setDepartments } = useStoreDepartment();
 
-  const { data: ordersNotInProgress, refetch } =
-    useGetOrdersNotAtWorkByUserId();
+  // const { data: ordersNotInProgress, refetch } =
+  //   useGetOrdersNotAtWorkByUserId();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(
-    null
-  );
+  const { data: departmentData } = useGetDepartmentsWithUsers();
+
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(
+  //   null
+  // );
 
   useEffect(() => {
-    if (ordersNotInProgress && ordersNotInProgress.length > 0) {
-      ordersNotInProgress.forEach((order) => {
-        toast(`Новая заявка: ${order.nameDeal} Контакт: ${order.nameDeal}`, {
-          style: {
-            background: "hsl(var(--background))",
-            borderColor: "hsl(var(--muted-foreground))",
-            color: "hsl(var(--foreground))",
-          },
-          position: "bottom-right",
-          duration: Infinity,
-          action: {
-            label: "Принять в работу",
-            onClick: () => {
-              setSelectedOrder(order);
-              setIsModalOpen(true);
-            },
-          },
-        });
-      });
+    if (authUser && departmentData) {
+      setDepartments(departmentData);
     }
-  }, [ordersNotInProgress]);
+  }, [authUser, departmentData, setDepartments]);
 
-  const handleClose = (value: boolean) => {
-    setIsModalOpen(value);
-    if (!value) {
-      refetch();
-    }
-  };
+  // логика оповещений о заявках
+  // useEffect(() => {
+  //   if (ordersNotInProgress && ordersNotInProgress.length > 0) {
+  //     ordersNotInProgress.forEach((order) => {
+  //       toast(`Новая заявка: ${order.nameDeal} Контакт: ${order.nameDeal}`, {
+  //         style: {
+  //           background: "hsl(var(--background))",
+  //           borderColor: "hsl(var(--muted-foreground))",
+  //           color: "hsl(var(--foreground))",
+  //         },
+  //         position: "bottom-right",
+  //         duration: Infinity,
+  //         action: {
+  //           label: "Принять в работу",
+  //           onClick: () => {
+  //             setSelectedOrder(order);
+  //             setIsModalOpen(true);
+  //           },
+  //         },
+  //       });
+  //     });
+  //   }
+  // }, [ordersNotInProgress]);
+
+  // const handleClose = (value: boolean) => {
+  //   setIsModalOpen(value);
+  //   if (!value) {
+  //     refetch();
+  //   }
+  // };
 
   if (!authUser) {
     return (
@@ -79,7 +92,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
           </div>
         </SidebarProvider>
       </div>
-      {isModalOpen &&
+      {/* {isModalOpen &&
         createPortal(
           <TabsDealTypeForms
             order={selectedOrder}
@@ -87,7 +100,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
             setIsModalOpen={handleClose}
           />,
           document.body
-        )}
+        )} */}
     </>
   );
 };

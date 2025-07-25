@@ -17,7 +17,7 @@ export const userFormSchema = z.object({
     .string()
     .min(6, { message: "Пароль должен содержать не менее 6 символов" })
     .max(30, { message: "Пароль должен содержать не более 30 символов" }),
-  email: z.string().email(),
+  email: z.email(),
   phone: z
     .string()
     .min(16, "Минимальное количество символов 16")

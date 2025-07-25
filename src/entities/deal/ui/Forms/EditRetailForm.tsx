@@ -1,12 +1,12 @@
-'use client'
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { formatterCurrency } from "@/shared/lib/utils";
 import { TOAST } from "@/shared/ui/Toast";
 
@@ -24,24 +24,23 @@ const formatCurrency = (value: string | null | undefined): string => {
 type Props = {
   close: Dispatch<SetStateAction<void>>;
   dealId: string;
-  isInvalidate :boolean
-  titleForm: string
+  isInvalidate: boolean;
+  titleForm: string;
 };
 
 const EditRetailForm = ({
   close,
   dealId,
-  isInvalidate =false,
-  titleForm
+  isInvalidate = false,
+  titleForm,
 }: Props) => {
   const { data, isPending: isLoading } = useGetRetailById(dealId, false);
   const { authUser } = useStoreUser();
 
   const form = useForm<RetailSchema>({
-    resolver: zodResolver(RetailFormSchema),
+    resolver: zodResolver(RetailFormSchema) as Resolver<RetailSchema>,
     defaultValues: defaultRetailValues,
   });
-
 
   const { mutateAsync, isPending } = useMutationUpdateRetail(
     dealId,
@@ -50,9 +49,9 @@ const EditRetailForm = ({
     isInvalidate
   );
 
-  const onSubmit = withAuthCheck(async (data: RetailSchema) => {
+  const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-  });
+  };
 
   const { reset } = form;
 

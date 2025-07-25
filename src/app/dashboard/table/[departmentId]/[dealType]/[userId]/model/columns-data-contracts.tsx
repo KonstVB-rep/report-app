@@ -76,7 +76,7 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     header: "Название сделки",
     cell: (info: CellContext<ContractResponse, unknown>) => {
       const value = info.getValue() as ReactNode;
-      return <span className="line-clamp-2">{value}</span>;
+      return value;
     },
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.nameDeal,
@@ -86,7 +86,7 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     header: "Название объекта",
     cell: (info: CellContext<ContractResponse, unknown>) => {
       const value = info.getValue() as ReactNode;
-      return <span className="line-clamp-2">{value}</span>;
+      return value;
     },
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.nameObject,
@@ -218,7 +218,7 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     header: "Комментарии",
     cell: (info: CellContext<ContractResponse, unknown>) => {
       const value = info.getValue() as ReactNode;
-      return <span className="line-clamp-2">{value}</span>;
+      return value;
     },
     size: 300,
     minSize: 300,

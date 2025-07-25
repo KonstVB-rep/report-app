@@ -6,10 +6,9 @@ import {
 } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useMutationUpdateProject } from "../../hooks/mutate";
@@ -22,19 +21,23 @@ import ProjectFormBody from "./ProjectFormBody";
 type Props = {
   close: Dispatch<SetStateAction<void>>;
   dealId: string;
-  isInvalidate :boolean
-  titleForm: string
+  isInvalidate: boolean;
+  titleForm: string;
 };
 
-const EditProjectForm = ({ close, dealId, isInvalidate = false,  titleForm }: Props) => {
+const EditProjectForm = ({
+  close,
+  dealId,
+  isInvalidate = false,
+  titleForm,
+}: Props) => {
   const { data, isPending: isLoading } = useGetProjectById(dealId, false);
   const { authUser } = useStoreUser();
 
   const form = useForm<ProjectSchema>({
-    resolver: zodResolver(ProjectFormSchema),
+    resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,
     defaultValues: defaultProjectValues,
   });
-
 
   const { mutateAsync, isPending } = useMutationUpdateProject(
     dealId,
@@ -43,9 +46,9 @@ const EditProjectForm = ({ close, dealId, isInvalidate = false,  titleForm }: Pr
     isInvalidate
   );
 
-  const onSubmit = withAuthCheck(async (data: ProjectSchema) => {
+  const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-  });
+  };
 
   const { reset } = form;
 

@@ -1,7 +1,6 @@
 import { FileDown, Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { withAuthCheck } from "@/shared/lib/helpers/withAuthCheck";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 import { useDownLoadFile } from "../../hooks/mutate";
@@ -27,9 +26,9 @@ const DownLoadOrCheckFile = ({
 }: DownloadFileProps) => {
   const { mutate: handleDownload, isPending } = useDownLoadFile();
 
-  const handleDelete = withAuthCheck(async () => {
+  const handleDelete = () => {
     handleDownload({ localPath, name });
-  });
+  };
 
   return (
     <>

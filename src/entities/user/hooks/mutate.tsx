@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 
 import { getQueryClient } from "@/app/provider/query-provider";
 import { DepartmentInfo } from "@/entities/department/types";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { createUser, deleteUser, updateUser } from "../api";
+import { createUser, deleteUser, ResponseDelUser, updateUser } from "../api";
 import { userEditSchema, userSchema } from "../model/schema";
 import {
   DepartmentTypeName,
@@ -19,6 +21,7 @@ import {
 const queryClient = getQueryClient();
 
 export const useCreateUser = () => {
+  const { authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
     mutationFn: (data: userSchema) => {
       const user: UserRequest = {
@@ -31,7 +34,12 @@ export const useCreateUser = () => {
         role: data.role as RoleType,
         permissions: data.permissions as PermissionType[],
       };
-      return createUser(user);
+      return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
+        createUser,
+        user,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -46,9 +54,15 @@ export const useCreateUser = () => {
 
 export const useDeleteUser = (userId: string) => {
   const router = useRouter();
+  const { authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: () => deleteUser(userId),
+    mutationFn: async () => {
+      return handleMutationWithAuthCheck<
+        { userId: string },
+        ResponseDelUser<null>
+      >(deleteUser, { userId }, authUser, isSubmittingRef);
+    },
     onMutate: async () => {
       const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"]);
 
@@ -93,8 +107,17 @@ export const useUpdateUser = (
   user: UserResponse,
   setOpen: (value: boolean) => void
 ) => {
+  const { authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
-    mutationFn: (data: userEditSchema) => updateUser(data as UserRequest),
+    mutationFn: (data: userEditSchema) => {
+      const updateData = data as UserRequest;
+      return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
+        updateUser,
+        updateData,
+        authUser,
+        isSubmittingRef
+      );
+    },
     onSuccess: () => {
       setOpen(false);
       if (user) {

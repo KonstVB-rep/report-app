@@ -1,9 +1,11 @@
+import { Prisma } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { getDepartmentsWithUsersQuery } from "../api/queryFn";
+import { getDepartmentsWithUsers } from "../api";
 
 export const useGetDepartmentsWithUsers = () => {
   const { authUser, isAuth } = useStoreUser();
@@ -12,17 +14,32 @@ export const useGetDepartmentsWithUsers = () => {
     queryKey: ["depsWithUsers"],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
-        return await getDepartmentsWithUsersQuery();
+        await checkAuthorization(authUser?.id);
+        return await getDepartmentsWithUsers();
       } catch (error) {
-        console.log(error, "Ошибка useGetDepartmentsWithUsers");
-        if ((error as Error).message === "Failed to fetch") {
+        console.error("Ошибка useGetDepartmentsWithUsers:", error);
+
+        // Обработка сетевых ошибок
+        if (error instanceof Error && error.message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
-        } else {
-          TOAST.ERROR((error as Error).message);
+          return null;
         }
+
+        // Обработка Prisma ошибок
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          TOAST.ERROR(`Prisma ошибка: ${error.code}`);
+        } else if (error instanceof Prisma.PrismaClientValidationError) {
+          TOAST.ERROR("Ошибка валидации данных");
+        } else if (error instanceof Prisma.PrismaClientInitializationError) {
+          TOAST.ERROR("Ошибка подключения к базе");
+        }
+        // Остальные ошибки
+        else if (error instanceof Error) {
+          TOAST.ERROR(error.message);
+        } else {
+          TOAST.ERROR("Неизвестная ошибка");
+        }
+
         return null;
       }
     },

@@ -78,7 +78,9 @@ const AppSidebar = () => {
   };
 
   if (!departments || !departments.length) {
-    return null;
+    return (
+      <Sidebar className="top-0 !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-primary-foreground"></Sidebar>
+    );
   }
 
   return (

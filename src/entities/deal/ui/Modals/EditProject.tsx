@@ -22,11 +22,11 @@ const EditProject = ({
   close,
   id,
   isInvalidate = false,
-  titleForm = "Создать проект"
+  titleForm = "Создать проект",
 }: {
   close: Dispatch<SetStateAction<void>>;
   id: string;
-  isInvalidate:boolean
+  isInvalidate: boolean;
 }) => {
   return (
     <DialogContent
@@ -37,7 +37,12 @@ const EditProject = ({
         <DialogTitle className="sr-only">Редактировать проект</DialogTitle>
         <DialogDescription></DialogDescription>
       </DialogHeader>
-      <EditProjectForm close={close} dealId={id} isInvalidate={isInvalidate} titleForm={titleForm}/>
+      <EditProjectForm
+        close={close}
+        dealId={id}
+        isInvalidate={isInvalidate}
+        titleForm={titleForm}
+      />
     </DialogContent>
   );
 };

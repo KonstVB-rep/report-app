@@ -2,29 +2,22 @@ import { cookies } from "next/headers";
 
 import { SignJWT } from "jose";
 
-if (!process.env.JWT_SECRET_KEY || !process.env.REFRESH_SECRET_KEY) {
-  throw new Error("JWT_SECRET_KEY or REFRESH_SECRET_KEY is not defined");
-}
-
-if (!process.env.NODE_ENV) {
-  throw new Error("NEXT_PUBLIC_NODE_ENV is not defined");
-}
-
 export const generateTokens = async (
   userId: string,
   departmentId: string | number
 ) => {
-  // Генерация access token
-  const accessToken = await new SignJWT({ userId, departmentId })
-    .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("7d") // 1 день
-    .sign(new TextEncoder().encode(process.env.JWT_SECRET_KEY)); // Подпись токена с секретом
+  // Параллельная генерация токенов
+  const [accessToken, refreshToken] = await Promise.all([
+    new SignJWT({ userId, departmentId })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("7d")
+      .sign(new TextEncoder().encode(process.env.JWT_SECRET_KEY)),
 
-  // Генерация refresh token
-  const refreshToken = await new SignJWT({ userId, departmentId })
-    .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("30d")
-    .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)); // Подпись токена с секретом
+    new SignJWT({ userId, departmentId })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("30d")
+      .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)),
+  ]);
 
   const cookiesStore = await cookies();
 
@@ -32,13 +25,13 @@ export const generateTokens = async (
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 60 * 60 * 24,
+    maxAge: 60 * 60 * 24, // 1 день
   });
   cookiesStore.set("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: 60 * 60 * 24 * 30, // 30 дней
   });
 
   return { accessToken, refreshToken };

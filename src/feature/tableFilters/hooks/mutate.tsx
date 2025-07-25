@@ -3,6 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 
 import { getQueryClient } from "@/app/provider/query-provider";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -12,23 +14,24 @@ import {
   selectFilter,
   updateFilter,
 } from "../api";
+import {
+  DeleteFilterReturnType,
+  SaveFilterType,
+  UpdateFilterDataType,
+} from "../types";
 
 const queryClient = getQueryClient();
 
 export const useSaveFilter = (setOpen: (value: boolean) => void) => {
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
-    mutationFn: ({
-      ownerId,
-      data,
-    }: {
-      ownerId: string;
-      data: Omit<UserFilter, "createdAt" | "updatedAt" | "id" | "userId">;
-    }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return saveFilter(ownerId, data);
+    mutationFn: (saveData: SaveFilterType) => {
+      return handleMutationWithAuthCheck<SaveFilterType, UserFilter>(
+        saveFilter,
+        saveData,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -47,18 +50,17 @@ export const useSaveFilter = (setOpen: (value: boolean) => void) => {
 };
 
 export const useUpdateFilter = () => {
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
     mutationFn: ({
       data,
     }: {
       data: Omit<UserFilter, "createdAt" | "updatedAt">;
     }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не найден");
-      }
-
-      return updateFilter(data);
+      return handleMutationWithAuthCheck<
+        UpdateFilterDataType,
+        UserFilter | undefined
+      >(updateFilter, data, authUser, isSubmittingRef);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -74,13 +76,13 @@ export const useUpdateFilter = () => {
 };
 
 export const useDeleteFilter = () => {
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
     mutationFn: (filterId: string) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не найден");
-      }
-      return deleteFilter(filterId);
+      return handleMutationWithAuthCheck<
+        { id: string },
+        DeleteFilterReturnType
+      >(deleteFilter, { id: filterId }, authUser, isSubmittingRef);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
