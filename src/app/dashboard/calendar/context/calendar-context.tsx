@@ -10,7 +10,7 @@ import React, {
   useContext,
   useState,
 } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { Resolver, useForm, UseFormReturn } from "react-hook-form";
 
 import {
   EventCalendarFormSchema,
@@ -60,7 +60,7 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
   const [editingId, setEditingId] = useState<string>("");
 
   const form = useForm<EventCalendarSchema>({
-    resolver: zodResolver(EventCalendarFormSchema),
+    resolver: zodResolver(EventCalendarFormSchema) as Resolver<EventCalendarSchema>,
     defaultValues: defaultValuesForm,
   });
 

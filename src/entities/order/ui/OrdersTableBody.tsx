@@ -13,12 +13,12 @@ import EditOrderContectMenu from "./EditOrderContectMenu";
 type TableComponentProps<T> = {
   table: ReturnType<typeof useReactTable<T>>;
   getRowLink?: (row: T & { id: string }, type: string) => string;
-  isExistActionDeal?: boolean;
+  hasEditDeleteActions?: boolean;
 };
 
 const OrdersTableBody = <T extends Record<string, unknown>>({
   table,
-  isExistActionDeal = true,
+  hasEditDeleteActions = true,
 }: TableComponentProps<T>) => {
   const rowCount = table.getRowModel().rows.length;
   const hasRows = rowCount > 0;
@@ -58,7 +58,7 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
       return (
         <ContextRowTable
           key={row.id}
-          isExistActionDeal={isExistActionDeal}
+          hasEditDeleteActions={hasEditDeleteActions}
           modals={(setOpenModal) => ({
             edit: (
               <EditOrderContectMenu
@@ -80,7 +80,7 @@ const OrdersTableBody = <T extends Record<string, unknown>>({
         </ContextRowTable>
       );
     },
-    [isExistActionDeal, renderRowCells]
+    [hasEditDeleteActions, renderRowCells]
   );
 
   return (

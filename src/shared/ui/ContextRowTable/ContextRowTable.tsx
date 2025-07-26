@@ -21,7 +21,7 @@ import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 
 type ContextMenuTableProps = {
   children: React.ReactNode;
-  isExistActionDeal?: boolean;
+  hasEditDeleteActions?: boolean;
   modals?: (
     setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>
   ) => {
@@ -34,7 +34,7 @@ type ContextMenuTableProps = {
 
 const ContextRowTable = ({
   children,
-  isExistActionDeal = true,
+  hasEditDeleteActions = true,
   modals = () => ({}),
   path = "",
 }: ContextMenuTableProps) => {
@@ -60,7 +60,7 @@ const ContextRowTable = ({
               </ContextMenuItem>
             )}
 
-            {isExistActionDeal && (
+            {hasEditDeleteActions && (
               <ProtectedByDepartmentAffiliation>
                 <ContextMenuItem
                   onClick={() => setOpenModal("edit")}

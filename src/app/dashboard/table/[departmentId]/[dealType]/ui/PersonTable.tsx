@@ -13,6 +13,7 @@ import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import NotFoundByPosition from "@/shared/ui/Redirect/NotFoundByPosition";
+import { DealBase } from "@/shared/ui/Table/model/types";
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
@@ -26,14 +27,14 @@ const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   loading: () => <TableRowsSkeleton />,
 });
 
-interface PersonTableProps<T> {
+interface PersonTableProps<T extends DealBase> {
   data: T[];
   type: DealType;
   columns: ColumnDef<T>[];
   getRowLink?: (row: T, type: string) => string;
 }
 
-const PersonTable = <T extends { id: string }>({
+const PersonTable = <T extends DealBase>({
   data,
   type,
   columns,
@@ -58,14 +59,9 @@ const PersonTable = <T extends { id: string }>({
 
           {isPageAuthuser && <ButtonsGroupTable />}
           <DataTable
-            columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-            data={data as Record<string, unknown>[]}
-            getRowLink={
-              getRowLink as (
-                row: Record<string, unknown>,
-                type: string
-              ) => string
-            }
+            columns={columns as ColumnDef<DealBase>[]}
+            data={data as DealBase[]}
+            getRowLink={getRowLink as (row: DealBase, type: string) => string}
             type={type}
           />
         </>

@@ -60,7 +60,7 @@
 // interface DataTableProps<TData, TValue = unknown> {
 //   columns: ColumnDef<TData, TValue>[];
 //   data: TData[];
-//   isExistActionDeal?: boolean;
+//   hasEditDeleteActions?: boolean;
 // }
 
 // const handleExport = async <
@@ -79,7 +79,7 @@
 // const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
 //   columns,
 //   data,
-//   isExistActionDeal = true,
+//   hasEditDeleteActions = true,
 // }: DataTableProps<TData, TValue>) => {
 //   const { dealType } = useParams();
 
@@ -215,7 +215,7 @@
 //         {data?.length ? (
 //           <OrdersTableBody
 //             table={table}
-//             isExistActionDeal={isExistActionDeal}
+//             hasEditDeleteActions={hasEditDeleteActions}
 //           />
 //         ) : (
 //           <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">

@@ -193,7 +193,7 @@ body {
 }
 
 .td {
-  @apply p-2 text-center;
+  @apply p-2 text-center inline-grid items-center;
 }
 
 td:has(.abs-element) {

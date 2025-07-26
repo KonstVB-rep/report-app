@@ -19,7 +19,7 @@ const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   columns: ColumnDef<T, unknown>[];
   data: T[];
   getRowLink: (row: T, type: DealType) => string;
-  isExistActionDeal: boolean;
+  hasEditDeleteActions: boolean;
   type: DealType;
 }) => JSX.Element;
 
@@ -53,7 +53,7 @@ const SummaryTableTemplate = <TData extends { id: string }>({
         columns={columns}
         data={data}
         getRowLink={getRowLink}
-        isExistActionDeal={false}
+        hasEditDeleteActions={false}
         type={type}
       />
     </DealTableTemplate>

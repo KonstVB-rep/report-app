@@ -97,8 +97,9 @@ const FiltersManagementContent = () => {
     }
   }, [defaultCheckedFilter, filterSelect]);
 
+
   return (
-    <MotionDivY className="flex items-center gap-2">
+    <div className="flex items-center gap-2">
       {searchParams.size > 0 && (
         <HoverCardComponent
           title={<Settings2 />}
@@ -178,7 +179,7 @@ const FiltersManagementContent = () => {
           </RadioGroup>
         </HoverCardComponent>
       )}
-    </MotionDivY>
+    </div>
   );
 };
 

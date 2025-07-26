@@ -21,11 +21,10 @@ import {
 
 
 export const downloadToExcel = async <
-  TData extends Record<string, unknown>,
-  TValue = unknown,
+  TData,
 >(
   table: Table<TData>,
-  columns: ColumnDef<TData, TValue>[],
+  columns: ColumnDef<TData>[],
   options?: {
     fileName?: string;
     sheetName?: string;

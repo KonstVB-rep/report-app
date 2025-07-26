@@ -72,7 +72,7 @@ type MultiSelectProps = React.ComponentPropsWithoutRef<
   onValueChange?: (value: string[], items: MultiSelectOptionItem[]) => void;
   onSelect?: (value: string, item: MultiSelectOptionItem) => void;
   onDeselect?: (value: string, item: MultiSelectOptionItem) => void;
-  defaultValue?: string[];
+  defaultValue?: string[] | undefined;
   onSearch?: (keyword?: string | undefined) => void;
   filter?: boolean | ((keyword: string, current: string) => boolean);
   disabled?: boolean;
