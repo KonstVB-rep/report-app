@@ -15,10 +15,10 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
   {
     id: "rowNumber",
     header: "№",
+    accessorKey:"rowNumber",
     cell: ({ row }) => row.index + 1,
     enableHiding: false,
     enableSorting: false,
-    accessorFn: () => "",
   },
   {
     id: "dateRequest",
@@ -58,7 +58,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
 
       return true;
     },
-    accessorFn: (row: OrderResponse) => row.dateRequest,
   },
   {
     id: "nameDeal",
@@ -66,7 +65,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
     header: "Название сделки",
     cell: (info: CellContext<OrderResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: OrderResponse) => row.nameDeal,
   },
   {
     id: "contact",
@@ -76,7 +74,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
     minSize: 300,
     cell: (info: CellContext<OrderResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: OrderResponse) => row.contact,
   },
   {
     id: "phone",
@@ -88,7 +85,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
       );
     },
     enableHiding: true,
-    accessorFn: (row: OrderResponse) => row.phone,
   },
   {
     id: "email",
@@ -98,7 +94,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
       <span className="whitespace-nowrap">{info.getValue() as string}</span>
     ),
     enableHiding: true,
-    accessorFn: (row: OrderResponse) => row.email,
   },
 
   {
@@ -110,7 +105,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
     cell: (info: CellContext<OrderResponse, unknown>) => info.getValue(), //тег
     enableSorting: false,
     enableHiding: true,
-    accessorFn: (row: OrderResponse) => row.comments,
   },
   {
     id: "orderStatus",
@@ -124,7 +118,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
     }, //тег
     enableSorting: false,
     enableHiding: true,
-    accessorFn: (row: OrderResponse) => row.orderStatus,
   },
   {
     id: "manager",
@@ -158,7 +151,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
       const userIdOfProject = row.original.userId;
       return filterValues.includes(userIdOfProject);
     },
-    accessorFn: (row: OrderResponse) => row.manager,
   },
   {
     id: "dealType",
@@ -169,7 +161,6 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
       return OrderType[dealType];
     },
     enableHiding: true,
-    accessorFn: (row: OrderResponse) => row.type,
   },
   {
     id: "resource",
@@ -180,6 +171,5 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
     // meta: {
     //   hidden: true,
     // },
-    accessorFn: (row: OrderResponse) => row.resource,
   },
 ];

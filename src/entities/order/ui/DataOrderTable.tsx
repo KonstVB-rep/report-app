@@ -59,10 +59,9 @@ interface DataTableProps<TData, TValue = unknown> {
 
 const handleExport = async <
   TData extends Record<string, unknown>,
-  TValue = unknown,
 >(
   table: Table<TData>,
-  columns: ColumnDef<TData, TValue>[]
+  columns: ColumnDef<TData>[]
 ) => {
   const { downloadToExcel } = await import(
     "@/shared/ui/Table/excel/downLoadToExcel"
@@ -70,11 +69,11 @@ const handleExport = async <
   downloadToExcel(table, columns);
 };
 
-const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
+const DataOrderTable = <TData extends Record<string, unknown>>({
   columns,
   data,
   hasEditDeleteActions = true,
-}: DataTableProps<TData, TValue>) => {
+}: DataTableProps<TData>) => {
   const { dealType } = useParams();
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -160,7 +159,7 @@ const DataOrderTable = <TData extends Record<string, unknown>, TValue>({
             >
               <Button
                 variant={"ghost"}
-                onClick={() => handleExport<TData, TValue>(table, columns)}
+                onClick={() => handleExport<TData>(table, columns)}
                 className="w-fit border p-2 hover:bg-slate-700"
                 title="Export to XLSX"
               >

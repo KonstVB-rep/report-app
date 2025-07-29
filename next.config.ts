@@ -42,10 +42,14 @@ const nextConfig: NextConfig = {
       // Работа с данными
       "@tanstack/react-table",
       "@tanstack/react-query",
+      "@tanstack/react-virtual",
 
       // Другое
       "react-day-picker",
       "react-hook-form",
+      "react-starfield",
+      "react-dropzone",
+      "@fullcalendar/*"
     ],
   },
 
