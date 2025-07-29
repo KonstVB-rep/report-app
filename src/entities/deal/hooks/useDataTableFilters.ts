@@ -23,7 +23,7 @@ const useDataTableFilters = () => {
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState('')
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const [selectedColumns, setSelectedColumns] = useState<string[]>(() =>
     utilsDataTable.transformParamsListToSFiltersObj(
@@ -117,7 +117,8 @@ const useDataTableFilters = () => {
     columnVisibility,
     setColumnVisibility,
     includedColumns,
-    globalFilter, setGlobalFilter
+    globalFilter,
+    setGlobalFilter,
   };
 };
 

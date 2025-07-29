@@ -1,6 +1,7 @@
+"use client";
+
 import { logout } from "@/feature/auth/logout";
 import axiosInstance from "@/shared/api/axiosInstance";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { AuthError } from "./customErrors";
 
@@ -8,20 +9,23 @@ export interface TokenCheckResponse {
   isValid: boolean;
 }
 
-export const checkTokens = async (): Promise<void> => {
+export const checkTokens = async (): Promise<boolean> => {
   try {
-    const res = await axiosInstance.get<TokenCheckResponse>("/check-tokens", {
-      withCredentials: true,
-    });
+    const { data } = await axiosInstance.get<TokenCheckResponse>(
+      "/check-tokens",
+      {
+        withCredentials: true,
+      }
+    );
 
-    const { isValid } = res.data;
-
-    if (!isValid) {
-      TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-      logout();
-      return;
+    if (!data.isValid) {
+      await logout();
+      throw new AuthError("Сессия недействительна");
     }
-  } catch {
-    throw new AuthError();
+
+    return true;
+  } catch (error) {
+    console.error("Ошибка проверки токенов:", error);
+    throw error;
   }
 };

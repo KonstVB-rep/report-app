@@ -47,7 +47,6 @@ const FiltersBlock = ({ value, table, type }: FiltersBlockProps) => {
             onClearDateFilter={handleClearDateFilter}
             value={value}
           />
-
         </div>
       </div>
 

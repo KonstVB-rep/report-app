@@ -358,24 +358,14 @@ export const useGetContractsUser = (userId: string | undefined) => {
 export const useGetDealsByDateRange = (
   userId: string,
   range: DateRange,
-  dealType: DealType,
   departmentId: string
 ) => {
   const { authUser } = useStoreUser();
   return useQuery({
-    queryKey: ["dealsByRange", userId, range, dealType, departmentId],
+    queryKey: ["dealsByRange", userId, range, departmentId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
-
-        return (
-          (await getDealsByDateRange(
-            userId as string,
-            range,
-            dealType,
-            departmentId
-          )) ?? []
-        );
+        return await getDealsByDateRange(userId as string, range, departmentId);
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -386,8 +376,8 @@ export const useGetDealsByDateRange = (
         throw error;
       }
     },
-    enabled: !!userId,
+    enabled: !!userId && !!authUser?.id && !!departmentId && !!range,
     staleTime: 1000 * 60,
-    refetchInterval: 60 * 1000 * 5,
+    // refetchInterval: 60 * 1000 * 5,
   });
 };

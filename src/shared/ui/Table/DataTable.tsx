@@ -1,23 +1,8 @@
 "use client";
 
 import { PermissionEnum } from "@prisma/client";
-import { 
-  // RankingInfo,
-   rankItem } from "@tanstack/match-sorter-utils";
-import {
-  ColumnDef,
-  FilterFn,
-  // getCoreRowModel,
-  // getExpandedRowModel,
-  // getFilteredRowModel,
-  // getSortedRowModel,
-  // Row,
-  // SortingState,
-  Table,
-  // useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef, Table } from "@tanstack/react-table";
 
-// import { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 
 import dynamic from "next/dynamic";
@@ -26,20 +11,18 @@ import { useParams } from "next/navigation";
 import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-// import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { DealTypeLabels } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import { DataTableFiltersProvider } from "@/feature/tableFilters/context/DataTableFiltersProvider";
-// import { DataTableFiltersContextType } from "@/feature/tableFilters/context/useDataTableFiltersContext";
 import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
+import { useTableState } from "@/shared/hooks/useTableState";
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
 import DebouncedInput from "../DebouncedInput";
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
-import TableComponent from "./TableComponent";
 import { DealBase } from "./model/types";
-import { useTableState } from "@/shared/hooks/useTableState";
- 
+import TableComponent from "./TableComponent";
+
 const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
   ssr: false,
   loading: () => (
@@ -49,39 +32,12 @@ const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
   ),
 });
 
-
-
-const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value);
-
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  });
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed;
-};
-
-// declare module '@tanstack/react-table' {
-//   //add fuzzy filter to the filterFns
-//   interface FilterFns {
-//     fuzzy: FilterFn<unknown>
-//   }
-//   interface FilterMeta {
-//     itemRank: RankingInfo
-//   }
-// }
-
-const handleExport = async <
-  TData,
->(
+const handleExport = async <TData,>(
   table: Table<TData>,
   columns: ColumnDef<TData>[],
   tableType?: string
 ) => {
-  const { downloadToExcel } = await import("./exceljs/downLoadToExcel");
+  const { downloadToExcel } = await import("./excel/downLoadToExcel");
   downloadToExcel(table, columns, { tableType });
 };
 
@@ -93,7 +49,6 @@ interface DataTableProps<T extends DealBase> {
   hasEditDeleteActions?: boolean;
 }
 
-// Обратите внимание на запятую после T - это синтаксис TypeScript для generic-компонентов
 const DataTable = <T extends DealBase>({
   columns,
   data,
@@ -103,102 +58,20 @@ const DataTable = <T extends DealBase>({
 }: DataTableProps<T>) => {
   const { dealType } = useParams();
 
-  // const [sorting, setSorting] = useState<SortingState>([]);
+  const { table, filtersContextValue, openFilters, setGlobalFilter } =
+    useTableState(data, columns);
 
-  // const memoizedData = useMemo(() => data, [data]);
-  // const memoizedColumns = useMemo(() => columns, [columns]);
-
-  // const {
-  //   selectedColumns,
-  //   setSelectedColumns,
-  //   filterValueSearchByCol,
-  //   setFilterValueSearchByCol,
-  //   openFilters,
-  //   setOpenFilters,
-  //   handleDateChange,
-  //   handleClearDateFilter,
-  //   columnFilters,
-  //   setColumnFilters,
-  //   columnVisibility,
-  //   setColumnVisibility,
-  //   includedColumns,
-  //   globalFilter,
-  //   setGlobalFilter,
-  // } = useDataTableFilters();
-
-  const {table,filtersContextValue, openFilters,setGlobalFilter} = useTableState(data, columns)
-
-
-// Конкретные значения:
-const {
-  columnFilters,    // Активные фильтры колонок
-  globalFilter,     // Значение глобального фильтра
-} = table.getState();
+  const { columnFilters, globalFilter } = table.getState();
 
   const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
     | DateRange
     | undefined;
 
-     // Получаем текущие данные (с учётом всех применённых фильтров/сортировок)
-  const currentData = table.getRowModel().rows.map(row => row.original);
+  // Получаем текущие данные (с учётом всех применённых фильтров/сортировок)
+  const currentData = table.getRowModel().rows.map((row) => row.original);
 
   // Получаем исходные данные (без фильтров/сортировок)
-  const originalData = table.getCoreRowModel().rows.map(row => row.original);
-
-  // const table = useReactTable({
-  //   data: memoizedData,
-  //   columns: memoizedColumns,
-  //   filterFns: {
-  //     fuzzy: fuzzyFilter,
-  //   },
-  //   onColumnFiltersChange: setColumnFilters,
-  //   onColumnVisibilityChange: setColumnVisibility,
-  //   getFilteredRowModel: getFilteredRowModel(),
-  //   getSortedRowModel: getSortedRowModel(),
-  //   onSortingChange: setSorting,
-  //   getCoreRowModel: getCoreRowModel(),
-  //   enableColumnResizing: true,
-  //   columnResizeMode: "onChange",
-  //   onGlobalFilterChange: setGlobalFilter,
-  //   globalFilterFn: "includesString",
-  //   debugTable: true,
-  //   debugHeaders: true,
-  //   debugColumns: true,
-  //   state: {
-  //     sorting,
-  //     columnFilters,
-  //     globalFilter,
-  //     columnVisibility: {
-  //       ...columnVisibility,
-  //       user: false,
-  //       // resource: false // Скрываем колонку с id 'user'
-  //     },
-  //   },
-  //   meta: {
-  //     columnVisibility: {
-  //       resource: false,
-  //       // user: false,
-  //     },
-  //   },
-  // });
-
-  // const filtersContextValue: DataTableFiltersContextType<T> = {
-  //   selectedColumns,
-  //   setSelectedColumns,
-  //   filterValueSearchByCol,
-  //   setFilterValueSearchByCol,
-  //   openFilters,
-  //   setOpenFilters,
-  //   handleDateChange,
-  //   handleClearDateFilter,
-  //   columnFilters,
-  //   columnVisibility,
-  //   setColumnFilters,
-  //   setColumnVisibility,
-  //   includedColumns,
-  //   columns: memoizedColumns,
-  // };
-
+  const originalData = table.getCoreRowModel().rows.map((row) => row.original);
   return (
     <DataTableFiltersProvider value={filtersContextValue}>
       <div className="relative grid w-full overflow-auto rounded-lg border bg-background p-2 auto-rows-max">
@@ -209,9 +82,7 @@ const {
             >
               <Button
                 variant={"ghost"}
-                onClick={() =>
-                  handleExport<T>(table, columns, type)
-                }
+                onClick={() => handleExport<T>(table, columns, type)}
                 className="w-fit border p-2 hover:bg-slate-700"
                 title="Export to XLSX"
               >
@@ -254,6 +125,7 @@ const {
             table={table}
             getRowLink={getRowLink}
             hasEditDeleteActions={hasEditDeleteActions}
+            openFilters={openFilters}
           />
         ) : (
           <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">

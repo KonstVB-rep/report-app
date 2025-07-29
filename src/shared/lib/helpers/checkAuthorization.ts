@@ -5,6 +5,5 @@ export const checkAuthorization = async (authUserId: string | undefined) => {
     throw new Error("Пользователь не авторизован");
   }
 
-  // Проверка сессии
   await checkTokens();
 };

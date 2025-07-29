@@ -39,11 +39,8 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
 
   const [open, setOpen] = useState(false);
 
-  // Простая проверка — мемоизация не нужна, так как простое сравнение
   const isActiveDepartment = item.id === Number(params.departmentId);
 
-  // Мемоизируем обработчик, чтобы не создавать новую функцию на каждый рендер
-  // и избежать лишних ререндеров дочерних компонентов, которые принимают эту функцию
   const handleDepartmentClick = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();

@@ -6,5 +6,6 @@ export const requireAuth = async (): Promise<string> => {
   if (!userId) {
     throw new Error("Пользователь не авторизован");
   }
+
   return userId;
 };

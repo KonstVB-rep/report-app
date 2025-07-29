@@ -9,14 +9,13 @@ import { EventInputType } from "@/feature/calendar/types";
 
 import Loading from "./loading";
 
-const EventsList = dynamic(() => import("@/feature/calendar/ui/EventsList"));
+const EventsList = dynamic(() => import("@/feature/calendar/ui/EventsList"), {
+  ssr: false,
+  loading: () => <Loading />,
+});
 
 const UserEventsPage = () => {
-  const { data: events, isPending } = useGetEventsCalendarUser();
-
-  if (isPending) {
-    return <Loading />;
-  }
+  const { data: events } = useGetEventsCalendarUser();
 
   return (
     <section className="p-5">

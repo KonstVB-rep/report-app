@@ -34,7 +34,7 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     if (!bot?.botName) return;
 
     try {
-      await checkAuthorization();
+      await checkAuthorization(authUser?.id);
       setIsFetch(true);
       updateStatusChatBot({
         botId: bot.id,

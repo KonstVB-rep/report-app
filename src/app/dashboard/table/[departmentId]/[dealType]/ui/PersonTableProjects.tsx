@@ -7,10 +7,10 @@ import dynamic from "next/dynamic";
 import { useGetProjectsUser } from "@/entities/deal/hooks/query";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+import { DealBase } from "@/shared/ui/Table/model/types";
 
 import { columnsDataProject } from "../[userId]/model/columns-data-project";
 import PersonTable from "./PersonTable";
-import { DealBase } from "@/shared/ui/Table/model/types";
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/ui/AccessDeniedMessage"),
@@ -23,7 +23,7 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
     PermissionEnum.VIEW_USER_REPORT
   );
 
-  const { data: deals , isLoading   } = useGetProjectsUser(
+  const { data: deals } = useGetProjectsUser(
     hasAccess ? (userId as string) : undefined
   );
 
@@ -35,8 +35,6 @@ const PersonTableProject = ({ userId }: { userId: string }) => {
         error={{ message: "у вас нет доступа к этому разделу" }}
       />
     );
-
-    console.log(isLoading  , 'isPending')
 
   return (
     <PersonTable

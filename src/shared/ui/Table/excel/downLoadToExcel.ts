@@ -19,10 +19,7 @@ import {
   StatusRetailLabels,
 } from "@/entities/deal/lib/constants";
 
-
-export const downloadToExcel = async <
-  TData,
->(
+export const downloadToExcel = async <TData>(
   table: Table<TData>,
   columns: ColumnDef<TData>[],
   options?: {
@@ -34,7 +31,7 @@ export const downloadToExcel = async <
 ) => {
   try {
     // Динамический импорт с fallback для tree-shaking
-    const xlsx = await import('xlsx/dist/xlsx.mini.min');
+    const xlsx = await import("xlsx/dist/xlsx.mini.min");
     const { utils, writeFile } = xlsx;
 
     // Настройки по умолчанию

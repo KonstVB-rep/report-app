@@ -61,7 +61,7 @@ const EventsListTable = <T extends EventInputType>({
                         onClick: header.column.getToggleSortingHandler(),
                       }}
                     >
-                      <span className="text-start text-xs font-semibold first-letter:capitalize">
+                      <span className="text-center text-xs font-semibold first-letter:capitalize">
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()

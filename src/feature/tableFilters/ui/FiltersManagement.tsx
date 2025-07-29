@@ -21,7 +21,7 @@ type FilterManagmentProps = {
 
 const FiltersManagement = ({ openFilters }: FilterManagmentProps) => {
   const { setOpenFilters, columnFilters } = useDataTableFiltersContext();
-  console.log(columnFilters, 'columnFilters')
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ const FiltersManagement = ({ openFilters }: FilterManagmentProps) => {
           </div>
         )}
       </div>
-      { <FiltersManagementContent />}
+      {<FiltersManagementContent />}
     </>
   );
 };

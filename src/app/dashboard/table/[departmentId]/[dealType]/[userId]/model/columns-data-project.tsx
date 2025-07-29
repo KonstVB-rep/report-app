@@ -29,6 +29,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: false,
     enableSorting: false,
     accessorFn: () => "",
+    size: 80,
   },
   {
     id: "dateRequest",

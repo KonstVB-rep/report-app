@@ -27,6 +27,7 @@ const EditProject = ({
   close: Dispatch<SetStateAction<void>>;
   id: string;
   isInvalidate: boolean;
+  titleForm: string
 }) => {
   return (
     <DialogContent

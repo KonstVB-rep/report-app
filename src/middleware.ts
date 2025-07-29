@@ -162,5 +162,5 @@ export const config = {
     "/orders/:path*",
     "/",
   ],
-  runtime: "experimental-edge",
+  // runtime: "experimental-edge",
 };

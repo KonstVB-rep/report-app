@@ -1,7 +1,13 @@
 import dynamic from "next/dynamic";
 
-const SummaryTableProject = dynamic(() => import("../ui/SummaryTableProject"));
-const SummaryTableRetail = dynamic(() => import("../ui/SummaryTableRetail"));
+import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";
+
+const SummaryTableProject = dynamic(() => import("../ui/SummaryTableProject"), {
+  loading: () => <DealsSkeleton />,
+});
+const SummaryTableRetail = dynamic(() => import("../ui/SummaryTableRetail"), {
+  loading: () => <DealsSkeleton />,
+});
 
 const SummaryTablePage = async ({
   params,

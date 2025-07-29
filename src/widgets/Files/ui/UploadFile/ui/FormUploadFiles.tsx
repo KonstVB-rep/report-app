@@ -61,14 +61,14 @@ const FormUploadFiles = ({
             file ? (
               <animated.li
                 key={file.name}
-                style={styles} // Применяем анимации к каждому элементу
+                style={styles}
                 className="relative grid w-full justify-items-center gap-1 rounded-md border border-dashed p-2 pr-[48px]"
               >
                 <Button
                   type="button"
                   size="icon"
                   variant="destructive"
-                  onClick={() => handleSelectFile(file.name)} // Теперь TypeScript не ругается на тип
+                  onClick={() => handleSelectFile(file.name)} 
                   className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md"
                   title="Удалить из списка"
                 >

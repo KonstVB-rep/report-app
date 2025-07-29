@@ -5,9 +5,7 @@ import {
   DataTableFiltersContextType,
 } from "./useDataTableFiltersContext";
 
-export const DataTableFiltersProvider = <
-  T,
->({
+export const DataTableFiltersProvider = <T,>({
   children,
   value,
 }: {

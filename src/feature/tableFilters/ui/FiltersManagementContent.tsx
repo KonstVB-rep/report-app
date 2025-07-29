@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import HoverCardComponent from "@/shared/ui/HoverCard";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext";
@@ -96,7 +95,6 @@ const FiltersManagementContent = () => {
       filterSelect(defaultCheckedFilter);
     }
   }, [defaultCheckedFilter, filterSelect]);
-
 
   return (
     <div className="flex items-center gap-2">

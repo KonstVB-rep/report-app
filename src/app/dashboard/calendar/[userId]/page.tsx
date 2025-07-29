@@ -13,15 +13,24 @@ import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 import Loading from "./loading";
 
 const FullCalendarComponent = dynamic(
-  () => import("@/feature/calendar/ui/FullCalendarComponent")
+  () => import("@/feature/calendar/ui/FullCalendarComponent"),
+  {
+    loading: () => <Loading />,
+  }
 );
 
 const CalendarFormModal = dynamic(
-  () => import("@/feature/calendar/ui/CalendarFormModal")
+  () => import("@/feature/calendar/ui/CalendarFormModal"),
+  {
+    loading: () => <Loading />,
+  }
 );
 
 const CalendarMobile = dynamic(
-  () => import("@/feature/calendar/ui/CalendarMobile")
+  () => import("@/feature/calendar/ui/CalendarMobile"),
+  {
+    loading: () => <Loading />,
+  }
 );
 
 const CalendarPage = () => {
@@ -29,12 +38,7 @@ const CalendarPage = () => {
 
   const { isMobile } = useSidebar();
 
-  const { events, isPendingLoad } = useEventActionContext();
-
-  if (isPendingLoad) {
-    return <Loading />;
-  }
-
+  const { events } = useEventActionContext();
   return (
     <div className="p-5">
       <div className="flex gap-2 justify-between flex-wrap pb-4">

@@ -1,4 +1,4 @@
-import { DealType } from "@prisma/client";
+import { User } from "@prisma/client";
 
 import { useEffect, useState } from "react";
 
@@ -7,7 +7,10 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useGetDealsByDateRange } from "@/entities/deal/hooks/query";
 import { DateRange } from "@/entities/deal/types";
+import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants";
+import { formatterCurrency } from "@/shared/lib/utils";
 import { OverlayLocal } from "@/shared/ui/Overlay";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 const dateRanges = [
   { name: "week", title: "неделя" },
@@ -17,7 +20,7 @@ const dateRanges = [
   { name: "year", title: "год" },
 ];
 
-const ProfileDealsData = () => {
+const ProfileDealsData = ({ user }: { user: User }) => {
   const { userId, departmentId } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -32,23 +35,13 @@ const ProfileDealsData = () => {
     router.push(`?${params.toString()}`);
   };
 
-  const { data: projectsCount, isPending: isLoadingProjects } =
-    useGetDealsByDateRange(
-      userId as string,
-      dateRangeState,
-      DealType.PROJECT,
-      departmentId as string
-    );
+  const { data, isPending } = useGetDealsByDateRange(
+    userId as string,
+    dateRangeState,
+    departmentId as string
+  );
 
-  const { data: retailsCount, isPending: isLoadingRetails } =
-    useGetDealsByDateRange(
-      userId as string,
-      dateRangeState,
-      DealType.RETAIL,
-      departmentId as string
-    );
-
-  const isPendingData = isLoadingProjects || isLoadingRetails;
+  const isPendingData = isPending;
 
   useEffect(() => {
     const param = searchParams.get("dateRange") || "week";
@@ -56,38 +49,89 @@ const ProfileDealsData = () => {
     router.push(`?dateRange=${param.toString()}`);
   }, [router, searchParams]);
 
+  if ((NOT_MANAGERS_POSITIONS_VALUES as string[]).includes(user.position)) {
+    return null;
+  }
+
   return (
-    <div className="flex flex-col gap-2">
-      <p className="p-2">Сделки за период:</p>
-      <div className="flex gap-1">
-        {dateRanges.map((item) => (
-          <Button
-            key={item.name}
-            variant="outline"
-            onClick={() => handleClick(item.name as DateRange)}
-            className={`${dateRangeState === item.name && "border-2 border-foreground border-solid"}`}
-          >
-            {item.title}
-          </Button>
-        ))}
-      </div>
-      <div className="relative">
-        <OverlayLocal
-          isPending={isPendingData}
-          className="rounded-md opacity-100"
-        />
-        <div className="p-2 border flex justify-around rounded-md">
-          <span>Проекты: {projectsCount?.length || 0}</span> /{" "}
-          <span>Отказы: {retailsCount?.reject || 0}</span> /{" "}
-          <span>Закрыты: {retailsCount?.closed || 0}</span>
+    <ProtectedByPermissions
+      permissionArr={[
+        "DEAL_MANAGEMENT",
+        "VIEW_USER_REPORT",
+        "VIEW_UNION_REPORT",
+      ]}
+    >
+      <div className="flex flex-col gap-2">
+        <p className="p-2">Сделки за период:</p>
+        <div className="flex gap-1">
+          {dateRanges.map((item) => (
+            <Button
+              key={item.name}
+              variant="outline"
+              disabled={isPendingData}
+              onClick={() => handleClick(item.name as DateRange)}
+              className={`${dateRangeState === item.name && "border-2 border-foreground border-solid disabled:opacity-70"}`}
+            >
+              {item.title}
+            </Button>
+          ))}
         </div>
-        <div className="p-2 border flex justify-around rounded-md">
-          <span>Розница: {retailsCount?.length || 0}</span> /{" "}
-          <span>Отказы: {retailsCount?.reject || 0}</span> /{" "}
-          <span>Закрыты: {retailsCount?.closed || 0}</span>
+        <div className="relative">
+          <OverlayLocal
+            isPending={isPendingData}
+            className="rounded-md opacity-100"
+          />
+          <div className="p-2 border flex flex-col gap-2 justify-around rounded-md">
+            <div className="grid grid-cols-4 gap-2">
+              <span className="p-2 rounded-md bg-muted">
+                Проекты: {data?.projects?.length || 0}
+              </span>
+              <span className="p-2 rounded-md bg-muted border-red-600 border">
+                Отказы: {data?.projects?.reject || 0}
+              </span>
+              <span className="p-2 rounded-md bg-muted border-lime-600 border">
+                Оплачены: {data?.projects?.paid || 0}
+              </span>
+              <span className="p-2 rounded-md bg-muted border-green-800 border">
+                Закрыты: {data?.projects?.closed || 0}
+              </span>
+            </div>
+            <div className="p-2 rounded-md bg-muted">
+              Общая сумма все кп:{" "}
+              {formatterCurrency.format(Number(data?.projects.money.sumCp))}
+            </div>
+            <div className="p-2 rounded-md bg-muted">
+              Общая дельта:{" "}
+              {formatterCurrency.format(Number(data?.projects.money.sumDelta))}
+            </div>
+          </div>
+          <div className="p-2 border flex flex-col gap-2 justify-around rounded-md">
+            <div className="grid grid-cols-4 gap-2">
+              <span className="p-2 rounded-md bg-muted">
+                Розница: {data?.retails?.length || 0}
+              </span>
+              <span className="p-2 rounded-md bg-muted border-red-600 border">
+                Отказы: {data?.retails?.reject || 0}
+              </span>
+              <span className="p-2 rounded-md bg-muted border-lime-600 border">
+                Оплачены: {data?.retails?.paid || 0}
+              </span>
+              <span className="p-2 rounded-md bg-muted border-green-800 border">
+                Закрыты: {data?.retails?.closed || 0}
+              </span>
+            </div>
+            <div className="p-2 rounded-md bg-muted">
+              Общая сумма все КП:{" "}
+              {formatterCurrency.format(Number(data?.retails.money.sumCp))}
+            </div>
+            <div className="p-2 rounded-md bg-muted">
+              Общая дельта:{" "}
+              {formatterCurrency.format(Number(data?.retails.money.sumDelta))}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </ProtectedByPermissions>
   );
 };
 

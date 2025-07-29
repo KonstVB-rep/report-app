@@ -13,6 +13,8 @@ import {
   getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn";
 
+import Loading from "./loading";
+
 const DealsInWork = ["projects", "retails", "contracts"];
 
 const fetchData = async (
@@ -61,13 +63,19 @@ const PersonTablePage = async ({
   let Component;
   switch (dealType) {
     case "projects":
-      Component = dynamic(() => import("../ui/PersonTableProjects"));
+      Component = dynamic(() => import("../ui/PersonTableProjects"), {
+        loading: () => <Loading />,
+      });
       break;
     case "retails":
-      Component = dynamic(() => import("../ui/PersonTableRetails"));
+      Component = dynamic(() => import("../ui/PersonTableRetails"), {
+        loading: () => <Loading />,
+      });
       break;
     case "contracts":
-      Component = dynamic(() => import("../ui/PersonTableContracts"));
+      Component = dynamic(() => import("../ui/PersonTableContracts"), {
+        loading: () => <Loading />,
+      });
       break;
     default:
       return null;

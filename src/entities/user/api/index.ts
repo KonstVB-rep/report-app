@@ -293,7 +293,7 @@ export const getUser = async (
       permissions: userPermissions,
     };
 
-    return userWithDepartmentNameWithPermissions;
+    return userWithDepartmentNameWithPermissions ?? null;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

@@ -12,7 +12,7 @@ export const useGetUser = (
 ) => {
   const { authUser } = useStoreUser();
   return useQuery({
-    queryKey: ["user", userId],
+    queryKey: ["user", userId, authUser?.id],
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
@@ -26,7 +26,7 @@ export const useGetUser = (
         throw error;
       }
     },
-    enabled: !!userId,
+    enabled: !!userId && !!authUser?.id,
     retry: 0,
   });
 };

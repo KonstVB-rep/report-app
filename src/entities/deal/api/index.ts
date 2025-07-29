@@ -563,10 +563,10 @@ export const getAllDealsRequestSourceByDepartment = async (
 export const getDealsByDateRange = async (
   idDealOwner: string,
   range: DateRange,
-  dealType: DealType,
   departmentId: string
 ) => {
-  const data = await handleAuthorization();
+  const data = await handleAuthorization(); // Проверьте, что здесь нет ошибок
+
   const { user, userId } = data!;
 
   if (!idDealOwner) {
@@ -613,95 +613,94 @@ export const getDealsByDateRange = async (
     default:
       throw new Error("Некорректный диапазон дат");
   }
-  // Получаем ID департамента
-  const departmentIdValue =
-    departmentId !== undefined ? +departmentId : +user!.departmentId;
 
   startDate.setHours(0, 0, 0, 0);
+  console.log(startDate, "startDate");
 
-  // Общее условие
-  // const whereClause = {
-  //   userId: idDealOwner,
-  //   dateRequest: {
-  //     gte: startDate,
-  //     lte: now,
-  //   },
-  //   user: {
-  //     departmentId: departmentIdValue,
-  //   },
-  // };
-
-  let deals: ProjectResponse[] | RetailResponse[] = [];
-
-  // if (dealType === DealType.PROJECT) {
-  //   deals = (await prisma.project.findMany({
-  //     where: whereClause,
-  //     orderBy: {
-  //       dateRequest: "asc",
-  //     },
-  //   })) as unknown as ProjectResponse[];
-  // }
-
-  // if (dealType === DealType.RETAIL) {
-  //   deals = (await prisma.retail.findMany({
-  //     where: whereClause,
-  //     orderBy: {
-  //       dateRequest: "asc",
-  //     },
-  //   })) as unknown as RetailResponse[];
-  // }
-
-  if (dealType === DealType.PROJECT) {
-    deals = (await prisma.project.findMany({
-      where: {
-        dateRequest: {
-          gte: startDate,
-          lte: now,
-        },
-        projectManagers: {
-          some: {
-            userId: idDealOwner,
-            user: {
-              departmentId: departmentIdValue,
-            },
+  const dealsP = (await prisma.project.findMany({
+    where: {
+      dateRequest: {
+        gte: startDate,
+        lte: now,
+      },
+      projectManagers: {
+        some: {
+          userId: idDealOwner,
+          user: {
+            departmentId: Number(departmentId),
           },
         },
       },
-      orderBy: {
-        dateRequest: "asc",
-      },
-    })) as unknown as ProjectResponse[];
-  }
+    },
+    orderBy: {
+      dateRequest: "asc",
+    },
+  })) as unknown as ProjectResponse[];
 
-  if (dealType === DealType.RETAIL) {
-    deals = (await prisma.retail.findMany({
-      where: {
-        dateRequest: {
-          gte: startDate,
-          lte: now,
-        },
-        retailManagers: {
-          some: {
-            userId: idDealOwner,
-            user: {
-              departmentId: departmentIdValue,
-            },
+  const dealsR = (await prisma.retail.findMany({
+    where: {
+      dateRequest: {
+        gte: startDate,
+        lte: now,
+      },
+      retailManagers: {
+        some: {
+          userId: idDealOwner,
+          user: {
+            departmentId: Number(departmentId),
           },
         },
       },
-      orderBy: {
-        dateRequest: "asc",
-      },
-    })) as unknown as RetailResponse[];
-  }
+    },
+    orderBy: {
+      dateRequest: "asc",
+    },
+  })) as unknown as RetailResponse[];
 
-  const closedDeals = deals.filter((item) => item.dealStatus === "CLOSED");
-  const rejectDeals = deals.filter((item) => item.dealStatus === "REJECT");
+  const paidDealsP = dealsP.filter((item) => item.dealStatus === "PAID");
+  const closedDealsP = dealsP.filter((item) => item.dealStatus === "CLOSED");
+  const rejectDealsP = dealsP.filter((item) => item.dealStatus === "REJECT");
+  const paidDealsR = dealsR.filter((item) => item.dealStatus === "PAID");
+  const closedDealsR = dealsR.filter((item) => item.dealStatus === "CLOSED");
+  const rejectDealsR = dealsR.filter((item) => item.dealStatus === "REJECT");
+  const dealPwithMoney = dealsP.filter(
+    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID"
+  );
+  const dealRwithMoney = dealsR.filter(
+    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID"
+  );
+  const commercialOfferAmountsP = dealPwithMoney.reduce(
+    (acc, item) => {
+      acc.sumCp += Number(item.amountCP);
+      acc.sumDelta += Number(item.delta);
+      return acc;
+    },
+    { sumCp: 0, sumDelta: 0 }
+  );
+  const commercialOfferAmountsR = dealRwithMoney.reduce(
+    (acc, item) => {
+      acc.sumCp += Number(item.amountCP);
+      acc.sumDelta += Number(item.delta);
+      return acc;
+    },
+    { sumCp: 0, sumDelta: 0 }
+  );
 
   return {
-    length: deals.length,
-    reject: rejectDeals.length,
-    closed: closedDeals.length,
+    projects: {
+      length: dealsP.length,
+      reject: rejectDealsP.length,
+      paid: paidDealsP.length,
+      closed: closedDealsP.length,
+      money: commercialOfferAmountsP,
+    },
+    retails: {
+      length: dealsR.length,
+      reject: rejectDealsR.length,
+      paid: paidDealsR.length,
+      closed: closedDealsR.length,
+      money: commercialOfferAmountsR,
+    },
   };
 };
 

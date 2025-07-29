@@ -7,15 +7,19 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
+import Loading from "./loading";
+
 const ProjectItemInfo = dynamic(
   () => import("@/entities/deal/ui/ProjectInfo"),
-  { ssr: false }
+  { ssr: false, loading: () => <Loading /> }
 );
 const RetailItemInfo = dynamic(() => import("@/entities/deal/ui/RetailInfo"), {
   ssr: false,
+  loading: () => <Loading />,
 });
 const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
   ssr: false,
+  loading: () => <Loading />,
 });
 
 function renderDealInfoByType(dealType?: string) {

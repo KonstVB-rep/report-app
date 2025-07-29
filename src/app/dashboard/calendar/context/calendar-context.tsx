@@ -60,7 +60,9 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
   const [editingId, setEditingId] = useState<string>("");
 
   const form = useForm<EventCalendarSchema>({
-    resolver: zodResolver(EventCalendarFormSchema) as Resolver<EventCalendarSchema>,
+    resolver: zodResolver(
+      EventCalendarFormSchema
+    ) as Resolver<EventCalendarSchema>,
     defaultValues: defaultValuesForm,
   });
 

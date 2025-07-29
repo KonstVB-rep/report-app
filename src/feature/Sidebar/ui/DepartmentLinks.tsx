@@ -74,7 +74,7 @@ const LinkItem = memo(
         } relative flex items-center gap-2 overflow-hidden rounded-md p-1 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground`}
       >
         <p className="relative z-[1] flex h-full w-full items-center gap-2 rounded-sm p-2">
-          <Icon size={isActive ? 16 : 12} className="shrink-0" />
+          <Icon size={isActive ? 24 : 16} className="shrink-0" />
           {title}
         </p>
         {isActive && (

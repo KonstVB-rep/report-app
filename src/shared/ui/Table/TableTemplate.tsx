@@ -1,15 +1,14 @@
 import { DealType } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
-import {
-  useVirtualizer,
-  VirtualItem,
-  Virtualizer,
-} from "@tanstack/react-virtual";
-import React, { ReactNode, RefObject, useEffect, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+import React, { RefObject, useEffect, useState } from "react";
+
 import { useParams } from "next/navigation";
+
 import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
+
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -18,20 +17,21 @@ import {
 } from "@/components/ui/table";
 import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
+import { DealBase } from "./model/types";
 import RowInfoDialog from "./RowInfoDialog";
 import { getRowClassName } from "./TableComponent";
-import { DealBase } from "./model/types";
-
 
 type TableTemplateProps<T extends DealBase> = {
   table: ReturnType<typeof useReactTable<T>>;
-  // renderRow: (row: Row<T>) => ReactNode;
   className?: string;
-  tableContainerRef: React.RefObject<HTMLDivElement | null>;
+  tableContainerRef: RefObject<HTMLDivElement | null>;
   hasEditDeleteActions: boolean;
 };
-  const ROW_HEIGHT = 57;
+
+const ROW_HEIGHT = 57;
+
 const TableTemplate = <T extends DealBase>({
   table,
   className,
@@ -40,57 +40,62 @@ const TableTemplate = <T extends DealBase>({
 }: TableTemplateProps<T>) => {
   const { rows } = table.getRowModel();
 
-  const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
+  const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => ROW_HEIGHT, //estimate row height for accurate scrollbar dragging
+    estimateSize: () => ROW_HEIGHT,
     getScrollElement: () => tableContainerRef.current,
-    //measure dynamic row height, except in firefox because it measures table border height incorrectly
-    measureElement:
-      typeof window !== 'undefined' &&
-      navigator.userAgent.indexOf('Firefox') === -1
-        ? element => element?.getBoundingClientRect().height
-        : undefined,
-    overscan: 5,
-  })
+    overscan: 15,
+  });
 
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const totalSize = rowVirtualizer.getTotalSize();
 
+  const [isHydrating, setIsHydrating] = useState(true);
+
+  useEffect(() => {
+    setIsHydrating(false);
+  }, []);
 
   return (
-    <table 
-    className={`w-full grid border-separate border-spacing-0 border ${className}`}
+    <table
+      className={`w-full grid border-separate border-spacing-0 border ${className}`}
     >
       <TableHeader className="sticky top-0 z-10 bg-white dark:bg-zinc-800">
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id} style={{ display: "flex", width: "100%" }}>
+          <TableRow
+            key={headerGroup.id}
+            style={{ display: "flex", width: "100%" }}
+          >
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
                 style={{
-                  display: "flex",
-                  position: "relative",
                   width: header.getSize(),
                   minWidth: header.column.columnDef.minSize,
                 }}
-                colSpan={header.colSpan}
                 className="border-r border-zinc-600 !p-2"
               >
                 {header.isPlaceholder ? null : (
                   <div
-                    className={header.column.getCanSort()
-                      ? "cursor-pointer select-none flex items-center text-center justify-center w-full gap-1 h-full text-primary"
-                      : "flex items-center justify-center h-full w-full text-center text-primary"}
+                    className={
+                      header.column.getCanSort()
+                        ? "cursor-pointer select-none flex items-center justify-center gap-1 h-full text-primary"
+                        : "flex items-center justify-center h-full text-primary"
+                    }
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    <span className="text-start text-xs font-semibold first-letter:capitalize">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    <span className="text-xs font-semibold first-letter:capitalize">
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                     </span>
                     {header.column.getCanSort() && (
                       <span>
-                        {header.column.getIsSorted() === "asc" ? (
-                          <MoveUp className="ml-2 h-4 w-4" />
-                        ) : header.column.getIsSorted() === "desc" ? (
-                          <MoveDown className="ml-2 h-4 w-4" />
-                        ) : (
+                        {{
+                          asc: <MoveUp className="ml-2 h-4 w-4" />,
+                          desc: <MoveDown className="ml-2 h-4 w-4" />,
+                        }[header.column.getIsSorted() as string] ?? (
                           <ArrowDownUp className="ml-2 h-4 w-4" />
                         )}
                       </span>
@@ -103,22 +108,20 @@ const TableTemplate = <T extends DealBase>({
         ))}
       </TableHeader>
 
-      <TableBody
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          position: 'relative',
-        }}
-      >
-        {table.getRowModel().rows.length > 0 ? (
-          rowVirtualizer.getVirtualItems().map((virtualRow) => (
-            <TableBodyRow
-              key={virtualRow.index}
-              row={rows[virtualRow.index]}
-              virtualRow={virtualRow}
-              rowVirtualizer={rowVirtualizer}
-              hasEditDeleteActions={hasEditDeleteActions}
-            />
-          ))
+      <TableBody style={{ height: `${totalSize}px`, position: "relative" }}>
+        {isHydrating && <SkeletonTable />}
+        {rows.length > 0 && !isHydrating ? (
+          virtualItems.map((virtualRow) => {
+            const row = rows[virtualRow.index];
+            return (
+              <TableBodyRow
+                key={row.id}
+                row={row}
+                virtualRow={virtualRow}
+                hasEditDeleteActions={hasEditDeleteActions}
+              />
+            );
+          })
         ) : (
           <TableRow className="h-[50px]">
             <TableCell colSpan={table.getAllColumns().length} className="py-4">
@@ -135,22 +138,17 @@ const TableTemplate = <T extends DealBase>({
 
 type TableBodyRowProps<T> = {
   row: Row<T>;
-  virtualRow: VirtualItem;
-  rowVirtualizer: Virtualizer<HTMLDivElement, HTMLTableRowElement>;
+  virtualRow: { index: number; start: number };
   hasEditDeleteActions: boolean;
 };
 
 const TableBodyRow = <T extends DealBase>({
   row,
   virtualRow,
-  rowVirtualizer,
   hasEditDeleteActions,
 }: TableBodyRowProps<T>) => {
-  const rowRef = useRef<HTMLTableRowElement>(null);
   const { departmentId } = useParams();
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null);
-
-
 
   const handleOpenInfo = (cellId: string) => {
     setOpenFullInfoCell(openFullInfoCell === cellId ? null : cellId);
@@ -158,7 +156,6 @@ const TableBodyRow = <T extends DealBase>({
 
   return (
     <ContextRowTable
-      key={row.id}
       hasEditDeleteActions={hasEditDeleteActions}
       modals={(setOpenModal) => ({
         edit: (
@@ -179,16 +176,17 @@ const TableBodyRow = <T extends DealBase>({
       path={`/dashboard/deal/${departmentId}/${(row.original.type as DealType).toLowerCase()}/${row.original.id}`}
     >
       <TableRow
-          data-index={virtualRow.index} //needed for dynamic row height measurement
-        ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
-          style={{
-        position: 'absolute',
-        transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
-      }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          transform: `translateY(${virtualRow.start}px)`,
+        }}
         className={getRowClassName(row.original.dealStatus as string)}
-        data-reject={`${row.original.dealStatus === "REJECT"}`}
-        data-success={`${row.original.dealStatus === "PAID"}`}
-        data-closed={`${row.original.dealStatus === "CLOSED"}`}
+        data-reject={row.original.dealStatus === "REJECT"}
+        data-success={row.original.dealStatus === "PAID"}
+        data-closed={row.original.dealStatus === "CLOSED"}
       >
         {row.getVisibleCells().map((cell) => (
           <TableCell
@@ -202,7 +200,7 @@ const TableBodyRow = <T extends DealBase>({
             </span>
             {openFullInfoCell === cell.id && (
               <RowInfoDialog
-                isActive={!!openFullInfoCell}
+                isActive={true}
                 text={flexRender(cell.column.columnDef.cell, cell.getContext())}
                 closeFn={() => setOpenFullInfoCell(null)}
               />
@@ -215,3 +213,14 @@ const TableBodyRow = <T extends DealBase>({
 };
 
 export default TableTemplate;
+
+const SkeletonTable = () => (
+  <tr className="flex flex-col space-y-2">
+    {[...Array(5)].map((_, i) => (
+      <td
+        key={i}
+        className="h-[57px] w-full bg-muted rounded-md animate-pulse"
+      />
+    ))}
+  </tr>
+);

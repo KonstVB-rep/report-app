@@ -71,7 +71,6 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
         setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
       });
     }
-    setOpen(false);
   };
 
   return (

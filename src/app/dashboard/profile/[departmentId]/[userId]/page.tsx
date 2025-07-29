@@ -5,7 +5,6 @@ import { PermissionEnum } from "@prisma/client";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 import { DepartmentLabels } from "@/entities/department/types";
 import { useGetUser } from "@/entities/user/hooks/query";
 import { RolesUser } from "@/entities/user/model/objectTypes";
@@ -54,10 +53,10 @@ const ProfilePage = () => {
         <div className="grid w-full md:max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
           <div className="@container flex h-full min-w-[260px] flex-col justify-between">
             <UserCard
-              email={user.email}
-              username={user.username}
-              phone={user.phone}
-              position={user.position}
+              email={user?.email}
+              username={user?.username}
+              phone={user?.phone}
+              position={user?.position}
             />
             <ProtectedByPermissions
               permissionArr={[PermissionEnum.USER_MANAGEMENT]}
@@ -75,14 +74,16 @@ const ProfilePage = () => {
                 <span className="first-letter:capitalize">
                   {
                     DepartmentLabels[
-                      user.departmentName as keyof typeof DepartmentLabels
+                      user?.departmentName as keyof typeof DepartmentLabels
                     ]
                   }
                 </span>
               </p>
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Должность:</span>{" "}
-                <span className="first-letter:capitalize">{user.position}</span>
+                <span className="first-letter:capitalize">
+                  {user?.position}
+                </span>
               </p>
               <ProtectedByPermissions
                 permissionArr={[PermissionEnum.USER_MANAGEMENT]}
@@ -90,7 +91,7 @@ const ProfilePage = () => {
                 <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                   <span className="first-letter:capitalize">Роль:</span>{" "}
                   <span className="first-letter:capitalize">
-                    {RolesUser[user.role as keyof typeof RolesUser]}
+                    {RolesUser[user?.role as keyof typeof RolesUser]}
                   </span>
                 </p>
               </ProtectedByPermissions>
@@ -101,45 +102,35 @@ const ProfilePage = () => {
                   Последняя сессия:
                 </span>
                 <span>
-                  {user.lastlogin?.toLocaleDateString() || "--/--/--"}
+                  {user?.lastlogin?.toLocaleDateString() || "--/--/--"}
                 </span>
               </p>
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">
                   Дата регистрации:
                 </span>
-                <span>{user.createdAt?.toLocaleDateString()}</span>
+                <span>{user?.createdAt?.toLocaleDateString()}</span>
               </p>
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">
                   Дата обновления:
                 </span>
-                <span>{user.updatedAt?.toLocaleDateString()}</span>
+                <span>{user?.updatedAt?.toLocaleDateString()}</span>
               </p>
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Тел.:</span>
-                <span>{user.phone}</span>
+                <span>{user?.phone}</span>
               </p>
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Email:</span>
-                <span>{user.email}</span>
+                <span>{user?.email}</span>
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      <ProtectedByPermissions
-        permissionArr={[
-          "DEAL_MANAGEMENT",
-          "VIEW_USER_REPORT",
-          "VIEW_UNION_REPORT",
-        ]}
-      >
-        {!(NOT_MANAGERS_POSITIONS_KEYS as string[]).includes(user.position) && (
-          <ProfileDealsData />
-        )}
-      </ProtectedByPermissions>
+      <ProfileDealsData user={user} />
     </section>
   );
 };
