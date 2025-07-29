@@ -83,10 +83,10 @@ export type RetailResponseWithContactsAndFiles = RetailResponse & {
 
 export type Contact = {
   id: string;
-  email: string | null;
   name: string;
-  phone: string | null;
-  position: string | null;
+  phone?: string | null;
+  email?: string | null;
+  position?: string | null;
 };
 
 export type DealUnionType = "retail" | "project";

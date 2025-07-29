@@ -40,6 +40,7 @@ import {
 import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
 import ContactDeal from "../Modals/ContactDeal";
+import { Contact } from "../../types";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -141,7 +142,7 @@ const ProjectFormBody = <T extends FieldValues>({
           <div className="grid gap-2 px-2">
             <div className="grid sm:grid-cols-2 gap-2">
               <div className="flex flex-col gap-1">
-                <DatePickerFormField<UseFormReturn<T>>
+                <DatePickerFormField
                   name={"dateRequest" as Path<T>}
                   label="Дата запроса"
                   control={form.control}
@@ -166,7 +167,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   required
                 />
 
-                <SelectFormField<UseFormReturn<T>>
+                <SelectFormField
                   name={"direction" as Path<T>}
                   label="Направление"
                   control={form.control}
@@ -176,7 +177,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   required
                 />
 
-                <SelectFormField<UseFormReturn<T>>
+                <SelectFormField
                   name={"deliveryType" as Path<T>}
                   label="Тип поставки"
                   control={form.control}
@@ -195,7 +196,7 @@ const ProjectFormBody = <T extends FieldValues>({
                 />
 
                 <InputPhoneForm
-                  name="phone"
+                  name={"phone" as Path<T>}
                   label="Телефон"
                   control={form.control}
                   errorMessage={getError("phone")}
@@ -245,7 +246,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   placeholder="Дельта"
                 />
 
-                <SelectFormField<UseFormReturn<T>>
+                <SelectFormField
                   name={"dealStatus" as Path<T>}
                   label="Статус КП"
                   control={form.control}
@@ -254,7 +255,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   placeholder="Выберите статус КП"
                 />
 
-                <DatePickerFormField<UseFormReturn<T>>
+                <DatePickerFormField
                   name={"plannedDateConnection" as Path<T>}
                   label="Планируемый контакт"
                   control={form.control}
@@ -338,8 +339,8 @@ const ProjectFormBody = <T extends FieldValues>({
             onContactsChange={setContacts}
             selectedContacts={selectedContacts}
             setSelectedContacts={setSelectedContacts}
-            contacts={contacts as T[typeof contactsKey]}
-            contactsKey={contactsKey}
+            contacts={contacts as Contact[]}
+            contactsKey={contactsKey as string | null}
             handleDeleteContact={handleDeleteContact}
           />
         </div>

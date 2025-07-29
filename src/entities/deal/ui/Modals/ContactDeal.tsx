@@ -25,12 +25,12 @@ type ContactFieldError = {
 };
 
 type ContactDealProps = {
-  contacts: Contact[] | [];
-  onContactsChange: (contacts: ContactSchema["contacts"]) => void;
-  contactsKey: string | null | undefined;
+  contacts: Contact[];  
+  onContactsChange: (contacts: Contact[]) => void;
+  contactsKey: string | null | undefined;  
   handleDeleteContact: (id: string) => void;
-  selectedContacts: Contact[] | [];
-  setSelectedContacts: (contacts: ContactSchema["contacts"]) => void;
+  selectedContacts: Contact[]; 
+  setSelectedContacts: (contacts: Contact[]) => void;
 };
 
 const ContactDeal = ({

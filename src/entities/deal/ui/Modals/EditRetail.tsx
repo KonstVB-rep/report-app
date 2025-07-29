@@ -26,7 +26,7 @@ const EditRetail = ({
 }: {
   close: Dispatch<SetStateAction<void>>;
   id: string;
-  isInvalidate: boolean;
+  isInvalidate?: boolean;
   titleForm: string;
 }) => {
   return (

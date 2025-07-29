@@ -19,10 +19,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   experimental: {
-    scrollRestoration: false,
-     optimizeServerReact: false,
     
-    // Частичная статическая генерация
     serverActions: {
       allowedOrigins: [
         process.env.NEXT_PUBLIC_API_BASE_URL

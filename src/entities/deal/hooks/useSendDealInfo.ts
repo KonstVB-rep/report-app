@@ -3,7 +3,7 @@ import { FieldValues } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
-import { ContactSchema } from "../model/schema";
+import { Contact } from "../types";
 
 const useSendDealInfo = <T extends FieldValues>(
   onSubmit: (data: T) => void,
@@ -13,13 +13,13 @@ const useSendDealInfo = <T extends FieldValues>(
 
   const firstManagerId = managerId || userId;
 
-  const [contacts, setContacts] = useState<ContactSchema["contacts"]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [managers, setManagers] = useState<{ userId: string }[]>([
     { userId: firstManagerId as string },
   ]);
   const [firstManager, setFirstManager] = useState<string>("");
   const [selectedContacts, setSelectedContacts] = useState<
-    ContactSchema["contacts"]
+    Contact[]
   >([]);
   const [isAddContact, setIsAddContact] = useState(false);
 
