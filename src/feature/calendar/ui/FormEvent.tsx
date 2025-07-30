@@ -23,7 +23,7 @@ import TextareaForm from "@/shared/ui/TextareaForm";
 import { TOAST } from "@/shared/ui/Toast";
 
 type FormEventProps = {
-  events: EventInputType[] | undefined;
+  events: EventInputType[];
 };
 
 type HandleSubmitProps = {

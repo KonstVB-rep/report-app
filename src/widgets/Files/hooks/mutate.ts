@@ -78,7 +78,8 @@ export const useDownLoadFile = () => {
       if (!response?.data) {
         throw new Error("Файл не найден");
       }
-      const { data: fileData } = response.data;
+
+      const fileData = response.data;
       return saveBlobToFile(fileData, name);
     },
     onError: (error) => {
@@ -89,7 +90,7 @@ export const useDownLoadFile = () => {
         logout();
         return;
       }
-
+      console.log(error, 'error useDownLoadFile')
       const errorMessage =
         err.message === "Failed to fetch"
           ? "Ошибка соединения"
@@ -114,6 +115,7 @@ export const useDeleteFiles = (
       isSubmittingRef.current = true;
       try {
         await checkAuthorization(authUser?.id);
+        
         const responses = await Promise.all(
           data.map(({ localPath: filePath, id, dealType, userId, dealId }) =>
             deleteFile({ id, filePath, dealType, userId, dealId })

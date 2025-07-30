@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
+import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { getDepartmentsWithUsers } from "../api";
@@ -14,8 +14,19 @@ export const useGetDepartmentsWithUsers = () => {
     queryKey: ["depsWithUsers"],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
-        return await getDepartmentsWithUsers();
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+        const [tokenCheckResult, tasks] = await Promise.all([
+          checkTokens(),
+          getDepartmentsWithUsers(),
+        ]);
+        // Если проверка токенов прошла успешно, возвращаем задачи
+        if (tokenCheckResult) {
+          return tasks;
+        } else {
+          throw new Error("Сессия недействительна");
+        }
       } catch (error) {
         console.error("Ошибка useGetDepartmentsWithUsers:", error);
 

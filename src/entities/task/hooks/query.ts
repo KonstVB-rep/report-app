@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { getTask, getTasksDepartment, getUserTasks } from "../api";
+
+import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
 
 export const useGetTask = (taskId: string) => {
   const { authUser } = useStoreUser();
@@ -12,9 +13,16 @@ export const useGetTask = (taskId: string) => {
     queryKey: ["task", authUser?.id, taskId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
 
-        return await getTask(taskId as string);
+        if(!authUser?.id) {
+          throw new Error("Пользователь не авторизован")
+        }
+
+        return await executeWithTokenCheck(            
+          () => getTask(taskId as string)  
+        );
+
+
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
@@ -34,9 +42,14 @@ export const useGetUserTasks = () => {
     queryKey: ["userTasks", authUser?.id],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
 
-        return await getUserTasks(authUser!.id);
+         if(!authUser?.id) {
+          throw new Error("Пользователь не авторизован")
+        }
+
+         return await executeWithTokenCheck(            
+          () => getUserTasks(authUser!.id)  
+        );
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
@@ -56,10 +69,16 @@ export const useGetTasksDepartment = () => {
     queryKey: ["tasks", authUser?.id, authUser?.departmentId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if(!authUser?.id) {
+          throw new Error("Пользователь не авторизован")
+        }
 
-        const departmentId = authUser!.departmentId;
-        return await getTasksDepartment(departmentId);
+        const departmentId = authUser.departmentId;
+
+        return await executeWithTokenCheck(            
+          () => getTasksDepartment(departmentId)  
+        );
+
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");

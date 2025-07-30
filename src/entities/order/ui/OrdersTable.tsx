@@ -1,5 +1,6 @@
 "use client";
 
+import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { JSX } from "react";
@@ -24,6 +25,7 @@ const DataOrderTable = dynamic(() => import("./DataOrderTable"), {
 }) as <T extends { id: string }>(props: {
   columns: ColumnDef<T, unknown>[];
   data: T[];
+  type: keyof typeof DealTypeLabels;
 }) => JSX.Element;
 
 const OrdersTable = () => {
@@ -48,7 +50,11 @@ const OrdersTable = () => {
         </div>
 
         {isPageAuthUser && <ButtonsGroupTable />}
-        <DataOrderTable columns={columnsOrder} data={orders} />
+        <DataOrderTable
+          columns={columnsOrder}
+          data={orders}
+          type={DealType.ORDER}
+        />
       </>
     </DealTableTemplate>
   );

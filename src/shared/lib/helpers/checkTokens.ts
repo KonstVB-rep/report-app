@@ -1,5 +1,3 @@
-"use client";
-
 import { logout } from "@/feature/auth/logout";
 import axiosInstance from "@/shared/api/axiosInstance";
 

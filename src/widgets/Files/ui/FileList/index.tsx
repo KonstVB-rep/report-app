@@ -15,6 +15,7 @@ import { FileInfo } from "../../types";
 import DeleteFile from "../DeleteFile";
 import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
 import SkeletonFiles from "../SkeletonFiles";
+import { useDownLoadFile } from "../../hooks/mutate";
 
 type FileListProps = {
   data: {
@@ -70,6 +71,12 @@ const FileItem = ({
   const fileType = getFileType(formatFile);
   const fileName = getFileNameWithoutUuid(file.name);
 
+   const { mutate: handleDownload, isPending } = useDownLoadFile();
+
+    const handleDownloadFile = () => {
+    handleDownload({ localPath: file.localPath, name: file.name });
+  };
+
   const transitions = useTransition(file, {
     keys: (file) => file.name, // Идентификатор для каждого файла
     from: { opacity: 0, transform: "translateY(20px)" },
@@ -78,27 +85,34 @@ const FileItem = ({
     config: { duration: 200, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Эквивалент "easeInOut"
   });
 
+
   return transitions((styles, item) => (
-    <animated.li
+    <animated.div
       style={styles} // Применяем стили анимации
       key={item.name}
-      className="group relative grid w-20 min-w-20 max-w-20 flex-1 gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
+      className="group relative grid w-20 h-full min-w-20 max-w-20 flex-1 gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
     >
-      <p className="flex items-center justify-center">
+      <p className="flex items-center justify-center group-hover:scale-0 group-focus-visible:scale-0">
         {fileTypeIcons[fileType]}
       </p>
       <p className="truncate text-xs">{fileName}</p>
-      <div className="absolute inset-0 -z-[1] h-full w-full rounded-md bg-black/80 group-hover:z-[1] group-focus-visible:z-[1]" />
+      <div className="absolute inset-0 -z-[1] h-full w-full rounded-md bg-black/80 group-hover:z-[1] group-focus-visible:z-[2]" />
       <DownLoadOrCheckFile
         className="absolute inset-0 z-10 h-full w-full items-center justify-center"
         fileName={fileName}
-        localPath={file.localPath}
-        name={file.name}
-        id={file.name}
-        onChange={onSelect}
-        checked={selected}
+        handleDownloadFile={handleDownloadFile}
+        isPending={isPending}
       />
-    </animated.li>
+       {!isPending && (
+          <input
+            type="checkbox"
+            id={file.name}
+            onChange={onSelect}
+            checked={selected}
+            className="absolute hidden checked:block group-hover:block group-focus-visible:block -right-1 -top-1 z-[11] h-5 w-5 cursor-pointer accent-red-700"
+          />
+        )}
+    </animated.div>
   ));
 };
 
@@ -188,11 +202,9 @@ const FileList = ({ data }: FileListProps) => {
           )}
 
           <animated.ul className="flex flex-wrap gap-2">
-            {filesTransition((styles, file) =>
+            {filesTransition((styles, file) => 
               file ? (
                 <animated.li style={styles} key={file.id}>
-                  {" "}
-                  {/* Используем file.id как ключ */}
                   <FileItem
                     file={file}
                     selected={selectedFiles.has(file.name)}

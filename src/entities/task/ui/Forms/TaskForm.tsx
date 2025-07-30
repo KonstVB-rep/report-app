@@ -36,7 +36,7 @@ const TaskForm = <T extends FieldValues>({
 
   const { departments } = useStoreDepartment();
 
-  const usersList =
+  const usersList: [string, string][] =
     departments
       ?.find((item: DepartmentInfo) => item.id === Number(departmentId))
       ?.users.map((user) => [user.id, user.username]) || [];
@@ -100,7 +100,7 @@ const TaskForm = <T extends FieldValues>({
             />
 
             <div className="flex flex-wrap gap-2 items-end">
-              <DatePickerFormField<UseFormReturn<T>>
+              <DatePickerFormField
                 name={"startDate" as Path<T>}
                 label="Начало"
                 control={form.control}
@@ -121,7 +121,7 @@ const TaskForm = <T extends FieldValues>({
             </div>
 
             <div className="flex flex-wrap gap-2 items-end">
-              <DatePickerFormField<UseFormReturn<T>>
+              <DatePickerFormField
                 name={"dueDate" as Path<T>}
                 label="Конец"
                 control={form.control}

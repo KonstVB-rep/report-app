@@ -52,6 +52,7 @@ export const EventCalendarFormSchema = z
       endTimeEvent,
     } = ctx.value;
 
+    // Если событие длится весь день, проверка времени не нужна
     if (allDay) return;
 
     const now = new Date();
@@ -65,6 +66,7 @@ export const EventCalendarFormSchema = z
     endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
     now.setSeconds(0, 0);
 
+    // Проверка на то, что дата начала не позже даты окончания
     if (startDate > endDate) {
       ctx.issues.push({
         code: "custom",
@@ -74,6 +76,7 @@ export const EventCalendarFormSchema = z
       });
     }
 
+    // Проверка на то, что дата начала не в прошлом
     if (startDate < now) {
       ctx.issues.push({
         code: "custom",
@@ -83,6 +86,7 @@ export const EventCalendarFormSchema = z
       });
     }
 
+    // Проверка на то, что дата окончания должна быть в будущем
     if (endDate <= now) {
       ctx.issues.push({
         code: "custom",
@@ -91,6 +95,14 @@ export const EventCalendarFormSchema = z
         input: endDateEvent,
       });
     }
-  });
 
+    // Глобальная ошибка для некорректного времени
+    if (startDate >= endDate) {
+      ctx.issues.push({
+        code: "custom",
+        message: "Время окончания события не должно быть меньше времени начала!",
+        path: ["dateError"], // Указываем глобальную ошибку
+      });
+    }
+  });
 export type EventCalendarSchema = z.infer<typeof EventCalendarFormSchema>;

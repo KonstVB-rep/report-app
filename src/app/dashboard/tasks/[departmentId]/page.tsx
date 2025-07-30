@@ -78,7 +78,6 @@ const TasksPage = () => {
 
         {currentView === "kanban" && data && <Kanban data={data} />}
 
-        {/* {currentView === "calendar" && <CalendarTask />} */}
       </MotionDivY>
     </section>
   );

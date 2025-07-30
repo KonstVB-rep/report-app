@@ -1,4 +1,4 @@
-import { DealType } from "@prisma/client";
+import { DealType, StatusOrder } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
@@ -17,26 +17,31 @@ import {
 } from "@/components/ui/table";
 import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
+import DelOrderContextMenu from "@/entities/order/ui/DelOrderContextMenu";
+import EditOrderContectMenu from "@/entities/order/ui/EditOrderContectMenu";
+import DelTaskDialogContextMenu from "@/entities/task/ui/Modals/DelTaskDialogContextMenu";
+import EditTaskDialogContextMenu from "@/entities/task/ui/Modals/EditTaskDialogContextMenu";
 
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
-import { DealBase } from "./model/types";
 import RowInfoDialog from "./RowInfoDialog";
 import { getRowClassName } from "./TableComponent";
 
-type TableTemplateProps<T extends DealBase> = {
+type TableTemplateProps<T extends Record<string, unknown>> = {
   table: ReturnType<typeof useReactTable<T>>;
   className?: string;
   tableContainerRef: RefObject<HTMLDivElement | null>;
-  hasEditDeleteActions: boolean;
+  hasEditDeleteActions?: boolean;
+  entityType?: "deal" | "task" | "order";
 };
 
 const ROW_HEIGHT = 57;
 
-const TableTemplate = <T extends DealBase>({
+const TableTemplate = <T extends Record<string, unknown>>({
   table,
   className,
   tableContainerRef,
   hasEditDeleteActions,
+  entityType = 'deal',
 }: TableTemplateProps<T>) => {
   const { rows } = table.getRowModel();
 
@@ -110,7 +115,7 @@ const TableTemplate = <T extends DealBase>({
 
       <TableBody style={{ height: `${totalSize}px`, position: "relative" }}>
         {isHydrating && <SkeletonTable />}
-        {rows.length > 0 && !isHydrating ? (
+        {rows.length > 0 && !isHydrating && (
           virtualItems.map((virtualRow) => {
             const row = rows[virtualRow.index];
             return (
@@ -119,17 +124,10 @@ const TableTemplate = <T extends DealBase>({
                 row={row}
                 virtualRow={virtualRow}
                 hasEditDeleteActions={hasEditDeleteActions}
+                entityType={entityType}
               />
             );
           })
-        ) : (
-          <TableRow className="h-[50px]">
-            <TableCell colSpan={table.getAllColumns().length} className="py-4">
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 transform whitespace-nowrap">
-                Нет данных
-              </div>
-            </TableCell>
-          </TableRow>
         )}
       </TableBody>
     </table>
@@ -139,13 +137,15 @@ const TableTemplate = <T extends DealBase>({
 type TableBodyRowProps<T> = {
   row: Row<T>;
   virtualRow: { index: number; start: number };
-  hasEditDeleteActions: boolean;
+  hasEditDeleteActions?: boolean;
+  entityType: string;
 };
 
-const TableBodyRow = <T extends DealBase>({
+const TableBodyRow = <T extends Record<string, unknown>>({
   row,
   virtualRow,
   hasEditDeleteActions,
+  entityType,
 }: TableBodyRowProps<T>) => {
   const { departmentId } = useParams();
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null);
@@ -153,63 +153,191 @@ const TableBodyRow = <T extends DealBase>({
   const handleOpenInfo = (cellId: string) => {
     setOpenFullInfoCell(openFullInfoCell === cellId ? null : cellId);
   };
-
-  return (
-    <ContextRowTable
-      hasEditDeleteActions={hasEditDeleteActions}
-      modals={(setOpenModal) => ({
-        edit: (
-          <EditDealContextMenu
-            close={() => setOpenModal(null)}
-            id={row.original.id as string}
-            type={row.original.type as DealType}
-          />
-        ),
-        delete: (
-          <DelDealContextMenu
-            close={() => setOpenModal(null)}
-            id={row.original.id as string}
-            type={row.original.type as DealType}
-          />
-        ),
-      })}
-      path={`/dashboard/deal/${departmentId}/${(row.original.type as DealType).toLowerCase()}/${row.original.id}`}
-    >
-      <TableRow
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          transform: `translateY(${virtualRow.start}px)`,
-        }}
-        className={getRowClassName(row.original.dealStatus as string)}
-        data-reject={row.original.dealStatus === "REJECT"}
-        data-success={row.original.dealStatus === "PAID"}
-        data-closed={row.original.dealStatus === "CLOSED"}
+  if (entityType === "deal") {
+    return (
+      <ContextRowTable
+        hasEditDeleteActions={hasEditDeleteActions}
+        modals={(setOpenModal) => ({
+          edit: (
+            <EditDealContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+              type={row.original.type as DealType}
+            />
+          ),
+          delete: (
+            <DelDealContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+              type={row.original.type as DealType}
+            />
+          ),
+        })}
+        path={
+          row.original.type
+            ? `/dashboard/deal/${departmentId}/${(row.original.type as DealType).toLowerCase()}/${row.original.id}`
+            : undefined
+        }
       >
-        {row.getVisibleCells().map((cell) => (
-          <TableCell
-            key={cell.id}
-            style={{ width: cell.column.getSize() }}
-            className="td min-w-12 border-b border-r leading-none box-border min-h-[57px]"
-            onDoubleClick={() => handleOpenInfo(cell.id)}
-          >
-            <span className="line-clamp-2 text-center text-sm">
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </span>
-            {openFullInfoCell === cell.id && (
-              <RowInfoDialog
-                isActive={true}
-                text={flexRender(cell.column.columnDef.cell, cell.getContext())}
-                closeFn={() => setOpenFullInfoCell(null)}
-              />
-            )}
-          </TableCell>
-        ))}
-      </TableRow>
-    </ContextRowTable>
-  );
+        <TableRow
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            transform: `translateY(${virtualRow.start}px)`,
+          }}
+          className={getRowClassName(row.original.dealStatus as string)}
+          data-reject={row.original.dealStatus === "REJECT"}
+          data-success={row.original.dealStatus === "PAID"}
+          data-closed={row.original.dealStatus === "CLOSED"}
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell
+              key={cell.id}
+              style={{ width: cell.column.getSize() }}
+              className="td min-w-12 border-b border-r leading-none box-border min-h-[57px]"
+              onDoubleClick={() => handleOpenInfo(cell.id)}
+            >
+              <span className="line-clamp-2 text-center text-sm">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </span>
+              {openFullInfoCell === cell.id && (
+                <RowInfoDialog
+                  isActive={true}
+                  text={flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                  closeFn={() => setOpenFullInfoCell(null)}
+                />
+              )}
+            </TableCell>
+          ))}
+        </TableRow>
+      </ContextRowTable>
+    );
+  }
+
+  if (entityType === "task") {
+    return (
+      <ContextRowTable
+        key={row.id}
+        modals={(setOpenModal) => ({
+          edit: (
+            <EditTaskDialogContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+            />
+          ),
+          delete: (
+            <DelTaskDialogContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+            />
+          ),
+        })}
+        path={`/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}/`}
+      >
+        <TableRow
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            transform: `translateY(${virtualRow.start}px)`,
+          }}
+          className={`tr hover:bg-zinc-600 hover:text-white`}
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell
+              key={cell.id}
+              style={{ width: cell.column.getSize() }}
+              className="td min-w-12 border-b border-r leading-none box-border min-h-[57px]"
+              onDoubleClick={() => handleOpenInfo(cell.id)}
+            >
+              <span className="line-clamp-2 text-center text-sm">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </span>
+              {openFullInfoCell === cell.id && (
+                <RowInfoDialog
+                  isActive={true}
+                  text={flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                  closeFn={() => setOpenFullInfoCell(null)}
+                />
+              )}
+            </TableCell>
+          ))}
+        </TableRow>
+      </ContextRowTable>
+    );
+  }
+
+  if (entityType === "order") {
+    const isNotAtWork =
+      row.original.orderStatus === StatusOrder.SUBMITTED_TO_WORK;
+    const isAtWork = row.original.orderStatus === StatusOrder.AT_WORK;
+
+    return (
+      <ContextRowTable
+        key={row.id}
+        hasEditDeleteActions={hasEditDeleteActions}
+        modals={(setOpenModal) => ({
+          edit: (
+            <EditOrderContectMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+            />
+          ),
+          delete: (
+            <DelOrderContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+            />
+          ),
+        })}
+      >
+        <TableRow
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            transform: `translateY(${virtualRow.start}px)`,
+          }}
+          className={`tr hover:bg-zinc-600 hover:text-white ${isNotAtWork && "bg-red-900/40"} ${isAtWork && "bg-lime-200/20"}`}
+          data-reject={`${isNotAtWork}`}
+          data-success={`${isAtWork}`}
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell
+              key={cell.id}
+              style={{ width: cell.column.getSize() }}
+              className="td min-w-12 border-b border-r leading-none box-border min-h-[57px]"
+              onDoubleClick={() => handleOpenInfo(cell.id)}
+            >
+              <span className="line-clamp-2 text-center text-sm">
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </span>
+              {openFullInfoCell === cell.id && (
+                <RowInfoDialog
+                  isActive={true}
+                  text={flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                  closeFn={() => setOpenFullInfoCell(null)}
+                />
+              )}
+            </TableCell>
+          ))}
+        </TableRow>
+      </ContextRowTable>
+    );
+  }
 };
 
 export default TableTemplate;

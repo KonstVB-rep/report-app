@@ -12,9 +12,6 @@ import {
 import { useMemo, useState } from "react";
 
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
-import { DataTableFiltersContextType } from "@/feature/tableFilters/context/useDataTableFiltersContext";
-
-import { DealBase } from "../ui/Table/model/types";
 
 const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
 
@@ -26,9 +23,9 @@ const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-export const useTableState = <T extends DealBase>(
-  data: T[],
-  columns: ColumnDef<T>[]
+export const useTableState = <T extends Record<string, unknown>>(
+  data: T[],  // принимаем данные любого типа, соответствующего Record<string, unknown>
+  columns: ColumnDef<T>[] // и колонки для этого типа
 ) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const memoizedData = useMemo(() => data, [data]);
@@ -56,7 +53,7 @@ export const useTableState = <T extends DealBase>(
     data: memoizedData,
     columns: memoizedColumns,
     filterFns: {
-      fuzzy: fuzzyFilter,
+      fuzzy: fuzzyFilter,  // Возможно, тебе нужно будет уточнить, что такое fuzzyFilter
     },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -77,19 +74,17 @@ export const useTableState = <T extends DealBase>(
       globalFilter,
       columnVisibility: {
         ...columnVisibility,
-        user: false,
-        // resource: false // Скрываем колонку с id 'user'
+        user: false, // например скрыть колонку с id 'user'
       },
     },
     meta: {
       columnVisibility: {
-        resource: false,
-        // user: false,
+        resource: false,  // например скрыть колонку с id 'resource'
       },
     },
   });
 
-  const filtersContextValue: DataTableFiltersContextType<T> = {
+  const filtersContextValue = {
     selectedColumns,
     setSelectedColumns,
     filterValueSearchByCol,

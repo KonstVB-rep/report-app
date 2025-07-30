@@ -1,3 +1,4 @@
+import { cn } from "@/shared/lib/utils";
 import { animated, useSpring } from "@react-spring/web";
 
 import React, { Ref } from "react";
@@ -25,7 +26,7 @@ const MotionDivY = ({
     <animated.div
       style={styles}
       key={keyValue || ""}
-      className={className}
+      className={cn('max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto',className)}
       ref={ref}
     >
       {children}

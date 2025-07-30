@@ -1,6 +1,7 @@
 "use client";
 
 // import { DealType } from "@prisma/client";
+import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import React from "react";
@@ -11,6 +12,7 @@ import { useParams } from "next/navigation";
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { DealBase } from "@/shared/ui/Table/model/types";
 
 import DataOrderTable from "./DataOrderTable";
 
@@ -26,18 +28,16 @@ export const DealTypeLabels: Record<string, string> = {
 //   loading: () => <TableRowsSkeleton />,
 // });
 
-interface OrdersTemplateTableProps<T> {
+interface OrdersTemplateTableProps<T extends DealBase> {
   data: T[];
   // type: DealType;
   columns: ColumnDef<T>[];
-  // getRowLink?: (row: T, type: string) => string;
 }
 
-const OrdersTemplateTable = <T extends { id: string }>({
+const OrdersTemplateTable = <T extends DealBase>({
   data,
   // type,
   columns,
-  // getRowLink,
 }: OrdersTemplateTableProps<T>) => {
   const { userId, dealType } = useParams();
   const { authUser } = useStoreUser();
@@ -56,14 +56,7 @@ const OrdersTemplateTable = <T extends { id: string }>({
         </div>
 
         {isPageAuthuser && <ButtonsGroupTable />}
-        <DataOrderTable
-          columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-          data={data as Record<string, unknown>[]}
-          // getRowLink={
-          //   getRowLink as (row: Record<string, unknown>, type: string) => string
-          // }
-          // type={type}
-        />
+        <DataOrderTable columns={columns} data={data} type={DealType.ORDER} />
       </>
     </DealTableTemplate>
   );

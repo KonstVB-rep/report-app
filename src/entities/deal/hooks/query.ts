@@ -2,6 +2,7 @@ import { DealType } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
@@ -21,9 +22,7 @@ import {
 } from "../api/queryFn";
 import {
   DateRange,
-  ProjectResponse,
   ProjectResponseWithContactsAndFiles,
-  RetailResponse,
   RetailResponseWithContactsAndFiles,
 } from "../types";
 
@@ -39,9 +38,11 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
     queryKey: ["project", dealId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
-        const deal = await getProjectById(dealId);
+        const deal = await executeWithTokenCheck(() => getProjectById(dealId));
 
         if (!deal) {
           return null;
@@ -80,9 +81,11 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
     queryKey: ["retail", dealId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
-        const deal = await getRetailById(dealId);
+        const deal = await executeWithTokenCheck(() => getRetailById(dealId));
 
         if (!deal) {
           return null;
@@ -127,28 +130,33 @@ export const useGetDealById = <
     | T
     | undefined;
 
-  // Функции для запроса данных
-  const fetchFunctions = {
-    [DealType.PROJECT]: getProjectById as (
-      id: string
-      // userId: string
-    ) => Promise<ProjectResponseWithContactsAndFiles>,
-    [DealType.RETAIL]: getRetailById as (
-      id: string
-      // userId: string
-    ) => Promise<RetailResponseWithContactsAndFiles>,
-  };
-
   const fetchFn = async (): Promise<T | undefined> => {
     try {
-      await checkAuthorization(authUser?.id);
-
       if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
         throw new Error(`Нет функции для типа сделки: ${type}`);
       }
 
-      const entity = await fetchFunctions[type](dealId);
-      return entity as T | undefined;
+      if (!authUser?.id) {
+        throw new Error("Пользователь не авторизован");
+      }
+
+      let entity: T | undefined = undefined;
+
+      if (type === DealType.PROJECT) {
+        const project = await executeWithTokenCheck(() =>
+          getProjectById(dealId)
+        );
+        // Присваиваем результат если проект найден
+        entity = project as T | undefined;
+      }
+
+      if (type === DealType.RETAIL) {
+        const retail = await executeWithTokenCheck(() => getRetailById(dealId));
+        // Присваиваем результат если розничная сделка найдена
+        entity = retail as T | undefined;
+      }
+
+      return entity;
     } catch (error) {
       console.log(error, "Ошибка useGetDealById");
       if ((error as Error).message === "Failed to fetch") {
@@ -181,26 +189,31 @@ export const useGetAllDealsByDepartmentByType = (
     ],
   };
 
-  const fetchFunctions = {
-    [DealType.PROJECT]: getAllProjectsByDepartment as () => Promise<
-      ProjectResponse[]
-    >,
-    [DealType.RETAIL]: getAllRetailsByDepartment as () => Promise<
-      RetailResponse[]
-    >,
-  };
-
   return useQuery({
     queryKey: queryKeys[type],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
         if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
           throw new Error(`Нет функции для типа сделки: ${type}`);
         }
 
-        return (await fetchFunctions[type]()) ?? [];
+        if (type === DealType.PROJECT) {
+          return (
+            (await executeWithTokenCheck(() => getAllProjectsByDepartment())) ??
+            []
+          );
+        }
+
+        if (type === DealType.RETAIL) {
+          return (
+            (await executeWithTokenCheck(() => getAllRetailsByDepartment())) ??
+            []
+          );
+        }
       } catch (error) {
         console.log(error, "Ошибка useGetAllDealsByDepartmentByType");
         if ((error as Error).message === "Failed to fetch") {
@@ -228,9 +241,15 @@ export const useGetAllProjects = (
     queryKey: ["all-projects", authUser?.departmentId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
-        return (await getAllProjectsByDepartmentQuery(departmentId)) ?? [];
+        return (
+          (await executeWithTokenCheck(() =>
+            getAllProjectsByDepartmentQuery(departmentId)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
         if ((error as Error).message === "Failed to fetch") {
@@ -258,9 +277,15 @@ export const useGetAllRetails = (
     queryKey: ["all-retails", authUser?.departmentId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
-        return (await getAllRetailsByDepartmentQuery(departmentId)) ?? [];
+        return (
+          (await executeWithTokenCheck(() =>
+            getAllRetailsByDepartmentQuery(departmentId)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
         if ((error as Error).message === "Failed to fetch") {
@@ -284,9 +309,15 @@ export const useGetRetailsUser = (userId: string | undefined) => {
     queryKey: ["retails", userId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
-        return (await getRetailsUser(userId as string)) ?? [];
+        return (
+          (await executeWithTokenCheck(() =>
+            getRetailsUser(userId as string)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -311,9 +342,15 @@ export const useGetProjectsUser = (userId: string | undefined) => {
     queryKey: ["projects", userId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
-        return (await getProjectsUser(userId as string)) ?? [];
+        return (
+          (await executeWithTokenCheck(() =>
+            getProjectsUser(userId as string)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -336,9 +373,15 @@ export const useGetContractsUser = (userId: string | undefined) => {
     queryKey: ["contracts", userId],
     queryFn: async () => {
       try {
-        await checkAuthorization(authUser?.id);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
 
-        return (await getProjectsUser(userId as string)) ?? [];
+        return (
+          (await executeWithTokenCheck(() =>
+            getProjectsUser(userId as string)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetContactsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -365,7 +408,15 @@ export const useGetDealsByDateRange = (
     queryKey: ["dealsByRange", userId, range, departmentId],
     queryFn: async () => {
       try {
-        return await getDealsByDateRange(userId as string, range, departmentId);
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+
+        return (
+          (await executeWithTokenCheck(() =>
+            getDealsByDateRange(userId as string, range, departmentId)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         if ((error as Error).message === "Failed to fetch") {

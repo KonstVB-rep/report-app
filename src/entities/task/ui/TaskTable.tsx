@@ -1,25 +1,14 @@
 // import { TaskStatus } from "@prisma/client";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  Row,
-  SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
+"use client";
 
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
+
+import {  useRef } from "react";
 import { DateRange } from "react-day-picker";
 
-import { useParams } from "next/navigation";
-
-import { TableCell, TableRow } from "@/components/ui/table";
-import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { DataTableFiltersProvider } from "@/feature/tableFilters/context/DataTableFiltersProvider";
-import { DataTableFiltersContextType } from "@/feature/tableFilters/context/useDataTableFiltersContext";
-import ContextRowTable from "@/shared/ui/ContextRowTable/ContextRowTable";
+import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
+import { useTableState } from "@/shared/hooks/useTableState";
 import DateRangeFilter from "@/shared/ui/DateRangeFilter";
 import FilterByUsers from "@/shared/ui/Filters/FilterByUsers";
 import FilterPopoverGroup from "@/shared/ui/Filters/FilterPopoverGroup";
@@ -27,191 +16,53 @@ import TableTemplate from "@/shared/ui/Table/TableTemplate";
 
 import { columnsDataTask } from "../model/column-data-tasks";
 import { LABEL_TASK_STATUS } from "../model/constants";
-import DelTaskDialogContextMenu from "./Modals/DelTaskDialogContextMenu";
-import EditTaskDialogContextMenu from "./Modals/EditTaskDialogContextMenu";
+import { TaskWithUserInfo } from "../types";
 
 interface TaskTableProps<TData> {
   data: TData[];
 }
 
-const TaskTable = <TData extends Record<string, unknown>>({
-  data,
-}: TaskTableProps<TData>) => {
-  const { departmentId } = useParams();
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
+const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
 
-  const memoizedData = useMemo(() => data, [data]);
-  const memoizedColumns = useMemo(
-    () => columnsDataTask,
-    []
-  ) as ColumnDef<TData>[];
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    selectedColumns,
-    setSelectedColumns,
-    filterValueSearchByCol,
-    setFilterValueSearchByCol,
-    openFilters,
-    setOpenFilters,
-    handleDateChange,
-    handleClearDateFilter,
-    columnFilters,
-    setColumnFilters,
-    columnVisibility,
-    setColumnVisibility,
-    includedColumns,
-  } = useDataTableFilters();
-
-  const renderRowCells = useCallback((row: Row<TData>) => {
-    return row.getVisibleCells().map((cell) => (
-      <TableCell
-        key={cell.id}
-        className="td min-w-12 border-b border-r h-[57px] !p-2"
-      >
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-      </TableCell>
-    ));
-  }, []);
-
-  const renderRow = useCallback(
-    (row: Row<TData>): ReactNode => {
-      return (
-        <ContextRowTable
-          key={row.id}
-          modals={(setOpenModal) => ({
-            edit: (
-              <EditTaskDialogContextMenu
-                close={() => setOpenModal(null)}
-                id={row.original.id as string}
-              />
-            ),
-            delete: (
-              <DelTaskDialogContextMenu
-                close={() => setOpenModal(null)}
-                id={row.original.id as string}
-              />
-            ),
-          })}
-          path={`/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}/`}
-        >
-          <TableRow
-            key={row.id}
-            className={`tr hover:bg-zinc-600 hover:text-white`}
-          >
-            {renderRowCells(row)}
-          </TableRow>
-        </ContextRowTable>
-      );
-    },
-    [departmentId, renderRowCells]
+  const { table, filtersContextValue } = useTableState(
+    data,
+    columnsDataTask as ColumnDef<T>[]
   );
 
-  const table = useReactTable({
-    data: memoizedData,
-    columns: memoizedColumns,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    enableColumnResizing: true,
-    columnResizeMode: "onChange",
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
-    state: {
-      sorting,
-      columnFilters,
-      rowSelection,
-      columnVisibility: {
-        ...columnVisibility,
-        user: false,
-        // resource: false // Скрываем колонку с id 'user'
-      },
-    },
-    meta: {
-      columnVisibility: {
-        resource: false,
-        // user: false,
-      },
-    },
-  });
+   const { rows } = table.getRowModel();
 
-  const value = columnFilters.find((f) => f.id === "dueDate")?.value as
-    | DateRange
-    | undefined;
+  const { columnFilters } = table.getState();
 
-  // const handleDateChange = useCallback(
-  //   (date: DateRange | undefined) => {
-  //     setColumnFilters((prev) => {
-  //       const newFilters = prev.filter((f) => f.id !== "dueDate");
-  //       return date?.from && date?.to
-  //         ? ([
-  //             ...newFilters,
-  //             { id: "dueDate", value: { from: date.from, to: date.to } },
-  //           ] as ColumnFiltersState)
-  //         : newFilters;
-  //     });
-  //   },
-  //   [setColumnFilters]
-  // );
-
-  // const handleClearDateFilter = useCallback(
-  //   (columnId: string) => {
-  //     setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
-  //   },
-  //   [setColumnFilters]
-  // );
-
-  const filtersContextValue: DataTableFiltersContextType<TData> = {
-    selectedColumns,
-    setSelectedColumns,
-    filterValueSearchByCol,
-    setFilterValueSearchByCol,
-    openFilters,
-    setOpenFilters,
-    handleDateChange,
-    handleClearDateFilter,
-    columnFilters,
-    columnVisibility,
-    setColumnFilters,
-    setColumnVisibility,
-    includedColumns,
-    columns: memoizedColumns,
-  };
-
+  if(rows.length === 0) {
+    return null
+  }
   return (
-    <DataTableFiltersProvider<TData> value={filtersContextValue}>
+    <DataTableFiltersProvider value={filtersContextValue}>
       <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
         <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
           <div className="flex items-center">
             <FilterByUsers label="Исполнитель" columnId="executorId" />
           </div>
-          <FilterPopoverGroup
-            options={[
-              {
-                label: "Статус",
-                columnId: "taskStatus",
-                options: LABEL_TASK_STATUS,
-              },
-            ]}
-            columnFilters={table.getState().columnFilters}
-            setColumnFilters={setColumnFilters}
-          />
-          <DateRangeFilter
-            onDateChange={handleDateChange("dueDate")}
-            onClearDateFilter={handleClearDateFilter}
-            value={value}
-          />
+          <FilterTasks columnFilters={columnFilters} />
         </div>
-        <div className="rounded-ee-md overflow-hidden border">
+        <div
+          className="rounded-lg overflow-hidden border transition-all duration-200"
+          ref={tableContainerRef}
+          style={{
+            overflow: "auto",
+            position: "relative",
+            height: "100%",
+            maxHeight: "78vh",
+          }}
+        >
           <TableTemplate
             table={table}
-            renderRow={renderRow}
+            tableContainerRef={tableContainerRef}
             className="rounded-ee-md"
+            entityType="task"
+
           />
         </div>
       </div>
@@ -220,3 +71,36 @@ const TaskTable = <TData extends Record<string, unknown>>({
 };
 
 export default TaskTable;
+
+const FilterTasks = ({
+  columnFilters,
+}: {
+  columnFilters: ColumnFiltersState;
+}) => {
+  const { handleDateChange, handleClearDateFilter, setColumnFilters } =
+    useDataTableFiltersContext();
+
+  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
+    | DateRange
+    | undefined;
+  return (
+    <>
+      <FilterPopoverGroup
+        options={[
+          {
+            label: "Статус",
+            columnId: "taskStatus",
+            options: LABEL_TASK_STATUS,
+          },
+        ]}
+        columnFilters={columnFilters}
+        setColumnFilters={setColumnFilters}
+      />
+      <DateRangeFilter
+        onDateChange={handleDateChange("dueDate")}
+        onClearDateFilter={handleClearDateFilter}
+        value={value}
+      />
+    </>
+  );
+};
