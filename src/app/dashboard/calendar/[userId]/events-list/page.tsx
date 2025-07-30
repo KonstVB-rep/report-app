@@ -16,6 +16,7 @@ const EventsList = dynamic(() => import("@/feature/calendar/ui/EventsList"), {
 
 const UserEventsPage = () => {
   const { data: events, isPending } = useGetEventsCalendarUser();
+  
 
  if(isPending) {
   return <Loading/>

@@ -20,6 +20,7 @@ import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
 import TextareaForm from "@/shared/ui/TextareaForm";
 import { TOAST } from "@/shared/ui/Toast";
+
 import { EventInputType } from "../types";
 
 type FormEventProps = {
@@ -66,22 +67,16 @@ export const handleSubmit = (
     const [startH, startM] = startTimeEvent.split(":");
     const [endH, endM] = endTimeEvent.split(":");
 
-    const startDay = new Date(startDate.toDateString());
-    const endDay = new Date(endDate.toDateString());
+    startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
+    endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
 
-    if (
-      (startDay <= endDay &&
-        parseInt(startH, 10) <= parseInt(endH, 10) &&
-        parseInt(endM, 10) < parseInt(startM, 10)) ||
-      endDate < startDay
-    ) {
+    console.log(endDate, startDate);
+
+    if (endDate <= startDate) {
       return TOAST.ERROR(
         "Время окончания события не должно быть меньше времени начала!"
       );
     }
-
-    startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
-    endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
   }
 
   if (editingId) {
@@ -141,7 +136,7 @@ const FormEvent = ({ events }: FormEventProps) => {
                 <FormItem className="flex gap-2 items-center justify-start my-2">
                   <FormControl>
                     <Checkbox
-                      checked={Boolean(field.value)} 
+                      checked={Boolean(field.value)}
                       onCheckedChange={(checked) => {
                         field.onChange(checked);
                         form.trigger("allDay");

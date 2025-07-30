@@ -57,6 +57,7 @@ const CalendarMobile = () => {
       closeModalForm
     );
   };
+  
   if(isPending){
     return <div>Загрузка...</div>
   }

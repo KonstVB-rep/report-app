@@ -1,8 +1,9 @@
 import { flexRender } from "@tanstack/react-table";
 import { Table as ReactTable } from "@tanstack/react-table";
 
-import React, { RefObject } from "react";
+import React, { Fragment, RefObject } from "react";
 
+import { useSidebar } from "@/components/ui/sidebar";
 import {
   Table,
   TableBody,
@@ -28,16 +29,15 @@ const EventsListTable = <T extends EventInputType>({
     table
   ) as RefObject<HTMLTableElement>;
 
+  const { isMobile } = useSidebar();
 
   const handleClickRowEvent = (row: T) => {
-  const now = new Date();
-  const endDate = new Date(row.end); 
+    const now = new Date();
+    const endDate = new Date(row.end);
 
     if (endDate < now) return;
-    console.log(row, 'row')
     handleRowClick?.(row);
   };
-
 
   if (!table?.getRowModel()?.rows) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;
@@ -93,19 +93,41 @@ const EventsListTable = <T extends EventInputType>({
                     isPastEvent ? "opacity-50" : ""
                   }`}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      onClick={() => handleClickRowEvent?.(cell.row.original)}
-                      key={cell.id}
-                      style={{ width: cell.column.getSize() }}
-                      className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <Fragment  key={cell.id}>
+                        {isMobile ? (
+                          <TableCell
+                            onClick={() =>
+                              handleClickRowEvent?.(cell.row.original)
+                            }
+                            key={cell.id}
+                            style={{ width: cell.column.getSize() }}
+                            className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ) : (
+                          <TableCell
+                            onDoubleClick={() =>
+                              handleClickRowEvent?.(cell.row.original)
+                            }
+                            key={cell.id}
+                            style={{ width: cell.column.getSize() }}
+                            className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        )}
+                      </Fragment>
+                    );
+                  })}
                 </TableRow>
               );
             })

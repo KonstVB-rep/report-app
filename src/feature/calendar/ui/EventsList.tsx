@@ -14,6 +14,9 @@ import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
 import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
+import { handleEventClickOnEventsList } from "../utils/eventHandlers";
+import CalendarFormModal from "./CalendarFormModal";
 
 type EventsListProps = {
   events: EventInputType[];
@@ -25,6 +28,18 @@ const EventsList = ({ events }: EventsListProps) => {
     columns: columnsDataCalendar as ColumnDef<EventInputType, unknown>[],
     getCoreRowModel: getCoreRowModel(),
   });
+
+   const { form, setEditingId, setOpenModal } =
+        useCalendarContext();
+  
+  const onEventClick = (eventCalendar: EventInputType) => {
+    handleEventClickOnEventsList(
+      eventCalendar,
+      form,
+      setEditingId,
+      setOpenModal
+    );
+  };
 
   const { authUser } = useStoreUser();
   const router = useRouter();
@@ -44,6 +59,7 @@ const EventsList = ({ events }: EventsListProps) => {
   }
 
   return (
+  <>
     <div className="grid gap-4">
       <ButtonLink
         pathName={`/dashboard/calendar/${authUser.id}`}
@@ -52,9 +68,11 @@ const EventsList = ({ events }: EventsListProps) => {
       />
 
       <div className="rounded-lg overflow-hidden border w-full">
-        <EventsListTable table={table} />
+        <EventsListTable table={table} handleRowClick={onEventClick}/>
       </div>
     </div>
+    <CalendarFormModal events={events} />
+  </>
   );
 };
 
