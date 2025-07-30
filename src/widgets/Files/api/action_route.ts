@@ -1,13 +1,17 @@
 import { DealType } from "@prisma/client";
 
+import { AxiosResponse } from "axios";
+
 import axiosInstance from "@/shared/api/axiosInstance";
 
-export const uploadFile = async (formData: FormData) => {
+export const uploadFile = async (
+  formData: FormData
+): Promise<AxiosResponse> => {
   try {
     const response = await axiosInstance.post("/yandex-disk/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Ошибка загрузки:", error);
     throw new Error((error as Error).message);
@@ -19,6 +23,7 @@ export const deleteFile = async (fileInfo: {
   filePath: string;
   dealType: DealType;
   userId: string;
+  dealId: string;
 }) => {
   try {
     const response = await axiosInstance.delete(`/yandex-disk/delete`, {
@@ -31,8 +36,11 @@ export const deleteFile = async (fileInfo: {
   }
 };
 
-export const downloadFile = async (filePath: string) => {
+export const downloadFile = async (data: {
+  filePath: string;
+}): Promise<AxiosResponse> => {
   try {
+    const { filePath } = data;
     const response = await axiosInstance.get("/yandex-disk/download", {
       params: { filePath },
       responseType: "blob",
@@ -42,7 +50,7 @@ export const downloadFile = async (filePath: string) => {
       throw new Error("Файл не найден");
     }
 
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Ошибка загрузки файла:", error);
     throw new Error("Ошибка загрузки файла");

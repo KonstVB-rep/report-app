@@ -1,24 +1,20 @@
 import { Role } from "@prisma/client";
 
-import React, { PropsWithChildren } from "react";
-
 import { useParams } from "next/navigation";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
-const ProtectedByDepartmentAffiliation = ({ children }: PropsWithChildren) => {
+const ProtectedByDepartmentAffiliation = ({
+  children,
+}: React.PropsWithChildren) => {
   const { authUser } = useStoreUser();
   const { departmentId } = useParams();
 
-  if (!authUser) return null;
+  const hasAccess =
+    authUser?.departmentId === Number(departmentId) ||
+    authUser?.role === Role.ADMIN;
 
-  if (
-    authUser.departmentId === Number(departmentId) ||
-    authUser.role === Role.ADMIN
-  )
-    return <>{children}</>;
-
-  return null;
+  return hasAccess ? <>{children}</> : null;
 };
 
 export default ProtectedByDepartmentAffiliation;

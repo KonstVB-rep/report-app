@@ -1,5 +1,5 @@
-import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
-import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
+import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
@@ -8,7 +8,7 @@ import { EventInputType } from "../types";
 import FormEvent from "./FormEvent";
 
 type CalendarFormModalProps = {
-  events: EventInputType[] | undefined;
+  events?: EventInputType[];
 };
 
 const CalendarFormModal = ({ events }: CalendarFormModalProps) => {
@@ -25,7 +25,7 @@ const CalendarFormModal = ({ events }: CalendarFormModalProps) => {
       <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
         <Overlay isPending={isLoading} />
 
-        <FormEvent events={events} />
+        <FormEvent events={events || []} />
       </MotionDivY>
     </DialogComponent>
   );

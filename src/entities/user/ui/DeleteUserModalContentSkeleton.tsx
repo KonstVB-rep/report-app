@@ -1,21 +1,27 @@
-import { DialogTitle } from "@radix-ui/react-dialog";
-
 import React from "react";
+
+const Skeleton = ({ className }: { className?: string }) => (
+  <div
+    className={`animate-pulse rounded-md bg-muted ${className}`}
+    role="presentation"
+    aria-hidden="true"
+  />
+);
 
 const DeleteUserModalContentSkeleton = () => {
   return (
     <div className="grid gap-5">
-      <DialogTitle className="h-6 w-1/2 m-auto animate-pulse rounded-md bg-muted" />
+      <Skeleton className="h-6 w-1/2 m-auto" />
 
       <div className="grid gap-2">
-        <div className="w-full h-6 animate-pulse rounded-md bg-muted" />
-        <div className="w-full h-6 animate-pulse rounded-md bg-muted" />
-        <div className="w-full h-6 animate-pulse rounded-md bg-muted" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-full" />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="h-9 animate-pulse rounded-md bg-muted" />
-        <div className="h-9 animate-pulse rounded-md bg-muted" />
+        <Skeleton className="h-9" />
+        <Skeleton className="h-9" />
       </div>
     </div>
   );

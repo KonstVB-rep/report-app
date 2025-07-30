@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 
 import { Toggle } from "@/components/ui/toggle";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { cn } from "@/shared/lib/utils";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import { TOAST } from "@/shared/ui/Toast";
@@ -33,9 +34,10 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
     if (!bot?.botName) return;
 
     try {
+      await checkAuthorization(authUser?.id);
       setIsFetch(true);
       updateStatusChatBot({
-        chatName,
+        botId: bot.id,
         isActive: false,
       });
       if (chatId) {
@@ -72,7 +74,7 @@ const CalendarBotLink = ({ chatName }: { chatName: string }) => {
         return;
       }
       if (!isActiveBot) {
-        updateStatusChatBot({ chatName: bot?.chatName, isActive: true });
+        updateStatusChatBot({ botId: bot.id, isActive: true });
         await sendNotification(
           "Вы успешно подписались на уведомления календаря",
           bot.chatId,

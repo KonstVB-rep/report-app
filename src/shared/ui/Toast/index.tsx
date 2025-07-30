@@ -40,9 +40,30 @@ export const TOAST = {
         margin: "auto",
       },
     }),
+  INFO: (message: string) =>
+    toast.info(message, {
+      duration: 2000,
+      position: "top-center",
+      style: {
+        border: "4px solid oklch(0.6413 0.154 245.33)",
+        borderRadius: "16px",
+        fontSize: "14px",
+        height: "auto",
+        color: "#333",
+        textAlign: "center",
+        backgroundColor: "#azure",
+        maxWidth: "400px",
+        minWidth: "12rem",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "flex",
+        justifyContent: "center",
+        margin: "auto",
+      },
+    }),
   PROMISE: (promise: Promise<unknown>, messageSuccess: string) =>
     toast.promise(promise, {
-      loading: "Выполняется",
+      loading: "Выполняется...",
       success: {
         message: messageSuccess,
         style: {
@@ -63,7 +84,7 @@ export const TOAST = {
             color: "oklch(0.577 0.245 27.325)",
             maxWidth: "400px",
             display: "flex",
-            justifyCOntent: "center",
+            justifyContent: "center",
           },
         };
       },
@@ -71,6 +92,8 @@ export const TOAST = {
         backgroundColor: "oklch(0.809 0.105 251.813)",
         margin: "auto",
         maxWidth: "400px",
+        display: "flex",
+        justifyContent: "center",
       },
       duration: 3000,
       icon: null,

@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import FormOrderSkeleton from "@/entities/order/ui/FormOrderSkeleton";
 import DialogComponent from "@/shared/ui/DialogComponent";
 import ProtectedByDepartmentAffiliation from "@/shared/ui/Protect/ProtectedByDepartmentAffiliation";
 
@@ -19,6 +20,11 @@ const ProjectForm = dynamic(() => import("../Forms/ProjectForm"), {
 const RetailForm = dynamic(() => import("../Forms/RetailForm"), {
   ssr: false,
   loading: () => <FormDealSkeleton />,
+});
+
+const OrderForm = dynamic(() => import("@/entities/order/ui/OrderForm"), {
+  ssr: false,
+  loading: () => <FormOrderSkeleton />,
 });
 
 type AddNewDealProps = {
@@ -34,9 +40,15 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
     title: "Добавить cделку по рознице",
     form: <RetailForm />,
   },
+  orders: {
+    title: "Добавить заявку",
+    form: <OrderForm />,
+  },
 };
 
 const AddNewDeal = ({ type }: AddNewDealProps) => {
+  if (!contentType[type]) return null;
+
   return (
     <ProtectedByDepartmentAffiliation>
       <DialogComponent
@@ -51,7 +63,7 @@ const AddNewDeal = ({ type }: AddNewDealProps) => {
           </Button>
         }
       >
-        {contentType[type].form}
+        {contentType[type]?.form}
       </DialogComponent>
     </ProtectedByDepartmentAffiliation>
   );

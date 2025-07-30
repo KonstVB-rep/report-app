@@ -1,7 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { toggleSubscribeChatBot } from "@/feature/telegramBot/api";
+import { logout } from "@/feature/auth/logout";
+import { toggleSubscribeChatBot } from "@/feature/calendar/api/calendar-bot/api";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -9,22 +11,25 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
+import {
+  ChatBotType,
+  ChatType,
+  EventDataType,
+  EventResponse,
+  ResponseChatBotType,
+} from "../types";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: (eventData: {
-      title: string;
-      start: string;
-      end: string;
-      allDay?: boolean;
-    }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return createEventCalendar(eventData);
+    mutationFn: (EventDataType: EventDataType) => {
+      return handleMutationWithAuthCheck<EventDataType, EventResponse>(
+        createEventCalendar,
+        EventDataType,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       closeModal();
@@ -37,28 +42,36 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
       TOAST.SUCCESS("Событие успешно добавлено в календарь");
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при добавлении события");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при добавлении события";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
 
 export const useUpdateEventCalendar = (closeModal: () => void) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: (eventData: {
-      id: string;
-      title: string;
-      start: string;
-      end: string;
-      allDay?: boolean;
-    }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return updateEventCalendar(eventData);
+    mutationFn: (EventDataType: EventDataType) => {
+
+      return handleMutationWithAuthCheck<EventDataType, EventResponse>(
+        updateEventCalendar,
+        EventDataType,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       closeModal();
@@ -71,22 +84,35 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
       TOAST.SUCCESS("Событие успешно обновлено");
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при обновлении события");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при обновлении события";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
 
 export const useDeleteEventCalendar = (closeModal: () => void) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (id: string) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return deleteEventCalendar(id);
+      return handleMutationWithAuthCheck<{ id: string }, EventResponse>(
+        deleteEventCalendar,
+        { id },
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: () => {
       closeModal();
@@ -99,63 +125,117 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
       TOAST.SUCCESS("Событие успешно удалено");
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке удаления события");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при удалении события";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
 
 export const useCreateChatBot = () => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: async (chatData: { chatName: string; isActive: boolean }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
-      return await toggleSubscribeChatBot(chatData.chatName, chatData.isActive);
+    mutationFn: async (chatData: ChatType) => {
+      const data = {
+        chatName: chatData.chatName,
+        userId: authUser?.id || "",
+        isActive: chatData.isActive,
+      };
+
+      return handleMutationWithAuthCheck<ChatBotType, ResponseChatBotType>(
+        toggleSubscribeChatBot,
+        data,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: (data) => {
+      if (!data) {
+        return;
+      }
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data.chatName],
       });
-       queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
       });
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке удаления события");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при подписке на чат бот";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
 
-
 export const useUpdateChatBot = () => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: async (chatData: { chatName: string; isActive: boolean }) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
+    mutationFn: async (chatData: {
+      botId: string | null;
+      isActive: boolean;
+    }) => {
+      if (!chatData.botId) return;
 
-      if(!chatData.chatName) return
-      return await toggleSubscribeChatBot(chatData.chatName, chatData.isActive);
+      const data = {
+        chatName: chatData.botId,
+        userId: authUser?.id || "",
+        isActive: chatData.isActive,
+      };
+      return handleMutationWithAuthCheck<ChatBotType, ResponseChatBotType>(
+        toggleSubscribeChatBot,
+        data,
+        authUser,
+        isSubmittingRef
+      );
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["chatInfo", authUser?.id, data?.chatName],
       });
-       queryClient.invalidateQueries({
-        queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
+      queryClient.invalidateQueries({
+        queryKey: ["chatInfoChecked", authUser?.id, data?.chatName],
       });
     },
     onError: (error) => {
-      console.log(error);
-      TOAST.ERROR("Произошла ошибка при попытке удаления события");
+      const err = error as Error & { status?: number };
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при обновлении статуса бота";
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };

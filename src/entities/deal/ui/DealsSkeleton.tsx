@@ -14,7 +14,7 @@ const DealsSkeleton = () => {
           </div>
         </div>
 
-        <div className="h-full max-h-[80vh] w-full animate-pulse rounded-xl bg-muted/50" />
+        <div className="h-full max-h-[79vh] min-h-[50vh] w-full animate-pulse rounded-xl bg-muted/50" />
       </div>
     </section>
   );

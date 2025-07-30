@@ -13,7 +13,7 @@ import { User } from "../types";
 
 const PersonEdit = dynamic(() => import("./PersonTableEdit"), {
   ssr: false,
-  loading: () => <div className="btn_hover animate-pulse h-10" />,
+  loading: () => <div className="btn_hover animate-pulse h-10 text-center" />,
 });
 
 type Props = {
@@ -26,13 +26,14 @@ export function ProfileSettings({ user }: Props) {
       title={
         <span className="flex w-full items-center gap-2 capitalize">
           <EllipsisVertical className="mr-2 h-4 w-4" />
-          {user.username.split(" ").join(" ")}
+          {user.username}
         </span>
       }
     >
       <Link
-        href={`/profile/${user.departmentId}/${user.id}`}
+        href={`/dashboard/profile/${user.departmentId}/${user.id}`}
         className="btn_hover text-sm"
+        aria-label={`Перейти в профиль пользователя ${user.username}`}
       >
         <UserRound size="16" /> <span>Профиль пользователя</span>
       </Link>

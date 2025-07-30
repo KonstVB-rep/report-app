@@ -2,7 +2,7 @@
 
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import React from "react";
+import { useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -13,12 +13,12 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 
-import { columnsDataCalendar } from "../../../app/(dashboard)/calendar/[userId]/events-list/model/column-data-calendar";
+import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
 
 type EventsListProps = {
   events: EventInputType[];
   showLinkCalendar?: boolean;
-  handleEventClickOnEventsList?: (evenetCalendar: EventInputType) => void;
+  handleEventClickOnEventsList?: (eventCalendar: EventInputType) => void;
   handleDateSelectOnEventsList: () => void;
 };
 
@@ -36,10 +36,13 @@ const EventsListDayMobile = ({
   const { authUser } = useStoreUser();
   const router = useRouter();
 
-  if (!authUser) {
-    router.replace("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!authUser) {
+      router.replace("/login");
+    }
+  }, [authUser, router]);
+
+  if (!authUser) return null;
 
   return (
     <>
@@ -53,7 +56,7 @@ const EventsListDayMobile = ({
       </Button>
 
       <div className="rounded-lg overflow-hidden border w-full">
-        <EventsListTable<EventInputType>
+        <EventsListTable
           table={table}
           handleRowClick={handleEventClickOnEventsList}
         />

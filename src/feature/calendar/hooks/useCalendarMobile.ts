@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Matcher } from "react-day-picker";
 
-// import { EventInputType } from "../types";
 import { useGetEventsCalendarUserToday } from "./query";
 
 const useCalendarMobile = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [openList, setOpenList] = useState(false);
 
-  const { data: events } = useGetEventsCalendarUserToday();
+  const { data: events, isPending } = useGetEventsCalendarUserToday();
 
   const futureEvents = events?.filter(
     (event) => new Date(event.start) >= new Date(new Date().toDateString())
@@ -55,7 +54,7 @@ const useCalendarMobile = () => {
     if (!isExistEventInDate && openList) {
       setOpenList(false);
     }
-  }, [events, futureEvents, openList, selectedDate]);
+  }, [futureEvents, openList, selectedDate]);
 
   return {
     events,
@@ -65,6 +64,7 @@ const useCalendarMobile = () => {
     selectedDate,
     eventDates,
     handleSelect,
+    isPending
   };
 };
 

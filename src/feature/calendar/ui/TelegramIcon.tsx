@@ -1,6 +1,11 @@
 import * as React from "react";
 
-const TelegramIcon = ({fill,width, height,...props}: React.SVGProps<SVGSVGElement>) => (
+const TelegramIcon = ({
+  fill,
+  width,
+  height,
+  ...props
+}: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlSpace="preserve"
     id="Layer_1"

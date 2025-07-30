@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
+import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants";
 import { DepartmentUserItem } from "@/entities/department/types";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
@@ -27,7 +28,14 @@ type DealsType = {
 const dealsSalesDepartment: DealsType[] = [
   { id: "projects", title: "Проекты" },
   { id: "retails", title: "Розница" },
+  { id: "contracts", title: "Договора" },
 ];
+
+// const table: {
+//   [key in string]: DealsType;
+// } = {
+//   orders: { id: "orders", title: "Заявки" },
+// };
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
 
@@ -66,7 +74,7 @@ const LinkItem = memo(
         } relative flex items-center gap-2 overflow-hidden rounded-md p-1 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground`}
       >
         <p className="relative z-[1] flex h-full w-full items-center gap-2 rounded-sm p-2">
-          <Icon size={isActive ? 16 : 12} className="shrink-0" />
+          <Icon size={isActive ? 24 : 16} className="shrink-0" />
           {title}
         </p>
         {isActive && (
@@ -88,11 +96,16 @@ export const DepartmentLinks = memo(
     dealType,
     pathName,
   }: DepartmentLinksProps) => {
-    const getDealLinks = useMemo(
-      () =>
-        departmentId === 1 ? dealsSalesDepartment : pagesMarkretingDepartment,
-      [departmentId]
-    );
+    const getDealLinks = useMemo(() => {
+      switch (departmentId) {
+        case 1:
+          return dealsSalesDepartment;
+        case 2:
+          return pagesMarkretingDepartment;
+        default:
+          return [];
+      }
+    }, [departmentId]);
 
     const renderLinks = useMemo(
       () =>
@@ -116,6 +129,28 @@ export const DepartmentLinks = memo(
       [dealType, user.id, user.url, userId, getDealLinks, departmentId]
     );
 
+    if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) {
+      return null;
+    }
+
+    if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) {
+      // return (
+      //   <LinkItem
+      //     key={user.id}
+      //     href={`${user.url}/orders`}
+      //     title={table.orders.title}
+      //     icon={departmentId === 1 ? BookText : ChartColumnBig}
+      //     isActive={
+      //       departmentId === user.departmentId &&
+      //       user.id === userId &&
+      //       dealType === table.orders.id
+      //     }
+      //     onClick={(e) => e.stopPropagation()}
+      //   />
+      // );
+      return null;
+    }
+
     if (departmentId === 2) {
       return (
         <>
@@ -132,23 +167,27 @@ export const DepartmentLinks = memo(
                   </p>
                 </AccordionTrigger>
                 <AccordionContent className="grid w-full gap-1 pl-5 relative">
-                  {namePagesByDealType.map((type, index) => (
-                    <Fragment key={type}>
-                      <div className="relative rounded-sm overflow-hidden">
-                        {pathName?.includes("summary-table") &&
-                          pathName?.includes(type.toLocaleLowerCase()) &&
-                          user.id === userId && <MarketActiveItemSidebar />}
-                        <SummaryTableLink
-                          type={type}
-                          departmentId="1"
-                          className="flex border p-3 text-primary dark:text-stone-400 border-solid border-transparent rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground"
-                        />
-                      </div>
-                      {index !== namePagesByDealType.length - 1 && (
-                        <Separator className="my-[1px] h-[1px] bg-stone-600" />
-                      )}
-                    </Fragment>
-                  ))}
+                  {namePagesByDealType.map((type, index) => {
+                    const isActiveSummaryTable =
+                      pathName?.includes("summary-table") &&
+                      pathName?.includes(type.toLocaleLowerCase()) &&
+                      user.id === userId;
+                    return (
+                      <Fragment key={type}>
+                        <div className="relative rounded-sm overflow-hidden">
+                          {isActiveSummaryTable && <MarketActiveItemSidebar />}
+                          <SummaryTableLink
+                            type={type}
+                            departmentId="1"
+                            className="flex border p-3 text-primary dark:text-stone-400 border-solid border-transparent rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground"
+                          />
+                        </div>
+                        {index !== namePagesByDealType.length - 1 && (
+                          <Separator className="my-[1px] h-[1px] bg-stone-600" />
+                        )}
+                      </Fragment>
+                    );
+                  })}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

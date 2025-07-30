@@ -19,17 +19,15 @@ type FilterPopoverGroupProps = {
 };
 
 const FilterPopoverGroup = React.memo(
-  ({ options, columnFilters, setColumnFilters }: FilterPopoverGroupProps) => {
+  ({ options }: FilterPopoverGroupProps) => {
     return (
-      <div className="flex flex-wrap items-center justify-start gap-2 bg-background py-2">
+      <div className="flex flex-wrap items-center justify-start gap-2 bg-background">
         {options.map((option) => (
           <FilterPopover
             key={option.columnId}
             columnId={option.columnId}
             options={option.options}
             label={option.label}
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
           />
         ))}
       </div>

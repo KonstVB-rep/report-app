@@ -22,11 +22,7 @@ type CalendarComponentProps = {
   field: FieldValues;
 };
 
-const CalendarComponent = ({
-  required = false,
-  field,
-  ...rest
-}: CalendarComponentProps) => {
+const CalendarComponent = ({ field, ...props }: CalendarComponentProps) => {
   const selectedDate = field.value ? new Date(field.value) : undefined;
 
   return (
@@ -41,7 +37,7 @@ const CalendarComponent = ({
             )}
           >
             {selectedDate ? (
-              format(selectedDate, "dd.MM.yyyy")
+              format(selectedDate, "dd.MM.yyyy", { locale: ru })
             ) : (
               <span>Выберите дату</span>
             )}
@@ -54,9 +50,9 @@ const CalendarComponent = ({
           mode="single"
           selected={selectedDate}
           onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
-          required={required}
+          required={props.required}
           locale={ru}
-          {...rest}
+          {...props}
         />
       </PopoverContent>
     </Popover>

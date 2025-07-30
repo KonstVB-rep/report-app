@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 
-import { TextareaFormProps } from "../type";
+import { TextareaFormProps } from "../Inputs/type";
 
 const TextareaForm = <T extends FieldValues>({
   name,

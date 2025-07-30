@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { getTelegramBotInDb } from "@/feature/telegramBot/api";
+import { getTelegramBotInDb } from "@/shared/api/getTelegramBotInDb";
 
 import {
   getCalendarBotName,
@@ -46,42 +46,11 @@ export const useGetEventsCalendarUserToday = () => {
     enabled: !!authUser?.id,
   });
 };
-
-// export const useGetInfoChatNotificationChecked = (chatName: string) => {
-//   const { authUser } = useStoreUser();
-
-//   return useQuery({
-//     queryKey: ["chatInfoChecked", authUser?.id, chatName],
-//     queryFn: async () => {
-//       try {
-//         if (!authUser?.id) {
-//           throw new Error("Пользователь не авторизован");
-//         }
-//         const botName = await getCalendarBotName();
-
-//         if (!botName) {
-//           throw new Error("Название бота не найдено");
-//         }
-//         const botInDb = await getTelegramBotInDb(
-//           botName,
-//           authUser.id,
-//           chatName
-//         );
-
-//         if (!botInDb) {
-//           return {id: null, botName, isActive: false, chatId: "", chatName: "" };
-//         }
-   
-//         return botInDb;
-//       } catch (error) {
-//         throw error;
-//       }
-//     },
-//     enabled: !!authUser?.id,
-//   });
-// };
-
-export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interval: number = 1) => {
+export const useGetInfoChat = (
+  chatName: string,
+  isNeedRefetch?: boolean,
+  interval: number = 1
+) => {
   const { authUser } = useStoreUser();
 
   return useQuery({
@@ -97,14 +66,16 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
           throw new Error("Название бота не найдено");
         }
 
-        const botInDb = await getTelegramBotInDb(
-          botName,
-          authUser.id,
-          chatName
-        );
+        const botInDb = await getTelegramBotInDb(botName, authUser.id);
 
         if (!botInDb) {
-          return {id: null, botName, isActive: false, chatId: "", chatName: "" };
+          return {
+            id: null,
+            botName,
+            isActive: false,
+            chatId: "",
+            chatName: "",
+          };
         }
 
         return botInDb;
@@ -112,7 +83,9 @@ export const useGetInfoChat = (chatName: string, isNeedRefech?: boolean, interva
         throw error;
       }
     },
-    enabled: !!authUser?.id,
-    refetchInterval:isNeedRefech ? interval * 1000 : false
+    enabled: !!authUser?.id && !!chatName, // не запускаем запрос без пользователя и имени чата
+    refetchInterval: isNeedRefetch ? interval * 1000 : false, // включаем периодический рефетч если нужно
+    staleTime: 5 * 60 * 1000, // можно задать, чтобы данные были свежими 5 минут (настройка для оптимизации)
+    gcTime: 10 * 60 * 1000, // кэшируем данные 10 минут
   });
 };

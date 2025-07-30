@@ -13,9 +13,11 @@ export const defaultProjectValues = {
   delta: "",
   dealStatus: "",
   comments: "",
+  peojectId: "",
   plannedDateConnection: undefined,
   resource: "",
   contacts: [],
+  managersIds: [],
 };
 
 export const defaultRetailValues = {
@@ -32,6 +34,8 @@ export const defaultRetailValues = {
   dealStatus: "",
   comments: "",
   plannedDateConnection: undefined,
+  retailsId: "",
   resource: "",
   contacts: [],
+  managersIds: [],
 };

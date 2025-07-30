@@ -20,7 +20,7 @@ const DelSavedFilterForm = ({
 }) => {
   const { mutate, isPending } = useDeleteFilter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     mutate(filterId);
   };

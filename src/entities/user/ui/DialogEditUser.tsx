@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -9,6 +9,7 @@ import { UserPen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import DialogComponent from "@/shared/ui/DialogComponent";
+import { TOAST } from "@/shared/ui/Toast";
 
 import { useGetUser } from "../hooks/query";
 import { UserWithdepartmentName } from "../types";
@@ -23,8 +24,17 @@ const DialogEditUser = () => {
   const params = useParams();
   const userId = String(params.userId);
 
-  const { data } = useGetUser(userId as string);
-  const [open, setOpen] = React.useState(false);
+  const { data, isLoading, isError } = useGetUser(userId);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (isError) {
+      TOAST.ERROR("Ошибка при загрузке данных пользователя");
+      console.error("Ошибка при загрузке данных пользователя");
+    }
+  }, [isError]);
+
+  if (!userId) return null;
 
   return (
     <DialogComponent
@@ -33,6 +43,7 @@ const DialogEditUser = () => {
       trigger={
         <Button
           variant="outline"
+          aria-label="Редактировать пользователя"
           className="h-10 w-full border-none px-2 btn_hover"
         >
           <UserPen />
@@ -44,7 +55,12 @@ const DialogEditUser = () => {
       dialogTitle={"Форма редактирования пользователя"}
       classNameContent="sm:max-w-[600px]"
     >
-      <UserEditForm user={data as UserWithdepartmentName} setOpen={setOpen} />
+      {/* Если данные загружаются или произошла ошибка */}
+      {isLoading ? (
+        <UserFormSkeleton />
+      ) : (
+        <UserEditForm user={data as UserWithdepartmentName} setOpen={setOpen} />
+      )}
     </DialogComponent>
   );
 };

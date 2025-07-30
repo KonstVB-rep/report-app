@@ -35,7 +35,6 @@ const SelectFormField = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-
           <FormControl>
             <SelectComponent
               value={field.value || ""}

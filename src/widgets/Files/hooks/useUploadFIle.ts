@@ -90,9 +90,10 @@ const useUploadFile = (
 
   useEffect(() => {
     if (isSuccess) {
-      handleClear();
+      setFiles(null);
+      if (inputRef.current) inputRef.current.value = "";
     }
-  }, [isSuccess]);
+  }, [inputRef, isSuccess]);
 
   return {
     getRootProps,

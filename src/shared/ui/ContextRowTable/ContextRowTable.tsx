@@ -1,8 +1,8 @@
 "use client";
 
-import { Project, Retail } from "@prisma/client";
+import { PermissionEnum } from "@prisma/client";
 
-import { memo, useState } from "react";
+import { Fragment, memo, useState } from "react";
 
 import Link from "next/link";
 
@@ -15,25 +15,32 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Dialog } from "@/components/ui/dialog";
-import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
-import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 
 import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAffiliation";
+import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
 
-type ContextMenuTableProps<T> = {
+type ContextMenuTableProps = {
   children: React.ReactNode;
-  rowData: T;
-  isExistActionDeal?: boolean;
-  departmentId: string;
+  hasEditDeleteActions?: boolean;
+  modals?: (
+    setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>
+  ) => {
+    edit?: React.ReactNode;
+    delete?: React.ReactNode;
+    [key: string]: React.ReactNode | undefined;
+  };
+  path?: string;
 };
 
-const ContextRowTable = <T,>({
+const ContextRowTable = ({
   children,
-  rowData,
-  isExistActionDeal = true,
-  departmentId,
-}: ContextMenuTableProps<T>) => {
+  hasEditDeleteActions = true,
+  modals = () => ({}),
+  path = "",
+}: ContextMenuTableProps) => {
   const [openModal, setOpenModal] = useState<"edit" | "delete" | null>(null);
+
+  const renderedModals = modals(setOpenModal);
 
   return (
     <>
@@ -42,18 +49,18 @@ const ContextRowTable = <T,>({
           <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
           <ContextMenuContent className="grid gap-1 bg-background">
-            <ContextMenuItem className="flex gap-2 p-0">
-              <Link
-                className="flex w-full items-center justify-start gap-2 p-2"
-                href={`/deal/${departmentId}/${(
-                  rowData as Project | Retail
-                ).type.toLowerCase()}/${(rowData as Project | Retail).id}`}
-              >
-                <FileText size="14" /> Подробнее
-              </Link>
-            </ContextMenuItem>
+            {path && (
+              <ContextMenuItem className="flex gap-2 p-0">
+                <Link
+                  className="flex w-full items-center justify-start gap-2 p-2"
+                  href={path}
+                >
+                  <FileText size="14" /> Подробнее
+                </Link>
+              </ContextMenuItem>
+            )}
 
-            {isExistActionDeal && (
+            {hasEditDeleteActions && (
               <ProtectedByDepartmentAffiliation>
                 <ContextMenuItem
                   onClick={() => setOpenModal("edit")}
@@ -62,30 +69,24 @@ const ContextRowTable = <T,>({
                   <FilePenLine size="14" /> Редактировать
                 </ContextMenuItem>
 
-                <ContextMenuItem
-                  onClick={() => setOpenModal("delete")}
-                  className="flex cursor-pointer gap-2"
+                <ProtectedByPermissions
+                  permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}
                 >
-                  <Trash2 size="14" /> Удалить
-                </ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={() => setOpenModal("delete")}
+                    className="flex cursor-pointer gap-2"
+                  >
+                    <Trash2 size="14" /> Удалить
+                  </ContextMenuItem>
+                </ProtectedByPermissions>
               </ProtectedByDepartmentAffiliation>
             )}
           </ContextMenuContent>
         </ContextMenu>
 
-        {openModal === "edit" && (
-          <EditDealContextMenu
-            close={() => setOpenModal(null)}
-            id={(rowData as Project | Retail).id}
-            type={(rowData as Project | Retail).type}
-          />
-        )}
-        {openModal === "delete" && (
-          <DelDealContextMenu
-            close={() => setOpenModal(null)}
-            id={(rowData as Project | Retail).id}
-            type={(rowData as Project | Retail).type}
-          />
+        {Object.entries(renderedModals).map(
+          ([key, modal]) =>
+            key === openModal && <Fragment key={key}>{modal}</Fragment>
         )}
       </Dialog>
     </>

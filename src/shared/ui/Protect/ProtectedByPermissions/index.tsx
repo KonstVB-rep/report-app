@@ -2,6 +2,8 @@
 
 import { PermissionEnum } from "@prisma/client";
 
+import { memo } from "react";
+
 import useStoreUser from "@/entities/user/store/useStoreUser";
 
 type ProtectedProps = {
@@ -9,34 +11,21 @@ type ProtectedProps = {
   children: React.ReactNode;
 };
 
-const ProtectedByPermissions = ({
-  children,
-  permissionArr,
-}: ProtectedProps) => {
-  const { hasPermissionByRole, authUser } = useStoreUser();
-  if (!authUser) return null;
+const ProtectedByPermissions = memo(
+  ({ children, permissionArr }: ProtectedProps) => {
+    const { hasPermissionByRole, authUser } = useStoreUser();
 
-  const isExistPermission = () => {
-    return (
-      permissionArr &&
-      permissionArr.length > 0 &&
-      permissionArr.every(
-        (p: PermissionEnum) =>
-          authUser.permissions &&
-          authUser.permissions.includes(p as PermissionEnum)
-      )
+    if (!authUser) return null;
+    if (hasPermissionByRole) return children;
+
+    const hasPermissions = permissionArr?.every((p) =>
+      authUser.permissions?.includes(p)
     );
-  };
 
-  if (hasPermissionByRole) {
-    return children;
+    return hasPermissions ? children : null;
   }
+);
 
-  if (isExistPermission()) {
-    return children;
-  }
-
-  return null;
-};
+ProtectedByPermissions.displayName = "ProtectedByPermissions";
 
 export default ProtectedByPermissions;

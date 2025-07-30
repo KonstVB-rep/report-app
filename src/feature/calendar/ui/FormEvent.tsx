@@ -1,12 +1,12 @@
 "use client";
 
-import { Path, UseFormReturn } from "react-hook-form";
+import { Path } from "react-hook-form";
 
-import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
-import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
+import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Form } from "@/components/ui/form";
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -15,22 +15,20 @@ import {
 } from "@/components/ui/form";
 import { EventCalendarSchema } from "@/feature/calendar/model/schema";
 import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";
-import { EventInputType } from "@/feature/calendar/ui/types";
 import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
 import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
 import TextareaForm from "@/shared/ui/TextareaForm";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { IsExistIntersectionEvents } from "../utils/eventHandlers";
+import { EventInputType } from "../types";
 
 type FormEventProps = {
-  events: EventInputType[] | undefined;
+  events: EventInputType[];
 };
 
 type HandleSubmitProps = {
   editingId?: string | null;
-  events: EventInputType[] | undefined;
   createEvent: (data: {
     title: string;
     start: string;
@@ -48,7 +46,7 @@ type HandleSubmitProps = {
 
 export const handleSubmit = (
   values: EventCalendarSchema,
-  { editingId, events, createEvent, updateEvent }: HandleSubmitProps
+  { editingId, createEvent, updateEvent }: HandleSubmitProps
 ) => {
   const {
     eventTitle,
@@ -69,27 +67,17 @@ export const handleSubmit = (
     const [startH, startM] = startTimeEvent.split(":");
     const [endH, endM] = endTimeEvent.split(":");
 
-    if (
-      parseInt(startH, 10) === parseInt(endH, 10) &&
-      parseInt(startM, 10) === parseInt(endM, 10)
-    ) {
-      return TOAST.ERROR(
-        "Время окнчания события должно быть больше времени началаю!"
-      );
-    }
-
     startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
     endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
+
+    console.log(endDate, startDate);
+
+    if (endDate <= startDate) {
+      return TOAST.ERROR(
+        "Время окончания события не должно быть меньше времени начала!"
+      );
+    }
   }
-
-  const isIntersections = IsExistIntersectionEvents(
-    startDate,
-    endDate,
-    events,
-    editingId
-  );
-
-  if (isIntersections) return;
 
   if (editingId) {
     updateEvent({
@@ -112,7 +100,7 @@ export const handleSubmit = (
 const FormEvent = ({ events }: FormEventProps) => {
   const { editingId, form } = useCalendarContext();
   const { createEvent, updateEvent, isLoading } = useEventActionContext();
-  const allDay = form.watch("allDay");
+  const allDay = form.watch("allDay") ?? false;
 
   return (
     <>
@@ -121,16 +109,15 @@ const FormEvent = ({ events }: FormEventProps) => {
           onSubmit={form.handleSubmit((values) =>
             handleSubmit(values, {
               editingId,
-              events,
               createEvent,
               updateEvent,
             })
           )}
           className="grid max-h-[82vh] min-w-full gap-5 overflow-y-auto"
-          key={allDay}
+          key={String(allDay)}
         >
           <div className="text-center font-semibold uppercase">
-            Форма добавления события
+            Форма события
           </div>
           <div className="grid gap-2 p-1">
             <TextareaForm
@@ -149,8 +136,7 @@ const FormEvent = ({ events }: FormEventProps) => {
                 <FormItem className="flex gap-2 items-center justify-start my-2">
                   <FormControl>
                     <Checkbox
-                      {...field}
-                      checked={field.value}
+                      checked={Boolean(field.value)}
                       onCheckedChange={(checked) => {
                         field.onChange(checked);
                         form.trigger("allDay");
@@ -162,7 +148,7 @@ const FormEvent = ({ events }: FormEventProps) => {
                 </FormItem>
               )}
             />
-            <DatePickerFormField<UseFormReturn<EventCalendarSchema>>
+            <DatePickerFormField
               name={"startDateEvent" as Path<EventCalendarSchema>}
               label="Начало события"
               control={form.control}
@@ -182,7 +168,7 @@ const FormEvent = ({ events }: FormEventProps) => {
               min={!allDay ? new Date().toISOString().slice(0, 16) : undefined}
               disabled={allDay}
             />
-            <DatePickerFormField<UseFormReturn<EventCalendarSchema>>
+            <DatePickerFormField
               name={"endDateEvent" as Path<EventCalendarSchema>}
               label="Конец события"
               control={form.control}
@@ -203,11 +189,6 @@ const FormEvent = ({ events }: FormEventProps) => {
               disabled={allDay}
             />
           </div>
-          {form.formState.errors.dateError && (
-            <p className="text-sm text-red-500 text-center">
-              {form.formState.errors.dateError.message}
-            </p>
-          )}
           <div className={`grid ${editingId ? "grid-cols-2" : ""} gap-4`}>
             <ModalDelEvents events={events} />
 

@@ -30,6 +30,10 @@ model User {
   userFilters     UserFilter[]
   eventsCalendar  EventCalendar[]
   chats           UserTelegramChat[]
+  retailManagers  RetailManager[]
+  projectManagers ProjectManager[]
+  tasksAssigned   Task[]       @relation("TaskAssigner")
+  tasksExecuted   Task[]       @relation("TaskExecutor")
 
   @@index([departmentId])
 }
@@ -54,12 +58,13 @@ model Permission {
 
 
 model Department {
-  id         Int            @id @default(autoincrement())
-  name       DepartmentEnum @unique
-  directorId String?        @unique
-  description String        @unique
-  director   User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
-  users      User[]         @relation("DepartmentUsers")
+  id          Int            @id @default(autoincrement())
+  name        DepartmentEnum @unique
+  directorId  String?        @unique
+  description String         @unique
+  director    User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
+  users       User[]         @relation("DepartmentUsers")
+  tasks       Task[]         @relation("DepartmentTask")
 }
 
 model Project {
@@ -85,7 +90,11 @@ model Project {
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
   user                  User             @relation(fields: [userId], references: [id])
+  projectManagers       ProjectManager[]
   additionalContacts    AdditionalContact[] @relation("ProjectContacts")
+
+  orderId               String?          @unique
+
 
   @@index([userId], map: "Project_userId_fkey")
 }
@@ -111,10 +120,55 @@ model Retail {
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
   user                  User             @relation(fields: [userId], references: [id])
+  retailManagers        RetailManager[]
   additionalContacts    AdditionalContact[] @relation("RetailContacts")
+
+  orderId               String?          @unique
 
   @@index([userId], map: "Retail_userId_fkey")
 }
+
+
+model Order {
+  id                    String           @id @default(cuid())
+  type                  DealType         @default(ORDER) // <-- Тип сделки
+  dateRequest           DateTime
+  nameDeal              String
+  contact               String
+  phone                 String?
+  email                 String?
+  manager               String
+  comments              String?
+  departmentId          Int
+  orderStatus           StatusOrder      @default(SUBMITTED_TO_WORK) 
+  resource              String?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  retailId              String?          @unique 
+  projectId             String?          @unique
+}
+
+model ProjectManager {
+  dealId      String
+  userId      String
+
+  project     Project   @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([dealId, userId]) // составной ключ — один и тот же менеджер не может повторно быть в заказе
+}
+
+model RetailManager {
+  dealId String
+  userId  String
+
+  retail  Retail   @relation(fields: [dealId],references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([dealId, userId])
+}
+
 
 model AdditionalContact {
   id           String    @id @default(cuid())
@@ -147,7 +201,7 @@ model DealFile {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id])
 
   @@index([dealId])
   @@index([userId], map: "File_userId_fkey")
@@ -192,28 +246,57 @@ model TelegramBot {
 }
 
 model UserTelegramChat {
-  id               String      @id @default(cuid())           // Уникальный ID записи
+  id               String     @id @default(cuid())           // Уникальный ID записи
   userId           String                                   // ID пользователя
   botId            String                                   // ID бота
   chatId           String                                   // ID чата
   telegramUserId   String
-  chatName         String      @unique
+  chatName         String
   telegramUsername String?                                  // ID пользователя в Telegram
-  isActive         Boolean     @default(true)                   // Статус активности чата
-  createdAt        DateTime    @default(now())                 // Время создания записи
-  updatedAt        DateTime    @updatedAt                      // Время последнего обновления записи
+  isActive         Boolean    @default(true)                   // Статус активности чата
+  createdAt        DateTime   @default(now())                 // Время создания записи
+  updatedAt        DateTime   @updatedAt                      // Время последнего обновления записи
 
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
-  bot            TelegramBot @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
+  bot            TelegramBot  @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
 
-  @@unique([botId, telegramUserId])   // Уникальность для каждого пользователя, бота и чата
+  @@unique([botId, userId])   // Уникальность для каждого пользователя, бота и чата
 }
+
+model Task {
+  id              String      @id @default(cuid())  
+  title           String
+  description     String
+  departmentId    Int
+  taskStatus      TaskStatus
+  taskPriority    TaskPriority
+  assignerId      String
+  executorId      String
+  orderTask       Int
+  dueDate         DateTime
+  startDate       DateTime
+  createdAt       DateTime    @default(now())                
+  updatedAt       DateTime    @updatedAt      
+
+  department   Department @relation("DepartmentTask", fields: [departmentId], references: [id])
+
+  // Автор задачи (assigner)
+  assigner     User         @relation("TaskAssigner", fields: [assignerId], references: [id])
+
+  // Исполнитель задачи (executor)
+  executor     User         @relation("TaskExecutor", fields: [executorId], references: [id])
+
+  @@index([orderTask, taskStatus])
+}
+
+
 enum PermissionEnum {
   VIEW_USER_REPORT
   VIEW_UNION_REPORT
   DOWNLOAD_REPORTS
   USER_MANAGEMENT
   DEAL_MANAGEMENT
+  TASK_MANAGEMENT
 }
 
 enum DirectionProject {
@@ -258,11 +341,26 @@ enum StatusProject {
   REJECT
   PAID
   APPROVAL
+  UNDER_APPROVAL
   FIRST_CP_APPROVAL
   CONTRACT_ADVANCE_PAYMENT
   PROGRESS
   DELIVERY_WORKS
   SIGN_ACTS_PAYMENT
+  CLOSED
+}
+
+enum StatusContract {
+  CONTRACT_ADVANCE_PAYMENT
+  PROGRESS
+  DELIVERY_WORKS
+  SIGN_ACTS_PAYMENT
+  CLOSED
+}
+
+enum StatusOrder {
+  SUBMITTED_TO_WORK
+  AT_WORK
   CLOSED
 }
 
@@ -292,7 +390,24 @@ enum Role {
 enum DealType {
   PROJECT
   RETAIL
+  ORDER
 }
+
 enum StorageType {
   YANDEX_DISK
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  // IN_REVIEW
+  DONE
+  CANCELED
+}
+
+enum TaskPriority {
+  LOW       // Не срочно, но нужно сделать (фоновые)
+  MEDIUM    // Важно, но не критично (обычные задачи)
+  HIGH      // Очень важно — сделать до средних
+  CRITICAL  // Экстренно — сделать первым
 }

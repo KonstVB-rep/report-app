@@ -1,77 +1,53 @@
 import { DealType } from "@prisma/client";
-import { ColumnDef, ColumnFiltersState, Table } from "@tanstack/react-table";
+import { Table } from "@tanstack/react-table";
 
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { DateRange } from "react-day-picker";
 
+import { useParams, usePathname } from "next/navigation";
+
 import { LABELS } from "@/entities/deal/lib/constants";
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
 
 import DateRangeFilter from "../../DateRangeFilter";
 import MotionDivY from "../../MotionComponents/MotionDivY";
-import MultiColumnFilter from "../../MultiColumnFilter";
 import SelectColumns from "../../SelectColumns";
 import FilterByUser from "../FilterByUsers";
 import FilterPopoverGroup from "../FilterPopoverGroup";
 
 type FiltersBlockProps = {
-  columnFilters: ColumnFiltersState;
-  setColumnFilters: (
-    callback: (prev: ColumnFiltersState) => ColumnFiltersState
-  ) => void;
-  columns: ColumnDef<Record<string, unknown>, unknown>[];
-  includedColumns: string[];
-  selectedColumns: string[];
-  setSelectedColumns: Dispatch<SetStateAction<string[]>>;
-  filterValueSearchByCol: string;
-  setFilterValueSearchByCol: Dispatch<SetStateAction<string>>;
   value?: DateRange;
-  onDateChange: (date: DateRange | undefined) => void;
-  onClearDateFilter: (columnId: string) => void;
   table: Table<Record<string, unknown>>;
   type: DealType;
 };
 
-const FiltersBlock = ({
-  setColumnFilters,
-  includedColumns,
-  selectedColumns,
-  setSelectedColumns,
-  filterValueSearchByCol,
-  setFilterValueSearchByCol,
-  value,
-  onDateChange,
-  onClearDateFilter,
-  table,
-  type,
-}: FiltersBlockProps) => {
+const FiltersBlock = ({ value, table, type }: FiltersBlockProps) => {
+  const pathname = usePathname();
+  const { authUser } = useStoreUser();
+  const { dealType } = useParams();
+
+  const { setColumnFilters, handleDateChange, handleClearDateFilter } =
+    useDataTableFiltersContext();
+
+  const hasTable = pathname.includes(
+    `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
+  );
+
+  const safeType = type as Exclude<DealType, "ORDER">;
+
   return (
     <MotionDivY className="min-h-0">
-      <FilterByUser
-        columnFilters={table.getState().columnFilters}
-        setColumnFilters={setColumnFilters}
-      />
+      <div className="py-2 flex flex-wrap justify-start gap-2">
+        {hasTable && <FilterByUser label="Менеджер" />}
 
-      <div className="mt-2 flex flex-wrap justify-between gap-2">
-        <DateRangeFilter
-          onDateChange={onDateChange}
-          onClearDateFilter={onClearDateFilter}
-          value={value}
-        />
-
-        <MultiColumnFilter
-          columns={
-            table.getAllColumns() as ColumnDef<
-              Record<string, unknown>,
-              unknown
-            >[]
-          }
-          setColumnFilters={setColumnFilters}
-          includedColumns={includedColumns}
-          selectedColumns={selectedColumns}
-          setSelectedColumns={setSelectedColumns}
-          filterValueSearchByCol={filterValueSearchByCol}
-          setFilterValueSearchByCol={setFilterValueSearchByCol}
-        />
+        <div className="flex gap-2 justify-start flex-wrap">
+          <DateRangeFilter
+            onDateChange={handleDateChange("dateRequest")}
+            onClearDateFilter={handleClearDateFilter}
+            value={value}
+          />
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 bg-background">
@@ -81,17 +57,17 @@ const FiltersBlock = ({
               {
                 label: "Статус",
                 columnId: "dealStatus",
-                options: LABELS[type].STATUS,
+                options: LABELS[safeType].STATUS,
               },
               {
                 label: "Направление",
                 columnId: "direction",
-                options: LABELS[type].DIRECTION,
+                options: LABELS[safeType].DIRECTION,
               },
               {
                 label: "Тип поставки",
                 columnId: "deliveryType",
-                options: LABELS[type].DELIVERY,
+                options: LABELS[safeType].DELIVERY,
               },
             ]}
             columnFilters={table.getState().columnFilters}

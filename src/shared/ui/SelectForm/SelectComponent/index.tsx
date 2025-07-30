@@ -12,6 +12,7 @@ import {
 type SelectComponentProps = {
   placeholder: string;
   options: [string, string][]; // Это массив кортежей [key, value]
+  className?: string;
 } & React.ComponentProps<typeof Select>;
 
 const SelectComponent = ({
@@ -19,23 +20,25 @@ const SelectComponent = ({
   options,
   value,
   onValueChange,
+  className,
   ...props
 }: SelectComponentProps) => {
   return (
     <Select
+      key={value}
       value={value}
       onValueChange={(val) => onValueChange?.(val)}
       {...props}
     >
-      <SelectTrigger className="w-full  border border-solid">
+      <SelectTrigger className="w-full border border-solid">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 
       <SelectContent>
         <SelectGroup>
           {options.map(([key, value]) => (
-            <SelectItem key={key} value={key}>
-              {value}
+            <SelectItem key={key} value={key} className={`${className}`}>
+              <span className={`${className}`}>{value}</span>
             </SelectItem>
           ))}
         </SelectGroup>

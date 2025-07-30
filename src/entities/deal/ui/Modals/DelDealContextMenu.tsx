@@ -1,4 +1,4 @@
-import { DealType } from "@prisma/client";
+import { DealType, PermissionEnum } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction } from "react";
 
@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import DelDealSkeleton from "../Skeletons/DelDealSkeleton";
 
@@ -28,14 +29,16 @@ const DelDealContextMenu = ({
   type: DealType;
 }) => {
   return (
-    <DialogContent className="sm:max-w-[400px]">
-      <DialogHeader>
-        <DialogTitle className="sr-only">Удалить проект</DialogTitle>
-        <DialogDescription className="sr-only" />
-      </DialogHeader>
+    <ProtectedByPermissions permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}>
+      <DialogContent className="sm:max-w-[400px]">
+        <DialogHeader>
+          <DialogTitle className="sr-only">Удалить проект</DialogTitle>
+          <DialogDescription className="sr-only" />
+        </DialogHeader>
 
-      <DelDealForm id={id} type={type} close={close} />
-    </DialogContent>
+        <DelDealForm id={id} type={type} close={close} />
+      </DialogContent>
+    </ProtectedByPermissions>
   );
 };
 

@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/ui/Overlay";
 
@@ -21,6 +22,10 @@ const DeleteUserModalContent = ({
   isPending,
   username,
 }: DeleteUserModalContentProps) => {
+  const delUser = async () => {
+    await checkTokens();
+    mutate();
+  };
   return (
     <MotionDivY>
       <DialogHeader>
@@ -41,7 +46,7 @@ const DeleteUserModalContent = ({
           <span>будет удален безвозвратно</span>
         </p>
         <div className="flex justify-between gap-4">
-          <Button onClick={() => mutate()} className="flex-1">
+          <Button onClick={delUser} className="flex-1">
             {isPending ? "Удаление..." : "Удалить"}
           </Button>
           <DialogClose asChild>

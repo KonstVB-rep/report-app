@@ -3,7 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
+
+import { useParams } from "next/navigation";
 
 import { TOAST } from "@/shared/ui/Toast";
 
@@ -12,16 +14,28 @@ import { defaultRetailValues } from "../../model/defaultvaluesForm";
 import { RetailFormSchema, RetailSchema } from "../../model/schema";
 import RetailFormBody from "./RetailFormBody";
 
-const RetailForm = () => {
+const RetailForm = ({
+  orderId,
+  managerId,
+}: {
+  orderId?: string;
+  managerId?: string;
+}) => {
+  const { userId } = useParams();
+
   const form = useForm<RetailSchema>({
-    resolver: zodResolver(RetailFormSchema),
-    defaultValues: defaultRetailValues,
+    resolver: zodResolver(RetailFormSchema) as Resolver<RetailSchema>,
+    defaultValues: {
+      ...defaultRetailValues,
+      managersIds: [{ userId: managerId ?? (userId as string) }],
+    },
   });
 
-  const { mutateAsync, isPending } = useCreateRetail(form);
+  const { mutateAsync, isPending } = useCreateRetail(form.reset);
 
   const onSubmit = (data: RetailSchema) => {
-    TOAST.PROMISE(mutateAsync(data), "Сделка по рознице добавлена");
+    const dataForm = orderId ? { ...data, orderId: orderId } : data;
+    TOAST.PROMISE(mutateAsync(dataForm), "Сделка по рознице добавлена");
   };
 
   return (
@@ -30,6 +44,8 @@ const RetailForm = () => {
       onSubmit={onSubmit}
       isPending={isPending}
       contactsKey="contacts"
+      managerId={managerId}
+      titleForm={"Создать сделку"}
     />
   );
 };

@@ -39,5 +39,7 @@ export const handleAuthorization = async (): Promise<{
     return handleError("Пользователь не найден");
   }
 
-  return { user, userId };
+  const res = { user, userId };
+
+  return res;
 };

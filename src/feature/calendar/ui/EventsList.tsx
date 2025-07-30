@@ -1,53 +1,78 @@
 "use client";
 
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import React from "react";
+import { useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { CalendarFold } from "lucide-react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { EventInputType } from "@/feature/calendar/types";
+import {  EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
-import { columnsDataCalendar } from "../../../app/(dashboard)/calendar/[userId]/events-list/model/column-data-calendar";
+import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
+import { handleEventClickOnEventsList } from "../utils/eventHandlers";
+import CalendarFormModal from "./CalendarFormModal";
 
 type EventsListProps = {
   events: EventInputType[];
-  showLinkCalendar?: boolean;
-  handleEventClickOnEventsList?: (evenetCalendar: EventInputType) => void;
 };
 
 const EventsList = ({ events }: EventsListProps) => {
   const table = useReactTable({
     data: events,
-    columns: columnsDataCalendar,
+    columns: columnsDataCalendar as ColumnDef<EventInputType, unknown>[],
     getCoreRowModel: getCoreRowModel(),
   });
+
+   const { form, setEditingId, setOpenModal } =
+        useCalendarContext();
+  
+  const onEventClick = (eventCalendar: EventInputType) => {
+    handleEventClickOnEventsList(
+      eventCalendar,
+      form,
+      setEditingId,
+      setOpenModal
+    );
+  };
 
   const { authUser } = useStoreUser();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!authUser) {
+      router.replace("/login");
+    }
+  }, [authUser, router]);
+
+  if(events?.length === 0) {
+    return null
+  }
+
   if (!authUser) {
-    router.replace("/login");
     return null;
   }
 
   return (
-    <>
+  <>
+    <div className="grid gap-4">
       <ButtonLink
-        pathName={`/calendar/${authUser.id}`}
+        pathName={`/dashboard/calendar/${authUser.id}`}
         label="Календарь"
         icon={<CalendarFold />}
       />
 
       <div className="rounded-lg overflow-hidden border w-full">
-        <EventsListTable<EventInputType> table={table} />
+        <EventsListTable table={table} handleRowClick={onEventClick}/>
       </div>
-    </>
+    </div>
+    <CalendarFormModal events={events} />
+  </>
   );
 };
 

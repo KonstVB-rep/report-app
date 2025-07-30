@@ -1,53 +1,23 @@
 import { PermissionEnum } from "@prisma/client";
-import { ColumnFiltersState } from "@tanstack/react-table";
 
 import React, { memo } from "react";
 
-import { useParams, usePathname } from "next/navigation";
-
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
-import useStoreUser from "@/entities/user/store/useStoreUser";
+import { getManagers } from "@/entities/department/lib/utils";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 import FilterPopover from "../FilterPopover";
 
 type Props = {
-  columnFilters?: ColumnFiltersState;
-  setColumnFilters?: (
-    callback: (prev: ColumnFiltersState) => ColumnFiltersState
-  ) => void;
+  label: string;
+  columnId?: string;
 };
 
-const FilterByUser = ({ columnFilters, setColumnFilters }: Props) => {
-  const { authUser } = useStoreUser();
-  const { deptsFormatted } = useStoreDepartment();
-  const pathname = usePathname();
-  const { dealType } = useParams();
+const managers = getManagers();
 
-  const hasTable = pathname.includes(
-    `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
-  );
-
-  const currentDepartment = deptsFormatted?.find(
-    (dept) => dept.id === authUser?.departmentId
-  );
-
-  const usersDepartment = currentDepartment?.users.reduce(
-    (acc, user) => ({ ...acc, ...user }),
-    {}
-  ) as Record<string, string>;
-
-  if (!hasTable) return null;
-
+const FilterByUser = ({ label, columnId = "user" }: Props) => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
-      <FilterPopover
-        columnId="user"
-        options={usersDepartment}
-        label="Менеджер"
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
-      />
+      <FilterPopover columnId={columnId} options={managers} label={label} />
     </ProtectedByPermissions>
   );
 };

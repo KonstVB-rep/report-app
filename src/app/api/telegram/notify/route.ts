@@ -7,11 +7,9 @@ import prisma from "@/prisma/prisma-client";
 
 async function sendNotification(message: string, chatId: string) {
   try {
-    const response = await axios.post(
+    return await axios.post(
       `${process.env.TELEGRAM_API_URL}${process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`
     );
-
-    return response;
   } catch (error) {
     console.error("Ошибка при отправке уведомления:", error);
   }
@@ -25,11 +23,8 @@ export async function POST(req: NextRequest) {
   try {
     const events = await req.json();
 
-    if (!Array.isArray(events) || events.length === 0) {
-      return NextResponse.json(
-        { message: "Неверные данные: ожидается массив событий" },
-        { status: 400 }
-      );
+    if (events.length === 0) {
+      return NextResponse.json({ message: "Нет событий" }, { status: 400 });
     }
 
     for (const event of events) {
@@ -45,18 +40,18 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const message = `‼️Напоминание: в ${new Date(start).toLocaleString().split(', ')[1]} - ${title}`;
+      const message = `‼️Напоминание: в ${new Date(start).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" }).split(", ")[1].slice(0, 5)} - ${title}`;
 
       try {
         // Отправляем уведомление в Telegram
-          const sent =await sendNotification(message, chatId);
-          
-          if (sent?.status === 200) {
-            await prisma.eventCalendar.update({
-              where: { id: event.id },
-              data: { notified: true },
-            });
-          }
+        const sent = await sendNotification(message, chatId);
+
+        if (sent?.status === 200) {
+          await prisma.eventCalendar.update({
+            where: { id: event.id },
+            data: { notified: true },
+          });
+        }
       } catch (error) {
         console.error(
           `Ошибка при отправке уведомления для события: ${title}`,

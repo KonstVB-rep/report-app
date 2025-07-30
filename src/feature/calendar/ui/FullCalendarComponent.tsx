@@ -12,12 +12,14 @@ import { useState } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { useCalendarContext } from "@/app/(dashboard)/calendar/context/calendar-context";
-import { useEventActionContext } from "@/app/(dashboard)/calendar/context/events-action-provider";
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
+import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
 import {
   handleDateSelect,
   handleEventClick,
 } from "@/feature/calendar/utils/eventHandlers";
+
+const defaultView = "dayGridMonth";
 
 const FullCalendarComponent = () => {
   const router = useRouter();
@@ -26,17 +28,13 @@ const FullCalendarComponent = () => {
   const { events } = useEventActionContext();
   const { form, setEditingId, setOpenModal } = useCalendarContext();
 
-  const defaultView = "dayGridMonth";
   const viewFromUrl = searchParams.get("view");
   const [currentView, setCurrentView] = useState(viewFromUrl || defaultView);
 
-  const capitalizeTitle = () => {
+  const handleDatesSet = (arg: { view: { type: string } }) => {
     const titleEl = document.querySelector(".fc-toolbar-title");
     titleEl?.classList.add("title-calendar");
-  };
 
-  const handleDatesSet = (arg: { view: { type: string } }) => {
-    capitalizeTitle();
     const newView = arg.view.type;
     setCurrentView(newView);
 

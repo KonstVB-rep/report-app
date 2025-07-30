@@ -16,7 +16,7 @@ const SubmitFormButton = ({
   return (
     <Button
       type="submit"
-      className="w-full"
+      className="w-full active:scale-95 transition-transform duration-150"
       aria-label="Отправить форму"
       disabled={isPending}
       {...props}

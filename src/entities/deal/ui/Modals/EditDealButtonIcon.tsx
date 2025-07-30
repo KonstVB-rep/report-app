@@ -29,7 +29,12 @@ const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
               </Button>
             </DialogTrigger>
           </TooltipComponent>
-          <EditProject close={close} id={id} />
+          <EditProject
+            close={close}
+            id={id}
+            isInvalidate
+            titleForm="Редактировать сделку"
+          />
         </Dialog>
       );
     case DealType.RETAIL:
@@ -42,7 +47,12 @@ const EditDealButtonIcon = ({ id, type }: { id: string; type: DealType }) => {
               </Button>
             </DialogTrigger>
           </TooltipComponent>
-          <EditRetail close={close} id={id} />
+          <EditRetail
+            close={close}
+            id={id}
+            isInvalidate
+            titleForm="Редактировать проект"
+          />
         </Dialog>
       );
     default:

@@ -6,8 +6,9 @@ import {
 } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/ui/Toast";
 
 import { useMutationUpdateProject } from "../../hooks/mutate";
@@ -17,33 +18,43 @@ import { ProjectFormSchema, ProjectSchema } from "../../model/schema";
 import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
 import ProjectFormBody from "./ProjectFormBody";
 
+type Props = {
+  close: Dispatch<SetStateAction<void>>;
+  dealId: string;
+  isInvalidate: boolean;
+  titleForm: string;
+};
+
 const EditProjectForm = ({
   close,
   dealId,
-}: {
-  close: Dispatch<SetStateAction<void>>;
-  dealId: string;
-}) => {
+  isInvalidate = false,
+  titleForm,
+}: Props) => {
   const { data, isPending: isLoading } = useGetProjectById(dealId, false);
+  const { authUser } = useStoreUser();
 
   const form = useForm<ProjectSchema>({
-    resolver: zodResolver(ProjectFormSchema),
+    resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,
     defaultValues: defaultProjectValues,
   });
 
   const { mutateAsync, isPending } = useMutationUpdateProject(
     dealId,
     data?.userId ?? "",
-    close
+    close,
+    isInvalidate
   );
 
   const onSubmit = (data: ProjectSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
   };
 
+  const { reset } = form;
+
   useEffect(() => {
     if (data && !isLoading) {
-      form.reset({
+      reset({
         ...data,
         phone: data.phone ?? undefined,
         email: data.email ?? undefined,
@@ -58,9 +69,12 @@ const EditProjectForm = ({
         delta: data.delta,
         resource: data.resource ?? "",
         contacts: data.additionalContacts ?? [],
+        managersIds: Array.isArray(data.managers)
+          ? data.managers.map((manager) => ({ userId: manager.id }))
+          : [],
       });
     }
-  }, [data, form, isLoading]);
+  }, [data, reset, isLoading]);
 
   if (isLoading) return <FormDealSkeleton />;
 
@@ -70,6 +84,8 @@ const EditProjectForm = ({
       onSubmit={onSubmit}
       isPending={isPending}
       contactsKey="contacts"
+      managerId={data?.userId || authUser?.id}
+      titleForm={titleForm}
     />
   );
 };

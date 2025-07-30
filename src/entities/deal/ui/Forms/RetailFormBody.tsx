@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
+import { useEffect } from "react";
+import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
@@ -32,6 +32,7 @@ import {
   StatusRetailLabels,
 } from "../../lib/constants";
 import { Contact } from "../../types";
+import AddManagerToDeal from "../Modals/AddManagerToDeal";
 import ContactDeal from "../Modals/ContactDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
@@ -39,16 +40,8 @@ type RetailFormBodyProps<T extends FieldValues> = {
   onSubmit: (data: T) => void;
   isPending: boolean;
   contactsKey?: keyof T;
-};
-
-const setSelectValue = <T extends FieldValues>(
-  form: UseFormReturn<T>,
-  name: keyof T,
-  selected: unknown
-) => {
-  if (selected) {
-    form.setValue(name as Path<T>, selected as PathValue<T, Path<T>>);
-  }
+  managerId: string | undefined;
+  titleForm: string;
 };
 
 const directionOptions = transformObjValueToArr(DirectionRetailLabels);
@@ -60,6 +53,8 @@ const RetailFormBody = <T extends FieldValues>({
   onSubmit,
   isPending,
   contactsKey,
+  managerId = "",
+  titleForm,
 }: RetailFormBodyProps<T>) => {
   const {
     contacts,
@@ -70,18 +65,26 @@ const RetailFormBody = <T extends FieldValues>({
     handleSubmit,
     isAddContact,
     toggleAddContact,
-  } = useSendDealInfo<T>(onSubmit);
+    managers,
+    setManagers,
+    firstManager,
+    setFirstManager,
+  } = useSendDealInfo<T>(onSubmit, managerId);
 
-  const currentContacts = form.getValues(contactsKey as Path<T>);
+  const { getValues } = form;
+
+  useEffect(() => {
+    const ids = getValues("managersIds" as Path<T>);
+    if (ids?.length > 0) setManagers(ids);
+  }, [getValues, setManagers]);
 
   useEffect(() => {
     if (contactsKey) {
-      const value = form.getValues(contactsKey as Path<T>);
-      setContacts(value);
+      setContacts(getValues(contactsKey as Path<T>));
     }
-  }, [contactsKey, form, setContacts, currentContacts]);
+  }, [contactsKey, getValues, setContacts]);
 
-  const error = (name: keyof T) =>
+  const getError = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
 
   return (
@@ -92,23 +95,21 @@ const RetailFormBody = <T extends FieldValues>({
           onSubmit={form.handleSubmit(handleSubmit)}
           className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
-          <div className="text-center font-semibold uppercase">
-            Форма добавления розничной сделки
-          </div>
+          <div className="text-center font-semibold uppercase">{titleForm}</div>
           <div className="grid gap-2 p-2 sm:grid-cols-2">
             <div className="flex flex-col gap-1">
               <DatePickerFormField
                 name={"dateRequest" as Path<T>}
                 label="Дата запроса"
                 control={form.control}
-                errorMessage={error("dateRequest")}
+                errorMessage={getError("dateRequest")}
               />
 
               <InputTextForm
                 name={"nameDeal" as Path<T>}
                 label="Название сделки"
                 control={form.control}
-                errorMessage={error("nameDeal")}
+                errorMessage={getError("nameDeal")}
                 required
                 placeholder="Название..."
               />
@@ -117,7 +118,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"nameObject" as Path<T>}
                 label="Название объекта/Город"
                 control={form.control}
-                errorMessage={error("nameObject")}
+                errorMessage={getError("nameObject")}
                 required
                 placeholder="Название..."
               />
@@ -126,12 +127,9 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"direction" as Path<T>}
                 label="Направление"
                 control={form.control}
-                errorMessage={error("direction")}
+                errorMessage={getError("direction")}
                 options={directionOptions}
                 placeholder="Выберите направление"
-                onValueChange={(selected) =>
-                  setSelectValue(form, "direction", selected)
-                }
                 required
               />
 
@@ -139,19 +137,16 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"deliveryType" as Path<T>}
                 label="Тип поставки"
                 control={form.control}
-                errorMessage={error("deliveryType")}
+                errorMessage={getError("deliveryType")}
                 options={deliveryOptions}
                 placeholder="Выберите тип поставки"
-                onValueChange={(selected) =>
-                  setSelectValue(form, "deliveryType", selected)
-                }
               />
 
               <InputTextForm
                 name={"contact" as Path<T>}
                 label="Контакты"
                 control={form.control}
-                errorMessage={error("contact")}
+                errorMessage={getError("contact")}
                 required
                 placeholder="Имя контакта"
               />
@@ -160,7 +155,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"phone" as Path<T>}
                 label="Телефон"
                 control={form.control}
-                errorMessage={error("phone")}
+                errorMessage={getError("phone")}
                 placeholder="Введите телефон пользователя"
               />
             </div>
@@ -171,7 +166,7 @@ const RetailFormBody = <T extends FieldValues>({
                 label="Email"
                 type="email"
                 control={form.control}
-                errorMessage={error("email")}
+                errorMessage={getError("email")}
                 className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
               />
 
@@ -179,7 +174,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"amountCP" as Path<T>}
                 label="Сумма КП"
                 control={form.control}
-                errorMessage={error("amountCP")}
+                errorMessage={getError("amountCP")}
                 placeholder="Сумма КП"
               />
 
@@ -187,7 +182,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"delta" as Path<T>}
                 label="Дельта"
                 control={form.control}
-                errorMessage={error("delta")}
+                errorMessage={getError("delta")}
                 placeholder="Дельта"
               />
 
@@ -195,26 +190,23 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"dealStatus" as Path<T>}
                 label="Статус КП"
                 control={form.control}
-                errorMessage={error("dealStatus")}
+                errorMessage={getError("dealStatus")}
                 options={statusOptions}
                 placeholder="Выберите статус КП"
-                onValueChange={(selected) =>
-                  setSelectValue(form, "dealStatus", selected)
-                }
               />
 
               <DatePickerFormField
                 name={"plannedDateConnection" as Path<T>}
                 label="Планируемый контакт"
                 control={form.control}
-                errorMessage={error("plannedDateConnection")}
+                errorMessage={getError("plannedDateConnection")}
               />
 
               <InputTextForm
                 name={"resource" as Path<T>}
                 label="Источник"
                 control={form.control}
-                errorMessage={error("resource")}
+                errorMessage={getError("resource")}
                 required
                 placeholder="Откуда пришёл клиент"
               />
@@ -232,9 +224,9 @@ const RetailFormBody = <T extends FieldValues>({
                         {...field}
                       />
                     </FormControl>
-                    {error("comments") && (
+                    {getError("comments") && (
                       <FormMessage className="text-red-500">
-                        {error("comments")}
+                        {getError("comments")}
                       </FormMessage>
                     )}
                   </FormItem>
@@ -244,14 +236,24 @@ const RetailFormBody = <T extends FieldValues>({
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={toggleAddContact}
-              size={isAddContact ? "icon" : undefined}
-            >
-              {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={toggleAddContact}
+                size={isAddContact ? "icon" : undefined}
+              >
+                {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
+              </Button>
+
+              <AddManagerToDeal
+                setManagers={setManagers}
+                managers={managers}
+                firstManager={firstManager}
+                setFirstManager={setFirstManager}
+              />
+            </div>
+
             <SubmitFormButton
               title="Сохранить"
               isPending={isPending}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   FieldValues,
   Path,
@@ -38,34 +38,30 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants";
 import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
+import AddManagerToDeal from "../Modals/AddManagerToDeal";
 import ContactDeal from "../Modals/ContactDeal";
+import { Contact } from "../../types";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
   contactsKey?: keyof T;
+  managerId: string | undefined;
+  titleForm: string;
 };
 
 const directionOptions = transformObjValueToArr(DirectionProjectLabels);
 const deliveryOptions = transformObjValueToArr(DeliveryProjectLabels);
 const statusOptions = transformObjValueToArr(StatusProjectLabels);
 
-const setSelectValue = <T extends FieldValues>(
-  form: UseFormReturn<T>,
-  name: keyof T,
-  selected: unknown
-) => {
-  if (selected) {
-    form.setValue(name as Path<T>, selected as PathValue<T, Path<T>>);
-  }
-};
-
 const ProjectFormBody = <T extends FieldValues>({
   form,
   onSubmit,
   isPending,
   contactsKey,
+  managerId = "",
+  titleForm,
 }: ProjectFormBodyProps<T>) => {
   const {
     contacts,
@@ -76,16 +72,25 @@ const ProjectFormBody = <T extends FieldValues>({
     handleSubmit,
     isAddContact,
     toggleAddContact,
-  } = useSendDealInfo<T>(onSubmit);
-
-  const currentContacts = form.getValues(contactsKey as Path<T>);
+    managers,
+    setManagers,
+    firstManager,
+    setFirstManager,
+  } = useSendDealInfo<T>(onSubmit, managerId);
 
   const watchedValues = useWatch({
     control: form.control,
     name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
   });
 
-  React.useEffect(() => {
+  const { getValues } = form;
+
+  useEffect(() => {
+    const ids = getValues("managersIds" as Path<T>);
+    if (ids?.length > 0) setManagers(ids);
+  }, [getValues, setManagers]);
+
+  useEffect(() => {
     if (!watchedValues) return;
 
     const [amountCP = "0", amountWork = "0", amountPurchase = "0"] =
@@ -118,10 +123,12 @@ const ProjectFormBody = <T extends FieldValues>({
 
   useEffect(() => {
     if (contactsKey) {
-      const contacts = form.getValues(contactsKey as Path<T>);
-      setContacts(contacts);
+      setContacts(getValues(contactsKey as Path<T>));
     }
-  }, [contactsKey, form, currentContacts, setContacts]);
+  }, [contactsKey, getValues, setContacts]);
+
+  const getError = (name: keyof T) =>
+    form.formState.errors[name]?.message as string;
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -129,30 +136,24 @@ const ProjectFormBody = <T extends FieldValues>({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto trаnsform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
-          <div className="text-center font-semibold uppercase">
-            Форма добавления проекта
-          </div>
+          <div className="text-center font-semibold uppercase">{titleForm}</div>
           <div className="grid gap-2 px-2">
             <div className="grid sm:grid-cols-2 gap-2">
               <div className="flex flex-col gap-1">
-                <DatePickerFormField<UseFormReturn<T>>
+                <DatePickerFormField
                   name={"dateRequest" as Path<T>}
                   label="Дата запроса"
                   control={form.control}
-                  errorMessage={
-                    form.formState.errors.dateRequest?.message as string
-                  }
+                  errorMessage={getError("dateRequest")}
                 />
 
                 <InputTextForm
                   name={"nameDeal" as Path<T>}
                   label="Название сделки"
                   control={form.control}
-                  errorMessage={
-                    form.formState.errors.nameDeal?.message as string
-                  }
+                  errorMessage={getError("nameDeal")}
                   placeholder="Название..."
                   required
                 />
@@ -161,52 +162,44 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"nameObject" as Path<T>}
                   label="Название объекта/Город"
                   control={form.control}
-                  errorMessage={
-                    form.formState.errors.nameObject?.message as string
-                  }
+                  errorMessage={getError("nameObject")}
                   placeholder="Название..."
                   required
                 />
 
-                <SelectFormField<UseFormReturn<T>>
+                <SelectFormField
                   name={"direction" as Path<T>}
                   label="Направление"
                   control={form.control}
-                  errorMessage={form.formState.errors.department?.message}
+                  errorMessage={getError("direction")}
                   options={directionOptions}
                   placeholder="Выберите направление"
-                  onValueChange={(selected) =>
-                    setSelectValue(form, "direction", selected)
-                  }
                   required
                 />
 
-                <SelectFormField<UseFormReturn<T>>
+                <SelectFormField
                   name={"deliveryType" as Path<T>}
                   label="Тип поставки"
                   control={form.control}
-                  errorMessage={form.formState.errors.department?.message}
+                  errorMessage={getError("deliveryType")}
                   options={deliveryOptions}
                   placeholder="Выберите тип поставки"
-                  onValueChange={(selected) =>
-                    setSelectValue(form, "deliveryType", selected)
-                  }
                 />
 
                 <InputTextForm
                   name={"contact" as Path<T>}
                   label="Контакты"
                   control={form.control}
-                  errorMessage={form.formState.errors.contact?.message}
+                  errorMessage={getError("contact")}
                   placeholder="Имя контакта"
                   required
                 />
 
                 <InputPhoneForm
-                  name="phone"
+                  name={"phone" as Path<T>}
                   label="Телефон"
                   control={form.control}
-                  errorMessage={form.formState.errors.phone?.message}
+                  errorMessage={getError("phone")}
                   placeholder="Введите телефон пользователя"
                 />
 
@@ -214,7 +207,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"email" as Path<T>}
                   label="Email"
                   control={form.control}
-                  errorMessage={form.formState.errors.email?.message}
+                  errorMessage={getError("email")}
                   className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
                   type="email"
                 />
@@ -225,7 +218,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"amountCP" as Path<T>}
                   label="Сумма КП"
                   control={form.control}
-                  errorMessage={form.formState.errors.amountCP?.message}
+                  errorMessage={getError("amountCP")}
                   placeholder="Сумма КП"
                 />
 
@@ -233,7 +226,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"amountWork" as Path<T>}
                   label="Сумма работ"
                   control={form.control}
-                  errorMessage={form.formState.errors.amountWork?.message}
+                  errorMessage={getError("amountWork")}
                   placeholder="Сумма работ"
                 />
 
@@ -241,7 +234,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"amountPurchase" as Path<T>}
                   label="Сумма закупки"
                   control={form.control}
-                  errorMessage={form.formState.errors.amountPurchase?.message}
+                  errorMessage={getError("amountPurchase")}
                   placeholder="Сумма закупки"
                 />
 
@@ -249,30 +242,24 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"delta" as Path<T>}
                   label="Дельта"
                   control={form.control}
-                  errorMessage={form.formState.errors.amountCP?.message}
+                  errorMessage={getError("delta")}
                   placeholder="Дельта"
                 />
 
-                <SelectFormField<UseFormReturn<T>>
+                <SelectFormField
                   name={"dealStatus" as Path<T>}
                   label="Статус КП"
                   control={form.control}
-                  errorMessage={form.formState.errors.dealStatus?.message}
+                  errorMessage={getError("dealStatus")}
                   options={statusOptions}
                   placeholder="Выберите статус КП"
-                  onValueChange={(selected) =>
-                    setSelectValue(form, "dealStatus", selected)
-                  }
                 />
 
-                <DatePickerFormField<UseFormReturn<T>>
+                <DatePickerFormField
                   name={"plannedDateConnection" as Path<T>}
                   label="Планируемый контакт"
                   control={form.control}
-                  errorMessage={
-                    form.formState.errors.plannedDateConnection
-                      ?.message as string
-                  }
+                  errorMessage={getError("plannedDateConnection")}
                   required
                 />
 
@@ -280,7 +267,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"resource" as Path<T>}
                   label="Источник"
                   control={form.control}
-                  errorMessage={form.formState.errors.resource?.message}
+                  errorMessage={getError("resource")}
                   placeholder="Откуда пришёл клиент"
                   required
                 />
@@ -300,9 +287,9 @@ const ProjectFormBody = <T extends FieldValues>({
                         />
                       </FormControl>
 
-                      {form.formState.errors.comments?.message && (
+                      {getError("comments") && (
                         <FormMessage className="text-red-500">
-                          {form.formState.errors.comments?.message as string}
+                          {getError("comments")}
                         </FormMessage>
                       )}
                     </FormItem>
@@ -311,24 +298,24 @@ const ProjectFormBody = <T extends FieldValues>({
               </div>
             </div>
             <div className="flex items-center justify-between flex-wrap gap-2">
-              {isAddContact ? (
+              <div className="flex gap-2">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={toggleAddContact}
-                  size="icon"
+                  size={isAddContact ? "icon" : undefined}
                 >
-                  <ArrowLeft />
+                  {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
                 </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={toggleAddContact}
-                >
-                  Добавить доп.контакт
-                </Button>
-              )}
+
+                <AddManagerToDeal
+                  setManagers={setManagers}
+                  managers={managers}
+                  firstManager={firstManager}
+                  setFirstManager={setFirstManager}
+                />
+              </div>
+
               <SubmitFormButton
                 title="Сохранить"
                 isPending={isPending}
@@ -352,8 +339,8 @@ const ProjectFormBody = <T extends FieldValues>({
             onContactsChange={setContacts}
             selectedContacts={selectedContacts}
             setSelectedContacts={setSelectedContacts}
-            contacts={contacts as T[typeof contactsKey]}
-            contactsKey={contactsKey}
+            contacts={contacts as Contact[]}
+            contactsKey={contactsKey as string | null}
             handleDeleteContact={handleDeleteContact}
           />
         </div>

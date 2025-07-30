@@ -1,8 +1,9 @@
 import { flexRender } from "@tanstack/react-table";
 import { Table as ReactTable } from "@tanstack/react-table";
 
-import React, { RefObject } from "react";
+import React, { Fragment, RefObject } from "react";
 
+import { useSidebar } from "@/components/ui/sidebar";
 import {
   Table,
   TableBody,
@@ -28,12 +29,17 @@ const EventsListTable = <T extends EventInputType>({
     table
   ) as RefObject<HTMLTableElement>;
 
+  const { isMobile } = useSidebar();
+
   const handleClickRowEvent = (row: T) => {
-    if (row.end < new Date(Date.now())) return;
+    const now = new Date();
+    const endDate = new Date(row.end);
+
+    if (endDate < now) return;
     handleRowClick?.(row);
   };
 
-  if (!table) {
+  if (!table?.getRowModel()?.rows) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;
   }
 
@@ -61,7 +67,7 @@ const EventsListTable = <T extends EventInputType>({
                         onClick: header.column.getToggleSortingHandler(),
                       }}
                     >
-                      <span className="text-start text-xs font-semibold first-letter:capitalize">
+                      <span className="text-center text-xs font-semibold first-letter:capitalize">
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
@@ -78,9 +84,8 @@ const EventsListTable = <T extends EventInputType>({
         <TableBody className="table-grid-container space-y-[2px]">
           {table?.getRowModel()?.rows?.length > 0 ? (
             table.getRowModel().rows.map((row) => {
-              const eventData = row.original as EventInputType;
-              const isPastEvent = new Date(eventData.end) < new Date(); // Проверяем, прошло ли событие
-
+              const EventDataType = row.original;
+              const isPastEvent = new Date(EventDataType.end) < new Date(); // Проверяем, прошло ли событие
               return (
                 <TableRow
                   key={row.id}
@@ -88,18 +93,41 @@ const EventsListTable = <T extends EventInputType>({
                     isPastEvent ? "opacity-50" : ""
                   }`}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      onClick={() => handleClickRowEvent?.(cell.row.original)}
-                      key={cell.id}
-                      className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <Fragment  key={cell.id}>
+                        {isMobile ? (
+                          <TableCell
+                            onClick={() =>
+                              handleClickRowEvent?.(cell.row.original)
+                            }
+                            key={cell.id}
+                            style={{ width: cell.column.getSize() }}
+                            className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ) : (
+                          <TableCell
+                            onDoubleClick={() =>
+                              handleClickRowEvent?.(cell.row.original)
+                            }
+                            key={cell.id}
+                            style={{ width: cell.column.getSize() }}
+                            className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        )}
+                      </Fragment>
+                    );
+                  })}
                 </TableRow>
               );
             })

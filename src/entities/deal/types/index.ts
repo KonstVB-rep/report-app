@@ -15,6 +15,12 @@ export type DeliveryType = DeliveryProject;
 
 export type StatusType = StatusProject;
 
+export type ManagerShortInfo = {
+  id: string;
+  managerName: string;
+  position: string;
+};
+
 export interface ProjectResponse {
   [key: string]: unknown;
   id: string;
@@ -38,6 +44,7 @@ export interface ProjectResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+  managers?: ManagerShortInfo[];
 }
 
 export type ProjectResponseWithContactsAndFiles = ProjectResponse & {
@@ -66,6 +73,7 @@ export interface RetailResponse {
   createdAt: Date;
   updatedAt: Date;
   type: DealType;
+  managers?: ManagerShortInfo[];
 }
 
 export type RetailResponseWithContactsAndFiles = RetailResponse & {
@@ -75,13 +83,60 @@ export type RetailResponseWithContactsAndFiles = RetailResponse & {
 
 export type Contact = {
   id: string;
-  email: string | null;
   name: string;
-  phone: string | null;
-  position: string | null;
+  phone?: string | null;
+  email?: string | null;
+  position?: string | null;
 };
 
 export type DealUnionType = "retail" | "project";
 export type DealsUnionType = "retails" | "projects";
 
 export type DateRange = "week" | "month" | "threeMonths" | "halfYear" | "year";
+
+export interface ContractResponse {
+  [key: string]: unknown;
+  id: string;
+  userId: string;
+  nameDeal: string;
+  nameObject: string;
+  dateRequest: Date;
+  direction: DirectionProject;
+  deliveryType: DeliveryProject | null;
+  contact: string;
+  phone: string | null;
+  email: string | null;
+  amountCP: string;
+  amountWork: string;
+  amountPurchase: string;
+  delta: string;
+  dealStatus: StatusProject;
+  comments: string;
+  createdAt: Date;
+  updatedAt: Date;
+  type: DealType;
+}
+
+export type ProjectWithoutDateCreateAndUpdate = Omit<
+  ProjectResponse,
+  "createdAt" | "updatedAt"
+>;
+
+export type ProjectWithManagersIds = Omit<
+  ProjectResponse,
+  "createdAt" | "updatedAt" | "managers"
+> & { managersIds: { userId: string }[] };
+
+export type RetailWithoutDateCreateAndUpdate = Omit<
+  RetailResponse,
+  "createdAt" | "updatedAt"
+>;
+
+export type RetailWithManagersIds = Omit<
+  RetailResponse,
+  "createdAt" | "updatedAt" | "managers"
+> & { managersIds: { userId: string }[] };
+
+export type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
+
+export type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;

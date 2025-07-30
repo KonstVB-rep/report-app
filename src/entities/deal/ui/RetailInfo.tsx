@@ -2,14 +2,17 @@
 
 import { Separator } from "@radix-ui/react-separator";
 
-import React from "react";
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { Building, Info } from "lucide-react";
 
-import Loading from "@/app/(dashboard)/deal/[departmentId]/[dealType]/[dealId]/loading";
+import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
+import {
+  typeofDelivery,
+  typeofDirections,
+  typeofStatus,
+} from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-retail";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
@@ -23,6 +26,7 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../lib/constants";
+import ManagersListByDeal from "./ManagersListByDeal";
 import RowInfoDealProp from "./RowInfoDealProp";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
@@ -51,22 +55,23 @@ const RetailItemInfo = () => {
   const { dealId } = useParams();
   const { data: deal, isLoading } = useGetRetailById(dealId as string, false);
 
+  const statusLabel =
+    StatusRetailLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
+  const directionLabel =
+    DirectionRetailLabels[deal?.direction as typeofDirections] || "Нет данных";
+  const deliveryLabel =
+    DeliveryRetailLabels[deal?.deliveryType as typeofDelivery] || "Нет данных";
+  const typeLabel =
+    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
+
   const dealInfo = {
     nameDeal: deal?.nameDeal,
     nameObject: deal?.nameObject,
-    status:
-      StatusRetailLabels[deal?.dealStatus as keyof typeof StatusRetailLabels] ||
-      "Нет данных",
-    dealType: DealTypeLabels[deal?.type as keyof typeof DealTypeLabels],
+    status: statusLabel,
+    dealType: typeLabel,
     dateRequest: deal?.dateRequest?.toLocaleDateString(),
-    direction:
-      DirectionRetailLabels[
-        deal?.direction as keyof typeof DirectionRetailLabels
-      ],
-    deliveryType:
-      DeliveryRetailLabels[
-        deal?.deliveryType as keyof typeof DeliveryRetailLabels
-      ],
+    direction: directionLabel,
+    deliveryType: deliveryLabel,
     delta: deal?.delta ? formatterCurrency.format(+deal.delta) : "0,00",
     amountCP: deal?.amountCP
       ? formatterCurrency.format(+deal.amountCP)
@@ -83,7 +88,7 @@ const RetailItemInfo = () => {
   }
 
   return (
-    <MotionDivY className="grid gap-2 p-4">
+    <MotionDivY className="grid gap-2 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">Розница</h1>
@@ -105,9 +110,13 @@ const RetailItemInfo = () => {
 
       <Separator />
 
+      <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
+
+      <Separator />
+
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
         <div className="grid-rows-auto grid gap-2">
-          <div className="grid min-w-72 gap-4">
+          <div className="grid min-w-64 gap-4">
             <IntoDealItem title={"Объект"}>
               <div className="flex w-full items-center justify-start gap-4 text-lg">
                 <Building
@@ -115,7 +124,7 @@ const RetailItemInfo = () => {
                   strokeWidth={1}
                   className="icon-deal_info"
                 />
-                <p className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                   {dealInfo.nameObject}
                 </p>
               </div>
@@ -128,7 +137,7 @@ const RetailItemInfo = () => {
                       className="icon-deal_info"
                     />
                     <TooltipComponent content="Статус сделки">
-                      <span className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                      <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                         {dealInfo.status}
                       </span>
                     </TooltipComponent>

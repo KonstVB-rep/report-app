@@ -154,7 +154,7 @@
 }
 
 body {
-  background-color: hsl(var(--background))!important;
+  background-color: hsl(var(--background));
 }
 
 @layer base {
@@ -162,7 +162,7 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-all duration-1000;
   }
 }
 
@@ -185,15 +185,24 @@ body {
 }
 
 .btn_hover {
-  @apply flex items-center gap-2 rounded-md border border-solid bg-background p-2 py-2 text-sidebar-accent-foreground hover:border-muted-foreground hover:bg-sidebar-accent focus-visible:border-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:outline-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+  @apply flex items-center gap-2 rounded-md border border-solid bg-background p-2 py-2 text-sidebar-accent-foreground hover:border-muted-foreground hover:bg-sidebar-accent focus-visible:border-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
 }
 
-.tr:nth-child(even):not([data-reject="true"]):not([data-paid="true"]) {
-  @apply bg-[hsl(var(--table-even-row))];
+.tr:nth-child(even):not([data-reject="true"]):not([data-success="true"]):not([data-closed="true"]) {
+  @apply bg-[hsl(var(--table-even-row))] hover:bg-zinc-600 hover:text-white
 }
 
 .td {
-  @apply p-2 text-center;
+  @apply p-2 text-center items-center;
+}
+
+.td.td_inline-grid {
+  @apply inline-grid ;
+}
+
+
+td:has(.abs-element) {
+  @apply relative;
 }
 
 .loader {
@@ -516,7 +525,7 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 }
 
 .fc-daygrid-more-link.fc-more-link{
-  @apply text-primary;
+  @apply text-secondary;
 }
 
 @media (max-width: 768px) {
@@ -629,3 +638,27 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 .fc-daygrid-event-harness{
   @apply cursor-pointer
 }
+
+/* Tasks */
+
+
+@container (min-width: 1024px) {
+  .custom-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Sonner */
+
+[data-sonner-toast][data-x-position=right][data-y-position=bottom]{
+  display: grid;
+  gap: 10px
+}
+
+[data-sonner-toast][data-styled=true] [data-button]{
+  height: auto!important;
+  padding: 5px 10px!important;
+  background: hsl(var(--foreground))!important;
+  color: hsl(var(--background))!important;
+}
+

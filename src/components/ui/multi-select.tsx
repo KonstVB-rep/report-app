@@ -72,7 +72,7 @@ type MultiSelectProps = React.ComponentPropsWithoutRef<
   onValueChange?: (value: string[], items: MultiSelectOptionItem[]) => void;
   onSelect?: (value: string, item: MultiSelectOptionItem) => void;
   onDeselect?: (value: string, item: MultiSelectOptionItem) => void;
-  defaultValue?: string[];
+  defaultValue?: string[] | [];
   onSearch?: (keyword?: string | undefined) => void;
   filter?: boolean | ((keyword: string, current: string) => boolean);
   disabled?: boolean;
@@ -111,13 +111,13 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   const [value, setValue] = useControllableState({
     prop: valueProp,
-    defaultProp: defaultValue,
+     defaultProp: defaultValue || [],
     onChange: handleValueChange,
   });
 
   const [open, setOpen] = useControllableState({
     prop: openProp,
-    defaultProp: defaultOpen,
+    defaultProp: defaultOpen ?? false,
     onChange: onOpenChange,
   });
 

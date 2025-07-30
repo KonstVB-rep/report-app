@@ -23,23 +23,30 @@ const InputPhoneForm = <T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <PhoneInput
-              placeholder="Введите телефон пользователя"
-              onAccept={field.onChange}
-              {...field}
-              {...rest}
-              value={field.value as string}
-            />
-          </FormControl>
-          {errorMessage && (
-            <FormMessage className="text-red-500">{errorMessage}</FormMessage>
-          )}
-        </FormItem>
-      )}
+      render={({ field }) => {
+        const fieldProps = {
+          ...field,
+          ref: undefined,
+          inputRef: field.ref,
+        };
+        return (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            <FormControl>
+              <PhoneInput
+                placeholder="Введите телефон пользователя"
+                onAccept={field.onChange}
+                {...fieldProps}
+                {...rest}
+                value={field.value as string}
+              />
+            </FormControl>
+            {errorMessage && (
+              <FormMessage className="text-red-500">{errorMessage}</FormMessage>
+            )}
+          </FormItem>
+        );
+      }}
     />
   );
 };

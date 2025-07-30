@@ -1,8 +1,9 @@
+import { animated, useTransition } from "@react-spring/web";
+
 import React, { Dispatch, SetStateAction } from "react";
 import { DropzoneInputProps, DropzoneRootProps } from "react-dropzone";
 
 import { CloudUpload, Loader, Trash2, Upload, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,14 @@ const FormUploadFiles = ({
   isPending,
   setFiles,
 }: FormUploadFilesProps) => {
+  const transitions = useTransition(files, {
+    keys: (file) => file?.name ?? "", // Уникальный ключ для каждого элемента
+    from: { opacity: 0, scale: 0.9, transform: "translateY(-10px)" },
+    enter: { opacity: 1, scale: 1, transform: "translateY(0)" },
+    leave: { opacity: 0, scale: 0.9, transform: "translateY(10px)" },
+    config: { duration: 200 },
+  });
+
   return (
     <form onSubmit={handleUpload} className="grid w-full gap-4">
       <div
@@ -48,21 +57,18 @@ const FormUploadFiles = ({
 
       {files && files.length > 0 ? (
         <ul className="grid max-h-48 gap-2 overflow-auto">
-          <AnimatePresence>
-            {files.map((file) => (
-              <motion.li
-                key={file.name} // Уникальный ключ для каждого элемента
-                initial={{ opacity: 0, scale: 0.9, y: -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                transition={{ duration: 0.2 }}
+          {transitions((styles, file) =>
+            file ? (
+              <animated.li
+                key={file.name}
+                style={styles}
                 className="relative grid w-full justify-items-center gap-1 rounded-md border border-dashed p-2 pr-[48px]"
               >
                 <Button
                   type="button"
                   size="icon"
                   variant="destructive"
-                  onClick={() => handleSelectFile(file.name)}
+                  onClick={() => handleSelectFile(file.name)} 
                   className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md"
                   title="Удалить из списка"
                 >
@@ -74,9 +80,9 @@ const FormUploadFiles = ({
                 <p className="text-xs text-muted-foreground">
                   Размер: {(file.size / 1024 / 1024).toFixed(3)} MB
                 </p>
-              </motion.li>
-            ))}
-          </AnimatePresence>
+              </animated.li>
+            ) : null
+          )}
         </ul>
       ) : null}
 

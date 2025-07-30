@@ -7,7 +7,7 @@ import axios from "axios";
 import {
   createTelegramBot,
   createUserTelegramChat,
-} from "@/feature/telegramBot/api";
+} from "@/feature/calendar/api/calendar-bot/api";
 
 const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;
 

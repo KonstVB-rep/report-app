@@ -1,9 +1,12 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client";
 
 import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Resolver, useForm } from "react-hook-form";
 
+import useStoreUser from "@/entities/user/store/useStoreUser";
 import { formatterCurrency } from "@/shared/lib/utils";
 import { TOAST } from "@/shared/ui/Toast";
 
@@ -18,33 +21,43 @@ const formatCurrency = (value: string | null | undefined): string => {
   return formatterCurrency.format(parseFloat(value || "0"));
 };
 
+type Props = {
+  close: Dispatch<SetStateAction<void>>;
+  dealId: string;
+  isInvalidate: boolean;
+  titleForm: string;
+};
+
 const EditRetailForm = ({
   close,
   dealId,
-}: {
-  close: Dispatch<SetStateAction<void>>;
-  dealId: string;
-}) => {
+  isInvalidate = false,
+  titleForm,
+}: Props) => {
   const { data, isPending: isLoading } = useGetRetailById(dealId, false);
+  const { authUser } = useStoreUser();
 
   const form = useForm<RetailSchema>({
-    resolver: zodResolver(RetailFormSchema),
+    resolver: zodResolver(RetailFormSchema) as Resolver<RetailSchema>,
     defaultValues: defaultRetailValues,
   });
 
   const { mutateAsync, isPending } = useMutationUpdateRetail(
     dealId,
     data?.userId ?? "",
-    close
+    close,
+    isInvalidate
   );
 
   const onSubmit = (data: RetailSchema) => {
     TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
   };
 
+  const { reset } = form;
+
   useEffect(() => {
     if (data && !isLoading) {
-      form.reset({
+      const formattedData = {
         ...data,
         phone: data.phone ?? undefined,
         email: data.email ?? undefined,
@@ -57,18 +70,26 @@ const EditRetailForm = ({
         delta: formatCurrency(data.delta),
         resource: data.resource ?? "",
         contacts: data?.additionalContacts ?? [],
-      });
+        managersIds: Array.isArray(data.managers)
+          ? data.managers.map((manager) => ({ userId: manager.id }))
+          : [],
+      };
+      reset(formattedData);
     }
-  }, [form, data, isLoading]);
+  }, [reset, data, isLoading]);
 
-  if (isLoading) <FormDealSkeleton />;
+  if (isLoading) return <FormDealSkeleton />;
+  if (!data) return null;
 
   return (
     <RetailFormBody
+      key={dealId}
       form={form}
       onSubmit={onSubmit}
       isPending={isPending}
       contactsKey="contacts"
+      managerId={data?.userId || authUser?.id}
+      titleForm={titleForm}
     />
   );
 };

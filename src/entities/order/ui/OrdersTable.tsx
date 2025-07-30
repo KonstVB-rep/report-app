@@ -1,0 +1,63 @@
+"use client";
+
+import { DealType } from "@prisma/client";
+import { ColumnDef } from "@tanstack/react-table";
+
+import { JSX } from "react";
+
+import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
+
+import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
+import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";
+import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
+import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+
+import { DealTypeLabels } from "../../../app/dashboard/table/[departmentId]/[dealType]/ui/PersonTable";
+import { useGetOrders } from "../hooks/query";
+import { columnsOrder } from "../model/columns-data-orders";
+
+const DataOrderTable = dynamic(() => import("./DataOrderTable"), {
+  ssr: false,
+  loading: () => <TableRowsSkeleton />,
+}) as <T extends { id: string }>(props: {
+  columns: ColumnDef<T, unknown>[];
+  data: T[];
+  type: keyof typeof DealTypeLabels;
+}) => JSX.Element;
+
+const OrdersTable = () => {
+  const { data: orders, isPending, isFetching } = useGetOrders();
+  const { userId, dealType } = useParams();
+  const { authUser } = useStoreUser();
+
+  const isPageAuthUser = userId === authUser?.id;
+  const isLoading = isPending || isFetching || !orders;
+  const dealTypeLabel = DealTypeLabels[dealType as string];
+
+  if (isLoading) return <DealsSkeleton />;
+
+  return (
+    <DealTableTemplate>
+      <>
+        <div className="flex flex-wrap justify-between gap-3 w-full">
+          <p className="border rounded-md p-2">{dealTypeLabel}</p>
+          <p className="border rounded-md p-2">
+            Общее количество заявок: {orders.length}
+          </p>
+        </div>
+
+        {isPageAuthUser && <ButtonsGroupTable />}
+        <DataOrderTable
+          columns={columnsOrder}
+          data={orders}
+          type={DealType.ORDER}
+        />
+      </>
+    </DealTableTemplate>
+  );
+};
+
+export default withAuthGuard(OrdersTable);

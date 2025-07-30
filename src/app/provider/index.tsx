@@ -9,7 +9,6 @@ import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
 
 import { LastPathProvider } from "./last-path-provider";
-
 import QueryProvider from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 
@@ -35,14 +34,15 @@ const AppProvider = ({ children }: PropsWithChildren) => {
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          storageKey="theme"
         >
           <QueryProvider>
             {process.env.NODE_ENV === "development" && (
               <ReactQueryDevtools initialIsOpen={false} />
             )}
-              <Toaster position="top-center" />
-              <SpeedInsights />
-              {children}
+            <Toaster position="top-center" />
+            <SpeedInsights />
+            {children}
           </QueryProvider>
         </ThemeProvider>
       </LastPathProvider>

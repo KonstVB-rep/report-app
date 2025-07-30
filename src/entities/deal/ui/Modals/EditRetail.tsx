@@ -21,13 +21,17 @@ const EditRetailForm = dynamic(() => import("../Forms/EditRetailForm"), {
 const EditRetail = ({
   close,
   id,
+  isInvalidate = false,
+  titleForm = "Создать розничную сделку",
 }: {
   close: Dispatch<SetStateAction<void>>;
   id: string;
+  isInvalidate?: boolean;
+  titleForm: string;
 }) => {
   return (
     <DialogContent
-      className="max-h-[85vh] overflow-y-auto sm:max-w-[825px]"
+      className="max-h-[90vh] overflow-y-auto sm:max-w-[825px]"
       showX={true}
     >
       <DialogHeader>
@@ -36,7 +40,12 @@ const EditRetail = ({
         </DialogTitle>
         <DialogDescription></DialogDescription>
       </DialogHeader>
-      <EditRetailForm close={close} dealId={id} />
+      <EditRetailForm
+        close={close}
+        dealId={id}
+        isInvalidate={isInvalidate}
+        titleForm={titleForm}
+      />
     </DialogContent>
   );
 };

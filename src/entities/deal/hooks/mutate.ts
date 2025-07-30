@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DealType,
   DeliveryProject,
@@ -7,12 +9,15 @@ import {
   StatusProject,
   StatusRetail,
 } from "@prisma/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import { Dispatch, SetStateAction } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { DeepPartial } from "react-hook-form";
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
+import { logout } from "@/feature/auth/logout";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -27,36 +32,64 @@ import {
   defaultRetailValues,
 } from "../model/defaultvaluesForm";
 import { ProjectSchema, RetailSchema } from "../model/schema";
-import { ProjectResponse, RetailResponse } from "../types";
+import {
+  ProjectResponse,
+  ProjectWithManagersIds,
+  ProjectWithoutDateCreateAndUpdate,
+  ProjectWithoutId,
+  RetailResponse,
+  RetailWithManagersIds,
+  RetailWithoutDateCreateAndUpdate,
+  RetailWithoutId,
+} from "../types";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
   type: DealType,
   ownerId: string
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
-
+  const { queryClient, authUser } = useFormSubmission();
   return useMutation({
     mutationFn: async (nealId: string) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
-      }
+      await checkAuthorization(authUser?.id);
 
       return await deleteDeal(nealId, ownerId, type);
     },
-    onSuccess: (_, dealId) => {
+    onSuccess: (data, dealId) => {
+      data.managers.forEach((manager) => {
+        queryClient.invalidateQueries({
+          queryKey: [`${type.toLowerCase()}s`, manager.userId],
+        });
+      });
+
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, ownerId],
       });
+
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}`, dealId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["orders", Number(authUser?.departmentId)],
       });
 
       closeModalFn();
     },
     onError: (error) => {
-      TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
@@ -64,23 +97,18 @@ export const useDelDeal = (
 export const useMutationUpdateProject = (
   dealId: string,
   userId: string,
-  close: () => void
+  close: () => void,
+  isInvalidate: boolean = false
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+
   return useMutation({
     mutationFn: (data: ProjectSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      return updateProject({
+      const formData = {
         ...data,
-        id: dealId,
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        userId,
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
@@ -107,110 +135,58 @@ export const useMutationUpdateProject = (
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
           : "0",
-      });
+        managersIds: data.managersIds,
+      };
+
+      return handleMutationWithAuthCheck<
+        ProjectWithManagersIds,
+        ProjectWithoutDateCreateAndUpdate | null
+      >(updateProject, formData, authUser, isSubmittingRef);
     },
+    onError: (error) => {
+      const err = error as Error & { status?: number };
 
-    // Оптимистичное обновление UI перед запросом
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: ["projects", userId] });
-      await queryClient.cancelQueries({ queryKey: ["project", dealId] });
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
 
-      const previousDeals = queryClient.getQueryData<ProjectResponse[]>([
-        "projects",
-        userId,
-      ]);
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
 
-      const previousDeal = queryClient.getQueryData<ProjectResponse[]>([
+      TOAST.ERROR(errorMessage);
+    },
+    onSuccess: (_, variables) => {
+      close();
+
+      const previousData = queryClient.getQueryData<ProjectResponse>([
         "project",
         dealId,
       ]);
 
-      queryClient.setQueryData<ProjectResponse[]>(
-        ["projects", userId],
-        (oldProjects) => {
-          if (!oldProjects) return oldProjects;
-          return oldProjects.map((p) =>
-            p.id === dealId
-              ? {
-                  ...p,
-                  ...newData,
-                  dateRequest: newData.dateRequest
-                    ? new Date(newData.dateRequest)
-                    : new Date(),
-                  direction: newData.direction as DirectionProject,
-                  dealStatus: newData.dealStatus as StatusProject,
-                  deliveryType: newData.deliveryType as DeliveryProject,
-                  plannedDateConnection: newData.plannedDateConnection
-                    ? new Date(newData.plannedDateConnection)
-                    : null,
-                }
-              : p
-          );
-        }
-      );
+      // 2. Сравниваем изменения в менеджерах (опционально)
+      const prevManagers =
+        previousData?.managers?.map((m) => m.id).sort() || [];
+      const currManagers =
+        variables.managersIds?.map((m) => m.userId).sort() || [];
 
-      queryClient.setQueryData<ProjectResponse>(
-        ["project", dealId],
-        (oldProject) => {
-          if (!oldProject) return oldProject;
-
-          return {
-            ...oldProject,
-            ...newData,
-            dateRequest: newData.dateRequest
-              ? new Date(newData.dateRequest)
-              : new Date(),
-            direction: newData.direction as DirectionProject,
-            dealStatus: newData.dealStatus as StatusProject,
-            deliveryType: newData.deliveryType as DeliveryProject,
-            plannedDateConnection: newData.plannedDateConnection
-              ? new Date(newData.plannedDateConnection)
-              : null,
-          };
-        }
-      );
-
-      return { previousDeals, previousDeal };
-    },
-
-    // 🔄 Откат данных в случае ошибки
-    onError: (_error, _newData, context) => {
-      TOAST.ERROR((_error as Error).message);
-      if (context?.previousDeal) {
-        queryClient.setQueryData(["project", dealId], context.previousDeal);
+      if (isInvalidate) {
+        queryClient.invalidateQueries({ queryKey: ["project", dealId] });
       }
-      if (context?.previousDeals) {
-        queryClient.setQueryData(["projects", userId], context.previousDeals);
-      }
-    },
 
-    // ✅ Если успех — обновляем кэш без лишнего запроса
-    onSuccess: (updatedDeal) => {
-      close();
-
-      queryClient.setQueryData(
-        ["projects", userId],
-        (oldProjects: ProjectResponse[] | undefined) => {
-          return oldProjects
-            ? [
-                ...oldProjects.map((p) =>
-                  p.id === dealId ? { ...p, ...updatedDeal } : p
-                ),
-              ]
-            : oldProjects;
-        }
-      );
-
-      queryClient.setQueryData(["project", dealId], { ...updatedDeal });
-
-      // 👇 Инвалидируем кэш, только если серверные данные могли измениться
+      // Обязательная инвалидаци
       queryClient.invalidateQueries({
-        queryKey: ["projects", userId],
-        exact: true,
+        queryKey: ["orders", Number(authUser?.departmentId)],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["project", dealId],
-        exact: true,
+
+      const allManagers = [
+        ...new Set([...prevManagers, ...currManagers, userId]),
+      ];
+
+      allManagers.forEach((id) => {
+        queryClient.invalidateQueries({ queryKey: ["projects", id] });
+        queryClient.invalidateQueries({ queryKey: ["contracts", id] });
       });
     },
   });
@@ -219,23 +195,19 @@ export const useMutationUpdateProject = (
 export const useMutationUpdateRetail = (
   dealId: string,
   userId: string,
-  close: () => void
+  close: () => void,
+  isInvalidate: boolean = false
 ) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
-    mutationFn: (data: RetailSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      return updateRetail({
-        id: dealId,
+    mutationFn: (
+      data: RetailSchema
+    ): Promise<RetailWithoutDateCreateAndUpdate | null | undefined> => {
+      const formData = {
         ...data,
         dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
         email: data.email || "",
         phone: data.phone || "",
-        userId,
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
@@ -252,120 +224,70 @@ export const useMutationUpdateRetail = (
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
           : "0",
-      });
+        managersIds: data.managersIds,
+      };
+
+      return handleMutationWithAuthCheck<
+        RetailWithManagersIds,
+        RetailWithoutDateCreateAndUpdate | null
+      >(updateRetail, formData, authUser, isSubmittingRef);
     },
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: ["retails", userId] });
-      await queryClient.cancelQueries({ queryKey: ["retail", dealId] });
 
-      const previousDeals = queryClient.getQueryData<RetailResponse[]>([
-        "retails",
-        userId,
-      ]);
+    onError: (error) => {
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
 
-      const previousDeal = queryClient.getQueryData<RetailResponse[]>([
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
+    },
+    onSuccess: (_, variables) => {
+      close();
+
+      const previousData = queryClient.getQueryData<RetailResponse>([
         "retail",
         dealId,
       ]);
+      const prevManagers =
+        previousData?.managers?.map((m) => m.id).sort() || [];
+      const currManagers =
+        variables.managersIds?.map((m) => m.userId).sort() || [];
 
-      queryClient.setQueryData<RetailResponse[]>(
-        ["retails", userId],
-        (oldProjects) => {
-          if (!oldProjects) return oldProjects;
-          return oldProjects.map((p) =>
-            p.id === dealId
-              ? {
-                  ...p,
-                  ...newData,
-                  dateRequest: newData.dateRequest
-                    ? new Date(newData.dateRequest)
-                    : new Date(),
-                  direction: newData.direction as DirectionRetail,
-                  dealStatus: newData.dealStatus as StatusRetail,
-                  deliveryType: newData.deliveryType as DeliveryRetail,
-                  plannedDateConnection: newData.plannedDateConnection
-                    ? new Date(newData.plannedDateConnection)
-                    : null,
-                }
-              : p
-          );
-        }
-      );
-
-      queryClient.setQueryData<RetailResponse>(
-        ["retail", dealId],
-        (oldProject) => {
-          if (!oldProject) return oldProject;
-
-          return {
-            ...oldProject,
-            ...newData,
-            dateRequest: newData.dateRequest
-              ? new Date(newData.dateRequest)
-              : new Date(),
-            direction: newData.direction as DirectionRetail,
-            dealStatus: newData.dealStatus as StatusRetail,
-            deliveryType: newData.deliveryType as DeliveryRetail,
-            plannedDateConnection: newData.plannedDateConnection
-              ? new Date(newData.plannedDateConnection)
-              : null,
-          };
-        }
-      );
-
-      return { previousDeals, previousDeal };
-    },
-    onError: (_error, _newData, context) => {
-      TOAST.ERROR((_error as Error).message);
-      if (context?.previousDeal) {
-        queryClient.setQueryData(["retail", dealId], context.previousDeal);
+      if (isInvalidate) {
+        queryClient.invalidateQueries({ queryKey: ["retail", dealId] });
       }
-      if (context?.previousDeals) {
-        queryClient.setQueryData(["retails", userId], context.previousDeals);
-      }
-    },
 
-    // ✅ Если успех — обновляем кэш без лишнего запроса
-    onSuccess: (updatedDeal) => {
-      close();
-
-      queryClient.setQueryData(
-        ["retails", userId],
-        (oldProjects: RetailResponse[] | undefined) =>
-          oldProjects
-            ? oldProjects.map((p) => (p.id === dealId ? updatedDeal : p))
-            : oldProjects
-      );
-
-      queryClient.setQueryData(["retail", dealId], updatedDeal);
-
-      // 👇 Если серверные данные могли измениться, сбрасываем кэш
       queryClient.invalidateQueries({
-        queryKey: ["retails", userId],
-        exact: true,
+        queryKey: ["orders", Number(authUser?.departmentId)],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["retail", dealId],
-        exact: true,
+
+      const allManagers = [
+        ...new Set([...prevManagers, ...currManagers, userId]),
+      ];
+      allManagers.forEach((id) => {
+        queryClient.invalidateQueries({ queryKey: ["retails", id] }); // ✅ Условная инвалидация
       });
     },
   });
 };
 
-export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+export const useCreateProject = (
+  reset: (values?: DeepPartial<ProjectSchema>) => void
+) => {
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
-    mutationFn: (data: ProjectSchema) => {
-      if (!authUser?.id) {
-        throw new Error("User ID is missing");
-      }
-
-      return createProject({
+    mutationFn: async (data: ProjectSchema) => {
+      const formData = {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        userId: authUser.id,
         deliveryType:
           data.deliveryType === ""
             ? null
@@ -396,41 +318,64 @@ export const useCreateProject = (form: UseFormReturn<ProjectSchema>) => {
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
           : "0",
-      });
+        managersIds: data.managersIds,
+      };
+
+      return handleMutationWithAuthCheck<
+        ProjectWithoutId & { managersIds: { userId: string }[] },
+        ProjectResponse
+      >(createProject, formData, authUser, isSubmittingRef);
     },
 
     onSuccess: (data) => {
-      if (data) {
-        // setOpen(false);
-        form.reset(defaultProjectValues);
+      if (!data) return;
 
-        queryClient.invalidateQueries({
-          queryKey: ["projects", authUser?.id],
-          exact: true,
-        });
-      }
+      reset(defaultProjectValues);
+
+      queryClient.invalidateQueries({
+        queryKey: ["projects", data?.userId],
+        exact: true,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["orders", authUser?.departmentId],
+        exact: true,
+      });
     },
+
     onError: (error) => {
-      TOAST.ERROR((error as Error).message);
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
   });
 };
 
-export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
-  const queryClient = useQueryClient();
-  const { authUser } = useStoreUser();
+export const useCreateRetail = (
+  reset: (values?: DeepPartial<RetailSchema>) => void
+) => {
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: (data: RetailSchema) => {
       if (!authUser?.id) {
-        throw new Error("User ID is missing");
+        throw new Error("Пользователь не авторизован");
       }
 
-      return createRetail({
+      const formData = {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        userId: authUser.id,
         deliveryType:
           data.deliveryType === ""
             ? null
@@ -451,18 +396,40 @@ export const useCreateRetail = (form: UseFormReturn<RetailSchema>) => {
               data.delta.replace(/\s/g, "").replace(",", ".")
             ).toString()
           : "0",
-      });
+        managersIds: data.managersIds,
+      };
+
+      return handleMutationWithAuthCheck<
+        RetailWithoutId & { managersIds: { userId: string }[] },
+        RetailResponse
+      >(createRetail, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
-      console.error("Ошибка при создании проекта:", error);
-      TOAST.ERROR("Ошибка при создании проекта");
+      const err = error as Error & { status?: number };
+      console.error("Mutation error:", err);
+
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
+
+      TOAST.ERROR(errorMessage);
     },
     onSuccess: (data) => {
       if (data) {
-        form.reset(defaultRetailValues);
+        reset(defaultRetailValues);
 
         queryClient.invalidateQueries({
-          queryKey: ["retails", authUser?.id],
+          queryKey: ["retails", data.userId],
+          exact: true,
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["orders", authUser?.departmentId],
           exact: true,
         });
       }

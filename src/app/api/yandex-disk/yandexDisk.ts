@@ -180,9 +180,10 @@ const deleteFileOrFolderFromYandexDiskAnDB = async (file: {
   id: string;
   dealType: DealType;
   userId: string;
+  dealId: string;
 }) => {
   try {
-    const { filePath, id, dealType, userId } = file;
+    const { filePath, id, dealType, userId, dealId } = file;
 
     const response = await axiosInstanceYandexDisk.delete(
       `/resources?path=${filePath}`
@@ -192,7 +193,7 @@ const deleteFileOrFolderFromYandexDiskAnDB = async (file: {
       throw new Error("Не удалось удалить файл.");
     }
 
-    return await deleteFileFromDB({ id, dealType, userId });
+    return await deleteFileFromDB({ id, dealType, userId, dealId });
   } catch (error) {
     console.error("Ошибка при удалении файла/папки:", error);
     throw error;

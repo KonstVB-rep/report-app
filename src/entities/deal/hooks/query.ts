@@ -1,7 +1,9 @@
 import { DealType } from "@prisma/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
@@ -19,15 +21,12 @@ import {
 } from "../api/queryFn";
 import {
   DateRange,
-  ProjectResponse,
   ProjectResponseWithContactsAndFiles,
-  RetailResponse,
   RetailResponseWithContactsAndFiles,
 } from "../types";
 
 export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser } = useFormSubmission();
 
   const cachedDeals = queryClient.getQueryData<
     ProjectResponseWithContactsAndFiles[]
@@ -42,31 +41,35 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        const deal = await getProjectById(dealId, authUser.id);
+        const deal = await executeWithTokenCheck(() => getProjectById(dealId));
 
         if (!deal) {
           return null;
         }
 
-        return deal;
+        return deal ?? {};
       } catch (error) {
         console.error(
           (error as Error).message,
           "❌ Ошибка в useGetProjectById"
         );
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
     placeholderData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
     staleTime: useCache ? 60 * 1000 : 0,
+    retry: 2,
   });
 };
 
 export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser } = useFormSubmission();
 
   const cachedDeals = queryClient.getQueryData<
     RetailResponseWithContactsAndFiles[]
@@ -81,22 +84,27 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        const deal = await getRetailById(dealId, authUser.id);
+        const deal = await executeWithTokenCheck(() => getRetailById(dealId));
 
         if (!deal) {
           return null;
         }
 
-        return deal;
+        return deal ?? {};
       } catch (error) {
         console.error(error, "❌ Ошибка в useGetRetailById");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !useCache || !cachedDeal,
     placeholderData: useCache ? cachedDeal : undefined,
     staleTime: useCache ? 60 * 1000 : 0,
+    retry: 2,
   });
 };
 
@@ -108,8 +116,7 @@ export const useGetDealById = <
   dealId: string,
   type: DealType
 ) => {
-  const { authUser } = useStoreUser();
-  const queryClient = useQueryClient();
+  const { queryClient, authUser } = useFormSubmission();
 
   const queryKey = [type.toLowerCase(), dealId];
 
@@ -122,28 +129,40 @@ export const useGetDealById = <
     | T
     | undefined;
 
-  // Функции для запроса данных
-  const fetchFunctions = {
-    [DealType.PROJECT]: getProjectById as (
-      id: string,
-      userId: string
-    ) => Promise<ProjectResponseWithContactsAndFiles>,
-    [DealType.RETAIL]: getRetailById as (
-      id: string,
-      userId: string
-    ) => Promise<RetailResponseWithContactsAndFiles>,
-  };
-
   const fetchFn = async (): Promise<T | undefined> => {
     try {
+      if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
+        throw new Error(`Нет функции для типа сделки: ${type}`);
+      }
+
       if (!authUser?.id) {
         throw new Error("Пользователь не авторизован");
       }
-      const entity = await fetchFunctions[type](dealId, authUser.id);
-      return entity as T | undefined;
+
+      let entity: T | undefined = undefined;
+
+      if (type === DealType.PROJECT) {
+        const project = await executeWithTokenCheck(() =>
+          getProjectById(dealId)
+        );
+        // Присваиваем результат если проект найден
+        entity = project as T | undefined;
+      }
+
+      if (type === DealType.RETAIL) {
+        const retail = await executeWithTokenCheck(() => getRetailById(dealId));
+        // Присваиваем результат если розничная сделка найдена
+        entity = retail as T | undefined;
+      }
+
+      return entity;
     } catch (error) {
       console.log(error, "Ошибка useGetDealById");
-      TOAST.ERROR((error as Error).message);
+      if ((error as Error).message === "Failed to fetch") {
+        TOAST.ERROR("Не удалось получить данные");
+      } else {
+        TOAST.ERROR((error as Error).message);
+      }
       throw error;
     }
   };
@@ -160,22 +179,13 @@ export const useGetAllDealsByDepartmentByType = (
   userId: string,
   type: DealType
 ) => {
-  const { authUser } = useStoreUser();
+  const { authUser } = useFormSubmission();
 
   const queryKeys = {
     [type]: [
       `all-${type.toLocaleLowerCase()}s-department`,
       authUser?.departmentId,
     ],
-  };
-
-  const fetchFunctions = {
-    [DealType.PROJECT]: getAllProjectsByDepartment as () => Promise<
-      ProjectResponse[]
-    >,
-    [DealType.RETAIL]: getAllRetailsByDepartment as () => Promise<
-      RetailResponse[]
-    >,
   };
 
   return useQuery({
@@ -185,15 +195,38 @@ export const useGetAllDealsByDepartmentByType = (
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await fetchFunctions[type]();
+
+        if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
+          throw new Error(`Нет функции для типа сделки: ${type}`);
+        }
+
+        if (type === DealType.PROJECT) {
+          return (
+            (await executeWithTokenCheck(() => getAllProjectsByDepartment())) ??
+            []
+          );
+        }
+
+        if (type === DealType.RETAIL) {
+          return (
+            (await executeWithTokenCheck(() => getAllRetailsByDepartment())) ??
+            []
+          );
+        }
       } catch (error) {
         console.log(error, "Ошибка useGetAllDealsByDepartmentByType");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
     retry: 2,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
@@ -210,15 +243,26 @@ export const useGetAllProjects = (
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getAllProjectsByDepartmentQuery(departmentId);
+
+        return (
+          (await executeWithTokenCheck(() =>
+            getAllProjectsByDepartmentQuery(departmentId)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
     retry: 2,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
@@ -235,19 +279,30 @@ export const useGetAllRetails = (
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getAllRetailsByDepartmentQuery(departmentId);
+
+        return (
+          (await executeWithTokenCheck(() =>
+            getAllRetailsByDepartmentQuery(departmentId)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!userId && !!authUser?.departmentId,
     placeholderData: undefined,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
-export const useGetRetailsUser = (userId: string | null) => {
+export const useGetRetailsUser = (userId: string | undefined) => {
   const { authUser } = useStoreUser();
   const { data, isError, ...restData } = useQuery({
     queryKey: ["retails", userId],
@@ -256,15 +311,26 @@ export const useGetRetailsUser = (userId: string | null) => {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        return await getRetailsUser(userId as string);
+
+        return (
+          (await executeWithTokenCheck(() =>
+            getRetailsUser(userId as string)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!userId,
     placeholderData: undefined,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
   return { data, isError, ...restData };
 };
@@ -279,44 +345,89 @@ export const useGetProjectsUser = (userId: string | undefined) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        return await getProjectsUser(userId as string);
+        return (
+          (await executeWithTokenCheck(() =>
+            getProjectsUser(userId as string)
+          )) ?? []
+        );
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
-        TOAST.ERROR((error as Error).message);
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!userId,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
   });
 };
 
-export const useGetDealsByDateRange = (
-  userId: string,
-  range: DateRange,
-  dealType: DealType,
-  departmentId: string
-) => {
+export const useGetContractsUser = (userId: string | undefined) => {
   const { authUser } = useStoreUser();
   return useQuery({
-    queryKey: ["dealsByRange", userId, range, dealType, departmentId],
+    queryKey: ["contracts", userId],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
 
-        return await getDealsByDateRange(
-          userId as string,
-          range,
-          dealType,
-          departmentId
+        return (
+          (await executeWithTokenCheck(() =>
+            getProjectsUser(userId as string)
+          )) ?? []
         );
       } catch (error) {
-        console.log(error, "Ошибка useGetProjectsUser");
-        TOAST.ERROR((error as Error).message);
+        console.log(error, "Ошибка useGetContactsUser");
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
         throw error;
       }
     },
     enabled: !!userId,
+    staleTime: 1000 * 60,
+    refetchInterval: 60 * 1000 * 5,
+  });
+};
+
+export const useGetDealsByDateRange = (
+  userId: string,
+  range: DateRange,
+  departmentId: string
+) => {
+  const { authUser } = useStoreUser();
+  return useQuery({
+    queryKey: ["dealsByRange", userId, range, departmentId],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+
+        return (
+          (await executeWithTokenCheck(() =>
+            getDealsByDateRange(userId as string, range, departmentId)
+          )) ?? []
+        );
+      } catch (error) {
+        console.log(error, "Ошибка useGetProjectsUser");
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
+        throw error;
+      }
+    },
+    enabled: !!userId && !!authUser?.id && !!departmentId && !!range,
+    staleTime: 1000 * 60,
+    // refetchInterval: 60 * 1000 * 5,
   });
 };

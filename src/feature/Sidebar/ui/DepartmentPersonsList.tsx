@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 import { useParams, usePathname, useRouter } from "next/navigation";
 
@@ -41,11 +41,14 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
 
   const isActiveDepartment = item.id === Number(params.departmentId);
 
-  const handleDepartmentClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    router.push(item.url);
-  };
+  const handleDepartmentClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      router.push(item.url);
+    },
+    [router, item.url]
+  );
 
   return (
     <Collapsible
@@ -57,7 +60,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
         <SidebarMenuButton
           asChild
           tooltip={item.title}
-          onClick={handleDepartmentClick}
+          onClick={handleDepartmentClick} // Используем мемоизированную функцию
           className={clsx(
             "h-max border-2",
             isActiveDepartment &&

@@ -43,7 +43,7 @@ export const utilsDataTable = {
   /**
    * Разбирает строку URL в объект видимости колонок.
    */
-  parsedHoddenColsFilter: (str: string): VisibilityState => {
+  parsedHiddenColsFilter: (str: string): VisibilityState => {
     if (!str) return {};
     return Object.fromEntries(str.split(",").map((key) => [key, false]));
   },

@@ -1,8 +1,9 @@
-import prisma from "@/prisma/prisma-client";
 import { NextResponse } from "next/server";
 
-export async function POST(){
-    try {
+import prisma from "@/prisma/prisma-client";
+
+export async function POST() {
+  try {
     const chats = await prisma.userTelegramChat.findMany({
       where: {
         isActive: true,

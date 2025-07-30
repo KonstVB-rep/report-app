@@ -1,34 +1,26 @@
 "use client";
 
 import { PermissionEnum } from "@prisma/client";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  SortingState,
-  Table,
-  useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
+import { ColumnDef, Table } from "@tanstack/react-table";
 
-import React, { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 
 import dynamic from "next/dynamic";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 import { Loader } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 import { DealTypeLabels } from "@/entities/deal/lib/constants";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-import FiltersManagment from "@/feature/tableFilters/ui/FiltersManagment";
+import { DataTableFiltersProvider } from "@/feature/tableFilters/context/DataTableFiltersProvider";
+import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
+import { useTableState } from "@/shared/hooks/useTableState";
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
+import DebouncedInput from "../DebouncedInput";
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
+import { DealBase } from "./model/types";
 import TableComponent from "./TableComponent";
 
 const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
@@ -40,173 +32,108 @@ const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
   ),
 });
 
-const includedColumns = [
-  "nameObject",
-  "nameDeal",
-  "contact",
-  "phone",
-  "email",
-  "comments",
-];
-
-interface DataTableProps<TData, TValue = unknown> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  getRowLink?: (row: TData & { id: string }, type: string) => string;
-  type: keyof typeof DealTypeLabels;
-  isExistActionDeal?: boolean;
-}
-
-const handleExport = async <
-  TData extends Record<string, unknown>,
-  TValue = unknown,
->(
+const handleExport = async <TData,>(
   table: Table<TData>,
-  columns: ColumnDef<TData, TValue>[]
+  columns: ColumnDef<TData>[],
+  tableType?: string
 ) => {
-  const { downloadToExcel } = await import("./exceljs/downLoadToExcel");
-  downloadToExcel(table, columns);
+  const { downloadToExcel } = await import("./excel/downLoadToExcel");
+  downloadToExcel(table, columns, { tableType });
 };
 
-const DataTable = <TData extends Record<string, unknown>, TValue>({
+interface DataTableProps<T extends DealBase> {
+  columns: ColumnDef<T>[];
+  data: T[];
+  getRowLink?: (row: T, type: string) => string;
+  type: keyof typeof DealTypeLabels;
+  hasEditDeleteActions?: boolean;
+}
+
+const DataTable = <T extends DealBase>({
   columns,
   data,
   getRowLink,
   type,
-  isExistActionDeal = true,
-}: DataTableProps<TData, TValue>) => {
-  const searchParams = useSearchParams();
+  hasEditDeleteActions = true,
+}: DataTableProps<T>) => {
   const { dealType } = useParams();
 
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const { table, filtersContextValue, openFilters, setGlobalFilter } =
+    useTableState(data, columns);
 
-  const memoizedData = useMemo(() => data, [data]);
-  const memoizedColumns = useMemo(() => columns, [columns]);
+  const { columnFilters, globalFilter } = table.getState();
 
   const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
     | DateRange
     | undefined;
 
-  const table = useReactTable({
-    data: memoizedData,
-    columns: memoizedColumns,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    enableColumnResizing: true,
-    columnResizeMode: "onChange",
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility: {
-        ...columnVisibility,
-        user: false,
-        // resource: false // Скрываем колонку с id 'user'
-      },
-    },
-    meta: {
-      columnVisibility: {
-        resource: false,
-        // user: false,
-      },
-    },
-  });
+  // Получаем текущие данные (с учётом всех применённых фильтров/сортировок)
+  const currentData = table.getRowModel().rows.map((row) => row.original);
 
-  const {
-    selectedColumns,
-    setSelectedColumns,
-    filterValueSearchByCol,
-    setFilterValueSearchByCol,
-    openFilters,
-    setOpenFilters,
-    handleDateChange,
-    handleClearDateFilter,
-  } = useDataTableFilters({
-    searchParams,
-    includedColumns,
-    setColumnFilters,
-    setColumnVisibility,
-    columnFilters,
-    columnVisibility,
-  });
-
+  // Получаем исходные данные (без фильтров/сортировок)
+  const originalData = table.getCoreRowModel().rows.map((row) => row.original);
   return (
-    <div className="relative grid w-full overflow-hidden rounded-lg border bg-background p-2">
-      <div className="flex items-center justify-between gap-2 pb-2">
-        {memoizedData.length > 0 && (
-          <ProtectedByPermissions
-            permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}
-          >
-            <Button
-              variant={"ghost"}
-              onClick={() => handleExport<TData, TValue>(table, columns)}
-              className="w-fit border p-2 hover:bg-slate-700"
-              title="Export to XLSX"
+    <DataTableFiltersProvider value={filtersContextValue}>
+      <div className="relative grid w-full overflow-auto rounded-lg border bg-background p-2 auto-rows-max">
+        <div className="flex items-center justify-between gap-2 pb-2">
+          {currentData.length > 0 && (
+            <ProtectedByPermissions
+              permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}
             >
-              {ICONS_TYPE_FILE[".xls"]({ width: 20, height: 20 })}
-            </Button>
-          </ProtectedByPermissions>
-        )}
+              <Button
+                variant={"ghost"}
+                onClick={() => handleExport<T>(table, columns, type)}
+                className="w-fit border p-2 hover:bg-slate-700"
+                title="Export to XLSX"
+              >
+                {ICONS_TYPE_FILE[".xls"]({ width: 20, height: 20 })}
+              </Button>
+            </ProtectedByPermissions>
+          )}
 
-        {memoizedData.length > 0 && (
-          <div className="flex flex-1 items-center justify-between gap-2">
-            <FiltersManagment
-              setColumnFilters={setColumnFilters}
-              setColumnVisibility={setColumnVisibility}
-              setSelectedColumns={setSelectedColumns}
-              openFilters={openFilters}
-              setOpenFilters={setOpenFilters}
-              columnFilters={columnFilters}
-              columnVisibility={columnVisibility}
-              selectedColumns={[]}
+          <div>
+            <DebouncedInput
+              value={globalFilter ?? ""}
+              onChange={(value) => setGlobalFilter(String(value))}
+              className="p-2 font-lg shadow border border-block"
+              placeholder="Search all columns..."
             />
           </div>
-        )}
 
-        <AddNewDeal type={dealType as string} />
-      </div>
-      <div
-        className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
-      >
-        {memoizedData.length > 0 && openFilters && (
-          <FiltersBlock
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-            onDateChange={handleDateChange}
-            onClearDateFilter={handleClearDateFilter}
-            value={value}
-            columns={columns as ColumnDef<Record<string, unknown>, unknown>[]}
-            includedColumns={includedColumns}
-            selectedColumns={selectedColumns}
-            setSelectedColumns={setSelectedColumns}
-            filterValueSearchByCol={filterValueSearchByCol}
-            setFilterValueSearchByCol={setFilterValueSearchByCol}
-            type={type}
-            table={table as Table<Record<string, unknown>>}
+          {originalData.length > 0 && (
+            <div className="flex flex-1 items-center justify-between gap-2">
+              <FiltersManagement openFilters={openFilters} />
+            </div>
+          )}
+
+          <AddNewDeal type={dealType as string} />
+        </div>
+        <div
+          className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
+        >
+          {originalData.length > 0 && openFilters && (
+            <FiltersBlock
+              value={value}
+              type={type}
+              table={table as Table<Record<string, unknown>>}
+            />
+          )}
+        </div>
+
+        {data.length ? (
+          <TableComponent
+            table={table}
+            getRowLink={getRowLink}
+            hasEditDeleteActions={hasEditDeleteActions}
+            openFilters={openFilters}
           />
+        ) : (
+          <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
+            Нет данных
+          </h1>
         )}
       </div>
-
-      {data.length ? (
-        <TableComponent
-          table={table}
-          getRowLink={getRowLink}
-          isExistActionDeal={isExistActionDeal}
-        />
-      ) : (
-        <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">
-          Проекты не найдены
-        </h1>
-      )}
-    </div>
+    </DataTableFiltersProvider>
   );
 };
 

@@ -20,19 +20,26 @@ type Props = {
 };
 
 const DelDealForm = ({ id, type, close }: Props) => {
-  const { data: deal } = useGetDealById(id, type);
+  const { data: deal, isPending: isLoadInfoAboutDeal } = useGetDealById(
+    id,
+    type
+  );
+
+  const userId = deal?.userId ?? "";
+  const dealFiles = deal?.dealFiles ?? [];
+  const hasFiles = dealFiles.length > 0;
 
   const { mutate: delDeal, isPending } = useDelDeal(
     () => {
-      if (!deal?.dealFiles?.length) {
+      if (!hasFiles) {
         close();
         return;
       }
 
-      mutate(deal.dealFiles);
+      mutate(dealFiles);
     },
     type,
-    deal?.userId ?? ""
+    userId
   );
 
   const { mutate, isPending: isPendingDelete } = useDeleteFiles(() => close);
@@ -44,7 +51,7 @@ const DelDealForm = ({ id, type, close }: Props) => {
     delDeal(id);
   };
 
-  if (isLoading) return <DelDealSkeleton />;
+  if (isLoadInfoAboutDeal) return <DelDealSkeleton />;
 
   return (
     <MotionDivY>
@@ -53,7 +60,7 @@ const DelDealForm = ({ id, type, close }: Props) => {
         <p className="text-center">
           Вы точно уверены что хотите удалить данные
         </p>
-        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold">
+        <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold break-all">
           &quot;{deal?.nameObject}&quot;?
         </p>
         <p className="text-center">Их нельзя будет восстановить!</p>

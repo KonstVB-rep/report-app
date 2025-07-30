@@ -1,32 +1,30 @@
 import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
 
-import { startTransition } from "react";
-import React, { useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { utilsDataTable } from "../lib/utilsDataTable";
 
-type Props = {
-  searchParams: URLSearchParams;
-  includedColumns: string[];
-  setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
-  setColumnVisibility: React.Dispatch<React.SetStateAction<VisibilityState>>;
-  columnFilters: ColumnFiltersState;
-  columnVisibility: VisibilityState;
-};
+const includedColumns = [
+  "nameObject",
+  "nameDeal",
+  "contact",
+  "phone",
+  "email",
+  "comments",
+];
 
-const useDataTableFilters = ({
-  searchParams,
-  includedColumns,
-  setColumnFilters,
-  setColumnVisibility,
-  columnFilters,
-  columnVisibility,
-}: Props) => {
+const useDataTableFilters = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [globalFilter, setGlobalFilter] = useState("");
+
   const [selectedColumns, setSelectedColumns] = useState<string[]>(() =>
     utilsDataTable.transformParamsListToSFiltersObj(
       searchParams.toString(),
@@ -44,13 +42,13 @@ const useDataTableFilters = ({
   const [openFilters, setOpenFilters] = useState(false);
 
   const handleDateChange = useCallback(
-    (date: DateRange | undefined) => {
+    (columnId: string) => (date: DateRange | undefined) => {
       setColumnFilters((prev) => {
-        const newFilters = prev.filter((f) => f.id !== "dateRequest");
+        const newFilters = prev.filter((f) => f.id !== columnId);
         return date?.from && date?.to
           ? ([
               ...newFilters,
-              { id: "dateRequest", value: { from: date.from, to: date.to } },
+              { id: columnId, value: { from: date.from, to: date.to } },
             ] as ColumnFiltersState)
           : newFilters;
       });
@@ -69,7 +67,7 @@ const useDataTableFilters = ({
     const initialFilters = utilsDataTable.parsedParams(
       decodeURIComponent(searchParams.get("filters") || "")
     );
-    const initialVisibility = utilsDataTable.parsedHoddenColsFilter(
+    const initialVisibility = utilsDataTable.parsedHiddenColsFilter(
       decodeURIComponent(searchParams.get("hidden") || "")
     );
 
@@ -114,6 +112,13 @@ const useDataTableFilters = ({
     setOpenFilters,
     handleDateChange,
     handleClearDateFilter,
+    columnFilters,
+    setColumnFilters,
+    columnVisibility,
+    setColumnVisibility,
+    includedColumns,
+    globalFilter,
+    setGlobalFilter,
   };
 };
 

@@ -1,13 +1,16 @@
 "use client";
 
-import React from "react";
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { Building, Info } from "lucide-react";
 
-import Loading from "@/app/(dashboard)/deal/[departmentId]/[dealType]/[dealId]/loading";
+import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
+import {
+  typeofDelivery,
+  typeofDirections,
+  typeofStatus,
+} from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-project";
 import { Separator } from "@/components/ui/separator";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
@@ -24,6 +27,7 @@ import {
   StatusProjectLabels,
 } from "../lib/constants";
 import IntoDealItem from "./IntoDealItem";
+import ManagersListByDeal from "./ManagersListByDeal";
 import RowInfoDealProp from "./RowInfoDealProp";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
@@ -51,6 +55,15 @@ const ProjectItemInfo = () => {
 
   const { data: deal, isLoading } = useGetProjectById(dealId, false);
 
+  const statusLabel =
+    StatusProjectLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
+  const directionLabel =
+    DirectionProjectLabels[deal?.direction as typeofDirections] || "Нет данных";
+  const deliveryLabel =
+    DeliveryProjectLabels[deal?.deliveryType as typeofDelivery] || "Нет данных";
+  const typeLabel =
+    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
+
   if (isLoading) return <Loading />;
   if (!deal) return <NotFoundDeal />;
 
@@ -69,7 +82,7 @@ const ProjectItemInfo = () => {
     : "Нет данных";
 
   return (
-    <MotionDivY className="grid gap-2 p-4">
+    <MotionDivY className="grid gap-2 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
@@ -90,10 +103,14 @@ const ProjectItemInfo = () => {
 
       <Separator />
 
+      <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
+
+      <Separator />
+
       <div className="grid gap-2">
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
           <div className="grid-rows-auto grid gap-2">
-            <div className="grid min-w-72 gap-4">
+            <div className="grid min-w-64 gap-4">
               <IntoDealItem title="Объект">
                 <div className="grid w-full gap-2">
                   <div className="flex w-full items-start justify-start gap-4 text-lg">
@@ -102,7 +119,7 @@ const ProjectItemInfo = () => {
                       strokeWidth={1}
                       className="icon-deal_info"
                     />
-                    <p className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                    <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
                       {deal.nameObject}
                     </p>
                   </div>
@@ -116,10 +133,8 @@ const ProjectItemInfo = () => {
                           className="icon-deal_info"
                         />
                         <TooltipComponent content="Статус сделки">
-                          <span className="text-md prop-deal-value h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-                            {StatusProjectLabels[
-                              deal.dealStatus as keyof typeof StatusProjectLabels
-                            ] || "Нет данных"}
+                          <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                            {statusLabel}
                           </span>
                         </TooltipComponent>
                       </p>
@@ -153,10 +168,7 @@ const ProjectItemInfo = () => {
                 />
                 <RowInfoDealProp
                   label="Тип сделки:"
-                  value={
-                    DealTypeLabels[deal.type as keyof typeof DealTypeLabels] ||
-                    "Нет данных"
-                  }
+                  value={typeLabel}
                   direction="column"
                 />
                 <RowInfoDealProp
@@ -167,22 +179,8 @@ const ProjectItemInfo = () => {
               </IntoDealItem>
 
               <IntoDealItem title="Детали" className="flex-item-contact">
-                <RowInfoDealProp
-                  label="Направление:"
-                  value={
-                    DirectionProjectLabels[
-                      deal.direction as keyof typeof DirectionProjectLabels
-                    ] || "Нет данных"
-                  }
-                />
-                <RowInfoDealProp
-                  label="Тип поставки:"
-                  value={
-                    DeliveryProjectLabels[
-                      deal.deliveryType as keyof typeof DeliveryProjectLabels
-                    ] || "Нет данных"
-                  }
-                />
+                <RowInfoDealProp label="Направление:" value={directionLabel} />
+                <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
               </IntoDealItem>
 
               <IntoDealItem title="Финансы" className="flex-item-contact">

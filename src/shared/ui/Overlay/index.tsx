@@ -11,9 +11,12 @@ export const OverlayLocal = ({
   if (!isPending) return null;
   return (
     <div
-      className={`absolute inset-0 z-[1000] flex cursor-pointer items-center justify-center bg-black/50 ${className}`}
+      className={`absolute inset-0 z-[1000] flex items-center justify-center bg-black/50 ${className}`}
       onClick={(e) => e.stopPropagation()}
       onKeyDown={(e) => e.stopPropagation()}
+      style={{
+        pointerEvents: "auto", // <- важно: блокирует взаимодействие с подложкой
+      }}
     />
   );
 };
@@ -30,7 +33,10 @@ const Overlay = ({
     <>
       {createPortal(
         <div
-          className={`fixed inset-0 z-[1000] flex cursor-pointer items-center justify-center bg-black/70 ${className}`}
+          style={{
+            pointerEvents: "auto", // <- важно: блокирует взаимодействие с подложкой
+          }}
+          className={`fixed inset-0 z-[1000] flex items-center justify-center bg-black/70 ${className}`}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
         />,

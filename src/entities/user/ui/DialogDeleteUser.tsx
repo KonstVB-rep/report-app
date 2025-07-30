@@ -22,7 +22,9 @@ const DialogDeleteUser = () => {
   const params = useParams();
   const userId = String(params.userId);
 
-  const { data } = useGetUser(userId, [PermissionEnum.USER_MANAGEMENT]);
+  const { data, isFetching } = useGetUser(userId, [
+    PermissionEnum.USER_MANAGEMENT,
+  ]);
 
   const { mutate, isPending } = useDeleteUser(userId);
 
@@ -37,11 +39,15 @@ const DialogDeleteUser = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]" showX={false}>
-        <DeleteUserModalContent
-          mutate={mutate}
-          isPending={isPending}
-          username={data?.username}
-        />
+        {isFetching || !data ? (
+          <DeleteUserModalContentSkeleton />
+        ) : (
+          <DeleteUserModalContent
+            mutate={mutate}
+            isPending={isPending}
+            username={data.username}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

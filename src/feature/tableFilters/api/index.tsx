@@ -6,6 +6,12 @@ import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
+import {
+  DeleteFilterReturnType,
+  SaveFilterType,
+  UpdateFilterDataType,
+} from "../types";
+
 export const getUserFilters = async () => {
   try {
     const { user } = await handleAuthorization();
@@ -44,11 +50,12 @@ export const getUserFilterById = async (filterId: string) => {
 };
 
 export const saveFilter = async (
-  ownerId: string,
-  data: Omit<UserFilter, "createdAt" | "updatedAt" | "id" | "userId">
-) => {
+  savedData: SaveFilterType
+): Promise<UserFilter> => {
   try {
     const { user } = await handleAuthorization();
+
+    const { data } = savedData;
 
     const existingFilter = await prisma.userFilter.findUnique({
       where: { id: user!.id, filterName: data.filterName },
@@ -72,9 +79,13 @@ export const saveFilter = async (
   }
 };
 
-export const deleteFilter = async (id: string) => {
+export const deleteFilter = async (data: {
+  id: string;
+}): Promise<DeleteFilterReturnType> => {
   try {
     await handleAuthorization();
+
+    const { id } = data;
 
     const filter = await prisma.userFilter.findUnique({
       where: { id },
@@ -96,7 +107,7 @@ export const deleteFilter = async (id: string) => {
 };
 
 export const updateFilter = async (
-  data: Partial<UserFilter>
+  data: UpdateFilterDataType
 ): Promise<UserFilter | undefined> => {
   try {
     await handleAuthorization();

@@ -1,7 +1,11 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+
+import { v4 as uuidv4 } from "uuid";
 
 import { ContactFormSchema, ContactSchema } from "../model/schema";
 
@@ -21,14 +25,16 @@ const useAddContactToDeal = (
                 email: "",
                 phone: "",
                 position: "",
-                id: crypto.randomUUID(),
+                id: uuidv4(),
               },
             ],
     },
   });
 
+  const { reset } = form;
+
   useEffect(() => {
-    form.reset({
+    reset({
       contacts:
         contacts.length > 0
           ? [...contacts]
@@ -38,11 +44,11 @@ const useAddContactToDeal = (
                 email: "",
                 phone: "",
                 position: "",
-                id: crypto.randomUUID(),
+                id: uuidv4(),
               },
             ],
     });
-  }, [contacts, form]);
+  }, [contacts, reset]);
 
   const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
@@ -51,7 +57,7 @@ const useAddContactToDeal = (
 
   const handleAddNewContactForm = () => {
     return append({
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       name: "",
       phone: "",
       email: "",
@@ -64,7 +70,7 @@ const useAddContactToDeal = (
 
     if (fields.length === 1) {
       append({
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: "",
         phone: "",
         email: "",
@@ -77,7 +83,7 @@ const useAddContactToDeal = (
   const handleRemoveAll = () => {
     replace([
       {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: "",
         phone: "",
         email: "",

@@ -6,15 +6,10 @@ import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 
-import { EventInputType } from "../types";
 import axiosInstance from "@/shared/api/axiosInstance";
+import { EventInputType, EventDataType } from "../types";
 
-export const createEventCalendar = async (eventData: {
-  title: string;
-  start: string;
-  end: string;
-  allDay?: boolean;
-}) => {
+export const createEventCalendar = async (eventData: Omit<EventDataType, 'id'>) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -36,13 +31,7 @@ export const createEventCalendar = async (eventData: {
   }
 };
 
-export const updateEventCalendar = async (eventData: {
-  id: string;
-  title: string;
-  start: string;
-  end: string;
-  allDay?: boolean;
-}) => {
+export const updateEventCalendar = async (eventData: EventDataType) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -67,6 +56,7 @@ export const updateEventCalendar = async (eventData: {
         start: new Date(start),
         end: new Date(end),
         allDay,
+        notified: false
       },
     });
 
@@ -77,11 +67,13 @@ export const updateEventCalendar = async (eventData: {
   }
 };
 
-export const deleteEventCalendar = async (id: string) => {
+export const deleteEventCalendar = async (eventData: {id: string}) => {
   try {
     const data = await handleAuthorization();
     if (!data) throw new Error("Не авторизован");
     const { userId } = data;
+
+    const { id } = eventData;
 
     const existingEvent = await prisma.eventCalendar.findFirst({
       where: {

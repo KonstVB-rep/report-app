@@ -30,7 +30,7 @@ const requiredFieldsForEditForm: RequiredFields[] = [
   "email",
 ];
 
-interface Response<T> {
+export interface ResponseDelUser<T> {
   error: boolean;
   message: string | null;
   data: T | null;
@@ -293,21 +293,23 @@ export const getUser = async (
       permissions: userPermissions,
     };
 
-    return userWithDepartmentNameWithPermissions;
+    return userWithDepartmentNameWithPermissions ?? null;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
   }
 };
 
-export const deleteUser = async (
-  deletedUserId: string
-): Promise<Response<null>> => {
+export const deleteUser = async (deletedUserData: {
+  userId: string;
+}): Promise<ResponseDelUser<null>> => {
   try {
     const { user } = await handleAuthorization();
 
     if (user)
       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
+
+    const deletedUserId = deletedUserData.userId;
 
     const person = await prisma.user.findUnique({
       where: { id: deletedUserId },
