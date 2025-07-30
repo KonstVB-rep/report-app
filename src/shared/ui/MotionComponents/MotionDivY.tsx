@@ -26,7 +26,7 @@ const MotionDivY = ({
     <animated.div
       style={styles}
       key={keyValue || ""}
-      className={cn('max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto',className)}
+      className={cn(className)}
       ref={ref}
     >
       {children}

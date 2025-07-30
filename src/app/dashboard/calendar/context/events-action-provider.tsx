@@ -8,15 +8,15 @@ import {
   useUpdateEventCalendar,
 } from "@/feature/calendar/hooks/mutate";
 import { useGetEventsCalendarUser } from "@/feature/calendar/hooks/query";
-import { EventData, EventInputType } from "@/feature/calendar/types";
+import { EventDataType, EventInputType } from "@/feature/calendar/types";
 
 import { useCalendarContext } from "./calendar-context";
 
 interface EventsActionContextType {
   isLoading: boolean;
   events: EventInputType[] | undefined;
-  createEvent: (event: EventData) => void;
-  updateEvent: (event: EventInputType) => void;
+  createEvent: (event: Omit<EventDataType, 'id'>) => void;
+  updateEvent: (event: EventDataType) => void;
   deleteEvent: (id: string) => void;
   isPendingLoad: boolean;
   isPendingDelete: boolean;

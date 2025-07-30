@@ -154,7 +154,7 @@ export const handleEventClickOnEventsList = (
 
   form.setValue(
     "startTimeEvent",
-    event.start?.toTimeString().slice(0, 5) || ""
+    event.start.toTimeString().slice(0, 5) || ""
   );
 
   form.setValue("endTimeEvent", event.end?.toTimeString().slice(0, 5) || "");

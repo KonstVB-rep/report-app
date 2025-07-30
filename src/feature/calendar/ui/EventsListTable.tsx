@@ -28,12 +28,18 @@ const EventsListTable = <T extends EventInputType>({
     table
   ) as RefObject<HTMLTableElement>;
 
+
   const handleClickRowEvent = (row: T) => {
-    const now = new Date();
-    if (row.end < now) return;
+  const now = new Date();
+  const endDate = new Date(row.end); 
+
+    if (endDate < now) return;
+    console.log(row, 'row')
     handleRowClick?.(row);
   };
-  if (!table) {
+
+
+  if (!table?.getRowModel()?.rows) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;
   }
 
@@ -78,9 +84,8 @@ const EventsListTable = <T extends EventInputType>({
         <TableBody className="table-grid-container space-y-[2px]">
           {table?.getRowModel()?.rows?.length > 0 ? (
             table.getRowModel().rows.map((row) => {
-              const eventData = row.original as EventInputType;
-              const isPastEvent = new Date(eventData.end) < new Date(); // Проверяем, прошло ли событие
-
+              const EventDataType = row.original;
+              const isPastEvent = new Date(EventDataType.end) < new Date(); // Проверяем, прошло ли событие
               return (
                 <TableRow
                   key={row.id}
@@ -92,6 +97,7 @@ const EventsListTable = <T extends EventInputType>({
                     <TableCell
                       onClick={() => handleClickRowEvent?.(cell.row.original)}
                       key={cell.id}
+                      style={{ width: cell.column.getSize() }}
                       className={`td w-fit border-b border-r  ${cell.column.id === "title" ? "" : "whitespace-nowrap"}`}
                     >
                       {flexRender(

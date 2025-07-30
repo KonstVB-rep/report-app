@@ -193,8 +193,13 @@ body {
 }
 
 .td {
-  @apply p-2 text-center inline-grid items-center;
+  @apply p-2 text-center items-center;
 }
+
+.td.td_inline-grid {
+  @apply inline-grid ;
+}
+
 
 td:has(.abs-element) {
   @apply relative;

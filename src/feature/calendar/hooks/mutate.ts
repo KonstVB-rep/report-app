@@ -14,8 +14,7 @@ import {
 import {
   ChatBotType,
   ChatType,
-  EventData,
-  EventInputType,
+  EventDataType,
   EventResponse,
   ResponseChatBotType,
 } from "../types";
@@ -24,10 +23,10 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: (eventData: EventData) => {
-      return handleMutationWithAuthCheck<EventData, EventResponse>(
+    mutationFn: (EventDataType: EventDataType) => {
+      return handleMutationWithAuthCheck<EventDataType, EventResponse>(
         createEventCalendar,
-        eventData,
+        EventDataType,
         authUser,
         isSubmittingRef
       );
@@ -65,10 +64,11 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: (eventData: EventInputType) => {
-      return handleMutationWithAuthCheck<EventInputType, EventResponse>(
+    mutationFn: (EventDataType: EventDataType) => {
+
+      return handleMutationWithAuthCheck<EventDataType, EventResponse>(
         updateEventCalendar,
-        eventData,
+        EventDataType,
         authUser,
         isSubmittingRef
       );

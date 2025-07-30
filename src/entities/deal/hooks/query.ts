@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {

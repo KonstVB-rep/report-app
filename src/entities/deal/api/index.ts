@@ -615,7 +615,6 @@ export const getDealsByDateRange = async (
   }
 
   startDate.setHours(0, 0, 0, 0);
-  console.log(startDate, "startDate");
 
   const dealsP = (await prisma.project.findMany({
     where: {

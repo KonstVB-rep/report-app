@@ -1,6 +1,6 @@
 "use client";
 
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import { useEffect } from "react";
 
@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { CalendarFold } from "lucide-react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { EventInputType } from "@/feature/calendar/types";
+import {  EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
 
@@ -22,7 +22,7 @@ type EventsListProps = {
 const EventsList = ({ events }: EventsListProps) => {
   const table = useReactTable({
     data: events,
-    columns: columnsDataCalendar,
+    columns: columnsDataCalendar as ColumnDef<EventInputType, unknown>[],
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -34,6 +34,10 @@ const EventsList = ({ events }: EventsListProps) => {
       router.replace("/login");
     }
   }, [authUser, router]);
+
+  if(events?.length === 0) {
+    return null
+  }
 
   if (!authUser) {
     return null;
@@ -48,7 +52,7 @@ const EventsList = ({ events }: EventsListProps) => {
       />
 
       <div className="rounded-lg overflow-hidden border w-full">
-        <EventsListTable<EventInputType> table={table} />
+        <EventsListTable table={table} />
       </div>
     </div>
   );

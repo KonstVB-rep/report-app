@@ -9,7 +9,7 @@ export const EventCalendarFormSchema = z
           : "Наименование должно быть строкой",
     }),
 
-    allDay: z.boolean().optional(),
+    allDay: z.boolean().default(false),
 
     startDateEvent: z.coerce.date({
       error: (issue) => ({
@@ -71,7 +71,7 @@ export const EventCalendarFormSchema = z
       ctx.issues.push({
         code: "custom",
         message: "Дата начала не может быть позже даты окончания",
-        path: ["startDateEvent"],
+        path: ["startDateEvent"], 
         input: startDateEvent,
       });
     }
@@ -91,17 +91,18 @@ export const EventCalendarFormSchema = z
       ctx.issues.push({
         code: "custom",
         message: "Дата окончания должна быть в будущем",
-        path: ["endDateEvent"],
+        path: ["endDateEvent"], 
         input: endDateEvent,
       });
     }
 
-    // Глобальная ошибка для некорректного времени
+    // Если времени окончания меньше времени начала
     if (startDate >= endDate) {
       ctx.issues.push({
         code: "custom",
         message: "Время окончания события не должно быть меньше времени начала!",
-        path: ["dateError"], // Указываем глобальную ошибку
+        path: ["startDateEvent"],
+        input: startDateEvent,
       });
     }
   });

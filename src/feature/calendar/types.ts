@@ -6,7 +6,9 @@ export type EventInputType = {
   allDay?: boolean;
 };
 
-export type EventData = {
+
+export type EventDataType = {
+  id?:string;
   title: string;
   start: string;
   end: string;

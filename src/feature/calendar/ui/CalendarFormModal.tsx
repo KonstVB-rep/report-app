@@ -25,7 +25,7 @@ const CalendarFormModal = ({ events }: CalendarFormModalProps) => {
       <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
         <Overlay isPending={isLoading} />
 
-        <FormEvent events={events} />
+        <FormEvent events={events || []} />
       </MotionDivY>
     </DialogComponent>
   );

@@ -4,14 +4,12 @@ import { endOfDay, startOfDay } from "date-fns";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
-import axiosInstance from "@/shared/api/axiosInstance";
 import { handleError } from "@/shared/api/handleError";
 
-import { EventData, EventInputType, EventResponse } from "../types";
+import axiosInstance from "@/shared/api/axiosInstance";
+import { EventInputType, EventDataType } from "../types";
 
-export const createEventCalendar = async (
-  eventData: EventData
-): Promise<EventResponse> => {
+export const createEventCalendar = async (eventData: Omit<EventDataType, 'id'>) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -33,9 +31,7 @@ export const createEventCalendar = async (
   }
 };
 
-export const updateEventCalendar = async (
-  eventData: EventInputType
-): Promise<EventResponse> => {
+export const updateEventCalendar = async (eventData: EventDataType) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -60,7 +56,7 @@ export const updateEventCalendar = async (
         start: new Date(start),
         end: new Date(end),
         allDay,
-        notified: false,
+        notified: false
       },
     });
 
@@ -71,15 +67,13 @@ export const updateEventCalendar = async (
   }
 };
 
-export const deleteEventCalendar = async (dataEvent: {
-  id: string;
-}): Promise<EventResponse> => {
+export const deleteEventCalendar = async (eventData: {id: string}) => {
   try {
     const data = await handleAuthorization();
     if (!data) throw new Error("Не авторизован");
     const { userId } = data;
 
-    const { id } = dataEvent;
+    const { id } = eventData;
 
     const existingEvent = await prisma.eventCalendar.findFirst({
       where: {
@@ -143,7 +137,7 @@ export const getEventsCalendarUserToday = async (): Promise<
       where: {
         userId,
         start: {
-          gte: todayStart,
+          gte: todayStart, 
           lte: todayEnd,
         },
       },
@@ -167,7 +161,6 @@ export const getEventsCalendarUserToday = async (): Promise<
 
 export async function getCalendarBotName(): Promise<string | null> {
   const botName = process.env.TELEGRAM_BOT_ERTEL_REPORT_APP_NAME;
-
   return botName ?? null;
 }
 
@@ -176,7 +169,9 @@ export const sendNotification = async (
   chatId: string,
   botName: string
 ) => {
+
   try {
+
     await axiosInstance.post(
       `/telegram/send-message-calendar-bot`,
       {

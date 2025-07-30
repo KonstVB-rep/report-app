@@ -88,7 +88,7 @@ const RetailItemInfo = () => {
   }
 
   return (
-    <MotionDivY className="grid gap-2 p-4">
+    <MotionDivY className="grid gap-2 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">Розница</h1>

@@ -21,9 +21,9 @@ const FullCalendarComponent = dynamic(
 
 const CalendarFormModal = dynamic(
   () => import("@/feature/calendar/ui/CalendarFormModal"),
-  {
-    loading: () => <Loading />,
-  }
+  // {
+  //   loading: () => <Loading />,
+  // }
 );
 
 const CalendarMobile = dynamic(
@@ -39,6 +39,7 @@ const CalendarPage = () => {
   const { isMobile } = useSidebar();
 
   const { events } = useEventActionContext();
+
   return (
     <div className="p-5">
       <div className="flex gap-2 justify-between flex-wrap pb-4">

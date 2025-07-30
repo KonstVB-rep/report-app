@@ -25,6 +25,7 @@ const CalendarMobile = () => {
     selectedDate,
     eventDates,
     handleSelect,
+    isPending
   } = useCalendarMobile();
 
   const { form, closeModalForm, setEditingId, setOpenModal } =
@@ -56,6 +57,9 @@ const CalendarMobile = () => {
       closeModalForm
     );
   };
+  if(isPending){
+    return <div>Загрузка...</div>
+  }
 
   return (
     <div className="calendar-mobile p-2 xs:p-5">

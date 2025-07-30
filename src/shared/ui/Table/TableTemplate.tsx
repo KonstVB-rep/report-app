@@ -2,7 +2,7 @@ import { DealType, StatusOrder } from "@prisma/client";
 import { flexRender, Row, useReactTable } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
-import React, { RefObject, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 import { useParams } from "next/navigation";
 
@@ -196,7 +196,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
             <TableCell
               key={cell.id}
               style={{ width: cell.column.getSize() }}
-              className="td min-w-12 border-b border-r leading-none box-border min-h-[57px]"
+              className="td td_inline-grid min-w-12 border-b border-r leading-none box-border min-h-[57px]"
               onDoubleClick={() => handleOpenInfo(cell.id)}
             >
               <span className="line-clamp-2 text-center text-sm">
@@ -253,7 +253,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
             <TableCell
               key={cell.id}
               style={{ width: cell.column.getSize() }}
-              className="td min-w-12 border-b border-r leading-none box-border min-h-[57px]"
+              className="td td_inline-grid min-w-12 border-b border-r leading-none box-border min-h-[57px]"
               onDoubleClick={() => handleOpenInfo(cell.id)}
             >
               <span className="line-clamp-2 text-center text-sm">
@@ -316,7 +316,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
             <TableCell
               key={cell.id}
               style={{ width: cell.column.getSize() }}
-              className="td min-w-12 border-b border-r leading-none box-border min-h-[57px]"
+              className="td td_inline-grid min-w-12 border-b border-r leading-none box-border min-h-[57px]"
               onDoubleClick={() => handleOpenInfo(cell.id)}
             >
               <span className="line-clamp-2 text-center text-sm">

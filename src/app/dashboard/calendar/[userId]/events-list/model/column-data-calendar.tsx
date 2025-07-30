@@ -1,4 +1,4 @@
-import { CellContext, ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 
 import { EventInputType } from "@/feature/calendar/types";
 
@@ -6,24 +6,27 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
   {
     id: "start",
     header: "Дата",
-    cell: (info: CellContext<EventInputType, unknown>) => {
-      const { row } = info;
-      if (
-        row.original.start.toLocaleDateString("ru-RU") ===
-        row.original.end.toLocaleDateString("ru-RU")
-      ) {
-        return row.original.start.toLocaleDateString("ru-RU");
-      }
-      return `${row.original.start.toLocaleDateString("ru-RU")} - ${row.original.end.toLocaleDateString("ru-RU")}`;
-    },
+    accessorKey: "start",
+    cell: (info) => {
+    const { row } = info;
+    const startDate = row.original.start instanceof Date ? row.original.start : new Date(row.original.start);
+    const endDate = row.original.end instanceof Date ? row.original.end : new Date(row.original.end);
+
+    if (startDate.toLocaleDateString("ru-RU") === endDate.toLocaleDateString("ru-RU")) {
+      return startDate.toLocaleDateString("ru-RU");
+    }
+    return `${startDate.toLocaleDateString("ru-RU")} - ${endDate.toLocaleDateString("ru-RU")}`;
+  },
     enableHiding: false,
     enableSorting: false,
-    accessorFn: (row: EventInputType) => row.start,
+    size: 100,
+    minSize: 100,
+    maxSize: 100,
   },
   {
     id: "eventTime",
     header: "Время",
-    cell: (info: CellContext<EventInputType, unknown>) => {
+    cell: (info) => {
       const { row } = info;
       return `${row.original.start.toLocaleTimeString("ru-RU", { timeStyle: "short" })} - ${row.original.end.toLocaleTimeString("ru-RU", { timeStyle: "short" })}`;
     },
@@ -37,11 +40,11 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
   {
     id: "title",
     header: "Событие",
-    cell: (info: CellContext<EventInputType, unknown>) => info.getValue(),
+    accessorKey: "title",
+    cell: (info) => (
+      <p className="break-all">{info.getValue() as string}</p>
+    ),
     enableHiding: false,
     enableSorting: false,
-    accessorFn: (row: EventInputType) => (
-      <p className="break-all">{row.title}</p>
-    ),
   },
 ];

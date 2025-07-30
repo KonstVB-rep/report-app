@@ -56,7 +56,7 @@ const EventsListDayMobile = ({
       </Button>
 
       <div className="rounded-lg overflow-hidden border w-full">
-        <EventsListTable<EventInputType>
+        <EventsListTable
           table={table}
           handleRowClick={handleEventClickOnEventsList}
         />
