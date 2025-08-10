@@ -1,4 +1,3 @@
-// import { TaskStatus } from "@prisma/client";
 "use client";
 
 import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
@@ -77,7 +76,7 @@ const FilterTasks = ({
 }: {
   columnFilters: ColumnFiltersState;
 }) => {
-  const { handleDateChange, handleClearDateFilter, setColumnFilters } =
+  const { handleDateChange, handleClearDateFilter } =
     useDataTableFiltersContext();
 
   const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
@@ -93,8 +92,6 @@ const FilterTasks = ({
             options: LABEL_TASK_STATUS,
           },
         ]}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
       />
       <DateRangeFilter
         onDateChange={handleDateChange("dueDate")}

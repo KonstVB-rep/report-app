@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 
 export const formatDate = (date: Date) =>
@@ -20,4 +20,15 @@ export const addCorrectTimeInDates = (
   end.setHours(+endH);
   end.setMinutes(+endM);
   return [start, end];
+};
+
+
+export const cleanDistance = (date: Date) => {
+  const raw = formatDistanceToNow(date, {
+    addSuffix: true,
+    locale: ru,
+  });
+
+  // Убираем "приблизительно" и "около"
+  return raw.replace(/(приблизительно |около )/gi, "");
 };

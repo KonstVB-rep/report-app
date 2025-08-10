@@ -1,6 +1,5 @@
 "use client";
 
-import { DealType } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import React from "react";
@@ -14,6 +13,15 @@ import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import NotFoundByPosition from "@/shared/ui/Redirect/NotFoundByPosition";
 import { DealBase } from "@/shared/ui/Table/model/types";
+import { useDealsUser } from "@/entities/deal/hooks/query";
+import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
+import { ContractResponse, ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types";
+import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
+import { PermissionEnum } from "@prisma/client";
+import { columnsDataProject } from "../[userId]/model/columns-data-project";
+import { columnsDataContract } from "../[userId]/model/columns-data-contracts";
+import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
+import { OrderResponse } from "@/entities/order/types";
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
@@ -27,22 +35,59 @@ const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
   loading: () => <TableRowsSkeleton />,
 });
 
-interface PersonTableProps<T extends DealBase> {
-  data: T[];
-  type: DealType;
-  columns: ColumnDef<T>[];
-  getRowLink?: (row: T, type: string) => string;
-}
 
-const PersonTable = <T extends DealBase>({
-  data,
-  type,
-  columns,
-  getRowLink,
-}: PersonTableProps<T>) => {
-  const { userId, dealType } = useParams();
+const Columns = (type: TableType): ColumnDef<ProjectResponse, unknown>[] | ColumnDef<RetailResponse, unknown>[] | ColumnDef<ContractResponse, unknown>[] |  ColumnDef<OrderResponse, unknown>[] => {
+  switch (type) {
+    case 'projects':
+      return columnsDataProject;
+    case 'retails':
+      return columnsDataRetail;
+    case 'contracts':
+      return columnsDataContract;
+    default:
+      throw new Error(`Unknown table type: ${type}`);
+  }
+};
+
+
+// const getRowLink = (row: DealBase): string => {
+//   if (row.type === 'PROJECT') {
+//     return `/dashboard/deal/project/${row.id}`;
+//   } 
+//   else if (row.type === 'RETAIL') {
+//     return `/dashboard/deal/retail/${row.id}`;
+//   }
+//   else if (row.type === 'ORDER') {
+//     return `/dashboard/orders/${row.id}`;
+//   }else return ''
+// };
+
+const PersonTable = () => {
+ const { userId, dealType } = useParams<{
+  userId: string;
+  dealType: TableType; // если dealType имеет конкретные значения
+}>();
+
   const { authUser } = useStoreUser();
   const isPageAuthuser = userId === authUser?.id;
+
+  const hasAccess = hasAccessToData(
+      userId as string,
+      PermissionEnum.VIEW_USER_REPORT
+    );
+  
+    const { data = [] } = useDealsUser(dealType,
+      hasAccess ? (userId as string) : undefined
+    );
+  
+  
+    if (!hasAccess)
+      return (
+        <AccessDeniedMessage
+          error={{ message: "у вас нет доступа к этому разделу" }}
+        />
+      );
+  
 
   return (
     <NotFoundByPosition>
@@ -53,16 +98,14 @@ const PersonTable = <T extends DealBase>({
               {DealTypeLabels[dealType as string]}
             </p>
             <p className="border rounded-md p-2">
-              Общее количество заявок: {data.length}
+              Общее количество заявок: {data?.length}
             </p>
           </div>
 
           {isPageAuthuser && <ButtonsGroupTable />}
           <DataTable
-            columns={columns as ColumnDef<DealBase>[]}
+            columns={Columns(dealType as TableType) as ColumnDef<DealBase>[]}
             data={data as DealBase[]}
-            getRowLink={getRowLink as (row: DealBase, type: string) => string}
-            type={type}
           />
         </>
       </DealTableTemplate>

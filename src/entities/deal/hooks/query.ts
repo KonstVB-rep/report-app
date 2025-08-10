@@ -7,8 +7,6 @@ import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { TOAST } from "@/shared/ui/Toast";
 
 import {
-  getAllProjectsByDepartment,
-  getAllRetailsByDepartment,
   getDealsByDateRange,
   getProjectById,
   getProjectsUser,
@@ -21,8 +19,10 @@ import {
 } from "../api/queryFn";
 import {
   DateRange,
+  DealsUnionType,
   ProjectResponseWithContactsAndFiles,
   RetailResponseWithContactsAndFiles,
+  TableType,
 } from "../types";
 
 export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
@@ -175,64 +175,9 @@ export const useGetDealById = <
   });
 };
 
-export const useGetAllDealsByDepartmentByType = (
-  userId: string,
-  type: DealType
-) => {
-  const { authUser } = useFormSubmission();
-
-  const queryKeys = {
-    [type]: [
-      `all-${type.toLocaleLowerCase()}s-department`,
-      authUser?.departmentId,
-    ],
-  };
-
-  return useQuery({
-    queryKey: queryKeys[type],
-    queryFn: async () => {
-      try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
-
-        if (type !== DealType.PROJECT && type !== DealType.RETAIL) {
-          throw new Error(`Нет функции для типа сделки: ${type}`);
-        }
-
-        if (type === DealType.PROJECT) {
-          return (
-            (await executeWithTokenCheck(() => getAllProjectsByDepartment())) ??
-            []
-          );
-        }
-
-        if (type === DealType.RETAIL) {
-          return (
-            (await executeWithTokenCheck(() => getAllRetailsByDepartment())) ??
-            []
-          );
-        }
-      } catch (error) {
-        console.log(error, "Ошибка useGetAllDealsByDepartmentByType");
-        if ((error as Error).message === "Failed to fetch") {
-          TOAST.ERROR("Не удалось получить данные");
-        } else {
-          TOAST.ERROR((error as Error).message);
-        }
-        throw error;
-      }
-    },
-    enabled: !!userId && !!authUser?.departmentId,
-    retry: 2,
-    staleTime: 1000 * 60,
-    refetchInterval: 60 * 1000 * 5,
-  });
-};
-
 export const useGetAllProjects = (
   userId: string | null,
-  departmentId?: string | undefined
+  departmentId: string
 ) => {
   const { authUser } = useStoreUser();
 
@@ -268,7 +213,7 @@ export const useGetAllProjects = (
 
 export const useGetAllRetails = (
   userId: string | null,
-  departmentId?: string | undefined
+  departmentId: string
 ) => {
   const { authUser } = useStoreUser();
 
@@ -430,4 +375,35 @@ export const useGetDealsByDateRange = (
     staleTime: 1000 * 60,
     // refetchInterval: 60 * 1000 * 5,
   });
+};
+
+export const useDealsUser = (type: TableType, userId?: string) => {
+  const fetchers = {
+    projects: useGetProjectsUser,
+    retails: useGetRetailsUser,
+    contracts: useGetContractsUser,
+  };
+
+  if (!(type in fetchers)) {
+    throw new Error(`Invalid deal type: ${type}`);
+  }
+
+  return fetchers[type](userId);
+};
+
+export const useGetAllDeals = (
+  type: DealsUnionType,
+  userId: string | null,
+  departmentId: string
+) => {
+  const fetchers = {
+    projects: useGetAllProjects,
+    retails: useGetAllRetails,
+  };
+
+  if (!(type in fetchers)) {
+    throw new Error(`Invalid deal type: ${type}`);
+  }
+
+  return fetchers[type](userId, departmentId);
 };

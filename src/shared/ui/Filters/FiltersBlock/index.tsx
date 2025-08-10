@@ -6,7 +6,7 @@ import { DateRange } from "react-day-picker";
 
 import { useParams, usePathname } from "next/navigation";
 
-import { LABELS } from "@/entities/deal/lib/constants";
+import { FormatedParamsType, FormatedParamsTypeKey, LABELS } from "@/entities/deal/lib/constants";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
 
@@ -17,24 +17,31 @@ import FilterByUser from "../FilterByUsers";
 import FilterPopoverGroup from "../FilterPopoverGroup";
 
 type FiltersBlockProps = {
-  value?: DateRange;
+  isShow: boolean
   table: Table<Record<string, unknown>>;
-  type: DealType;
 };
 
-const FiltersBlock = ({ value, table, type }: FiltersBlockProps) => {
+const FiltersBlock = ({ table, isShow }: FiltersBlockProps) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
   const { dealType } = useParams();
 
-  const { setColumnFilters, handleDateChange, handleClearDateFilter } =
+  const { handleDateChange, handleClearDateFilter } =
     useDataTableFiltersContext();
+  
+  if(!isShow) return null;
+
+  const { columnFilters } = table.getState();
+
+  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
+    | DateRange
+    | undefined;
 
   const hasTable = pathname.includes(
     `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
   );
 
-  const safeType = type as Exclude<DealType, "ORDER">;
+  const safeType = FormatedParamsType[dealType as FormatedParamsTypeKey ] as Exclude<DealType, "ORDER">;
 
   return (
     <MotionDivY className="min-h-0">
@@ -70,8 +77,6 @@ const FiltersBlock = ({ value, table, type }: FiltersBlockProps) => {
                 options: LABELS[safeType].DELIVERY,
               },
             ]}
-            columnFilters={table.getState().columnFilters}
-            setColumnFilters={setColumnFilters}
           />
 
           <SelectColumns data={table as Table<Record<string, unknown>>} />

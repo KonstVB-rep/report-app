@@ -433,7 +433,7 @@ export const getAllProjectsByDepartment = async (
 };
 
 export const getAllRetailsByDepartment = async (
-  departmentId?: string | undefined
+  departmentId: string
 ): Promise<RetailResponse[]> => {
   try {
     const { user } = await handleAuthorization();

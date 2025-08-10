@@ -12,7 +12,7 @@ import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 import UserCard from "@/shared/ui/UserCard";
 
-import ProfileDealsData from "./ProfileDealsData";
+import ProfileDealsData from "./ui/ProfileDealsData";
 
 const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
   ssr: false,
@@ -30,7 +30,7 @@ const AccessDeniedMessage = dynamic(
 
 const Loading = dynamic(() => import("./loading"), { ssr: false });
 
-const NotFoundUser = dynamic(() => import("./NotFoundUser"), { ssr: false });
+const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false });
 
 const ProfilePage = () => {
   const { userId } = useParams();

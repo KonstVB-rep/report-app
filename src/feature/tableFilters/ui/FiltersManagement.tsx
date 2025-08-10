@@ -17,13 +17,16 @@ const FiltersManagementContent = dynamic(
 
 type FilterManagmentProps = {
   openFilters: boolean;
+  isShow:boolean
 };
 
-const FiltersManagement = ({ openFilters }: FilterManagmentProps) => {
+const FiltersManagement = ({ openFilters, isShow }: FilterManagmentProps) => {
   const { setOpenFilters, columnFilters } = useDataTableFiltersContext();
 
+  if(!isShow) return null;
+
   return (
-    <>
+    <div className="flex flex-1 items-center justify-between gap-2">
       <div className="flex items-center gap-2">
         <Button
           variant={"ghost"}
@@ -42,7 +45,7 @@ const FiltersManagement = ({ openFilters }: FilterManagmentProps) => {
         )}
       </div>
       {<FiltersManagementContent />}
-    </>
+    </div>
   );
 };
 
