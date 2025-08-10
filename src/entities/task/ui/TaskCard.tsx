@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import {
   TASK_PRIORITY_COLOR_BORDER,
 } from "../model/constants";
 import { TaskWithUserInfo } from "../types";
+import { cleanDistance } from "../lib/helpers";
 
 const EditTaskDialogButton = dynamic(
   () => import("./Modals/EditTaskDialogButton")
@@ -27,15 +28,6 @@ const DelTaskDialogButton = dynamic(
   () => import("./Modals/DelTaskDialogButton")
 );
 
-const cleanDistance = (date: Date) => {
-  const raw = formatDistanceToNow(date, {
-    addSuffix: true,
-    locale: ru,
-  });
-
-  // Убираем "приблизительно" и "около"
-  return raw.replace(/(приблизительно |около )/gi, "");
-};
 
 type TaskCardProps = {
   task: TaskWithUserInfo;

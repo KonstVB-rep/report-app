@@ -31,7 +31,7 @@ export const ProjectFormSchema = z
     id: z.string().optional(),
     dateRequest: z.preprocess((val) => {
       if (val instanceof Date) return val.toISOString();
-      if (!val) return ""; // или return null/undefined если нужно другое поведение
+      if (!val) return ""; 
       return val;
     }, z.string()),
     nameDeal: z.string({
@@ -119,17 +119,17 @@ export const RetailFormSchema = z
     id: z.string().optional(),
     dateRequest: z.preprocess((val) => {
       if (val instanceof Date) return val.toISOString();
-      if (!val) return ""; // или return null/undefined если нужно другое поведение
+      if (!val) return "";
       return val;
     }, z.string()),
     nameDeal: z
       .string({
-        error: "Название сделки должно быть строкой", // Если не string
+        error: "Название сделки должно быть строкой",
       })
       .min(1, "Название объекта не может быть пустым"),
     nameObject: z
       .string({
-        error: "Название объекта должно быть строкой", // Если не string
+        error: "Название объекта должно быть строкой",
       })
       .min(1, "Название объекта не может быть пустым"),
     direction: z.enum(

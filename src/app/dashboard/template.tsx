@@ -74,7 +74,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
   if (!authUser) {
     return (
       <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
-        <p className="text-3xl opacity-30">Выход...</p>
+        <p className="text-2xl sm:text-4xl opacity-30">Идет завершение сессии...</p>
       </div>
     );
   }

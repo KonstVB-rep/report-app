@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ExternalLink } from "lucide-react";
 
@@ -21,6 +21,7 @@ import {
   TASK_PRIORITY_COLOR_BORDER,
 } from "../model/constants";
 import { TaskWithUserInfo } from "../types";
+import { cleanDistance } from "../lib/helpers";
 
 const EditTaskDialogButton = dynamic(
   () => import("./Modals/EditTaskDialogButton")
@@ -30,15 +31,6 @@ const DelTaskDialogButton = dynamic(
   () => import("./Modals/DelTaskDialogButton")
 );
 
-const cleanDistance = (date: Date) => {
-  const raw = formatDistanceToNow(date, {
-    addSuffix: true,
-    locale: ru,
-  });
-
-  // Убираем "приблизительно" и "около"
-  return raw.replace(/(приблизительно |около )/gi, "");
-};
 
 type TaskKanbanCardProps = {
   task: TaskWithUserInfo;
@@ -88,7 +80,6 @@ const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
         {task.description}
       </CardDescription>
       <CardContent className="flex gap-2 px-3 py-0">
-        {/* <Badge>{LABEL_TASK_STATUS[task.taskStatus]}</Badge> */}
         <Badge variant="outline">
           {LABEL_TASK_PRIORITY[task.taskPriority]}
         </Badge>

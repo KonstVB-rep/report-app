@@ -36,7 +36,7 @@ export const getContractsUserQuery = async (userId: string) => {
 };
 
 export const getAllProjectsByDepartmentQuery = async (
-  departmentId?: string | undefined
+  departmentId: string
 ) => {
   try {
     return await getAllProjectsByDepartment(departmentId);
@@ -47,7 +47,7 @@ export const getAllProjectsByDepartmentQuery = async (
 };
 
 export const getAllRetailsByDepartmentQuery = async (
-  departmentId?: string | undefined
+  departmentId: string
 ) => {
   try {
     return await getAllRetailsByDepartment(departmentId);

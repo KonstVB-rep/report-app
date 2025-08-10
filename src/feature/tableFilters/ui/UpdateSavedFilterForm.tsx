@@ -35,6 +35,7 @@ const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
   const handleChange = () => {
     setIsUpdateParams(!isUpdateParams);
   };
+  
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!filter?.userId) {
