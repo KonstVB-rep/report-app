@@ -3,38 +3,45 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { animated, useSpring } from "@react-spring/web";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import Image from "next/image";
 
-import { z } from "zod";
+import { treeifyError } from "zod";
 
 import loginImg from "@/assets/login-img";
 import { Card, CardContent } from "@/components/ui/card";
+import { Form } from "@/components/ui/form";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { login } from "@/feature/auth/login";
+import { cn } from "@/shared/lib/utils";
 import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
 import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
 import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
 import { TOAST } from "@/shared/ui/Toast";
 
-import { Form } from "../../../components/ui/form";
+import { loginFormSchema, LoginSchema } from "../model/schema";
 
-export const loginFormSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6).max(30),
-});
+type ErrorState = {
+  email: string;
+  password: string;
+};
+
+const initialErrorState = {
+  email: "",
+  password: "",
+};
 
 const LoginForm = ({ className }: React.ComponentProps<"div">) => {
-  const form = useForm<z.infer<typeof loginFormSchema>>({
+  const form = useForm<LoginSchema>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
-
+  const [errors, setErrors] = useState<ErrorState>(() => initialErrorState);
   const [state, formAction] = useActionState(login, undefined);
   const { setAuthUser, setIsAuth } = useStoreUser();
 
@@ -42,16 +49,26 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
     opacity: 1,
     transform: "translateY(0px)",
     from: { opacity: 0, transform: "translateY(20px)" },
-    config: { duration: 350, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Эквивалент "easeOut"
+    config: { duration: 350, easing: (t) => 1 - Math.pow(1 - t, 3) },
   });
 
   const onSubmit = (formData: FormData) => {
     const parsed = loginFormSchema.safeParse(Object.fromEntries(formData));
-    if (!parsed.success) return;
+    if (!parsed.success) {
+      const flattenedErrors = treeifyError(parsed.error);
+      setErrors({
+        email: flattenedErrors.properties?.email?.errors[0] || "",
+        password: flattenedErrors.properties?.password?.errors[0] || "",
+      });
+      return;
+    }
+    setErrors(initialErrorState);
     formAction(formData);
   };
 
   useEffect(() => {
+    if (!state) return;
+
     if (state?.error) {
       TOAST.ERROR(state.message);
     }
@@ -80,10 +97,10 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
                   name="email"
                   label="Email"
                   control={form.control}
-                  errorMessage={form.formState.errors.email?.message}
+                  errorMessage={errors.email}
                   type="email"
                   placeholder="Введите email"
-                  className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
+                  className={cn("w-full", errors.email && "border-red-500")}
                   required
                 />
 
@@ -91,8 +108,8 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
                   name="password"
                   label="Пароль"
                   control={form.control}
-                  errorMessage={form.formState.errors.password?.message}
-                  className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
+                  errorMessage={errors.password}
+                  className={cn("w-full", errors.password && "border-red-500")}
                   autoComplete="current-password"
                   required
                 />
