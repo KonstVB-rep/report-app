@@ -1,5 +1,3 @@
-import { ColumnFiltersState } from "@tanstack/react-table";
-
 import React from "react";
 
 import FilterPopover from "../FilterPopover";
@@ -12,10 +10,6 @@ export type OptionGroup = {
 
 type FilterPopoverGroupProps = {
   options: OptionGroup[];
-  columnFilters: ColumnFiltersState;
-  setColumnFilters: (
-    callback: (prev: ColumnFiltersState) => ColumnFiltersState
-  ) => void;
 };
 
 const FilterPopoverGroup = React.memo(

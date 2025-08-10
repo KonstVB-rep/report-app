@@ -1,4 +1,4 @@
-import { StatusContract } from "@prisma/client";
+import { DealType, StatusContract } from "@prisma/client";
 
 export enum DirectionProject {
   PARKING = "Парковка",
@@ -34,12 +34,6 @@ export enum DeliveryRetail {
   SUPPLY = "Поставка оборудования",
   EXPENDABLE_MATERIALS = "Расходные материалы",
   WORK = "Работы",
-}
-
-export enum DealType {
-  PROJECT = "Проект",
-  RETAIL = "Розница",
-  ORDER = "Заявки",
 }
 
 export enum StatusProject {
@@ -157,18 +151,6 @@ export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   CLOSED: "Закрыт",
 } as const;
 
-export const LABELS = {
-  RETAIL: {
-    DIRECTION: DirectionRetailLabels,
-    DELIVERY: DeliveryRetailLabels,
-    STATUS: StatusRetailLabels,
-  },
-  PROJECT: {
-    DIRECTION: DirectionProjectLabels,
-    DELIVERY: DeliveryProjectLabels,
-    STATUS: StatusProjectLabels,
-  },
-} as const;
 
 export type AllStatusKeys =
   | keyof typeof StatusProject
@@ -210,3 +192,30 @@ export const StatusContractLabels: StatusContractLabelsType = {
   SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
 } as const;
+
+export const LABELS = {
+  RETAIL: {
+    DIRECTION: DirectionRetailLabels,
+    DELIVERY: DeliveryRetailLabels,
+    STATUS: StatusRetailLabels,
+  },
+  PROJECT: {
+    DIRECTION: DirectionProjectLabels,
+    DELIVERY: DeliveryProjectLabels,
+    STATUS: StatusProjectLabels,
+  },
+  CONTRACT: {
+    DIRECTION: DirectionProjectLabels,
+    DELIVERY: DeliveryProjectLabels,
+    STATUS: StatusesContract,
+  },
+} as const;
+
+export const FormatedParamsType = {
+  'projects' : DealType.PROJECT,
+  'retails' : DealType.RETAIL,
+  'orders' : DealType.ORDER,
+  'contracts': 'CONTRACT'
+}
+
+export type FormatedParamsTypeKey = keyof typeof FormatedParamsType;

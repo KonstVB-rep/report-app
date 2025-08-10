@@ -1,12 +1,5 @@
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { TaskStatus } from "@prisma/client";
-
-import { useCallback, useEffect, useState } from "react";
 
 import dynamic from "next/dynamic";
 
@@ -15,7 +8,7 @@ import { CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
-import { useUpdateTasksOrder } from "../hooks/mutate";
+import useDragEnd from "../hooks/useDragEnd";
 import { TaskWithUserInfo } from "../types";
 import TaskKanbanCard from "./TaskKanbanCard";
 
@@ -48,76 +41,8 @@ export const StatusesTask = [
   },
 ] as const;
 
-const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
-
 const Kanban = ({ data }: KanbanProps) => {
-  const { mutate, isPending } = useUpdateTasksOrder();
-
-  const [tasks, setTasks] = useState<TaskWithUserInfo[]>([]);
-
-  useEffect(() => {
-    setTasks(data);
-  }, [data]);
-
-  const onDragEnd = useCallback(
-    (result: DropResult) => {
-      const { destination, source } = result;
-      if (!destination) return;
-
-      if (
-        destination.droppableId === source.droppableId &&
-        destination.index === source.index
-      )
-        return;
-
-      const currentTasks = [...tasks];
-
-      const sourceTasks = currentTasks.filter(
-        (task) => task.taskStatus === source.droppableId
-      );
-      const destinationTasks = currentTasks.filter(
-        (task) => task.taskStatus === destination.droppableId
-      );
-
-      if (source.droppableId === destination.droppableId) {
-        // Перемещение внутри одного столбца
-        const reordered = reorder(sourceTasks, source.index, destination.index);
-        reordered.forEach((task, i) => (task.orderTask = i));
-
-        const updated = currentTasks.map((task) =>
-          task.taskStatus === source.droppableId
-            ? (reordered.find((t) => t.id === task.id) ?? task)
-            : task
-        );
-
-        setTasks(updated);
-        mutate({ updatedTasks: updated });
-      } else {
-        // Перемещение между разными столбцами
-        const [movedCard] = sourceTasks.splice(source.index, 1);
-        movedCard.taskStatus = destination.droppableId as TaskStatus;
-        destinationTasks.splice(destination.index, 0, movedCard);
-
-        sourceTasks.forEach((task, i) => (task.orderTask = i));
-        destinationTasks.forEach((task, i) => (task.orderTask = i));
-
-        const updated = currentTasks.map((task) => {
-          const inSource = sourceTasks.find((t) => t.id === task.id);
-          const inDest = destinationTasks.find((t) => t.id === task.id);
-          return inSource ?? inDest ?? task;
-        });
-
-        setTasks(updated);
-        mutate({ updatedTasks: updated });
-      }
-    },
-    [tasks, mutate]
-  );
+  const { onDragEnd, tasks, isPending } = useDragEnd(data);
 
   return (
     <div className="relative grid gap-2">

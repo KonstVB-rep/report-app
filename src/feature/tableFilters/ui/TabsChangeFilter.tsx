@@ -10,15 +10,7 @@ const TabsChangeFilter = ({ filterId }: { filterId: string }) => {
   const { data: filter, isPending } = useGetUserFilterById(filterId);
 
   if (isPending) {
-    return (
-      <div className="grid w-full min-w-[300px] gap-2 md:min-w-[400px]">
-        <div className="grid w-full grid-cols-2 gap-2 rounded-xl bg-background p-4">
-          <div className="h-10 animate-pulse rounded-xl bg-muted/50" />
-          <div className="h-10 animate-pulse rounded-xl bg-muted/50" />
-        </div>
-        <div className="h-52 w-full animate-pulse rounded-xl bg-muted/50" />
-      </div>
-    );
+    return <FilterSleketonLoader />;
   }
 
   if (!filter) {
@@ -48,3 +40,15 @@ const TabsChangeFilter = ({ filterId }: { filterId: string }) => {
 };
 
 export default TabsChangeFilter;
+
+const FilterSleketonLoader = () => {
+  return (
+    <div className="grid w-full min-w-[300px] gap-2 md:min-w-[400px]">
+      <div className="grid w-full grid-cols-2 gap-2 rounded-xl bg-background p-4">
+        <div className="h-10 animate-pulse rounded-xl bg-muted/50" />
+        <div className="h-10 animate-pulse rounded-xl bg-muted/50" />
+      </div>
+      <div className="h-52 w-full animate-pulse rounded-xl bg-muted/50" />
+    </div>
+  );
+};

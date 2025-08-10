@@ -18,7 +18,7 @@ export const getRowClassName = (dealStatus?: string) => {
 
   return `${baseClass} ${
     dealStatus === "CLOSED"
-      ? "bg-green-950/80"
+      ? "bg-green-950/30 opacity-60"
       : dealStatus === "REJECT"
         ? "bg-red-900/40 opacity-60"
         : dealStatus === "PAID"

@@ -17,6 +17,13 @@ import Loading from "./loading";
 
 const DealsInWork = ["projects", "retails", "contracts"];
 
+const PersonTable = dynamic(
+  () => import('../ui/PersonTable'),
+  { 
+    loading: () => <Loading />,
+  }
+);
+
 const fetchData = async (
   queryClient: QueryClient,
   dealType: string,
@@ -60,30 +67,10 @@ const PersonTablePage = async ({
     throw new Error((error as Error).message);
   }
 
-  let Component;
-  switch (dealType) {
-    case "projects":
-      Component = dynamic(() => import("../ui/PersonTableProjects"), {
-        loading: () => <Loading />,
-      });
-      break;
-    case "retails":
-      Component = dynamic(() => import("../ui/PersonTableRetails"), {
-        loading: () => <Loading />,
-      });
-      break;
-    case "contracts":
-      Component = dynamic(() => import("../ui/PersonTableContracts"), {
-        loading: () => <Loading />,
-      });
-      break;
-    default:
-      return null;
-  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Component userId={userId} />
+      <PersonTable />
     </HydrationBoundary>
   );
 };
