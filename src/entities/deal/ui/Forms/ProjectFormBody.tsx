@@ -35,12 +35,14 @@ import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
+  StatusesContract,
   StatusProjectLabels,
 } from "../../lib/constants";
 import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
 import ContactDeal from "../Modals/ContactDeal";
 import { Contact } from "../../types";
+import { useParams } from "next/navigation";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -53,7 +55,13 @@ type ProjectFormBodyProps<T extends FieldValues> = {
 
 const directionOptions = transformObjValueToArr(DirectionProjectLabels);
 const deliveryOptions = transformObjValueToArr(DeliveryProjectLabels);
-const statusOptions = transformObjValueToArr(StatusProjectLabels);
+const statusOptionsProject = transformObjValueToArr(StatusProjectLabels);
+const statusOptionsContracts = transformObjValueToArr(StatusesContract);
+
+const statusOptions = {
+  "projects": statusOptionsProject,
+  "contracts":statusOptionsContracts
+}
 
 const ProjectFormBody = <T extends FieldValues>({
   form,
@@ -63,6 +71,11 @@ const ProjectFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: ProjectFormBodyProps<T>) => {
+
+ const { dealType } = useParams<{
+  dealType: "projects" | "contracts"; 
+}>();
+
   const {
     contacts,
     setContacts,
@@ -251,7 +264,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Статус КП"
                   control={form.control}
                   errorMessage={getError("dealStatus")}
-                  options={statusOptions}
+                  options={statusOptions[dealType]}
                   placeholder="Выберите статус КП"
                 />
 
