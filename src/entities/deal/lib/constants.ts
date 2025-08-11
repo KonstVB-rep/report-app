@@ -48,7 +48,7 @@ export enum StatusProject {
   // PROGRESS = "Проект в работе / Закупка / Производство",
   // DELIVERY_WORKS = "Поставка / Выполнение работ",
   // SIGN_ACTS_PAYMENT = "Подписание актов / Оплата",
-  // CLOSED = "Закрыт",
+  CLOSED = "Закрыт",
 }
 
 export enum StatusRetail {
@@ -131,7 +131,7 @@ export const StatusProjectLabels: StatusProjectLabelsType = {
   // PROGRESS: "Проект в работе / Закупка / Производство",
   // DELIVERY_WORKS: "Поставка / Выполнение работ",
   // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
-  // CLOSED: "Закрыт",
+  CLOSED: "Закрыт",
 } as const;
 
 export const DealTypeLabels: Record<keyof typeof DealType, string> = {
