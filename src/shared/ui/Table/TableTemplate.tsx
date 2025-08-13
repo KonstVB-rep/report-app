@@ -49,7 +49,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
     count: rows.length,
     estimateSize: () => ROW_HEIGHT,
     getScrollElement: () => tableContainerRef.current,
-    overscan: 15,
+    overscan: 10,
   });
 
   const virtualItems = rowVirtualizer.getVirtualItems();

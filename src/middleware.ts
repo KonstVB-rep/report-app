@@ -16,51 +16,6 @@ export async function verifyToken(token: string) {
   }
 }
 
-export async function refreshAccessToken(
-  refreshToken: string,
-  request: NextRequest
-) {
-  try {
-    const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ refreshToken: refreshToken }),
-    });
-
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-    const { accessToken, refreshToken: newRefreshToken } = await res.json();
-
-    const response = NextResponse.next();
-
-    response.cookies.set("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "strict",
-      maxAge: 60 * 1,
-      path: "/",
-    });
-
-    if (newRefreshToken) {
-      response.cookies.set("refreshToken", newRefreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
-        maxAge: 60 * 5,
-        path: "/",
-      });
-    }
-
-    return response;
-  } catch (error) {
-    console.error("Refresh token error:", error);
-    return redirectToLogin(request);
-  }
-}
-
 async function redirectToLogin(request: NextRequest) {
   const loginUrl = new URL("/login", request.url);
 
@@ -83,7 +38,7 @@ export default async function middleware(request: NextRequest) {
       try {
         await jwtVerify(accessToken, secretKey);
 
-        return NextResponse.redirect(new URL("/dashboard", request.url)); // Редирект на /dashboard
+        return NextResponse.redirect(new URL("/dashboard", request.url)); 
       } catch (err) {
         console.log(err, "middleware error");
         return NextResponse.next();
