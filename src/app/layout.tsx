@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppProvider>
-          <div className="max-w-[1980px] m-auto overflow-hidden">
+          <div className="max-w-[1980px] m-auto overflow-hidden h-screen">
           {children}
           </div>
         </AppProvider>
