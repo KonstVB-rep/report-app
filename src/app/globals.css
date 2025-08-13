@@ -184,6 +184,14 @@ body {
   filter: brightness(0.2);
 }
 
+.not-found-page {
+  background: url('../../public/404-light.jpg') no-repeat center center fixed;
+}
+
+.dark .not-found-page {
+  background: url('../../public/404-dark.jpg') no-repeat center center fixed;
+}
+
 .btn_hover {
   @apply flex items-center gap-2 rounded-md border border-solid bg-background p-2 py-2 text-sidebar-accent-foreground hover:border-muted-foreground hover:bg-sidebar-accent focus-visible:border-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
 }

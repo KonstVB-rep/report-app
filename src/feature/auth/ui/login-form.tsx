@@ -6,11 +6,9 @@ import { animated, useSpring } from "@react-spring/web";
 import { useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import Image from "next/image";
 
 import { treeifyError } from "zod";
 
-import loginImg from "@/assets/login-img";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import useStoreUser from "@/entities/user/store/useStoreUser";
@@ -82,7 +80,7 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
   return (
     <animated.div style={styles} className={`flex flex-col gap-6 ${className}`}>
       <Card className="overflow-hidden">
-        <CardContent className="grid p-0 md:grid-cols-2">
+        <CardContent className="grid p-0">
           <Form {...form}>
             <form className="p-6 md:p-8" action={onSubmit}>
               <div className="flex flex-col gap-6">
@@ -118,17 +116,6 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
               </div>
             </form>
           </Form>
-          <div className="relative hidden bg-muted md:block">
-            <Image
-              src={loginImg}
-              alt="Login"
-              placeholder="blur"
-              priority
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="absolute inset-0 h-full w-full dark:brightness-[0.2] dark:grayscale"
-            />
-          </div>
         </CardContent>
       </Card>
     </animated.div>
