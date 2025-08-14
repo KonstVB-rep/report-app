@@ -14,11 +14,9 @@ import { useMutation } from "@tanstack/react-query";
 import { Dispatch, SetStateAction } from "react";
 import { DeepPartial } from "react-hook-form";
 
-import { logout } from "@/feature/auth/logout";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-import { TOAST } from "@/shared/ui/Toast";
 
 import {
   createProject,
@@ -42,6 +40,7 @@ import {
   RetailWithoutDateCreateAndUpdate,
   RetailWithoutId,
 } from "../types";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
@@ -77,19 +76,7 @@ export const useDelDeal = (
       closeModalFn();
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-      console.error("Mutation error:", err);
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error)
     },
   });
 };
@@ -144,18 +131,7 @@ export const useMutationUpdateProject = (
       >(updateProject, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
-
-      TOAST.ERROR(errorMessage);
+    handleErrorSession(error)
     },
     onSuccess: (_, variables) => {
       close();
@@ -234,19 +210,7 @@ export const useMutationUpdateRetail = (
     },
 
     onError: (error) => {
-      const err = error as Error & { status?: number };
-      console.error("Mutation error:", err);
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error)
     },
     onSuccess: (_, variables) => {
       close();
@@ -344,19 +308,7 @@ export const useCreateProject = (
     },
 
     onError: (error) => {
-      const err = error as Error & { status?: number };
-      console.error("Mutation error:", err);
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error)
     },
   });
 };
@@ -405,19 +357,7 @@ export const useCreateRetail = (
       >(createRetail, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-      console.error("Mutation error:", err);
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch" ? "Ошибка соединения" : err.message;
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error)
     },
     onSuccess: (data) => {
       if (data) {

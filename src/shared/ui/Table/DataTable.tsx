@@ -3,14 +3,12 @@
 import { ColumnDef, Table } from "@tanstack/react-table";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 
 import { Loader } from "lucide-react";
 
-import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-import { DataTableFiltersProvider } from "@/feature/tableFilters/context/DataTableFiltersProvider";
-import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
 import { useTableState } from "@/shared/hooks/useTableState";
+import { DataTableFiltersProvider } from "@/shared/ui/Table/tableFilters/context/DataTableFiltersProvider";
+import FiltersManagement from "@/shared/ui/Table/tableFilters/ui/FiltersManagement";
 
 import ButtonExportTableXls from "../Buttons/ButtonExportTableXls";
 import DebouncedInput from "../DebouncedInput";
@@ -30,14 +28,15 @@ interface DataTableProps<T extends DealBase> {
   columns: ColumnDef<T>[];
   data: T[];
   hasEditDeleteActions?: boolean;
+  children?: React.ReactNode;
 }
 
 const DataTable = <T extends DealBase>({
   columns,
   data,
   hasEditDeleteActions = true,
+  children,
 }: DataTableProps<T>) => {
-  const { dealType } = useParams();
 
   const { table, filtersContextValue, openFilters, setGlobalFilter } =
     useTableState(data, columns);
@@ -72,7 +71,7 @@ const DataTable = <T extends DealBase>({
             isShow={originalData.length > 0}
           />
 
-          <AddNewDeal type={dealType as string} />
+         {children}
         </div>
         <div
           className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}

@@ -1,41 +1,67 @@
 "use client";
 
-import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table";
 
-import {  useRef } from "react";
+import { useCallback, useRef } from "react";
 import { DateRange } from "react-day-picker";
 
-import { DataTableFiltersProvider } from "@/feature/tableFilters/context/DataTableFiltersProvider";
-import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
 import { useTableState } from "@/shared/hooks/useTableState";
 import DateRangeFilter from "@/shared/ui/DateRangeFilter";
 import FilterByUsers from "@/shared/ui/Filters/FilterByUsers";
 import FilterPopoverGroup from "@/shared/ui/Filters/FilterPopoverGroup";
+import { DataTableFiltersProvider } from "@/shared/ui/Table/tableFilters/context/DataTableFiltersProvider";
+import { useDataTableFiltersContext } from "@/shared/ui/Table/tableFilters/context/useDataTableFiltersContext";
 import TableTemplate from "@/shared/ui/Table/TableTemplate";
 
 import { columnsDataTask } from "../model/column-data-tasks";
 import { LABEL_TASK_STATUS } from "../model/constants";
 import { TaskWithUserInfo } from "../types";
+import { TableContextType, TableProvider } from "@/shared/ui/Table/context/TableContext";
+import DelTaskDialogContextMenu from "./Modals/DelTaskDialogContextMenu";
+import EditTaskDialogContextMenu from "./Modals/EditTaskDialogContextMenu";
 
 interface TaskTableProps<TData> {
   data: TData[];
 }
 
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
-
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
+
+    const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =
+    useCallback(
+      (
+        setOpenModal: React.Dispatch<
+          React.SetStateAction<"delete" | "edit" | null>
+        >,
+        row: Row<T>
+      ) => ({
+         edit: (
+            <EditTaskDialogContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+            />
+          ),
+          delete: (
+            <DelTaskDialogContextMenu
+              close={() => setOpenModal(null)}
+              id={row.original.id as string}
+            />
+          ),
+      }),
+      [] // Зависимости, если нужны
+    );
 
   const { table, filtersContextValue } = useTableState(
     data,
     columnsDataTask as ColumnDef<T>[]
   );
 
-   const { rows } = table.getRowModel();
+  const { rows } = table.getRowModel();
 
   const { columnFilters } = table.getState();
 
-  if(rows.length === 0) {
-    return null
+  if (rows.length === 0) {
+    return null;
   }
   return (
     <DataTableFiltersProvider value={filtersContextValue}>
@@ -56,13 +82,14 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
             maxHeight: "78vh",
           }}
         >
+          <TableProvider<T> getContextMenuActions={getContextMenuActions}>
           <TableTemplate
             table={table}
             tableContainerRef={tableContainerRef}
             className="rounded-ee-md"
             entityType="task"
-
           />
+          </TableProvider>
         </div>
       </div>
     </DataTableFiltersProvider>

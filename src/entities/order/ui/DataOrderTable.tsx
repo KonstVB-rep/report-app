@@ -8,19 +8,17 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-import { DataTableFiltersProvider } from "@/feature/tableFilters/context/DataTableFiltersProvider";
-import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
-import FiltersManagement from "@/feature/tableFilters/ui/FiltersManagement";
 import { useTableState } from "@/shared/hooks/useTableState";
-;
+import ButtonExportTableXls from "@/shared/ui/Buttons/ButtonExportTableXls";
 import { DealBase } from "@/shared/ui/Table/model/types";
-
+import { DataTableFiltersProvider } from "@/shared/ui/Table/tableFilters/context/DataTableFiltersProvider";
+import { useDataTableFiltersContext } from "@/shared/ui/Table/tableFilters/context/useDataTableFiltersContext";
+import FiltersManagement from "@/shared/ui/Table/tableFilters/ui/FiltersManagement";
 
 import { STATUS_ORDER } from "../lib/constants";
 import LoadFilterItem from "./LoadFilterItem";
 import OrdersTableBody from "./OrdersTableBody";
 import { DealTypeLabels } from "./OrdersTemplateTable";
-import ButtonExportTableXls from "@/shared/ui/Buttons/ButtonExportTableXls";
 
 const FilterByUsers = dynamic(
   () => import("@/shared/ui/Filters/FilterByUsers"),
@@ -50,7 +48,6 @@ interface DataTableProps<T extends DealBase> {
   type: keyof typeof DealTypeLabels;
 }
 
-
 const DataOrderTable = <T extends DealBase>({
   columns,
   data,
@@ -78,10 +75,16 @@ const DataOrderTable = <T extends DealBase>({
     <DataTableFiltersProvider value={filtersContextValue}>
       <div className="relative grid w-full overflow-auto rounded-lg border bg-background p-2 auto-rows-max">
         <div className="flex items-center justify-between gap-2 pb-2">
+          <ButtonExportTableXls
+            isShow={currentData.length > 0}
+            table={table}
+            columns={columns}
+          />
 
-           <ButtonExportTableXls isShow={currentData.length > 0} table={table} columns={columns} />
-
-          <FiltersManagement openFilters={openFilters} isShow={originalData.length > 0}/>
+          <FiltersManagement
+            openFilters={openFilters}
+            isShow={originalData.length > 0}
+          />
 
           <AddNewDeal type={dealType as string} />
         </div>

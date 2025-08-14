@@ -1,4 +1,4 @@
-import { Table } from "@tanstack/react-table";
+import {Table } from "@tanstack/react-table";
 
 import { useRef } from "react";
 
@@ -42,7 +42,7 @@ const TableComponent = <T extends DealBase>({
         overflow: "auto",
         position: "relative",
         // height: "100%",
-        height: openFilters ? "69vh" : "78vh",
+        maxHeight: openFilters ? "69vh" : "78vh",
       }}
     >
       {table.getRowModel().rows.length > 0 && (

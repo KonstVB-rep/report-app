@@ -273,7 +273,6 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Планируемый контакт"
                   control={form.control}
                   errorMessage={getError("plannedDateConnection")}
-                  required
                 />
 
                 <InputTextForm
@@ -282,7 +281,6 @@ const ProjectFormBody = <T extends FieldValues>({
                   control={form.control}
                   errorMessage={getError("resource")}
                   placeholder="Откуда пришёл клиент"
-                  required
                 />
 
                 <FormField

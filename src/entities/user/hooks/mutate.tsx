@@ -6,7 +6,6 @@ import { getQueryClient } from "@/app/provider/query-provider";
 import { DepartmentInfo } from "@/entities/department/types";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { createUser, deleteUser, ResponseDelUser, updateUser } from "../api";
 import { userEditSchema, userSchema } from "../model/schema";
@@ -17,6 +16,7 @@ import {
   UserRequest,
   UserResponse,
 } from "../types";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 const queryClient = getQueryClient();
 
@@ -47,7 +47,7 @@ export const useCreateUser = () => {
       });
     },
     onError: (error) => {
-      TOAST.ERROR(error.message);
+      handleErrorSession(error)
     },
   });
 };
@@ -98,7 +98,7 @@ export const useDeleteUser = (userId: string) => {
         ["depsWithUsers"],
         context?.previousDepsWithUsers
       );
-      TOAST.ERROR(error.message);
+      handleErrorSession(error)
     },
   });
 };
@@ -130,6 +130,9 @@ export const useUpdateUser = (
         queryKey: ["depsWithUsers"],
         exact: true,
       });
+    },
+    onError: (error) => {
+      handleErrorSession(error)
     },
   });
 };

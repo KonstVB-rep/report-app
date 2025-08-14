@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { logout } from "@/feature/auth/logout";
+import { logout } from "@/shared/auth/logout";
 import { toggleSubscribeChatBot } from "@/feature/calendar/api/calendar-bot/api";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";

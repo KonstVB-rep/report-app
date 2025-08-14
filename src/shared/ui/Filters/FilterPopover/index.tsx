@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
+import { useDataTableFiltersContext } from "@/shared/ui/Table/tableFilters/context/useDataTableFiltersContext";
 
 type Props = {
   columnId: string;

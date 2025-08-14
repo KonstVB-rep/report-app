@@ -1,4 +1,4 @@
-import { logout } from "@/feature/auth/logout";
+import { logout } from "@/shared/auth/logout";
 import axiosInstance from "@/shared/api/axiosInstance";
 
 import { AuthError } from "./customErrors";

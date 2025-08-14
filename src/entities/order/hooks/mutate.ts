@@ -7,7 +7,6 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
-import { logout } from "@/feature/auth/logout";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
@@ -22,6 +21,7 @@ import {
   OrderResponse,
   UpdateOrderData,
 } from "./../types";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 export const useCreateOrder = (
   reset: (values?: DeepPartial<OrderSchema>) => void
@@ -58,20 +58,7 @@ export const useCreateOrder = (
       >(createOrder, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при создании заявки";
-
-      TOAST.ERROR(errorMessage);
+    handleErrorSession(error)
     },
     onSuccess: (data) => {
       if (data) {
@@ -126,20 +113,7 @@ export const useDelOrder = (closeModalFn: Dispatch<SetStateAction<void>>) => {
       closeModalFn();
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при удалении заявки";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error)
     },
   });
 };
@@ -181,20 +155,7 @@ export const useUpdateOrder = (closeModalFn: () => void) => {
       }
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при обновлении заявки";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error)
     },
   });
 };

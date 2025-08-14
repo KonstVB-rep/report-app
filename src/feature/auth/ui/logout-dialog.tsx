@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { logout } from "@/feature/auth/logout";
+import { logout } from "@/shared/auth/logout";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
 import Overlay from "@/shared/ui/Overlay";
 

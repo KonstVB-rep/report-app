@@ -30,7 +30,7 @@ export const DealTypeLabels: Record<string, string> = {
   orders: "Заявки",
 };
 
-const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
+const DealsTable = dynamic(() => import("@/feature/deals/DealsTable"), {
   ssr: false,
   loading: () => <TableRowsSkeleton />,
 });
@@ -103,7 +103,7 @@ const PersonTable = () => {
           </div>
 
           {isPageAuthuser && <ButtonsGroupTable />}
-          <DataTable
+          <DealsTable
             columns={Columns(dealType as TableType) as ColumnDef<DealBase>[]}
             data={data as DealBase[]}
           />

@@ -6,9 +6,13 @@ import { DateRange } from "react-day-picker";
 
 import { useParams, usePathname } from "next/navigation";
 
-import { FormatedParamsType, FormatedParamsTypeKey, LABELS } from "@/entities/deal/lib/constants";
+import {
+  FormatedParamsType,
+  FormatedParamsTypeKey,
+  LABELS,
+} from "@/entities/deal/lib/constants";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { useDataTableFiltersContext } from "@/feature/tableFilters/context/useDataTableFiltersContext";
+import { useDataTableFiltersContext } from "@/shared/ui/Table/tableFilters/context/useDataTableFiltersContext";
 
 import DateRangeFilter from "../../DateRangeFilter";
 import MotionDivY from "../../MotionComponents/MotionDivY";
@@ -17,7 +21,7 @@ import FilterByUser from "../FilterByUsers";
 import FilterPopoverGroup from "../FilterPopoverGroup";
 
 type FiltersBlockProps = {
-  isShow: boolean
+  isShow: boolean;
   table: Table<Record<string, unknown>>;
 };
 
@@ -28,8 +32,8 @@ const FiltersBlock = ({ table, isShow }: FiltersBlockProps) => {
 
   const { handleDateChange, handleClearDateFilter } =
     useDataTableFiltersContext();
-  
-  if(!isShow) return null;
+
+  if (!isShow) return null;
 
   const { columnFilters } = table.getState();
 
@@ -41,7 +45,9 @@ const FiltersBlock = ({ table, isShow }: FiltersBlockProps) => {
     `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
   );
 
-  const safeType = FormatedParamsType[dealType as FormatedParamsTypeKey ] as Exclude<DealType, "ORDER">;
+  const safeType = FormatedParamsType[
+    dealType as FormatedParamsTypeKey
+  ] as Exclude<DealType, "ORDER">;
 
   return (
     <MotionDivY className="min-h-0">

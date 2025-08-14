@@ -34,7 +34,7 @@ const Columns = (type: DealsUnionType): ColumnDef<ProjectResponse, unknown>[] | 
   }
 };
 
-const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
+const DealsTable = dynamic(() => import("@/feature/deals/DealsTable"), {
   ssr: false,
   loading: () => <TableRowsSkeleton />,
 }) as <T extends { id: string }>(props: {
@@ -94,7 +94,7 @@ const SummaryTable=() => {
           Общее количество заявок: {deals?.length}
         </p>
       </div>
-      <DataTable
+      <DealsTable
         columns={Columns(dealType as DealsUnionType) as ColumnDef<DealBase>[]}
         data={deals as DealBase[]}
         hasEditDeleteActions={false}
