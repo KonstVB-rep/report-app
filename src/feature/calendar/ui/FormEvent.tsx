@@ -4,7 +4,9 @@ import { Path } from "react-hook-form";
 
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
-import { Checkbox } from "@/components/ui/checkbox";
+import { EventCalendarSchema } from "@/feature/calendar/model/schema";
+import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";
+import { Checkbox } from "@/shared/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -12,14 +14,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { EventCalendarSchema } from "@/feature/calendar/model/schema";
-import ModalDelEvents from "@/feature/calendar/ui/ModalDelEvents";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
-import InputTimeForm from "@/shared/ui/Inputs/InputTimeForm";
-import TextareaForm from "@/shared/ui/TextareaForm";
-import { TOAST } from "@/shared/ui/Toast";
+} from "@/shared/components/ui/form";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
+import InputTimeForm from "@/shared/custom-components/ui/Inputs/InputTimeForm";
+import TextareaForm from "@/shared/custom-components/ui/TextareaForm";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { EventInputType } from "../types";
 

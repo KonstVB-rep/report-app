@@ -11,8 +11,7 @@ import { useParams } from "next/navigation";
 
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { DealBase } from "@/shared/ui/Table/model/types";
+import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
 
 import DataOrderTable from "./DataOrderTable";
 
@@ -23,25 +22,16 @@ export const DealTypeLabels: Record<string, string> = {
   orders: "Заявки",
 };
 
-// const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
-//   ssr: false,
-//   loading: () => <TableRowsSkeleton />,
-// });
-
 interface OrdersTemplateTableProps<T extends DealBase> {
   data: T[];
-  // type: DealType;
   columns: ColumnDef<T>[];
 }
 
 const OrdersTemplateTable = <T extends DealBase>({
   data,
-  // type,
   columns,
 }: OrdersTemplateTableProps<T>) => {
-  const { userId, dealType } = useParams();
-  const { authUser } = useStoreUser();
-  const isPageAuthuser = userId === authUser?.id;
+  const { dealType } = useParams();
 
   return (
     <DealTableTemplate>
@@ -55,7 +45,7 @@ const OrdersTemplateTable = <T extends DealBase>({
           </p>
         </div>
 
-        {isPageAuthuser && <ButtonsGroupTable />}
+        <ButtonsGroupTable />
         <DataOrderTable columns={columns} data={data} type={DealType.ORDER} />
       </>
     </DealTableTemplate>

@@ -4,13 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { deleteFile, downloadFile, uploadFile } from "../api/action_route";
 import { saveBlobToFile } from "../libs/helpers/saveBlobToFile";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 export const useUploadFileYdxDisk = () => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
@@ -46,7 +46,7 @@ export const useUploadFileYdxDisk = () => {
       });
     },
     onError: (error) => {
-       handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -70,7 +70,7 @@ export const useDownLoadFile = () => {
       return saveBlobToFile(fileData, name);
     },
     onError: (error) => {
-       handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -89,7 +89,7 @@ export const useDeleteFiles = (
       isSubmittingRef.current = true;
       try {
         await checkAuthorization(authUser?.id);
-        
+
         const responses = await Promise.all(
           data.map(({ localPath: filePath, id, dealType, userId, dealId }) =>
             deleteFile({ id, filePath, dealType, userId, dealId })
@@ -123,7 +123,7 @@ export const useDeleteFiles = (
       handleCloseDialog?.();
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };

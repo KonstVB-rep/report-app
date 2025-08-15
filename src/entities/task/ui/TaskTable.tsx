@@ -5,18 +5,21 @@ import { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table";
 import { useCallback, useRef } from "react";
 import { DateRange } from "react-day-picker";
 
+import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter";
+import FilterByUsers from "@/shared/custom-components/ui/Filters/FilterByUsers";
+import FilterPopoverGroup from "@/shared/custom-components/ui/Filters/FilterPopoverGroup";
+import {
+  TableContextType,
+  TableProvider,
+} from "@/shared/custom-components/ui/Table/context/TableContext";
+import { DataTableFiltersProvider } from "@/shared/custom-components/ui/Table/tableFilters/context/DataTableFiltersProvider";
+import { useDataTableFiltersContext } from "@/shared/custom-components/ui/Table/tableFilters/context/useDataTableFiltersContext";
+import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate";
 import { useTableState } from "@/shared/hooks/useTableState";
-import DateRangeFilter from "@/shared/ui/DateRangeFilter";
-import FilterByUsers from "@/shared/ui/Filters/FilterByUsers";
-import FilterPopoverGroup from "@/shared/ui/Filters/FilterPopoverGroup";
-import { DataTableFiltersProvider } from "@/shared/ui/Table/tableFilters/context/DataTableFiltersProvider";
-import { useDataTableFiltersContext } from "@/shared/ui/Table/tableFilters/context/useDataTableFiltersContext";
-import TableTemplate from "@/shared/ui/Table/TableTemplate";
 
 import { columnsDataTask } from "../model/column-data-tasks";
 import { LABEL_TASK_STATUS } from "../model/constants";
 import { TaskWithUserInfo } from "../types";
-import { TableContextType, TableProvider } from "@/shared/ui/Table/context/TableContext";
 import DelTaskDialogContextMenu from "./Modals/DelTaskDialogContextMenu";
 import EditTaskDialogContextMenu from "./Modals/EditTaskDialogContextMenu";
 
@@ -27,7 +30,7 @@ interface TaskTableProps<TData> {
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
 
-    const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =
+  const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =
     useCallback(
       (
         setOpenModal: React.Dispatch<
@@ -35,18 +38,18 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
         >,
         row: Row<T>
       ) => ({
-         edit: (
-            <EditTaskDialogContextMenu
-              close={() => setOpenModal(null)}
-              id={row.original.id as string}
-            />
-          ),
-          delete: (
-            <DelTaskDialogContextMenu
-              close={() => setOpenModal(null)}
-              id={row.original.id as string}
-            />
-          ),
+        edit: (
+          <EditTaskDialogContextMenu
+            close={() => setOpenModal(null)}
+            id={row.original.id as string}
+          />
+        ),
+        delete: (
+          <DelTaskDialogContextMenu
+            close={() => setOpenModal(null)}
+            id={row.original.id as string}
+          />
+        ),
       }),
       [] // Зависимости, если нужны
     );
@@ -73,22 +76,16 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           <FilterTasks columnFilters={columnFilters} />
         </div>
         <div
-          className="rounded-lg overflow-hidden border transition-all duration-200"
+          className="rounded-lg relative h-full overflow-auto max-h-[78vh] border transition-all duration-200"
           ref={tableContainerRef}
-          style={{
-            overflow: "auto",
-            position: "relative",
-            height: "100%",
-            maxHeight: "78vh",
-          }}
         >
           <TableProvider<T> getContextMenuActions={getContextMenuActions}>
-          <TableTemplate
-            table={table}
-            tableContainerRef={tableContainerRef}
-            className="rounded-ee-md"
-            entityType="task"
-          />
+            <TableTemplate
+              table={table}
+              tableContainerRef={tableContainerRef}
+              className="rounded-ee-md"
+              entityType="task"
+            />
           </TableProvider>
         </div>
       </div>

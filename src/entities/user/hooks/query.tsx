@@ -1,7 +1,7 @@
 import { PermissionEnum } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { getUser } from "../api";
 import useStoreUser from "../store/useStoreUser";

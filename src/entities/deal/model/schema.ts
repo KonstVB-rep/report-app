@@ -31,7 +31,7 @@ export const ProjectFormSchema = z
     id: z.string().optional(),
     dateRequest: z.preprocess((val) => {
       if (val instanceof Date) return val.toISOString();
-      if (!val) return ""; 
+      if (!val) return "";
       return val;
     }, z.string()),
     nameDeal: z.string({
@@ -94,10 +94,7 @@ export const ProjectFormSchema = z
       });
     }
 
-    if (
-      data.dealStatus !== StatusProject.REJECT &&
-      !data.resource?.trim()
-    ) {
+    if (data.dealStatus !== StatusProject.REJECT && !data.resource?.trim()) {
       ctx.issues.push({
         code: "custom",
         message: "Укажите ресурс",

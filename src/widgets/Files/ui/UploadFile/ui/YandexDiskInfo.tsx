@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@/shared/components/ui/progress";
 
 type YandexDiskinfoProps = {
   used_space: number;

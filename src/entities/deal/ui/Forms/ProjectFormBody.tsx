@@ -9,9 +9,11 @@ import {
   useWatch,
 } from "react-hook-form";
 
+import { useParams } from "next/navigation";
+
 import { ArrowLeft } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Form,
   FormControl,
@@ -19,17 +21,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/shared/components/ui/form";
+import { Textarea } from "@/shared/components/ui/textarea";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
+import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm";
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import Overlay from "@/shared/custom-components/ui/Overlay";
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
-import InputNumberForm from "@/shared/ui/Inputs/InputNumberForm";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/ui/Overlay";
-import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {
@@ -39,10 +41,9 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants";
 import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
+import { Contact } from "../../types";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
 import ContactDeal from "../Modals/ContactDeal";
-import { Contact } from "../../types";
-import { useParams } from "next/navigation";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -59,9 +60,9 @@ const statusOptionsProject = transformObjValueToArr(StatusProjectLabels);
 const statusOptionsContracts = transformObjValueToArr(StatusesContract);
 
 const statusOptions = {
-  "projects": statusOptionsProject,
-  "contracts":statusOptionsContracts
-}
+  projects: statusOptionsProject,
+  contracts: statusOptionsContracts,
+};
 
 const ProjectFormBody = <T extends FieldValues>({
   form,
@@ -71,10 +72,9 @@ const ProjectFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: ProjectFormBodyProps<T>) => {
-
- const { dealType } = useParams<{
-  dealType: "projects" | "contracts"; 
-}>();
+  const { dealType } = useParams<{
+    dealType: "projects" | "contracts";
+  }>();
 
   const {
     contacts,

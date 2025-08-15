@@ -2,12 +2,12 @@ import React from "react";
 
 import { Crown } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/shared/components/ui/button";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Label } from "@/shared/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import { cn } from "@/shared/lib/utils";
-import DialogComponent from "@/shared/ui/DialogComponent";
 import useMananagersStore from "@/widgets/Files/hooks/useMananagersStore";
 
 const AddManagerToDeal = ({

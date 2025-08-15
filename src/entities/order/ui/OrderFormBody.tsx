@@ -4,6 +4,7 @@ import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 
 import cuid from "cuid";
 
+import { getManagers } from "@/entities/department/lib/utils";
 import {
   Form,
   FormControl,
@@ -11,17 +12,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { getManagers } from "@/entities/department/lib/utils";
+} from "@/shared/components/ui/form";
+import { Textarea } from "@/shared/components/ui/textarea";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import Overlay from "@/shared/custom-components/ui/Overlay";
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/ui/Overlay";
-import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 type OrderFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;

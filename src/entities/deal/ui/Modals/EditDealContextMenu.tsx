@@ -18,9 +18,13 @@ const EditDealContextMenu = ({
 }) => {
   switch (type) {
     case DealType.PROJECT:
-      return <EditProject close={close} id={id} titleForm = "Редактировать проект"/>;
+      return (
+        <EditProject close={close} id={id} titleForm="Редактировать проект" />
+      );
     case DealType.RETAIL:
-      return <EditRetail close={close} id={id} titleForm = "Редактировать проект"/>;
+      return (
+        <EditRetail close={close} id={id} titleForm="Редактировать проект" />
+      );
     // case DealType.ORDER:
     //   return <EditOrder close={close} id={id} />;
     default:

@@ -8,9 +8,10 @@ import { ru } from "date-fns/locale";
 
 import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { createOrder, delOrder, updateOrder } from "../api";
 import { defaultOrderValues } from "../lib/constants";
@@ -21,7 +22,6 @@ import {
   OrderResponse,
   UpdateOrderData,
 } from "./../types";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 export const useCreateOrder = (
   reset: (values?: DeepPartial<OrderSchema>) => void
@@ -58,7 +58,7 @@ export const useCreateOrder = (
       >(createOrder, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
-    handleErrorSession(error)
+      handleErrorSession(error);
     },
     onSuccess: (data) => {
       if (data) {
@@ -113,7 +113,7 @@ export const useDelOrder = (closeModalFn: Dispatch<SetStateAction<void>>) => {
       closeModalFn();
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -155,7 +155,7 @@ export const useUpdateOrder = (closeModalFn: () => void) => {
       }
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };

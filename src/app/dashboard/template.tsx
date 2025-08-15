@@ -7,9 +7,6 @@ import dynamic from "next/dynamic";
 
 import { usePathname } from "next/navigation";
 
-// import { toast } from "sonner";
-
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 // import { useGetOrdersNotAtWorkByUserId } from "@/entities/order/hooks/query";
@@ -18,10 +15,13 @@ import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
-import PageTransitionY from "@/shared/ui/MotionComponents/PageTransitionY";
+// import { toast } from "sonner";
+
+import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
+import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
 
 const RedirectToPath = dynamic(
-  () => import("@/shared/ui/Redirect/RedirectToPath"),
+  () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),
   {
     ssr: false,
     loading: () => (

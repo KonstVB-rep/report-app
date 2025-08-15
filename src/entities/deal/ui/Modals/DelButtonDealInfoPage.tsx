@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 
 import { Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
+import { Button } from "@/shared/components/ui/button";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import DelDealSkeleton from "../Skeletons/DelDealSkeleton";
 

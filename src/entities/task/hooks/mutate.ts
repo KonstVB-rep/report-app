@@ -2,8 +2,9 @@ import { Task } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { createTask, deleteTask, updateTask, updateTasksOrder } from "../api";
 import {
@@ -13,7 +14,6 @@ import {
   TaskFormTypeWithId,
   TaskWithUserInfo,
 } from "../types";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 export const useCreateTask = () => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
@@ -34,7 +34,7 @@ export const useCreateTask = () => {
       });
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -63,7 +63,7 @@ export const useUpdateTask = () => {
       });
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -100,7 +100,7 @@ export const useDeleteTask = (close: () => void) => {
       TOAST.SUCCESS("Задача удалена");
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -121,7 +121,7 @@ export const useUpdateTasksOrder = () => {
       });
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };

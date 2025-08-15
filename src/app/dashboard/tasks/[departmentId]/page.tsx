@@ -5,8 +5,6 @@ import { PermissionEnum } from "@prisma/client";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import { useGetTasksDepartment } from "@/entities/task/hooks/query";
 import useViewType from "@/entities/task/hooks/useViewType";
@@ -14,8 +12,10 @@ import { viewType } from "@/entities/task/model/constants";
 import LoadingView from "@/entities/task/ui/LoadingView";
 import СreateTaskDialog from "@/entities/task/ui/Modals/СreateTaskDialog";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import RedirectToPath from "@/shared/ui/Redirect/RedirectToPath";
+import { Button } from "@/shared/components/ui/button";
+import { Separator } from "@/shared/components/ui/separator";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
 
 const Kanban = dynamic(() => import("@/entities/task/ui/Kanban"), {
   ssr: false,
@@ -77,7 +77,6 @@ const TasksPage = () => {
         {currentView === "table" && data && <TaskTable data={data} />}
 
         {currentView === "kanban" && data && <Kanban data={data} />}
-
       </MotionDivY>
     </section>
   );

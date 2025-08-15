@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getQueryClient } from "@/app/provider/query-provider";
 import { DepartmentInfo } from "@/entities/department/types";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 
 import { createUser, deleteUser, ResponseDelUser, updateUser } from "../api";
@@ -16,7 +17,6 @@ import {
   UserRequest,
   UserResponse,
 } from "../types";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 const queryClient = getQueryClient();
 
@@ -47,7 +47,7 @@ export const useCreateUser = () => {
       });
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -98,7 +98,7 @@ export const useDeleteUser = (userId: string) => {
         ["depsWithUsers"],
         context?.previousDepsWithUsers
       );
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -132,7 +132,7 @@ export const useUpdateUser = (
       });
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };

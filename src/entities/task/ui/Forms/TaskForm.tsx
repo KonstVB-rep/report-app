@@ -3,16 +3,16 @@ import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
-import { Form } from "@/components/ui/form";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import { DepartmentInfo } from "@/entities/department/types";
+import { Form } from "@/shared/components/ui/form";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import Overlay from "@/shared/custom-components/ui/Overlay";
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/ui/Overlay";
-import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import { LABEL_TASK_PRIORITY, LABEL_TASK_STATUS } from "../../model/constants";
 

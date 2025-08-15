@@ -11,7 +11,11 @@ const CardMainContact = ({
   phone: string | null;
   email: string | null | undefined;
 }) => {
-  const fields: { label: string; value?: string | null, type: "name" | "phone" | "email" }[] = [
+  const fields: {
+    label: string;
+    value?: string | null;
+    type: "name" | "phone" | "email";
+  }[] = [
     { label: "Имя", value: contact, type: "name" },
     { label: "Телефон", value: phone, type: "phone" },
     { label: "Email", value: email, type: "email" },

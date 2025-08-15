@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 
-import TooltipComponent from "@/shared/ui/TooltipComponent";
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 
 type ItemType = {
   name: string;

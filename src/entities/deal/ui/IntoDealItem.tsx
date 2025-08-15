@@ -15,7 +15,12 @@ const IntoDealItem = ({
   children,
   className = "",
 }: IntoDealItemProps) => (
-  <div className={cn("overflow-hidden rounded-md border bg-zinc-200 dark:bg-zinc-800", className)}>
+  <div
+    className={cn(
+      "overflow-hidden rounded-md border bg-zinc-200 dark:bg-zinc-800",
+      className
+    )}
+  >
     <p className="break-all first-letter:capitalize bg-stone-100 dark:bg-black/40 p-4 font-medium">
       {title}
     </p>

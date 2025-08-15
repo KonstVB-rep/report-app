@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { TOAST } from "@/shared/ui/Toast";
 
 import {
   getDealsByDateRange,

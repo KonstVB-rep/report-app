@@ -12,9 +12,9 @@ import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
 import {
   TableContextType,
   TableProvider,
-} from "@/shared/ui/Table/context/TableContext";
-import DataTable from "@/shared/ui/Table/DataTable";
-import { DealBase } from "@/shared/ui/Table/model/types";
+} from "@/shared/custom-components/ui/Table/context/TableContext";
+import DataTable from "@/shared/custom-components/ui/Table/DataTable";
+import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
 
 interface DealsTableProps<T extends DealBase> {
   columns: ColumnDef<T>[];
@@ -54,9 +54,7 @@ const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
 
   return (
     <TableProvider<T> getContextMenuActions={getContextMenuActions}>
-      <DataTable
-        {...props}
-      >
+      <DataTable {...props}>
         <AddNewDeal type={dealType} />
       </DataTable>
     </TableProvider>

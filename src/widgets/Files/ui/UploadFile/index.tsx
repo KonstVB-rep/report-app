@@ -8,9 +8,9 @@ import dynamic from "next/dynamic";
 
 import { Upload } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import Overlay from "@/shared/ui/Overlay";
+import { Button } from "@/shared/components/ui/button";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import Overlay from "@/shared/custom-components/ui/Overlay";
 
 import useUploadFile from "../../hooks/useUploadFIle";
 import FormUploadFilesSkeleton from "./ui/FormUploadFilesSkeleton";

@@ -1,15 +1,15 @@
 import React from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   DialogClose,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/components/ui/dialog";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import Overlay from "@/shared/custom-components/ui/Overlay";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/ui/Overlay";
 
 type DeleteUserModalContentProps = {
   mutate: () => void;

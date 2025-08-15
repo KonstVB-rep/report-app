@@ -1,5 +1,5 @@
-import { logout } from "@/shared/auth/logout";
 import axiosInstance from "@/shared/api/axiosInstance";
+import { logout } from "@/shared/auth/logout";
 
 import { AuthError } from "./customErrors";
 

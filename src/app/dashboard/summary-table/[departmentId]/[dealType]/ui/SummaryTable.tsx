@@ -6,28 +6,36 @@ import { ColumnDef } from "@tanstack/react-table";
 import React, { JSX, useMemo } from "react";
 
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
 
+import { useGetAllDeals } from "@/entities/deal/hooks/query";
+import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
+import {
+  DealsUnionType,
+  ProjectResponse,
+  RetailResponse,
+} from "@/entities/deal/types";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable";
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
-import { useGetAllDeals } from "@/entities/deal/hooks/query";
-import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
-import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
-import { useParams } from "next/navigation";
-import Loading from "../[userId]/loading";
-import { DealBase } from "@/shared/ui/Table/model/types";
-import { DealsUnionType, ProjectResponse, RetailResponse } from "@/entities/deal/types";
-import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
-import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
+import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage";
+import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
+import Loading from "../[userId]/loading";
+import { columnsDataProjectSummary } from "../[userId]/model/summary-columns-data-project";
+import { columnsDataRetailSummary } from "../[userId]/model/summary-columns-data-retail";
 
-const Columns = (type: DealsUnionType): ColumnDef<ProjectResponse, unknown>[] | ColumnDef<RetailResponse, unknown>[] => {
+const Columns = (
+  type: DealsUnionType
+):
+  | ColumnDef<ProjectResponse, unknown>[]
+  | ColumnDef<RetailResponse, unknown>[] => {
   switch (type) {
-    case 'projects':
+    case "projects":
       return columnsDataProjectSummary;
-    case 'retails':
+    case "retails":
       return columnsDataRetailSummary;
     default:
       throw new Error(`Unknown table type: ${type}`);
@@ -47,43 +55,40 @@ export interface SummaryTableProps<TData extends { id: string }> {
   columns: ColumnDef<TData, unknown>[];
 }
 
-const SummaryTable=() => {
+const SummaryTable = () => {
+  const { userId, departmentId, dealType } = useParams<{
+    userId: string;
+    departmentId: string;
+    dealType: "projects" | "retails";
+  }>();
 
-    const { userId, departmentId, dealType } = useParams<{
-      userId: string;
-      departmentId: string;
-      dealType: 'projects' | 'retails'
-    }>();
-  
-    const hasAccess = useMemo(
-      () =>
-        userId
-          ? hasAccessToDataSummary(
-              userId as string,
-              PermissionEnum.VIEW_UNION_REPORT
-            )
-          : false,
-      [userId]
+  const hasAccess = useMemo(
+    () =>
+      userId
+        ? hasAccessToDataSummary(
+            userId as string,
+            PermissionEnum.VIEW_UNION_REPORT
+          )
+        : false,
+    [userId]
+  );
+
+  const {
+    data: deals,
+    error,
+    isError,
+    isPending,
+  } = useGetAllDeals(dealType, hasAccess ? userId : null, departmentId);
+
+  if (!hasAccess) {
+    return (
+      <AccessDeniedMessage
+        error={{ message: "у вас нет доступа к этому разделу" }}
+      />
     );
-  
-    const {
-      data: deals,
-      error,
-      isError,
-      isPending,
-    } = useGetAllDeals(dealType,hasAccess ? userId : null, departmentId);
-  
-  
-    if (!hasAccess) {
-      return (
-        <AccessDeniedMessage
-          error={{ message: "у вас нет доступа к этому разделу" }}
-        />
-      );
-    }
-  
-    if (isPending) return <Loading />;
+  }
 
+  if (isPending) return <Loading />;
 
   return (
     <DealTableTemplate>

@@ -7,7 +7,7 @@ import { Resolver, useForm } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useCreateProject } from "../../hooks/mutate";
 import { defaultProjectValues } from "../../model/defaultvaluesForm";

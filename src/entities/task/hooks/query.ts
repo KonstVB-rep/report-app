@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/ui/Toast";
+import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { getTask, getTasksDepartment, getUserTasks } from "../api";
-
-import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
 
 export const useGetTask = (taskId: string) => {
   const { authUser } = useStoreUser();
@@ -13,16 +12,11 @@ export const useGetTask = (taskId: string) => {
     queryKey: ["task", authUser?.id, taskId],
     queryFn: async () => {
       try {
-
-        if(!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
         }
 
-        return await executeWithTokenCheck(            
-          () => getTask(taskId as string)  
-        );
-
-
+        return await executeWithTokenCheck(() => getTask(taskId as string));
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
@@ -42,14 +36,11 @@ export const useGetUserTasks = () => {
     queryKey: ["userTasks", authUser?.id],
     queryFn: async () => {
       try {
-
-         if(!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
         }
 
-         return await executeWithTokenCheck(            
-          () => getUserTasks(authUser!.id)  
-        );
+        return await executeWithTokenCheck(() => getUserTasks(authUser!.id));
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
@@ -69,16 +60,15 @@ export const useGetTasksDepartment = () => {
     queryKey: ["tasks", authUser?.id, authUser?.departmentId],
     queryFn: async () => {
       try {
-        if(!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
         }
 
         const departmentId = authUser.departmentId;
 
-        return await executeWithTokenCheck(            
-          () => getTasksDepartment(departmentId)  
+        return await executeWithTokenCheck(() =>
+          getTasksDepartment(departmentId)
         );
-
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");

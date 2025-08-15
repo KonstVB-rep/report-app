@@ -6,7 +6,7 @@ import { Resolver, useForm } from "react-hook-form";
 
 import { useParams } from "next/navigation";
 
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useCreateTask } from "../../hooks/mutate";
 import { addCorrectTimeInDates, formatDate } from "../../lib/helpers";

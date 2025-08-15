@@ -2,10 +2,10 @@
 
 import { Loader } from "lucide-react";
 
-import { Toggle } from "@/components/ui/toggle";
+import { Toggle } from "@/shared/components/ui/toggle";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { cn } from "@/shared/lib/utils";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 import useChatBot from "../hooks/useChatBot";
 import TelegramIcon from "./TelegramIcon";

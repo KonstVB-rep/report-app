@@ -1,4 +1,4 @@
-import { TOAST } from "../ui/Toast";
+import { TOAST } from "../custom-components/ui/Toast";
 import { logout } from "./logout";
 
 const handleErrorSession = (error: Error) => {

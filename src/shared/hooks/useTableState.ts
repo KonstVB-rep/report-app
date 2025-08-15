@@ -14,7 +14,6 @@ import { useMemo, useState } from "react";
 import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
 
 const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
-
   const itemRank = rankItem(row.getValue(columnId), value);
   addMeta({
     itemRank,
@@ -24,7 +23,7 @@ const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
 };
 
 export const useTableState = <T extends Record<string, unknown>>(
-  data: T[],  // принимаем данные любого типа, соответствующего Record<string, unknown>
+  data: T[], // принимаем данные любого типа, соответствующего Record<string, unknown>
   columns: ColumnDef<T>[] // и колонки для этого типа
 ) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -53,7 +52,7 @@ export const useTableState = <T extends Record<string, unknown>>(
     data: memoizedData,
     columns: memoizedColumns,
     filterFns: {
-      fuzzy: fuzzyFilter,  // Возможно, тебе нужно будет уточнить, что такое fuzzyFilter
+      fuzzy: fuzzyFilter, // Возможно, тебе нужно будет уточнить, что такое fuzzyFilter
     },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -79,7 +78,7 @@ export const useTableState = <T extends Record<string, unknown>>(
     },
     meta: {
       columnVisibility: {
-        resource: false,  // например скрыть колонку с id 'resource'
+        resource: false, // например скрыть колонку с id 'resource'
       },
     },
   });

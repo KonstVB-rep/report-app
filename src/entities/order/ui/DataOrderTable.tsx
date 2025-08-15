@@ -8,12 +8,12 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
+import ButtonExportTableXls from "@/shared/custom-components/ui/Buttons/ButtonExportTableXls";
+import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
+import { DataTableFiltersProvider } from "@/shared/custom-components/ui/Table/tableFilters/context/DataTableFiltersProvider";
+import { useDataTableFiltersContext } from "@/shared/custom-components/ui/Table/tableFilters/context/useDataTableFiltersContext";
+import FiltersManagement from "@/shared/custom-components/ui/Table/tableFilters/ui/FiltersManagement";
 import { useTableState } from "@/shared/hooks/useTableState";
-import ButtonExportTableXls from "@/shared/ui/Buttons/ButtonExportTableXls";
-import { DealBase } from "@/shared/ui/Table/model/types";
-import { DataTableFiltersProvider } from "@/shared/ui/Table/tableFilters/context/DataTableFiltersProvider";
-import { useDataTableFiltersContext } from "@/shared/ui/Table/tableFilters/context/useDataTableFiltersContext";
-import FiltersManagement from "@/shared/ui/Table/tableFilters/ui/FiltersManagement";
 
 import { STATUS_ORDER } from "../lib/constants";
 import LoadFilterItem from "./LoadFilterItem";
@@ -21,20 +21,23 @@ import OrdersTableBody from "./OrdersTableBody";
 import { DealTypeLabels } from "./OrdersTemplateTable";
 
 const FilterByUsers = dynamic(
-  () => import("@/shared/ui/Filters/FilterByUsers"),
+  () => import("@/shared/custom-components/ui/Filters/FilterByUsers"),
   {
     ssr: false,
     loading: () => <LoadFilterItem />,
   }
 );
 
-const DateRangeFilter = dynamic(() => import("@/shared/ui/DateRangeFilter"), {
-  ssr: false,
-  loading: () => <LoadFilterItem />,
-});
+const DateRangeFilter = dynamic(
+  () => import("@/shared/custom-components/ui/DateRangeFilter"),
+  {
+    ssr: false,
+    loading: () => <LoadFilterItem />,
+  }
+);
 
 const FilterPopoverRadio = dynamic(
-  () => import("@/shared/ui/Filters/FilterPopoverRadio"),
+  () => import("@/shared/custom-components/ui/Filters/FilterPopoverRadio"),
   {
     ssr: false,
     loading: () => <LoadFilterItem />,

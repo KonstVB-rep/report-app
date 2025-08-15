@@ -4,11 +4,11 @@ import Link from "next/link";
 
 import { TableProperties } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { UserResponse } from "@/entities/user/types";
-import Contacts from "@/shared/ui/Contacts";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
+import { Button } from "@/shared/components/ui/button";
+import Contacts from "@/shared/custom-components/ui/Contacts";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 
 const ProfileLink = ({
   id,

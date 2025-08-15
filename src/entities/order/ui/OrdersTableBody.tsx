@@ -2,8 +2,9 @@ import { useReactTable } from "@tanstack/react-table";
 
 import { useRef } from "react";
 
-import { DealBase } from "@/shared/ui/Table/model/types";
-import TableTemplate from "@/shared/ui/Table/TableTemplate";
+import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
+import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate";
+import { cn } from "@/shared/lib/utils";
 
 type TableComponentProps<T extends DealBase> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -21,14 +22,14 @@ const OrdersTableBody = <T extends DealBase>({
 
   return (
     <div
-      className="rounded-lg overflow-hidden border transition-all duration-200"
+      className={cn(
+        "rounded-lg relative h-full overflow-auto border transition-all duration-200",
+        {
+          "max-h-[64vh]": openFilters,
+          "max-h-[75vh]": !openFilters,
+        }
+      )}
       ref={tableContainerRef}
-      style={{
-        overflow: "auto",
-        position: "relative",
-        height: "100%",
-        maxHeight: openFilters ? "69vh" : "78vh",
-      }}
     >
       {table.getRowModel().rows.length > 0 && (
         <p className="border rounded-md px-2 py-1 m-1 w-fit bg-stone-700 text-white dark:bg-black">

@@ -5,7 +5,7 @@ import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,17 +13,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/shared/components/ui/form";
+import { Textarea } from "@/shared/components/ui/textarea";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
+import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm";
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import Overlay from "@/shared/custom-components/ui/Overlay";
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import DatePickerFormField from "@/shared/ui/Inputs/DatePickerFormField";
-import InputNumberForm from "@/shared/ui/Inputs/InputNumberForm";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/ui/Overlay";
-import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
 
 import useSendDealInfo from "../../hooks/useSendDealInfo";
 import {

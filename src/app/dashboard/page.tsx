@@ -5,7 +5,7 @@ import React from "react";
 import { useTheme } from "next-themes";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import Starfield from "@/shared/ui/StarField";
+import Starfield from "@/shared/custom-components/ui/StarField";
 
 type TypeOptionsTheme = {
   starCount: number;

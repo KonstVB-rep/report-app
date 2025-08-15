@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { NOT_MANAGERS_POSITIONS_KEYS } from "@/entities/department/lib/constants";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { getAllOrder, getOrderById, getOrdersByUserId } from "../api";
 import { OrderResponse } from "../types";

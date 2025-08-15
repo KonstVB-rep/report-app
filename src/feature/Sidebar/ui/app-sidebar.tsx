@@ -8,15 +8,6 @@ import Link from "next/link";
 
 import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import {
@@ -25,6 +16,15 @@ import {
   UnionTypeDepartmentsName,
 } from "@/entities/department/types";
 import { UserResponse } from "@/entities/user/types";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/shared/components/ui/sidebar";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";

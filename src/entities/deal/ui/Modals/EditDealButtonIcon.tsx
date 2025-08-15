@@ -7,9 +7,9 @@ import dynamic from "next/dynamic";
 
 import { FilePenLine } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
+import { Button } from "@/shared/components/ui/button";
+import { Dialog } from "@/shared/components/ui/dialog";
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 
 const EditProject = dynamic(() => import("./EditProject"), { ssr: false });
 const EditRetail = dynamic(() => import("./EditRetail"), { ssr: false });

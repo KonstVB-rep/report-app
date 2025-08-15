@@ -13,10 +13,10 @@ import {
   typeofDirections,
   typeofStatus,
 } from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-retail";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetRetailById } from "../hooks/query";

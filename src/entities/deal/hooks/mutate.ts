@@ -15,6 +15,7 @@ import { Dispatch, SetStateAction } from "react";
 import { DeepPartial } from "react-hook-form";
 
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 
@@ -40,7 +41,6 @@ import {
   RetailWithoutDateCreateAndUpdate,
   RetailWithoutId,
 } from "../types";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
@@ -76,7 +76,7 @@ export const useDelDeal = (
       closeModalFn();
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -131,7 +131,7 @@ export const useMutationUpdateProject = (
       >(updateProject, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
-    handleErrorSession(error)
+      handleErrorSession(error);
     },
     onSuccess: (_, variables) => {
       close();
@@ -210,7 +210,7 @@ export const useMutationUpdateRetail = (
     },
 
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
     onSuccess: (_, variables) => {
       close();
@@ -308,7 +308,7 @@ export const useCreateProject = (
     },
 
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
   });
 };
@@ -357,7 +357,7 @@ export const useCreateRetail = (
       >(createRetail, formData, authUser, isSubmittingRef);
     },
     onError: (error) => {
-      handleErrorSession(error)
+      handleErrorSession(error);
     },
     onSuccess: (data) => {
       if (data) {

@@ -8,5 +8,4 @@ export const loginFormSchema = z.object({
     .max(30, "Пароль должен содержать не более 30 символов"),
 });
 
-
-export type LoginSchema = z.infer<typeof loginFormSchema>
+export type LoginSchema = z.infer<typeof loginFormSchema>;

@@ -3,10 +3,10 @@
 import { ru } from "date-fns/locale";
 
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
-import { Calendar } from "@/components/ui/calendar";
 import EventsListDayMobile from "@/feature/calendar/ui/EventsListDayMobile";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
+import { Calendar } from "@/shared/components/ui/calendar";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 
 import useCalendarMobile from "../hooks/useCalendarMobile";
 import { EventInputType } from "../types";
@@ -25,7 +25,7 @@ const CalendarMobile = () => {
     selectedDate,
     eventDates,
     handleSelect,
-    isPending
+    isPending,
   } = useCalendarMobile();
 
   const { form, closeModalForm, setEditingId, setOpenModal } =
@@ -57,9 +57,9 @@ const CalendarMobile = () => {
       closeModalForm
     );
   };
-  
-  if(isPending){
-    return <div>Загрузка...</div>
+
+  if (isPending) {
+    return <div>Загрузка...</div>;
   }
 
   return (

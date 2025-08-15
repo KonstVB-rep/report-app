@@ -6,22 +6,22 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ExternalLink } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import { Badge } from "@/shared/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
-import useStoreUser from "@/entities/user/store/useStoreUser";
+} from "@/shared/components/ui/card";
 
+import { cleanDistance } from "../lib/helpers";
 import {
   LABEL_TASK_PRIORITY,
   TASK_PRIORITY_COLOR_BORDER,
 } from "../model/constants";
 import { TaskWithUserInfo } from "../types";
-import { cleanDistance } from "../lib/helpers";
 
 const EditTaskDialogButton = dynamic(
   () => import("./Modals/EditTaskDialogButton")
@@ -30,7 +30,6 @@ const EditTaskDialogButton = dynamic(
 const DelTaskDialogButton = dynamic(
   () => import("./Modals/DelTaskDialogButton")
 );
-
 
 type TaskKanbanCardProps = {
   task: TaskWithUserInfo;

@@ -1,10 +1,12 @@
-import { DropResult } from '@hello-pangea/dnd';
-import { TaskStatus } from '@prisma/client';
-import { useCallback, useEffect, useState } from 'react'
-import { TaskWithUserInfo } from '../types';
-import { useUpdateTasksOrder } from './mutate';
+import { DropResult } from "@hello-pangea/dnd";
+import { TaskStatus } from "@prisma/client";
 
-const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
+import { useCallback, useEffect, useState } from "react";
+
+import { TaskWithUserInfo } from "../types";
+import { useUpdateTasksOrder } from "./mutate";
+
+const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
@@ -12,7 +14,7 @@ const reorder = <T,>(list: T[], startIndex: number, endIndex: number): T[] => {
 };
 
 const useDragEnd = (data: TaskWithUserInfo[]) => {
-    const { mutate, isPending } = useUpdateTasksOrder();
+  const { mutate, isPending } = useUpdateTasksOrder();
 
   const [tasks, setTasks] = useState<TaskWithUserInfo[]>([]);
 
@@ -75,7 +77,7 @@ const useDragEnd = (data: TaskWithUserInfo[]) => {
     [tasks, mutate]
   );
 
-  return { onDragEnd, tasks,isPending}
-}
+  return { onDragEnd, tasks, isPending };
+};
 
-export default useDragEnd
+export default useDragEnd;

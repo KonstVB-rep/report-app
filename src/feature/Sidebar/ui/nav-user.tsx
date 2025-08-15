@@ -4,15 +4,15 @@ import Link from "next/link";
 
 import { BadgeCheck, ChevronsUpDown } from "lucide-react";
 
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import DialogAddUser from "@/entities/user/ui/DialogAddUser";
+import LogoutDialog from "@/feature/auth/ui/logout-dialog";
 import {
   SidebarMenu,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import DialogAddUser from "@/entities/user/ui/DialogAddUser";
-import LogoutDialog from "@/feature/auth/ui/logout-dialog";
-import HoverCardComponent from "@/shared/ui/HoverCard";
+} from "@/shared/components/ui/sidebar";
+import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
 
 export const NavUser = () => {
   const { isMobile } = useSidebar();

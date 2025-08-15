@@ -3,7 +3,7 @@ import { Table as ReactTable } from "@tanstack/react-table";
 
 import React, { Fragment, RefObject } from "react";
 
-import { useSidebar } from "@/components/ui/sidebar";
+import { useSidebar } from "@/shared/components/ui/sidebar";
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/shared/components/ui/table";
 import useScrollIntoViewBottom from "@/shared/hooks/useScrollIntoViewBottomTable";
 
 import { EventInputType } from "../types";
@@ -95,7 +95,7 @@ const EventsListTable = <T extends EventInputType>({
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <Fragment  key={cell.id}>
+                      <Fragment key={cell.id}>
                         {isMobile ? (
                           <TableCell
                             onClick={() =>

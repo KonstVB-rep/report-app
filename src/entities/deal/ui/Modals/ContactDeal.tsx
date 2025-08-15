@@ -6,11 +6,11 @@ import dynamic from "next/dynamic";
 
 import { Plus, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
+import { Button } from "@/shared/components/ui/button";
+import { Form } from "@/shared/components/ui/form";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
 
 import useAddContactToDeal from "../../hooks/useAddContactToDeal";
 import { ContactSchema } from "../../model/schema";
@@ -25,11 +25,11 @@ type ContactFieldError = {
 };
 
 type ContactDealProps = {
-  contacts: Contact[];  
+  contacts: Contact[];
   onContactsChange: (contacts: Contact[]) => void;
-  contactsKey: string | null | undefined;  
+  contactsKey: string | null | undefined;
   handleDeleteContact: (id: string) => void;
-  selectedContacts: Contact[]; 
+  selectedContacts: Contact[];
   setSelectedContacts: (contacts: Contact[]) => void;
 };
 

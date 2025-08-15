@@ -15,7 +15,7 @@ export const columnsOrder: ColumnDef<OrderResponse, unknown>[] = [
   {
     id: "rowNumber",
     header: "№",
-    accessorKey:"rowNumber",
+    accessorKey: "rowNumber",
     cell: ({ row }) => row.index + 1,
     enableHiding: false,
     enableSorting: false,
