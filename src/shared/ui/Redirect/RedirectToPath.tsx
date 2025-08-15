@@ -11,7 +11,7 @@ const RedirectToPath = ({ to }: { to: string }) => {
   const router = useRouter();
 
   useEffect(() => {
-    router.push(to);
+    router.replace(to);
   }, [to, router]);
 
   return null;
