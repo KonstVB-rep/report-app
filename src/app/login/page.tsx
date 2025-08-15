@@ -19,7 +19,7 @@ const LoginPage = () => {
           className="object-cover opacity-20 brightness-75 filter"
           sizes="(max-width: 768px) 100vw, 50vw"
         />
-        <div className="relative z-10 w-full max-w-sm md:max-w-3xl">
+        <div className="relative z-10 w-full max-w-sm md:max-w-md">
           <LoginForm />
         </div>
       </div>

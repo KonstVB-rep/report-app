@@ -2,6 +2,7 @@
 
 import { PropsWithChildren, useEffect } from "react";
 
+import dynamic from "next/dynamic";
 // import { createPortal } from "react-dom";
 
 import { usePathname } from "next/navigation";
@@ -18,6 +19,20 @@ import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
 import PageTransitionY from "@/shared/ui/MotionComponents/PageTransitionY";
+
+const RedirectToPath = dynamic(
+  () => import("@/shared/ui/Redirect/RedirectToPath"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
+        <p className="text-2xl sm:text-4xl opacity-30">
+          Идет завершение сессии...
+        </p>
+      </div>
+    ),
+  }
+);
 
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
@@ -72,11 +87,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
   // };
 
   if (!authUser) {
-    return (
-      <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
-        <p className="text-2xl sm:text-4xl opacity-30">Идет завершение сессии...</p>
-      </div>
-    );
+    return <RedirectToPath to="/login" />;
   }
 
   return (
