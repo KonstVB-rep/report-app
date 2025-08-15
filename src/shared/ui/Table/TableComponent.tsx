@@ -42,7 +42,7 @@ const TableComponent = <T extends DealBase>({
         overflow: "auto",
         position: "relative",
         height: "100%",
-        maxHeight: openFilters ? "69vh" : "78vh",
+        maxHeight: openFilters ? "64vh" : "75vh",
       }}
     >
       {table.getRowModel().rows.length > 0 && (

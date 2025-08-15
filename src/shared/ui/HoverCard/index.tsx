@@ -22,7 +22,7 @@ type Props = {
 const HoverCardComponent = ({
   children,
   title,
-  align = "center",
+  align = "start",
   sideOffset = 2,
   className,
   ...props

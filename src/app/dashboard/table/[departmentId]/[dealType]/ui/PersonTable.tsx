@@ -10,7 +10,6 @@ import { useParams } from "next/navigation";
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import NotFoundByPosition from "@/shared/ui/Redirect/NotFoundByPosition";
 import { DealBase } from "@/shared/ui/Table/model/types";
 import { useDealsUser } from "@/entities/deal/hooks/query";
@@ -68,9 +67,6 @@ const PersonTable = () => {
   dealType: TableType; // если dealType имеет конкретные значения
 }>();
 
-  const { authUser } = useStoreUser();
-  const isPageAuthuser = userId === authUser?.id;
-
   const hasAccess = hasAccessToData(
       userId as string,
       PermissionEnum.VIEW_USER_REPORT
@@ -102,7 +98,7 @@ const PersonTable = () => {
             </p>
           </div>
 
-          {isPageAuthuser && <ButtonsGroupTable />}
+          <ButtonsGroupTable />
           <DataTable
             columns={Columns(dealType as TableType) as ColumnDef<DealBase>[]}
             data={data as DealBase[]}
