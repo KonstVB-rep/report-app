@@ -8,9 +8,9 @@ import { useParams } from "next/navigation";
 import { DepartmentLabels } from "@/entities/department/types";
 import { useGetUser } from "@/entities/user/hooks/query";
 import { RolesUser } from "@/entities/user/model/objectTypes";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
+import UserCard from "@/shared/custom-components/ui/UserCard";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
-import UserCard from "@/shared/ui/UserCard";
 
 import ProfileDealsData from "./ui/ProfileDealsData";
 
@@ -24,7 +24,7 @@ const DeleteUser = dynamic(() => import("@/entities/user/ui/DeleteUser"), {
 });
 
 const AccessDeniedMessage = dynamic(
-  () => import("@/shared/ui/AccessDeniedMessage"),
+  () => import("@/shared/custom-components/ui/AccessDeniedMessage"),
   { ssr: false }
 );
 
@@ -58,11 +58,13 @@ const ProfilePage = () => {
               phone={user?.phone}
               position={user?.position}
             />
+            
             <ProtectedByPermissions
               permissionArr={[PermissionEnum.USER_MANAGEMENT]}
             >
               <div className="grid w-full gap-2 divide-solid rounded-md bg-muted p-4">
                 <PersonEdit />
+
                 <DeleteUser />
               </div>
             </ProtectedByPermissions>
@@ -71,6 +73,7 @@ const ProfilePage = () => {
             <div className="grid gap-2">
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Отдел:</span>{" "}
+
                 <span className="first-letter:capitalize">
                   {
                     DepartmentLabels[
@@ -79,23 +82,28 @@ const ProfilePage = () => {
                   }
                 </span>
               </p>
+
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Должность:</span>{" "}
+
                 <span className="first-letter:capitalize">
                   {user?.position}
                 </span>
               </p>
+
               <ProtectedByPermissions
                 permissionArr={[PermissionEnum.USER_MANAGEMENT]}
               >
                 <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                   <span className="first-letter:capitalize">Роль:</span>{" "}
+
                   <span className="first-letter:capitalize">
                     {RolesUser[user?.role as keyof typeof RolesUser]}
                   </span>
                 </p>
               </ProtectedByPermissions>
             </div>
+
             <div className="grid gap-2">
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">
@@ -105,24 +113,21 @@ const ProfilePage = () => {
                   {user?.lastlogin?.toLocaleDateString() || "--/--/--"}
                 </span>
               </p>
+
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">
                   Дата регистрации:
                 </span>
                 <span>{user?.createdAt?.toLocaleDateString()}</span>
               </p>
-              <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">
-                  Дата обновления:
-                </span>
-                <span>{user?.updatedAt?.toLocaleDateString()}</span>
-              </p>
+
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Тел.:</span>
                 <span>{user?.phone}</span>
               </p>
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Email:</span>
+
                 <span>{user?.email}</span>
               </p>
             </div>

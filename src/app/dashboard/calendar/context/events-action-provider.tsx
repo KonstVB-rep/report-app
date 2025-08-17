@@ -15,7 +15,7 @@ import { useCalendarContext } from "./calendar-context";
 interface EventsActionContextType {
   isLoading: boolean;
   events: EventInputType[] | undefined;
-  createEvent: (event: Omit<EventDataType, 'id'>) => void;
+  createEvent: (event: Omit<EventDataType, "id">) => void;
   updateEvent: (event: EventDataType) => void;
   deleteEvent: (id: string) => void;
   isPendingLoad: boolean;

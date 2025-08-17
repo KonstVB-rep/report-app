@@ -22,7 +22,6 @@ export const addCorrectTimeInDates = (
   return [start, end];
 };
 
-
 export const cleanDistance = (date: Date) => {
   const raw = formatDistanceToNow(date, {
     addSuffix: true,

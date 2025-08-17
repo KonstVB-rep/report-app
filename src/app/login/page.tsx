@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import loginBg from "@/assets/login-bg";
 import LoginForm from "@/feature/auth/ui/login-form";
-import RedirectLastPath from "@/shared/ui/Redirect/RedirectLastPath";
+import RedirectLastPath from "@/shared/custom-components/ui/Redirect/RedirectLastPath";
 
 const LoginPage = () => {
   return (

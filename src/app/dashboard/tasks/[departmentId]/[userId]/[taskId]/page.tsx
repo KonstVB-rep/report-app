@@ -11,7 +11,7 @@ import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import { useGetTask } from "@/entities/task/hooks/query";
 // import TaskCard from '@/entities/task/ui/TaskCard'
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import RedirectToPath from "@/shared/ui/Redirect/RedirectToPath";
+import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
 
 import Loading from "./loading";
 

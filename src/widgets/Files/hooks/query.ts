@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getInfoDisk } from "@/app/api/yandex-disk/yandexDisk";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { getAllFilesDealFromDb } from "../api/actions_db";
 

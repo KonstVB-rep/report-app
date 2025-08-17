@@ -71,7 +71,7 @@ export const EventCalendarFormSchema = z
       ctx.issues.push({
         code: "custom",
         message: "Дата начала не может быть позже даты окончания",
-        path: ["startDateEvent"], 
+        path: ["startDateEvent"],
         input: startDateEvent,
       });
     }
@@ -91,7 +91,7 @@ export const EventCalendarFormSchema = z
       ctx.issues.push({
         code: "custom",
         message: "Дата окончания должна быть в будущем",
-        path: ["endDateEvent"], 
+        path: ["endDateEvent"],
         input: endDateEvent,
       });
     }
@@ -100,7 +100,8 @@ export const EventCalendarFormSchema = z
     if (startDate >= endDate) {
       ctx.issues.push({
         code: "custom",
-        message: "Время окончания события не должно быть меньше времени начала!",
+        message:
+          "Время окончания события не должно быть меньше времени начала!",
         path: ["startDateEvent"],
         input: startDateEvent,
       });

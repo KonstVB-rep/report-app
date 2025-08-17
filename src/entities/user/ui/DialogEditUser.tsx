@@ -7,9 +7,9 @@ import { useParams } from "next/navigation";
 
 import { UserPen } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import { TOAST } from "@/shared/ui/Toast";
+import { Button } from "@/shared/components/ui/button";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useGetUser } from "../hooks/query";
 import { UserWithdepartmentName } from "../types";

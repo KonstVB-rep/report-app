@@ -1,10 +1,10 @@
 import { Task } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
-import { logout } from "@/feature/auth/logout";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { createTask, deleteTask, updateTask, updateTasksOrder } from "../api";
 import {
@@ -34,20 +34,7 @@ export const useCreateTask = () => {
       });
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при создании задачи";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error);
     },
   });
 };
@@ -76,20 +63,7 @@ export const useUpdateTask = () => {
       });
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при обновлении задачи";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error);
     },
   });
 };
@@ -126,20 +100,7 @@ export const useDeleteTask = (close: () => void) => {
       TOAST.SUCCESS("Задача удалена");
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при удалении задачи";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error);
     },
   });
 };
@@ -160,20 +121,7 @@ export const useUpdateTasksOrder = () => {
       });
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при обновлении статуса задачи";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error);
     },
   });
 };

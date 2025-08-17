@@ -9,7 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/components/ui/dialog";
 
 import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
 
@@ -27,7 +27,7 @@ const EditProject = ({
   close: Dispatch<SetStateAction<void>>;
   id: string;
   isInvalidate?: boolean;
-  titleForm: string
+  titleForm: string;
 }) => {
   return (
     <DialogContent

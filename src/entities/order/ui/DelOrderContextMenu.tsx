@@ -2,13 +2,13 @@ import React from "react";
 
 import dynamic from "next/dynamic";
 
+import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
+} from "@/shared/components/ui/dialog";
 
 const DelOrderForm = dynamic(() => import("./DelOrderForm"), {
   ssr: false,

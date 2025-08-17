@@ -1,6 +1,10 @@
 "use client";
 
-import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 import { useEffect } from "react";
 
@@ -8,13 +12,13 @@ import { useRouter } from "next/navigation";
 
 import { CalendarFold } from "lucide-react";
 
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import {  EventInputType } from "@/feature/calendar/types";
+import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
-import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
+import ButtonLink from "@/shared/custom-components/ui/Buttons/ButtonLink";
 
 import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
-import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import { handleEventClickOnEventsList } from "../utils/eventHandlers";
 import CalendarFormModal from "./CalendarFormModal";
 
@@ -29,9 +33,8 @@ const EventsList = ({ events }: EventsListProps) => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-   const { form, setEditingId, setOpenModal } =
-        useCalendarContext();
-  
+  const { form, setEditingId, setOpenModal } = useCalendarContext();
+
   const onEventClick = (eventCalendar: EventInputType) => {
     handleEventClickOnEventsList(
       eventCalendar,
@@ -50,8 +53,8 @@ const EventsList = ({ events }: EventsListProps) => {
     }
   }, [authUser, router]);
 
-  if(events?.length === 0) {
-    return null
+  if (events?.length === 0) {
+    return null;
   }
 
   if (!authUser) {
@@ -59,20 +62,20 @@ const EventsList = ({ events }: EventsListProps) => {
   }
 
   return (
-  <>
-    <div className="grid gap-4">
-      <ButtonLink
-        pathName={`/dashboard/calendar/${authUser.id}`}
-        label="Календарь"
-        icon={<CalendarFold />}
-      />
+    <>
+      <div className="grid gap-4">
+        <ButtonLink
+          pathName={`/dashboard/calendar/${authUser.id}`}
+          label="Календарь"
+          icon={<CalendarFold />}
+        />
 
-      <div className="rounded-lg overflow-hidden border w-full">
-        <EventsListTable table={table} handleRowClick={onEventClick}/>
+        <div className="rounded-lg overflow-hidden border w-full">
+          <EventsListTable table={table} handleRowClick={onEventClick} />
+        </div>
       </div>
-    </div>
-    <CalendarFormModal events={events} />
-  </>
+      <CalendarFormModal events={events} />
+    </>
   );
 };
 

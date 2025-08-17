@@ -9,8 +9,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
+} from "@/shared/components/ui/dialog";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import DelDealSkeleton from "../Skeletons/DelDealSkeleton";
 

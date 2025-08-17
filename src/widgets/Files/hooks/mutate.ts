@@ -3,11 +3,11 @@ import { useMutation } from "@tanstack/react-query";
 
 import { AxiosResponse } from "axios";
 
-import { logout } from "@/feature/auth/logout";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { deleteFile, downloadFile, uploadFile } from "../api/action_route";
 import { saveBlobToFile } from "../libs/helpers/saveBlobToFile";
@@ -46,20 +46,7 @@ export const useUploadFileYdxDisk = () => {
       });
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при загрузки файлов на Яндекс диск";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error);
     },
   });
 };
@@ -83,20 +70,7 @@ export const useDownLoadFile = () => {
       return saveBlobToFile(fileData, name);
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-      console.log(error, 'error useDownLoadFile')
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при загрузки файлов";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error);
     },
   });
 };
@@ -115,7 +89,7 @@ export const useDeleteFiles = (
       isSubmittingRef.current = true;
       try {
         await checkAuthorization(authUser?.id);
-        
+
         const responses = await Promise.all(
           data.map(({ localPath: filePath, id, dealType, userId, dealId }) =>
             deleteFile({ id, filePath, dealType, userId, dealId })
@@ -149,20 +123,7 @@ export const useDeleteFiles = (
       handleCloseDialog?.();
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при удалении файла";
-
-      TOAST.ERROR(errorMessage);
+      handleErrorSession(error);
     },
   });
 };

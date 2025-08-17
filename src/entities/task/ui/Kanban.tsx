@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 
 import { CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import { cn } from "@/shared/lib/utils";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
 
 import useDragEnd from "../hooks/useDragEnd";
 import { TaskWithUserInfo } from "../types";

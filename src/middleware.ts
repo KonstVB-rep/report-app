@@ -38,7 +38,7 @@ export default async function middleware(request: NextRequest) {
       try {
         await jwtVerify(accessToken, secretKey);
 
-        return NextResponse.redirect(new URL("/dashboard", request.url)); 
+        return NextResponse.redirect(new URL("/dashboard", request.url));
       } catch (err) {
         console.log(err, "middleware error");
         return NextResponse.next();

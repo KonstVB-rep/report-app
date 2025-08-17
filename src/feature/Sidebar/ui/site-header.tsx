@@ -8,17 +8,17 @@ import { usePathname } from "next/navigation";
 
 import { CalendarClock, SidebarIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/ui/mode-toggle";
-import { Separator } from "@/components/ui/separator";
-import { useSidebar } from "@/components/ui/sidebar";
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import HoverCardComponent from "@/shared/ui/HoverCard";
-import MobileMenu from "@/shared/ui/MobileMenu";
+import { Button } from "@/shared/components/ui/button";
+import { ModeToggle } from "@/shared/components/ui/mode-toggle";
+import { Separator } from "@/shared/components/ui/separator";
+import { useSidebar } from "@/shared/components/ui/sidebar";
+import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
+import MobileMenu from "@/shared/custom-components/ui/MobileMenu";
 
 const ProtectedByPermissions = dynamic(
-  () => import("@/shared/ui/Protect/ProtectedByPermissions"),
+  () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
   { ssr: false }
 );
 

@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 
 import { LogOut } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { logout } from "@/shared/auth/logout";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -13,10 +14,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { logout } from "@/feature/auth/logout";
+} from "@/shared/components/ui/dialog";
+import Overlay from "@/shared/custom-components/ui/Overlay";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
-import Overlay from "@/shared/ui/Overlay";
 
 const LogoutDialog = () => {
   const [loading, setLoading] = useState(false);

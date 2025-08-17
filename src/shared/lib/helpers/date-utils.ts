@@ -1,4 +1,3 @@
-
 // Операции
 export const DateUtils = {
   // Конец дня (23:59:59.999)
@@ -68,6 +67,6 @@ export const DateUtils = {
   },
 
   formatterLocaleRu(date: Date) {
-    return new Intl.DateTimeFormat("ru-RU").format(date)
+    return new Intl.DateTimeFormat("ru-RU").format(date);
   },
 };

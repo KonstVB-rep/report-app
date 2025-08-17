@@ -7,7 +7,7 @@ import React from "react";
 import Link from "next/link";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 type Props = {
   type: DealType;

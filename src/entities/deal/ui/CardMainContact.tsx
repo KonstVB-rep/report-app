@@ -11,21 +11,26 @@ const CardMainContact = ({
   phone: string | null;
   email: string | null | undefined;
 }) => {
-  const fields: { label: string; value?: string | null }[] = [
-    { label: "Имя", value: contact },
-    { label: "Телефон", value: phone },
-    { label: "Email", value: email },
+  const fields: {
+    label: string;
+    value?: string | null;
+    type: "name" | "phone" | "email";
+  }[] = [
+    { label: "Имя", value: contact, type: "name" },
+    { label: "Телефон", value: phone, type: "phone" },
+    { label: "Email", value: email, type: "email" },
   ];
   return (
     <div className="grid w-full">
       <div className="flex items-center justify-start gap-4">
         <div className="w-full flex flex-col items-start justify-start text-md gap-2">
-          {fields.map(({ label, value }) => (
+          {fields.map(({ label, value, type }) => (
             <CardInfo
               key={label}
               data={value}
               classNameData="flex items-center gap-4"
               title={label}
+              type={type || undefined}
             />
           ))}
         </div>

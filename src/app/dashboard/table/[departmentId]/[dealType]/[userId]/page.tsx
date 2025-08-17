@@ -17,12 +17,9 @@ import Loading from "./loading";
 
 const DealsInWork = ["projects", "retails", "contracts"];
 
-const PersonTable = dynamic(
-  () => import('../ui/PersonTable'),
-  { 
-    loading: () => <Loading />,
-  }
-);
+const PersonTable = dynamic(() => import("../ui/PersonTable"), {
+  loading: () => <Loading />,
+});
 
 const fetchData = async (
   queryClient: QueryClient,
@@ -66,7 +63,6 @@ const PersonTablePage = async ({
     console.log(error, "ErrorPersonTablePage");
     throw new Error((error as Error).message);
   }
-
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

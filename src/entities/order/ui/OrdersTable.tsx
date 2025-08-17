@@ -12,7 +12,6 @@ import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
-import useStoreUser from "@/entities/user/store/useStoreUser";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { DealTypeLabels } from "../../../app/dashboard/table/[departmentId]/[dealType]/ui/PersonTable";
@@ -30,10 +29,8 @@ const DataOrderTable = dynamic(() => import("./DataOrderTable"), {
 
 const OrdersTable = () => {
   const { data: orders, isPending, isFetching } = useGetOrders();
-  const { userId, dealType } = useParams();
-  const { authUser } = useStoreUser();
+  const { dealType } = useParams();
 
-  const isPageAuthUser = userId === authUser?.id;
   const isLoading = isPending || isFetching || !orders;
   const dealTypeLabel = DealTypeLabels[dealType as string];
 
@@ -49,7 +46,7 @@ const OrdersTable = () => {
           </p>
         </div>
 
-        {isPageAuthUser && <ButtonsGroupTable />}
+        <ButtonsGroupTable />
         <DataOrderTable
           columns={columnsOrder}
           data={orders}

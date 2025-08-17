@@ -2,8 +2,8 @@ import React from "react";
 
 import { Plus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import DialogComponent from "@/shared/ui/DialogComponent";
+import { Button } from "@/shared/components/ui/button";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 
 import CreateTaskForm from "../Forms/CreateTaskForm";
 

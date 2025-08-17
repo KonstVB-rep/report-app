@@ -6,10 +6,10 @@ import dynamic from "next/dynamic";
 
 import { Plus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import FormOrderSkeleton from "@/entities/order/ui/FormOrderSkeleton";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import ProtectedByDepartmentAffiliation from "@/shared/ui/Protect/ProtectedByDepartmentAffiliation";
+import { Button } from "@/shared/components/ui/button";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation";
 
 import FormDealSkeleton from "../Skeletons/FormDealSkeleton";
 

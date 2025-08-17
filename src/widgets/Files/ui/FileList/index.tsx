@@ -7,6 +7,7 @@ import { FileWarning } from "lucide-react";
 
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
 
+import { useDownLoadFile } from "../../hooks/mutate";
 import { useGetHrefFilesDealFromDB } from "../../hooks/query";
 import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
 import { getFormatFile } from "../../libs/helpers/getFormatFile";
@@ -15,7 +16,6 @@ import { FileInfo } from "../../types";
 import DeleteFile from "../DeleteFile";
 import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
 import SkeletonFiles from "../SkeletonFiles";
-import { useDownLoadFile } from "../../hooks/mutate";
 
 type FileListProps = {
   data: {
@@ -71,9 +71,9 @@ const FileItem = ({
   const fileType = getFileType(formatFile);
   const fileName = getFileNameWithoutUuid(file.name);
 
-   const { mutate: handleDownload, isPending } = useDownLoadFile();
+  const { mutate: handleDownload, isPending } = useDownLoadFile();
 
-    const handleDownloadFile = () => {
+  const handleDownloadFile = () => {
     handleDownload({ localPath: file.localPath, name: file.name });
   };
 
@@ -84,7 +84,6 @@ const FileItem = ({
     leave: { opacity: 0, transform: "translateY(-20px)" },
     config: { duration: 200, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Эквивалент "easeInOut"
   });
-
 
   return transitions((styles, item) => (
     <animated.div
@@ -103,15 +102,15 @@ const FileItem = ({
         handleDownloadFile={handleDownloadFile}
         isPending={isPending}
       />
-       {!isPending && (
-          <input
-            type="checkbox"
-            id={file.name}
-            onChange={onSelect}
-            checked={selected}
-            className="absolute hidden checked:block group-hover:block group-focus-visible:block -right-1 -top-1 z-[11] h-5 w-5 cursor-pointer accent-red-700"
-          />
-        )}
+      {!isPending && (
+        <input
+          type="checkbox"
+          id={file.name}
+          onChange={onSelect}
+          checked={selected}
+          className="absolute hidden checked:block group-hover:block group-focus-visible:block -right-1 -top-1 z-[11] h-5 w-5 cursor-pointer accent-red-700"
+        />
+      )}
     </animated.div>
   ));
 };
@@ -202,7 +201,7 @@ const FileList = ({ data }: FileListProps) => {
           )}
 
           <animated.ul className="flex flex-wrap gap-2">
-            {filesTransition((styles, file) => 
+            {filesTransition((styles, file) =>
               file ? (
                 <animated.li style={styles} key={file.id}>
                   <FileItem

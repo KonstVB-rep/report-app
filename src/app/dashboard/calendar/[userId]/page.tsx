@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { ListTodo } from "lucide-react";
 
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
-import { useSidebar } from "@/components/ui/sidebar";
 import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
-import ButtonLink from "@/shared/ui/Buttons/ButtonLink";
+import { useSidebar } from "@/shared/components/ui/sidebar";
+import ButtonLink from "@/shared/custom-components/ui/Buttons/ButtonLink";
 
 import Loading from "./loading";
 
@@ -20,7 +20,7 @@ const FullCalendarComponent = dynamic(
 );
 
 const CalendarFormModal = dynamic(
-  () => import("@/feature/calendar/ui/CalendarFormModal"),
+  () => import("@/feature/calendar/ui/CalendarFormModal")
   // {
   //   loading: () => <Loading />,
   // }

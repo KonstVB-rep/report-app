@@ -5,8 +5,8 @@ import { DropzoneInputProps, DropzoneRootProps } from "react-dropzone";
 
 import { CloudUpload, Loader, Trash2, Upload, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
 
 type FormUploadFilesProps = {
   inputRef: {
@@ -68,7 +68,7 @@ const FormUploadFiles = ({
                   type="button"
                   size="icon"
                   variant="destructive"
-                  onClick={() => handleSelectFile(file.name)} 
+                  onClick={() => handleSelectFile(file.name)}
                   className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md"
                   title="Удалить из списка"
                 >

@@ -1,6 +1,6 @@
 import { persist } from "zustand/middleware";
 
-import { checkUserPermission } from "@/feature/auth/lib/checkUserPermission";
+import { checkUserPermission } from "@/shared/lib/helpers/checkUserPermission";
 import { create } from "@/shared/lib/helpers/сreate";
 
 import { User } from "../types";
