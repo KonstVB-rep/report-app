@@ -5,9 +5,9 @@ import React from "react";
 
 import { X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
 import useAnimateOnDataChange from "@/shared/hooks/useAnimateOnDataChange";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
 import getFileNameWithoutUuid from "@/widgets/Files/libs/helpers/getFileNameWithoutUuid";
 
 type FormDeleteFileProps = {

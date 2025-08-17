@@ -6,18 +6,17 @@ import { animated, useSpring } from "@react-spring/web";
 import { useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-
 import { treeifyError } from "zod";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { login } from "@/feature/auth/login";
+import { Card, CardContent } from "@/shared/components/ui/card";
+import { Form } from "@/shared/components/ui/form";
+import SubmitFormActionBtn from "@/shared/custom-components/ui/Buttons/SubmitFormActionBtn";
+import InputFormPassword from "@/shared/custom-components/ui/Inputs/InputFormPassword";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { cn } from "@/shared/lib/utils";
-import SubmitFormActionBtn from "@/shared/ui/Buttons/SubmitFormActionBtn";
-import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { loginFormSchema, LoginSchema } from "../model/schema";
 

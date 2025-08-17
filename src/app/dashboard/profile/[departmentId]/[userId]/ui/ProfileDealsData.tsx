@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { useGetDealsByDateRange } from "@/entities/deal/hooks/query";
 import { DateRange } from "@/entities/deal/types";
 import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants";
+import { Button } from "@/shared/components/ui/button";
+import { OverlayLocal } from "@/shared/custom-components/ui/Overlay";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 import { formatterCurrency } from "@/shared/lib/utils";
-import { OverlayLocal } from "@/shared/ui/Overlay";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
 
 const dateRanges = [
   { name: "week", title: "неделя" },
@@ -97,7 +97,7 @@ const ProfileDealsData = ({ user }: { user: User }) => {
               </span>
             </div>
             <div className="p-2 rounded-md bg-muted">
-              Общая сумма все кп:{" "}
+              Общая сумма КП:{" "}
               {formatterCurrency.format(Number(data?.projects.money.sumCp))}
             </div>
             <div className="p-2 rounded-md bg-muted">
@@ -121,7 +121,7 @@ const ProfileDealsData = ({ user }: { user: User }) => {
               </span>
             </div>
             <div className="p-2 rounded-md bg-muted">
-              Общая сумма все КП:{" "}
+              Общая сумма КП:{" "}
               {formatterCurrency.format(Number(data?.retails.money.sumCp))}
             </div>
             <div className="p-2 rounded-md bg-muted">

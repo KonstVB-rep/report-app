@@ -31,7 +31,7 @@ export const ProjectFormSchema = z
     id: z.string().optional(),
     dateRequest: z.preprocess((val) => {
       if (val instanceof Date) return val.toISOString();
-      if (!val) return ""; 
+      if (!val) return "";
       return val;
     }, z.string()),
     nameDeal: z.string({
@@ -69,9 +69,9 @@ export const ProjectFormSchema = z
       if (val instanceof Date) return val.toISOString();
       if (!val) return null;
       return val;
-    }, z.string()),
+    }, z.string().nullable().optional()),
     orderId: z.string().nullable().optional(),
-    resource: z.string().optional(),
+    resource: z.string().nullable().optional(),
     contacts: z.array(SingleContactSchema),
     managersIds: z.array(
       z.object({
@@ -91,6 +91,15 @@ export const ProjectFormSchema = z
         message: "Укажите планируемую дату подключения",
         path: ["plannedDateConnection"],
         input: data.plannedDateConnection,
+      });
+    }
+
+    if (data.dealStatus !== StatusProject.REJECT && !data.resource?.trim()) {
+      ctx.issues.push({
+        code: "custom",
+        message: "Укажите ресурс",
+        path: ["resource"],
+        input: data.resource,
       });
     }
 

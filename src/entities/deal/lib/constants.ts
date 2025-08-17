@@ -151,7 +151,6 @@ export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   CLOSED: "Закрыт",
 } as const;
 
-
 export type AllStatusKeys =
   | keyof typeof StatusProject
   | keyof typeof StatusRetail;
@@ -212,10 +211,10 @@ export const LABELS = {
 } as const;
 
 export const FormatedParamsType = {
-  'projects' : DealType.PROJECT,
-  'retails' : DealType.RETAIL,
-  'orders' : DealType.ORDER,
-  'contracts': 'CONTRACT'
-}
+  projects: DealType.PROJECT,
+  retails: DealType.RETAIL,
+  orders: DealType.ORDER,
+  contracts: "CONTRACT",
+};
 
 export type FormatedParamsTypeKey = keyof typeof FormatedParamsType;

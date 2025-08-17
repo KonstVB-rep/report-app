@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { sendNotification } from "../api";
 import { useUpdateChatBot } from "./mutate";
@@ -88,7 +88,7 @@ const useChatBot = (chatName: string) => {
       setIsRefech(false);
     }
   }, [bot, isActiveBot]);
-  return {isFetchingRequest, isActiveBot, handleChange};
+  return { isFetchingRequest, isActiveBot, handleChange };
 };
 
 export default useChatBot;

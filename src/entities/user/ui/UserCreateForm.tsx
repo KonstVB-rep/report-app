@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
 
+import { DepartmentLabels } from "@/entities/department/types";
 import {
   Form,
   FormControl,
@@ -11,17 +12,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { DepartmentLabels } from "@/entities/department/types";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import InputFormPassword from "@/shared/ui/Inputs/InputFormPassword";
-import InputPhoneForm from "@/shared/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import MultiSelectComponent from "@/shared/ui/MultiSlectComponent";
-import Overlay from "@/shared/ui/Overlay";
-import SelectFormField from "@/shared/ui/SelectForm/SelectFormField";
-import { TOAST } from "@/shared/ui/Toast";
+} from "@/shared/components/ui/form";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import InputFormPassword from "@/shared/custom-components/ui/Inputs/InputFormPassword";
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import MultiSelectComponent from "@/shared/custom-components/ui/MultiSlectComponent";
+import Overlay from "@/shared/custom-components/ui/Overlay";
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useCreateUser } from "../hooks/mutate";
 import { RolesUser } from "../model/objectTypes";

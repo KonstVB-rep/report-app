@@ -91,7 +91,7 @@ export type Contact = {
 
 export type DealUnionType = "retail" | "project";
 export type DealsUnionType = "retails" | "projects";
-export type TableType = 'projects' | 'retails' | 'contracts';
+export type TableType = "projects" | "retails" | "contracts";
 
 export type DateRange = "week" | "month" | "threeMonths" | "halfYear" | "year";
 
@@ -141,5 +141,3 @@ export type RetailWithManagersIds = Omit<
 export type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
 
 export type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
-
-

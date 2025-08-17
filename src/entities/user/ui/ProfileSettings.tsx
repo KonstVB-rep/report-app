@@ -7,7 +7,7 @@ import Link from "next/link";
 
 import { EllipsisVertical, UserRound } from "lucide-react";
 
-import HoverCardComponent from "@/shared/ui/HoverCard";
+import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
 
 import { User } from "../types";
 

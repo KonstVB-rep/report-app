@@ -8,8 +8,8 @@ import { DateRange } from "react-day-picker";
 import { endOfDay, startOfDay } from "date-fns";
 import { Ban, CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 
-// import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+// import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Badge } from "@/shared/components/ui/badge";
 
 import { TaskWithUserInfo } from "../types";
 import {

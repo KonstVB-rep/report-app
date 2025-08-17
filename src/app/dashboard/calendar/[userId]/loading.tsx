@@ -1,12 +1,16 @@
-'use client'
-import { useSidebar } from "@/components/ui/sidebar";
+"use client";
+
 import React from "react";
+
+import { useSidebar } from "@/shared/components/ui/sidebar";
 
 const Loading = () => {
   const { isMobile } = useSidebar();
 
-  if(isMobile){
-    return <div className="w-full h-[50vh] bg-muted rounded-md animate-pulse"/>
+  if (isMobile) {
+    return (
+      <div className="w-full h-[50vh] bg-muted rounded-md animate-pulse" />
+    );
   }
   return (
     <section

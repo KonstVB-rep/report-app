@@ -64,7 +64,7 @@ const useCalendarMobile = () => {
     selectedDate,
     eventDates,
     handleSelect,
-    isPending
+    isPending,
   };
 };
 

@@ -7,16 +7,16 @@ import Link from "next/link";
 
 import { BookText, ChartColumnBig, TableProperties } from "lucide-react";
 
+import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
+import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants";
+import { DepartmentUserItem } from "@/entities/department/types";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
-import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants";
-import { DepartmentUserItem } from "@/entities/department/types";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
+} from "@/shared/components/ui/accordion";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import MarketActiveItemSidebar from "./MarketActiveItemSidebar";
 

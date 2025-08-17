@@ -1,14 +1,19 @@
+import ProjectForm from "@/entities/deal/ui/Forms/ProjectForm";
+import RetailForm from "@/entities/deal/ui/Forms/RetailForm";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProjectForm from "@/entities/deal/ui/Forms/ProjectForm";
-import RetailForm from "@/entities/deal/ui/Forms/RetailForm";
-import DialogComponent from "@/shared/ui/DialogComponent";
+} from "@/shared/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/shared/components/ui/tabs";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 
 import { OrderResponse } from "../types";
 

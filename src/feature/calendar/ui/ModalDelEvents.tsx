@@ -4,8 +4,8 @@ import { Loader } from "lucide-react";
 
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
-import { Button } from "@/components/ui/button";
-import DialogComponent from "@/shared/ui/DialogComponent";
+import { Button } from "@/shared/components/ui/button";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 
 import { EventInputType } from "../types";
 

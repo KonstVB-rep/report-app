@@ -1,10 +1,10 @@
 import React, { Dispatch, SetStateAction } from "react";
 
-import { Button } from "@/components/ui/button";
-import { DialogClose } from "@/components/ui/dialog";
-import SubmitFormButton from "@/shared/ui/Buttons/SubmitFormButton";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/ui/Overlay";
+import { Button } from "@/shared/components/ui/button";
+import { DialogClose } from "@/shared/components/ui/dialog";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import Overlay from "@/shared/custom-components/ui/Overlay";
 
 import { useDeleteTask } from "../../hooks/mutate";
 import { useGetTask } from "../../hooks/query";

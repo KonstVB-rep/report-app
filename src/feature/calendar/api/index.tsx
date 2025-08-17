@@ -4,12 +4,14 @@ import { endOfDay, startOfDay } from "date-fns";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
+import axiosInstance from "@/shared/api/axiosInstance";
 import { handleError } from "@/shared/api/handleError";
 
-import axiosInstance from "@/shared/api/axiosInstance";
-import { EventInputType, EventDataType } from "../types";
+import { EventDataType, EventInputType } from "../types";
 
-export const createEventCalendar = async (eventData: Omit<EventDataType, 'id'>) => {
+export const createEventCalendar = async (
+  eventData: Omit<EventDataType, "id">
+) => {
   try {
     const data = await handleAuthorization();
     const { userId } = data!;
@@ -56,7 +58,7 @@ export const updateEventCalendar = async (eventData: EventDataType) => {
         start: new Date(start),
         end: new Date(end),
         allDay,
-        notified: false
+        notified: false,
       },
     });
 
@@ -67,7 +69,7 @@ export const updateEventCalendar = async (eventData: EventDataType) => {
   }
 };
 
-export const deleteEventCalendar = async (eventData: {id: string}) => {
+export const deleteEventCalendar = async (eventData: { id: string }) => {
   try {
     const data = await handleAuthorization();
     if (!data) throw new Error("Не авторизован");
@@ -137,7 +139,7 @@ export const getEventsCalendarUserToday = async (): Promise<
       where: {
         userId,
         start: {
-          gte: todayStart, 
+          gte: todayStart,
           lte: todayEnd,
         },
       },
@@ -169,9 +171,7 @@ export const sendNotification = async (
   chatId: string,
   botName: string
 ) => {
-
   try {
-
     await axiosInstance.post(
       `/telegram/send-message-calendar-bot`,
       {

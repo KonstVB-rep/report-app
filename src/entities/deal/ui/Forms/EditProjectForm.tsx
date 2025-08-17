@@ -9,7 +9,7 @@ import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { Resolver, useForm } from "react-hook-form";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useMutationUpdateProject } from "../../hooks/mutate";
 import { useGetProjectById } from "../../hooks/query";

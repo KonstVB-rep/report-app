@@ -11,12 +11,12 @@ import {
   typeofDirections,
   typeofStatus,
 } from "@/app/dashboard/table/[departmentId]/[dealType]/[userId]/model/columns-data-project";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/shared/components/ui/separator";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation";
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
-import MotionDivY from "@/shared/ui/MotionComponents/MotionDivY";
-import ProtectedByDepartmentAffiliation from "@/shared/ui/Protect/ProtectedByDepartmentAffiliation";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetProjectById } from "../hooks/query";

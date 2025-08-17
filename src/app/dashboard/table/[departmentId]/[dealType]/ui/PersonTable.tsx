@@ -1,5 +1,6 @@
 "use client";
 
+import { PermissionEnum } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import React from "react";
@@ -7,20 +8,25 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
+import { useDealsUser } from "@/entities/deal/hooks/query";
+import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
+import {
+  ContractResponse,
+  ProjectResponse,
+  RetailResponse,
+  TableType,
+} from "@/entities/deal/types";
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
-import NotFoundByPosition from "@/shared/ui/Redirect/NotFoundByPosition";
-import { DealBase } from "@/shared/ui/Table/model/types";
-import { useDealsUser } from "@/entities/deal/hooks/query";
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import { ContractResponse, ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types";
-import AccessDeniedMessage from "@/shared/ui/AccessDeniedMessage";
-import { PermissionEnum } from "@prisma/client";
-import { columnsDataProject } from "../[userId]/model/columns-data-project";
-import { columnsDataContract } from "../[userId]/model/columns-data-contracts";
-import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 import { OrderResponse } from "@/entities/order/types";
+import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage";
+import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition";
+import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
+
+import { columnsDataContract } from "../[userId]/model/columns-data-contracts";
+import { columnsDataProject } from "../[userId]/model/columns-data-project";
+import { columnsDataRetail } from "../[userId]/model/columns-data-retail";
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
@@ -29,30 +35,34 @@ export const DealTypeLabels: Record<string, string> = {
   orders: "Заявки",
 };
 
-const DataTable = dynamic(() => import("@/shared/ui/Table/DataTable"), {
+const DealsTable = dynamic(() => import("@/feature/deals/DealsTable"), {
   ssr: false,
   loading: () => <TableRowsSkeleton />,
 });
 
-
-const Columns = (type: TableType): ColumnDef<ProjectResponse, unknown>[] | ColumnDef<RetailResponse, unknown>[] | ColumnDef<ContractResponse, unknown>[] |  ColumnDef<OrderResponse, unknown>[] => {
+const Columns = (
+  type: TableType
+):
+  | ColumnDef<ProjectResponse, unknown>[]
+  | ColumnDef<RetailResponse, unknown>[]
+  | ColumnDef<ContractResponse, unknown>[]
+  | ColumnDef<OrderResponse, unknown>[] => {
   switch (type) {
-    case 'projects':
+    case "projects":
       return columnsDataProject;
-    case 'retails':
+    case "retails":
       return columnsDataRetail;
-    case 'contracts':
+    case "contracts":
       return columnsDataContract;
     default:
       throw new Error(`Unknown table type: ${type}`);
   }
 };
 
-
 // const getRowLink = (row: DealBase): string => {
 //   if (row.type === 'PROJECT') {
 //     return `/dashboard/deal/project/${row.id}`;
-//   } 
+//   }
 //   else if (row.type === 'RETAIL') {
 //     return `/dashboard/deal/retail/${row.id}`;
 //   }
@@ -62,28 +72,27 @@ const Columns = (type: TableType): ColumnDef<ProjectResponse, unknown>[] | Colum
 // };
 
 const PersonTable = () => {
- const { userId, dealType } = useParams<{
-  userId: string;
-  dealType: TableType; // если dealType имеет конкретные значения
-}>();
+  const { userId, dealType } = useParams<{
+    userId: string;
+    dealType: TableType;
+  }>();
 
   const hasAccess = hasAccessToData(
-      userId as string,
-      PermissionEnum.VIEW_USER_REPORT
+    userId as string,
+    PermissionEnum.VIEW_USER_REPORT
+  );
+
+  const { data = [] } = useDealsUser(
+    dealType,
+    hasAccess ? (userId as string) : undefined
+  );
+
+  if (!hasAccess)
+    return (
+      <AccessDeniedMessage
+        error={{ message: "у вас нет доступа к этому разделу" }}
+      />
     );
-  
-    const { data = [] } = useDealsUser(dealType,
-      hasAccess ? (userId as string) : undefined
-    );
-  
-  
-    if (!hasAccess)
-      return (
-        <AccessDeniedMessage
-          error={{ message: "у вас нет доступа к этому разделу" }}
-        />
-      );
-  
 
   return (
     <NotFoundByPosition>
@@ -99,7 +108,7 @@ const PersonTable = () => {
           </div>
 
           <ButtonsGroupTable />
-          <DataTable
+          <DealsTable
             columns={Columns(dealType as TableType) as ColumnDef<DealBase>[]}
             data={data as DealBase[]}
           />

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { Resolver, useForm } from "react-hook-form";
 
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useCreateOrder } from "../hooks/mutate";
 import { defaultOrderValues } from "../lib/constants";

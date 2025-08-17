@@ -10,8 +10,8 @@ import { useParams, usePathname } from "next/navigation";
 import { Redo2 } from "lucide-react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import Overlay from "@/shared/ui/Overlay";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
+import Overlay from "@/shared/custom-components/ui/Overlay";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import { DealsUnionType } from "../types";
 

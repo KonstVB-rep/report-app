@@ -4,7 +4,7 @@ import { TaskPriority, TaskStatus } from "@prisma/client";
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { Resolver, useForm } from "react-hook-form";
 
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useUpdateTask } from "../../hooks/mutate";
 import { useGetTask } from "../../hooks/query";

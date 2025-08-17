@@ -1,0 +1,45 @@
+import React from "react";
+import { DateRange } from "react-day-picker";
+
+import { X } from "lucide-react";
+
+import { Button } from "@/shared/components/ui/button";
+import { DateRangePicker } from "@/shared/components/ui/date-range-picker";
+
+interface DateRangeFilterProps {
+  onDateChange: (date: DateRange | undefined) => void;
+  onClearDateFilter: (columnId: string) => void;
+  value?: DateRange;
+}
+
+const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
+  onDateChange,
+  onClearDateFilter,
+  value,
+}) => {
+  const handleClear = () => {
+    onDateChange(undefined);
+    onClearDateFilter("dateRequest");
+  };
+
+  return (
+    <div
+      className={`relative flex max-w-fit items-center gap-4 rounded border ${
+        value ? "border-solid" : "border-dashed"
+      } border-muted-foreground`}
+    >
+      <DateRangePicker value={value} onValueChange={onDateChange} />
+      {value && (
+        <Button
+          variant="outline"
+          onClick={handleClear}
+          className="absolute right-0 h-full p-2"
+        >
+          <X />
+        </Button>
+      )}
+    </div>
+  );
+};
+
+export default DateRangeFilter;

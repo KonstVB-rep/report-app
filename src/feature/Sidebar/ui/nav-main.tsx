@@ -1,7 +1,7 @@
 "use client";
 
-import { SidebarGroup, SidebarMenu } from "@/components/ui/sidebar";
 import { DepartmentListItemType } from "@/entities/department/types";
+import { SidebarGroup, SidebarMenu } from "@/shared/components/ui/sidebar";
 
 import DepartmentPersonsList from "./DepartmentPersonsList";
 

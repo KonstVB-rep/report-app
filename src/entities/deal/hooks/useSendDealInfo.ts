@@ -18,9 +18,7 @@ const useSendDealInfo = <T extends FieldValues>(
     { userId: firstManagerId as string },
   ]);
   const [firstManager, setFirstManager] = useState<string>("");
-  const [selectedContacts, setSelectedContacts] = useState<
-    Contact[]
-  >([]);
+  const [selectedContacts, setSelectedContacts] = useState<Contact[]>([]);
   const [isAddContact, setIsAddContact] = useState(false);
 
   const handleDeleteContact = useCallback((id: string) => {

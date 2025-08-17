@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 
 import { Plus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
+import { Button } from "@/shared/components/ui/button";
 
 import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
 

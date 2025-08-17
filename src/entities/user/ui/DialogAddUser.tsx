@@ -8,9 +8,9 @@ import dynamic from "next/dynamic";
 
 import { SquarePlus } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import DialogComponent from "@/shared/ui/DialogComponent";
-import ProtectedByPermissions from "@/shared/ui/Protect/ProtectedByPermissions";
+import { Button } from "@/shared/components/ui/button";
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import UserFormSkeleton from "./UserFormSkeleton";
 

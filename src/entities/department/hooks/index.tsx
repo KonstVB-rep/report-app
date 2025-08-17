@@ -2,8 +2,8 @@ import { Prisma } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { getDepartmentsWithUsers } from "../api";
 

@@ -4,13 +4,13 @@ import React from "react";
 
 import dynamic from "next/dynamic";
 
+import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
+} from "@/shared/components/ui/dialog";
 
 const EditOrderForm = dynamic(() => import("./EditOrderForm"), {
   ssr: false,

@@ -7,8 +7,12 @@ import { useParams } from "next/navigation";
 
 import { Trash } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/shared/components/ui/dialog";
 
 import { useDeleteUser } from "../hooks/mutate";
 import { useGetUser } from "../hooks/query";

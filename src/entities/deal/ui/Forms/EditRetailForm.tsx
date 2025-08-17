@@ -7,8 +7,8 @@ import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { Resolver, useForm } from "react-hook-form";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { formatterCurrency } from "@/shared/lib/utils";
-import { TOAST } from "@/shared/ui/Toast";
 
 import { useMutationUpdateRetail } from "../../hooks/mutate";
 import { useGetRetailById } from "../../hooks/query";

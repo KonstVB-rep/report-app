@@ -2,8 +2,8 @@ import React from "react";
 
 import { ContactRound, Mail, PhoneOutgoing } from "lucide-react";
 
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { cn } from "@/shared/lib/utils";
-import TooltipComponent from "@/shared/ui/TooltipComponent";
 
 const ICONS = {
   phone: <PhoneOutgoing className="icon-deal_info" />,

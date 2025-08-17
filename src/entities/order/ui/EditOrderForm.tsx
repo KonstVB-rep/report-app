@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Resolver, useForm } from "react-hook-form";
 
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
-import { TOAST } from "@/shared/ui/Toast";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { useUpdateOrder } from "../hooks/mutate";
 import { useGetOrderById } from "../hooks/query";

@@ -8,26 +8,26 @@ import clsx from "clsx";
 import { ChevronRight } from "lucide-react";
 
 import {
+  DepartmentLabels,
+  DepartmentListItemType,
+} from "@/entities/department/types";
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@/shared/components/ui/accordion";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "@/shared/components/ui/collapsible";
 import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-} from "@/components/ui/sidebar";
-import {
-  DepartmentLabels,
-  DepartmentListItemType,
-} from "@/entities/department/types";
+} from "@/shared/components/ui/sidebar";
 
 import { DepartmentLinks } from "./DepartmentLinks";
 import LinkProfile from "./LinkProfile";
