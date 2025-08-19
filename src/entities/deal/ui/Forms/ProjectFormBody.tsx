@@ -100,6 +100,11 @@ const ProjectFormBody = <T extends FieldValues>({
     name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
   });
 
+  const watchedContacts = useWatch({
+    control: form.control,
+    name: contactsKey as Path<T>,
+  });
+
   const { getValues } = form;
 
   useEffect(() => {
@@ -139,10 +144,10 @@ const ProjectFormBody = <T extends FieldValues>({
   }, [form, watchedValues]);
 
   useEffect(() => {
-    if (contactsKey) {
-      setContacts(getValues(contactsKey as Path<T>));
+    if (watchedContacts) {
+      setContacts(watchedContacts);
     }
-  }, [contactsKey, getValues, setContacts]);
+  }, [watchedContacts, setContacts]);
 
   const getError = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
