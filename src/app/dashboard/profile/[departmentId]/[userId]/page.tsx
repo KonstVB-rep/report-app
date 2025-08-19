@@ -58,7 +58,7 @@ const ProfilePage = () => {
               phone={user?.phone}
               position={user?.position}
             />
-            
+
             <ProtectedByPermissions
               permissionArr={[PermissionEnum.USER_MANAGEMENT]}
             >
@@ -73,7 +73,6 @@ const ProfilePage = () => {
             <div className="grid gap-2">
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Отдел:</span>{" "}
-
                 <span className="first-letter:capitalize">
                   {
                     DepartmentLabels[
@@ -85,7 +84,6 @@ const ProfilePage = () => {
 
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Должность:</span>{" "}
-
                 <span className="first-letter:capitalize">
                   {user?.position}
                 </span>
@@ -96,7 +94,6 @@ const ProfilePage = () => {
               >
                 <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                   <span className="first-letter:capitalize">Роль:</span>{" "}
-
                   <span className="first-letter:capitalize">
                     {RolesUser[user?.role as keyof typeof RolesUser]}
                   </span>

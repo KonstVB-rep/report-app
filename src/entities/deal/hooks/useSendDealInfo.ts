@@ -7,7 +7,8 @@ import { Contact } from "../types";
 
 const useSendDealInfo = <T extends FieldValues>(
   onSubmit: (data: T) => void,
-  managerId: string
+  managerId: string,
+  additionalContacts: Contact[] = []
 ) => {
   const { userId } = useParams();
 
@@ -43,7 +44,8 @@ const useSendDealInfo = <T extends FieldValues>(
 
   useEffect(() => {
     setFirstManager(firstManagerId as string);
-  }, [firstManagerId]);
+    setContacts(additionalContacts);
+  }, [additionalContacts, firstManagerId]);
 
   return {
     contacts,

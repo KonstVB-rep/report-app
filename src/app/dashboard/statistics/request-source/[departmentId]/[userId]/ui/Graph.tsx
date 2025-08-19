@@ -1,17 +1,20 @@
 import React from "react";
+
 import {
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
   LabelList,
+  LabelProps,
   ResponsiveContainer,
   XAxis,
   YAxis,
-  LabelProps
 } from "recharts";
-import { COLORS } from "../lib/constants";
+
 import useCurrentTheme from "@/shared/hooks/useCurrentTheme";
+
+import { COLORS } from "../lib/constants";
 
 type DataType = { name: string; value: number }[];
 
@@ -56,7 +59,7 @@ const CustomLabel: React.FC<CustomLabelProps> = (props) => {
 
 interface GraphProps {
   data: DataType;
-  className: string
+  className: string;
 }
 
 const Graph: React.FC<GraphProps> = ({ data, className }) => {
@@ -80,12 +83,15 @@ const Graph: React.FC<GraphProps> = ({ data, className }) => {
 
           <Bar dataKey="value" radius={[2, 2, 0, 0]} barSize={30}>
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
             ))}
-            <LabelList 
-              dataKey="value" 
-              position="top" 
-              content={<CustomLabel />} 
+            <LabelList
+              dataKey="value"
+              position="top"
+              content={<CustomLabel />}
             />
           </Bar>
         </BarChart>

@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  getAdditionalContacts,
   getAllProjectsByDepartment,
   getAllRetailsByDepartment,
   getContractsUser,
@@ -49,6 +50,19 @@ export const getAllRetailsByDepartmentQuery = async (departmentId: string) => {
     return await getAllRetailsByDepartment(departmentId);
   } catch (error) {
     console.log(error, "Ошибка getAllRetailsByDepartmentQuery");
+    throw new Error((error as Error).message);
+  }
+};
+
+export const getAdditionalContractsQuery = async (dealId: string) => {
+  try {
+    if (dealId) {
+      return await getAdditionalContacts(dealId);
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.log(error, "Ошибка getAdditionalContractsQuery");
     throw new Error((error as Error).message);
   }
 };

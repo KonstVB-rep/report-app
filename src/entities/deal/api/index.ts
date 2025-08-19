@@ -1496,3 +1496,22 @@ export const deleteDeal = async (
     return handleError((error as Error).message);
   }
 };
+
+export const getAdditionalContacts = async (dealId: string) => {
+  try {
+    await handleAuthorization();
+
+    return await prisma.additionalContact.findMany({
+      where: {
+        projects: {
+          some: {
+            id: dealId,
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
