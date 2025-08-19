@@ -1,7 +1,7 @@
 import { DealType } from "@prisma/client";
 import { ColumnDef, Row } from "@tanstack/react-table";
 
-import React, { Suspense } from "react";
+import React from "react";
 import { useCallback } from "react";
 
 import { useParams } from "next/navigation";
@@ -26,7 +26,6 @@ interface DealsTableProps<T extends DealBase> {
 const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
   const { dealType } = useParams<{ dealType: string }>();
 
-  // Мемоизируем функцию создания контекстного меню
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =
     useCallback(
       (
@@ -50,16 +49,14 @@ const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
           />
         ),
       }),
-      [] // Зависимости, если нужны
+      []
     );
 
   return (
     <TableProvider<T>
       getContextMenuActions={getContextMenuActions}
       renderAdditionalInfo={(dealId: string) => (
-        <Suspense fallback={<div>Загрузка контактов...</div>}>
           <AdditionalContacts dealId={dealId} />
-        </Suspense>
       )}
     >
       <DataTable {...props}>

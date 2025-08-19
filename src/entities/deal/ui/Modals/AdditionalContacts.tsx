@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useGetAdditionalContacts } from "../../hooks/query";
 import { Contact } from "../../types";
 
 const AdditionalContacts = ({ dealId }: { dealId: string }) => {
-  const [showEmptyNote, setShowEmptyNote] = React.useState(true);
+  const [showEmptyNote, setShowEmptyNote] = useState(true);
   const {
     data: additionalContacts,
     isPending,
@@ -63,7 +63,6 @@ const AdditionalContacts = ({ dealId }: { dealId: string }) => {
           </ul>
         </div>
       ))}
-      {/* <div className="absolute bottom-0 w-full h-5 bg-primary-foreground" /> */}
     </div>
   );
 };
