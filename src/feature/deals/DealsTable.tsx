@@ -1,7 +1,7 @@
 import { DealType } from "@prisma/client";
 import { ColumnDef, Row } from "@tanstack/react-table";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useCallback } from "react";
 
 import { useParams } from "next/navigation";
