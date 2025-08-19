@@ -4,24 +4,19 @@ import { ColumnDef, Table } from "@tanstack/react-table";
 
 import dynamic from "next/dynamic";
 
-import { Loader } from "lucide-react";
-
 import { DataTableFiltersProvider } from "@/shared/custom-components/ui/Table/tableFilters/context/DataTableFiltersProvider";
 import FiltersManagement from "@/shared/custom-components/ui/Table/tableFilters/ui/FiltersManagement";
 import { useTableState } from "@/shared/hooks/useTableState";
 
 import ButtonExportTableXls from "../Buttons/ButtonExportTableXls";
 import DebouncedInput from "../DebouncedInput";
+import LoaderCircle from "../Loader";
 import { DealBase } from "./model/types";
 import TableComponent from "./TableComponent";
 
 const FiltersBlock = dynamic(() => import("../Filters/FiltersBlock"), {
   ssr: false,
-  loading: () => (
-    <div className="flex justify-center items-center h-20 bg-muted rounded-md">
-      <Loader className="animate-spin" />
-    </div>
-  ),
+  loading: () => <LoaderCircle />,
 });
 
 interface DataTableProps<T extends DealBase> {
