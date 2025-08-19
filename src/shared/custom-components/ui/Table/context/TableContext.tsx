@@ -12,6 +12,7 @@ export type TableContextType<T> = {
     edit: React.ReactNode;
     delete: React.ReactNode;
   };
+  renderAdditionalInfo?: (id: string) => React.ReactNode;
 };
 
 const TableContext = createContext<TableContextType<unknown> | null>(null);
@@ -29,18 +30,20 @@ function useTableContext<T>() {
 interface TableProviderProps<T> {
   children: React.ReactNode;
   getContextMenuActions: TableContextType<T>["getContextMenuActions"];
+  renderAdditionalInfo?: (id: string) => React.ReactNode;
 }
 
 function TableProvider<T>({
   children,
   getContextMenuActions,
+  renderAdditionalInfo,
 }: TableProviderProps<T>) {
-  // Мемоизируем значение контекста
   const contextValue = useMemo<TableContextType<T>>(
     () => ({
       getContextMenuActions,
+      renderAdditionalInfo,
     }),
-    [getContextMenuActions]
+    [getContextMenuActions, renderAdditionalInfo]
   );
 
   return (

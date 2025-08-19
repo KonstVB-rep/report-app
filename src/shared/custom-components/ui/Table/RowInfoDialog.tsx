@@ -8,9 +8,21 @@ import { X } from "lucide-react";
 import useKeyDown from "@/shared/hooks/useKeyDown";
 import { useOutsideLeftClick } from "@/shared/hooks/useOutsideLeftClick";
 
-type Props = { text: ReactNode; isActive: boolean; closeFn: () => void };
+type Props = {
+  text: ReactNode;
+  isActive: boolean;
+  closeFn: () => void;
+  isTargetCell?: boolean;
+  children?: ReactNode;
+};
 
-const RowInfoDialog = ({ text, isActive, closeFn }: Props) => {
+const RowInfoDialog = ({
+  text,
+  isActive,
+  closeFn,
+  isTargetCell,
+  children,
+}: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useKeyDown(isActive, closeFn, "Escape");
@@ -24,9 +36,10 @@ const RowInfoDialog = ({ text, isActive, closeFn }: Props) => {
             <div className="absolute inset-0 w-full h-full bg-black/40 z-10">
               <div
                 ref={ref}
-                className="absolute left-1/2 w-full max-w-[400px] top-1/2 -translate-x-1/2 -translate-y-1/2 h-auto p-5 bg-primary-foreground border-2 shadow-lg rounded-md z-10 text-primary"
+                className="absolute left-1/2 w-full max-h-[80vh] max-w-[400px] top-1/2 -translate-x-1/2 -translate-y-1/2 h-auto p-5 bg-primary-foreground border-2 shadow-lg rounded-md z-10 text-primary"
               >
                 <p className="text-base text-center md:text-lg p-1 ">{text}</p>
+                {isTargetCell && children}
                 <button
                   onClick={closeFn}
                   className="absolute -top-4 -right-4 text-sm text-gray-500 rounded-md bg-primary border-1 border-primary p-[2px]"
