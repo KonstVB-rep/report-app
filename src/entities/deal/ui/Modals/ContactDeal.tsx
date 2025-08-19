@@ -43,7 +43,6 @@ const ContactDeal = ({
     form,
     handleRemove,
     handleAddNewContactForm,
-    handleRemoveAll,
     fields,
   } = useAddContactToDeal(contacts, onContactsChange);
 
@@ -56,7 +55,7 @@ const ContactDeal = ({
     setSelectedContacts([...selectedContacts, ...newContacts]);
     handleRemoveAll();
   };
-  console.log(fields, "fields.length");
+
   return (
     <>
       <Form {...form}>
