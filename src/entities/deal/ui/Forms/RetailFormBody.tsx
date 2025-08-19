@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { FieldValues, Path, UseFormReturn, useWatch } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
@@ -69,7 +69,12 @@ const RetailFormBody = <T extends FieldValues>({
     setManagers,
     firstManager,
     setFirstManager,
-  } = useSendDealInfo<T>(onSubmit, managerId, form.getValues("contacts" as Path<T>));
+  } = useSendDealInfo<T>(
+    onSubmit,
+    managerId,
+    form.getValues("contacts" as Path<T>)
+  );
+
 
   const { getValues } = form;
 
@@ -78,11 +83,16 @@ const RetailFormBody = <T extends FieldValues>({
     if (ids?.length > 0) setManagers(ids);
   }, [getValues, setManagers]);
 
+  const watchedContacts = useWatch({
+    control: form.control,
+    name: contactsKey as Path<T>,
+  });
+
   useEffect(() => {
-    if (contactsKey) {
-      setContacts(getValues(contactsKey as Path<T>));
+    if (watchedContacts) {
+      setContacts(watchedContacts);
     }
-  }, [contactsKey, getValues, setContacts]);
+  }, [watchedContacts, setContacts]);
 
   const getError = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
