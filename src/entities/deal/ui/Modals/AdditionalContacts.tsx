@@ -5,6 +5,7 @@ import { Contact } from "../../types";
 
 const AdditionalContacts = ({ dealId }: { dealId: string }) => {
   const [showEmptyNote, setShowEmptyNote] = useState(true);
+
   const {
     data: additionalContacts,
     isPending,
