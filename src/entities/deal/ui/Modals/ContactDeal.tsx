@@ -43,6 +43,7 @@ const ContactDeal = ({
     form,
     handleRemove,
     handleAddNewContactForm,
+    handleRemoveAll,
     fields,
   } = useAddContactToDeal(contacts, onContactsChange);
 
