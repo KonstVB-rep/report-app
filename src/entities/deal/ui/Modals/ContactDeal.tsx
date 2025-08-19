@@ -169,7 +169,7 @@ const ContactDeal = ({
               Сохранить
             </Button>
           </div>
-          {selectedContacts.length > 0 && (
+          {selectedContacts.length > 3 && (
             <DialogComponent
               dialogTitle="Контакты"
               classNameContent="sm:max-w-[600px] max-h-[82vh] overflow-y-auto"
