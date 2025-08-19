@@ -44,7 +44,9 @@ const useSendDealInfo = <T extends FieldValues>(
 
   useEffect(() => {
     setFirstManager(firstManagerId as string);
-    setContacts(additionalContacts);
+    if (additionalContacts) {
+      setSelectedContacts(additionalContacts);
+    }
   }, [additionalContacts, firstManagerId]);
 
   return {
