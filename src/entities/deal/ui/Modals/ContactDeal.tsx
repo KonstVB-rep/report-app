@@ -45,13 +45,35 @@ const ContactDeal = ({
     form,
     handleRemove,
     handleAddNewContactForm,
-    handleRemoveAll,
     fields,
   } = useAddContactToDeal(contacts, onContactsChange);
 
   const onSubmit = (data: ContactSchema) => {
-    setSelectedContacts([...selectedContacts, ...data.contacts]);
-    handleRemoveAll();
+
+    const updatedContacts = selectedContacts.map((contact) => {
+      // Находим контакт по уникальному id
+      const updatedContact = data.contacts.find(
+        (newContact) => newContact.id === contact.id
+      );
+
+      if (updatedContact) {
+        // Если контакт найден, обновляем его
+        return { ...contact, ...updatedContact };
+      }
+
+      // Если контакт не найден, оставляем старый
+      return contact;
+    });
+
+    // Если есть новые контакты, которых еще нет в selectedContacts
+    const newContacts = data.contacts.filter(
+      (newContact) =>
+        !selectedContacts.some((contact) => contact.id === newContact.id)
+    );
+
+    // Обновляем selectedContacts с изменениями и новыми контактами
+    setSelectedContacts([...updatedContacts, ...newContacts]);
+    // handleRemoveAll();
   };
 
   return (
@@ -147,7 +169,7 @@ const ContactDeal = ({
               Сохранить
             </Button>
           </div>
-          {selectedContacts.length > 3 && (
+          {selectedContacts.length > 0 && (
             <DialogComponent
               dialogTitle="Контакты"
               classNameContent="sm:max-w-[600px] max-h-[82vh] overflow-y-auto"
