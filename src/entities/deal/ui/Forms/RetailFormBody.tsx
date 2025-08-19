@@ -69,7 +69,7 @@ const RetailFormBody = <T extends FieldValues>({
     setManagers,
     firstManager,
     setFirstManager,
-  } = useSendDealInfo<T>(onSubmit, managerId);
+  } = useSendDealInfo<T>(onSubmit, managerId, form.getValues("contacts" as Path<T>));
 
   const { getValues } = form;
 

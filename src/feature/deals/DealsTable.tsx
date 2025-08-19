@@ -26,7 +26,6 @@ interface DealsTableProps<T extends DealBase> {
 const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
   const { dealType } = useParams<{ dealType: string }>();
 
-  // Мемоизируем функцию создания контекстного меню
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =
     useCallback(
       (
@@ -50,16 +49,14 @@ const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
           />
         ),
       }),
-      [] // Зависимости, если нужны
+      []
     );
 
   return (
     <TableProvider<T>
       getContextMenuActions={getContextMenuActions}
       renderAdditionalInfo={(dealId: string) => (
-        <Suspense fallback={<div>Загрузка контактов...</div>}>
           <AdditionalContacts dealId={dealId} />
-        </Suspense>
       )}
     >
       <DataTable {...props}>

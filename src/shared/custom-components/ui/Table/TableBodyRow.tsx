@@ -33,6 +33,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
   const handleOpenInfo = (cellId: string) => {
     setOpenFullInfoCell(openFullInfoCell === cellId ? null : cellId);
   };
+  
   if (entityType === "deal") {
     return (
       <ContextRowTable
