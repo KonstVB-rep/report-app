@@ -75,7 +75,6 @@ const RetailFormBody = <T extends FieldValues>({
     form.getValues("contacts" as Path<T>)
   );
 
-
   const { getValues } = form;
 
   useEffect(() => {
