@@ -9,7 +9,7 @@ import {
 
 import { z } from "zod";
 
-export const SingleContactSchema = z
+export const SingleContactFormSchema = z
   .object({
     id: z.string(),
     name: z.string().min(1, { error: "Имя обязательно" }),
@@ -23,7 +23,7 @@ export const SingleContactSchema = z
   });
 
 export const ContactFormSchema = z.object({
-  contacts: z.array(SingleContactSchema),
+  contacts: z.array(SingleContactFormSchema),
 });
 
 export const ProjectFormSchema = z
@@ -72,7 +72,7 @@ export const ProjectFormSchema = z
     }, z.string().nullable().optional()),
     orderId: z.string().nullable().optional(),
     resource: z.string().nullable().optional(),
-    contacts: z.array(SingleContactSchema),
+    contacts: z.array(SingleContactFormSchema),
     managersIds: z.array(
       z.object({
         userId: z.string(),
@@ -171,7 +171,7 @@ export const RetailFormSchema = z
     }, z.string()),
     orderId: z.string().nullable().optional(),
     resource: z.string().optional(),
-    contacts: z.array(SingleContactSchema),
+    contacts: z.array(SingleContactFormSchema),
     managersIds: z.array(
       z.object({
         userId: z.string(),
@@ -216,3 +216,4 @@ export const RetailFormSchema = z
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;
 export type RetailSchema = z.infer<typeof RetailFormSchema>;
 export type ContactSchema = z.infer<typeof ContactFormSchema>;
+export type SingleContactSchema = z.infer<typeof SingleContactFormSchema>;

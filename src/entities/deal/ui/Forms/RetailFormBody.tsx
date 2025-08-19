@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { FieldValues, Path, UseFormReturn, useWatch } from "react-hook-form";
+import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
@@ -81,17 +81,6 @@ const RetailFormBody = <T extends FieldValues>({
     const ids = getValues("managersIds" as Path<T>);
     if (ids?.length > 0) setManagers(ids);
   }, [getValues, setManagers]);
-
-  const watchedContacts = useWatch({
-    control: form.control,
-    name: contactsKey as Path<T>,
-  });
-
-  useEffect(() => {
-    if (watchedContacts) {
-      setContacts(watchedContacts);
-    }
-  }, [watchedContacts, setContacts]);
 
   const getError = (name: keyof T) =>
     form.formState.errors[name]?.message as string;

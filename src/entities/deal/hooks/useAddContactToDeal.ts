@@ -31,6 +31,11 @@ const useAddContactToDeal = (
     },
   });
 
+  const { fields, append, remove, replace } = useFieldArray({
+    control: form.control,
+    name: "contacts",
+  });
+
   const { reset } = form;
 
   useEffect(() => {
@@ -49,11 +54,6 @@ const useAddContactToDeal = (
             ],
     });
   }, [contacts, reset]);
-
-  const { fields, append, remove, replace } = useFieldArray({
-    control: form.control,
-    name: "contacts",
-  });
 
   const handleAddNewContactForm = () => {
     return append({
