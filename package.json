@@ -55,6 +55,7 @@
     "cmdk": "^1.0.4",
     "cuid": "^3.0.0",
     "date-fns": "^4.1.0",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "jose": "^6.0.8",
     "lucide-react": "^0.525.0",
@@ -74,7 +75,6 @@
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
-    "xlsx": "^0.18.5",
     "zod": "^4.0.5",
     "zustand": "^5.0.3"
   },

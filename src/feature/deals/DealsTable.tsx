@@ -1,11 +1,12 @@
 import { DealType } from "@prisma/client";
 import { ColumnDef, Row } from "@tanstack/react-table";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useCallback } from "react";
 
 import { useParams } from "next/navigation";
 
+import AdditionalContacts from "@/entities/deal/ui/Modals/AdditionalContacts";
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
 import DelDealContextMenu from "@/entities/deal/ui/Modals/DelDealContextMenu";
 import EditDealContextMenu from "@/entities/deal/ui/Modals/EditDealContextMenu";
@@ -53,7 +54,14 @@ const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
     );
 
   return (
-    <TableProvider<T> getContextMenuActions={getContextMenuActions}>
+    <TableProvider<T>
+      getContextMenuActions={getContextMenuActions}
+      renderAdditionalInfo={(dealId: string) => (
+        <Suspense fallback={<div>Загрузка контактов...</div>}>
+          <AdditionalContacts dealId={dealId} />
+        </Suspense>
+      )}
+    >
       <DataTable {...props}>
         <AddNewDeal type={dealType} />
       </DataTable>

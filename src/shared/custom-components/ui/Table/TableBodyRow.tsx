@@ -28,7 +28,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
   const { departmentId } = useParams();
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null);
 
-  const { getContextMenuActions } = useTableContext<T>();
+  const { getContextMenuActions, renderAdditionalInfo } = useTableContext<T>();
 
   const handleOpenInfo = (cellId: string) => {
     setOpenFullInfoCell(openFullInfoCell === cellId ? null : cellId);
@@ -61,28 +61,33 @@ const TableBodyRow = <T extends Record<string, unknown>>({
           data-success={row.original.dealStatus === "PAID"}
           data-closed={row.original.dealStatus === "CLOSED"}
         >
-          {row.getVisibleCells().map((cell) => (
-            <TableCell
-              key={cell.id}
-              style={{ width: cell.column.getSize() }}
-              className="td td_inline-grid min-w-12 border-b border-r leading-none box-border min-h-[57px]"
-              onDoubleClick={() => handleOpenInfo(cell.id)}
-            >
-              <span className="line-clamp-2 text-center text-sm">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </span>
-              {openFullInfoCell === cell.id && (
-                <RowInfoDialog
-                  isActive={true}
-                  text={flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                  closeFn={() => setOpenFullInfoCell(null)}
-                />
-              )}
-            </TableCell>
-          ))}
+          {row.getVisibleCells().map((cell) => {
+            return (
+              <TableCell
+                key={cell.id}
+                style={{ width: cell.column.getSize() }}
+                className="td td_inline-grid min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
+                onDoubleClick={() => handleOpenInfo(cell.id)}
+              >
+                <span className="line-clamp-2 text-center text-sm">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </span>
+                {openFullInfoCell === cell.id && (
+                  <RowInfoDialog
+                    isActive={true}
+                    text={flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                    isTargetCell={cell.column.id === "contact"}
+                    closeFn={() => setOpenFullInfoCell(null)}
+                  >
+                    {renderAdditionalInfo?.(row.original.id as string)}
+                  </RowInfoDialog>
+                )}
+              </TableCell>
+            );
+          })}
         </TableRow>
       </ContextRowTable>
     );

@@ -89,7 +89,11 @@ const ProjectFormBody = <T extends FieldValues>({
     setManagers,
     firstManager,
     setFirstManager,
-  } = useSendDealInfo<T>(onSubmit, managerId);
+  } = useSendDealInfo<T>(
+    onSubmit,
+    managerId,
+    form.getValues("contacts" as Path<T>)
+  );
 
   const watchedValues = useWatch({
     control: form.control,

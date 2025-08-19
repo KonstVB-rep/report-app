@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
       "clsx",
       "tailwind-merge",
       "zod",
+      "exceljs",
 
       // Работа с данными
       "@tanstack/react-table",

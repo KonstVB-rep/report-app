@@ -7,6 +7,7 @@ import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 
 import {
+  getAdditionalContacts,
   getDealsByDateRange,
   getProjectById,
   getProjectsUser,
@@ -406,4 +407,37 @@ export const useGetAllDeals = (
   }
 
   return fetchers[type](userId, departmentId);
+};
+
+export const useGetAdditionalContacts = (dealId: string) => {
+  const { authUser } = useStoreUser();
+  return useQuery({
+    queryKey: ["additionalContacts", dealId],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+
+        if (!dealId) {
+          TOAST.ERROR("Не удалось получить данные");
+        }
+
+        return (
+          (await executeWithTokenCheck(() => getAdditionalContacts(dealId))) ??
+          []
+        );
+      } catch (error) {
+        console.log(error, "Ошибка useGetAdditionalContracts");
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
+        throw error;
+      }
+    },
+    enabled: !!dealId,
+    staleTime: 1000 * 60,
+  });
 };

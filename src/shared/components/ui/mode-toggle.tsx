@@ -34,27 +34,30 @@ export function ModeToggle() {
       <DropdownMenuContent align="end" className="grid gap-1">
         <DropdownMenuItem
           onClick={() => setTheme("light")}
-          className="btn_hover cursor-pointer"
+          className={cn(
+            "cursor-pointer",
+            theme === "light" ? "btn_blue" : "btn_hover"
+          )}
         >
-          <span className={cn(theme === "light" && "text-blue-600")}>
-            Светлая
-          </span>
+          <span className={cn(theme === "light")}>Светлая</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
-          className="btn_hover cursor-pointer"
+          className={cn(
+            "cursor-pointer",
+            theme === "dark" ? "btn_blue" : "btn_hover"
+          )}
         >
-          <span className={cn(theme === "dark" && "text-blue-600")}>
-            Темная
-          </span>
+          <span className={cn(theme === "dark")}>Темная</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("system")}
-          className="btn_hover cursor-pointer"
+          className={cn(
+            "cursor-pointer",
+            theme === "system" ? "btn_blue" : "btn_hover"
+          )}
         >
-          <span className={cn(theme === "system" && "text-blue-600")}>
-            Системная
-          </span>
+          <span className={cn(theme === "system")}>Системная</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
