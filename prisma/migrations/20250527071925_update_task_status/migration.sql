@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `Task` MODIFY `taskStatus` ENUM('OPEN', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'CANCELED') NOT NULL;

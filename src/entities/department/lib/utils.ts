@@ -30,14 +30,14 @@ export const formattedArr = <T extends Dept>(
   }));
 };
 
-export const getManagers = () => {
+export const getManagers = (onlyManagers = true  ) => {
   const { authUser } = useStoreUser.getState();
   const { departments } = useStoreDepartment.getState();
 
   const currentDepartment = departments?.find(
     (dept) => dept.id === authUser?.departmentId
   );
-
+  if(onlyManagers) {
   return (
     currentDepartment?.users.reduce(
       (acc, item) => {
@@ -53,4 +53,15 @@ export const getManagers = () => {
       {} as Record<string, string>
     ) ?? {}
   );
+}else {
+  return (
+    currentDepartment?.users.reduce(
+      (acc, item) => {
+        acc[item.id] = item.username;
+        return acc;
+      },
+      {} as Record<string, string>
+    ) ?? {}
+  );
+}
 };

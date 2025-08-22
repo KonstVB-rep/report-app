@@ -4,10 +4,9 @@ import { NextResponse } from "next/server";
 
 import axios from "axios";
 
-import {
-  createTelegramBot,
-  createUserTelegramChat,
-} from "@/feature/calendar/api/calendar-bot/api";
+import { createUserTelegramChat } from "@/feature/createTelegramChatBot/api";
+import { createTelegramBot } from "@/feature/createTelegramChatBot/api";
+import prisma from "@/prisma/prisma-client";
 
 const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;
 
@@ -45,7 +44,16 @@ export async function POST(req: Request) {
           );
         }
 
-        const bot = await createTelegramBot(botName, token);
+        const botInDb = await prisma.telegramBot.findUnique({
+          where: { botName },
+        });
+
+        let bot = undefined
+
+        if (!botInDb) {
+           bot = await createTelegramBot(botName, token);
+        }
+
 
         if (!bot) {
           console.error("Бот не найден или не удалось создать");
@@ -58,22 +66,31 @@ export async function POST(req: Request) {
         const telegramUsername = from?.username ?? "Никнейм не указан";
         const telegramUserId = from.id;
 
+        const chat = await prisma.userTelegramChat.findUnique({
+          where: { botId_chatId: { botId: bot.id, chatId } },
+        });
+
+        if (chat) {
+          await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
+            chat_id: chatId,
+            text: `Привет, ${telegramUsername}! Ты уже подписан на уведомления.`,
+          });
+          return NextResponse.json({ status: "Пользователь уже подписан" });
+        }
+
         await createUserTelegramChat(
           userId,
+          botName,                
           chatId,
-          telegramUserId,
-          telegramUsername,
+          String(telegramUserId),         
           nameChat,
-          bot.botName,
-          bot.token
         );
         await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
           chat_id: chatId,
-          text: `Привет, ${telegramUsername}! Ты успешно зарегистрирован.
-Уведомления будут приходить за 30 минут до события.`,
+          text: `Привет, ${telegramUsername}! Ты успешно подписан на уведомления.`,
         });
 
-        return NextResponse.json({ status: "Пользователь зарегистрирован" });
+        return NextResponse.json({ status: "Пользователь подписан" });
       }
     }
 

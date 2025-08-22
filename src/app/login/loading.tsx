@@ -1,11 +1,9 @@
-import React from "react";
+import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders";
 
-const loading = () => {
+const Loading = () => {
   return (
-    <div className="relative flex items-center justify-center h-full min-h-screen p-4">
-      <span className="loader" />
-    </div>
+    <LoaderCircleInWater />
   );
 };
 
-export default loading;
+export default Loading;

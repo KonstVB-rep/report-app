@@ -10,7 +10,7 @@ import { useTableState } from "@/shared/hooks/useTableState";
 
 import ButtonExportTableXls from "../Buttons/ButtonExportTableXls";
 import DebouncedInput from "../DebouncedInput";
-import LoaderCircle from "../Loader";
+import { LoaderCircle } from "../Loaders";
 import { DealBase } from "./model/types";
 import TableComponent from "./TableComponent";
 

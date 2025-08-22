@@ -34,6 +34,7 @@ model User {
   projectManagers ProjectManager[]
   tasksAssigned   Task[]       @relation("TaskAssigner")
   tasksExecuted   Task[]       @relation("TaskExecutor")
+  telegramInfo TelegramUserInfo[]
 
   @@index([departmentId])
 }
@@ -243,24 +244,28 @@ model TelegramBot {
   updatedAt DateTime  @updatedAt                    // Время последнего обновления
 
   chats     UserTelegramChat[]      // Связь с таблицей чатов
+
+  telegramUsersInfo TelegramUserInfo[]
 }
 
 model UserTelegramChat {
-  id               String     @id @default(cuid())           // Уникальный ID записи
-  userId           String                                   // ID пользователя
-  botId            String                                   // ID бота
-  chatId           String                                   // ID чата
-  telegramUserId   String
-  chatName         String
-  telegramUsername String?                                  // ID пользователя в Telegram
-  isActive         Boolean    @default(true)                   // Статус активности чата
-  createdAt        DateTime   @default(now())                 // Время создания записи
-  updatedAt        DateTime   @updatedAt                      // Время последнего обновления записи
+  id               String     @id @default(cuid())
+  userId           String     // ID пользователя в вашей системе
+  botId            String     // ID бота
+  chatId           String     // ID чата в Telegram
+  telegramUserInfoId String   // ID информации о Telegram пользователе
+  chatName         String?
+  isActive         Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)  // Связь с таблицей пользователей
-  bot            TelegramBot  @relation(fields: [botId], references: [id], onDelete: Cascade) // Связь с таблицей ботов
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bot            TelegramBot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  telegramUserInfo TelegramUserInfo @relation(fields: [telegramUserInfoId], references: [id], onDelete: Cascade)
 
-  @@unique([botId, userId])   // Уникальность для каждого пользователя, бота и чата
+  @@unique([botId, chatId]) // Уникальный чат для бота
+  @@index([userId])
+  @@index([telegramUserInfoId])
 }
 
 model Task {
@@ -287,6 +292,35 @@ model Task {
   executor     User         @relation("TaskExecutor", fields: [executorId], references: [id])
 
   @@index([orderTask, taskStatus])
+}
+
+model TelegramUserInfo {
+  id              String      @id @default(cuid())  
+  chatId          String      @unique
+  tgUserId        String      @unique
+  tgUserName      String?     @unique // Может быть null
+  firstName       String?
+  lastName        String?
+  languageCode    String?
+  isBot           Boolean     @default(true)
+  createdAt       DateTime    @default(now())                
+  updatedAt       DateTime    @updatedAt
+
+  // Связь с пользователем системы (если привязан)
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Связь с ботом (через который получена информация)
+  botId           String?
+  bot             TelegramBot? @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  // Связь с чатами пользователя
+  chats       UserTelegramChat[]
+
+  @@index([tgUserId])
+  @@index([chatId])
+  @@index([userId])
+  @@index([botId])
 }
 
 
@@ -385,6 +419,7 @@ enum Role {
   DIRECTOR          
   EMPLOYEE 
   ADMIN
+  SUPER_ADMIN
 }
 
 enum DealType {

@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   experimental: {
+
+    staleTimes: {
+      dynamic: 0,
+      static: 0,
+    },
     
     serverActions: {
       allowedOrigins: [
@@ -52,6 +57,14 @@ const nextConfig: NextConfig = {
       "react-dropzone",
       "@fullcalendar/*"
     ],
+  },
+
+  // Отключаем in-memory cache
+  onDemandEntries: {
+    // период удержания страниц в памяти (мс)
+    maxInactiveAge: 25 * 1000,
+    // количество страниц, которые должны сохраняться в памяти
+    pagesBufferLength: 2,
   },
 
   webpack: (config, { dev, isServer }) => {

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 
 import dynamic from "next/dynamic";
 
@@ -11,7 +10,7 @@ import { Form } from "@/shared/components/ui/form";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
 import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
-import LoaderCircle from "@/shared/custom-components/ui/Loader";
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
 
 import useAddContactToDeal from "../../hooks/useAddContactToDeal";
 import { ContactSchema } from "../../model/schema";

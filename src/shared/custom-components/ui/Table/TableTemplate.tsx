@@ -65,9 +65,12 @@ const TableTemplate = <T extends Record<string, unknown>>({
                 style={{
                   width: header.getSize(),
                   minWidth: header.column.columnDef.minSize,
+                  maxWidth: header.column.columnDef.maxSize,
                 }}
-                className="border-r border-zinc-600 !p-2"
+                data-size={header.getSize()}
+                className="border-r border-zinc-600 !p-2 flex-1"
               >
+            
                 {header.isPlaceholder ? null : (
                   <div
                     className={
@@ -108,12 +111,14 @@ const TableTemplate = <T extends Record<string, unknown>>({
           virtualItems.map((virtualRow) => {
             const row = rows[virtualRow.index];
             return (
-              <TableBodyRow
+              <TableBodyRow<T>
                 key={row.id}
                 row={row}
                 virtualRow={virtualRow}
                 hasEditDeleteActions={hasEditDeleteActions}
                 entityType={entityType}
+                headers={table.getHeaderGroups()[0].headers}
+
               />
             );
           })}

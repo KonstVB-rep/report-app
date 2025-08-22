@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { toggleSubscribeChatBot } from "@/feature/calendar/api/calendar-bot/api";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { logout } from "@/shared/auth/logout";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
@@ -12,12 +11,11 @@ import {
   updateEventCalendar,
 } from "../api";
 import {
-  ChatBotType,
-  ChatType,
   EventDataType,
   EventResponse,
-  ResponseChatBotType,
 } from "../types";
+import { toggleSubscribeChatBot } from "@/feature/createTelegramChatBot/api";
+import { ChatBotType, ResponseChatBotType } from "@/feature/createTelegramChatBot/type";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
@@ -146,10 +144,10 @@ export const useCreateChatBot = () => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: async (chatData: ChatType) => {
+    mutationFn: async (chatData: ChatBotType) => {
       const data = {
         chatName: chatData.chatName,
-        userId: authUser?.id || "",
+        chatId: chatData.chatId,
         isActive: chatData.isActive,
       };
 
@@ -196,13 +194,14 @@ export const useUpdateChatBot = () => {
   return useMutation({
     mutationFn: async (chatData: {
       botId: string | null;
+      chatId: string;
       isActive: boolean;
     }) => {
       if (!chatData.botId) return;
 
       const data = {
         chatName: chatData.botId,
-        userId: authUser?.id || "",
+        chatId: chatData.chatId,
         isActive: chatData.isActive,
       };
       return handleMutationWithAuthCheck<ChatBotType, ResponseChatBotType>(

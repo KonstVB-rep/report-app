@@ -29,7 +29,11 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: false,
     enableSorting: false,
     accessorFn: () => "",
-    size: 80,
+    maxSize: 100,
+    enableResizing: false,
+    meta: {
+      isNotSearchable: true,
+    },
   },
   {
     id: "dateRequest",
@@ -42,7 +46,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     meta: {
       isDateFilter: true,
     },
-    size: 100, // Фиксированная ширина
+    // size: 100, // Фиксированная ширина
     enableResizing: false, // Запрещаем изменение размера
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date;
@@ -221,7 +225,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       const value = info.getValue() as ReactNode;
       return value;
     },
-    size: 300,
     minSize: 300,
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.comments,

@@ -14,6 +14,7 @@ import СreateTaskDialog from "@/entities/task/ui/Modals/СreateTaskDialog";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
+import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
 
@@ -39,14 +40,22 @@ const TasksPage = () => {
     departmentId: string;
   }>();
 
-  const { data } = useGetTasksDepartment();
+  const { data, isPending } = useGetTasksDepartment();
+
+  console.log(isPending, "isPending");
 
   const { handleViewChange, currentView } = useViewType();
 
   if (!authUser) return null;
 
   if (!hasAccess) {
-    return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />;
+    return (
+      <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />
+    );
+  }
+
+  if (isPending) {
+    return <LoaderCircleInWater />;
   }
 
   return (

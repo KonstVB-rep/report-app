@@ -81,6 +81,11 @@ export const useTableState = <T extends Record<string, unknown>>(
         resource: false, // например скрыть колонку с id 'resource'
       },
     },
+  //   defaultColumn: {
+  //   size: 0,      // убираем дефолтные 150px
+  //   minSize: 0,
+  //   // maxSize: Number.MAX_SAFE_INTEGER,
+  // },
   });
 
   const filtersContextValue = {

@@ -25,24 +25,3 @@ export type EventResponse = {
   updatedAt: Date;
   notified: boolean;
 };
-
-export type ChatType = { chatName: string; isActive: boolean };
-
-export type ChatBotType = {
-  chatName: string;
-  userId: string;
-  isActive: boolean;
-};
-
-export type ResponseChatBotType = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
-  isActive: boolean;
-  botId: string;
-  chatId: string;
-  telegramUserId: string;
-  chatName: string;
-  telegramUsername: string | null;
-};

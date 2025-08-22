@@ -18,6 +18,9 @@ import {
   TASK_PRIORITY_COLOR_BG,
 } from "./constants";
 
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import { formatDateTime } from "@/shared/lib/helpers/formatDate";
+
 export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
   {
     id: "rowNumber",
@@ -26,6 +29,8 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     enableHiding: false,
     enableSorting: false,
     accessorFn: () => "",
+    minSize: 100,
+    maxSize: 100,
   },
   // {
   //   id: "select",
@@ -55,6 +60,41 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
   //   enableSorting: false,
   //   enableHiding: false,
   // },
+   {
+    id: "startDate",
+    header: "Дата начала",
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
+      const date = info.getValue() as string;
+      return formatDateTime(date);
+    },
+    filterFn: (row, columnId, filterValue) => {
+      const date = row.getValue(columnId) as Date;
+      const dateAtStartOfDay = startOfDay(date);
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange;
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to);
+          return (
+            dateAtStartOfDay >= startOfDay(from) &&
+            dateAtStartOfDay <= toAtEndOfDay
+          );
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from);
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to);
+        }
+        return false;
+      }
+
+      return true;
+    },
+    accessorFn: (row: TaskWithUserInfo) => row.startDate,
+  },
   {
     id: "title",
     header: "Задача",
@@ -139,12 +179,31 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     },
     accessorFn: (row: TaskWithUserInfo) => row.taskPriority,
   },
-  // {
-  //   id: "assignerId",
-  //   header: "Автор",
-  //   cell: (info: CellContext<Task, unknown>) => info.getValue(),
-  //   accessorFn: (row: Task) => row.assignerId,
-  // },
+  {
+    id: "assignerId",
+    header: "Автор",
+    cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
+      const userId = info.getValue() as string;
+      const {deptsFormatted} = useStoreDepartment.getState()
+      const users = deptsFormatted?.reduce((acc, curr) => {
+        curr.users.forEach(user => {
+          acc = { ...acc, ...user }
+        })
+        return acc
+      }, {})
+
+      if (!users) {
+        return null
+      }
+
+     const userName  = (users[userId as keyof typeof users] as string).split(' ').map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1)
+      }).join(' ')
+      
+      return userName
+    },
+    accessorFn: (row: TaskWithUserInfo) => row.assignerId,
+  },
   {
     id: "executorId",
     header: "Исполнитель",
@@ -168,8 +227,8 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "dueDate",
     header: "Срок до",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const date = info.getValue() as Date;
-      return date.toLocaleDateString("ru-RU");
+      const date = info.getValue() as string;
+      return formatDateTime(date);
     },
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date;

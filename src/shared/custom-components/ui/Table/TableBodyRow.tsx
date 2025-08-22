@@ -1,7 +1,7 @@
 import { DealType } from "@prisma/client";
-import { flexRender, Row } from "@tanstack/react-table";
+import { Cell, flexRender, Header, Row } from "@tanstack/react-table";
 
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
 
 import { useParams } from "next/navigation";
 
@@ -12,11 +12,39 @@ import { useTableContext } from "./context/TableContext";
 import RowInfoDialog from "./RowInfoDialog";
 import { getRowClassName } from "./TableComponent";
 
-type TableBodyRowProps<T> = {
+type TableBodyRowProps<T extends Record<string, unknown>> = {
   row: Row<T>;
   virtualRow: { index: number; start: number };
   hasEditDeleteActions?: boolean;
   entityType: string;
+  headers?: Header<T, unknown>[];
+};
+
+type TableCellComponentProps<TData> = {
+  cell: Cell<TData, unknown>;
+  styles?: CSSProperties;
+  handleOpenInfo: (cellId: string) => void;
+  children?: React.ReactNode;
+};
+
+const TableCellComponent = <TData,>({
+  cell,
+  styles,
+  handleOpenInfo,
+  children
+}: TableCellComponentProps<TData>) => {
+  return (
+    <TableCell
+      style={styles}
+      className="td td_inline-grid flex-1 min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
+      onDoubleClick={() => handleOpenInfo(cell.id)}
+    >
+      <span className="line-clamp-2 text-center text-sm">
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </span>
+      {children}
+    </TableCell>
+  );
 };
 
 const TableBodyRow = <T extends Record<string, unknown>>({
@@ -24,6 +52,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
   virtualRow,
   hasEditDeleteActions,
   entityType,
+  headers,
 }: TableBodyRowProps<T>) => {
   const { departmentId } = useParams();
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null);
@@ -33,7 +62,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
   const handleOpenInfo = (cellId: string) => {
     setOpenFullInfoCell(openFullInfoCell === cellId ? null : cellId);
   };
-  
+
   if (entityType === "deal") {
     return (
       <ContextRowTable
@@ -56,23 +85,25 @@ const TableBodyRow = <T extends Record<string, unknown>>({
             left: 0,
             width: "100%",
             transform: `translateY(${virtualRow.start}px)`,
+            display: "flex",
           }}
           className={getRowClassName(row.original.dealStatus as string)}
           data-reject={row.original.dealStatus === "REJECT"}
           data-success={row.original.dealStatus === "PAID"}
           data-closed={row.original.dealStatus === "CLOSED"}
         >
-          {row.getVisibleCells().map((cell) => {
+          {row.getVisibleCells().map((cell, index) => {
             return (
-              <TableCell
+              <TableCellComponent<T> // Явно передаем тип T
                 key={cell.id}
-                style={{ width: cell.column.getSize() }}
-                className="td td_inline-grid min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
-                onDoubleClick={() => handleOpenInfo(cell.id)}
+                styles={{
+                  width: headers?.[index]?.getSize(),
+                  minWidth: headers?.[index]?.column.columnDef.minSize,
+                  maxWidth: headers?.[index]?.column.columnDef.maxSize,
+                }}
+                cell={cell}
+                handleOpenInfo={handleOpenInfo}
               >
-                <span className="line-clamp-2 text-center text-sm">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </span>
                 {openFullInfoCell === cell.id && (
                   <RowInfoDialog
                     isActive={true}
@@ -86,7 +117,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
                     {renderAdditionalInfo?.(row.original.id as string)}
                   </RowInfoDialog>
                 )}
-              </TableCell>
+              </TableCellComponent>
             );
           })}
         </TableRow>
@@ -103,7 +134,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
             ? (setOpenModal) => getContextMenuActions(setOpenModal, row)
             : undefined
         }
-        path={`/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}/`}
+        path={`/dashboard/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}/`}
       >
         <TableRow
           style={{
@@ -112,19 +143,21 @@ const TableBodyRow = <T extends Record<string, unknown>>({
             left: 0,
             width: "100%",
             transform: `translateY(${virtualRow.start}px)`,
+            display: "flex", // Добавьте display: flex
           }}
           className={`tr hover:bg-zinc-600 hover:text-white`}
         >
-          {row.getVisibleCells().map((cell) => (
-            <TableCell
+          {row.getVisibleCells().map((cell, index) => (
+            <TableCellComponent<T> // Явно передаем тип T
               key={cell.id}
-              style={{ width: cell.column.getSize() }}
-              className="td td_inline-grid min-w-12 border-b border-r leading-none box-border min-h-[57px]"
-              onDoubleClick={() => handleOpenInfo(cell.id)}
+              styles={{
+                width: headers?.[index]?.getSize(),
+                minWidth: headers?.[index]?.column.columnDef.minSize,
+                maxWidth: headers?.[index]?.column.columnDef.maxSize,
+              }}
+              cell={cell}
+              handleOpenInfo={handleOpenInfo}
             >
-              <span className="line-clamp-2 text-center text-sm">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </span>
               {openFullInfoCell === cell.id && (
                 <RowInfoDialog
                   isActive={true}
@@ -135,7 +168,7 @@ const TableBodyRow = <T extends Record<string, unknown>>({
                   closeFn={() => setOpenFullInfoCell(null)}
                 />
               )}
-            </TableCell>
+            </TableCellComponent>
           ))}
         </TableRow>
       </ContextRowTable>
@@ -207,3 +240,4 @@ const TableBodyRow = <T extends Record<string, unknown>>({
 };
 
 export default TableBodyRow;
+

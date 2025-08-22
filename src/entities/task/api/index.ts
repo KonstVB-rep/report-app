@@ -21,6 +21,8 @@ import {
   TaskFormTypeWithId,
   TaskWithUserInfo,
 } from "../types";
+import { formatDate } from "../lib/helpers";
+import { formatDateTime } from "@/shared/lib/helpers/formatDate";
 
 // import { getDepartmentUsersWithTasks } from "./queryFn";
 
@@ -136,7 +138,7 @@ export const getTask = async (taskId: string) => {
 export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
   try {
     const data = await handleAuthorization();
-    const { userId } = data!;
+    const { userId, user } = data!;
 
     const lastTask = await prisma.task.findFirst({
       where: {
@@ -175,6 +177,36 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
         },
       },
     });
+
+      // const botName = "ErtelTasksBot";
+      // const description= task.description;
+      // const taskPriority = task.taskPriority;
+      // const executorManager = task.executorId;
+      // const timeMakeUpTask = formatDateTime(task.dueDate);
+
+      // console.log(description, taskPriority, executorManager, timeMakeUpTask);
+  
+    
+      //   const message = `<b>Новая задача</b>: ${description}
+      // <b>От кого:</b>: ${user?.username}
+      // <b>Приоритет</b>: ${taskPriority}
+      // <b>Срок исполнения</b>: ${timeMakeUpTask}`;
+    
+        // // Вызов отправки уведомления (можно await, если нужно дождаться)
+        // let telegramError: string | undefined = undefined;
+    
+        // try {
+        //   const sendData = await sendNotification(botName, executorManager, message);
+        //   const sendJson = await sendData.json();
+        //   if (!sendData.ok) {
+        //     telegramError =
+        //       sendJson.error || "Ошибка при отправке уведомления в Telegram";
+        //   }
+        // } catch (notifyError) {
+        //   console.error("Ошибка отправки уведомления:", notifyError);
+        //   telegramError = (notifyError as Error).message;
+        // }
+    
     return { error: false, message: "Задача успешно создана", data: null };
   } catch (error) {
     console.error(error);
@@ -202,6 +234,8 @@ export const updateTask = async (
     if (!task) {
       return handleError("Задача не найдена");
     }
+
+    console.log(taskTarget.startDate, 'taskTarget.startDate');
 
     return await prisma.task.update({
       where: { id: taskTarget.id },

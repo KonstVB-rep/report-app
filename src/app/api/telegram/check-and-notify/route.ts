@@ -47,6 +47,11 @@ export async function GET() {
       const events = await getEventsCalendarUserToday(chat.userId);
       if (!events?.length) continue;
 
+      const isNowBetween = (time: Date) => {
+        const diff = Math.abs(now.getTime() - time.getTime());
+        return diff <= 60 * 1000; // допускаем погрешность в 1 минуту
+      };
+
       const upcomingEvents = events.filter((event) => {
         const eventStartTime = new Date(event.start);
         const thirtyMinutesBefore = new Date(
@@ -55,16 +60,11 @@ export async function GET() {
         const fifteenMinutesBefore = new Date(
           eventStartTime.getTime() - 15 * 60 * 1000
         );
-        const exactStart = new Date(eventStartTime);
-
-        thirtyMinutesBefore.setSeconds(0, 0);
-        fifteenMinutesBefore.setSeconds(0, 0);
-        exactStart.setSeconds(0, 0);
 
         return (
-          (now.getTime() === thirtyMinutesBefore.getTime() ||
-            now.getTime() === fifteenMinutesBefore.getTime() ||
-            now.getTime() === exactStart.getTime()) &&
+          (isNowBetween(thirtyMinutesBefore) ||
+            isNowBetween(fifteenMinutesBefore) ||
+            isNowBetween(eventStartTime)) &&
           now <= eventStartTime
         );
       });
