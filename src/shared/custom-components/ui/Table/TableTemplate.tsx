@@ -70,7 +70,6 @@ const TableTemplate = <T extends Record<string, unknown>>({
                 data-size={header.getSize()}
                 className="border-r border-zinc-600 !p-2 flex-1"
               >
-            
                 {header.isPlaceholder ? null : (
                   <div
                     className={
@@ -118,7 +117,6 @@ const TableTemplate = <T extends Record<string, unknown>>({
                 hasEditDeleteActions={hasEditDeleteActions}
                 entityType={entityType}
                 headers={table.getHeaderGroups()[0].headers}
-
               />
             );
           })}

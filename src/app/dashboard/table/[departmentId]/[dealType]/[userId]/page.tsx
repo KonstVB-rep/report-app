@@ -17,9 +17,12 @@ import Loading from "./loading";
 
 const DealsInWork = ["projects", "retails", "contracts"];
 
-const PersonTable = dynamic(() => import("../ui/PersonTable"), {
-  loading: () => <Loading />,
-});
+const PersonDealsTable = dynamic(
+  () => import("@/widgets/deal/ui/PersonDealsTable"),
+  {
+    loading: () => <Loading />,
+  }
+);
 
 const fetchData = async (
   queryClient: QueryClient,
@@ -66,7 +69,7 @@ const PersonTablePage = async ({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PersonTable />
+      <PersonDealsTable />
     </HydrationBoundary>
   );
 };

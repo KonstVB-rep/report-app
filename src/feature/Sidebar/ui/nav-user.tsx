@@ -5,7 +5,6 @@ import Link from "next/link";
 import { BadgeCheck, ChevronsUpDown } from "lucide-react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import DialogAddUser from "@/entities/user/ui/DialogAddUser";
 import LogoutDialog from "@/feature/auth/ui/logout-dialog";
 import {
   SidebarMenu,
@@ -13,8 +12,9 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
+import { ReactNode } from "react";
 
-export const NavUser = () => {
+export const NavUser = ({children }: { children?: ReactNode}) => {
   const { isMobile } = useSidebar();
   const { authUser } = useStoreUser();
 
@@ -26,7 +26,9 @@ export const NavUser = () => {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DialogAddUser />
+        {children}
+        {/* <DialogAddUser /> */}
+        {/* <Link href="/adminboard" className="btn_hover justify-center text-sm">Администрирование</Link> */}
       </SidebarMenuItem>
       <SidebarMenuItem>
         <HoverCardComponent

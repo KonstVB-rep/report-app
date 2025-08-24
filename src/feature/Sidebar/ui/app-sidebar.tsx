@@ -5,6 +5,7 @@ import { memo, useEffect, useMemo } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react";
 
@@ -26,6 +27,7 @@ import {
   SidebarMenuItem,
 } from "@/shared/components/ui/sidebar";
 
+import DepartmentPersonsList from "./DepartmentPersonsList";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
@@ -42,6 +44,7 @@ const urlPath = (depsId: number): Record<UnionTypeDepartmentsName, string> => ({
 });
 
 const AppSidebar = () => {
+  const pathname = usePathname();
   const { departments } = useStoreDepartment();
   const { setDepartments } = useStoreDepartment();
 
@@ -82,14 +85,37 @@ const AppSidebar = () => {
       <Sidebar className="top-0 !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-primary-foreground"></Sidebar>
     );
   }
-
+  console.log(pathname, "pathname");
   return (
     <Sidebar className="top-0 !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" variant="outline" asChild>
-              <div>
+            {pathname !== "/dashboard" ? (
+              <SidebarMenuButton size="lg" variant="outline" asChild>
+                <div className="flex-1 text-left text-sm leading-tight">
+                  <Link
+                    href=""
+                    className="flex gap-2 w-full truncate text-lg font-semibold italic cursor-pointer"
+                    title="На главную"
+                  >
+                    <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
+                      <Image
+                        src="/logo.png"
+                        alt="logo"
+                        width={16}
+                        height={16}
+                        style={{ width: "16px", height: "16px" }}
+                        className="drop-shadow-[0_0px_8px_rgba(255,255,255,1)] dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)]"
+                      />
+                    </div>
+                    <span>Ertel</span>
+                  </Link>
+                </div>
+              </SidebarMenuButton>
+            ) : (
+
+              <div className="flex items-center rounded-md gap-2 w-full truncate text-lg font-semibold italic p-2 py-[9px] h-12 border-[1px] bg-background">
                 <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
                   <Image
                     src="/logo.png"
@@ -100,24 +126,25 @@ const AppSidebar = () => {
                     className="drop-shadow-[0_0px_8px_rgba(255,255,255,1)] dark:drop-shadow-[0_0px_8px_rgba(0,0,0,1)]"
                   />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <Link
-                    href="/dashboard"
-                    className="truncate text-lg font-semibold italic cursor-pointer"
-                  >
-                    Ertel
-                  </Link>
-                </div>
+                <span>Ertel</span>
               </div>
-            </SidebarMenuButton>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain.length ? data.navMain : []} />
+        <NavMain>
+          {(data.navMain.length ? data.navMain : []).map((item) => (
+            <DepartmentPersonsList key={item.id} item={item} />
+          ))}
+        </NavMain>
       </SidebarContent>
       <SidebarFooter className="border-t border-muted">
-        <NavUser />
+        <NavUser>
+          <Link href="/adminboard" className="btn_hover justify-center text-sm">
+            Администрирование
+          </Link>
+        </NavUser>
       </SidebarFooter>
     </Sidebar>
   );

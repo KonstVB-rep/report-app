@@ -14,8 +14,8 @@ const InputPassword = (props: InputPasswordProps) => {
   return (
     <div className="relative">
       <Input
-        id="password"
-        type={visible ? "text" : "password"}
+        id="user_password"
+        type={visible ? "text" : "user_password"}
         placeholder="✱✱✱✱✱✱✱"
         className={`w-full placeholder:text-sm ${props.className}`}
         {...props}

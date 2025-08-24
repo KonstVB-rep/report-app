@@ -1,5 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 
+import { toggleSubscribeChatBot } from "@/feature/createTelegramChatBot/api";
+import {
+  ChatBotType,
+  ResponseChatBotType,
+} from "@/feature/createTelegramChatBot/type";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { logout } from "@/shared/auth/logout";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
@@ -10,12 +15,7 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
-import {
-  EventDataType,
-  EventResponse,
-} from "../types";
-import { toggleSubscribeChatBot } from "@/feature/createTelegramChatBot/api";
-import { ChatBotType, ResponseChatBotType } from "@/feature/createTelegramChatBot/type";
+import { EventDataType, EventResponse } from "../types";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();

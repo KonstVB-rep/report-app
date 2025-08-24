@@ -192,8 +192,12 @@ body {
   background: url('../../public/404-dark.jpg') no-repeat center center fixed;
 }
 
+.btn_flex {
+  @apply flex rounded-md border border-solid bg-background text-sidebar-accent-foreground hover:border-muted-foreground hover:bg-sidebar-accent focus-visible:border-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+
 .btn_hover {
-  @apply flex items-center gap-2 rounded-md border border-solid bg-background p-2 py-2 text-sidebar-accent-foreground hover:border-muted-foreground hover:bg-sidebar-accent focus-visible:border-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+  @apply  btn_flex items-center gap-2 p-2 py-2 ;
 }
 .btn_blue {
   @apply flex items-center gap-2 rounded-md border border-solid border-primary bg-blue-800 p-2 py-2 text-background dark:text-sidebar-accent-foreground hover:border-muted-foreground hover:bg-sidebar-accent focus-visible:border-muted-foreground focus-visible:outline focus-visible:outline-1 focus-visible:ring-offset-2 focus-visible:ring-offset-white;

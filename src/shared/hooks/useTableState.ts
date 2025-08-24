@@ -11,7 +11,7 @@ import {
 
 import { useMemo, useState } from "react";
 
-import useDataTableFilters from "@/entities/deal/hooks/useDataTableFilters";
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters";
 
 const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
@@ -81,11 +81,11 @@ export const useTableState = <T extends Record<string, unknown>>(
         resource: false, // например скрыть колонку с id 'resource'
       },
     },
-  //   defaultColumn: {
-  //   size: 0,      // убираем дефолтные 150px
-  //   minSize: 0,
-  //   // maxSize: Number.MAX_SAFE_INTEGER,
-  // },
+    //   defaultColumn: {
+    //   size: 0,      // убираем дефолтные 150px
+    //   minSize: 0,
+    //   // maxSize: Number.MAX_SAFE_INTEGER,
+    // },
   });
 
   const filtersContextValue = {

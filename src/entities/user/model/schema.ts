@@ -1,8 +1,10 @@
+import { PermissionEnum } from "@prisma/client";
+
 import { z } from "zod";
 
 import { DepartmentLabels } from "@/entities/department/types";
 
-import { PermissionUser, RolesUser } from "./objectTypes";
+import { RolesUser } from "./objectTypes";
 
 export const userFormSchema = z.object({
   username: z
@@ -17,19 +19,31 @@ export const userFormSchema = z.object({
     .string()
     .min(6, { message: "Пароль должен содержать не менее 6 символов" })
     .max(30, { message: "Пароль должен содержать не более 30 символов" }),
-  email: z.email(),
-  phone: z
-    .string()
-    .min(16, "Минимальное количество символов 16")
-    .max(16, "Максимальное количество символов 16"),
+  email: z.email("Некорректный email"),
+  phone: z.string().min(18, "Минимальное количество символов 18"),
+  // .max(16, "Максимальное количество символов 18"),
   position: z
     .string()
     .min(3, { message: "Должность должна содержать не менее 3 символов" })
     .max(60, { message: "Должность должна содержать не более 60 символов" }),
-  department: z.enum(Object.keys(DepartmentLabels) as [string, ...string[]]),
-  role: z.enum(Object.keys(RolesUser) as [string, ...string[]]),
+  department: z
+    .string()
+    .refine((val) => Object.keys(DepartmentLabels).includes(val), {
+      message: "Пожалуйста, выберите отдел из списка",
+    }),
+
+  role: z
+    .string()
+    .refine((val) => Object.keys(RolesUser).includes(val), {
+      message: "Пожалуйста, выберите роль из списка",
+    }),
   permissions: z
-    .array(z.enum(Object.keys(PermissionUser) as [string, ...string[]]))
+    .array(z.string())
+    .transform((arr) =>
+      arr.filter((permission): permission is PermissionEnum =>
+        Object.values(PermissionEnum).includes(permission as PermissionEnum)
+      )
+    )
     .optional(),
 });
 

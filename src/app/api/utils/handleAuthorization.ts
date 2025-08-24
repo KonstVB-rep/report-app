@@ -1,9 +1,10 @@
-'use server'
+"use server";
+
 import { User } from "@/entities/user/types";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
-import { requireAuth } from "./requireAuth ";
 
+import { requireAuth } from "./requireAuth ";
 
 export const handleAuthorization = async (): Promise<{
   user: User | null;
@@ -11,7 +12,7 @@ export const handleAuthorization = async (): Promise<{
 }> => {
   const userId = await requireAuth();
 
-  // const isValisTokens = await checkTokens(); 
+  // const isValisTokens = await checkTokens();
 
   if (!userId) {
     return handleError("Ошибка авторизации");

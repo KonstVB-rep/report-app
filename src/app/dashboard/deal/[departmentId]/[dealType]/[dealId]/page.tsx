@@ -10,10 +10,10 @@ import { useParams } from "next/navigation";
 import Loading from "./loading";
 
 const ProjectItemInfo = dynamic(
-  () => import("@/entities/deal/ui/ProjectInfo"),
+  () => import("@/feature/deals/ui/ProjectInfo"),
   { ssr: false, loading: () => <Loading /> }
 );
-const RetailItemInfo = dynamic(() => import("@/entities/deal/ui/RetailInfo"), {
+const RetailItemInfo = dynamic(() => import("@/feature/deals/ui/RetailInfo"), {
   ssr: false,
   loading: () => <Loading />,
 });

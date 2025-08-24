@@ -7,10 +7,10 @@ import prisma from "@/prisma/prisma-client";
 
 export const login = async (prevState: unknown, formData: FormData) => {
   try {
-    const password = formData.get("password") as string;
+    const user_password = formData.get("user_password") as string;
     const email = formData.get("email") as string;
 
-    if (!email || !password) {
+    if (!email || !user_password) {
       return {
         data: null,
         message: "Пожалуйста, заполните все поля",
@@ -39,7 +39,10 @@ export const login = async (prevState: unknown, formData: FormData) => {
       };
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.user_password);
+    const isPasswordValid = await bcrypt.compare(
+      user_password,
+      user.user_password
+    );
 
     if (!isPasswordValid) {
       return {

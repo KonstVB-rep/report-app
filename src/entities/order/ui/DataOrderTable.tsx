@@ -8,11 +8,11 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import AddNewDeal from "@/entities/deal/ui/Modals/AddNewDeal";
-import ButtonExportTableXls from "@/shared/custom-components/ui/Buttons/ButtonExportTableXls";
+import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider";
+import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
+import FiltersManagement from "@/feature/filter-persistence/ui/FiltersManagement";
+import ButtonExportTableXls from "@/feature/table-export-excel/ui/ButtonExportTableXls";
 import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
-import { DataTableFiltersProvider } from "@/shared/custom-components/ui/Table/tableFilters/context/DataTableFiltersProvider";
-import { useDataTableFiltersContext } from "@/shared/custom-components/ui/Table/tableFilters/context/useDataTableFiltersContext";
-import FiltersManagement from "@/shared/custom-components/ui/Table/tableFilters/ui/FiltersManagement";
 import { useTableState } from "@/shared/hooks/useTableState";
 
 import { STATUS_ORDER } from "../lib/constants";

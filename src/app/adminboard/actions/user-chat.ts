@@ -1,6 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { z } from "zod";
+
+import { createUserTelegramChat } from "@/feature/createTelegramChatBot/api";
+import { ActionResponse } from "@/shared/types";
 
 export interface ChatFormData {
   userId: string; // ID пользователя в вашей системе
@@ -8,21 +13,6 @@ export interface ChatFormData {
   chatId: string; // ID чата в Telegram
   telegramUserInfoId: string; // ID информации о Telegram пользователе
   chatName?: string;
-}
-export interface ActionResponseChat {
-  success: boolean;
-  message: string;
-  errors?: {
-    errors: string[];
-    properties?: {
-      [K in keyof ChatFormData]?: {
-        errors: string[];
-      };
-    };
-  };
-  inputs?: {
-    [K in keyof ChatFormData]?: string;
-  };
 }
 
 const createChatFormSchema = z.object({
@@ -41,11 +31,9 @@ const createChatFormSchema = z.object({
 });
 
 export async function saveChat(
-  prevState: ActionResponseChat | null,
+  prevState: ActionResponse<ChatFormData> | null,
   formData: FormData
-): Promise<ActionResponseChat> {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
+): Promise<ActionResponse<ChatFormData>> {
   try {
     const rawData: ChatFormData = {
       userId: formData.get("userId") as string,
@@ -68,15 +56,16 @@ export async function saveChat(
       };
     }
 
-    // await createUserTelegramChat(
-    //   data.userId,
-    //   data.botName,
-    //   data.chatId,
-    //   String(data.telegramUserInfoId),
-    //   data.chatName || "noname"
-    // );
+    await createUserTelegramChat(
+      data.userId,
+      data.botName,
+      data.chatId,
+      String(data.telegramUserInfoId),
+      data.chatName || "noname"
+    );
 
     console.log(data, "data");
+    revalidatePath(formData.get("pathname") as string);
 
     return {
       success: true,

@@ -31,7 +31,7 @@ const TableCellComponent = <TData,>({
   cell,
   styles,
   handleOpenInfo,
-  children
+  children,
 }: TableCellComponentProps<TData>) => {
   return (
     <TableCell
@@ -240,4 +240,3 @@ const TableBodyRow = <T extends Record<string, unknown>>({
 };
 
 export default TableBodyRow;
-

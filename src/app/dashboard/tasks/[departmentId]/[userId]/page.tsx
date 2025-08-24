@@ -6,23 +6,23 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import { useGetUserTasks } from "@/entities/task/hooks/query";
-import useViewType from "@/entities/task/hooks/useViewType";
-import { viewType } from "@/entities/task/model/constants";
 import LoadingView from "@/entities/task/ui/LoadingView";
-import СreateTaskDialog from "@/entities/task/ui/Modals/СreateTaskDialog";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { useGetUserTasks } from "@/feature/task/hooks/query";
+import useViewType from "@/feature/task/hooks/useViewType";
+import { viewType } from "@/feature/task/model/constants";
+import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog";
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
 
-const Kanban = dynamic(() => import("@/entities/task/ui/Kanban"), {
+const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
   loading: () => <LoadingView />,
 });
 
-const TaskTable = dynamic(() => import("@/entities/task/ui/TaskTable"), {
+const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   ssr: false,
   loading: () => <LoadingView />,
 });

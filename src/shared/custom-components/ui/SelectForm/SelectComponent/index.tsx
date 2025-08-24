@@ -36,7 +36,7 @@ const SelectComponent = ({
 
       <SelectContent>
         <SelectGroup>
-          {options.map(([key, value]) => (
+          {options?.map(([key, value]) => (
             <SelectItem key={key} value={key} className={`${className}`}>
               <span className={`${className}`}>{value}</span>
             </SelectItem>

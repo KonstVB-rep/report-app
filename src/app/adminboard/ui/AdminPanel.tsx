@@ -1,16 +1,15 @@
+import React from "react";
 
-import React from 'react'
-import { CreateBotForm } from './Forms/CreateBotForm'
-import { CreateUserChatForm } from './Forms/CreateUserChatForm'
+import WrapperBots from "./Bot/ui/WrapperBots";
+import WrapperChats from "./ChatsBot/ui/WrapperChats";
 
 const AdminPanel = () => {
-
   return (
-    <div>
-    <CreateBotForm />
-    <CreateUserChatForm/>
+    <div className="p-5 flex flex-wrap gap-5">
+      <WrapperBots />
+      <WrapperChats />
     </div>
-  )
-}
+  );
+};
 
-export default AdminPanel
+export default AdminPanel;

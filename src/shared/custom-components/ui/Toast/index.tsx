@@ -61,6 +61,27 @@ export const TOAST = {
         margin: "auto",
       },
     }),
+  PENDING: (message: string) =>
+    toast.info(message, {
+      duration: Infinity,
+      position: "top-center",
+      style: {
+        border: "4px solid oklch(0.6413 0.154 245.33)",
+        borderRadius: "16px",
+        fontSize: "14px",
+        height: "auto",
+        color: "#333",
+        textAlign: "center",
+        backgroundColor: "#azure",
+        maxWidth: "400px",
+        minWidth: "12rem",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        display: "flex",
+        justifyContent: "center",
+        margin: "auto",
+      },
+    }),
   PROMISE: (promise: Promise<unknown>, messageSuccess: string) =>
     toast.promise(promise, {
       loading: "Выполняется...",

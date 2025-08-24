@@ -12,20 +12,20 @@ import {
   CardHeader,
 } from "@/shared/components/ui/card";
 
-import { cleanDistance } from "../lib/helpers";
 import {
   LABEL_TASK_PRIORITY,
   LABEL_TASK_STATUS,
   TASK_PRIORITY_COLOR_BORDER,
-} from "../model/constants";
+} from "../../../feature/task/model/constants";
+import { cleanDistance } from "../lib/helpers";
 import { TaskWithUserInfo } from "../types";
 
 const EditTaskDialogButton = dynamic(
-  () => import("./Modals/EditTaskDialogButton")
+  () => import("../../../feature/task/ui/Modals/EditTaskDialogButton")
 );
 
 const DelTaskDialogButton = dynamic(
-  () => import("./Modals/DelTaskDialogButton")
+  () => import("../../../feature/task/ui/Modals/DelTaskDialogButton")
 );
 
 type TaskCardProps = {

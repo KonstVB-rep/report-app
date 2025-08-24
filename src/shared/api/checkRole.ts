@@ -2,9 +2,16 @@
 "use server";
 
 import { Role } from "@prisma/client";
-import prisma from "@/prisma/prisma-client";
+
+import { cookies } from "next/headers";
+
 import { jwtVerify } from "jose";
-import { cookies } from "next/headers"; // ← Импортируем cookies
+
+import prisma from "@/prisma/prisma-client";
+
+// actions/checkRole.ts
+
+// ← Импортируем cookies
 
 const accessTokenSecretKey = new TextEncoder().encode(
   process.env.JWT_SECRET_KEY
@@ -12,12 +19,11 @@ const accessTokenSecretKey = new TextEncoder().encode(
 
 export const checkRole = async (): Promise<boolean> => {
   try {
-
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
     if (!accessToken) {
-      console.log('No token found in checkRole');
+      console.log("No token found in checkRole");
       return false;
     }
 
@@ -26,7 +32,6 @@ export const checkRole = async (): Promise<boolean> => {
     if (!payload.userId) {
       return false;
     }
-
 
     const userData = await prisma.user.findUnique({
       where: { id: String(payload.userId) },

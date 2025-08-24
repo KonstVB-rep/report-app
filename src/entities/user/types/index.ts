@@ -1,8 +1,8 @@
-import { PermissionEnum } from "@prisma/client";
+import { PermissionEnum, Role } from "@prisma/client";
 
-import { PermissionUser, RolesUser } from "../model/objectTypes";
+import { PermissionUser } from "../model/objectTypes";
 
-export type RoleType = keyof typeof RolesUser;
+// export type RoleType = keyof typeof RolesUser;
 export type DepartmentTypeName = "SALES" | "TECNICAL" | "MARKETING";
 export type User = {
   id: string;
@@ -12,7 +12,7 @@ export type User = {
   email: string;
   position: string;
   departmentId: number;
-  role: RoleType;
+  role: Role;
   lastlogin?: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -40,7 +40,7 @@ export type UserResponse = Omit<
 
 export type Option = {
   label: string;
-  value: string;
+  value: PermissionEnum;
   disable?: boolean;
 };
 
@@ -72,3 +72,15 @@ export const OPTIONS: Option[] = [
 ];
 
 export type PermissionType = keyof typeof PermissionEnum;
+
+export type UserFormData = {
+  id?: string;
+  username: string;
+  phone: string;
+  user_password: string;
+  email: string;
+  position: string;
+  department: DepartmentTypeName;
+  role: Role;
+  permissions?: PermissionEnum[];
+};

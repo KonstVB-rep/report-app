@@ -12,25 +12,27 @@ import { Button } from "@/shared/components/ui/button";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
+import UserCreateFormCopy from "./UserCreateForm_copy";
 import UserFormSkeleton from "./UserFormSkeleton";
+import { cn } from "@/shared/lib/utils";
 
 const UserCreateForm = dynamic(() => import("./UserCreateForm"), {
   ssr: false,
   loading: () => <UserFormSkeleton />,
 });
 
-const DialogAddUser = () => {
+const DialogAddUser = ({ className }: { className?: string}) => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
       <DialogComponent
         trigger={
           <Button
             variant="outline"
-            className="btn_hover w-full"
+            className={cn("btn_hover",className)}
             aria-label="Добавить нового пользователя"
           >
             <SquarePlus size={16} />
-            <span className="ml-2 whitespace-nowrap text-sm">
+            <span className="whitespace-nowrap text-sm text-start">
               Добавить пользователя
             </span>
           </Button>
@@ -38,7 +40,8 @@ const DialogAddUser = () => {
         dialogTitle="Форма добавления пользователя"
         classNameContent="sm:max-w-[600px]"
       >
-        <UserCreateForm />
+        {/* <UserCreateForm /> */}
+        <UserCreateFormCopy />
       </DialogComponent>
     </ProtectedByPermissions>
   );

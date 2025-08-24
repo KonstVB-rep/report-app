@@ -1,5 +1,3 @@
-
-'use server'
 import { User } from "@/entities/user/types";
 
 import { checkTokens } from "../lib/helpers/checkTokens";

@@ -142,7 +142,6 @@ export type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">;
 
 export type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">;
 
-
 export type ContactFieldError = {
   _common?: {
     message?: string;

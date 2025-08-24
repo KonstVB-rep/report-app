@@ -9,22 +9,7 @@ import {
 
 import { z } from "zod";
 
-export const SingleContactFormSchema = z
-  .object({
-    id: z.string(),
-    name: z.string().min(1, { error: "Имя обязательно" }),
-    phone: z.string().nullable().optional(),
-    email: z.string().nullable().optional(),
-    position: z.string().nullable().optional(),
-  })
-  .refine((contact) => contact.phone?.trim() || contact.email?.trim(), {
-    error: "Укажите либо телефон, либо email",
-    path: ["_common"],
-  });
-
-export const ContactFormSchema = z.object({
-  contacts: z.array(SingleContactFormSchema),
-});
+import { SingleContactFormSchema } from "@/entities/contact/model/schema";
 
 export const ProjectFormSchema = z
   .object({
@@ -215,5 +200,3 @@ export const RetailFormSchema = z
 
 export type ProjectSchema = z.infer<typeof ProjectFormSchema>;
 export type RetailSchema = z.infer<typeof RetailFormSchema>;
-export type ContactSchema = z.infer<typeof ContactFormSchema>;
-export type SingleContactSchema = z.infer<typeof SingleContactFormSchema>;

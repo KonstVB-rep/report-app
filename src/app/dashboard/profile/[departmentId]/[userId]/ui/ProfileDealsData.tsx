@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 
-import { useGetDealsByDateRange } from "@/entities/deal/hooks/query";
 import { DateRange } from "@/entities/deal/types";
 import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants";
+import { useGetDealsByDateRange } from "@/feature/deals/api/hooks/query";
 import { Button } from "@/shared/components/ui/button";
 import { OverlayLocal } from "@/shared/custom-components/ui/Overlay";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";

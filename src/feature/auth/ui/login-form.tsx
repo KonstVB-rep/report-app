@@ -22,12 +22,12 @@ import { loginFormSchema, LoginSchema } from "../model/schema";
 
 type ErrorState = {
   email: string;
-  password: string;
+  user_password: string;
 };
 
 const initialErrorState = {
   email: "",
-  password: "",
+  user_password: "",
 };
 
 const LoginForm = ({ className }: React.ComponentProps<"div">) => {
@@ -35,7 +35,7 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
-      password: "",
+      user_password: "",
     },
   });
   const [errors, setErrors] = useState<ErrorState>(() => initialErrorState);
@@ -55,7 +55,8 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
       const flattenedErrors = treeifyError(parsed.error);
       setErrors({
         email: flattenedErrors.properties?.email?.errors[0] || "",
-        password: flattenedErrors.properties?.password?.errors[0] || "",
+        user_password:
+          flattenedErrors.properties?.user_password?.errors[0] || "",
       });
       return;
     }
@@ -102,12 +103,15 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
                 />
 
                 <InputFormPassword
-                  name="password"
+                  name="user_password"
                   label="Пароль"
                   control={form.control}
-                  errorMessage={errors.password}
-                  className={cn("w-full", errors.password && "border-red-500")}
-                  autoComplete="current-password"
+                  errorMessage={errors.user_password}
+                  className={cn(
+                    "w-full",
+                    errors.user_password && "border-red-500"
+                  )}
+                  autoComplete="current-user_password"
                   required
                 />
 

@@ -9,22 +9,22 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(cuid())
+  id              String             @id @default(cuid())
   username        String
-  email           String           @unique
-  phone           String           @unique
+  email           String             @unique
+  phone           String             
   user_password   String
   position        String
   departmentId    Int
   role            Role
   lastlogin       DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  directorOf      Department?      @relation("DepartmentDirector")
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  directorOf      Department?        @relation("DepartmentDirector")
   File            DealFile[]
   projects        Project[]
   retail          Retail[]
-  department      Department       @relation("DepartmentUsers", fields: [departmentId], references: [id])
+  department      Department         @relation("DepartmentUsers", fields: [departmentId], references: [id])
   login           UserLogin[]
   permissions     UserPermission[]
   userFilters     UserFilter[]
@@ -32,31 +32,30 @@ model User {
   chats           UserTelegramChat[]
   retailManagers  RetailManager[]
   projectManagers ProjectManager[]
-  tasksAssigned   Task[]       @relation("TaskAssigner")
-  tasksExecuted   Task[]       @relation("TaskExecutor")
-  telegramInfo TelegramUserInfo[]
+  tasksAssigned   Task[]             @relation("TaskAssigner")
+  tasksExecuted   Task[]             @relation("TaskExecutor")
+  telegramInfo    TelegramUserInfo[]
 
   @@index([departmentId])
 }
 
 model UserPermission {
-  id            String         @id @default(cuid())
-  userId        String
-  permissionId  String
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  permission    Permission     @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  id           String     @id @default(cuid())
+  userId       String
+  permissionId String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@index([userId], map: "UserPermission_userId_fkey")
   @@index([permissionId], map: "UserPermission_permissionId_fkey")
 }
 
 model Permission {
-  id              String          @id @default(cuid())
-  name            PermissionEnum  @unique
+  id              String           @id @default(cuid())
+  name            PermissionEnum   @unique
   description     String?
   userPermissions UserPermission[] // Добавлена связь с UserPermission
 }
-
 
 model Department {
   id          Int            @id @default(autoincrement())
@@ -69,9 +68,9 @@ model Department {
 }
 
 model Project {
-  id                    String           @id @default(cuid())
+  id                    String              @id @default(cuid())
   userId                String
-  type                  DealType         @default(PROJECT) // <-- Тип сделки
+  type                  DealType            @default(PROJECT) // <-- Тип сделки
   dateRequest           DateTime
   nameDeal              String
   nameObject            String
@@ -80,30 +79,29 @@ model Project {
   contact               String
   phone                 String?
   email                 String?
-  amountCP              Decimal?          @db.Decimal(15, 2)
-  amountPurchase        Decimal?          @db.Decimal(15, 2)
-  amountWork            Decimal?          @db.Decimal(15, 2)
-  delta                 Decimal?          @db.Decimal(15, 2)
+  amountCP              Decimal?            @db.Decimal(15, 2)
+  amountPurchase        Decimal?            @db.Decimal(15, 2)
+  amountWork            Decimal?            @db.Decimal(15, 2)
+  delta                 Decimal?            @db.Decimal(15, 2)
   comments              String
   dealStatus            StatusProject
   plannedDateConnection DateTime?
   resource              String?
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
-  user                  User             @relation(fields: [userId], references: [id])
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  user                  User                @relation(fields: [userId], references: [id])
   projectManagers       ProjectManager[]
   additionalContacts    AdditionalContact[] @relation("ProjectContacts")
 
-  orderId               String?          @unique
-
+  orderId String? @unique
 
   @@index([userId], map: "Project_userId_fkey")
 }
 
 model Retail {
-  id                    String           @id @default(cuid())
+  id                    String              @id @default(cuid())
   userId                String
-  type                  DealType         @default(RETAIL) // <-- Тип сделки
+  type                  DealType            @default(RETAIL) // <-- Тип сделки
   dateRequest           DateTime
   nameDeal              String
   nameObject            String
@@ -112,74 +110,72 @@ model Retail {
   contact               String
   phone                 String?
   email                 String?
-  amountCP              Decimal?          @db.Decimal(15, 2)
-  delta                 Decimal?          @db.Decimal(15, 2)
+  amountCP              Decimal?            @db.Decimal(15, 2)
+  delta                 Decimal?            @db.Decimal(15, 2)
   dealStatus            StatusRetail
   comments              String
   plannedDateConnection DateTime?
   resource              String?
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
-  user                  User             @relation(fields: [userId], references: [id])
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  user                  User                @relation(fields: [userId], references: [id])
   retailManagers        RetailManager[]
   additionalContacts    AdditionalContact[] @relation("RetailContacts")
 
-  orderId               String?          @unique
+  orderId String? @unique
 
   @@index([userId], map: "Retail_userId_fkey")
 }
 
-
 model Order {
-  id                    String           @id @default(cuid())
-  type                  DealType         @default(ORDER) // <-- Тип сделки
-  dateRequest           DateTime
-  nameDeal              String
-  contact               String
-  phone                 String?
-  email                 String?
-  manager               String
-  comments              String?
-  departmentId          Int
-  orderStatus           StatusOrder      @default(SUBMITTED_TO_WORK) 
-  resource              String?
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
+  id           String      @id @default(cuid())
+  type         DealType    @default(ORDER) // <-- Тип сделки
+  dateRequest  DateTime
+  nameDeal     String
+  contact      String
+  phone        String?
+  email        String?
+  manager      String
+  comments     String?
+  departmentId Int
+  orderStatus  StatusOrder @default(SUBMITTED_TO_WORK)
+  resource     String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  retailId              String?          @unique 
-  projectId             String?          @unique
+  retailId  String? @unique
+  projectId String? @unique
 }
 
 model ProjectManager {
-  dealId      String
-  userId      String
+  dealId String
+  userId String
 
-  project     Project   @relation(fields: [dealId], references: [id], onDelete: Cascade)
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([dealId, userId]) // составной ключ — один и тот же менеджер не может повторно быть в заказе
 }
 
 model RetailManager {
   dealId String
-  userId  String
+  userId String
 
-  retail  Retail   @relation(fields: [dealId],references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  retail Retail @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([dealId, userId])
 }
 
-
 model AdditionalContact {
-  id           String    @id @default(cuid())
-  name         String 
-  phone        String?      
-  email        String?    
-  position     String?    
+  id       String  @id @default(cuid())
+  name     String
+  phone    String?
+  email    String?
+  position String?
 
-  projects     Project[] @relation("ProjectContacts") // связь с несколькими проектами
-  retails      Retail[]  @relation("RetailContacts") // связь с несколькими розничными сделками
+  projects Project[] @relation("ProjectContacts") // связь с несколькими проектами
+  retails  Retail[]  @relation("RetailContacts") // связь с несколькими розничными сделками
 }
 
 model UserLogin {
@@ -192,34 +188,32 @@ model UserLogin {
 }
 
 model DealFile {
-  id          String       @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
   localPath   String
-  storageType StorageType  @default(YANDEX_DISK)
+  storageType StorageType @default(YANDEX_DISK)
   userId      String
-  dealId      String       // Универсальный ID сделки (может быть как Project, так и Retail)
-  dealType    DealType     // PROJECT или RETAIL
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  dealId      String // Универсальный ID сделки (может быть как Project, так и Retail)
+  dealType    DealType // PROJECT или RETAIL
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  user        User         @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@index([dealId])
   @@index([userId], map: "File_userId_fkey")
 }
 
-
 model UserFilter {
-  id           String    @id @default(cuid())
-  userId       String
-  filterName   String    
-  filterValue  String    @db.Text
-  isActive     Boolean   @default(false) 
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  userId      String
+  filterName  String
+  filterValue String   @db.Text
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  user         User      @relation(fields: [userId], references: [id])
-
+  user User @relation(fields: [userId], references: [id])
 }
 
 model EventCalendar {
@@ -233,34 +227,35 @@ model EventCalendar {
   updatedAt DateTime @updatedAt
   notified  Boolean  @default(false)
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model TelegramBot {
-  id        String    @id @default(cuid())  // Уникальный ID бота
-  botName   String    @unique
-  token     String    @unique        
-  createdAt DateTime  @default(now())               // Время создания
-  updatedAt DateTime  @updatedAt                    // Время последнего обновления
+  id          String   @id @default(cuid()) // Уникальный ID бота
+  botName     String   @unique
+  token       String   @unique
+  description String?
+  createdAt   DateTime @default(now()) // Время создания
+  updatedAt   DateTime @updatedAt // Время последнего обновления
 
-  chats     UserTelegramChat[]      // Связь с таблицей чатов
+  chats UserTelegramChat[] // Связь с таблицей чатов
 
   telegramUsersInfo TelegramUserInfo[]
 }
 
 model UserTelegramChat {
-  id               String     @id @default(cuid())
-  userId           String     // ID пользователя в вашей системе
-  botId            String     // ID бота
-  chatId           String     // ID чата в Telegram
-  telegramUserInfoId String   // ID информации о Telegram пользователе
-  chatName         String?
-  isActive         Boolean    @default(true)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  id                 String   @id @default(cuid())
+  userId             String // ID пользователя в вашей системе
+  botId              String // ID бота
+  chatId             String // ID чата в Telegram
+  telegramUserInfoId String // ID информации о Telegram пользователе
+  chatName           String?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bot            TelegramBot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bot              TelegramBot      @relation(fields: [botId], references: [id], onDelete: Cascade)
   telegramUserInfo TelegramUserInfo @relation(fields: [telegramUserInfoId], references: [id], onDelete: Cascade)
 
   @@unique([botId, chatId]) // Уникальный чат для бота
@@ -269,60 +264,59 @@ model UserTelegramChat {
 }
 
 model Task {
-  id              String      @id @default(cuid())  
-  title           String
-  description     String
-  departmentId    Int
-  taskStatus      TaskStatus
-  taskPriority    TaskPriority
-  assignerId      String
-  executorId      String
-  orderTask       Int
-  dueDate         DateTime
-  startDate       DateTime
-  createdAt       DateTime    @default(now())                
-  updatedAt       DateTime    @updatedAt      
+  id           String       @id @default(cuid())
+  title        String
+  description  String
+  departmentId Int
+  taskStatus   TaskStatus
+  taskPriority TaskPriority
+  assignerId   String
+  executorId   String
+  orderTask    Int
+  dueDate      DateTime
+  startDate    DateTime
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  department   Department @relation("DepartmentTask", fields: [departmentId], references: [id])
+  department Department @relation("DepartmentTask", fields: [departmentId], references: [id])
 
   // Автор задачи (assigner)
-  assigner     User         @relation("TaskAssigner", fields: [assignerId], references: [id])
+  assigner User @relation("TaskAssigner", fields: [assignerId], references: [id])
 
   // Исполнитель задачи (executor)
-  executor     User         @relation("TaskExecutor", fields: [executorId], references: [id])
+  executor User @relation("TaskExecutor", fields: [executorId], references: [id])
 
   @@index([orderTask, taskStatus])
 }
 
 model TelegramUserInfo {
-  id              String      @id @default(cuid())  
-  chatId          String      @unique
-  tgUserId        String      @unique
-  tgUserName      String?     @unique // Может быть null
-  firstName       String?
-  lastName        String?
-  languageCode    String?
-  isBot           Boolean     @default(true)
-  createdAt       DateTime    @default(now())                
-  updatedAt       DateTime    @updatedAt
+  id           String   @id @default(cuid())
+  chatId       String   @unique
+  tgUserId     String   @unique
+  tgUserName   String?  @unique // Может быть null
+  firstName    String?
+  lastName     String?
+  languageCode String?
+  isBot        Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Связь с пользователем системы (если привязан)
-  userId          String?
-  user            User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Связь с ботом (через который получена информация)
-  botId           String?
-  bot             TelegramBot? @relation(fields: [botId], references: [id], onDelete: Cascade)
+  botId String?
+  bot   TelegramBot? @relation(fields: [botId], references: [id], onDelete: Cascade)
 
   // Связь с чатами пользователя
-  chats       UserTelegramChat[]
+  chats UserTelegramChat[]
 
   @@index([tgUserId])
   @@index([chatId])
   @@index([userId])
   @@index([botId])
 }
-
 
 enum PermissionEnum {
   VIEW_USER_REPORT
@@ -356,7 +350,7 @@ enum DirectionRetail {
 
 enum DeliveryProject {
   COMPLEX
-  EQUIPMENT_SUPPLY 
+  EQUIPMENT_SUPPLY
   WORK_SERVICES
   RENT
   SOFTWARE_DELIVERY
@@ -364,7 +358,7 @@ enum DeliveryProject {
 }
 
 enum DeliveryRetail {
-  EXPENDABLE_MATERIALS 
+  EXPENDABLE_MATERIALS
   SUPPLY
   WORK
 }
@@ -415,9 +409,9 @@ enum DepartmentEnum {
   MARKETING
 }
 
-enum Role {   
-  DIRECTOR          
-  EMPLOYEE 
+enum Role {
+  DIRECTOR
+  EMPLOYEE
   ADMIN
   SUPER_ADMIN
 }
@@ -441,8 +435,8 @@ enum TaskStatus {
 }
 
 enum TaskPriority {
-  LOW       // Не срочно, но нужно сделать (фоновые)
-  MEDIUM    // Важно, но не критично (обычные задачи)
-  HIGH      // Очень важно — сделать до средних
-  CRITICAL  // Экстренно — сделать первым
+  LOW // Не срочно, но нужно сделать (фоновые)
+  MEDIUM // Важно, но не критично (обычные задачи)
+  HIGH // Очень важно — сделать до средних
+  CRITICAL // Экстренно — сделать первым
 }

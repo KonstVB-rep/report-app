@@ -1,12 +1,7 @@
 import React from "react";
 
 import { Button } from "@/shared/components/ui/button";
-import {
-  DialogClose,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
+import { DialogClose } from "@/shared/components/ui/dialog";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
@@ -28,13 +23,6 @@ const DeleteUserModalContent = ({
   };
   return (
     <MotionDivY>
-      <DialogHeader>
-        <DialogTitle className="sr-only">Удалить пользователя</DialogTitle>
-
-        <DialogDescription className="sr-only">
-          Пользователь будет удален навсегда
-        </DialogDescription>
-      </DialogHeader>
       <div className="grid gap-5">
         <Overlay isPending={isPending} />
         <p className="text-center">Вы уверены что хотите удалить аккаунт?</p>

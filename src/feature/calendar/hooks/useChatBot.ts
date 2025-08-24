@@ -65,7 +65,11 @@ const useChatBot = (chatName: string) => {
         return;
       }
       if (!isActiveBot) {
-        updateStatusChatBot({ botId: bot.id, chatId: String(bot.chatId), isActive: true });
+        updateStatusChatBot({
+          botId: bot.id,
+          chatId: String(bot.chatId),
+          isActive: true,
+        });
         await sendNotification(
           "Вы успешно подписались на уведомления календаря",
           bot.chatId,

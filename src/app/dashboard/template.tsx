@@ -3,20 +3,13 @@
 import { PropsWithChildren, useEffect } from "react";
 
 import dynamic from "next/dynamic";
-// import { createPortal } from "react-dom";
-
 import { usePathname } from "next/navigation";
 
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
-// import { useGetOrdersNotAtWorkByUserId } from "@/entities/order/hooks/query";
-// import { OrderResponse } from "@/entities/order/types";
-// import TabsDealTypeForms from "@/entities/order/ui/TabsDealTypeForms";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
-// import { toast } from "sonner";
-
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
 

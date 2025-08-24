@@ -11,6 +11,9 @@ import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 
@@ -43,6 +46,13 @@ const DialogDeleteUser = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]" showX={false}>
+        <DialogHeader>
+          <DialogTitle className="sr-only">Удалить пользователя</DialogTitle>
+
+          <DialogDescription className="sr-only">
+            Пользователь будет удален навсегда
+          </DialogDescription>
+        </DialogHeader>
         {isFetching || !data ? (
           <DeleteUserModalContentSkeleton />
         ) : (

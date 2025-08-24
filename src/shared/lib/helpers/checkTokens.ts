@@ -1,4 +1,5 @@
 import axiosInstance from "@/shared/api/axiosInstance";
+
 import { AuthError } from "./customErrors";
 
 export interface TokenCheckResponse {
@@ -7,8 +8,7 @@ export interface TokenCheckResponse {
     userId: string;
     departmentId: number;
     exp: number;
-
-  }
+  };
 }
 
 export const checkTokens = async (): Promise<boolean> => {
@@ -19,7 +19,7 @@ export const checkTokens = async (): Promise<boolean> => {
         withCredentials: true,
       }
     );
-    console.log(data, "checkTokens");
+
     if (!data.isValid) {
       throw new AuthError("Сессия недействительна");
     }

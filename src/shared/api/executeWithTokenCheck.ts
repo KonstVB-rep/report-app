@@ -8,7 +8,6 @@ export const executeWithTokenCheck = async <T>(
       checkTokens(),
       actionFn(),
     ]);
-
     // Если проверка токенов прошла успешно, возвращаем результат второй функции
     if (tokenCheckResult) {
       return result;

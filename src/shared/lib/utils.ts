@@ -30,3 +30,41 @@ export function formatNumber(value: string): string {
   // Добавляем ",00" в конец
   return formattedWithSpaces + ",00";
 }
+
+export const formatPhoneNumber = (value: string): string => {
+  if (!value) return "";
+
+  // Очищаем от всего, кроме цифр
+  let cleaned = value.replace(/\D/g, "");
+
+  // Ограничиваем длину
+  if (cleaned.length > 11) {
+    cleaned = cleaned.substring(0, 11);
+  }
+
+  // Форматируем: +7 (999) 123-45-67
+  if (cleaned.length === 0) return "";
+
+  if (cleaned.startsWith("7")) {
+    cleaned = "7" + cleaned.substring(1);
+  } else if (cleaned.startsWith("8")) {
+    cleaned = "7" + cleaned.substring(1);
+  }
+
+  let formatted = "+7";
+
+  if (cleaned.length > 1) {
+    formatted += ` (${cleaned.substring(1, 4)}`;
+  }
+  if (cleaned.length > 4) {
+    formatted += `) ${cleaned.substring(4, 7)}`;
+  }
+  if (cleaned.length > 7) {
+    formatted += `-${cleaned.substring(7, 9)}`;
+  }
+  if (cleaned.length > 9) {
+    formatted += `-${cleaned.substring(9, 11)}`;
+  }
+
+  return formatted;
+};

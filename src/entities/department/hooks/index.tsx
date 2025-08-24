@@ -17,13 +17,14 @@ export const useGetDepartmentsWithUsers = () => {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        const [tokenCheckResult, tasks] = await Promise.all([
+        const [tokenCheckResult, deps] = await Promise.all([
           checkTokens(),
           getDepartmentsWithUsers(),
         ]);
+
         // Если проверка токенов прошла успешно, возвращаем задачи
         if (tokenCheckResult) {
-          return tasks;
+          return deps;
         } else {
           throw new Error("Сессия недействительна");
         }

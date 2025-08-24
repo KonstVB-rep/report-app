@@ -48,12 +48,11 @@ export async function POST(req: Request) {
           where: { botName },
         });
 
-        let bot = undefined
+        let bot = undefined;
 
         if (!botInDb) {
-           bot = await createTelegramBot(botName, token);
+          bot = await createTelegramBot(botName, token);
         }
-
 
         if (!bot) {
           console.error("Бот не найден или не удалось создать");
@@ -80,10 +79,10 @@ export async function POST(req: Request) {
 
         await createUserTelegramChat(
           userId,
-          botName,                
+          botName,
           chatId,
-          String(telegramUserId),         
-          nameChat,
+          String(telegramUserId),
+          nameChat
         );
         await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
           chat_id: chatId,

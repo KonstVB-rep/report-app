@@ -39,6 +39,8 @@ const UserEditForm = ({
 }) => {
   const { authUser } = useStoreUser();
 
+  console.log(user?.permissions, "user?.permissions");
+
   const form = useForm<userEditSchema>({
     resolver: zodResolver(userFormEditSchema),
     defaultValues: {

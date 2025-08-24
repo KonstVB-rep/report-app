@@ -8,17 +8,15 @@ import { DateRange } from "react-day-picker";
 import { endOfDay, startOfDay } from "date-fns";
 import { Ban, CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
 
-// import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Badge } from "@/shared/components/ui/badge";
-
-import { TaskWithUserInfo } from "../types";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import { TaskWithUserInfo } from "@/entities/task/types";
 import {
   LABEL_TASK_PRIORITY,
   LABEL_TASK_STATUS,
   TASK_PRIORITY_COLOR_BG,
-} from "./constants";
-
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+} from "@/feature/task/model/constants";
+// import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Badge } from "@/shared/components/ui/badge";
 import { formatDateTime } from "@/shared/lib/helpers/formatDate";
 
 export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
@@ -60,7 +58,7 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
   //   enableSorting: false,
   //   enableHiding: false,
   // },
-   {
+  {
     id: "startDate",
     header: "Дата начала",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
@@ -184,23 +182,26 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     header: "Автор",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
       const userId = info.getValue() as string;
-      const {deptsFormatted} = useStoreDepartment.getState()
+      const { deptsFormatted } = useStoreDepartment.getState();
       const users = deptsFormatted?.reduce((acc, curr) => {
-        curr.users.forEach(user => {
-          acc = { ...acc, ...user }
-        })
-        return acc
-      }, {})
+        curr.users.forEach((user) => {
+          acc = { ...acc, ...user };
+        });
+        return acc;
+      }, {});
 
       if (!users) {
-        return null
+        return null;
       }
 
-     const userName  = (users[userId as keyof typeof users] as string).split(' ').map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1)
-      }).join(' ')
-      
-      return userName
+      const userName = (users[userId as keyof typeof users] as string)
+        .split(" ")
+        .map((word) => {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+
+      return userName;
     },
     accessorFn: (row: TaskWithUserInfo) => row.assignerId,
   },

@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ChartColumnBig, ChartPie, X } from "lucide-react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-import { StatusesInWork } from "@/entities/deal/lib/constants";
+import { StatusesInWork } from "@/feature/deals/lib/constants";
 import { Button } from "@/shared/components/ui/button";
 import { DateRangePicker } from "@/shared/components/ui/date-range-picker";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
@@ -69,7 +69,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       const key = isFromSite(resource)
         ? normalizeResource(resource)
         : emptyResourceKey;
-      countsStatuses[key] ??= defaultValuesCount(); // Используем оператор ??=
+      countsStatuses[key] ??= defaultValuesCount();
 
       if (dealStatus in StatusesInWork) {
         countsStatuses[key].inWork++;

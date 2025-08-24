@@ -8,9 +8,9 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import { useGetTask } from "@/entities/task/hooks/query";
 // import TaskCard from '@/entities/task/ui/TaskCard'
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { useGetTask } from "@/feature/task/hooks/query";
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
 
 import Loading from "./loading";

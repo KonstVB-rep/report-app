@@ -14,7 +14,7 @@ import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
-import { DealTypeLabels } from "../../../app/dashboard/table/[departmentId]/[dealType]/ui/PersonTable";
+import { DealTypeLabels } from "../../../widgets/deal/ui/PersonDealsTable";
 import { useGetOrders } from "../hooks/query";
 import { columnsOrder } from "../model/columns-data-orders";
 

@@ -2,12 +2,15 @@ import dynamic from "next/dynamic";
 
 import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";
 
-const SummaryTable = dynamic(() => import("../ui/SummaryTable"), {
-  loading: () => <DealsSkeleton />,
-});
+const SummaryDealsTable = dynamic(
+  () => import("@/widgets/deal/ui/SummaryDealsTable"),
+  {
+    loading: () => <DealsSkeleton />,
+  }
+);
 
 const SummaryTablePage = async () => {
-  return <SummaryTable />;
+  return <SummaryDealsTable />;
 };
 
 export default SummaryTablePage;
