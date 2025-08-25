@@ -1,7 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { useRouter } from "next/navigation";
-
 import { getQueryClient } from "@/app/provider/query-provider";
 import { DepartmentInfo } from "@/entities/department/types";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
@@ -15,11 +13,14 @@ import {
   deleteUser,
   ResponseDelUser,
   updateUser
-} from "../../../entities/user/api";
+} from "@/entities/user/api";
 import {
   UserFormData,
   UserResponse
-} from "../../../entities/user/types";
+} from "@/entities/user/types";
+import { checkRole } from "@/shared/api/checkRole";
+import { checkTokens } from "@/shared/lib/helpers/checkTokens";
+import { Role } from "@prisma/client";
 
 const queryClient = getQueryClient();
 
@@ -38,8 +39,14 @@ export const useCreateUser = (
       queryClient.invalidateQueries({
         queryKey: ["depsWithUsers"],
       });
+      if (!data.success) {
+        TOAST.ERROR(data.message);
+        onSuccessCallback?.(data);
+        return;
+      }
+      onSuccessCallback?.(data);
       if (data.success) {
-        TOAST.SUCCESS("Данные успешно сохранены");
+        TOAST.SUCCESS(data.message) ;
       }
       onSuccessCallback?.(data);
     },
@@ -116,14 +123,17 @@ export const useUpdateUser = (
 // };
 
 export const useDeleteUser = (userId: string) => {
-  const router = useRouter();
   const { authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async () => {
       const mutateFn = async (data: { userId: string }) => {
+         await Promise.all([
+              checkTokens(),
+              checkRole(), 
+              checkRole(Role.DIRECTOR),
+            ]);
         const result = await deleteUser(data);
-        router.back();
         return result;
       };
       return handleMutationWithAuthCheck<
@@ -151,7 +161,6 @@ export const useDeleteUser = (userId: string) => {
       return { previousDepsWithUsers };
     },
     onSuccess: async () => {
-      router.back();
 
       await queryClient.invalidateQueries({
         queryKey: ["depsWithUsers"],

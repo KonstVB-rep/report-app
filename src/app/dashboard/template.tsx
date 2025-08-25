@@ -1,12 +1,12 @@
 "use client";
 
-import { PropsWithChildren, useEffect } from "react";
+import { PropsWithChildren } from "react";
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+// import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
@@ -30,23 +30,23 @@ const RedirectToPath = dynamic(
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
-  const { setDepartments } = useStoreDepartment();
+  // const { setDepartments } = useStoreDepartment();
 
   // const { data: ordersNotInProgress, refetch } =
   //   useGetOrdersNotAtWorkByUserId();
 
-  const { data: departmentData } = useGetDepartmentsWithUsers();
+  useGetDepartmentsWithUsers();
 
   // const [isModalOpen, setIsModalOpen] = useState(false);
   // const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(
   //   null
   // );
 
-  useEffect(() => {
-    if (authUser && departmentData) {
-      setDepartments(departmentData);
-    }
-  }, [authUser, departmentData, setDepartments]);
+  // useEffect(() => {
+  //   if (authUser && departmentData) {
+  //     setDepartments(departmentData);
+  //   }
+  // }, [authUser, departmentData, setDepartments]);
 
   // логика оповещений о заявках
   // useEffect(() => {

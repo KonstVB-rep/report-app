@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { z } from "zod";
 
-import { createTelegramBot } from "@/feature/createTelegramChatBot/api";
+import { createTelegramBot } from "@/feature/telegramChatBot/api";
 import { ActionResponse } from "@/shared/types";
 
 export interface BotFormData {

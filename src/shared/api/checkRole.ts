@@ -17,13 +17,13 @@ const accessTokenSecretKey = new TextEncoder().encode(
   process.env.JWT_SECRET_KEY
 );
 
-export const checkRole = async (): Promise<boolean> => {
+export const checkRole = async (role: Role = Role.ADMIN): Promise<boolean> => {
   try {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
     if (!accessToken) {
-      console.log("No token found in checkRole");
+      console.log("Токен отсутствует");
       return false;
     }
 
@@ -38,7 +38,7 @@ export const checkRole = async (): Promise<boolean> => {
       select: { id: true, role: true },
     });
 
-    return userData?.role === Role.ADMIN;
+    return userData?.role === role;
   } catch (error) {
     console.error("Ошибка при проверке прав доступа:", error);
     return false;

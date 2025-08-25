@@ -11,10 +11,11 @@ import DialogEditUser from "@/feature/user/ui/DialogEditUser";
 
 const EmployeesList = () => {
   const { departments } = useStoreDepartment();
+
   return (
-    <div className="w-fit flex flex-wrap gap-4">
+    <div className="grid [grid-template-columns:repeat(auto-fill,minmax(340px,1fr))] gap-4">
       {departments?.map((dept) => (
-        <div key={dept.id} className="bg-muted rounded-md">
+        <div key={dept.id} className="bg-muted rounded-md max-h-[85vh] overflow-auto">
           <h3 className="p-4 flex items-center justify-center bg-primary text-secondary rounded-t-md">
             {DepartmentLabels[dept.name as keyof typeof DepartmentLabels]}
           </h3>
@@ -22,7 +23,7 @@ const EmployeesList = () => {
             {dept.users.map((user) => (
               <div
                 key={user.id}
-                className={`flex w-full gap-4 items-center justify-between rounded-md border border-solid px-4 py-2 bg-background`}
+                className={`flex w-full flex-wrap gap-4 items-center justify-between rounded-md border border-solid px-4 py-2 bg-background`}
                 title={`${user.username.toUpperCase()} - Перейти в профиль`}
               >
                 <div className="grid gap-1 items-center">
@@ -30,13 +31,13 @@ const EmployeesList = () => {
                     {user.username}
                   </p>
                   {user.position && (
-                    <span className="text-xs flex gap-2 first-letter:capitalize text-nowrap text-start">
+                    <span className="text-xs flex flex-wrap gap-2 first-letter:capitalize text-nowrap text-start">
                       Должность:{" "}
                       <span className="flex gap-2"><span className="first-letter:uppercase">{user.position.split(" ")[0]}</span><span>{user.position.split(" ")[1]}</span></span>
                     </span>
                   )}
                   {user.role && (
-                    <p className="text-xs first-letter:capitalize text-nowrap text-start">
+                    <p className="text-xs flex flex-wrap gap-2 first-letter:capitalize text-nowrap text-start">
                       Роль:{" "}{RolesUser[user?.role as keyof typeof RolesUser]}
                     </p>
                   )}

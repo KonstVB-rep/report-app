@@ -3,8 +3,8 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-import { createUserTelegramChat } from "@/feature/createTelegramChatBot/api";
-import { createTelegramBot } from "@/feature/createTelegramChatBot/api";
+import { createUserTelegramChat } from "@/feature/telegramChatBot/api";
+import { createTelegramBot } from "@/feature/telegramChatBot/api";
 import prisma from "@/prisma/prisma-client";
 
 const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;

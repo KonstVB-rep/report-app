@@ -6,9 +6,11 @@ import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 
 import { getDepartmentsWithUsers } from "../api";
+import useStoreDepartment from "../store/useStoreDepartment";
 
 export const useGetDepartmentsWithUsers = () => {
   const { authUser, isAuth } = useStoreUser();
+    const { setDepartments } = useStoreDepartment();
 
   return useQuery({
     queryKey: ["depsWithUsers"],
@@ -24,6 +26,7 @@ export const useGetDepartmentsWithUsers = () => {
 
         // Если проверка токенов прошла успешно, возвращаем задачи
         if (tokenCheckResult) {
+          setDepartments(deps);
           return deps;
         } else {
           throw new Error("Сессия недействительна");

@@ -13,10 +13,9 @@ import { CreateBotForm } from "./CreateBotForm";
 
 const BotsList = ({ bots }: { bots: TelegramBot[] }) => {
   return (
-    <div className="flex flex-col gap-2 p-3 rounded-md border w-fit self-start bg-stone-900">
+    <div className="flex flex-col gap-2 p-3 rounded-md border self-start bg-stone-900 max-h-[86vh] overflow-auto">
       <DialogComponent
         contentTooltip="Добавить бота"
-        classNameContent="w-fit"
         trigger={
           <Button
             variant="outline"
@@ -30,7 +29,7 @@ const BotsList = ({ bots }: { bots: TelegramBot[] }) => {
       >
         <CreateBotForm />
       </DialogComponent>
-      <ul className="flex flex-col gap-2 w-fit">
+      <ul className="flex flex-col gap-2">
         <li className="text-center text-lg font-medium">Список ботов:</li>
         {bots.map((bot) => (
           <li

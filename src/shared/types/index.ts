@@ -12,4 +12,5 @@ export type ActionResponse<T> = {
   inputs?: {
     [K in keyof T]?: string;
   };
+  result?: T;
 };

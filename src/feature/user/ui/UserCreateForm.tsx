@@ -22,7 +22,6 @@ const UserCreateForm = () => {
   const { mutateAsync, isPending } = useCreateUser(
     (data: ActionResponse<UserFormData>) => {
       setState(data);
-      console.log("Создан пользователь:", data);
     }
   );
 

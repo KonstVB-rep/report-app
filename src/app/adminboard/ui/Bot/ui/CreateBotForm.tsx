@@ -43,7 +43,7 @@ export const CreateBotForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-sm m-auto border-none">
+    <Card className="w-full max-w-sm m-auto border-none !p-0">
       <CardHeader>
         <CardTitle>Создание бота</CardTitle>
         <CardDescription>Заполните форму для создания бота</CardDescription>

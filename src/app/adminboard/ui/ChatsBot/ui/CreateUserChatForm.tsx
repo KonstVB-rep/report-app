@@ -2,11 +2,11 @@
 
 import { TelegramBot } from "@prisma/client";
 
-import React, { useActionState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { usePathname } from "next/navigation";
 
-import { ChatFormData, saveChat } from "@/app/adminboard/actions/user-chat";
+import { ChatFormData } from "@/app/adminboard/actions/user-chat";
 import { getManagers } from "@/entities/department/lib/utils";
 import {
   Card,
@@ -18,9 +18,8 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
 import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { cn } from "@/shared/lib/utils";
 import { ActionResponse } from "@/shared/types";
+import { useCreateChatBot } from "@/feature/telegramChatBot/hooks/mutate";
 
 const initialState: ActionResponse<ChatFormData> = {
   success: false,
@@ -30,8 +29,15 @@ const initialState: ActionResponse<ChatFormData> = {
 const managers = getManagers(false);
 
 export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
-  const [state, formAction, isPending] = useActionState(saveChat, initialState);
+  // const [state, formAction, isPending] = useActionState(saveChat, initialState);
+  const [state, setState] = useState(initialState);
   const pathname = usePathname();
+  const { mutateAsync, isPending } = useCreateChatBot((data: ActionResponse<ChatFormData>) => {
+    setState(data);
+  });
+
+
+  const [resetKey, setResetKey] = useState(0);
 
   const getFieldError = (fieldName: keyof ChatFormData) => {
     return state?.errors?.properties?.[fieldName]?.errors[0];
@@ -44,64 +50,52 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
 
   const actionSubmit = (data: FormData) => {
     data.append("pathname", pathname);
-    formAction(data);
+    mutateAsync(data);
   };
 
   useEffect(() => {
     if (state.success) {
-      TOAST.SUCCESS(state.message);
+      setResetKey((prev) => prev + 1);
     }
-  }, [state.success, state.message]);
+  }, [state]);
+
 
   return (
-    <Card className="w-full max-w-sm m-auto">
-      <CardHeader>
+    <Card className="w-full max-w-sm m-auto border-none">
+      <CardHeader className="!px-2 !pt-4">
         <CardTitle>Создание чата для бота</CardTitle>
-        <CardDescription>Заполните форму для создания чата для бота</CardDescription>
+        <CardDescription>
+          Заполните форму для создания чата для бота
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form action={actionSubmit} className="space-y-6" autoComplete="on">
+      <CardContent className="!p-2">
+        <form
+          action={actionSubmit}
+          className="space-y-6"
+          autoComplete="on"
+        >
           <SelectComponent
+            key={`user-${resetKey}`}
             placeholder="Выберите пользователя"
             options={[...Object.entries(managers)]}
-            name={"userId"}
+            name="userId"
             required
-            defaultValue={state.inputs?.userId}
-            aria-describedby="userId"
-            className={cn(
-              "capitalize",
-              getFieldError("userId") ? "border-red-500" : ""
-            )}
           />
-
-          {getFieldError("userId") && (
-            <p id="userId" className="text-sm text-red-500">
-              {getFieldError("userId")}
-            </p>
-          )}
 
           <SelectComponent
+            key={`bot-${resetKey}`}
             placeholder="Название бота..."
             options={[...Object.entries(botsMap)]}
-            name={"botName"}
+            name="botName"
             required
-            defaultValue={state.inputs?.botName}
-            aria-describedby="botName"
-            className={cn(getFieldError("botName") ? "border-red-500" : "")}
           />
-
-          {getFieldError("botName") && (
-            <p id="botName" className="text-sm text-red-500">
-              {getFieldError("botName")}
-            </p>
-          )}
 
           <Input
             name={"username"}
             placeholder="Ник..."
             required
             minLength={3}
-            defaultValue={state.inputs?.botName}
+            defaultValue={state.inputs?.username}
             aria-describedby="username"
             className={getFieldError("username") ? "border-red-500" : ""}
           />
@@ -112,13 +106,12 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
             </p>
           )}
 
-
           <Input
             name={"chatId"}
             placeholder="ID чата..."
             required
             minLength={3}
-            defaultValue={state.inputs?.botName}
+            defaultValue={state.inputs?.chatId}
             aria-describedby="chatId"
             className={getFieldError("chatId") ? "border-red-500" : ""}
           />
@@ -134,7 +127,7 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
             placeholder="ID информации о Telegram пользователе..."
             required
             minLength={3}
-            defaultValue={state.inputs?.botName}
+            defaultValue={state.inputs?.telegramUserInfoId}
             aria-describedby="telegramUserInfoId"
             className={
               getFieldError("telegramUserInfoId") ? "border-red-500" : ""
@@ -165,6 +158,7 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
 
           <SubmitFormButton
             title="Сохранить"
+
             isPending={isPending}
             className="ml-auto mr-2 w-max"
           />

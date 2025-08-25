@@ -10,6 +10,7 @@ import AdminSidebar from "@/feature/Sidebar/ui/AdminSidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 
 const RedirectToPath = dynamic(
   () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),
@@ -28,6 +29,8 @@ const RedirectToPath = dynamic(
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
+
+  useGetDepartmentsWithUsers();
 
   if (!authUser) {
     return <RedirectToPath to="/login" />;

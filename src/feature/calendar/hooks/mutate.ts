@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { toggleSubscribeChatBot } from "@/feature/createTelegramChatBot/api";
+import { toggleSubscribeChatBot } from "@/feature/telegramChatBot/api";
 import {
   ChatBotType,
   ResponseChatBotType,
-} from "@/feature/createTelegramChatBot/type";
+} from "@/feature/telegramChatBot/type";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { logout } from "@/shared/auth/logout";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
@@ -140,100 +140,3 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
   });
 };
 
-export const useCreateChatBot = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
-
-  return useMutation({
-    mutationFn: async (chatData: ChatBotType) => {
-      const data = {
-        chatName: chatData.chatName,
-        chatId: chatData.chatId,
-        isActive: chatData.isActive,
-      };
-
-      return handleMutationWithAuthCheck<ChatBotType, ResponseChatBotType>(
-        toggleSubscribeChatBot,
-        data,
-        authUser,
-        isSubmittingRef
-      );
-    },
-    onSuccess: (data) => {
-      if (!data) {
-        return;
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["chatInfo", authUser?.id, data.chatName],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["chatInfoChecked", authUser?.id, data.chatName],
-      });
-    },
-    onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при подписке на чат бот";
-
-      TOAST.ERROR(errorMessage);
-    },
-  });
-};
-
-export const useUpdateChatBot = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
-
-  return useMutation({
-    mutationFn: async (chatData: {
-      botId: string | null;
-      chatId: string;
-      isActive: boolean;
-    }) => {
-      if (!chatData.botId) return;
-
-      const data = {
-        chatName: chatData.botId,
-        chatId: chatData.chatId,
-        isActive: chatData.isActive,
-      };
-      return handleMutationWithAuthCheck<ChatBotType, ResponseChatBotType>(
-        toggleSubscribeChatBot,
-        data,
-        authUser,
-        isSubmittingRef
-      );
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ["chatInfo", authUser?.id, data?.chatName],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["chatInfoChecked", authUser?.id, data?.chatName],
-      });
-    },
-    onError: (error) => {
-      const err = error as Error & { status?: number };
-
-      if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
-      }
-
-      const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при обновлении статуса бота";
-
-      TOAST.ERROR(errorMessage);
-    },
-  });
-};

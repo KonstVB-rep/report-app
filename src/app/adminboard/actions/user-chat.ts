@@ -4,15 +4,15 @@ import { revalidatePath } from "next/cache";
 
 import { z } from "zod";
 
-import { createUserTelegramChat } from "@/feature/createTelegramChatBot/api";
 import { ActionResponse } from "@/shared/types";
+import { createUserTelegramChat } from "@/feature/telegramChatBot/api";
 
 export interface ChatFormData {
   userId: string; // ID пользователя в вашей системе
   botName: string;
   chatId: string; // ID чата в Telegram
   telegramUserInfoId: string; // ID информации о Telegram пользователе
-  chatName?: string;
+  chatName: string;
   username?: string;
 }
 
@@ -27,9 +27,8 @@ const createChatFormSchema = z.object({
     .min(1, { message: "ID информации о пользователе не может быть пустым" }),
   chatName: z
     .string()
-    .max(100, { message: "Имя чата не должно быть длиннее 100 символов" })
-    .optional(),
-    username: z
+    .max(100, { message: "Имя чата не должно быть длиннее 100 символов" }),
+  username: z
     .string()
     .min(3, { message: "Имя чата не может быть пустым" })
     .max(100, { message: "Имя чата не должно быть длиннее 100 символов" })
@@ -37,18 +36,16 @@ const createChatFormSchema = z.object({
 });
 
 export async function saveChat(
-  prevState: ActionResponse<ChatFormData> | null,
   formData: FormData
 ): Promise<ActionResponse<ChatFormData>> {
   try {
+    
     const rawData: ChatFormData = {
       userId: formData.get("userId") as string,
       botName: formData.get("botName") as string,
       chatId: formData.get("chatId") as string,
       telegramUserInfoId: formData.get("telegramUserInfoId") as string,
-      chatName: formData.get("chatName")
-        ? (formData.get("chatName") as string)
-        : undefined,
+      chatName: formData.get("chatName") as string,
       username: formData.get("username")
         ? (formData.get("username") as string)
         : undefined
@@ -65,7 +62,7 @@ export async function saveChat(
       };
     }
   
-    await createUserTelegramChat(
+    const savedResult = await createUserTelegramChat(
       data.userId,
       data.botName,
       data.chatId,
@@ -74,12 +71,10 @@ export async function saveChat(
       data.username || ""
     );
 
-    console.log(data, "data");
     revalidatePath(formData.get("pathname") as string);
-
     return {
-      success: true,
-      message: "Бот сохранен",
+      ...savedResult,
+      result:data
     };
   } catch (error) {
     console.log("Произошла ошибка при сохранении чата", error);

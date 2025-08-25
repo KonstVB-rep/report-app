@@ -43,7 +43,7 @@ const UserEditForm = ({
     mutateAsync(formData);
   };
 
-  console.log(user, "user");
+
 
   useEffect(() => {
     if (!user) return;

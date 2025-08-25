@@ -8,7 +8,7 @@ const Skeleton = ({ className }: { className?: string }) => (
   />
 );
 
-const DeleteUserModalContentSkeleton = () => {
+const DeleteModalContentSkeleton = () => {
   return (
     <div className="grid gap-5">
       <Skeleton className="h-6 w-1/2 m-auto" />
@@ -27,4 +27,4 @@ const DeleteUserModalContentSkeleton = () => {
   );
 };
 
-export default DeleteUserModalContentSkeleton;
+export default DeleteModalContentSkeleton;
