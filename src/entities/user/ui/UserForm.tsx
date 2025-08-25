@@ -26,6 +26,7 @@ const UserForm = ({
     return state?.errors?.properties?.[fieldName]?.errors[0];
   };
 
+
   return (
     <form
       onSubmit={onSubmit}
@@ -80,6 +81,7 @@ const UserForm = ({
             placeholder="+7 (999) 123-45-67"
             title="Формат: +7 (999) 123-45-67"
             aria-describedby="phone"
+            defaultValue={state.inputs?.phone}
             className={getFieldError("phone") ? "border-red-500" : ""}
             onInput={(e) => {
               const input = e.target as HTMLInputElement;
@@ -142,7 +144,9 @@ const UserForm = ({
             placeholder="Выберите отдел"
             options={Object.entries(DepartmentLabels)}
             name={"department"}
-            defaultValue={state.inputs?.department}
+            value={
+                state.inputs?.department
+            }
             aria-describedby="department"
             className={cn(
               "capitalize",
@@ -164,7 +168,7 @@ const UserForm = ({
             options={Object.entries(RolesUser)}
             placeholder="Выберите роль"
             name={"role"}
-            defaultValue={state.inputs?.role}
+            value={state.inputs?.role}
             aria-describedby="role"
             className={cn(
               "capitalize",
@@ -189,9 +193,10 @@ const UserForm = ({
             name={"permissions"}
             defaultValue={
               state.inputs?.permissions
-                ? JSON.parse(state.inputs.permissions)
+                ? state.inputs.permissions.split(",").map((s) => s.trim()) // <- убираем пробелы
                 : undefined
             }
+            aria-describedby="permissions"
           />
           {getFieldError("permissions") && (
             <p id="permissions" className="text-sm text-red-500">

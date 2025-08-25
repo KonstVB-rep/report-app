@@ -34,16 +34,14 @@ import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectForm
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 
 import ContactDeal from "../../contact/ui/ContactDeal";
-import useSendDealInfo from "../../hooks/useSendDealInfo";
-import {
-  DeliveryProjectLabels,
-  DirectionProjectLabels,
-  StatusContract,
-  StatusProjectLabels,
-} from "../../lib/constants";
-import { formatNumber, parseFormattedNumber } from "../../lib/helpers";
-import { Contact } from "../../types";
-import AddManagerToDeal from "../Modals/AddManagerToDeal";
+import { parseFormattedNumber } from "@/entities/deal/lib/helpers";
+import { Contact } from "@/entities/deal/types";
+import { formatNumber } from "@/shared/lib/utils";
+import { StatusContract } from "@prisma/client";
+import useSendDealInfo from "../api/hooks/useSendDealInfo";
+import { DirectionProjectLabels, DeliveryProjectLabels, StatusProjectLabels } from "../lib/constants";
+import AddManagerToDeal from "../ui/Modals/AddManagerToDeal";
+
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -130,7 +128,7 @@ const ProjectFormBody = <T extends FieldValues>({
 
     form.setValue(
       "delta" as Path<T>,
-      formatNumber(calculatedDelta) as PathValue<T, Path<T>>,
+      formatNumber(String(calculatedDelta)) as PathValue<T, Path<T>>,
       {
         shouldValidate: true,
         shouldDirty: true,

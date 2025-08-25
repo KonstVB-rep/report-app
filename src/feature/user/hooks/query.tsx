@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 
-import { getUser } from "../api";
-import useStoreUser from "../store/useStoreUser";
+import { getUser } from "../../../entities/user/api";
+import useStoreUser from "../../../entities/user/store/useStoreUser";
 
 export const useGetUser = (
   userId: string,

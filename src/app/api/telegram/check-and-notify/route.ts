@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 
 import {
-  getEventsCalendarUserToday,
+  getEventsCalendarUserTodayRoute,
   getInfoChatNotificationChecked,
-} from "@/feature/calendar/api/calendar-bot/server";
+} from "@/feature/calendar/api/server";
 import { EventInputType } from "@/feature/calendar/types";
 
 async function sendNotificationsToTelegram(
@@ -44,7 +44,7 @@ export async function GET() {
     for (const chat of allChats) {
       if (!chat.isActive || !chat.chatId || !chat.userId) continue;
 
-      const events = await getEventsCalendarUserToday(chat.userId);
+      const events = await getEventsCalendarUserTodayRoute(chat.userId);
       if (!events?.length) continue;
 
       const isNowBetween = (time: Date) => {

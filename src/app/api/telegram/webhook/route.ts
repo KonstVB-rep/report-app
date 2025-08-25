@@ -1,7 +1,6 @@
 "use server";
 
 import { NextResponse } from "next/server";
-
 import axios from "axios";
 
 import { createUserTelegramChat } from "@/feature/createTelegramChatBot/api";
@@ -16,13 +15,14 @@ export async function POST(req: Request) {
 
     if (body.message) {
       const { chat, text, from } = body.message;
-      const chatId = chat.id;
 
-      if (text.startsWith("/start")) {
+      const chatId = String(chat.id); 
+
+      if (text?.startsWith("/start")) { 
         const params = text.split(" ");
         const action = params[1];
 
-        const userId = action.split("-")[0];
+        const userId = action?.split("-")[0];
 
         if (!userId) {
           throw new Error(
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         const nameChat = action.split("-")[2];
 
         const token =
-          process.env[`TELEGRAM_BOT_TOKEN_${botName.toUpperCase()}`];
+          process.env[`TELEGRAM_BOT_TOKEN_${botName?.toUpperCase()}`]; 
 
         if (!token) {
           console.error(`Токен для бота ${botName} не найден в .env`);
@@ -48,11 +48,7 @@ export async function POST(req: Request) {
           where: { botName },
         });
 
-        let bot = undefined;
-
-        if (!botInDb) {
-          bot = await createTelegramBot(botName, token);
-        }
+        const bot = botInDb ?? (await createTelegramBot(botName, token));
 
         if (!bot) {
           console.error("Бот не найден или не удалось создать");
@@ -63,13 +59,13 @@ export async function POST(req: Request) {
         }
 
         const telegramUsername = from?.username ?? "Никнейм не указан";
-        const telegramUserId = from.id;
+        const telegramUserId = String(from.id);
 
-        const chat = await prisma.userTelegramChat.findUnique({
+        const chatExists = await prisma.userTelegramChat.findUnique({
           where: { botId_chatId: { botId: bot.id, chatId } },
         });
 
-        if (chat) {
+        if (chatExists) {
           await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
             chat_id: chatId,
             text: `Привет, ${telegramUsername}! Ты уже подписан на уведомления.`,
@@ -81,9 +77,10 @@ export async function POST(req: Request) {
           userId,
           botName,
           chatId,
-          String(telegramUserId),
+          telegramUserId,
           nameChat
         );
+
         await axios.post(`${TELEGRAM_API_URL}${token}/sendMessage`, {
           chat_id: chatId,
           text: `Привет, ${telegramUsername}! Ты успешно подписан на уведомления.`,

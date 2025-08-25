@@ -1,9 +1,8 @@
-import React from "react";
 
 import { useParams } from "next/navigation";
 
-import { useGetUser } from "@/entities/user/hooks/query";
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
+import { useGetUser } from "@/feature/user/hooks/query";
 
 import LinkToUserTable from "./LinkToUserTable";
 

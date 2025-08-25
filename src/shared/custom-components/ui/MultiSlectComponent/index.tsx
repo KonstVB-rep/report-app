@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Input } from "@/shared/components/ui/input";
 import {
@@ -71,17 +71,23 @@ export const MultiSelectNativeForm = ({
   ...props
 }: MultiSelectNativeFormProps) => {
   const hiddenInputRef = useRef<HTMLInputElement>(null);
-  const [selectedValues, setSelectedValues] = React.useState<
-    string[] | undefined
-  >(defaultValue);
+
+  const [selectedValues, setSelectedValues] = React.useState<string[]>(() =>
+    defaultValue.map((s) => s.trim())
+  );
+
+  useEffect(() => {
+    if (defaultValue && defaultValue.length > 0) {
+      setSelectedValues(defaultValue.map((s) => s.trim()));
+    }
+  }, [defaultValue]);
 
   const handleValueChange = (values: string[]) => {
     setSelectedValues(values);
     onValueChange?.(values);
 
-    // Обновляем скрытое поле
     if (hiddenInputRef.current) {
-      hiddenInputRef.current.value = values.join(",");
+      hiddenInputRef.current.value = JSON.stringify(values);
     }
   };
 
@@ -96,9 +102,8 @@ export const MultiSelectNativeForm = ({
       />
 
       <MultiSelect
-        onValueChange={handleValueChange}
-        defaultValue={defaultValue}
         value={selectedValues}
+        onValueChange={handleValueChange}
         {...props}
       >
         <MultiSelectTrigger className="h-10 border border-solid border-border text-black">
@@ -115,3 +120,4 @@ export const MultiSelectNativeForm = ({
     </>
   );
 };
+

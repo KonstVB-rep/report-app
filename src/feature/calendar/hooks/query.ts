@@ -1,16 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { getTelegramBotInDb } from "@/shared/api/getTelegramBotInDb";
+
 
 import {
   getCalendarBotName,
   getEventsCalendarUser,
   getEventsCalendarUserToday,
 } from "../api";
+import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb";
 
 export const useGetEventsCalendarUser = () => {
+
   const { authUser } = useStoreUser();
+
   return useQuery({
     queryKey: ["eventsCalendar", authUser?.id],
     queryFn: async () => {
@@ -66,7 +69,7 @@ export const useGetInfoChat = (
           throw new Error("Название бота не найдено");
         }
 
-        const botInDb = await getTelegramBotInDb(botName, authUser.id);
+        const botInDb = await getTelegramChatBotInDb(botName, authUser.id);
 
         if (!botInDb) {
           return {

@@ -18,7 +18,6 @@ import {
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable";
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
-import { OrderResponse } from "@/entities/order/types";
 import { useDealsUser } from "@/feature/deals/api/hooks/query";
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage";
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition";
@@ -45,8 +44,7 @@ const Columns = (
 ):
   | ColumnDef<ProjectResponse, unknown>[]
   | ColumnDef<RetailResponse, unknown>[]
-  | ColumnDef<ContractResponse, unknown>[]
-  | ColumnDef<OrderResponse, unknown>[] => {
+  | ColumnDef<ContractResponse, unknown>[] => {
   switch (type) {
     case "projects":
       return columnsDataProject;

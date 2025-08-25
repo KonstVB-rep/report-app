@@ -85,7 +85,7 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
             options={[...Object.entries(botsMap)]}
             name={"botName"}
             required
-            defaultValue={state.inputs?.userId}
+            defaultValue={state.inputs?.botName}
             aria-describedby="botName"
             className={cn(getFieldError("botName") ? "border-red-500" : "")}
           />
@@ -95,6 +95,23 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
               {getFieldError("botName")}
             </p>
           )}
+
+          <Input
+            name={"username"}
+            placeholder="Ник..."
+            required
+            minLength={3}
+            defaultValue={state.inputs?.botName}
+            aria-describedby="username"
+            className={getFieldError("username") ? "border-red-500" : ""}
+          />
+
+          {getFieldError("username") && (
+            <p id="username" className="text-sm text-red-500">
+              {getFieldError("username")}
+            </p>
+          )}
+
 
           <Input
             name={"chatId"}

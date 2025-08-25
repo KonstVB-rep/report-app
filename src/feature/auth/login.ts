@@ -28,6 +28,12 @@ export const login = async (prevState: unknown, formData: FormData) => {
             permission: true,
           },
         },
+        telegramInfo: {
+          select: {
+            tgUserId: true,
+            tgUserName: true,
+          },
+        },
       },
     });
 

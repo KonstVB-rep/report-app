@@ -12,17 +12,15 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
-import { formatDateTime } from "@/shared/lib/helpers/formatDate";
+// import { formatDateTime } from "@/shared/lib/helpers/formatDate";
 
-import { formatDate } from "../lib/helpers";
+// import { formatDate } from "../lib/helpers";
 // import { TOAST } from "@/shared/ui/Toast";
 
 import {
-  DeleteTaskData,
-  TaskFormType,
-  TaskFormTypeWithId,
   TaskWithUserInfo,
 } from "../types";
+import { TaskFormType, TaskFormTypeWithId, DeleteTaskData } from "@/feature/task/types";
 
 // import { getDepartmentUsersWithTasks } from "./queryFn";
 
@@ -138,7 +136,7 @@ export const getTask = async (taskId: string) => {
 export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
   try {
     const data = await handleAuthorization();
-    const { userId, user } = data!;
+    const { userId } = data!;
 
     const lastTask = await prisma.task.findFirst({
       where: {

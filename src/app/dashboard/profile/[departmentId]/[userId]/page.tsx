@@ -1,27 +1,14 @@
 "use client";
 
-import { PermissionEnum } from "@prisma/client";
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
 import { DepartmentLabels } from "@/entities/department/types";
-import { useGetUser } from "@/entities/user/hooks/query";
-import { RolesUser } from "@/entities/user/model/objectTypes";
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
+import { useGetUser } from "@/feature/user/hooks/query";
 import UserCard from "@/shared/custom-components/ui/UserCard";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import ProfileDealsData from "./ui/ProfileDealsData";
-
-const PersonEdit = dynamic(() => import("@/entities/user/ui/PersonTableEdit"), {
-  ssr: false,
-  loading: () => <div className="btn_hover animate-pulse h-10" />,
-});
-const DeleteUser = dynamic(() => import("@/entities/user/ui/DeleteUser"), {
-  ssr: false,
-  loading: () => <div className="btn_hover animate-pulse h-10" />,
-});
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/custom-components/ui/AccessDeniedMessage"),
@@ -57,51 +44,13 @@ const ProfilePage = () => {
               username={user?.username}
               phone={user?.phone}
               position={user?.position}
-            />
-
-            <ProtectedByPermissions
-              permissionArr={[PermissionEnum.USER_MANAGEMENT]}
-            >
-              <div className="grid w-full gap-2 divide-solid rounded-md bg-muted p-4">
-                <PersonEdit />
-
-                <DeleteUser />
-              </div>
-            </ProtectedByPermissions>
-          </div>
-          <div className="grid h-full w-full gap-2 text-sm">
-            <div className="grid gap-2">
-              <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">Отдел:</span>{" "}
-                <span className="first-letter:capitalize">
-                  {
-                    DepartmentLabels[
+              departmentName={DepartmentLabels[
                       user?.departmentName as keyof typeof DepartmentLabels
-                    ]
-                  }
-                </span>
-              </p>
+                    ]}
+            />
+          </div>
 
-              <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">Должность:</span>{" "}
-                <span className="first-letter:capitalize">
-                  {user?.position}
-                </span>
-              </p>
-
-              <ProtectedByPermissions
-                permissionArr={[PermissionEnum.USER_MANAGEMENT]}
-              >
-                <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                  <span className="first-letter:capitalize">Роль:</span>{" "}
-                  <span className="first-letter:capitalize">
-                    {RolesUser[user?.role as keyof typeof RolesUser]}
-                  </span>
-                </p>
-              </ProtectedByPermissions>
-            </div>
-
-            <div className="grid gap-2">
+            <div className="grid gap-2 h-full">
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">
                   Последняя сессия:
@@ -128,7 +77,7 @@ const ProfilePage = () => {
                 <span>{user?.email}</span>
               </p>
             </div>
-          </div>
+          {/* </div> */}
         </div>
       </div>
 

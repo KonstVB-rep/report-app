@@ -13,6 +13,7 @@ export interface ChatFormData {
   chatId: string; // ID чата в Telegram
   telegramUserInfoId: string; // ID информации о Telegram пользователе
   chatName?: string;
+  username?: string;
 }
 
 const createChatFormSchema = z.object({
@@ -26,6 +27,11 @@ const createChatFormSchema = z.object({
     .min(1, { message: "ID информации о пользователе не может быть пустым" }),
   chatName: z
     .string()
+    .max(100, { message: "Имя чата не должно быть длиннее 100 символов" })
+    .optional(),
+    username: z
+    .string()
+    .min(3, { message: "Имя чата не может быть пустым" })
     .max(100, { message: "Имя чата не должно быть длиннее 100 символов" })
     .optional(),
 });
@@ -43,6 +49,9 @@ export async function saveChat(
       chatName: formData.get("chatName")
         ? (formData.get("chatName") as string)
         : undefined,
+      username: formData.get("username")
+        ? (formData.get("username") as string)
+        : undefined
     };
 
     const { data, success, error } = createChatFormSchema.safeParse(rawData);
@@ -55,13 +64,14 @@ export async function saveChat(
         inputs: rawData,
       };
     }
-
+  
     await createUserTelegramChat(
       data.userId,
       data.botName,
       data.chatId,
       String(data.telegramUserInfoId),
-      data.chatName || "noname"
+      data.chatName || "",
+      data.username || ""
     );
 
     console.log(data, "data");
@@ -72,10 +82,10 @@ export async function saveChat(
       message: "Бот сохранен",
     };
   } catch (error) {
-    console.log("Произошла ошибка при сохранении бота", error);
+    console.log("Произошла ошибка при сохранении чата", error);
     return {
       success: false,
-      message: "Произошла ошибка при сохранении бота",
+      message: "Произошла ошибка при сохранении чата",
     };
   }
 }

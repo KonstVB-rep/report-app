@@ -26,14 +26,10 @@ import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectForm
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 
 import ContactDeal from "../../contact/ui/ContactDeal";
-import useSendDealInfo from "../../hooks/useSendDealInfo";
-import {
-  DeliveryRetailLabels,
-  DirectionRetailLabels,
-  StatusRetailLabels,
-} from "../../lib/constants";
-import { Contact } from "../../types";
-import AddManagerToDeal from "../Modals/AddManagerToDeal";
+import { Contact } from "@/entities/deal/types";
+import useSendDealInfo from "../api/hooks/useSendDealInfo";
+import { DirectionRetailLabels, DeliveryRetailLabels, StatusRetailLabels } from "../lib/constants";
+import AddManagerToDeal from "../ui/Modals/AddManagerToDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;

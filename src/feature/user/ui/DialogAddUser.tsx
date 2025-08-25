@@ -2,7 +2,6 @@
 
 import { PermissionEnum } from "@prisma/client";
 
-import React from "react";
 
 import dynamic from "next/dynamic";
 
@@ -12,11 +11,11 @@ import { Button } from "@/shared/components/ui/button";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
-import UserCreateFormCopy from "./UserCreateForm_copy";
-import UserFormSkeleton from "./UserFormSkeleton";
+
+import UserFormSkeleton from "@/entities/user/ui/UserFormSkeleton";
 import { cn } from "@/shared/lib/utils";
 
-const UserCreateForm = dynamic(() => import("./UserCreateForm"), {
+const UserCreateForm = dynamic(() => import("@/feature/user/ui/UserCreateForm"), {
   ssr: false,
   loading: () => <UserFormSkeleton />,
 });
@@ -41,7 +40,7 @@ const DialogAddUser = ({ className }: { className?: string}) => {
         classNameContent="sm:max-w-[600px]"
       >
         {/* <UserCreateForm /> */}
-        <UserCreateFormCopy />
+        <UserCreateForm />
       </DialogComponent>
     </ProtectedByPermissions>
   );

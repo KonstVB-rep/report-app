@@ -4,8 +4,8 @@ import React from "react";
 
 import { useParams } from "next/navigation";
 
-import { useGetUser } from "@/entities/user/hooks/query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { useGetUser } from "@/feature/user/hooks/query";
 
 import DealsSkeleton from "./DealsSkeleton";
 import ErrorMessageTable from "./ErrorMessageTable";

@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
 import { useRouter } from "next/navigation";
@@ -15,21 +14,16 @@ import {
   createUser,
   deleteUser,
   ResponseDelUser,
-  saveUser,
-  updateUser,
-} from "../api";
-import { userEditSchema, userSchema } from "../model/schema";
+  updateUser
+} from "../../../entities/user/api";
 import {
-  DepartmentTypeName,
-  PermissionType,
   UserFormData,
-  UserRequest,
-  UserResponse,
-} from "../types";
+  UserResponse
+} from "../../../entities/user/types";
 
 const queryClient = getQueryClient();
 
-export const useCreateUserCopy = (
+export const useCreateUser = (
   onSuccessCallback?: (data: ActionResponse<UserFormData>) => void
 ) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
@@ -38,7 +32,7 @@ export const useCreateUserCopy = (
       return handleMutationWithAuthCheck<
         FormData,
         ActionResponse<UserFormData>
-      >(saveUser, data, authUser, isSubmittingRef);
+      >(createUser, data, authUser, isSubmittingRef);
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
@@ -55,7 +49,7 @@ export const useCreateUserCopy = (
   });
 };
 
-export const useUpdateUserCopy = (
+export const useUpdateUser = (
   userId: string,
   onSuccessCallback?: (data: ActionResponse<UserFormData>) => void
 ) => {
@@ -65,7 +59,7 @@ export const useUpdateUserCopy = (
       return handleMutationWithAuthCheck<
         FormData,
         ActionResponse<UserFormData>
-      >(saveUser, formData, authUser, isSubmittingRef);
+      >(updateUser, formData, authUser, isSubmittingRef);
     },
     onSuccess: (data) => {
       if (data.success) {
@@ -89,37 +83,37 @@ export const useUpdateUserCopy = (
   });
 };
 
-export const useCreateUser = () => {
-  const { authUser, isSubmittingRef } = useFormSubmission();
-  return useMutation({
-    mutationFn: (data: userSchema) => {
-      const user: UserRequest = {
-        username: data.username,
-        email: data.email,
-        phone: data.phone,
-        position: data.position,
-        user_password: data.user_password,
-        department: data.department as DepartmentTypeName,
-        role: data.role as Role,
-        permissions: data.permissions as PermissionType[],
-      };
-      return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
-        createUser,
-        user,
-        authUser,
-        isSubmittingRef
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-      });
-    },
-    onError: (error) => {
-      handleErrorSession(error);
-    },
-  });
-};
+// export const useCreateUser = () => {
+//   const { authUser, isSubmittingRef } = useFormSubmission();
+//   return useMutation({
+//     mutationFn: (data: userSchema) => {
+//       const user: UserRequest = {
+//         username: data.username,
+//         email: data.email,
+//         phone: data.phone,
+//         position: data.position,
+//         user_password: data.user_password,
+//         department: data.department as DepartmentTypeName,
+//         role: data.role as Role,
+//         permissions: data.permissions as PermissionType[],
+//       };
+//       return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
+//         createUser,
+//         user,
+//         authUser,
+//         isSubmittingRef
+//       );
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({
+//         queryKey: ["depsWithUsers"],
+//       });
+//     },
+//     onError: (error) => {
+//       handleErrorSession(error);
+//     },
+//   });
+// };
 
 export const useDeleteUser = (userId: string) => {
   const router = useRouter();
@@ -177,36 +171,36 @@ export const useDeleteUser = (userId: string) => {
   });
 };
 
-export const useUpdateUser = (
-  user: UserResponse,
-  setOpen: (value: boolean) => void
-) => {
-  const { authUser, isSubmittingRef } = useFormSubmission();
-  return useMutation({
-    mutationFn: (data: userEditSchema) => {
-      const updateData = data as UserRequest;
-      return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
-        updateUser,
-        updateData,
-        authUser,
-        isSubmittingRef
-      );
-    },
-    onSuccess: () => {
-      setOpen(false);
-      if (user) {
-        queryClient.invalidateQueries({
-          queryKey: ["user", user.id],
-          exact: true,
-        });
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-        exact: true,
-      });
-    },
-    onError: (error) => {
-      handleErrorSession(error);
-    },
-  });
-};
+// export const useUpdateUser = (
+//   user: UserResponse,
+//   setOpen: (value: boolean) => void
+// ) => {
+//   const { authUser, isSubmittingRef } = useFormSubmission();
+//   return useMutation({
+//     mutationFn: (data: userEditSchema) => {
+//       const updateData = data as UserRequest;
+//       return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
+//         updateUser,
+//         updateData,
+//         authUser,
+//         isSubmittingRef
+//       );
+//     },
+//     onSuccess: () => {
+//       setOpen(false);
+//       if (user) {
+//         queryClient.invalidateQueries({
+//           queryKey: ["user", user.id],
+//           exact: true,
+//         });
+//       }
+//       queryClient.invalidateQueries({
+//         queryKey: ["depsWithUsers"],
+//         exact: true,
+//       });
+//     },
+//     onError: (error) => {
+//       handleErrorSession(error);
+//     },
+//   });
+// };

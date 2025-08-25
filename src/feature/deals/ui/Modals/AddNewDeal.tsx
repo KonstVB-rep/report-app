@@ -7,7 +7,6 @@ import dynamic from "next/dynamic";
 import { Plus } from "lucide-react";
 
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
-import FormOrderSkeleton from "@/entities/order/ui/FormOrderSkeleton";
 import { Button } from "@/shared/components/ui/button";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation";
@@ -21,10 +20,6 @@ const RetailForm = dynamic(() => import("../Forms/RetailForm"), {
   loading: () => <FormDealSkeleton />,
 });
 
-const OrderForm = dynamic(() => import("@/entities/order/ui/OrderForm"), {
-  ssr: false,
-  loading: () => <FormOrderSkeleton />,
-});
 
 type AddNewDealProps = {
   type: string;
@@ -38,10 +33,6 @@ const contentType: Record<string, { title: string; form: React.ReactNode }> = {
   retails: {
     title: "Добавить cделку по рознице",
     form: <RetailForm />,
-  },
-  orders: {
-    title: "Добавить заявку",
-    form: <OrderForm />,
   },
 };
 

@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 
 import { UserPen } from "lucide-react";
 
@@ -11,20 +10,18 @@ import { Button } from "@/shared/components/ui/button";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 
-import { useGetUser } from "../hooks/query";
-import { UserWithdepartmentName } from "../types";
-import UserFormSkeleton from "./UserFormSkeleton";
+import {  UserOmit, UserWithdepartmentName } from "@/entities/user/types";
+import UserFormSkeleton from "@/entities/user/ui/UserFormSkeleton";
+import { useGetUser } from "@/feature/user/hooks/query";
 
-const UserEditForm = dynamic(() => import("./UserEditForm"), {
+const UserEditForm = dynamic(() => import("@/feature/user/ui/UserEditForm"), {
   ssr: false,
   loading: () => <UserFormSkeleton />,
 });
 
-const DialogEditUser = () => {
-  const params = useParams();
-  const userId = String(params.userId);
+const DialogEditUser = ({ user }: { user: UserOmit }) => {
 
-  const { data, isLoading, isError } = useGetUser(userId);
+  const { data, isLoading, isError } = useGetUser(user.id);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -34,7 +31,7 @@ const DialogEditUser = () => {
     }
   }, [isError]);
 
-  if (!userId) return null;
+  if (!user.id) return null;
 
   return (
     <DialogComponent
@@ -44,18 +41,15 @@ const DialogEditUser = () => {
         <Button
           variant="outline"
           aria-label="Редактировать пользователя"
-          className="h-10 w-full border-none px-2 btn_hover"
+          title="Редактировать пользователя"
+          className="h-10 w-10 border-none px-2 btn_hover justify-center flex-shrink-0"
         >
-          <UserPen />
-          <span className="whitespace-nowrap text-sm">
-            Редактировать пользователя
-          </span>
+          <UserPen size={40}/>
         </Button>
       }
       dialogTitle={"Форма редактирования пользователя"}
       classNameContent="sm:max-w-[600px]"
     >
-      {/* Если данные загружаются или произошла ошибка */}
       {isLoading ? (
         <UserFormSkeleton />
       ) : (

@@ -5,9 +5,6 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { CreateBotForm } from "@/app/adminboard/ui/Bot/ui/CreateBotForm";
-import { CreateUserChatForm } from "@/app/adminboard/ui/ChatsBot/ui/CreateUserChatForm";
-import DialogAddUser from "@/entities/user/ui/DialogAddUser";
 import {
   Sidebar,
   SidebarContent,
@@ -20,7 +17,8 @@ import {
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { Bot, BotMessageSquare, Users } from "lucide-react";
+import { Bot, Users } from "lucide-react";
+import DialogAddUser from "@/feature/user/ui/DialogAddUser";
 
 const urlPath = [
   { title: "Телеграмм боты", path: `/adminboard/tg-bots` },
@@ -73,7 +71,7 @@ const AdminSidebar = () => {
                 <CreateUserChatForm bots={[]} />
             </AddFormWrapper> */}
           <DialogAddUser className="text-sm justify-start"/>
-          <Link className="btn_hover text-sm justify-start" href={"/adminboard/tg-bots"}><Bot size={16}/>Телеграмм боты</Link>
+          <Link className="btn_hover text-sm justify-start" href="/adminboard/bots"><Bot size={16}/>Телеграмм боты</Link>
           <Link className="btn_hover text-sm justify-start" href="/adminboard/employees"><Users size={16}/>Сотрудники</Link>
         </NavMain>
       </SidebarContent>

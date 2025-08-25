@@ -17,7 +17,13 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
   permissions?: PermissionType[];
+  tgUserId?: string,
+  tgUserName?: string,
 };
+
+export type UserOmit = Omit<User, "user_password" | "lastlogin" | "createdAt" | "updatedAt">;
+
+
 
 export type UserWithdepartmentName = Omit<
   User,

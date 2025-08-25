@@ -256,12 +256,40 @@ model UserTelegramChat {
 
   user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   bot              TelegramBot      @relation(fields: [botId], references: [id], onDelete: Cascade)
-  telegramUserInfo TelegramUserInfo @relation(fields: [telegramUserInfoId], references: [id], onDelete: Cascade)
+  telegramUserInfo TelegramUserInfo @relation(fields: [telegramUserInfoId], references: [tgUserId], onDelete: Cascade)
 
   @@unique([botId, chatId]) // Уникальный чат для бота
   @@index([userId])
   @@index([telegramUserInfoId])
 }
+
+model TelegramUserInfo {
+  id           String   @id @default(cuid())
+  tgUserId     String   @unique              // Уникальный Telegram ID пользователя
+  tgUserName   String?  @unique              // Username, если есть
+  firstName    String?
+  lastName     String?
+  languageCode String?
+  isBot        Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Связь с пользователем системы (если привязан)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Связь с ботом (через которого получили инфу)
+  botId String?
+  bot   TelegramBot? @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  // Все чаты этого пользователя
+  chats UserTelegramChat[]
+
+  @@index([tgUserId])
+  @@index([userId])
+  @@index([botId])
+}
+
 
 model Task {
   id           String       @id @default(cuid())
@@ -289,34 +317,6 @@ model Task {
   @@index([orderTask, taskStatus])
 }
 
-model TelegramUserInfo {
-  id           String   @id @default(cuid())
-  chatId       String   @unique
-  tgUserId     String   @unique
-  tgUserName   String?  @unique // Может быть null
-  firstName    String?
-  lastName     String?
-  languageCode String?
-  isBot        Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Связь с пользователем системы (если привязан)
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Связь с ботом (через который получена информация)
-  botId String?
-  bot   TelegramBot? @relation(fields: [botId], references: [id], onDelete: Cascade)
-
-  // Связь с чатами пользователя
-  chats UserTelegramChat[]
-
-  @@index([tgUserId])
-  @@index([chatId])
-  @@index([userId])
-  @@index([botId])
-}
 
 enum PermissionEnum {
   VIEW_USER_REPORT

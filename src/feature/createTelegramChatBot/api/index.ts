@@ -106,7 +106,8 @@ export const createUserTelegramChat = async (
   botName: string,
   chatId: string,
   telegramUserInfoId: string,
-  chatName: string
+  chatName: string,
+  username: string
 ) => {
   try {
     const bot = await prisma.telegramBot.findUnique({
@@ -116,6 +117,22 @@ export const createUserTelegramChat = async (
     if (!bot) {
       throw new Error("Бот не найден в системе");
     }
+
+    const telegramUserInfo = await prisma.telegramUserInfo.findUnique({
+      where: { tgUserId:  telegramUserInfoId},
+    });
+
+    if (!telegramUserInfo) {
+      await prisma.telegramUserInfo.create({
+        data: {
+          tgUserId: telegramUserInfoId,
+          tgUserName: username,
+          botId: bot.id,
+          userId: userId,
+        },
+      })
+    }
+
 
     const existingChat = await prisma.userTelegramChat.findUnique({
       where: {
