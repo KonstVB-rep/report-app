@@ -3,11 +3,10 @@ import { Button } from "@/shared/components/ui/button";
 import { DialogClose } from "@/shared/components/ui/dialog";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/custom-components/ui/Overlay";
-import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 
 type DeleteModalContentProps = {
   mutate: () => void;
-  isPending: boolean;
+  isPending?: boolean;
   children?: React.ReactNode
 };
 
@@ -17,13 +16,12 @@ const DeleteModalContent = ({
   children
 }: DeleteModalContentProps) => {
   const deleteData = async () => {
-    await checkTokens();
     mutate();
   };
   return (
     <MotionDivY>
       <div className="grid gap-5">
-        <Overlay isPending={isPending} />
+        <Overlay isPending={isPending || false} />
         {children}
         <div className="flex justify-between gap-4">
           <Button onClick={deleteData} className="flex-1">

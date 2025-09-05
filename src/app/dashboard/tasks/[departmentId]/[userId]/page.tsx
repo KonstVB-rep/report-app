@@ -8,6 +8,7 @@ import { useParams } from "next/navigation";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import LoadingView from "@/entities/task/ui/LoadingView";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
 import { useGetUserTasks } from "@/feature/task/hooks/query";
 import useViewType from "@/feature/task/hooks/useViewType";
 import { viewType } from "@/feature/task/model/constants";
@@ -50,7 +51,10 @@ const UserTasksPage = () => {
 
   return (
     <section className="p-5">
-      <h1 className="text-xl py-2">Мои задачи</h1>
+      <div className="flex items-center justify-between py-2">
+        <h1 className="text-xl py-2 uppercase">Мои задачи</h1>
+        <CalendarBotLink botName="ertel_report_app_task_bot" />
+      </div>
 
       <Separator />
 

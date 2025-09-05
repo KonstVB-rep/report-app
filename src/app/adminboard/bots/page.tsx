@@ -1,26 +1,23 @@
-import React from "react";
+import { getAllBots } from "@/entities/tgBot/api";
+import BotsList from "@/feature/telegramBot/ui/BotsList";
 
-import { getAllBots, getAllChatsBot } from "@/feature/telegramChatBot/api";
-
-import BotsList from "../ui/Bot/ui/BotsList";
-import ChatsList from "../ui/ChatsBot/ui/ChatsList";
 
 const BotsPage = async () => {
   try {
-    const [allBots, allChats] = await Promise.all([
-      getAllBots(),
-      getAllChatsBot(),
-    ]);
+    const allBots = await getAllBots();
 
     return (
       <div className="p-5 grid [grid-template-columns:repeat(auto-fill,minmax(340px,1fr))] gap-4 overflow-auto max-h-[94vh]">
         <BotsList bots={allBots} />
-        <ChatsList chats={allChats} bots={allBots} />
       </div>
     );
   } catch (error) {
     console.error("Ошибка загрузки данных:", error);
-    return <div>Ошибка загрузки данных</div>;
+    return (
+       <div className="p-5 min-h-screen grid place-items-center">
+        <h1 className="text-2xl">Ошибка загрузки данных</h1>
+      </div>
+    );
   }
 };
 

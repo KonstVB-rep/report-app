@@ -4,7 +4,6 @@ import { endOfDay, startOfDay } from "date-fns";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
-import axiosInstance from "@/shared/api/axiosInstance";
 import { handleError } from "@/shared/api/handleError";
 
 import { EventDataType, EventInputType } from "../types";
@@ -39,7 +38,6 @@ export const updateEventCalendar = async (eventData: EventDataType) => {
     const { userId } = data!;
     const { id, title, start, end, allDay = false } = eventData;
 
-    // Проверка: принадлежит ли событие текущему пользователю
     const existingEvent = await prisma.eventCalendar.findFirst({
       where: {
         id,
@@ -161,33 +159,8 @@ export const getEventsCalendarUserToday = async (): Promise<
   }
 };
 
-export async function getCalendarBotName(): Promise<string | null> {
-  const botName = process.env.TELEGRAM_BOT_ERTEL_REPORT_APP_NAME;
-  return botName ?? null;
-}
+// export async function getBotName(): Promise<string | null> {
+//   const botName = process.env.TELEGRAM_BOT_ERTEL_CALENDARE_NAME;
+//   return botName ?? null;
+// }
 
-export const sendNotification = async (
-  message: string,
-  chatId: string,
-  botName: string
-) => {
-  try {
-    await axiosInstance.post(
-      `/telegram/send-message-calendar-bot`,
-      {
-        message,
-        chatId,
-        botName,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    return { status: "success" };
-  } catch (error) {
-    console.error("Ошибка при отправке:", error);
-  }
-};

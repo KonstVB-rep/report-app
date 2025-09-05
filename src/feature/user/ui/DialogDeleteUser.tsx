@@ -5,7 +5,7 @@ import { useDeleteUser } from "@/feature/user/hooks/mutate";
 import { useGetUser } from "@/feature/user/hooks/query";
 import DeleteDialog from "@/shared/custom-components/ui/DeleteDIalog";
 
-const DialogDeleteUser = ({ user }: { user: UserOmit }) => {
+const DialogDeleteUser = ({ user, textButtonShow = false }: { user: UserOmit, textButtonShow?: boolean }) => {
   const { data, isFetching } = useGetUser(user.id);
 
   const { mutate, isPending } = useDeleteUser(user.id);
@@ -13,6 +13,7 @@ const DialogDeleteUser = ({ user }: { user: UserOmit }) => {
   return (
     <>
       <DeleteDialog
+        textButtonShow={textButtonShow}
         title="Удалить пользователя"
         description="Вы действительно хотите удалить пользователя?"
         isPending={isPending}

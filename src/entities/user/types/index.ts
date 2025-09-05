@@ -88,5 +88,5 @@ export type UserFormData = {
   position: string;
   department: DepartmentTypeName;
   role: Role;
-  permissions?: PermissionEnum[];
+  permissions?: string;
 };

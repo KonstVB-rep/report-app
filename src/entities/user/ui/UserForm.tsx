@@ -26,11 +26,10 @@ const UserForm = ({
     return state?.errors?.properties?.[fieldName]?.errors[0];
   };
 
-
   return (
     <form
       onSubmit={onSubmit}
-      className="flex max-h-[85vh] flex-col gap-8 overflow-y-auto px-2 py-8"
+      className="flex max-h-[85vh] w-full flex-col gap-8 overflow-y-auto px-2 py-8"
     >
       <MotionDivY className="grid gap-1">
         <div className="grid gap-2">

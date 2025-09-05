@@ -50,7 +50,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           />
         ),
       }),
-      [] // Зависимости, если нужны
+      [] 
     );
 
   const { table, filtersContextValue } = useTableState(
@@ -63,7 +63,13 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const { columnFilters } = table.getState();
 
   if (rows.length === 0) {
-    return null;
+    return (
+      <div className="py-4">
+        <div className="flex items-center justify-center flex-wrap gap-2 p-2 border-b border-t mb-2">
+          <h1 className="text-xl text-center w-full uppercase text-muted-foreground">Список задач пуст</h1>
+        </div>
+      </div>
+    );
   }
   return (
     <DataTableFiltersProvider value={filtersContextValue}>

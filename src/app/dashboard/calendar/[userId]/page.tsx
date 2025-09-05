@@ -49,7 +49,7 @@ const CalendarPage = () => {
           icon={<ListTodo />}
         />
 
-        <CalendarBotLink chatName="calendarChat" />
+        <CalendarBotLink botName="ertel_report_app_bot" />
       </div>
       {isMobile ? (
         <CalendarMobile />

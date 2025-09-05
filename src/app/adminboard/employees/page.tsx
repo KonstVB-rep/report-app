@@ -4,7 +4,7 @@ import EmployeesList from "./ui/EmployeesList";
 
 const EmployeesPage = () => {
   return (
-    <div className="p-5 overflow-auto max-h-[94vh]">
+    <div className="p-5">
       <EmployeesList />
     </div>
   );

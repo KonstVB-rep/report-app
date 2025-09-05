@@ -1,71 +1,41 @@
-"use client";
 
-import { TelegramBot } from "@prisma/client";
+import { BotFormData, ChatFormData } from '@/entities/tgBot/types';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import { Switch } from '@/shared/components/ui/switch';
+import SubmitFormButton from '@/shared/custom-components/ui/Buttons/SubmitFormButton';
+import SelectComponent from '@/shared/custom-components/ui/SelectForm/SelectComponent';
+import { ActionResponse } from '@/shared/types';
+import React from 'react'
+import useChatForm from '../hooks/useChatForm';
 
-import React, { useEffect, useState } from "react";
-
-import { usePathname } from "next/navigation";
-
-import { ChatFormData } from "@/app/adminboard/actions/user-chat";
-import { getManagers } from "@/entities/department/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
-import { Input } from "@/shared/components/ui/input";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
-import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent";
-import { ActionResponse } from "@/shared/types";
-import { useCreateChatBot } from "@/feature/telegramChatBot/hooks/mutate";
-
-const initialState: ActionResponse<ChatFormData> = {
-  success: false,
-  message: "",
+type ChatFormProps = {
+    title: string;
+    description: string;
+    bot: BotFormData;
+    mutateAsync: (data: FormData) => Promise<ActionResponse<ChatFormData>>;
+    state: ActionResponse<ChatFormData>;
+    isPending: boolean;
 };
 
-const managers = getManagers(false);
-
-export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
-  // const [state, formAction, isPending] = useActionState(saveChat, initialState);
-  const [state, setState] = useState(initialState);
-  const pathname = usePathname();
-  const { mutateAsync, isPending } = useCreateChatBot((data: ActionResponse<ChatFormData>) => {
-    setState(data);
-  });
-
-
-  const [resetKey, setResetKey] = useState(0);
-
-  const getFieldError = (fieldName: keyof ChatFormData) => {
-    return state?.errors?.properties?.[fieldName]?.errors[0];
-  };
-
-  const botsMap = bots.reduce<Record<string, string>>((acc, bot) => {
-    acc[bot.botName] = bot.botName;
-    return acc;
-  }, {});
-
-  const actionSubmit = (data: FormData) => {
-    data.append("pathname", pathname);
-    mutateAsync(data);
-  };
-
-  useEffect(() => {
-    if (state.success) {
-      setResetKey((prev) => prev + 1);
-    }
-  }, [state]);
-
-
+const ChatForm = ({title, description, bot, mutateAsync, state, isPending}: ChatFormProps) => {
+    const {
+    actionSubmit,
+    getFieldError,
+    selectedUser,
+    setSelectedUser,
+    isActive,
+    setIsActive,
+    managers,
+    } = useChatForm(bot, mutateAsync, state);
+    
   return (
-    <Card className="w-full max-w-sm m-auto border-none">
+      <Card className="w-full max-w-sm m-auto border-none">
       <CardHeader className="!px-2 !pt-4">
-        <CardTitle>Создание чата для бота</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>
-          Заполните форму для создания чата для бота
+          {description}
         </CardDescription>
       </CardHeader>
       <CardContent className="!p-2">
@@ -74,21 +44,25 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
           className="space-y-6"
           autoComplete="on"
         >
+          <div className="grid gap-2 p-2">{bot.botName}</div>
           <SelectComponent
-            key={`user-${resetKey}`}
             placeholder="Выберите пользователя"
             options={[...Object.entries(managers)]}
             name="userId"
+            value={selectedUser} 
+        onValueChange={setSelectedUser}
             required
           />
+      
 
-          <SelectComponent
-            key={`bot-${resetKey}`}
+          {/* <SelectComponent
             placeholder="Название бота..."
             options={[...Object.entries(botsMap)]}
+            value={selectedBot} 
+        onValueChange={setSelectedBot}
             name="botName"
             required
-          />
+          /> */}
 
           <Input
             name={"username"}
@@ -142,7 +116,7 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
 
           <Input
             name={"chatName"}
-            placeholder="Название чата..."
+            placeholder="Имя чата..."
             required
             minLength={3}
             defaultValue={state.inputs?.chatName}
@@ -156,6 +130,11 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
             </p>
           )}
 
+          <div className="flex items-center space-x-2">
+            <Switch id="isActive-chat" value={isActive ? "true" : "false"} onCheckedChange={setIsActive}/>
+            <Label htmlFor="isActive-chat">{isActive ? "Активен" : "Не активен"}</Label>
+          </div>
+
           <SubmitFormButton
             title="Сохранить"
 
@@ -165,5 +144,7 @@ export const CreateUserChatForm = ({ bots }: { bots: TelegramBot[] }) => {
         </form>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
+
+export default ChatForm

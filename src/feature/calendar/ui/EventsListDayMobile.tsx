@@ -13,7 +13,7 @@ import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 import { Button } from "@/shared/components/ui/button";
 
-import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
+import { columnsDataCalendar } from "@/feature/calendar/model/column-data-calendar";
 
 type EventsListProps = {
   events: EventInputType[];

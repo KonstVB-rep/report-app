@@ -231,42 +231,20 @@ model EventCalendar {
 }
 
 model TelegramBot {
-  id          String   @id @default(cuid()) // Уникальный ID бота
+  id          String   @id @default(cuid())
   botName     String   @unique
   token       String   @unique
-  description String?
-  createdAt   DateTime @default(now()) // Время создания
-  updatedAt   DateTime @updatedAt // Время последнего обновления
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  chats UserTelegramChat[] // Связь с таблицей чатов
-
-  telegramUsersInfo TelegramUserInfo[]
-}
-
-model UserTelegramChat {
-  id                 String   @id @default(cuid())
-  userId             String // ID пользователя в вашей системе
-  botId              String // ID бота
-  chatId             String // ID чата в Telegram
-  telegramUserInfoId String // ID информации о Telegram пользователе
-  chatName           String?
-  isActive           Boolean  @default(true)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bot              TelegramBot      @relation(fields: [botId], references: [id], onDelete: Cascade)
-  telegramUserInfo TelegramUserInfo @relation(fields: [telegramUserInfoId], references: [tgUserId], onDelete: Cascade)
-
-  @@unique([botId, chatId]) // Уникальный чат для бота
-  @@index([userId])
-  @@index([telegramUserInfoId])
+  chats UserTelegramChat[]
 }
 
 model TelegramUserInfo {
   id           String   @id @default(cuid())
-  tgUserId     String   @unique              // Уникальный Telegram ID пользователя
-  tgUserName   String?  @unique              // Username, если есть
+  tgUserId     String   @unique  
+  tgUserName   String?  @unique
   firstName    String?
   lastName     String?
   languageCode String?
@@ -274,20 +252,33 @@ model TelegramUserInfo {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Связь с пользователем системы (если привязан)
   userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Связь с ботом (через которого получили инфу)
-  botId String?
-  bot   TelegramBot? @relation(fields: [botId], references: [id], onDelete: Cascade)
-
-  // Все чаты этого пользователя
   chats UserTelegramChat[]
 
-  @@index([tgUserId])
+}
+
+model UserTelegramChat {
+  id        String   @id @default(cuid())
+  userId    String   // ID пользователя в вашей системе
+  botId     String   // ID бота
+  chatId    String   // ID чата в Telegram
+  chatName  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Связь с информацией о Telegram пользователе
+  telegramUserInfoId String
+  telegramUserInfo   TelegramUserInfo @relation(fields: [telegramUserInfoId], references: [id], onDelete: Cascade)
+
+  user User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bot  TelegramBot @relation(fields: [botId], references: [id], onDelete: Cascade)
+
+  @@unique([botId, chatId])
+  @@unique([botId, telegramUserInfoId])
   @@index([userId])
-  @@index([botId])
 }
 
 
@@ -338,11 +329,13 @@ enum DirectionProject {
   BPS
   PPS
   PARK_ATTRACTION
+  LOCKER
   STADIUM_ARENA
 }
 
 enum DirectionRetail {
   PARKING_EQUIPMENT
+  LOCKER
   SCUD
   IDS_CONSUMABLES
   OTHER

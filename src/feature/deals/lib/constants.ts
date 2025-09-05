@@ -18,12 +18,14 @@ export enum DirectionProject {
   PPS = "ППС",
   PARK_ATTRACTION = "Парк/Аттракцион",
   STADIUM_ARENA = "Стадион/Арена",
+  LOCKER = "Камеры хранения"
 }
 
 export enum DirectionRetail {
   PARKING_EQUIPMENT = "Parking equipment",
   SCUD = "СКУД",
   IDS_CONSUMABLES = "Идентификаторы и расходники",
+  LOCKER = "Камеры хранения",
   OTHER = "Иное",
 }
 
@@ -66,6 +68,7 @@ export const DirectionProjectLabels: Record<
   PPS: "ППС",
   PARK_ATTRACTION: "Парк/Аттракцион",
   STADIUM_ARENA: "Стадион/Арена",
+  LOCKER: "Камеры хранения"
 } as const;
 
 export const DirectionRetailLabels: Record<
@@ -74,6 +77,7 @@ export const DirectionRetailLabels: Record<
 > = {
   PARKING_EQUIPMENT: "Парковочное оборудование",
   SCUD: "СКУД",
+  LOCKER: "Камеры хранения",
   IDS_CONSUMABLES: "Идентификаторы и расходники",
   OTHER: "Иное",
 } as const;

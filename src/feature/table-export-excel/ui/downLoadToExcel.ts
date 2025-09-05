@@ -99,7 +99,7 @@ export const downloadToExcel = async <TData>(
     // Стили для всех ячеек
     worksheet.eachRow((row, rowNumber) => {
       row.eachCell((cell) => {
-        console.log(cell, "cell");
+
         cell.border = {
           top: { style: "thin" },
           left: { style: "thin" },

@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Dialog,
   DialogContent,
@@ -22,6 +21,7 @@ type DialogComponentProps = {
   onOpenChange?: (value: boolean) => void;
   classNameContent?: string;
   disableClose?: boolean;
+  description?: string;
 };
 
 const DialogComponent = ({
@@ -35,13 +35,16 @@ const DialogComponent = ({
   footer,
   classNameContent,
   disableClose = false,
+  description,
 }: DialogComponentProps) => {
   const [internalOpen, setInternalOpen] = React.useState(false);
 
+  // Проверка на контролируемое или неконтролируемое состояние
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
+  // Рендерим триггер, если передан
   const renderTrigger = () => {
     const triggerElement = trigger ? (
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -73,7 +76,7 @@ const DialogComponent = ({
           <DialogTitle className="text-center text-sm uppercase">
             {dialogTitle}
           </DialogTitle>
-          <DialogDescription className="sr-only" />
+          <DialogDescription className="sr-only">{description}</DialogDescription>
         </DialogHeader>
         {children}
         {footer}

@@ -9,8 +9,6 @@ export type ActionResponse<T> = {
       };
     };
   };
-  inputs?: {
-    [K in keyof T]?: string;
-  };
+  inputs?:Partial<T>;
   result?: T;
 };

@@ -96,11 +96,6 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     header: "Направление",
     cell: (info: CellContext<ContractResponse, unknown>) => {
       const value = info.getValue() as typeofDirections;
-      console.log(
-        value,
-        DirectionProjectLabels,
-        "DirectionProjectLabels[value]"
-      );
       return <span>{DirectionProjectLabels[value]}</span>;
     },
     filterFn: (row, columnId, value) => {

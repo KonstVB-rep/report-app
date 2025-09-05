@@ -96,16 +96,19 @@ const safeParseFormData = (
 
   const { data: dataForm, success, error } = userFormSchema.safeParse(rawData);
 
+  const normalizedPermissions: PermissionEnum[] | undefined =
+  permissions?.length
+    ? (permissions.map((p) => p as PermissionEnum) as PermissionEnum[])
+    : undefined;
+
   if (!success) {
-    console.log(JSON.stringify(permissions), "z.treeifyError(error)");
     return {
       success: false,
       message: "Пожалуйста, исправьте ошибки в форме",
       errors: z.treeifyError(error),
       inputs: {
         ...rawData,
-        permissions:
-          permissions.length > 0 ? JSON.stringify(permissions) : undefined,
+        permissions: normalizedPermissions,
       },
     };
   }

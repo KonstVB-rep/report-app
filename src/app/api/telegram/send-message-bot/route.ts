@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 
 import axios from "axios";
 
+const botTokens: Record<string, string> = {
+  ertel_report_app_task_bot: process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_TASK_BOT || "",
+  ertel_report_app_bot: process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT || "",
+};
+
 export async function POST(request: Request) {
   try {
     const data = await request.json();
@@ -24,7 +29,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const telegramUrl = `${process.env.TELEGRAM_API_URL}${process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+    const token = botTokens[resolvedBotName];
+    const telegramUrl = `${process.env.TELEGRAM_API_URL}${token}/sendMessage`;
     const response = await axios.post(telegramUrl, {
       chat_id: chatId,
       text: message,

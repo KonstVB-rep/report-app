@@ -7,13 +7,13 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { cn } from "@/shared/lib/utils";
 
-import useChatBot from "../hooks/useChatBot";
+import useChatBot from "../../telegramBot/hooks/useChatBot";
 import TelegramIcon from "./TelegramIcon";
 
-const CalendarBotLink = ({ chatName }: { chatName: string }) => {
-  const { isFetchingRequest, isActiveBot, handleChange } = useChatBot(chatName);
+const CalendarBotLink = ({ botName }: { botName: string }) => {
+  const { isFetchingRequest, isActiveBot, handleChange } = useChatBot(botName);
 
-  if (!chatName) return null;
+  if (!botName || isActiveBot) return null;
 
   return (
     <MotionDivY className="flex flex-col items-center">

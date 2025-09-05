@@ -21,6 +21,9 @@ import {
   TaskWithUserInfo,
 } from "../types";
 import { TaskFormType, TaskFormTypeWithId, DeleteTaskData } from "@/feature/task/types";
+import { sendNotify } from "@/feature/telegramBot/actions/send-notify";
+import { formatDateTime } from "@/shared/lib/helpers/formatDate";
+import { AxiosError } from "axios";
 
 // import { getDepartmentUsersWithTasks } from "./queryFn";
 
@@ -147,7 +150,7 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
 
     const newOrder = lastTask ? lastTask.orderTask + 1 : 0;
 
-    await prisma.task.create({
+    const newTask = await prisma.task.create({
       data: {
         ...task,
         departmentId: +task.departmentId,
@@ -158,58 +161,65 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
       },
       include: {
         assigner: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            position: true,
-          },
+          select: { id: true, username: true, email: true, position: true },
         },
         executor: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            position: true,
-          },
+          select: { id: true, username: true, email: true, position: true },
         },
       },
     });
 
-    // const botName = "ErtelTasksBot";
-    // const description= task.description;
-    // const taskPriority = task.taskPriority;
+    const chatData = await prisma.userTelegramChat.findUnique({
+      where: { id: userId, chatName: "tasksChat" },
+    });
+
+    const botName = process.env.TELEGRAM_BOT_ERTEL_TASK_NAME || "";
+    const description = task.description;
+    const taskPriority = task.taskPriority;
     // const executorManager = task.executorId;
-    // const timeMakeUpTask = formatDateTime(task.dueDate);
+    const timeMakeUpTask = formatDateTime(task.dueDate);
 
-    // console.log(description, taskPriority, executorManager, timeMakeUpTask);
+    const message = `<b>Новая задача</b>: ${description}
+<b>От кого:</b> ${newTask.assigner?.username}
+<b>Приоритет</b>: ${taskPriority}
+<b>Срок исполнения</b>: ${timeMakeUpTask}`;
 
-    //   const message = `<b>Новая задача</b>: ${description}
-    // <b>От кого:</b>: ${user?.username}
-    // <b>Приоритет</b>: ${taskPriority}
-    // <b>Срок исполнения</b>: ${timeMakeUpTask}`;
+    // --- отправка в Telegram ---
+    let telegramError: string | undefined = undefined;
 
-    // // Вызов отправки уведомления (можно await, если нужно дождаться)
-    // let telegramError: string | undefined = undefined;
+    try {
+      const sendData = await sendNotify(message,chatData?.chatId || '',botName);
 
-    // try {
-    //   const sendData = await sendNotification(botName, executorManager, message);
-    //   const sendJson = await sendData.json();
-    //   if (!sendData.ok) {
-    //     telegramError =
-    //       sendJson.error || "Ошибка при отправке уведомления в Telegram";
-    //   }
-    // } catch (notifyError) {
-    //   console.error("Ошибка отправки уведомления:", notifyError);
-    //   telegramError = (notifyError as Error).message;
-    // }
+      if (!sendData || sendData.status !== 200) {
+        telegramError =
+          (sendData?.data?.description as string) ||
+          "Ошибка при отправке уведомления в Telegram";
+      }
+    } catch (notifyError) {
+      console.error("Ошибка отправки уведомления:", notifyError);
 
-    return { error: false, message: "Задача успешно создана", data: null };
+      if (notifyError instanceof AxiosError) {
+        telegramError =
+          (notifyError.response?.data?.description as string) ||
+          notifyError.response?.statusText ||
+          notifyError.message;
+      } else {
+        telegramError = (notifyError as Error).message;
+      }
+    }
+
+    return {
+      error: false,
+      message: "Задача успешно создана",
+      data: null,
+      telegramError,
+    };
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
   }
 };
+
 
 export const updateTask = async (
   taskTarget: TaskFormTypeWithId
@@ -231,8 +241,6 @@ export const updateTask = async (
     if (!task) {
       return handleError("Задача не найдена");
     }
-
-    console.log(taskTarget.startDate, "taskTarget.startDate");
 
     return await prisma.task.update({
       where: { id: taskTarget.id },

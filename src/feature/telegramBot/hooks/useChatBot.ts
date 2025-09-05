@@ -1,24 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
 
-import { sendNotification } from "../api";
-import { useUpdateChatBot } from "./mutate";
-import { useGetInfoChat } from "./query";
+import { useToggleSudscribeChatBot } from "@/feature/telegramBot/hooks/mutate";
 
-const useChatBot = (chatName: string) => {
+import { useGetInfoChat } from "../../calendar/hooks/query";
+import { sendNotify } from "../actions/send-notify";
+
+
+const useChatBot = (botName: string) => {
   const { authUser } = useStoreUser();
   const [isRefech, setIsRefech] = useState(false);
 
   const [isFetch, setIsFetch] = useState(false);
 
-  const { data: bot, isFetching } = useGetInfoChat(chatName, isRefech, 1);
+  const { data: bot, isFetching, refetch } = useGetInfoChat(botName, isRefech, 1);
+
 
   const isFetchingRequest = isFetching || isFetch;
 
-  const { mutate: updateStatusChatBot } = useUpdateChatBot();
+  const { mutate: updateStatusChatBot } = useToggleSudscribeChatBot();
 
   const handleUnsubscribeChatBot = async (chatId: string) => {
     if (!bot?.botName) return;
@@ -27,12 +30,12 @@ const useChatBot = (chatName: string) => {
       await checkAuthorization(authUser?.id);
       setIsFetch(true);
       updateStatusChatBot({
-        botId: bot.id,
+        botId: bot?.id || "",
         chatId: String(chatId),
         isActive: false,
       });
       if (chatId) {
-        await sendNotification(
+        await sendNotify(
           "Вы успешно отписались от уведомлений",
           chatId,
           bot.botName
@@ -43,15 +46,13 @@ const useChatBot = (chatName: string) => {
         "Не удалось отписаться от уведомлений. Попробуйте еще раз или позже."
       );
       console.error("Ошибка при отписке от бота:", error);
-    } finally {
-      setIsFetch(false);
-    }
+    } 
   };
 
   const isActiveBot = bot ? bot.isActive : false;
 
   const openTelegramLink = (botName: string, userId: string) => {
-    const url = `https://t.me/${botName}?start=${userId}-${botName}-calendarChat`;
+    const url = `https://t.me/${botName}?start=${userId}-${botName}-${bot?.chatName}`;
     window.open(url, "_blank");
   };
 
@@ -66,12 +67,12 @@ const useChatBot = (chatName: string) => {
       }
       if (!isActiveBot) {
         updateStatusChatBot({
-          botId: bot.id,
+          botId: bot.id || "",
           chatId: String(bot.chatId),
           isActive: true,
         });
-        await sendNotification(
-          "Вы успешно подписались на уведомления календаря",
+        await sendNotify(
+          `Вы успешно подписались на уведомления - ${bot.description}`,
           bot.chatId,
           bot.botName
         );
@@ -85,14 +86,10 @@ const useChatBot = (chatName: string) => {
       TOAST.ERROR("Не удалось изменить статус бота.");
     } finally {
       setIsFetch(false);
+      refetch();
     }
   };
 
-  useEffect(() => {
-    if (bot?.chatName && isActiveBot) {
-      setIsRefech(false);
-    }
-  }, [bot, isActiveBot]);
   return { isFetchingRequest, isActiveBot, handleChange };
 };
 

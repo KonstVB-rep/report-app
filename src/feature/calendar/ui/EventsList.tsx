@@ -18,7 +18,7 @@ import { EventInputType } from "@/feature/calendar/types";
 import EventsListTable from "@/feature/calendar/ui/EventsListTable";
 import ButtonLink from "@/shared/custom-components/ui/Buttons/ButtonLink";
 
-import { columnsDataCalendar } from "../../../app/dashboard/calendar/[userId]/events-list/model/column-data-calendar";
+import { columnsDataCalendar } from "../model/column-data-calendar";
 import { handleEventClickOnEventsList } from "../utils/eventHandlers";
 import CalendarFormModal from "./CalendarFormModal";
 

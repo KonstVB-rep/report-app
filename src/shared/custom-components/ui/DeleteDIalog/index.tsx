@@ -15,6 +15,7 @@ import {
 import Overlay from "../Overlay";
 import DeleteModalContentSkeleton from "../Skeletons/DeleteModalContentSkeleton";
 import DeleteModalContent from "./DeleteModalContent";
+import { cn } from "@/shared/lib/utils";
 
 type DeleteDialogProps = {
   title: string;
@@ -22,7 +23,9 @@ type DeleteDialogProps = {
   children: React.ReactNode;
   isPending: boolean;
   isShowSkeleton?: boolean;
+  textButtonShow?: boolean;
   mutate: () => void;
+  className?: string
 };
 
 const DeleteDialog = ({
@@ -31,7 +34,9 @@ const DeleteDialog = ({
   children,
   isPending,
   isShowSkeleton = false,
+  textButtonShow = false,
   mutate,
+  className = "flex items-center flex-shrink-0 gap-2 border-none px-2 hover:bg-red-600/70 hover:text-white focus-visible:bg-red-600/70 focus-visible:text-white"
 }: DeleteDialogProps) => {
   return (
     <>
@@ -41,9 +46,10 @@ const DeleteDialog = ({
           <Button
             variant="destructive"
             title={title}
-            className="flex h-10 w-10 items-center flex-shrink-0 justify-center gap-2 border-none px-2 hover:bg-red-600/70 hover:text-white focus-visible:bg-red-600/70 focus-visible:text-white"
+            size={!textButtonShow ? "icon" : "default"}
+            className={cn(className, textButtonShow ? "w-full justify-start" : "justify-center")}
           >
-            <Trash size={40} />
+            <Trash size={40} />{textButtonShow && title}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]" showX={false}>

@@ -18,13 +18,6 @@ import {
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { Bot, Users } from "lucide-react";
-import DialogAddUser from "@/feature/user/ui/DialogAddUser";
-
-const urlPath = [
-  { title: "Телеграмм боты", path: `/adminboard/tg-bots` },
-  { title: "Телеграмм чаты", path: `/adminboard/tg-bots-chats` },
-  { title: "Сотрудники", path: `/adminboard/employees` },
-];
 
 const AdminSidebar = () => {
   return (
@@ -59,18 +52,6 @@ const AdminSidebar = () => {
       </SidebarHeader>
       <SidebarContent>
         <NavMain>
-          {/* {urlPath.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <Link href={item.path}>{item.title}</Link>
-              </SidebarMenuItem>
-            ))} */}
-          {/* <AddFormWrapper ariaLabel="Добавить пользователя" title="Добавить пользователя" dialogTitle="Добавить пользователя">
-                <CreateBotForm />
-            </AddFormWrapper>
-            <AddFormWrapper ariaLabel="Добавить пользователя" title="Добавить пользователя" dialogTitle="Добавить пользователя">
-                <CreateUserChatForm bots={[]} />
-            </AddFormWrapper> */}
-          <DialogAddUser className="text-sm justify-start"/>
           <Link className="btn_hover text-sm justify-start" href="/adminboard/bots"><Bot size={16}/>Телеграмм боты</Link>
           <Link className="btn_hover text-sm justify-start" href="/adminboard/employees"><Users size={16}/>Сотрудники</Link>
         </NavMain>

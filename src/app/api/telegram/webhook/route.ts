@@ -3,9 +3,8 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-import { createUserTelegramChat } from "@/feature/telegramChatBot/api";
-import { createTelegramBot } from "@/feature/telegramChatBot/api";
 import prisma from "@/prisma/prisma-client";
+import { createTelegramBot, createUserTelegramChat } from "@/entities/tgBot/api";
 
 const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;
 
@@ -48,7 +47,7 @@ export async function POST(req: Request) {
           where: { botName },
         });
 
-        const bot = botInDb ?? (await createTelegramBot(botName, token));
+        const bot = botInDb ?? (await createTelegramBot(botName, token, "не задано"));
 
         if (!bot) {
           console.error("Бот не найден или не удалось создать");
@@ -60,6 +59,12 @@ export async function POST(req: Request) {
 
         const telegramUsername = from?.username ?? "Никнейм не указан";
         const telegramUserId = String(from.id);
+        
+        // Получаем дополнительные данные из объекта from
+        const firstName = from?.first_name || null;
+        const lastName = from?.last_name || null;
+        const languageCode = from?.language_code || null;
+        const isBot = from?.is_bot || false;
 
         const chatExists = await prisma.userTelegramChat.findUnique({
           where: { botId_chatId: { botId: bot.id, chatId } },
@@ -77,7 +82,14 @@ export async function POST(req: Request) {
           userId,
           botName,
           chatId,
-          telegramUserId,
+          {
+            tgUserId: telegramUserId,
+            tgUserName: telegramUsername,
+            firstName: firstName,
+            lastName: lastName,
+            languageCode: languageCode,
+            isBot: isBot
+          },
           nameChat
         );
 

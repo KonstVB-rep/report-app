@@ -42,8 +42,6 @@ const TasksPage = () => {
 
   const { data, isPending } = useGetTasksDepartment();
 
-  console.log(isPending, "isPending");
-
   const { handleViewChange, currentView } = useViewType();
 
   if (!authUser) return null;
@@ -57,6 +55,7 @@ const TasksPage = () => {
   if (isPending) {
     return <LoaderCircleInWater />;
   }
+  
 
   return (
     <section className="p-5">

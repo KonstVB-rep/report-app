@@ -37,9 +37,8 @@ const DialogAddUser = ({ className }: { className?: string}) => {
           </Button>
         }
         dialogTitle="Форма добавления пользователя"
-        classNameContent="sm:max-w-[600px]"
+        classNameContent="w-full sm:max-w-[600px]"
       >
-        {/* <UserCreateForm /> */}
         <UserCreateForm />
       </DialogComponent>
     </ProtectedByPermissions>
