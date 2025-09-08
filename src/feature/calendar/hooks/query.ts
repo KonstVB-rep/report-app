@@ -35,23 +35,20 @@ export const useGetEventsCalendarUserToday = () => {
   return useQuery({
     queryKey: ["eventsCalendarToday", authUser?.id],
     queryFn: async () => {
-      try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован");
-        }
-
-        return await getEventsCalendarUserToday();
-      } catch (error) {
-        throw error;
+      if (!authUser?.id) {
+        throw new Error("Пользователь не авторизован");
       }
+      return await getEventsCalendarUserToday();
     },
     enabled: !!authUser?.id,
+    staleTime: 0,              
+    gcTime: 5 * 60 * 1000,     
+    refetchOnWindowFocus: true
   });
 };
+
 export const useGetInfoChat = (
   botName: string,
-  isNeedRefetch?: boolean,
-  interval: number = 1
 ) => {
   const { authUser } = useStoreUser();
 
@@ -62,7 +59,6 @@ export const useGetInfoChat = (
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        // const botName = await getBotName();
 
         if (!botName) {
           throw new Error("Название бота не найдено");
@@ -86,9 +82,8 @@ export const useGetInfoChat = (
         throw error;
       }
     },
-    enabled: !!authUser?.id && !!botName, // не запускаем запрос без пользователя и имени чата
-    refetchInterval: isNeedRefetch ? interval * 1000 : false, // включаем периодический рефетч если нужно
-    staleTime: 5 * 60 * 1000, // можно задать, чтобы данные были свежими 5 минут (настройка для оптимизации)
-    gcTime: 10 * 60 * 1000, // кэшируем данные 10 минут
+    enabled: !!authUser?.id && !!botName, 
+    staleTime: 5 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 };

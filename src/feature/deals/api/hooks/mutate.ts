@@ -140,7 +140,6 @@ export const useMutationUpdateProject = (
         dealId,
       ]);
 
-      // 2. Сравниваем изменения в менеджерах (опционально)
       const prevManagers =
         previousData?.managers?.map((m) => m.id).sort() || [];
       const currManagers =
@@ -150,7 +149,6 @@ export const useMutationUpdateProject = (
         queryClient.invalidateQueries({ queryKey: ["project", dealId] });
       }
 
-      // Обязательная инвалидаци
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
       });

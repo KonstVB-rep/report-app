@@ -21,10 +21,11 @@ export async function GET(request: Request) {
     }
 
     const fileBuffer = await downloadFileFromYandexDisk(filePath); // Uint8Array
+    const buffer = Buffer.from(fileBuffer);
     const fileName = filePath.split("/").pop() || "file";
     const contentType = mime.lookup(fileName) || "application/octet-stream";
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
         "Content-Type": contentType,

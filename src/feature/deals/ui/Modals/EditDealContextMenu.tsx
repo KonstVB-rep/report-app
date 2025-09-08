@@ -25,8 +25,6 @@ const EditDealContextMenu = ({
       return (
         <EditRetail close={close} id={id} titleForm="Редактировать проект" />
       );
-    // case DealType.ORDER:
-    //   return <EditOrder close={close} id={id} />;
     default:
       return null;
   }

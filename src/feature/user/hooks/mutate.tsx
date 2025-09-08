@@ -1,26 +1,26 @@
+import { Role } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
 import { getQueryClient } from "@/app/provider/query-provider";
 import { DepartmentInfo } from "@/entities/department/types";
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { ActionResponse } from "@/shared/types";
-
 import {
   createUser,
   deleteUser,
   ResponseDelUser,
-  updateUser
+  updateUser,
 } from "@/entities/user/api";
 import {
   UserFormData,
-  UserResponse
+  UserFormEditData,
+  UserResponse,
 } from "@/entities/user/types";
 import { checkRole } from "@/shared/api/checkRole";
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
+import handleErrorSession from "@/shared/auth/handleErrorSession";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
-import { Role } from "@prisma/client";
+import { ActionResponse } from "@/shared/types";
 
 const queryClient = getQueryClient();
 
@@ -46,7 +46,7 @@ export const useCreateUser = (
       }
       onSuccessCallback?.(data);
       if (data.success) {
-        TOAST.SUCCESS(data.message) ;
+        TOAST.SUCCESS(data.message);
       }
       onSuccessCallback?.(data);
     },
@@ -58,20 +58,20 @@ export const useCreateUser = (
 
 export const useUpdateUser = (
   userId: string,
-  onSuccessCallback?: (data: ActionResponse<UserFormData>) => void
+  onSuccessCallback?: (data: ActionResponse<UserFormEditData>) => void
 ) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
     mutationFn: (formData: FormData) => {
       return handleMutationWithAuthCheck<
         FormData,
-        ActionResponse<UserFormData>
+        ActionResponse<UserFormEditData>
       >(updateUser, formData, authUser, isSubmittingRef);
     },
     onSuccess: (data) => {
       if (data.success) {
         queryClient.invalidateQueries({
-          queryKey: ["user", userId],
+          queryKey: ["user", userId, authUser?.id],
           exact: true,
         });
       }
@@ -82,6 +82,10 @@ export const useUpdateUser = (
       if (data.success) {
         TOAST.SUCCESS("Данные успешно сохранены");
       }
+      if(!data.success){
+        TOAST.ERROR(data.message);
+      }
+
       onSuccessCallback?.(data);
     },
     onError: (error) => {
@@ -90,37 +94,6 @@ export const useUpdateUser = (
   });
 };
 
-// export const useCreateUser = () => {
-//   const { authUser, isSubmittingRef } = useFormSubmission();
-//   return useMutation({
-//     mutationFn: (data: userSchema) => {
-//       const user: UserRequest = {
-//         username: data.username,
-//         email: data.email,
-//         phone: data.phone,
-//         position: data.position,
-//         user_password: data.user_password,
-//         department: data.department as DepartmentTypeName,
-//         role: data.role as Role,
-//         permissions: data.permissions as PermissionType[],
-//       };
-//       return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
-//         createUser,
-//         user,
-//         authUser,
-//         isSubmittingRef
-//       );
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({
-//         queryKey: ["depsWithUsers"],
-//       });
-//     },
-//     onError: (error) => {
-//       handleErrorSession(error);
-//     },
-//   });
-// };
 
 export const useDeleteUser = (userId: string) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
@@ -128,11 +101,11 @@ export const useDeleteUser = (userId: string) => {
   return useMutation({
     mutationFn: async () => {
       const mutateFn = async (data: { userId: string }) => {
-         await Promise.all([
-              checkTokens(),
-              checkRole(), 
-              checkRole(Role.DIRECTOR),
-            ]);
+        await Promise.all([
+          checkTokens(),
+          checkRole(),
+          checkRole(Role.DIRECTOR),
+        ]);
         const result = await deleteUser(data);
         return result;
       };
@@ -161,7 +134,6 @@ export const useDeleteUser = (userId: string) => {
       return { previousDepsWithUsers };
     },
     onSuccess: async () => {
-
       await queryClient.invalidateQueries({
         queryKey: ["depsWithUsers"],
       });
@@ -179,37 +151,3 @@ export const useDeleteUser = (userId: string) => {
     },
   });
 };
-
-// export const useUpdateUser = (
-//   user: UserResponse,
-//   setOpen: (value: boolean) => void
-// ) => {
-//   const { authUser, isSubmittingRef } = useFormSubmission();
-//   return useMutation({
-//     mutationFn: (data: userEditSchema) => {
-//       const updateData = data as UserRequest;
-//       return handleMutationWithAuthCheck<UserRequest, UserResponse | undefined>(
-//         updateUser,
-//         updateData,
-//         authUser,
-//         isSubmittingRef
-//       );
-//     },
-//     onSuccess: () => {
-//       setOpen(false);
-//       if (user) {
-//         queryClient.invalidateQueries({
-//           queryKey: ["user", user.id],
-//           exact: true,
-//         });
-//       }
-//       queryClient.invalidateQueries({
-//         queryKey: ["depsWithUsers"],
-//         exact: true,
-//       });
-//     },
-//     onError: (error) => {
-//       handleErrorSession(error);
-//     },
-//   });
-// };

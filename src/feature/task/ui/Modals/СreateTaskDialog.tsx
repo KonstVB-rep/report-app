@@ -10,6 +10,7 @@ import CreateTaskForm from "../Forms/CreateTaskForm";
 const СreateTaskDialog = () => {
   return (
     <DialogComponent
+      classNameContent="sm:max-w-[500px]"
       trigger={
         <Button variant="default">
           <Plus /> Новая

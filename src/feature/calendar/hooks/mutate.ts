@@ -1,10 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { toggleSubscribeChatBot } from "@/feature/telegramChatBot/api";
-import {
-  ChatBotType,
-  ResponseChatBotType,
-} from "@/feature/telegramChatBot/type";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { logout } from "@/shared/auth/logout";
 import { TOAST } from "@/shared/custom-components/ui/Toast";

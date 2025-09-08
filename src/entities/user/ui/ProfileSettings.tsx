@@ -2,7 +2,6 @@
 
 import React from "react";
 
-// import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { EllipsisVertical, UserRound } from "lucide-react";
@@ -10,11 +9,6 @@ import { EllipsisVertical, UserRound } from "lucide-react";
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
 
 import { User } from "../types";
-
-// const DialogEditUser = dynamic(() => import("@/feature/user/ui/DialogEditUser"), {
-//   ssr: false,
-//   loading: () => <div className="btn_hover animate-pulse h-10 text-center" />,
-// });
 
 type Props = {
   user: User;
@@ -38,7 +32,6 @@ export function ProfileSettings({ user }: Props) {
         <UserRound size="16" /> <span>Профиль пользователя</span>
       </Link>
 
-      {/* <DialogEditUser /> */}
     </HoverCardComponent>
   );
 }

@@ -24,7 +24,6 @@ export type DataTableFiltersContextType<TData, TValue = unknown> = {
   columns: ColumnDef<TData, TValue>[];
 };
 
-// Создаем контекст с default-значением через as
 export const DataTableFiltersContext =
   createContext<DataTableFiltersContextType<Record<string, unknown>> | null>(
     null as unknown as DataTableFiltersContextType<Record<string, unknown>>

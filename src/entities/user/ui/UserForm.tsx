@@ -11,17 +11,22 @@ import { cn, formatPhoneNumber } from "@/shared/lib/utils";
 import { ActionResponse } from "@/shared/types";
 
 import { RolesUser } from "../model/objectTypes";
-import { OPTIONS, UserFormData } from "../types";
+import {  OPTIONS, UserFormData, UserFormEditData } from "../types";
+import { DepartmentEnum, Role } from "@prisma/client";
 
-const UserForm = ({
+
+type UserFormProps<T extends UserFormData | UserFormEditData> = {
+  state: ActionResponse<T>;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  isPending: boolean;
+  setState: React.Dispatch<React.SetStateAction<ActionResponse<T>>>;
+};
+const UserForm = <T extends UserFormData | UserFormEditData>({
   state,
   onSubmit,
   isPending,
-}: {
-  state: ActionResponse<UserFormData>;
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
-  isPending: boolean;
-}) => {
+  setState,
+}: UserFormProps<T>) => {
   const getFieldError = (fieldName: keyof UserFormData) => {
     return state?.errors?.properties?.[fieldName]?.errors[0];
   };
@@ -146,6 +151,16 @@ const UserForm = ({
             value={
                 state.inputs?.department
             }
+            onValueChange={(val) => {
+              if (!val) return;
+              setState((prev) => ({
+                ...prev,
+                inputs: {
+                  ...prev.inputs!,
+                  department: val as DepartmentEnum,
+                },
+              }));
+            }}
             aria-describedby="department"
             className={cn(
               "capitalize",
@@ -167,7 +182,17 @@ const UserForm = ({
             options={Object.entries(RolesUser)}
             placeholder="Выберите роль"
             name={"role"}
-            value={state.inputs?.role}
+            value={state.inputs?.role ?? ""}
+            onValueChange={(val) => {
+              if (!val) return;
+              setState((prev) => ({
+                ...prev,
+                inputs: {
+                  ...prev.inputs!,
+                  role: val as Role,
+                },
+              }));
+            }}
             aria-describedby="role"
             className={cn(
               "capitalize",
@@ -192,7 +217,7 @@ const UserForm = ({
             name={"permissions"}
             defaultValue={
               state.inputs?.permissions
-                ? state.inputs.permissions.split(",").map((s) => s.trim()) // <- убираем пробелы
+                ? state.inputs.permissions.map((s) => s.trim())
                 : undefined
             }
             aria-describedby="permissions"
@@ -204,7 +229,7 @@ const UserForm = ({
           )}
         </div>
       </MotionDivY>
-      <SubmitFormButton title="Добавить пользователя" isPending={isPending} />
+      <SubmitFormButton title="Сохранить" isPending={isPending} />
     </form>
   );
 };

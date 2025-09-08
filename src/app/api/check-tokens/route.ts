@@ -4,8 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { jwtVerify } from "jose";
 
-// app/api/check-tokens/route.ts
-
 const accessTokenSecretKey = new TextEncoder().encode(
   process.env.JWT_SECRET_KEY
 );

@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
-// import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
@@ -30,54 +29,7 @@ const RedirectToPath = dynamic(
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
-  // const { setDepartments } = useStoreDepartment();
-
-  // const { data: ordersNotInProgress, refetch } =
-  //   useGetOrdersNotAtWorkByUserId();
-
   useGetDepartmentsWithUsers();
-
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(
-  //   null
-  // );
-
-  // useEffect(() => {
-  //   if (authUser && departmentData) {
-  //     setDepartments(departmentData);
-  //   }
-  // }, [authUser, departmentData, setDepartments]);
-
-  // логика оповещений о заявках
-  // useEffect(() => {
-  //   if (ordersNotInProgress && ordersNotInProgress.length > 0) {
-  //     ordersNotInProgress.forEach((order) => {
-  //       toast(`Новая заявка: ${order.nameDeal} Контакт: ${order.nameDeal}`, {
-  //         style: {
-  //           background: "hsl(var(--background))",
-  //           borderColor: "hsl(var(--muted-foreground))",
-  //           color: "hsl(var(--foreground))",
-  //         },
-  //         position: "bottom-right",
-  //         duration: Infinity,
-  //         action: {
-  //           label: "Принять в работу",
-  //           onClick: () => {
-  //             setSelectedOrder(order);
-  //             setIsModalOpen(true);
-  //           },
-  //         },
-  //       });
-  //     });
-  //   }
-  // }, [ordersNotInProgress]);
-
-  // const handleClose = (value: boolean) => {
-  //   setIsModalOpen(value);
-  //   if (!value) {
-  //     refetch();
-  //   }
-  // };
 
   if (!authUser) {
     return <RedirectToPath to="/login" />;
@@ -96,15 +48,6 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
           </div>
         </SidebarProvider>
       </div>
-      {/* {isModalOpen &&
-        createPortal(
-          <TabsDealTypeForms
-            order={selectedOrder}
-            isModalOpen={isModalOpen}
-            setIsModalOpen={handleClose}
-          />,
-          document.body
-        )} */}
     </>
   );
 };

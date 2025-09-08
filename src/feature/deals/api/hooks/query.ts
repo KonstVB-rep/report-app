@@ -61,8 +61,8 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
         throw error;
       }
     },
-    enabled: !useCache || !cachedDeal, // Запрос если нет в кэше ИЛИ useCache = false
-    placeholderData: useCache ? cachedDeal : undefined, // Берем из кэша только если useCache = true
+    enabled: !useCache || !cachedDeal, 
+    placeholderData: useCache ? cachedDeal : undefined,
     staleTime: useCache ? 60 * 1000 : 0,
     retry: 2,
   });
@@ -145,13 +145,11 @@ export const useGetDealById = <
         const project = await executeWithTokenCheck(() =>
           getProjectById(dealId)
         );
-        // Присваиваем результат если проект найден
         entity = project as T | undefined;
       }
 
       if (type === DealType.RETAIL) {
         const retail = await executeWithTokenCheck(() => getRetailById(dealId));
-        // Присваиваем результат если розничная сделка найдена
         entity = retail as T | undefined;
       }
 
@@ -373,7 +371,6 @@ export const useGetDealsByDateRange = (
     },
     enabled: !!userId && !!authUser?.id && !!departmentId && !!range,
     staleTime: 1000 * 60,
-    // refetchInterval: 60 * 1000 * 5,
   });
 };
 

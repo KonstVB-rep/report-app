@@ -4,15 +4,17 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { toast } from "sonner";
 
+import {
+  UserFormEditData,
+  UserWithdepartmentName,
+} from "@/entities/user/types";
+import UserForm from "@/entities/user/ui/UserForm";
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import { ActionResponse } from "@/shared/types";
 
-
 import { useUpdateUser } from "../hooks/mutate";
-import { UserFormData, UserWithdepartmentName } from "@/entities/user/types";
-import UserForm from "@/entities/user/ui/UserForm";
 
-const initialState: ActionResponse<UserFormData> = {
+const initialState: ActionResponse<UserFormEditData> = {
   success: false,
   message: "",
 };
@@ -28,7 +30,7 @@ const UserEditForm = ({
 
   const { mutateAsync, isPending } = useUpdateUser(
     user?.id as string,
-    (data: ActionResponse<UserFormData>) => {
+    (data: ActionResponse<UserFormEditData>) => {
       setState(data);
       setOpen(false);
       console.log("Изменен пользователь:", data);
@@ -43,10 +45,11 @@ const UserEditForm = ({
     mutateAsync(formData);
   };
 
-
-
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
+
     setState({
       ...initialState,
       inputs: {
@@ -56,7 +59,7 @@ const UserEditForm = ({
         position: user.position,
         department: user.departmentName,
         role: user.role,
-        permissions: user.permissions?.join(", "),
+        permissions: user.permissions,
       },
     });
   }, [user]);
@@ -82,7 +85,12 @@ const UserEditForm = ({
   return (
     <>
       <Overlay isPending={isPending} />
-      <UserForm state={state} onSubmit={onSubmit} isPending={isPending} />
+      <UserForm
+        state={state}
+        onSubmit={onSubmit}
+        isPending={isPending}
+        setState={setState}
+      />
     </>
   );
 };

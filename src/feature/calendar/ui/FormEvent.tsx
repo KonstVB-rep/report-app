@@ -113,7 +113,7 @@ const FormEvent = ({ events }: FormEventProps) => {
               updateEvent,
             })
           )}
-          className="grid max-h-[82vh] min-w-full gap-5 overflow-y-auto"
+          className="grid max-h-[82vh] w-full gap-5 overflow-y-auto"
           key={String(allDay)}
         >
           <div className="text-center font-semibold uppercase">

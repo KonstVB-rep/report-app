@@ -149,10 +149,10 @@ async function downloadFileFromYandexDisk(
     const { href: downloadUrl } = response.data;
 
     const downloadResponse = await axiosDownLoaderFromYD.get(downloadUrl, {
-      responseType: "arraybuffer", // <-- ВАЖНО
+      responseType: "arraybuffer", 
     });
 
-    return new Uint8Array(downloadResponse.data); // <-- Возвращаем корректный тип
+    return new Uint8Array(downloadResponse.data);
   } catch (error) {
     console.error("Ошибка в downloadFileFromYandexDisk:", error);
     throw error;

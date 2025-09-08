@@ -39,7 +39,7 @@ export const getTasksDepartment = async (
 
     return await prisma.task.findMany({
       where: {
-        departmentId, // укажи нужный ID департамента
+        departmentId, 
       },
       include: {
         assigner: {

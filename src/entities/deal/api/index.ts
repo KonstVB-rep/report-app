@@ -468,13 +468,6 @@ export const getAllRetailsByDepartment = async (
           },
         },
       },
-      // include: {
-      //   user: {
-      //     select: {
-      //       username: true,
-      //     },
-      //   },
-      // },
       orderBy: {
         dateRequest: "asc",
       },
@@ -511,16 +504,10 @@ export const getAllDealsRequestSourceByDepartment = async (
   try {
     await handleAuthorization();
 
-    // const permissionError = await checkUserPermissionByRole(user!, [
-    //   PermissionEnum.VIEW_UNION_REPORT,
-    // ]);
-
-    // if (permissionError) return permissionError;
-
     const retailsRequestResorce = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: departmentId, // Фильтрация по связанному пользователю
+          departmentId: departmentId, 
         },
       },
       select: {
@@ -536,7 +523,7 @@ export const getAllDealsRequestSourceByDepartment = async (
     const projectsRequestResource = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: departmentId, // Фильтрация по связанному пользователю
+          departmentId: departmentId, 
         },
       },
       select: {
@@ -565,7 +552,7 @@ export const getDealsByDateRange = async (
   range: DateRange,
   departmentId: string
 ) => {
-  const data = await handleAuthorization(); // Проверьте, что здесь нет ошибок
+  const data = await handleAuthorization(); 
 
   const { user, userId } = data!;
 
@@ -731,7 +718,6 @@ export const createProject = async (
     const safeAmountPurchase = new Prisma.Decimal(amountPurchase as string);
     const idDeal = cuid();
     const idOrder = cuid();
-    //проверяем есть ли заказ
 
     const isExistOrder = await prisma.order.findUnique({
       where: {
@@ -758,8 +744,6 @@ export const createProject = async (
           ? StatusOrder.AT_WORK
           : StatusOrder.CLOSED,
     };
-
-    //создаем или обновляем заказ
 
     if (isExistOrder) {
       await prisma.order.update({

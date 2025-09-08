@@ -38,7 +38,6 @@ const CalendarMobile = () => {
     }
   };
 
-  // Обработчик клика по событию в списке
   const onEventClick = (eventCalendar: EventInputType) => {
     handleEventClickOnEventsList(
       eventCalendar,
@@ -48,7 +47,6 @@ const CalendarMobile = () => {
     );
   };
 
-  // Обработчик добавления нового события из списка
   const onAddEventClick = () => {
     handleDateSelectOnEventsList(
       selectedDate,

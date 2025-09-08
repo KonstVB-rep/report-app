@@ -44,7 +44,7 @@ const checkCtx = (
     });
   }
 
-  // ❌ dueDate < startDate
+  // ❌ Дата окончания не может быть раньше даты начала
   if (isBefore(data.dueDate, data.startDate)) {
     ctx.issues.push({
       code: "custom",

@@ -1,4 +1,4 @@
-import { PermissionEnum } from "@prisma/client";
+import { DepartmentEnum, PermissionEnum, Role } from "@prisma/client";
 
 import { z } from "zod";
 
@@ -21,22 +21,21 @@ export const userFormSchema = z.object({
     .max(30, { message: "Пароль должен содержать не более 30 символов" }),
   email: z.email("Некорректный email"),
   phone: z.string().min(18, "Минимальное количество символов 18"),
-  // .max(16, "Максимальное количество символов 18"),
   position: z
     .string()
     .min(3, { message: "Должность должна содержать не менее 3 символов" })
     .max(60, { message: "Должность должна содержать не более 60 символов" }),
-  department: z
-    .string()
-    .refine((val) => Object.keys(DepartmentLabels).includes(val), {
-      message: "Пожалуйста, выберите отдел из списка",
-    }),
+   department: z.enum(
+         Object.keys(DepartmentLabels).filter(Boolean) as [DepartmentEnum, ...DepartmentEnum[]],
+         {
+           error: "Выберите отдел из списка",
+         }
+       ),
 
-  role: z
-    .string()
-    .refine((val) => Object.keys(RolesUser).includes(val), {
-      message: "Пожалуйста, выберите роль из списка",
-    }),
+  role:  z.enum(
+         Object.keys(RolesUser).filter(Boolean) as unknown as [Role, ...Role[]], {
+    message: "Пожалуйста, выберите роль из списка",
+  }),
   permissions: z
     .array(z.string())
     .transform((arr) =>
@@ -47,16 +46,15 @@ export const userFormSchema = z.object({
     .optional(),
 });
 
-export const userFormEditSchema = userFormSchema.merge(
-  z.object({
-    user_password: z
-      .string()
-      .min(6, { message: "Пароль должен содержать не менее 6 символов" })
-      .max(30, { message: "Пароль должен содержать не более 30 символов" })
-      .or(z.literal(""))
-      .optional(),
-  })
-);
+export const userFormEditSchema = userFormSchema.extend({
+  id: z.string(), 
+  user_password: z
+    .string()
+    .min(6, { message: "Пароль должен содержать не менее 6 символов" })
+    .max(30, { message: "Пароль должен содержать не более 30 символов" })
+    .or(z.literal(""))
+    .optional(),
+});
 
-export type userEditSchema = z.infer<typeof userFormEditSchema>;
-export type userSchema = z.infer<typeof userFormSchema>;
+export type UserEditSchema = z.infer<typeof userFormEditSchema>;
+export type UserSchema = z.infer<typeof userFormSchema>;

@@ -24,7 +24,6 @@ export const useGetDepartmentsWithUsers = () => {
           getDepartmentsWithUsers(),
         ]);
 
-        // Если проверка токенов прошла успешно, возвращаем задачи
         if (tokenCheckResult) {
           setDepartments(deps);
           return deps;
@@ -34,13 +33,11 @@ export const useGetDepartmentsWithUsers = () => {
       } catch (error) {
         console.error("Ошибка useGetDepartmentsWithUsers:", error);
 
-        // Обработка сетевых ошибок
         if (error instanceof Error && error.message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
           return null;
         }
 
-        // Обработка Prisma ошибок
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           TOAST.ERROR(`Prisma ошибка: ${error.code}`);
         } else if (error instanceof Prisma.PrismaClientValidationError) {
@@ -48,7 +45,6 @@ export const useGetDepartmentsWithUsers = () => {
         } else if (error instanceof Prisma.PrismaClientInitializationError) {
           TOAST.ERROR("Ошибка подключения к базе");
         }
-        // Остальные ошибки
         else if (error instanceof Error) {
           TOAST.ERROR(error.message);
         } else {

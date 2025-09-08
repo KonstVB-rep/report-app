@@ -15,7 +15,6 @@ export async function GET(req: NextRequest) {
   // 30 минут от текущего времени
   const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
   thirtyMinutesLater.setSeconds(0, 0); // Округляем до начала минуты
-  //(на 1 минуту больше)
   const thirtyOneMinutesLater = new Date(thirtyMinutesLater.getTime() + 60000);
 
   try {

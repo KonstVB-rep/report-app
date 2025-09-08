@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
       const message = `‼️Напоминание: в ${new Date(start).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" }).split(", ")[1].slice(0, 5)} - ${title}`;
 
       try {
-        // Отправляем уведомление в Telegram
         const sent = await sendNotification(message, chatId);
 
         if (sent?.status === 200) {

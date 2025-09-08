@@ -8,7 +8,6 @@ import {
   User,
 } from "@prisma/client";
 
-
 import bcrypt from "bcrypt";
 import z from "zod";
 
@@ -19,27 +18,13 @@ import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 import { ActionResponse } from "@/shared/types";
 
-
-import { userFormSchema } from "../model/schema";
-import { DepartmentTypeName, UserFormData, UserRequest } from "../types";
-
-// type RequiredFields = keyof UserRequest;
-// const requiredFields: RequiredFields[] = [
-//   "username",
-//   "user_password",
-//   "position",
-//   "department",
-//   "role",
-//   "email",
-// ];
-
-// const requiredFieldsForEditForm: RequiredFields[] = [
-//   "username",
-//   "position",
-//   "department",
-//   "role",
-//   "email",
-// ];
+import { userFormEditSchema, userFormSchema } from "../model/schema";
+import {
+  UserDataBase,
+  UserFormData,
+  UserFormEditData,
+  UserRequest,
+} from "../types";
 
 export interface ResponseDelUser<T> {
   error: boolean;
@@ -51,12 +36,13 @@ const extractFormData = (
   formData: FormData,
   permissions: string[]
 ): UserFormData => ({
+  ...(formData.get("id") && { id: formData.get("id") as string }),
   username: formData.get("username") as string,
   phone: formData.get("phone") as string,
   email: formData.get("email") as string,
   user_password: formData.get("user_password") as string,
   position: formData.get("position") as string,
-  department: formData.get("department") as DepartmentTypeName,
+  department: formData.get("department") as DepartmentEnum,
   role: formData.get("role") as Role,
   permissions: permissions as PermissionEnum[],
 });
@@ -78,11 +64,12 @@ export const checkFormData = async (
   return dataObject;
 };
 
-const safeParseFormData = (
-  formData: FormData
-): UserFormData | ActionResponse<UserFormData> => {
+const safeParseFormData = <T extends UserDataBase>(
+  formData: FormData,
+  schema: z.ZodType<T>
+): T | ActionResponse<T> => {
   const permissionsValue = formData.get("permissions");
-  let permissions: string[] = [];
+  let permissions: PermissionEnum[] = [];
 
   if (typeof permissionsValue === "string") {
     try {
@@ -94,28 +81,29 @@ const safeParseFormData = (
 
   const rawData = extractFormData(formData, permissions);
 
-  const { data: dataForm, success, error } = userFormSchema.safeParse(rawData);
+  const { data: dataForm, success, error } = schema.safeParse(rawData);
 
   const normalizedPermissions: PermissionEnum[] | undefined =
-  permissions?.length
-    ? (permissions.map((p) => p as PermissionEnum) as PermissionEnum[])
-    : undefined;
+    permissions?.length
+      ? (permissions.map((p) => p as PermissionEnum) as PermissionEnum[])
+      : undefined;
 
   if (!success) {
-    return {
+    const response: ActionResponse<T> = {
       success: false,
       message: "Пожалуйста, исправьте ошибки в форме",
       errors: z.treeifyError(error),
       inputs: {
         ...rawData,
         permissions: normalizedPermissions,
-      },
+      } as unknown as Partial<T>,
     };
+    return response;
   }
 
   return {
     ...dataForm,
-    department: dataForm.department as DepartmentTypeName,
+    department: dataForm.department as DepartmentEnum,
     role: dataForm.role as Role,
     permissions: dataForm.permissions as PermissionEnum[],
   };
@@ -123,15 +111,17 @@ const safeParseFormData = (
 
 const handleDirectorAssignment = async (
   departmentId: number,
-  userId: string
+  userId?: string
 ) => {
   const existingDirector = await prisma.department.findUnique({
     where: { id: departmentId },
     select: { directorId: true },
   });
 
-  if (existingDirector?.directorId) {
-    throw new Error(`Департамент уже имеет руководителя.`);
+  if (existingDirector?.directorId && existingDirector?.directorId !== userId) {
+    throw new Error(
+      `Ваш отдел уже имеет руководителя. Пожалуйста, обратитесь к администратору.`
+    );
   }
 
   await prisma.department.update({
@@ -140,37 +130,62 @@ const handleDirectorAssignment = async (
   });
 };
 
-const addUserToDb = async (
-  dataForm: UserFormData,
+const addUserToDb = async <T extends UserDataBase>(
+  dataForm: T,
   hashedPassword: string,
-  departmentId: number
+  departmentId: number,
+  action: string
 ) => {
-  return await prisma.user.create({
-    data: {
-      email: dataForm.email!.toLowerCase().trim(),
-      phone: dataForm.phone!.toLowerCase().trim(),
-      role: dataForm.role as Role,
-      departmentId: departmentId,
-      username: dataForm.username!.toLowerCase().trim(),
-      position: dataForm.position!.toLowerCase().trim(),
-      user_password: hashedPassword,
-    },
-    select: {
-      id: true,
-      username: true,
-      email: true,
-      role: true,
-      departmentId: true,
-      position: true,
-      phone: true,
-    },
-  });
+  const selectFields = {
+    id: true,
+    username: true,
+    email: true,
+    role: true,
+    departmentId: true,
+    position: true,
+    phone: true,
+  };
+
+  if (action === "create") {
+    return await prisma.user.create({
+      data: {
+        email: dataForm.email!.toLowerCase().trim(),
+        phone: dataForm.phone!.toLowerCase().trim(),
+        role: dataForm.role as Role,
+        departmentId: departmentId,
+        username: dataForm.username!.toLowerCase().trim(),
+        position: dataForm.position!.toLowerCase().trim(),
+        user_password: hashedPassword,
+      },
+      select: selectFields,
+    });
+  }
+  if (action === "update") {
+    return await prisma.user.update({
+      where: { id: dataForm.id },
+      data: {
+        email: dataForm.email?.toLowerCase().trim(),
+        phone: dataForm.phone?.toLowerCase().trim(),
+        role: dataForm.role as Role,
+        ...(departmentId && { departmentId }),
+        username: dataForm.username?.toLowerCase().trim(),
+        position: dataForm.position?.toLowerCase().trim(),
+        ...(hashedPassword && { user_password: hashedPassword }),
+      },
+      select: selectFields,
+    });
+  }
+  return undefined;
 };
 
 const assignPermissionsToUser = async (
   userId: string,
   permissions: PermissionEnum[]
 ) => {
+  await prisma.userPermission.deleteMany({
+    where: { userId: userId },
+  });
+
   const permissionRecords = await prisma.permission.findMany({
     where: { name: { in: permissions } },
     select: { id: true, name: true },
@@ -181,9 +196,12 @@ const assignPermissionsToUser = async (
     permissionId: permission.id,
   }));
 
-  await prisma.userPermission.createMany({
-    data: userPermissions,
-  });
+  if (userPermissions.length > 0) {
+    await prisma.userPermission.createMany({
+      data: userPermissions,
+      skipDuplicates: true,
+    });
+  }
 };
 
 const checkUserPermissions = async (
@@ -195,7 +213,6 @@ const checkUserPermissions = async (
   }
 };
 
-// Проверка уникальности email
 const checkEmailUnique = async (email: string) => {
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
@@ -203,12 +220,10 @@ const checkEmailUnique = async (email: string) => {
   }
 };
 
-// Подготовка пароля
 const hashUserPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password.trim(), 10);
 };
 
-// Поиск департамента
 const findDepartment = async (departmentName: string): Promise<Department> => {
   const department = await prisma.department.findUnique({
     where: { name: departmentName as DepartmentEnum },
@@ -221,21 +236,22 @@ const findDepartment = async (departmentName: string): Promise<Department> => {
   return department;
 };
 
-function isUserFormData(
-  data: UserFormData | ActionResponse<UserFormData>
-): data is UserFormData {
-  return (data as UserFormData).email !== undefined;
+function isUserFormData<T extends UserDataBase>(
+  data: T | ActionResponse<T>
+): data is T {
+  return !("errors" in data);
 }
 
 export const createUser = async (
   formData: FormData
 ): Promise<ActionResponse<UserFormData>> => {
   try {
-    const parsedData = safeParseFormData(formData);
+    const parsedData = safeParseFormData<UserFormData>(
+      formData,
+      userFormSchema
+    );
 
-    // Проверяем, является ли результат ошибкой
     if (isUserFormData(parsedData)) {
-      // Здесь TS понимает, что это точно UserFormData
       await checkUserPermissions([PermissionEnum.USER_MANAGEMENT]);
       await checkEmailUnique(parsedData.email as string);
       const hashedPassword = await hashUserPassword(parsedData.user_password!);
@@ -243,23 +259,27 @@ export const createUser = async (
         parsedData.department as string
       );
 
-      // Создание пользователя
-      const newUser = await addUserToDb(
+      if (parsedData.role === Role.DIRECTOR) {
+        await handleDirectorAssignment(departmentTarget.id);
+      }
+
+      const newUser = await addUserToDb<UserFormData>(
         {
           ...parsedData,
           role: parsedData.role as Role,
-          department: parsedData.department as DepartmentTypeName,
+          department: parsedData.department as DepartmentEnum,
         },
         hashedPassword,
-        departmentTarget.id
+        departmentTarget.id,
+        "create"
       );
-
-      if (parsedData.role === Role.DIRECTOR) {
-        await handleDirectorAssignment(departmentTarget.id, newUser.id);
+      if (!newUser) {
+        throw new Error("Произошла ошибка при сохранении пользователя");
       }
 
-      // Добавление разрешений пользователю
       await assignPermissionsToUser(newUser.id, parsedData.permissions || []);
+    } else {
+      return parsedData;
     }
 
     return {
@@ -280,239 +300,75 @@ export const createUser = async (
 
 export const updateUser = async (
   formData: FormData
-): Promise<ActionResponse<UserFormData>> => {
+): Promise<ActionResponse<UserFormEditData>> => {
   try {
-    const parsedData = safeParseFormData(formData);
+    const parsedData = safeParseFormData<UserFormEditData>(
+      formData,
+      userFormEditSchema
+    );
 
-    // Проверяем, является ли результат ошибкой
     if (isUserFormData(parsedData)) {
       await checkUserPermissions([PermissionEnum.USER_MANAGEMENT]);
-      await checkEmailUnique(parsedData.email as string);
+      const currentUser = await prisma.user.findUnique({
+        where: { id: parsedData.id! },
+        select: { email: true },
+      });
+
+      if (!currentUser) {
+        throw new Error("Пользователь не найден");
+      }
+
+      if (currentUser.email !== parsedData.email) {
+        await checkEmailUnique(parsedData.email);
+      }
+
       const hashedPassword = await hashUserPassword(parsedData.user_password!);
       const departmentTarget = await findDepartment(
         parsedData.department as string
       );
 
-      // Создание пользователя
-      const updatedUser = await addUserToDb(
+      if (parsedData.role === Role.DIRECTOR) {
+        await handleDirectorAssignment(departmentTarget.id, parsedData.id);
+      }
+
+      const updatedUser = await addUserToDb<UserFormEditData>(
         {
           ...parsedData,
           role: parsedData.role as Role,
-          department: parsedData.department as DepartmentTypeName,
+          department: parsedData.department as DepartmentEnum,
         },
         hashedPassword,
-        departmentTarget.id
+        departmentTarget.id,
+        "update"
       );
-      if (parsedData.role === Role.DIRECTOR) {
-        await handleDirectorAssignment(departmentTarget.id, updatedUser.id);
+
+      if (!updatedUser) {
+        throw new Error("Произошла ошибка при сохранении изменений");
       }
 
-      // Добавление разрешений пользователю
       await assignPermissionsToUser(
         updatedUser.id,
         parsedData.permissions || []
       );
+    } else {
+      return parsedData;
     }
 
     return {
       success: true,
-      message: "Новый пользователь сохранен",
+      message: "Пользователь изменен",
     };
   } catch (error) {
-    console.log("Произошла ошибка при сохранении пользователя", error);
+    console.log("Произошла ошибка при сохранении изменений", error);
     return {
       success: false,
       message:
         error instanceof Error
           ? error.message
-          : "Произошла ошибка при сохранении пользователя",
+          : "Произошла ошибка при сохранении изменений",
     };
   }
 };
-
-// export const createUser = async (
-//   dataUser: UserRequest
-// ): Promise<UserResponse | undefined> => {
-//   try {
-//     const { department, permissions, ...userData } = await checkFormData(
-//       dataUser,
-//       requiredFields
-//     );
-//     const dataAuthUser = await handleAuthorization();
-//     const { user } = dataAuthUser!;
-
-//     if (user) {
-//       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
-//     }
-
-//     const existingUser = await findUserByEmail(userData.email as string);
-//     if (existingUser) {
-//       throw new Error("Пользователь с таким email уже существует");
-//     }
-
-//     const hashedPassword = await bcrypt.hash(
-//       userData.user_password!.trim(),
-//       10
-//     );
-//     const departmentTarget = await prisma.department.findUnique({
-//       where: { name: department as DepartmentEnum },
-//     });
-
-//     if (!departmentTarget)
-//       throw new Error(`Департамент ${department} не найден`);
-
-//     // Создание пользователя
-//     const updatedUser = await prisma.user.create({
-//       data: {
-//         ...userData,
-//         role: userData.role as Role,
-//         departmentId: departmentTarget.id,
-//         username: userData.username!.toLowerCase().trim(),
-//         position: userData.position!.toLowerCase().trim(),
-//         user_password: hashedPassword,
-//       },
-//       select: {
-//         id: true,
-//         username: true,
-//         email: true,
-//         role: true,
-//         departmentId: true,
-//         position: true,
-//         phone: true,
-//       },
-//     });
-
-//     if (userData.role === Role.DIRECTOR) {
-//       const existingDirector = await prisma.department.findUnique({
-//         where: { id: departmentTarget.id },
-//         select: { directorId: true },
-//       });
-
-//       if (existingDirector?.directorId) {
-//         console.warn(
-//           `Внимание: Департамент ${departmentTarget.name} уже имеет руководителя.`
-//         );
-//         return handleError(
-//           `Департамент ${departmentTarget.name} уже имеет руководителя.`
-//         );
-//       }
-
-//       // Обновляем департамент, чтобы назначить нового директора
-//       await prisma.department.update({
-//         where: { id: departmentTarget.id },
-//         data: { directorId: updatedUser.id },
-//       });
-//     }
-
-//     // Добавление разрешений пользователю
-//     if (permissions && permissions.length > 0) {
-//       const permissionRecords = await prisma.permission.findMany({
-//         where: { name: { in: permissions } }, // Получаем ID разрешений из Permission
-//         select: { id: true, name: true },
-//       });
-
-//       const userPermissions = permissionRecords.map((permission) => ({
-//         userId: updatedUser.id,
-//         permissionId: permission.id,
-//       }));
-
-//       await prisma.userPermission.createMany({
-//         data: userPermissions,
-//       });
-//     }
-
-//     return updatedUser;
-//   } catch (error) {
-//     console.error(error);
-//     handleError(
-//       typeof error === "string" ? error : "Ошибка при создании пользователя"
-//     );
-//   }
-// };
-
-// export const updateUser = async (
-//   dataUser: UserRequest
-// ): Promise<UserResponse | undefined> => {
-//   try {
-//     const { department, user_password, permissions, ...userData } =
-//       await checkFormData(dataUser, requiredFieldsForEditForm);
-//     const { user } = await handleAuthorization();
-
-//     if (user) {
-//       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
-//     }
-
-//     const person = await prisma.user.findUnique({
-//       where: { email: userData.email as string },
-//     });
-//     if (!person) return handleError("Пользователь не найден");
-
-//     let departmentId = person.departmentId;
-//     if (department) {
-//       const newDepartment = await prisma.department.findUnique({
-//         where: { name: department as DepartmentEnum },
-//       });
-//       if (!newDepartment)
-//         return handleError(`Департамент ${department} не найден`);
-//       departmentId = newDepartment.id;
-//     }
-
-//     const updatedData = { ...person, ...userData };
-//     if (user_password) {
-//       updatedData.user_password = await bcrypt.hash(user_password.trim(), 10);
-//     }
-
-//     // Обновляем пользователя
-//     const updatedUser = await prisma.user.update({
-//       where: { email: userData.email as string },
-//       data: {
-//         ...updatedData,
-//         role: updatedData.role as Role,
-//         departmentId,
-//         username: updatedData.username!.toLowerCase().trim(),
-//         position: updatedData.position!.toLowerCase().trim(),
-//       },
-//       select: {
-//         id: true,
-//         username: true,
-//         email: true,
-//         role: true,
-//         departmentId: true,
-//         position: true,
-//         phone: true,
-//       },
-//     });
-
-//     // Обновляем права пользователя
-//     if (permissions) {
-//       // Удаляем старые разрешения
-//       await prisma.userPermission.deleteMany({
-//         where: { userId: updatedUser.id },
-//       });
-
-//       if (permissions.length > 0) {
-//         const permissionRecords = await prisma.permission.findMany({
-//           where: { name: { in: permissions } },
-//           select: { id: true, name: true },
-//         });
-
-//         const userPermissions = permissionRecords.map((permission) => ({
-//           userId: updatedUser.id,
-//           permissionId: permission.id,
-//         }));
-
-//         await prisma.userPermission.createMany({
-//           data: userPermissions,
-//         });
-//       }
-//     }
-
-//     return updatedUser;
-//   } catch (error) {
-//     console.error(error);
-//     return handleError((error as Error).message);
-//   }
-// };
 
 export const getUser = async (
   targetUserId: string,
@@ -532,7 +388,7 @@ export const getUser = async (
         permissions: {
           include: {
             permission: {
-              select: { name: true }, // Получаем только название разрешения (PermissionEnum)
+              select: { name: true },
             },
           },
         },
@@ -617,8 +473,6 @@ export const getAllUsersByDepartment = async (
     if (!user) {
       handleError("Пользователь не найден");
     }
-
-    // await checkUserPermissionByRole(userId, user!.role, user!.departmentId);
 
     const users = await prisma.user.findMany({
       where: { departmentId: Number(id) },

@@ -21,10 +21,11 @@ const UserCreateForm = () => {
 
   const { mutateAsync, isPending } = useCreateUser(
     (data: ActionResponse<UserFormData>) => {
-      setState(data);
+      if (!data.success) {
+        setState(data);
+      }
     }
   );
-
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,7 +55,12 @@ const UserCreateForm = () => {
   return (
     <>
       <Overlay isPending={isPending} />
-      <UserForm state={state} onSubmit={onSubmit} isPending={isPending} />
+      <UserForm
+        state={state}
+        onSubmit={onSubmit}
+        isPending={isPending}
+        setState={setState}
+      />
     </>
   );
 };

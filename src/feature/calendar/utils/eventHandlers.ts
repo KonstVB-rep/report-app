@@ -86,7 +86,7 @@ export const handleEventClick = (
     form.setValue("startDateEvent", new Date(event.start));
   }
 
-  // Проверяем, есть ли `end`, если нет — подставляем дату начала
+
   if (event.end) {
     form.setValue("endDateEvent", new Date(event.end));
   } else {
@@ -134,7 +134,6 @@ export const handleEventClickOnEventsList = (
     form.setValue("startDateEvent", new Date(event.start));
   }
 
-  // Проверяем, есть ли `end`, если нет — подставляем дату начала
   if (event.end) {
     form.setValue("endDateEvent", new Date(event.end));
   } else {
@@ -195,34 +194,3 @@ export const handleDateSelectOnEventsList = (
 
   setOpenModal(true);
 };
-
-// export const IsExistIntersectionEvents = (
-//   newEventStart: Date,
-//   newEventEnd: Date,
-//   events: EventInputType[] | undefined,
-//   editingId: string | null
-// ) => {
-//   const overlap = events
-//     ?.filter((item) => item.id !== editingId)
-//     ?.some((event) => {
-//       // Преобразуем время начала и конца события в Date, чтобы избежать проблем с временем в разных часовых поясах
-//       const eventStart = new Date(event.start);
-//       const eventEnd = new Date(event.end);
-
-//       // Проверка, пересекается ли новое событие с существующим
-//       return (
-//         (newEventStart >= eventStart && newEventStart < eventEnd) || // Если начало нового события попадает в существующее
-//         (newEventEnd > eventStart && newEventEnd <= eventEnd) || // Если конец нового события попадает в существующее
-//         (newEventStart <= eventStart && newEventEnd >= eventEnd) // Если новое событие полностью охватывает существующее
-//       );
-//     });
-
-//   if (overlap) {
-//     // Если события пересекаются, установим предупреждение
-//     TOAST.ERROR(
-//       "У вас yже есть событие на выбранное время!Удалите или измените время одного из событий."
-//     );
-//     return true;
-//   }
-//   return false;
-// };

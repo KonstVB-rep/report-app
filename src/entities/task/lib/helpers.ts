@@ -28,6 +28,5 @@ export const cleanDistance = (date: Date) => {
     locale: ru,
   });
 
-  // Убираем "приблизительно" и "около"
   return raw.replace(/(приблизительно |около )/gi, "");
 };

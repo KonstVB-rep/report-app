@@ -10,10 +10,8 @@ export async function GET() {
   try {
     if (!accessToken) throw new Error("No token");
 
-    // Пытаемся верифицировать токен
     const payload = await verifyToken(accessToken);
 
-    // Возвращаем ответ с полезной информацией
     return NextResponse.json({ isValid: true, payload });
   } catch (error) {
     console.error("Ошибка валидации токена:", error);

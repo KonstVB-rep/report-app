@@ -18,7 +18,6 @@ export const utilsDataTable = {
     return str.split("&").map((item) => {
       const [filterName, filterValue] = item.split("=");
       try {
-        // Пытаемся распарсить значение как JSON
         return { id: filterName, value: JSON.parse(filterValue) };
       } catch (e) {
         console.error("Ошибка при разборе фильтров:", e);
@@ -34,7 +33,7 @@ export const utilsDataTable = {
     return (
       Object.entries(visibility)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([_, isVisible]) => !isVisible) // Берем только скрытые колонки
+        .filter(([_, isVisible]) => !isVisible)
         .map(([key]) => key)
         .join(",")
     );
@@ -60,7 +59,7 @@ export const utilsDataTable = {
     return str.split("&").reduce<Record<string, string>>((acc, item) => {
       const [key, value] = item.split("=");
       if (includeArr.includes(key)) {
-        acc[key] = value.replace(/"/g, ""); // Убираем лишние кавычки
+        acc[key] = value.replace(/"/g, "");
       }
       return acc;
     }, {});

@@ -52,7 +52,6 @@ export const EventCalendarFormSchema = z
       endTimeEvent,
     } = ctx.value;
 
-    // Если событие длится весь день, проверка времени не нужна
     if (allDay) return;
 
     const now = new Date();
