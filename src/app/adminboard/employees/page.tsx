@@ -4,7 +4,7 @@ import EmployeesList from "./ui/EmployeesList";
 
 const EmployeesPage = () => {
   return (
-    <div className="p-5">
+    <div className="px-5 pb-5">
       <EmployeesList />
     </div>
   );

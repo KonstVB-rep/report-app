@@ -2,14 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 
+import z from "zod";
 
-
-import { ActionResponse } from "@/shared/types";
 import { createTelegramBot, updateBotDb } from "@/entities/tgBot/api";
 import { BotFormData } from "@/entities/tgBot/types";
-import z from "zod";
-import { createBotFormShema } from "../lib/schema";
+import { ActionResponse } from "@/shared/types";
 
+import { createBotFormShema } from "../lib/schema";
 
 export async function saveBot(
   prevState: ActionResponse<BotFormData> | null,
@@ -19,7 +18,7 @@ export async function saveBot(
     const rawData: BotFormData = {
       botName: formData.get("botName") as string,
       token: formData.get("token") as string,
-      description: (formData.get("description") as string),
+      description: formData.get("description") as string,
     };
 
     const { data, success, error } = createBotFormShema.safeParse(rawData);
@@ -49,7 +48,6 @@ export async function saveBot(
   }
 }
 
-
 export async function updateBot(
   prevState: ActionResponse<BotFormData> | null,
   formData: FormData
@@ -58,7 +56,7 @@ export async function updateBot(
     const rawData: BotFormData = {
       botName: formData.get("botName") as string,
       token: formData.get("token") as string,
-      description: (formData.get("description") as string),
+      description: formData.get("description") as string,
     };
 
     const { data, success, error } = createBotFormShema.safeParse(rawData);
@@ -72,7 +70,11 @@ export async function updateBot(
       };
     }
 
-    await updateBotDb({botName:data.botName, token:data.token, description:data.description || ""});
+    await updateBotDb({
+      botName: data.botName,
+      token: data.token,
+      description: data.description || "",
+    });
     revalidatePath(formData.get("pathname") as string);
 
     return {

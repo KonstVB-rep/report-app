@@ -21,7 +21,6 @@ export const sendNotify = async (
         },
       }
     );
-
   } catch (error) {
     console.error("Ошибка при отправке:", error);
   }

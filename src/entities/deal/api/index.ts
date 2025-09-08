@@ -507,7 +507,7 @@ export const getAllDealsRequestSourceByDepartment = async (
     const retailsRequestResorce = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: departmentId, 
+          departmentId: departmentId,
         },
       },
       select: {
@@ -523,7 +523,7 @@ export const getAllDealsRequestSourceByDepartment = async (
     const projectsRequestResource = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: departmentId, 
+          departmentId: departmentId,
         },
       },
       select: {
@@ -552,7 +552,7 @@ export const getDealsByDateRange = async (
   range: DateRange,
   departmentId: string
 ) => {
-  const data = await handleAuthorization(); 
+  const data = await handleAuthorization();
 
   const { user, userId } = data!;
 

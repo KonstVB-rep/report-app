@@ -68,3 +68,12 @@ export const formatPhoneNumber = (value: string): string => {
 
   return formatted;
 };
+
+export const normalizePhone = (phone: string): string => {
+  if (!phone) {
+    return "";
+  } else {
+    const normalized = phone.replace(/\D/g, ""); // убираем всё, кроме цифр
+    return "+" + normalized;
+  }
+};

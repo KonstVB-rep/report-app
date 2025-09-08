@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Button } from "@/shared/components/ui/button";
 import { DialogClose } from "@/shared/components/ui/dialog";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
@@ -7,13 +8,13 @@ import Overlay from "@/shared/custom-components/ui/Overlay";
 type DeleteModalContentProps = {
   mutate: () => void;
   isPending?: boolean;
-  children?: React.ReactNode
+  children?: React.ReactNode;
 };
 
 const DeleteModalContent = ({
   mutate,
   isPending,
-  children
+  children,
 }: DeleteModalContentProps) => {
   const deleteData = async () => {
     mutate();

@@ -4,13 +4,12 @@ import { usePathname } from "next/navigation";
 
 import { SquarePen } from "lucide-react";
 
+import { BotFormData } from "@/entities/tgBot/types";
 import EditDataDialog from "@/shared/custom-components/ui/EditDialog";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 
-import WrapperBotForm from "./WrapperBotForm";
-import { BotFormData } from "@/entities/tgBot/types";
 import { updateBot } from "../actions/bot";
-
+import WrapperBotForm from "./WrapperBotForm";
 
 const DialogEditBot = ({ bot }: { bot: BotFormData }) => {
   const [state, formAction, isPending] = useActionState(updateBot, {
@@ -32,13 +31,13 @@ const DialogEditBot = ({ bot }: { bot: BotFormData }) => {
   };
   return (
     <EditDataDialog icon={<SquarePen size={40} />}>
-        <WrapperBotForm
-          title="Редактировать"
-          description="Заполните форму для создания бота"
-          state={state}
-          isPending={isPending}
-          actionSubmit={actionSubmit}
-        />
+      <WrapperBotForm
+        title="Редактировать"
+        description="Заполните форму для создания бота"
+        state={state}
+        isPending={isPending}
+        actionSubmit={actionSubmit}
+      />
     </EditDataDialog>
   );
 };

@@ -7,24 +7,24 @@ import DeleteDialog from "@/shared/custom-components/ui/DeleteDIalog";
 import { useDeleteChat } from "../hooks/mutate";
 
 type DeleteChatProps = {
-  data: { chat: UserTelegramChat , botName: string};
+  data: { chat: UserTelegramChat; botName: string };
   textButtonShow?: boolean;
 };
 
-const DeleteChat = ({ data,textButtonShow }: DeleteChatProps) => {
+const DeleteChat = ({ data, textButtonShow }: DeleteChatProps) => {
   const { mutate, isPending } = useDeleteChat();
-  const {chat, botName} = data;
+  const { chat, botName } = data;
 
   if (!chat) {
     return null;
   }
-  
+
   return (
     <DeleteDialog
       title="Удалить чат"
       description="Вы действительно хотите удалить чат?"
       isPending={isPending}
-      mutate={() => mutate({chatId: chat.chatId, botName})}
+      mutate={() => mutate({ chatId: chat.chatId, botName })}
       textButtonShow={textButtonShow}
     >
       <>

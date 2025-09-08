@@ -59,6 +59,7 @@ type MultiSelectNativeFormProps = {
   name: string;
   onValueChange?: (value: string[]) => void;
   id: string;
+  disabled?: boolean;
 };
 
 export const MultiSelectNativeForm = ({
@@ -68,6 +69,7 @@ export const MultiSelectNativeForm = ({
   onValueChange,
   name,
   id,
+  disabled,
   ...props
 }: MultiSelectNativeFormProps) => {
   const hiddenInputRef = useRef<HTMLInputElement>(null);
@@ -103,6 +105,7 @@ export const MultiSelectNativeForm = ({
 
       <MultiSelect
         value={selectedValues}
+        disabled={disabled}
         onValueChange={handleValueChange}
         {...props}
       >
@@ -120,4 +123,3 @@ export const MultiSelectNativeForm = ({
     </>
   );
 };
-

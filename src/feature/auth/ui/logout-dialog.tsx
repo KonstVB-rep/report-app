@@ -18,7 +18,7 @@ import {
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import { resetAllStores } from "@/shared/lib/helpers/сreate";
 
-const LogoutDialog = () => {
+const LogoutDialog = ({ withTitle = true }: { withTitle?: boolean }) => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -45,7 +45,7 @@ const LogoutDialog = () => {
             variant="outline"
             className="btn_hover w-full justify-center text-sm"
           >
-            <LogOut /> Выход
+            <LogOut /> {withTitle && "Выход"}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]" showX={false}>

@@ -18,7 +18,7 @@ export enum DirectionProject {
   PPS = "ППС",
   PARK_ATTRACTION = "Парк/Аттракцион",
   STADIUM_ARENA = "Стадион/Арена",
-  LOCKER = "Камеры хранения"
+  LOCKER = "Камеры хранения",
 }
 
 export enum DirectionRetail {
@@ -68,7 +68,7 @@ export const DirectionProjectLabels: Record<
   PPS: "ППС",
   PARK_ATTRACTION: "Парк/Аттракцион",
   STADIUM_ARENA: "Стадион/Арена",
-  LOCKER: "Камеры хранения"
+  LOCKER: "Камеры хранения",
 } as const;
 
 export const DirectionRetailLabels: Record<

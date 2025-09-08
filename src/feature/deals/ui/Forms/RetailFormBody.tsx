@@ -101,6 +101,7 @@ const RetailFormBody = <T extends FieldValues>({
                 label="Дата запроса"
                 control={form.control}
                 errorMessage={getError("dateRequest")}
+                disabled={isPending}
               />
 
               <InputTextForm
@@ -110,6 +111,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={getError("nameDeal")}
                 required
                 placeholder="Название..."
+                disabled={isPending}
               />
 
               <InputTextForm
@@ -119,6 +121,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={getError("nameObject")}
                 required
                 placeholder="Название..."
+                disabled={isPending}
               />
 
               <SelectFormField
@@ -129,6 +132,7 @@ const RetailFormBody = <T extends FieldValues>({
                 options={directionOptions}
                 placeholder="Выберите направление"
                 required
+                disabled={isPending}
               />
 
               <SelectFormField
@@ -138,6 +142,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={getError("deliveryType")}
                 options={deliveryOptions}
                 placeholder="Выберите тип поставки"
+                disabled={isPending}
               />
 
               <InputTextForm
@@ -147,6 +152,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={getError("contact")}
                 required
                 placeholder="Имя контакта"
+                disabled={isPending}
               />
 
               <InputPhoneForm
@@ -155,6 +161,7 @@ const RetailFormBody = <T extends FieldValues>({
                 control={form.control}
                 errorMessage={getError("phone")}
                 placeholder="Введите телефон пользователя"
+                disabled={isPending}
               />
             </div>
 
@@ -166,6 +173,7 @@ const RetailFormBody = <T extends FieldValues>({
                 control={form.control}
                 errorMessage={getError("email")}
                 className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
+                disabled={isPending}
               />
 
               <InputNumberForm
@@ -174,6 +182,7 @@ const RetailFormBody = <T extends FieldValues>({
                 control={form.control}
                 errorMessage={getError("amountCP")}
                 placeholder="Сумма КП"
+                disabled={isPending}
               />
 
               <InputNumberForm
@@ -182,6 +191,7 @@ const RetailFormBody = <T extends FieldValues>({
                 control={form.control}
                 errorMessage={getError("delta")}
                 placeholder="Дельта"
+                disabled={isPending}
               />
 
               <SelectFormField
@@ -191,6 +201,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={getError("dealStatus")}
                 options={statusOptions}
                 placeholder="Выберите статус КП"
+                disabled={isPending}
               />
 
               <DatePickerFormField
@@ -198,6 +209,7 @@ const RetailFormBody = <T extends FieldValues>({
                 label="Планируемый контакт"
                 control={form.control}
                 errorMessage={getError("plannedDateConnection")}
+                disabled={isPending}
               />
 
               <InputTextForm
@@ -207,6 +219,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={getError("resource")}
                 required
                 placeholder="Откуда пришёл клиент"
+                disabled={isPending}
               />
 
               <FormField
@@ -219,6 +232,7 @@ const RetailFormBody = <T extends FieldValues>({
                       <Textarea
                         placeholder="Введите комментарии"
                         required
+                        disabled={isPending}
                         {...field}
                       />
                     </FormControl>

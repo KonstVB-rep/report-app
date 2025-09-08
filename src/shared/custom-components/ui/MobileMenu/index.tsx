@@ -12,6 +12,7 @@ import { Check, Menu } from "lucide-react";
 
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import LogoutDialog from "@/feature/auth/ui/logout-dialog";
 import {
   Accordion,
   AccordionContent,
@@ -66,7 +67,7 @@ const MobileMenu = () => {
             <Menu />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 md:hidden" align="start">
+        <DropdownMenuContent className="w-56" align="start">
           {!isSummaryTable && (
             <>
               <Accordion type="single" collapsible className="w-full">
@@ -152,6 +153,9 @@ const MobileMenu = () => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+          <DropdownMenuItem asChild>
+            <LogoutDialog />
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

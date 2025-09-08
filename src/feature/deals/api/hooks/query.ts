@@ -61,7 +61,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
         throw error;
       }
     },
-    enabled: !useCache || !cachedDeal, 
+    enabled: !useCache || !cachedDeal,
     placeholderData: useCache ? cachedDeal : undefined,
     staleTime: useCache ? 60 * 1000 : 0,
     retry: 2,

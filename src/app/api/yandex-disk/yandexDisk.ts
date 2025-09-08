@@ -149,7 +149,7 @@ async function downloadFileFromYandexDisk(
     const { href: downloadUrl } = response.data;
 
     const downloadResponse = await axiosDownLoaderFromYD.get(downloadUrl, {
-      responseType: "arraybuffer", 
+      responseType: "arraybuffer",
     });
 
     return new Uint8Array(downloadResponse.data);

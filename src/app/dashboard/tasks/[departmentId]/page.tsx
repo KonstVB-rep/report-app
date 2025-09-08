@@ -55,7 +55,6 @@ const TasksPage = () => {
   if (isPending) {
     return <LoaderCircleInWater />;
   }
-  
 
   return (
     <section className="p-5">

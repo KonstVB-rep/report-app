@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 
+import { UserFormData } from "@/entities/user/types";
+import UserForm from "@/entities/user/ui/UserForm";
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import { ActionResponse } from "@/shared/types";
 
-import { UserFormData } from "../../../entities/user/types";
-import UserForm from "../../../entities/user/ui/UserForm";
 import { useCreateUser } from "../hooks/mutate";
 
 const initialState: ActionResponse<UserFormData> = {

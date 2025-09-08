@@ -6,7 +6,6 @@ export const generateTokens = async (
   userId: string,
   departmentId: string | number
 ) => {
-
   const [accessToken, refreshToken] = await Promise.all([
     new SignJWT({ userId, departmentId })
       .setProtectedHeader({ alg: "HS256" })

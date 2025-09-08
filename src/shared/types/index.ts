@@ -9,6 +9,6 @@ export type ActionResponse<T> = {
       };
     };
   };
-  inputs?:Partial<T>;
+  inputs?: Partial<T>;
   result?: T;
 };

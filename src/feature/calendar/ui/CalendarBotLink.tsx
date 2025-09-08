@@ -13,7 +13,12 @@ import TelegramIcon from "./TelegramIcon";
 const CalendarBotLink = ({ botName }: { botName: string }) => {
   const { isFetchingRequest, isActiveBot, handleChange } = useChatBot(botName);
 
-  console.log("isActiveBot", isActiveBot, "isFetchingRequest", isFetchingRequest);
+  console.log(
+    "isActiveBot",
+    isActiveBot,
+    "isFetchingRequest",
+    isFetchingRequest
+  );
 
   if (!botName || isActiveBot) return null;
 

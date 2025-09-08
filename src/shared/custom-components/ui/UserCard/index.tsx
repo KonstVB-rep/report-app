@@ -19,7 +19,7 @@ const UserCard = ({
   username,
   position,
   isLink = false,
-  departmentName
+  departmentName,
 }: UserCardProps) => {
   const styles = isLink ? "border border-solid rounded-md" : "";
 
@@ -30,9 +30,15 @@ const UserCard = ({
       <div className="grid w-full justify-items-center gap-2 p-2">
         <CircleUserRound size="80" />
 
-        <p className="capitalize bg-muted rounded-md w-full flex items-center justify-center">{username}</p>
-        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold">{departmentName}</p>
-        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold">{position}</p>
+        <p className="capitalize bg-muted rounded-md w-full flex items-center justify-center">
+          {username}
+        </p>
+        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold">
+          {departmentName}
+        </p>
+        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold">
+          {position}
+        </p>
       </div>
       <div className="flex gap-2 overflow-hidden rounded-md w-full items-center">
         <Contacts email={email} phone={phone} className="rounded-full" />

@@ -31,7 +31,6 @@ export function ProfileSettings({ user }: Props) {
       >
         <UserRound size="16" /> <span>Профиль пользователя</span>
       </Link>
-
     </HoverCardComponent>
   );
 }

@@ -33,22 +33,19 @@ const EmployeesList = () => {
   return (
     <div className="grid gap-4">
       <DialogAddUser className="text-sm justify-start w-fit" />
-      <div className="grid [grid-template-columns:repeat(auto-fill,minmax(340px,1fr))] gap-4">
+      <div className="grid [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))] gap-4">
         {departments?.map((dept) => (
-          <div
-            key={dept.id}
-            className="relative bg-muted rounded-md"
-          >
+          <div key={dept.id} className="relative bg-muted rounded-md">
             <h3 className="sticky t-0 w-full p-4 flex items-center justify-center bg-primary text-secondary rounded-t-md">
               {DepartmentLabels[dept.name as keyof typeof DepartmentLabels]}
             </h3>
-            <div  className="grid gap-2 p-2 border bg-stone-800 w-full rounded-md overflow-auto max-h-[78vh]">
+            <div className="grid gap-2 p-2 border bg-stone-800 w-full rounded-md overflow-auto max-h-[78vh]">
               {dept.users.map((user) => (
                 <div
                   key={user.id}
                   className={`flex w-full flex-wrap gap-4 items-center justify-between rounded-md border border-solid px-4 py-2 bg-background`}
                 >
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2 items-center justify-center">
                     <CircleUserRound
                       size={50}
                       strokeWidth={1}

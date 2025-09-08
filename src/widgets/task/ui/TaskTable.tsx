@@ -50,7 +50,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           />
         ),
       }),
-      [] 
+      []
     );
 
   const { table, filtersContextValue } = useTableState(
@@ -66,7 +66,9 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
     return (
       <div className="py-4">
         <div className="flex items-center justify-center flex-wrap gap-2 p-2 border-b border-t mb-2">
-          <h1 className="text-xl text-center w-full uppercase text-muted-foreground">Список задач пуст</h1>
+          <h1 className="text-xl text-center w-full uppercase text-muted-foreground">
+            Список задач пуст
+          </h1>
         </div>
       </div>
     );

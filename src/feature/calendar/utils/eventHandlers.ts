@@ -86,7 +86,6 @@ export const handleEventClick = (
     form.setValue("startDateEvent", new Date(event.start));
   }
 
-
   if (event.end) {
     form.setValue("endDateEvent", new Date(event.end));
   } else {

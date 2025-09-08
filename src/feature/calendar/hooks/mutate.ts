@@ -134,4 +134,3 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
     },
   });
 };
-

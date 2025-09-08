@@ -44,7 +44,6 @@ export const useCreateUser = (
         onSuccessCallback?.(data);
         return;
       }
-      onSuccessCallback?.(data);
       if (data.success) {
         TOAST.SUCCESS(data.message);
       }
@@ -82,7 +81,7 @@ export const useUpdateUser = (
       if (data.success) {
         TOAST.SUCCESS("Данные успешно сохранены");
       }
-      if(!data.success){
+      if (!data.success) {
         TOAST.ERROR(data.message);
       }
 
@@ -93,7 +92,6 @@ export const useUpdateUser = (
     },
   });
 };
-
 
 export const useDeleteUser = (userId: string) => {
   const { authUser, isSubmittingRef } = useFormSubmission();

@@ -2,7 +2,6 @@ import { DepartmentEnum, PermissionEnum, Role } from "@prisma/client";
 
 import { PermissionUser } from "../model/objectTypes";
 
-
 export type User = {
   id: string;
   username: string;
@@ -16,13 +15,14 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
   permissions?: PermissionType[];
-  tgUserId?: string,
-  tgUserName?: string,
+  tgUserId?: string;
+  tgUserName?: string;
 };
 
-export type UserOmit = Omit<User, "user_password" | "lastlogin" | "createdAt" | "updatedAt">;
-
-
+export type UserOmit = Omit<
+  User,
+  "user_password" | "lastlogin" | "createdAt" | "updatedAt"
+>;
 
 export type UserWithdepartmentName = Omit<
   User,

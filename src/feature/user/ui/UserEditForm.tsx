@@ -1,5 +1,7 @@
 "use client";
 
+import { DepartmentEnum, PermissionEnum, Role } from "@prisma/client";
+
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { toast } from "sonner";
@@ -32,8 +34,9 @@ const UserEditForm = ({
     user?.id as string,
     (data: ActionResponse<UserFormEditData>) => {
       setState(data);
-      setOpen(false);
-      console.log("Изменен пользователь:", data);
+      if (data.success) {
+        setOpen(false);
+      }
     }
   );
 
@@ -42,6 +45,17 @@ const UserEditForm = ({
 
     const formData = new FormData(event.currentTarget);
     formData.append("id", user?.id as string);
+    state.inputs = {
+      username: formData.get("username") as string,
+      phone: formData.get("phone") as string,
+      email: formData.get("email") as string,
+      position: formData.get("position") as string,
+      department: formData.get("department") as DepartmentEnum,
+      role: formData.get("role") as Role,
+      permissions: JSON.parse(
+        formData.get("permissions") as string
+      ) as PermissionEnum[],
+    };
     mutateAsync(formData);
   };
 
@@ -68,7 +82,7 @@ const UserEditForm = ({
     let toastId: string | number | null = null;
 
     if (isPending) {
-      toastId = toast.loading("Идет создание пользователя...");
+      toastId = toast.loading("Идет сохранение...");
     } else {
       if (toastId) {
         toast.dismiss(toastId);

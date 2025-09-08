@@ -1,23 +1,17 @@
 import React from "react";
 
-
+import { BotFormData } from "@/entities/tgBot/types";
 import { Input } from "@/shared/components/ui/input";
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
 import { ActionResponse } from "@/shared/types";
-import { BotFormData } from "@/entities/tgBot/types";
-
 
 type BotFormProps = {
   state: ActionResponse<BotFormData>;
   isPending: boolean;
   actionSubmit: (data: FormData) => void;
-}
+};
 
-const BotForm = ({
-  state,
-  isPending,
-  actionSubmit,
-}:BotFormProps) => {
+const BotForm = ({ state, isPending, actionSubmit }: BotFormProps) => {
   const getFieldError = (fieldName: keyof BotFormData) => {
     return state?.errors?.properties?.[fieldName]?.errors[0];
   };
@@ -32,6 +26,7 @@ const BotForm = ({
         defaultValue={state.inputs?.botName}
         aria-describedby="botName"
         className={getFieldError("botName") ? "border-red-500" : ""}
+        disabled={isPending}
       />
 
       {getFieldError("botName") && (
@@ -48,6 +43,7 @@ const BotForm = ({
         defaultValue={state.inputs?.description}
         aria-describedby="description"
         className={getFieldError("description") ? "border-red-500" : ""}
+        disabled={isPending}
       />
 
       {getFieldError("description") && (
@@ -64,6 +60,7 @@ const BotForm = ({
         defaultValue={state.inputs?.token}
         aria-describedby="token"
         className={getFieldError("token") ? "border-red-500" : ""}
+        disabled={isPending}
       />
 
       {getFieldError("token") && (

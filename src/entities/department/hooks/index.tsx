@@ -10,7 +10,7 @@ import useStoreDepartment from "../store/useStoreDepartment";
 
 export const useGetDepartmentsWithUsers = () => {
   const { authUser, isAuth } = useStoreUser();
-    const { setDepartments } = useStoreDepartment();
+  const { setDepartments } = useStoreDepartment();
 
   return useQuery({
     queryKey: ["depsWithUsers"],
@@ -44,8 +44,7 @@ export const useGetDepartmentsWithUsers = () => {
           TOAST.ERROR("Ошибка валидации данных");
         } else if (error instanceof Prisma.PrismaClientInitializationError) {
           TOAST.ERROR("Ошибка подключения к базе");
-        }
-        else if (error instanceof Error) {
+        } else if (error instanceof Error) {
           TOAST.ERROR(error.message);
         } else {
           TOAST.ERROR("Неизвестная ошибка");

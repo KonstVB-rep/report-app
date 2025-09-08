@@ -2,32 +2,32 @@
 
 import { PermissionEnum } from "@prisma/client";
 
-
 import dynamic from "next/dynamic";
 
 import { SquarePlus } from "lucide-react";
 
+import UserFormSkeleton from "@/entities/user/ui/UserFormSkeleton";
 import { Button } from "@/shared/components/ui/button";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
-
-
-import UserFormSkeleton from "@/entities/user/ui/UserFormSkeleton";
 import { cn } from "@/shared/lib/utils";
 
-const UserCreateForm = dynamic(() => import("@/feature/user/ui/UserCreateForm"), {
-  ssr: false,
-  loading: () => <UserFormSkeleton />,
-});
+const UserCreateForm = dynamic(
+  () => import("@/feature/user/ui/UserCreateForm"),
+  {
+    ssr: false,
+    loading: () => <UserFormSkeleton />,
+  }
+);
 
-const DialogAddUser = ({ className }: { className?: string}) => {
+const DialogAddUser = ({ className }: { className?: string }) => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
       <DialogComponent
         trigger={
           <Button
             variant="outline"
-            className={cn("btn_hover",className)}
+            className={cn("btn_hover", className)}
             aria-label="Добавить нового пользователя"
           >
             <SquarePlus size={16} />

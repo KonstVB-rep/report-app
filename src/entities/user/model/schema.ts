@@ -20,22 +20,30 @@ export const userFormSchema = z.object({
     .min(6, { message: "Пароль должен содержать не менее 6 символов" })
     .max(30, { message: "Пароль должен содержать не более 30 символов" }),
   email: z.email("Некорректный email"),
-  phone: z.string().min(18, "Минимальное количество символов 18"),
+  phone: z
+    .string()
+    .min(16, "Минимальное количество символов 16")
+    .max(16, "Максимальное количество символов 16"),
   position: z
     .string()
     .min(3, { message: "Должность должна содержать не менее 3 символов" })
     .max(60, { message: "Должность должна содержать не более 60 символов" }),
-   department: z.enum(
-         Object.keys(DepartmentLabels).filter(Boolean) as [DepartmentEnum, ...DepartmentEnum[]],
-         {
-           error: "Выберите отдел из списка",
-         }
-       ),
+  department: z.enum(
+    Object.keys(DepartmentLabels).filter(Boolean) as [
+      DepartmentEnum,
+      ...DepartmentEnum[],
+    ],
+    {
+      error: "Выберите отдел из списка",
+    }
+  ),
 
-  role:  z.enum(
-         Object.keys(RolesUser).filter(Boolean) as unknown as [Role, ...Role[]], {
-    message: "Пожалуйста, выберите роль из списка",
-  }),
+  role: z.enum(
+    Object.keys(RolesUser).filter(Boolean) as unknown as [Role, ...Role[]],
+    {
+      message: "Пожалуйста, выберите роль из списка",
+    }
+  ),
   permissions: z
     .array(z.string())
     .transform((arr) =>
@@ -47,7 +55,7 @@ export const userFormSchema = z.object({
 });
 
 export const userFormEditSchema = userFormSchema.extend({
-  id: z.string(), 
+  id: z.string(),
   user_password: z
     .string()
     .min(6, { message: "Пароль должен содержать не менее 6 символов" })

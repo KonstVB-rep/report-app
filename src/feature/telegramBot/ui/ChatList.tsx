@@ -1,13 +1,15 @@
 "use client";
 
+import { UserTelegramChat } from "@prisma/client";
+
 import { BotMessageSquareIcon } from "lucide-react";
 
 import { getManagers } from "@/entities/department/lib/utils";
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
-import DialogCreateChatForm from "./DialogCreateChatForm";
-import { UserTelegramChat } from "@prisma/client";
 import { BotData } from "@/entities/tgBot/types";
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
+
 import DeleteChat from "./DeleteChat";
+import DialogCreateChatForm from "./DialogCreateChatForm";
 import DialogEditChatForm from "./DialogEditChatForm";
 
 const managers = getManagers(false);
@@ -15,21 +17,26 @@ const managers = getManagers(false);
 const ChatList = ({
   bot,
   chats,
-  isFetching
+  isFetching,
 }: {
   bot: BotData;
   chats: UserTelegramChat[];
-  isFetching: boolean
+  isFetching: boolean;
 }) => {
-
-  if(chats.length === 0 && !isFetching) {
-    return <div className="flex flex-col items-center justify-center w-full gap-2 p-3 pt-5 rounded-md self-start border-none max-h-[86vh] text-lg font-semibold">Нет чатов</div>;
+  if (chats.length === 0 && !isFetching) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full gap-2 p-3 pt-5 rounded-md self-start border-none max-h-[86vh] text-lg font-semibold">
+        Нет чатов
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col gap-2 w-full p-1 pt-5 rounded-md self-start border-none max-h-[86vh] overflow-auto">
-
-      <p className="flex flex-col items-center gap-2 justify-center text-lg font-medium"><BotMessageSquareIcon size={40} />Список чатов: {bot.description}</p>
+      <p className="flex flex-col items-center gap-2 justify-center text-lg font-medium">
+        <BotMessageSquareIcon size={40} />
+        Список чатов: {bot.description}
+      </p>
 
       {isFetching && chats.length === 0 && (
         <LoaderCircle className="self-center" />
@@ -57,7 +64,7 @@ const ChatList = ({
               </p>
               <div className="flex gap-2">
                 <DeleteChat data={{ chat, botName: bot.botName }} />
-              <DialogEditChatForm chat={chat} />
+                <DialogEditChatForm chat={chat} />
               </div>
             </li>
           ))}

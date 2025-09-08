@@ -1,4 +1,3 @@
-
 import { useParams } from "next/navigation";
 
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";

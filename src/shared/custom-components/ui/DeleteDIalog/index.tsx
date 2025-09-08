@@ -11,11 +11,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
+import { cn } from "@/shared/lib/utils";
 
 import Overlay from "../Overlay";
 import DeleteModalContentSkeleton from "../Skeletons/DeleteModalContentSkeleton";
 import DeleteModalContent from "./DeleteModalContent";
-import { cn } from "@/shared/lib/utils";
 
 type DeleteDialogProps = {
   title: string;
@@ -25,7 +25,7 @@ type DeleteDialogProps = {
   isShowSkeleton?: boolean;
   textButtonShow?: boolean;
   mutate: () => void;
-  className?: string
+  className?: string;
 };
 
 const DeleteDialog = ({
@@ -36,7 +36,7 @@ const DeleteDialog = ({
   isShowSkeleton = false,
   textButtonShow = false,
   mutate,
-  className = "flex items-center flex-shrink-0 gap-2 border-none px-2 hover:bg-red-600/70 hover:text-white focus-visible:bg-red-600/70 focus-visible:text-white"
+  className = "flex items-center flex-shrink-0 gap-2 border-none px-2 hover:bg-red-600/70 hover:text-white focus-visible:bg-red-600/70 focus-visible:text-white",
 }: DeleteDialogProps) => {
   return (
     <>
@@ -47,9 +47,13 @@ const DeleteDialog = ({
             variant="destructive"
             title={title}
             size={!textButtonShow ? "icon" : "default"}
-            className={cn(className, textButtonShow ? "w-full justify-start" : "justify-center")}
+            className={cn(
+              className,
+              textButtonShow ? "w-full justify-start" : "justify-center"
+            )}
           >
-            <Trash size={40} />{textButtonShow && title}
+            <Trash size={40} />
+            {textButtonShow && title}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]" showX={false}>

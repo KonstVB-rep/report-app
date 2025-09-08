@@ -114,7 +114,6 @@ const AppSidebar = () => {
                 </div>
               </SidebarMenuButton>
             ) : (
-
               <div className="flex items-center rounded-md gap-2 w-full truncate text-lg font-semibold italic p-2 py-[9px] h-12 border-[1px] bg-background">
                 <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
                   <Image

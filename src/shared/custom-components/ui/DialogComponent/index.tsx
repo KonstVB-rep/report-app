@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -76,7 +77,9 @@ const DialogComponent = ({
           <DialogTitle className="text-center text-sm uppercase">
             {dialogTitle}
           </DialogTitle>
-          <DialogDescription className="sr-only">{description}</DialogDescription>
+          <DialogDescription className="sr-only">
+            {description}
+          </DialogDescription>
         </DialogHeader>
         {children}
         {footer}

@@ -20,7 +20,6 @@ const RetailForm = dynamic(() => import("../ui/Forms/RetailForm"), {
   loading: () => <FormDealSkeleton />,
 });
 
-
 type AddNewDealProps = {
   type: string;
 };

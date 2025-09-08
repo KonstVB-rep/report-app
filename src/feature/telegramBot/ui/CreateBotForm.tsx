@@ -3,13 +3,13 @@
 import React, { useActionState, useEffect } from "react";
 
 import { usePathname } from "next/navigation";
+
+import { BotFormData } from "@/entities/tgBot/types";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { ActionResponse } from "@/shared/types";
 
-
-import WrapperBotForm from "./WrapperBotForm";
-import { BotFormData } from "@/entities/tgBot/types";
 import { saveBot } from "../actions/bot";
+import WrapperBotForm from "./WrapperBotForm";
 
 const initialState: ActionResponse<BotFormData> = {
   success: false,

@@ -1,16 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-
-
 import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb";
-import {
-  getEventsCalendarUser,
-  getEventsCalendarUserToday,
-} from "../api";
+
+import { getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
 
 export const useGetEventsCalendarUser = () => {
-
   const { authUser } = useStoreUser();
 
   return useQuery({
@@ -41,15 +36,13 @@ export const useGetEventsCalendarUserToday = () => {
       return await getEventsCalendarUserToday();
     },
     enabled: !!authUser?.id,
-    staleTime: 0,              
-    gcTime: 5 * 60 * 1000,     
-    refetchOnWindowFocus: true
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 };
 
-export const useGetInfoChat = (
-  botName: string,
-) => {
+export const useGetInfoChat = (botName: string) => {
   const { authUser } = useStoreUser();
 
   return useQuery({
@@ -82,7 +75,7 @@ export const useGetInfoChat = (
         throw error;
       }
     },
-    enabled: !!authUser?.id && !!botName, 
+    enabled: !!authUser?.id && !!botName,
     staleTime: 5 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
   });

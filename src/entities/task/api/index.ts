@@ -8,22 +8,26 @@ import {
   // TaskStatus,
 } from "@prisma/client";
 
+import { AxiosError } from "axios";
+
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
+import {
+  DeleteTaskData,
+  TaskFormType,
+  TaskFormTypeWithId,
+} from "@/feature/task/types";
+import { sendNotify } from "@/feature/telegramBot/actions/send-notify";
 import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
+import { formatDateTime } from "@/shared/lib/helpers/formatDate";
+
 // import { formatDateTime } from "@/shared/lib/helpers/formatDate";
 
 // import { formatDate } from "../lib/helpers";
 // import { TOAST } from "@/shared/ui/Toast";
 
-import {
-  TaskWithUserInfo,
-} from "../types";
-import { TaskFormType, TaskFormTypeWithId, DeleteTaskData } from "@/feature/task/types";
-import { sendNotify } from "@/feature/telegramBot/actions/send-notify";
-import { formatDateTime } from "@/shared/lib/helpers/formatDate";
-import { AxiosError } from "axios";
+import { TaskWithUserInfo } from "../types";
 
 // import { getDepartmentUsersWithTasks } from "./queryFn";
 
@@ -39,7 +43,7 @@ export const getTasksDepartment = async (
 
     return await prisma.task.findMany({
       where: {
-        departmentId, 
+        departmentId,
       },
       include: {
         assigner: {
@@ -188,7 +192,11 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
     let telegramError: string | undefined = undefined;
 
     try {
-      const sendData = await sendNotify(message,chatData?.chatId || '',botName);
+      const sendData = await sendNotify(
+        message,
+        chatData?.chatId || "",
+        botName
+      );
 
       if (!sendData || sendData.status !== 200) {
         telegramError =
@@ -219,7 +227,6 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
     return handleError((error as Error).message);
   }
 };
-
 
 export const updateTask = async (
   taskTarget: TaskFormTypeWithId

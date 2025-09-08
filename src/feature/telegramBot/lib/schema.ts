@@ -26,14 +26,12 @@ export const createChatFormSchema = z.object({
     .min(3, { message: "Имя чата не может быть пустым" })
     .max(100, { message: "Имя чата не должно быть длиннее 100 символов" })
     .optional(),
-  isActive: z.boolean().optional().default(true)
+  isActive: z.boolean().optional().default(true),
 });
 
 export const updateChatFormSchema = z.object({
   chatName: z
     .string()
     .max(100, { message: "Имя чата не должно быть длиннее 100 символов" }),
-  isActive: z.boolean().optional().default(true)
+  isActive: z.boolean().optional().default(true),
 });
-
-

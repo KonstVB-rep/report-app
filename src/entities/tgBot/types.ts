@@ -5,26 +5,26 @@ export type BotData = {
   botName: string;
   token: string;
   description: string;
-}
+};
 
-export type BotFormData = Omit<BotData, "id">
+export type BotFormData = Omit<BotData, "id">;
 
 export type ChatFormData = {
-  userId: string; // ID пользователя в вашей системе
+  userId: string;
   botName: string;
-  chatId: string; // ID чата в Telegram
-  telegramUserInfoId: string; // ID информации о Telegram пользователе
+  chatId: string;
+  telegramUserInfoId: string;
   chatName: string;
   username?: string;
   isActive?: boolean;
   firstName?: string;
   lastName?: string;
-}
+};
 
 export type BotWithChats = {
-  id: string,
-  botName: string,
-  description: string,
-  token: string,
-  chats: Omit<UserTelegramChat, "createdAt" | "updatedAt">[]
-}
+  id: string;
+  botName: string;
+  description: string;
+  token: string;
+  chats: Omit<UserTelegramChat, "createdAt" | "updatedAt">[];
+};

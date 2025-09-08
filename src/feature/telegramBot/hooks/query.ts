@@ -1,7 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
+
+import { getChatsByBotId } from "@/entities/tgBot/api";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { useQuery } from "@tanstack/react-query";
-import { getChatsByBotId } from "@/entities/tgBot/api";
 
 export const useGetChatsByBotId = (botId: string | undefined) => {
   const { authUser } = useStoreUser();
@@ -10,10 +11,10 @@ export const useGetChatsByBotId = (botId: string | undefined) => {
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
-        if(!botId){
+        if (!botId) {
           throw new Error("botId не найден");
         }
-        return await getChatsByBotId(botId) || [];
+        return (await getChatsByBotId(botId)) || [];
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");

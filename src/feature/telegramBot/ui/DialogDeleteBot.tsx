@@ -1,18 +1,17 @@
 import React from "react";
 
-import DeleteDialog from "@/shared/custom-components/ui/DeleteDIalog";
 import { BotData } from "@/entities/tgBot/types";
-import { useDeleteBot } from "../hooks/mutate";
+import DeleteDialog from "@/shared/custom-components/ui/DeleteDIalog";
 
+import { useDeleteBot } from "../hooks/mutate";
 
 type DeleteBotProps = {
   bot: BotData;
 };
 
 const DialogDeleteBot = ({ bot }: DeleteBotProps) => {
-
   const { mutate, isPending } = useDeleteBot();
-  
+
   return (
     <DeleteDialog
       title="Удалить"
@@ -24,9 +23,7 @@ const DialogDeleteBot = ({ bot }: DeleteBotProps) => {
         <p className="text-center">Вы уверены что хотите удалить бот?</p>
         <p className="grid text-center">
           <span> Бот: </span>
-          <span className="text-lg font-bold capitalize">
-            {bot.botName}
-          </span>
+          <span className="text-lg font-bold capitalize">{bot.botName}</span>
           <span>будет удален безвозвратно</span>
         </p>
       </>

@@ -1,3 +1,5 @@
+import { DepartmentEnum, Role } from "@prisma/client";
+
 import React from "react";
 
 import { DepartmentLabels } from "@/entities/department/types";
@@ -11,9 +13,7 @@ import { cn, formatPhoneNumber } from "@/shared/lib/utils";
 import { ActionResponse } from "@/shared/types";
 
 import { RolesUser } from "../model/objectTypes";
-import {  OPTIONS, UserFormData, UserFormEditData } from "../types";
-import { DepartmentEnum, Role } from "@prisma/client";
-
+import { OPTIONS, UserFormData, UserFormEditData } from "../types";
 
 type UserFormProps<T extends UserFormData | UserFormEditData> = {
   state: ActionResponse<T>;
@@ -48,6 +48,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             defaultValue={state.inputs?.username}
             aria-describedby="username"
             className={getFieldError("username") ? "border-red-500" : ""}
+            disabled={isPending}
           />
           {getFieldError("username") && (
             <p id="username" className="text-sm text-red-500">
@@ -67,6 +68,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             defaultValue={state.inputs?.email}
             aria-describedby="email"
             className={getFieldError("email") ? "border-red-500" : ""}
+            disabled={isPending}
           />
           {getFieldError("email") && (
             <p id="email" className="text-sm text-red-500">
@@ -92,6 +94,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
               const value = input.value;
               input.value = formatPhoneNumber(value);
             }}
+            disabled={isPending}
           />
           {getFieldError("phone") && (
             <p id="phone" className="text-sm text-red-500">
@@ -113,6 +116,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             defaultValue={state.inputs?.user_password}
             aria-describedby="user_password"
             className={getFieldError("user_password") ? "border-red-500" : ""}
+            disabled={isPending}
           />
           {getFieldError("user_password") && (
             <p id="user_password" className="text-sm text-red-500">
@@ -132,6 +136,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             defaultValue={state.inputs?.position}
             aria-describedby="position"
             className={getFieldError("position") ? "border-red-500" : ""}
+            disabled={isPending}
           />
           {getFieldError("position") && (
             <p id="position" className="text-sm text-red-500">
@@ -148,9 +153,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             placeholder="Выберите отдел"
             options={Object.entries(DepartmentLabels)}
             name={"department"}
-            value={
-                state.inputs?.department
-            }
+            value={state.inputs?.department}
             onValueChange={(val) => {
               if (!val) return;
               setState((prev) => ({
@@ -166,6 +169,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
               "capitalize",
               getFieldError("department") ? "border-red-500" : ""
             )}
+            disabled={isPending}
           />
           {getFieldError("department") && (
             <p id="department" className="text-sm text-red-500">
@@ -198,6 +202,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
               "capitalize",
               getFieldError("role") ? "border-red-500" : ""
             )}
+            disabled={isPending}
           />
           {getFieldError("role") && (
             <p id="role" className="text-sm text-red-500">
@@ -221,6 +226,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
                 : undefined
             }
             aria-describedby="permissions"
+            disabled={isPending}
           />
           {getFieldError("permissions") && (
             <p id="permissions" className="text-sm text-red-500">

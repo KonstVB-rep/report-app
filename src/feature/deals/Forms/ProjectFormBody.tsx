@@ -1,5 +1,7 @@
 "use client";
 
+import { StatusContract } from "@prisma/client";
+
 import { useEffect } from "react";
 import {
   FieldValues,
@@ -13,6 +15,8 @@ import { useParams } from "next/navigation";
 
 import { ArrowLeft } from "lucide-react";
 
+import { parseFormattedNumber } from "@/entities/deal/lib/helpers";
+import { Contact } from "@/entities/deal/types";
 import { Button } from "@/shared/components/ui/button";
 import {
   Form,
@@ -32,16 +36,16 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
+import { formatNumber } from "@/shared/lib/utils";
 
 import ContactDeal from "../../contact/ui/ContactDeal";
-import { parseFormattedNumber } from "@/entities/deal/lib/helpers";
-import { Contact } from "@/entities/deal/types";
-import { formatNumber } from "@/shared/lib/utils";
-import { StatusContract } from "@prisma/client";
 import useSendDealInfo from "../api/hooks/useSendDealInfo";
-import { DirectionProjectLabels, DeliveryProjectLabels, StatusProjectLabels } from "../lib/constants";
+import {
+  DeliveryProjectLabels,
+  DirectionProjectLabels,
+  StatusProjectLabels,
+} from "../lib/constants";
 import AddManagerToDeal from "../ui/Modals/AddManagerToDeal";
-
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;

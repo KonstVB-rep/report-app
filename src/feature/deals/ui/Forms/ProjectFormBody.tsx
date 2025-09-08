@@ -159,6 +159,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Дата запроса"
                   control={form.control}
                   errorMessage={getError("dateRequest")}
+                  disabled={isPending}
                 />
 
                 <InputTextForm
@@ -168,6 +169,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("nameDeal")}
                   placeholder="Название..."
                   required
+                  disabled={isPending}
                 />
 
                 <InputTextForm
@@ -177,6 +179,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("nameObject")}
                   placeholder="Название..."
                   required
+                  disabled={isPending}
                 />
 
                 <SelectFormField
@@ -187,6 +190,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   options={directionOptions}
                   placeholder="Выберите направление"
                   required
+                  disabled={isPending}
                 />
 
                 <SelectFormField
@@ -196,6 +200,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("deliveryType")}
                   options={deliveryOptions}
                   placeholder="Выберите тип поставки"
+                  disabled={isPending}
                 />
 
                 <InputTextForm
@@ -205,6 +210,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("contact")}
                   placeholder="Имя контакта"
                   required
+                  disabled={isPending}
                 />
 
                 <InputPhoneForm
@@ -213,6 +219,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   control={form.control}
                   errorMessage={getError("phone")}
                   placeholder="Введите телефон пользователя"
+                  disabled={isPending}
                 />
 
                 <InputTextForm
@@ -222,6 +229,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("email")}
                   className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
                   type="email"
+                  disabled={isPending}
                 />
               </div>
 
@@ -232,6 +240,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   control={form.control}
                   errorMessage={getError("amountCP")}
                   placeholder="Сумма КП"
+                  disabled={isPending}
                 />
 
                 <InputNumberForm
@@ -240,6 +249,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   control={form.control}
                   errorMessage={getError("amountWork")}
                   placeholder="Сумма работ"
+                  disabled={isPending}
                 />
 
                 <InputNumberForm
@@ -248,6 +258,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   control={form.control}
                   errorMessage={getError("amountPurchase")}
                   placeholder="Сумма закупки"
+                  disabled={isPending}
                 />
 
                 <InputNumberForm
@@ -256,6 +267,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   control={form.control}
                   errorMessage={getError("delta")}
                   placeholder="Дельта"
+                  disabled={isPending}
                 />
 
                 <SelectFormField
@@ -265,6 +277,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("dealStatus")}
                   options={statusOptions[dealType]}
                   placeholder="Выберите статус КП"
+                  disabled={isPending}
                 />
 
                 <DatePickerFormField
@@ -272,6 +285,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Планируемый контакт"
                   control={form.control}
                   errorMessage={getError("plannedDateConnection")}
+                  disabled={isPending}
                 />
 
                 <InputTextForm
@@ -280,6 +294,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   control={form.control}
                   errorMessage={getError("resource")}
                   placeholder="Откуда пришёл клиент"
+                  disabled={isPending}
                 />
 
                 <FormField
@@ -293,6 +308,7 @@ const ProjectFormBody = <T extends FieldValues>({
                         <Textarea
                           placeholder="Введите комментарии"
                           required
+                          disabled={isPending}
                           {...field}
                         />
                       </FormControl>

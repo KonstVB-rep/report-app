@@ -5,6 +5,7 @@ import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 import { ArrowLeft } from "lucide-react";
 
+import { Contact } from "@/entities/deal/types";
 import { Button } from "@/shared/components/ui/button";
 import {
   Form,
@@ -26,9 +27,12 @@ import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectForm
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 
 import ContactDeal from "../../contact/ui/ContactDeal";
-import { Contact } from "@/entities/deal/types";
 import useSendDealInfo from "../api/hooks/useSendDealInfo";
-import { DirectionRetailLabels, DeliveryRetailLabels, StatusRetailLabels } from "../lib/constants";
+import {
+  DeliveryRetailLabels,
+  DirectionRetailLabels,
+  StatusRetailLabels,
+} from "../lib/constants";
 import AddManagerToDeal from "../ui/Modals/AddManagerToDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {

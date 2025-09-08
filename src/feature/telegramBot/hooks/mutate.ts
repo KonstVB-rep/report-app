@@ -4,16 +4,19 @@ import { useMutation } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 
 import { getQueryClient } from "@/app/provider/query-provider";
-
+import {
+  deleteBot,
+  deleteChat,
+  toggleSubscribeChatBot,
+} from "@/entities/tgBot/api";
+import { ChatFormData } from "@/entities/tgBot/types";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { logout } from "@/shared/auth/logout";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { ActionResponse } from "@/shared/types";
-import { deleteBot, deleteChat, toggleSubscribeChatBot } from "@/entities/tgBot/api";
-import { ChatFormData } from "@/entities/tgBot/types";
-import { saveChat, updateChat } from "../actions/user-chat";
 
+import { saveChat, updateChat } from "../actions/user-chat";
 
 const queryClient = getQueryClient();
 
@@ -68,9 +71,9 @@ export const useDeleteChat = () => {
   const { authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: async (data:{chatId: string, botName: string}) => {
+    mutationFn: async (data: { chatId: string; botName: string }) => {
       return handleMutationWithAuthCheck<
-        {chatId: string, botName: string},
+        { chatId: string; botName: string },
         UserTelegramChat
       >(deleteChat, data, authUser, isSubmittingRef);
     },
@@ -186,7 +189,11 @@ export const useToggleSudscribeChatBot = () => {
   const { authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
-    mutationFn: async (chatData: { botId: string; chatId: string; isActive: boolean }) => {
+    mutationFn: async (chatData: {
+      botId: string;
+      chatId: string;
+      isActive: boolean;
+    }) => {
       return handleMutationWithAuthCheck<
         { botId: string; chatId: string; isActive: boolean },
         UserTelegramChat
@@ -195,9 +202,9 @@ export const useToggleSudscribeChatBot = () => {
     onSuccess: () => {
       TOAST.SUCCESS("Вы подписались на чат бота");
 
-        // queryClient.invalidateQueries({
-        //   queryKey: ["chatInfoChecked", authUser?.id, data.result.chatName],
-        // });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["chatInfoChecked", authUser?.id, data.result.chatName],
+      // });
     },
     onError: (error) => {
       const err = error as Error & { status?: number };

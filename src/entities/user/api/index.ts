@@ -191,6 +191,8 @@ const assignPermissionsToUser = async (
     select: { id: true, name: true },
   });
 
+  console.log(permissions, permissionRecords, "permissions");
+
   const userPermissions = permissionRecords.map((permission) => ({
     userId: userId,
     permissionId: permission.id,
@@ -348,7 +350,7 @@ export const updateUser = async (
 
       await assignPermissionsToUser(
         updatedUser.id,
-        parsedData.permissions || []
+        parsedData.permissions as PermissionEnum[]
       );
     } else {
       return parsedData;

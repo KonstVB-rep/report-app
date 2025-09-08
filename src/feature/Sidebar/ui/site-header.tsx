@@ -15,6 +15,7 @@ import { ModeToggle } from "@/shared/components/ui/mode-toggle";
 import { Separator } from "@/shared/components/ui/separator";
 import { useSidebar } from "@/shared/components/ui/sidebar";
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
+import Logo from "@/shared/custom-components/ui/Logo";
 import MobileMenu from "@/shared/custom-components/ui/MobileMenu";
 
 const ProtectedByPermissions = dynamic(
@@ -24,7 +25,11 @@ const ProtectedByPermissions = dynamic(
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
 
-export function SiteHeader() {
+export function SiteHeader({
+  isHasSitebar = true,
+}: {
+  isHasSitebar?: boolean;
+}) {
   const { authUser } = useStoreUser();
   const { toggleSidebar } = useSidebar();
   const pathName = usePathname();
@@ -35,21 +40,25 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="flex h-[--header-height] items-center justify-between gap-2 px-4">
-        {/* Левая часть: кнопка сайдбара */}
-        <div className="flex items-center gap-4">
-          <Button
-            className="h-8 w-8"
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            aria-label="Открыть/закрыть боковую панель"
-          >
-            <SidebarIcon />
-          </Button>
-          <Separator orientation="vertical" className="mr-2 h-4" />
-        </div>
+        {isHasSitebar ? (
+          <div className="flex items-center gap-4">
+            <Button
+              className="h-8 w-8"
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              aria-label="Открыть/закрыть боковую панель"
+            >
+              <SidebarIcon />
+            </Button>
+            <Separator orientation="vertical" className="mr-2 h-4" />
+          </div>
+        ) : (
+          <div className="hover:scale-125 transition-all duration-200">
+            <Logo isTitle={false} href="/dashboard" />
+          </div>
+        )}
 
-        {/* Центр: действия (для md и выше) */}
         <div className="hidden items-center gap-2 md:flex">
           <Link
             href={`/dashboard/tasks/${departmentId}/${userId}`}
@@ -99,7 +108,6 @@ export function SiteHeader() {
           <ModeToggle />
         </div>
 
-        {/* Правая часть (всегда): мобильное меню */}
         <MobileMenu />
       </div>
     </header>

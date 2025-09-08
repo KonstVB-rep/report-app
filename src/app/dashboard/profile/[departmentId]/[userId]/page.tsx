@@ -44,39 +44,35 @@ const ProfilePage = () => {
               username={user?.username}
               phone={user?.phone}
               position={user?.position}
-              departmentName={DepartmentLabels[
-                      user?.departmentName as keyof typeof DepartmentLabels
-                    ]}
+              departmentName={
+                DepartmentLabels[
+                  user?.departmentName as keyof typeof DepartmentLabels
+                ]
+              }
             />
           </div>
 
-            <div className="grid gap-2 h-full">
-              <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">
-                  Последняя сессия:
-                </span>
-                <span>
-                  {user?.lastlogin?.toLocaleDateString() || "--/--/--"}
-                </span>
-              </p>
+          <div className="grid gap-2 h-full">
+            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
+              <span className="first-letter:capitalize">Последняя сессия:</span>
+              <span>{user?.lastlogin?.toLocaleDateString() || "--/--/--"}</span>
+            </p>
 
-              <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">
-                  Дата регистрации:
-                </span>
-                <span>{user?.createdAt?.toLocaleDateString()}</span>
-              </p>
+            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
+              <span className="first-letter:capitalize">Дата регистрации:</span>
+              <span>{user?.createdAt?.toLocaleDateString()}</span>
+            </p>
 
-              <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">Тел.:</span>
-                <span>{user?.phone}</span>
-              </p>
-              <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">Email:</span>
+            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
+              <span className="first-letter:capitalize">Тел.:</span>
+              <span>{user?.phone}</span>
+            </p>
+            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
+              <span className="first-letter:capitalize">Email:</span>
 
-                <span>{user?.email}</span>
-              </p>
-            </div>
+              <span>{user?.email}</span>
+            </p>
+          </div>
           {/* </div> */}
         </div>
       </div>

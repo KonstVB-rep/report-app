@@ -3,14 +3,17 @@
 import { PropsWithChildren } from "react";
 
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
+import { ArrowBigLeft } from "lucide-react";
+
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import AdminSidebar from "@/feature/Sidebar/ui/AdminSidebar";
+import LogoutDialog from "@/feature/auth/ui/logout-dialog";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
+import { Button } from "@/shared/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 
 const RedirectToPath = dynamic(
   () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),
@@ -27,8 +30,8 @@ const RedirectToPath = dynamic(
 );
 
 const TemplateDashboard = ({ children }: PropsWithChildren) => {
-  const pathname = usePathname();
   const { authUser } = useStoreUser();
+  const router = useRouter();
 
   useGetDepartmentsWithUsers();
 
@@ -40,13 +43,28 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
     <>
       <div className="min-w-64 [--header-height:calc(theme(spacing.14))]">
         <SidebarProvider className="flex flex-col">
-          <SiteHeader />
-          <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] max-h-[calc(100svh-var(--header-height)-2px)] flex-1">
-            <AdminSidebar />
-            <SidebarInset className="h-auto min-h-min" key={pathname}>
-              <PageTransitionY>{children}</PageTransitionY>
-            </SidebarInset>
+          <div className="flex bg-background">
+            <SiteHeader isHasSitebar={false} />
+            <div className="min-h-full border-b border-l px-2 items-center hidden md:flex">
+              <LogoutDialog withTitle={false} />
+            </div>
           </div>
+
+          <SidebarInset className="h-auto">
+            <PageTransitionY>
+              <div className="max-h-[94vh] overflow-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => router.back()}
+                  className="mb-4 ml-4 mt-4"
+                >
+                  <ArrowBigLeft />
+                  Назад
+                </Button>
+                {children}
+              </div>
+            </PageTransitionY>
+          </SidebarInset>
         </SidebarProvider>
       </div>
     </>

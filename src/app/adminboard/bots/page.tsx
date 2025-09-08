@@ -1,7 +1,6 @@
 import { getAllBots } from "@/entities/tgBot/api";
 import BotsList from "@/feature/telegramBot/ui/BotsList";
 
-
 const BotsPage = async () => {
   try {
     const allBots = await getAllBots();
@@ -14,7 +13,7 @@ const BotsPage = async () => {
   } catch (error) {
     console.error("Ошибка загрузки данных:", error);
     return (
-       <div className="p-5 min-h-screen grid place-items-center">
+      <div className="p-5 min-h-screen grid place-items-center">
         <h1 className="text-2xl">Ошибка загрузки данных</h1>
       </div>
     );

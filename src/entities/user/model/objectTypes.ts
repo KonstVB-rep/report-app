@@ -4,13 +4,7 @@ export const RolesUser = {
   ADMIN: "Администратор",
 } as const;
 
-export const RolesUserMap = {
-  DIRECTOR: "DIRECTOR",
-  EMPLOYEE: "EMPLOYEE",
-  ADMIN: "ADMIN",
-} as const;
-
-export const RolesWithDefaultPermissions = ["ADMIN", "DIRECTOR"];
+export const RolesWithDefaultPermissions = ["ADMIN", "DIRECTOR", "SUPERADMIN"];
 
 export const PermissionUser = {
   VIEW_USER_REPORT: "Просмотр отчета пользователя",

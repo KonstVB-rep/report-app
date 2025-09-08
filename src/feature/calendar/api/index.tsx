@@ -158,5 +158,3 @@ export const getEventsCalendarUserToday = async (): Promise<
     return [];
   }
 };
-
-

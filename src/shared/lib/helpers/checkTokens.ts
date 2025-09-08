@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import axiosInstance from "@/shared/api/axiosInstance";
 
 import { AuthError } from "./customErrors";

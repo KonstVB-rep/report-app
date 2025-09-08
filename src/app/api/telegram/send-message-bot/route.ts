@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 
 const botTokens: Record<string, string> = {
-  ertel_report_app_task_bot: process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_TASK_BOT || "",
-  ertel_report_app_bot: process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT || "",
+  ertel_report_app_task_bot:
+    process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_TASK_BOT || "",
+  ertel_report_app_bot:
+    process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT || "",
 };
 
 export async function POST(request: Request) {

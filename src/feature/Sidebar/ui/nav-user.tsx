@@ -1,5 +1,7 @@
 "use client";
 
+import { ReactNode } from "react";
+
 import Link from "next/link";
 
 import { BadgeCheck, ChevronsUpDown } from "lucide-react";
@@ -12,9 +14,8 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
-import { ReactNode } from "react";
 
-export const NavUser = ({children }: { children?: ReactNode}) => {
+export const NavUser = ({ children }: { children?: ReactNode }) => {
   const { isMobile } = useSidebar();
   const { authUser } = useStoreUser();
 
@@ -25,11 +26,7 @@ export const NavUser = ({children }: { children?: ReactNode}) => {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        {children}
-        {/* <DialogAddUser /> */}
-        {/* <Link href="/adminboard" className="btn_hover justify-center text-sm">Администрирование</Link> */}
-      </SidebarMenuItem>
+      <SidebarMenuItem>{children}</SidebarMenuItem>
       <SidebarMenuItem>
         <HoverCardComponent
           title={
