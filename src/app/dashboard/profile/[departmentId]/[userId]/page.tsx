@@ -53,10 +53,7 @@ const ProfilePage = () => {
           </div>
 
           <div className="grid gap-2 h-full">
-            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-              <span className="first-letter:capitalize">Последняя сессия:</span>
-              <span>{user?.lastlogin?.toLocaleDateString() || "--/--/--"}</span>
-            </p>
+
 
             <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
               <span className="first-letter:capitalize">Дата регистрации:</span>

@@ -25,6 +25,8 @@ import {
   UserFormEditData,
   UserRequest,
 } from "../types";
+import { checkRole } from "@/shared/api/checkRole";
+import { UserTypeTable } from "../model/column-data-user";
 
 export interface ResponseDelUser<T> {
   error: boolean;
@@ -303,6 +305,7 @@ export const createUser = async (
 export const updateUser = async (
   formData: FormData
 ): Promise<ActionResponse<UserFormEditData>> => {
+      console.log("formData", formData);
   try {
     const parsedData = safeParseFormData<UserFormEditData>(
       formData,
@@ -375,7 +378,11 @@ export const updateUser = async (
 export const getUser = async (
   targetUserId: string,
   permissions?: PermissionEnum[]
-): Promise<(User & { departmentName: string }) | undefined> => {
+): Promise<(User & { 
+  departmentName: string;
+  permissions: PermissionEnum[];
+  lastSession?: Date;
+}) | undefined> => {
   try {
     const { user, userId } = await handleAuthorization();
 
@@ -414,21 +421,18 @@ export const getUser = async (
       select: { loginAt: true },
     });
 
-    if (lastSession) {
-      targetUser.lastlogin = lastSession?.loginAt;
-    }
-
     const userPermissions = targetUser.permissions.map(
       (p) => p.permission.name
     );
 
     const userWithDepartmentNameWithPermissions = {
       ...targetUser,
-      departmentName: targetUser!.department?.name || null,
+      departmentName: targetUser.department?.name || null,
       permissions: userPermissions,
+      lastSession: lastSession?.loginAt,
     };
 
-    return userWithDepartmentNameWithPermissions ?? null;
+    return userWithDepartmentNameWithPermissions;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);
@@ -481,6 +485,66 @@ export const getAllUsersByDepartment = async (
     });
 
     return users;
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
+export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
+  try {
+    const data = await handleAuthorization();
+    const { user } = data!;
+
+    await checkRole(Role.ADMIN);
+
+
+    if (!user) {
+      handleError("Пользователь не найден");
+    }
+
+    const lastLogins = await prisma.userLogin.groupBy({
+      by: ['userId'],
+      _max: {
+        loginAt: true
+      }
+    });
+
+
+    const users = await prisma.user.findMany({
+      include: {
+        department: {
+          select: {
+            name: true,
+          },
+        },
+        permissions: {
+          include: {
+            permission: {
+              select: { name: true },
+            },
+          },
+        },
+        telegramInfo: {
+          select: {
+            tgUserName: true,
+          },
+        },
+      },
+    });
+
+      const usersWithLastLogin: UserTypeTable[] = users.map(user => {
+      const lastLoginRecord = lastLogins.find(ll => ll.userId === user.id);
+      return {
+        ...user,
+        login: user.username, 
+        telegramInfo: user.telegramInfo[0]?.tgUserName || "",
+        lastlogin: lastLoginRecord?._max.loginAt || new Date(0), 
+        permissions: user.permissions.map(p => p.permission.name),
+      };
+    });
+
+    return usersWithLastLogin;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

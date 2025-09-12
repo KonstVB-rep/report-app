@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb";
 
-import { getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
+import { getAllEventsCalendar, getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
 
 export const useGetEventsCalendarUser = () => {
   const { authUser } = useStoreUser();
@@ -34,6 +34,24 @@ export const useGetEventsCalendarUserToday = () => {
         throw new Error("Пользователь не авторизован");
       }
       return await getEventsCalendarUserToday();
+    },
+    enabled: !!authUser?.id,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+  });
+};
+
+export const useGetAllEvents = () => {
+  const { authUser } = useStoreUser();
+
+  return useQuery({
+    queryKey: ["allEvents", authUser?.id],
+    queryFn: async () => {
+      if (!authUser?.id) {
+        throw new Error("Пользователь не авторизован");
+      }
+      return await getAllEventsCalendar();
     },
     enabled: !!authUser?.id,
     staleTime: 0,
@@ -80,3 +98,5 @@ export const useGetInfoChat = (botName: string) => {
     gcTime: 5 * 60 * 1000,
   });
 };
+
+

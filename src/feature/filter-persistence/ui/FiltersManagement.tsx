@@ -44,7 +44,7 @@ const FiltersManagement = ({ openFilters, isShow }: FilterManagmentProps) => {
           </div>
         )}
       </div>
-      {<FiltersManagementContent />}
+      <FiltersManagementContent />
     </div>
   );
 };

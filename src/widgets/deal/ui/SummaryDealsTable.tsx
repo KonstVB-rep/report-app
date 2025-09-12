@@ -3,7 +3,7 @@
 import { PermissionEnum } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
-import React, { JSX, useMemo } from "react";
+import { JSX, useMemo } from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -19,9 +19,9 @@ import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable";
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
-import { useGetAllDeals } from "@/feature/deals/api/hooks/query";
+import { useGetAllDealsByType } from "@/feature/deals/api/hooks/query";
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage";
-import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
+import { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataProjectSummary } from "../model/summary-columns-data-project";
@@ -78,7 +78,7 @@ const SummaryDealsTable = () => {
     error,
     isError,
     isPending,
-  } = useGetAllDeals(dealType, hasAccess ? userId : null, departmentId);
+  } = useGetAllDealsByType(dealType, hasAccess ? userId : null, departmentId);
 
   if (!hasAccess) {
     return (
@@ -100,8 +100,8 @@ const SummaryDealsTable = () => {
         </p>
       </div>
       <DealsTable
-        columns={Columns(dealType as DealsUnionType) as ColumnDef<DealBase>[]}
-        data={deals as DealBase[]}
+        columns={Columns(dealType as DealsUnionType) as ColumnDef<TypeBaseDT>[]}
+        data={deals as TypeBaseDT[]}
         hasEditDeleteActions={false}
       />
     </DealTableTemplate>

@@ -2,7 +2,7 @@
 
 import { DepartmentEnum, PermissionEnum, Role } from "@prisma/client";
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 
@@ -26,7 +26,7 @@ const UserEditForm = ({
   setOpen,
 }: {
   user: UserWithdepartmentName | undefined;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: (value: boolean) => void;
 }) => {
   const [state, setState] = useState(initialState);
 
@@ -42,7 +42,7 @@ const UserEditForm = ({
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    console.log('onSubmit', onSubmit)
     const formData = new FormData(event.currentTarget);
     formData.append("id", user?.id as string);
     state.inputs = {

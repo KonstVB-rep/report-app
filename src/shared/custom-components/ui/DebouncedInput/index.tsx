@@ -40,7 +40,6 @@ const DebouncedInput: React.FC<DebouncedInputProps> = React.memo(
         <Input
           {...props}
           type="search"
-          placeholder="Поиск..."
           className="max-w-48 pl-8"
           value={value}
           onChange={handleChange}

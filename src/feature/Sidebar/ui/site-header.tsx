@@ -38,7 +38,7 @@ export function SiteHeader({
   const departmentId = authUser?.departmentId;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background">
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="flex h-[--header-height] items-center justify-between gap-2 px-4">
         {isHasSitebar ? (
           <div className="flex items-center gap-4">

@@ -22,6 +22,7 @@ import {
   Contact,
   ContractResponse,
   DateRange,
+  DealBase,
   ManagerShortInfo,
   ProjectResponse,
   ProjectResponseWithContactsAndFiles,
@@ -498,6 +499,13 @@ type DealsListWithResource =
     }
   | { deals: []; totalDealsCount: number };
 
+type DealsList =
+  | {
+      deals: DealBase[];
+      totalDealsCount: number;
+    }
+  | { deals: []; totalDealsCount: number };
+
 export const getAllDealsRequestSourceByDepartment = async (
   departmentId: number
 ): Promise<DealsListWithResource> => {
@@ -541,6 +549,61 @@ export const getAllDealsRequestSourceByDepartment = async (
     const totalDealsCount = allDeals.length || 0;
 
     return { deals: allDeals, totalDealsCount } as DealsListWithResource;
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
+export const getAllDealsByDepartment = async (
+  departmentId: number
+): Promise<DealsList> => {
+  try {
+    await handleAuthorization();
+
+    const retailsRequestResorce = await prisma.retail.findMany({
+      where: {
+        user: {
+          departmentId: departmentId,
+        },
+      },
+      select: {
+        id: true,
+        dateRequest: true,
+        nameDeal: true,
+        nameObject: true,
+        comments: true,
+        userId: true,
+      },
+      orderBy: {
+        dateRequest: "asc",
+      },
+    });
+
+    const projectsRequestResource = await prisma.project.findMany({
+      where: {
+        user: {
+          departmentId: departmentId,
+        },
+      },
+     select: {
+        id: true,
+        dateRequest: true,
+        nameDeal: true,
+        nameObject: true,
+        comments: true,
+        userId: true,
+      },
+      orderBy: {
+        dateRequest: "asc",
+      },
+    });
+
+    const allDeals = [...retailsRequestResorce, ...projectsRequestResource];
+
+    const totalDealsCount = allDeals.length || 0;
+
+    return { deals: allDeals, totalDealsCount } as DealsList;
   } catch (error) {
     console.error(error);
     return handleError((error as Error).message);

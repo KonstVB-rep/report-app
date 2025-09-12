@@ -35,4 +35,11 @@ export const DepartmentLabels: Record<keyof typeof DepartmentEnum, string> = {
   MARKETING: "Отдел маркетинга",
 } as const;
 
+
+export const DepartmentLabelsById: Record<string, string> = {
+  '1': "Отдел продаж",
+  '2': "Отдел маркетинга",
+  '3': "Технический отдел",
+} as const;
+
 export type UnionTypeDepartmentsName = keyof typeof DepartmentLabels;

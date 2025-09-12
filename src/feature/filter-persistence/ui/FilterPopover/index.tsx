@@ -82,7 +82,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
         } border-muted-foreground`}
       >
         <Button variant="outline" className="relative h-auto">
-          <Filter className="mr-2 h-4 w-4" />
+          <Filter className="h-4 w-4" />
           {label}
           {filterValues.length > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">

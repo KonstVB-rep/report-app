@@ -36,7 +36,7 @@ const SelectColumns = <TData extends Record<string, unknown>>({
       <PopoverTrigger
         asChild
         className={`${
-          hiddenColumns.length - 1 > 0 ? "border-solid" : "border-dashed"
+          hiddenColumns.length - 2 > 0 ? "border-solid" : "border-dashed"
         } border-muted-foreground`}
       >
         <Button

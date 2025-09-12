@@ -14,7 +14,7 @@ export type User = {
   lastlogin?: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  permissions?: PermissionType[];
+  permissions?: PermissionEnum[];
   tgUserId?: string;
   tgUserName?: string;
 };

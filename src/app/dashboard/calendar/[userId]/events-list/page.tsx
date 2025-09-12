@@ -22,7 +22,7 @@ const UserEventsPage = () => {
   }
 
   return (
-    <section className="p-5">
+    <section className="p-3 sm:p-5">
       <EventsList events={events as EventInputType[]} />
     </section>
   );

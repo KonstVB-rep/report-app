@@ -1,8 +1,6 @@
 import { PermissionEnum } from "@prisma/client";
 import { ColumnDef, Table } from "@tanstack/react-table";
 
-import React from "react";
-
 import { useParams } from "next/navigation";
 
 import {
@@ -11,7 +9,6 @@ import {
 } from "@/feature/deals/lib/constants";
 import { Button } from "@/shared/components/ui/button";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
-import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile";
 
 const handleExport = async <TData,>(
@@ -23,13 +20,13 @@ const handleExport = async <TData,>(
   downloadToExcel(table, columns, { tableType });
 };
 
-type ButtonExportXlsType<T extends DealBase> = {
+type ButtonExportXlsType<T extends Record<string, unknown>> = {
   columns: ColumnDef<T>[];
   table: Table<T>;
   isShow: boolean;
 };
 
-const ButtonExportTableXls = <T extends DealBase>({
+const ButtonExportTableXls = <T extends Record<string, unknown>>({
   columns,
   table,
   isShow,

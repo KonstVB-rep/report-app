@@ -7,10 +7,12 @@ import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 
 import {
   createEventCalendar,
+  deleteArrayEventsCalendar,
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api";
 import { EventDataType, EventResponse } from "../types";
+import { Prisma } from "@prisma/client";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
@@ -94,11 +96,12 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
   });
 };
 
-export const useDeleteEventCalendar = (closeModal: () => void) => {
+export const useDeleteEventCalendar = (closeModal?: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (id: string) => {
+        console.log("authUser", authUser);
       return handleMutationWithAuthCheck<{ id: string }, EventResponse>(
         deleteEventCalendar,
         { id },
@@ -107,7 +110,7 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
       );
     },
     onSuccess: () => {
-      closeModal();
+      closeModal?.();
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
       });
@@ -119,6 +122,45 @@ export const useDeleteEventCalendar = (closeModal: () => void) => {
     onError: (error) => {
       const err = error as Error & { status?: number };
 
+      if (err.status === 401 || err.message === "Сессия истекла") {
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
+        logout();
+        return;
+      }
+
+      const errorMessage =
+        err.message === "Failed to fetch"
+          ? "Ошибка соединения"
+          : "Ошибка при удалении события";
+
+      TOAST.ERROR(errorMessage);
+    },
+  });
+};
+
+
+export const useDeleteEventsCalendar = (closeModal?: () => void) => {
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      return handleMutationWithAuthCheck<{ ids: string[] }, Prisma.BatchPayload>(
+        deleteArrayEventsCalendar,
+        { ids },
+        authUser,
+        isSubmittingRef
+      );
+    },
+    onSuccess: () => {
+      closeModal?.();
+      queryClient.invalidateQueries({
+        queryKey:  ["allEvents", authUser?.id],
+      });
+      TOAST.SUCCESS("Событие успешно удалено");
+    },
+    onError: (error) => {
+      const err = error as Error & { status?: number };
+      console.log("error", err);
       if (err.status === 401 || err.message === "Сессия истекла") {
         TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
         logout();

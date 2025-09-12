@@ -27,6 +27,7 @@ export const useTableState = <T extends Record<string, unknown>>(
   columns: ColumnDef<T>[] // и колонки для этого типа
 ) => {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({})
   const memoizedData = useMemo(() => data, [data]);
   const memoizedColumns = useMemo(() => columns, [columns]);
 
@@ -60,6 +61,8 @@ export const useTableState = <T extends Record<string, unknown>>(
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
     onGlobalFilterChange: setGlobalFilter,
@@ -69,11 +72,13 @@ export const useTableState = <T extends Record<string, unknown>>(
     debugColumns: true,
     state: {
       sorting,
+      rowSelection,
       columnFilters,
       globalFilter,
       columnVisibility: {
         ...columnVisibility,
-        user: false, // например скрыть колонку с id 'user'
+        user: false,
+        id: false
       },
     },
     meta: {

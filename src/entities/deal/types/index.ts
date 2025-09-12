@@ -147,3 +147,12 @@ export type ContactFieldError = {
     message?: string;
   };
 };
+
+export type DealBase = {
+    id: string;
+    dateRequest: Date;
+    nameDeal: string;
+    nameObject: string;
+    comments: string;
+    userId: string;
+}

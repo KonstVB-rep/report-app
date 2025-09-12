@@ -1,6 +1,8 @@
 import { Role } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
+import { usePathname } from "next/navigation";
+
 import { getQueryClient } from "@/app/provider/query-provider";
 import { DepartmentInfo } from "@/entities/department/types";
 import {
@@ -28,6 +30,7 @@ export const useCreateUser = (
   onSuccessCallback?: (data: ActionResponse<UserFormData>) => void
 ) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
+  const pathname = usePathname();
   return useMutation({
     mutationFn: (data: FormData) => {
       return handleMutationWithAuthCheck<
@@ -36,9 +39,16 @@ export const useCreateUser = (
       >(createUser, data, authUser, isSubmittingRef);
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-      });
+      if (pathname.includes("admindashboard")) {
+        queryClient.invalidateQueries({
+          queryKey: ["all-users", authUser?.id],
+          exact: true,
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["depsWithUsers"],
+        });
+      }
       if (!data.success) {
         TOAST.ERROR(data.message);
         onSuccessCallback?.(data);
@@ -59,9 +69,11 @@ export const useUpdateUser = (
   userId: string,
   onSuccessCallback?: (data: ActionResponse<UserFormEditData>) => void
 ) => {
+  const pathname = usePathname();
   const { authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
     mutationFn: (formData: FormData) => {
+      console.log("authUser", authUser);
       return handleMutationWithAuthCheck<
         FormData,
         ActionResponse<UserFormEditData>
@@ -74,10 +86,18 @@ export const useUpdateUser = (
           exact: true,
         });
       }
-      queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-        exact: true,
-      });
+
+      if (pathname.includes("adminboard")) {
+        queryClient.invalidateQueries({
+          queryKey: ["all-users", authUser?.id],
+          exact: true,
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["depsWithUsers"],
+        });
+      }
+
       if (data.success) {
         TOAST.SUCCESS("Данные успешно сохранены");
       }
@@ -95,6 +115,7 @@ export const useUpdateUser = (
 
 export const useDeleteUser = (userId: string) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
+  const pathname = usePathname();
 
   return useMutation({
     mutationFn: async () => {
@@ -113,23 +134,31 @@ export const useDeleteUser = (userId: string) => {
       >(mutateFn, { userId }, authUser, isSubmittingRef);
     },
     onMutate: async () => {
-      const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"]);
+      if (pathname.includes("adminboard")) {
+        queryClient.invalidateQueries({
+          queryKey: ["all-users", authUser?.id],
+          exact: true,
+        });
+      } else {
+        const previousDepsWithUsers = queryClient.getQueryData([
+          "depsWithUsers",
+        ]);
 
-      queryClient.setQueryData(
-        ["depsWithUsers"],
-        (oldData: DepartmentInfo[]) => {
-          return oldData.map((department: DepartmentInfo) => {
-            return {
-              ...department,
-              users: department.users.filter(
-                (user: UserResponse) => user.id !== userId
-              ),
-            };
-          });
-        }
-      );
-
-      return { previousDepsWithUsers };
+        queryClient.setQueryData(
+          ["depsWithUsers"],
+          (oldData: DepartmentInfo[]) => {
+            return oldData.map((department: DepartmentInfo) => {
+              return {
+                ...department,
+                users: department.users.filter(
+                  (user: UserResponse) => user.id !== userId
+                ),
+              };
+            });
+          }
+        );
+        return { previousDepsWithUsers };
+      }
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({

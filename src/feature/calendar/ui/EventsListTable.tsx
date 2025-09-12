@@ -39,6 +39,7 @@ const EventsListTable = <T extends EventInputType>({
     handleRowClick?.(row);
   };
 
+
   if (!table?.getRowModel()?.rows) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;
   }

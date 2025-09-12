@@ -53,10 +53,6 @@ const EventsList = ({ events }: EventsListProps) => {
     }
   }, [authUser, router]);
 
-  if (events?.length === 0) {
-    return null;
-  }
-
   if (!authUser) {
     return null;
   }

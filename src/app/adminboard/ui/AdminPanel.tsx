@@ -1,28 +1,31 @@
-import React from "react";
+"use client";
+
 
 import Link from "next/link";
 
-import { Bot, Users } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+
+import UserTable from "@/feature/user/ui/admindashboard/UserTable";
 
 const AdminPanel = () => {
   return (
-    <div className="px-5 pb-5 grid place-items-center gap-5 w-full">
-      <h1 className="text-2xl text-center">Панель администратора</h1>
-      <div className="flex flex-wrap gap-3 justify-start w-full">
-        <Link
-          className="btn_hover text-sm justify-start"
-          href="/adminboard/bots"
-        >
-          <Bot size={16} />
-          Телеграмм боты
-        </Link>
-        <Link
-          className="btn_hover text-sm justify-start"
-          href="/adminboard/employees"
-        >
-          <Users size={16} />
-          Сотрудники
-        </Link>
+    <div className="gap-5 w-full">
+      <div className="flex flex-col flex-wrap gap-3 justify-start w-full">
+          <div className="flex flex-wrap gap-3 self-end">
+            <Link
+            href={"/adminboard/bots"}
+            className="flex items-center justify-between py-2 px-3 border w-fit rounded-md border-blue-600 bg-muted self-end"
+          >
+            Боты <ChevronRight />
+          </Link>
+          <Link
+            href={"/adminboard/events"}
+            className="flex items-center justify-between py-2 px-3 border w-fit rounded-md border-blue-600 bg-muted self-end"
+          >
+            Календарь <ChevronRight />
+          </Link>
+          </div>
+        <UserTable />
       </div>
     </div>
   );

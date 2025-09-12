@@ -1,18 +1,14 @@
 "use client";
 
-import { PropsWithChildren } from "react";
-
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-
-import { ArrowBigLeft } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import LogoutDialog from "@/feature/auth/ui/logout-dialog";
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
-import { Button } from "@/shared/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
+import ButtonBack from "@/shared/custom-components/ui/Buttons/ButtonBack";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
 
 const RedirectToPath = dynamic(
@@ -29,9 +25,9 @@ const RedirectToPath = dynamic(
   }
 );
 
-const TemplateDashboard = ({ children }: PropsWithChildren) => {
+const TemplateDashboard = ({ children }: { children: React.ReactNode }) => {
   const { authUser } = useStoreUser();
-  const router = useRouter();
+  const pathName = usePathname();
 
   useGetDepartmentsWithUsers();
 
@@ -52,15 +48,9 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
 
           <SidebarInset className="h-auto">
             <PageTransitionY>
-              <div className="max-h-[94vh] overflow-auto">
-                <Button
-                  variant="outline"
-                  onClick={() => router.back()}
-                  className="mb-4 ml-4 mt-4"
-                >
-                  <ArrowBigLeft />
-                  Назад
-                </Button>
+              <div className="max-h-[94vh] overflow-auto p-2">
+                {pathName?.includes("adminboard") &&
+                  pathName !== "/adminboard" && <ButtonBack />}
                 {children}
               </div>
             </PageTransitionY>

@@ -1,14 +1,17 @@
 "use client";
 
 import { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table";
+import { VirtualItem } from "@tanstack/react-virtual";
 
 import { useCallback, useRef } from "react";
 import { DateRange } from "react-day-picker";
 
+import { getManagers } from "@/entities/department/lib/utils";
 import { columnsDataTask } from "@/entities/task/model/column-data-tasks";
 import { TaskWithUserInfo } from "@/entities/task/types";
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider";
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
+import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
 import { LABEL_TASK_STATUS } from "@/feature/task/model/constants";
 import DelTaskDialogContextMenu from "@/feature/task/ui/Modals/DelTaskDialogContextMenu";
 import EditTaskDialogContextMenu from "@/feature/task/ui/Modals/EditTaskDialogContextMenu";
@@ -17,12 +20,14 @@ import {
   TableContextType,
   TableProvider,
 } from "@/shared/custom-components/ui/Table/context/TableContext";
+import TableRowDealOrTask from "@/shared/custom-components/ui/Table/TableRowDealOrTask";
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate";
+import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow";
 import { useTableState } from "@/shared/hooks/useTableState";
+import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable";
 import FilterByUsers from "@/widgets/DataTable/ui/Filters/FilterByUsers";
-import FilterPopoverGroup from "@/widgets/DataTable/ui/Filters/FilterPopoverGroup";
 
-interface TaskTableProps<TData> {
+interface TaskTableProps<TData extends TaskWithUserInfo> {
   data: TData[];
 }
 
@@ -62,6 +67,11 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
 
   const { columnFilters } = table.getState();
 
+  const { virtualItems, totalSize } = useVirtualizedRowTable<T>({
+    rows,
+    tableContainerRef,
+  });
+
   if (rows.length === 0) {
     return (
       <div className="py-4">
@@ -78,7 +88,11 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
       <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
         <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
           <div className="flex items-center">
-            <FilterByUsers label="Исполнитель" columnId="executorId" />
+            <FilterByUsers
+              label="Исполнитель"
+              columnId="executorId"
+              managers={getManagers()}
+            />
           </div>
           <FilterTasks columnFilters={columnFilters} />
         </div>
@@ -89,10 +103,29 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           <TableProvider<T> getContextMenuActions={getContextMenuActions}>
             <TableTemplate
               table={table}
-              tableContainerRef={tableContainerRef}
               className="rounded-ee-md"
-              entityType="task"
-            />
+              totalSize={totalSize}
+            >
+              <VirtualRow<T>
+                rows={rows}
+                virtualItems={virtualItems}
+                renderRow={({
+                  row,
+                  virtualRow,
+                }: {
+                  row: Row<T>;
+                  virtualRow: VirtualItem;
+                }) => (
+                  <TableRowDealOrTask<T>
+                    key={row.id}
+                    row={row}
+                    virtualRow={virtualRow}
+                    entityType={"task"}
+                    headers={table.getHeaderGroups()[0].headers}
+                  />
+                )}
+              />
+            </TableTemplate>
           </TableProvider>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { DealType } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
 
-import React from "react";
 import { DateRange } from "react-day-picker";
 
 import { useParams, usePathname } from "next/navigation";
@@ -17,15 +16,15 @@ import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import SelectColumns from "@/shared/custom-components/ui/SelectColumns";
 
-import FilterByUser from "../FilterByUsers";
-import FilterPopoverGroup from "../FilterPopoverGroup";
+import { getManagers } from "@/entities/department/lib/utils";
+import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
+import FilterByUser from "@/feature/filter-persistence/ui/FilterByUsers";
 
 type FiltersBlockProps = {
-  isShow: boolean;
   table: Table<Record<string, unknown>>;
 };
 
-const FiltersBlock = ({ table, isShow }: FiltersBlockProps) => {
+const FiltersBlock = ({ table }: FiltersBlockProps) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
   const { dealType } = useParams();
@@ -33,7 +32,6 @@ const FiltersBlock = ({ table, isShow }: FiltersBlockProps) => {
   const { handleDateChange, handleClearDateFilter } =
     useDataTableFiltersContext();
 
-  if (!isShow) return null;
 
   const { columnFilters } = table.getState();
 
@@ -52,7 +50,7 @@ const FiltersBlock = ({ table, isShow }: FiltersBlockProps) => {
   return (
     <MotionDivY className="min-h-0">
       <div className="py-2 flex flex-wrap justify-start gap-2">
-        {hasTable && <FilterByUser label="Менеджер" />}
+        {hasTable && <FilterByUser label="Менеджер" managers={getManagers()}/>}
 
         <div className="flex gap-2 justify-start flex-wrap">
           <DateRangeFilter

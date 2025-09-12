@@ -1,13 +1,16 @@
-import { Table } from "@tanstack/react-table";
+import { Row, Table } from "@tanstack/react-table";
+import { VirtualItem } from "@tanstack/react-virtual";
 
 import { useRef } from "react";
 
+import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable";
 import { cn } from "@/shared/lib/utils";
 
-import { DealBase } from "./model/types";
+import TableRowDealOrTask from "./TableRowDealOrTask";
 import TableTemplate from "./TableTemplate";
+import VirtualRow from "./VirtualRow";
 
-interface TableComponentProps<T extends DealBase> {
+interface TableComponentDTProps<T extends Record<string, unknown>> {
   table: Table<T>;
   getRowLink?: (row: T & { id: string }, type: string) => string;
   hasEditDeleteActions?: boolean;
@@ -29,12 +32,18 @@ export const getRowClassName = (dealStatus?: string) => {
   }`;
 };
 
-const TableComponent = <T extends DealBase>({
+const TableComponentDT = <T extends Record<string, unknown>>({
   table,
   hasEditDeleteActions = true,
   openFilters,
-}: TableComponentProps<T>) => {
+}: TableComponentDTProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const { rows } = table.getRowModel();
+
+  const { virtualItems, totalSize } = useVirtualizedRowTable<T>({
+    rows,
+    tableContainerRef,
+  });
 
   return (
     <div
@@ -52,13 +61,30 @@ const TableComponent = <T extends DealBase>({
           Количество выбранных заявок: {table.getRowModel().rows.length}
         </p>
       )}
-      <TableTemplate
-        table={table}
-        tableContainerRef={tableContainerRef}
-        hasEditDeleteActions={hasEditDeleteActions}
-      />
+      <TableTemplate table={table} totalSize={totalSize}>
+        <VirtualRow
+          rows={rows}
+          virtualItems={virtualItems}
+          renderRow={({
+            row,
+            virtualRow,
+          }: {
+            row: Row<T>;
+            virtualRow: VirtualItem;
+          }) => (
+            <TableRowDealOrTask<T>
+              key={row.id}
+              row={row}
+              virtualRow={virtualRow}
+              hasEditDeleteActions={hasEditDeleteActions}
+              entityType={"deal"}
+              headers={table.getHeaderGroups()[0].headers}
+            />
+          )}
+        />
+      </TableTemplate>
     </div>
   );
 };
 
-export default TableComponent;
+export default TableComponentDT;

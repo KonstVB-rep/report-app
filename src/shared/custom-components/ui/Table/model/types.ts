@@ -30,8 +30,8 @@ export type TableBodyRowProps<T> = {
 
 //  export type AllCommonKeys = CommonProperties<[ProjectResponse, RetailResponse, ContractResponse]>;
 
-export type DealBase = {
+export type TypeBaseDT = {
   id: string;
-  dealStatus: string;
-  type: string;
+  dealStatus?: string;
+  type?: string;
 };

@@ -1,0 +1,293 @@
+import { PermissionEnum, User } from "@prisma/client";
+import { CellContext, ColumnDef } from "@tanstack/react-table";
+
+import { DateRange } from "react-day-picker";
+
+import { endOfDay, startOfDay } from "date-fns";
+
+import { DepartmentLabelsById } from "@/entities/department/types";
+
+import { PermissionUser, RolesUser } from "./objectTypes";
+
+export type UserTypeTable = User & {
+  permissions: PermissionEnum[];
+  telegramInfo: string;
+  lastlogin: Date;
+};
+
+export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
+  {
+    id: "rowNumber",
+    header: "№",
+    cell: ({ row }) => Number(row.index) + 1,
+    enableHiding: false,
+    enableSorting: false,
+    accessorFn: () => "",
+    minSize: 80,
+    maxSize: 80,
+  },
+  {
+    id: "id",
+    header: "",
+    cell: (info) => info.getValue(),
+    enableHiding: true,
+    meta: {
+      hidden: true,
+    },
+    filterFn: (row, columnId, filterValues) => {
+      if (!filterValues || filterValues.length === 0) {
+        return true;
+      }
+
+      const userIdOfProject = row.original.id;
+      return filterValues.includes(userIdOfProject);
+    },
+    accessorFn: (row: UserTypeTable) => row.id,
+  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //       <Label className={cn("flex items-center justify-center cursor-pointer gap-1",(table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected()) && "text-blue-600")}>
+  //         Выбрать
+  //         <Checkbox
+  //         checked={
+  //           table.getIsAllPageRowsSelected() ||
+  //           (table.getIsSomePageRowsSelected() && "indeterminate")
+  //         }
+  //         onCheckedChange={(value: CheckedState) =>
+  //           table.toggleAllPageRowsSelected(!!value)
+  //         }
+  //         className="opacity-0 w-0 h-0"
+  //         aria-label="Select all"
+  //       />
+  //       </Label>
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="flex items-center justify-center gap-1">
+  //       <Checkbox
+  //         checked={row.getIsSelected()}
+  //         onCheckedChange={(value: CheckedState) => row.toggleSelected(!!value)}
+  //         aria-label="Select row"
+  //       />
+  //     </div>
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  //   minSize: 100,
+  //   maxSize: 100,
+  // },
+  {
+    id: "username",
+    header: "Имя",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string;
+      return value
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    },
+    accessorFn: (row: UserTypeTable) => {
+      return row.username;
+    },
+  },
+  {
+    id: "email",
+    header: "Элетронная почта",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string;
+      return value;
+    },
+    accessorFn: (row: UserTypeTable) => {
+      return row.email;
+    },
+  },
+  {
+    id: "phone",
+    header: "Телефон",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string;
+      return value;
+    },
+    accessorFn: (row: UserTypeTable) => row.phone,
+  },
+  {
+    id: "position",
+    header: "Должность",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string;
+      return (
+        value.split(" ")[0].charAt(0).toUpperCase() +
+        value.split(" ")[0].slice(1)
+      );
+    },
+    accessorFn: (row: UserTypeTable) => row.position,
+  },
+  {
+    id: "telegramInfo",
+    header: "телеграм данные",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string;
+      return value;
+    },
+    accessorFn: (row: UserTypeTable) => row.telegramInfo,
+  },
+  {
+    id: "departmentId",
+    header: "Отдел",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string;
+      return DepartmentLabelsById[value];
+    },
+    accessorFn: (row: UserTypeTable) => row.departmentId,
+  },
+  {
+    id: "role",
+    header: "Роль",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string;
+      return RolesUser[value as keyof typeof RolesUser];
+    },
+    accessorFn: (row: UserTypeTable) => row.role,
+  },
+  {
+    id: "permissions",
+    header: "Разрешения",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const value = info.getValue() as string[];
+      if (Array.isArray(value))
+        return (
+          <span
+            style={{ whiteSpace: "break-spaces" }}
+            className="block text-left"
+          >
+            {value
+              .map((item) => PermissionUser[item as PermissionEnum])
+              .join(",\n")}
+          </span>
+        );
+      return value;
+    },
+    accessorFn: (row: UserTypeTable) => row.permissions,
+  },
+  {
+    id: "lastlogin",
+    header: "Последняя сессия",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const date = info.getValue() as Date;
+      return date.toLocaleDateString("ru-RU");
+    },
+    enableHiding: true,
+    meta: {
+      isDateFilter: true,
+    },
+    enableResizing: false,
+    filterFn: (row, columnId, filterValue) => {
+      const date = row.getValue(columnId) as Date;
+      const dateAtStartOfDay = startOfDay(date);
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange;
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to);
+          return (
+            dateAtStartOfDay >= startOfDay(from) &&
+            dateAtStartOfDay <= toAtEndOfDay
+          );
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from);
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to);
+        }
+        return false;
+      }
+
+      return true;
+    },
+    accessorFn: (row: UserTypeTable) => row.lastlogin,
+  },
+  {
+    id: "createdAt",
+    header: "Дата регистрации",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const date = info.getValue() as Date;
+      return date.toLocaleDateString("ru-RU");
+    },
+    enableHiding: true,
+    meta: {
+      isDateFilter: true,
+    },
+    enableResizing: false,
+    filterFn: (row, columnId, filterValue) => {
+      const date = row.getValue(columnId) as Date;
+      const dateAtStartOfDay = startOfDay(date);
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange;
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to);
+          return (
+            dateAtStartOfDay >= startOfDay(from) &&
+            dateAtStartOfDay <= toAtEndOfDay
+          );
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from);
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to);
+        }
+        return false;
+      }
+
+      return true;
+    },
+    accessorFn: (row: UserTypeTable) => row.createdAt,
+  },
+  {
+    id: "updatedAt",
+    header: "Дата обновления",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const date = info.getValue() as Date;
+      return date.toLocaleDateString("ru-RU");
+    },
+    enableHiding: true,
+    meta: {
+      isDateFilter: true,
+    },
+    // size: 100, // Фиксированная ширина
+    enableResizing: false,
+    filterFn: (row, columnId, filterValue) => {
+      const date = row.getValue(columnId) as Date;
+      const dateAtStartOfDay = startOfDay(date);
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange;
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to);
+          return (
+            dateAtStartOfDay >= startOfDay(from) &&
+            dateAtStartOfDay <= toAtEndOfDay
+          );
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from);
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to);
+        }
+        return false;
+      }
+
+      return true;
+    },
+    accessorFn: (row: UserTypeTable) => row.updatedAt,
+  },
+];

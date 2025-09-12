@@ -9,23 +9,22 @@ import FiltersManagement from "@/feature/filter-persistence/ui/FiltersManagement
 import ButtonExportTableXls from "@/feature/table-export-excel/ui/ButtonExportTableXls";
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput";
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
-import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
-import TableComponent from "@/shared/custom-components/ui/Table/TableComponent";
 import { useTableState } from "@/shared/hooks/useTableState";
+import TableComponentDT from "@/shared/custom-components/ui/Table/TableComponentDT";
 
 const FiltersBlock = dynamic(() => import("./Filters/FiltersBlock"), {
   ssr: false,
   loading: () => <LoaderCircle />,
 });
 
-interface DataTableProps<T extends DealBase> {
+interface DataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   hasEditDeleteActions?: boolean;
   children?: React.ReactNode;
 }
 
-const DataTable = <T extends DealBase>({
+const DataTable = <T extends Record<string, unknown>>({
   columns,
   data,
   hasEditDeleteActions = true,
@@ -55,7 +54,7 @@ const DataTable = <T extends DealBase>({
               value={globalFilter ?? ""}
               onChange={(value) => setGlobalFilter(String(value))}
               className="p-2 font-lg shadow border border-block"
-              placeholder="Search all columns..."
+              placeholder="Поиск..."
             />
           </div>
 
@@ -69,14 +68,13 @@ const DataTable = <T extends DealBase>({
         <div
           className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
         >
-          <FiltersBlock
+          {openFilters && <FiltersBlock
             table={table as Table<Record<string, unknown>>}
-            isShow={originalData.length > 0 && openFilters}
-          />
+          />}
         </div>
 
         {data.length ? (
-          <TableComponent
+          <TableComponentDT
             table={table}
             hasEditDeleteActions={hasEditDeleteActions}
             openFilters={openFilters}

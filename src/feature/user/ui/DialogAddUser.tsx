@@ -28,7 +28,7 @@ const DialogAddUser = ({ className }: { className?: string }) => {
           <Button
             variant="outline"
             className={cn("btn_hover", className)}
-            aria-label="Добавить нового пользователя"
+            aria-label="Новый пользователь"
           >
             <SquarePlus size={16} />
             <span className="whitespace-nowrap text-sm text-start">

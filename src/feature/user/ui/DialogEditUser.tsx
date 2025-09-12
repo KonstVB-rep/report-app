@@ -20,10 +20,13 @@ const UserEditForm = dynamic(() => import("@/feature/user/ui/UserEditForm"), {
 const DialogEditUser = ({
   user,
   textButtonShow = false,
+  className
 }: {
   user: UserOmit;
   textButtonShow?: boolean;
+  className?: string;
 }) => {
+  
   const { data, isLoading, isError } = useGetUser(user.id);
   const [open, setOpen] = useState(false);
 
@@ -43,6 +46,7 @@ const DialogEditUser = ({
       open={open}
       setOpen={setOpen}
       icon={<UserPen size={40} />}
+      className={className}
     >
       {isLoading ? (
         <UserFormSkeleton />

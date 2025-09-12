@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import {
   getAdditionalContacts,
+  getAllDealsByDepartment,
   getDealsByDateRange,
   getProjectById,
   getProjectsUser,
@@ -388,7 +389,7 @@ export const useDealsUser = (type: TableType, userId?: string) => {
   return fetchers[type](userId);
 };
 
-export const useGetAllDeals = (
+export const useGetAllDealsByType = (
   type: DealsUnionType,
   userId: string | null,
   departmentId: string
@@ -434,6 +435,37 @@ export const useGetAdditionalContacts = (dealId: string) => {
       }
     },
     enabled: !!dealId,
+    staleTime: 1000 * 60,
+  });
+};
+
+
+export const useGetAllDealsDepartment = () => {
+   const { authUser } = useStoreUser();
+  return useQuery({
+    queryKey: ["getAllDealsDepartment", authUser?.departmentId, authUser?.id],
+    queryFn: async () => {
+      try {
+        if (!authUser?.id) {
+          throw new Error("Пользователь не авторизован");
+        }
+
+        return (
+          (await executeWithTokenCheck(() =>
+            getAllDealsByDepartment(authUser?.departmentId)
+          )) ?? []
+        );
+      } catch (error) {
+        console.log(error, "Ошибка useGetProjectsUser");
+        if ((error as Error).message === "Failed to fetch") {
+          TOAST.ERROR("Не удалось получить данные");
+        } else {
+          TOAST.ERROR((error as Error).message);
+        }
+        throw error;
+      }
+    },
+    enabled: !!authUser?.id && !!authUser?.departmentId,
     staleTime: 1000 * 60,
   });
 };

@@ -3,6 +3,9 @@ import tailwindCssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
+  future: { 
+    hoverOnlyWhenSupported: true,
+  },
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",

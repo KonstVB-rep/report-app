@@ -8,9 +8,11 @@ import DeleteDialog from "@/shared/custom-components/ui/DeleteDIalog";
 const DialogDeleteUser = ({
   user,
   textButtonShow = false,
+  className
 }: {
   user: UserOmit;
   textButtonShow?: boolean;
+  className?: string;
 }) => {
   const { data, isFetching } = useGetUser(user.id);
 
@@ -20,11 +22,12 @@ const DialogDeleteUser = ({
     <>
       <DeleteDialog
         textButtonShow={textButtonShow}
-        title="Удалить пользователя"
+        title="Удалить"
         description="Вы действительно хотите удалить пользователя?"
         isPending={isPending}
         isShowSkeleton={isFetching || !data}
         mutate={mutate}
+        className={className}
       >
         <>
           <p className="text-center">Вы уверены что хотите удалить аккаунт?</p>

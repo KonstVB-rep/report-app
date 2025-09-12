@@ -5,12 +5,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import dynamic from "next/dynamic";
 
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
+import ModalContent from "@/shared/custom-components/ui/ModalContent";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 const DelDealForm = dynamic(() => import("../Forms/DelDealForm"), {
@@ -29,14 +24,9 @@ const DelDealContextMenu = ({
 }) => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}>
-      <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
-          <DialogTitle className="sr-only">Удалить проект</DialogTitle>
-          <DialogDescription className="sr-only" />
-        </DialogHeader>
-
+      <ModalContent title="Удалить проект" className="sm:max-w-[400px]">
         <DelDealForm id={id} type={type} close={close} />
-      </DialogContent>
+      </ModalContent>
     </ProtectedByPermissions>
   );
 };

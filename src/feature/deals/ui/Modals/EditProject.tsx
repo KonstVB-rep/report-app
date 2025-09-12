@@ -5,12 +5,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import dynamic from "next/dynamic";
 
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
+import ModalContent from "@/shared/custom-components/ui/ModalContent";
 
 const EditProjectForm = dynamic(() => import("../Forms/EditProjectForm"), {
   ssr: false,
@@ -29,21 +24,15 @@ const EditProject = ({
   titleForm: string;
 }) => {
   return (
-    <DialogContent
-      className="max-h-[94vh] overflow-y-auto sm:max-w-[825px]"
-      showX={true}
-    >
-      <DialogHeader>
-        <DialogTitle className="sr-only">Редактировать проект</DialogTitle>
-        <DialogDescription></DialogDescription>
-      </DialogHeader>
+
+    <ModalContent title="Редактировать проект"  className="max-h-[94vh] overflow-y-auto sm:max-w-[825px]">
       <EditProjectForm
         close={close}
         dealId={id}
         isInvalidate={isInvalidate}
         titleForm={titleForm}
       />
-    </DialogContent>
+    </ModalContent>
   );
 };
 

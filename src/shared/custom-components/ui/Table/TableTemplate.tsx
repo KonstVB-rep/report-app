@@ -1,7 +1,4 @@
 import { flexRender, useReactTable } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
-
-import { RefObject, useEffect, useState } from "react";
 
 import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
 
@@ -12,42 +9,19 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 
-import TableBodyRow from "./TableBodyRow";
-
 type TableTemplateProps<T extends Record<string, unknown>> = {
   table: ReturnType<typeof useReactTable<T>>;
   className?: string;
-  tableContainerRef: RefObject<HTMLDivElement | null>;
-  hasEditDeleteActions?: boolean;
-  entityType?: "deal" | "task" | "order";
+  totalSize?: number;
+  children: React.ReactNode;
 };
-
-const ROW_HEIGHT = 57;
 
 const TableTemplate = <T extends Record<string, unknown>>({
   table,
   className,
-  tableContainerRef,
-  hasEditDeleteActions,
-  entityType = "deal",
+  totalSize,
+  children,
 }: TableTemplateProps<T>) => {
-  const { rows } = table.getRowModel();
-
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    estimateSize: () => ROW_HEIGHT,
-    getScrollElement: () => tableContainerRef.current,
-    overscan: 10,
-  });
-
-  const virtualItems = rowVirtualizer.getVirtualItems();
-  const totalSize = rowVirtualizer.getTotalSize();
-
-  const [isHydrating, setIsHydrating] = useState(true);
-
-  useEffect(() => {
-    setIsHydrating(false);
-  }, []);
 
   return (
     <table
@@ -57,7 +31,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow
             key={headerGroup.id}
-            style={{ display: "flex", width: "100%" }}
+            className="flex w-full"
           >
             {headerGroup.headers.map((header) => (
               <TableHead
@@ -104,36 +78,10 @@ const TableTemplate = <T extends Record<string, unknown>>({
       </TableHeader>
 
       <TableBody style={{ height: `${totalSize}px`, position: "relative" }}>
-        {isHydrating && <SkeletonTable />}
-        {rows.length > 0 &&
-          !isHydrating &&
-          virtualItems.map((virtualRow) => {
-            const row = rows[virtualRow.index];
-            return (
-              <TableBodyRow<T>
-                key={row.id}
-                row={row}
-                virtualRow={virtualRow}
-                hasEditDeleteActions={hasEditDeleteActions}
-                entityType={entityType}
-                headers={table.getHeaderGroups()[0].headers}
-              />
-            );
-          })}
+        {children}
       </TableBody>
     </table>
   );
 };
 
 export default TableTemplate;
-
-const SkeletonTable = () => (
-  <tr className="flex flex-col space-y-2">
-    {[...Array(5)].map((_, i) => (
-      <td
-        key={i}
-        className="h-[57px] w-full bg-muted rounded-md animate-pulse"
-      />
-    ))}
-  </tr>
-);

@@ -2,7 +2,6 @@ import { PermissionEnum } from "@prisma/client";
 
 import React, { memo } from "react";
 
-import { getManagers } from "@/entities/department/lib/utils";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import FilterPopover from "../FilterPopover";
@@ -10,11 +9,10 @@ import FilterPopover from "../FilterPopover";
 type Props = {
   label: string;
   columnId?: string;
+  managers: Record<string, string> | { id: string; label: string }[];
 };
 
-const managers = getManagers();
-
-const FilterByUser = ({ label, columnId = "user" }: Props) => {
+const FilterByUser = ({ label, columnId = "user", managers }: Props) => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
       <FilterPopover columnId={columnId} options={managers} label={label} />

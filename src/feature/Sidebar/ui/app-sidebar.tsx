@@ -141,7 +141,7 @@ const AppSidebar = () => {
       <SidebarFooter className="border-t border-muted">
         <NavUser>
           <Link href="/adminboard" className="btn_hover justify-center text-sm">
-            Администрирование
+            Панель администратора
           </Link>
         </NavUser>
       </SidebarFooter>

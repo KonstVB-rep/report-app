@@ -12,9 +12,9 @@ export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] =
       id: "user",
       header: "Менеджер",
       cell: (info) => info.getValue(),
-      enableHiding: true, // Разрешает скрывать колонку
+      enableHiding: true, 
       meta: {
-        hidden: true, // Изначально скрыта
+        hidden: true,
       },
       filterFn: (row, columnId, filterValues) => {
         if (!filterValues || filterValues.length === 0) {

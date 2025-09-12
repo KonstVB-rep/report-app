@@ -14,16 +14,16 @@ import {
   TableContextType,
   TableProvider,
 } from "@/shared/custom-components/ui/Table/context/TableContext";
-import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
+import { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types";
 import DataTable from "@/widgets/DataTable/ui/DataTable";
 
-interface DealsTableProps<T extends DealBase> {
+interface DealsTableProps<T extends TypeBaseDT> {
   columns: ColumnDef<T>[];
   data: T[];
   hasEditDeleteActions?: boolean;
 }
 
-const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
+const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
   const { dealType } = useParams<{ dealType: string }>();
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =

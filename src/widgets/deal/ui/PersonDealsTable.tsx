@@ -3,7 +3,6 @@
 import { PermissionEnum } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
-import React from "react";
 
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
@@ -21,7 +20,7 @@ import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
 import { useDealsUser } from "@/feature/deals/api/hooks/query";
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage";
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition";
-import { DealBase } from "@/shared/custom-components/ui/Table/model/types";
+import { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types";
 
 import { columnsDataContract } from "../model/columns-data-contracts";
 import { columnsDataProject } from "../model/columns-data-project";
@@ -57,17 +56,6 @@ const Columns = (
   }
 };
 
-// const getRowLink = (row: DealBase): string => {
-//   if (row.type === 'PROJECT') {
-//     return `/dashboard/deal/project/${row.id}`;
-//   }
-//   else if (row.type === 'RETAIL') {
-//     return `/dashboard/deal/retail/${row.id}`;
-//   }
-//   else if (row.type === 'ORDER') {
-//     return `/dashboard/orders/${row.id}`;
-//   }else return ''
-// };
 
 const PersonDealsTable = () => {
   const { userId, dealType } = useParams<{
@@ -107,8 +95,8 @@ const PersonDealsTable = () => {
 
           <ButtonsGroupTable />
           <DealsTable
-            columns={Columns(dealType as TableType) as ColumnDef<DealBase>[]}
-            data={data as DealBase[]}
+            columns={Columns(dealType as TableType) as ColumnDef<TypeBaseDT>[]}
+            data={data as TypeBaseDT[]}
           />
         </>
       </DealTableTemplate>
