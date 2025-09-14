@@ -19,7 +19,7 @@ const AdminPanel = () => {
             Боты <ChevronRight />
           </Link>
 
-             <Link
+          <Link
             href={"/adminboard/deals"}
             prefetch={false}
             className="flex items-center justify-between py-2 px-3 border w-fit rounded-md border-blue-600 bg-muted self-end"

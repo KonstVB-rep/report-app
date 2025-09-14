@@ -1,9 +1,8 @@
 import { Role } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { usePathname } from "next/navigation";
 
-import { getQueryClient } from "@/app/provider/query-provider";
 import { DepartmentInfo } from "@/entities/department/types";
 import {
   createUser,
@@ -25,13 +24,12 @@ import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 import { ActionResponse } from "@/shared/types";
 
-const queryClient = getQueryClient();
-
 export const useCreateUser = (
   onSuccessCallback?: (data: ActionResponse<UserFormData>) => void
 ) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: FormData) => {
       return handleMutationWithAuthCheck<
@@ -42,8 +40,7 @@ export const useCreateUser = (
     onSuccess: (data) => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
-          queryKey: ["all-users", authUser?.id],
-          exact: true,
+          queryKey: ["all-users"],
         });
       } else {
         queryClient.invalidateQueries({
@@ -70,6 +67,7 @@ export const useUpdateUser = (
   userId: string,
   onSuccessCallback?: (data: ActionResponse<UserFormEditData>) => void
 ) => {
+  const queryClient = useQueryClient();
   const pathname = usePathname();
   const { authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
@@ -90,8 +88,7 @@ export const useUpdateUser = (
 
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
-          queryKey: ["all-users", authUser?.id],
-          exact: true,
+          queryKey: ["all-users"],
         });
       } else {
         queryClient.invalidateQueries({
@@ -117,7 +114,7 @@ export const useUpdateUser = (
 export const useDeleteUser = (userId: string) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
   const pathname = usePathname();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
       const mutateFn = async (data: { userId: string }) => {
@@ -155,8 +152,7 @@ export const useDeleteUser = (userId: string) => {
     onSuccess: async () => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
-          queryKey: ["all-users", authUser?.id],
-          exact: true,
+          queryKey: ["all-users"],
         });
       } else {
         await queryClient.invalidateQueries({
@@ -181,7 +177,7 @@ export const useDeleteUser = (userId: string) => {
 export const useDeleteUsersList = (userIds: string[]) => {
   const { authUser, isSubmittingRef } = useFormSubmission();
   const pathname = usePathname();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
       const mutateFn = async (data: string[]) => {
@@ -221,8 +217,7 @@ export const useDeleteUsersList = (userIds: string[]) => {
     onSuccess: async () => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
-          queryKey: ["all-users", authUser?.id],
-          exact: true,
+          queryKey: ["all-users"],
         });
       } else {
         await queryClient.invalidateQueries({
