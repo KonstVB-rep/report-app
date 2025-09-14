@@ -10,15 +10,17 @@ import { Input } from "@/shared/components/ui/input";
 type InputPasswordProps = React.InputHTMLAttributes<HTMLInputElement>;
 const InputPassword = (props: InputPasswordProps) => {
   const [visible, setVisible] = React.useState(false);
+  console.log(visible, "visible");
+  const { type, ...restProps } = props;
 
   return (
     <div className="relative">
       <Input
         id="user_password"
-        type={visible ? "text" : "user_password"}
+        type={visible ? "text" : "password"}
         placeholder="✱✱✱✱✱✱✱"
         className={`w-full placeholder:text-sm ${props.className}`}
-        {...props}
+        {...restProps}
       />
       <Button
         variant="ghost"

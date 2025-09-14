@@ -1,6 +1,6 @@
 import { getAllBots } from "@/entities/tgBot/api";
-import ClientBotsPage from "./ui/ClientBotsPage";
 
+import ClientBotsPage from "./ui/ClientBotsPage";
 
 const BotsPage = async () => {
   try {

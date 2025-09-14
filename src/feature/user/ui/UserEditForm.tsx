@@ -42,7 +42,7 @@ const UserEditForm = ({
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('onSubmit', onSubmit)
+    console.log("onSubmit", onSubmit);
     const formData = new FormData(event.currentTarget);
     formData.append("id", user?.id as string);
     state.inputs = {

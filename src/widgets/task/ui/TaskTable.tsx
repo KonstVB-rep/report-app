@@ -11,6 +11,7 @@ import { columnsDataTask } from "@/entities/task/model/column-data-tasks";
 import { TaskWithUserInfo } from "@/entities/task/types";
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider";
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
+import FilterByUsers from "@/feature/filter-persistence/ui/FilterByUsers";
 import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
 import { LABEL_TASK_STATUS } from "@/feature/task/model/constants";
 import DelTaskDialogContextMenu from "@/feature/task/ui/Modals/DelTaskDialogContextMenu";
@@ -25,7 +26,6 @@ import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate";
 import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow";
 import { useTableState } from "@/shared/hooks/useTableState";
 import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable";
-import FilterByUsers from "@/widgets/DataTable/ui/Filters/FilterByUsers";
 
 interface TaskTableProps<TData extends TaskWithUserInfo> {
   data: TData[];
@@ -75,7 +75,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   if (rows.length === 0) {
     return (
       <div className="py-4">
-        <div className="flex items-center justify-center flex-wrap gap-2 p-2 border-b border-t mb-2">
+        <div className="flex items-center justify-center flex-wrap gap-2 p-2 border-b border-t border-border mb-2">
           <h1 className="text-xl text-center w-full uppercase text-muted-foreground">
             Список задач пуст
           </h1>

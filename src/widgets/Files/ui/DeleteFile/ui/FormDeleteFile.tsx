@@ -64,7 +64,7 @@ const FormDeleteFile = ({
                       }}
                       onClick={() => handleDeleteFromListSelected(file.name)}
                     >
-                      <X strokeWidth={1} className="!h-6 !w-6" />
+                      <X strokeWidth={1} className="h-6! w-6!" />
                     </animated.span>
                   </Button>
                 </animated.li>

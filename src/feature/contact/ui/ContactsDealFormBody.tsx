@@ -46,7 +46,7 @@ const ContactsDealFormBody = ({
         errorMessage={
           (form.formState.errors.email as ContactFieldError)?._common?.message
         }
-        className="w-full valid:[&:not(:placeholder-shown)]:border-green-500 invalid:[&:not(:placeholder-shown)]:border-red-500"
+        className="w-full valid:not-placeholder-shown:border-green-500 invalid:not-placeholder-shown:border-red-500"
         placeholder="Email"
         type="email"
       />

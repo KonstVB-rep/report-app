@@ -1,6 +1,5 @@
 "use client";
 
-
 import Link from "next/link";
 
 import { ChevronRight } from "lucide-react";
@@ -11,8 +10,8 @@ const AdminPanel = () => {
   return (
     <div className="gap-5 w-full">
       <div className="flex flex-col flex-wrap gap-3 justify-start w-full">
-          <div className="flex flex-wrap gap-3 self-end">
-            <Link
+        <div className="flex flex-wrap gap-3 self-end">
+          <Link
             href={"/adminboard/bots"}
             className="flex items-center justify-between py-2 px-3 border w-fit rounded-md border-blue-600 bg-muted self-end"
           >
@@ -24,7 +23,7 @@ const AdminPanel = () => {
           >
             Календарь <ChevronRight />
           </Link>
-          </div>
+        </div>
         <UserTable />
       </div>
     </div>

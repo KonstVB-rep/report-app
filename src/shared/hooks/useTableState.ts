@@ -27,7 +27,7 @@ export const useTableState = <T extends Record<string, unknown>>(
   columns: ColumnDef<T>[] // и колонки для этого типа
 ) => {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({})
+  const [rowSelection, setRowSelection] = useState({});
   const memoizedData = useMemo(() => data, [data]);
   const memoizedColumns = useMemo(() => columns, [columns]);
 
@@ -78,19 +78,14 @@ export const useTableState = <T extends Record<string, unknown>>(
       columnVisibility: {
         ...columnVisibility,
         user: false,
-        id: false
+        id: false,
       },
     },
     meta: {
       columnVisibility: {
-        resource: false, // например скрыть колонку с id 'resource'
+        resource: false,
       },
     },
-    //   defaultColumn: {
-    //   size: 0,      // убираем дефолтные 150px
-    //   minSize: 0,
-    //   // maxSize: Number.MAX_SAFE_INTEGER,
-    // },
   });
 
   const filtersContextValue = {

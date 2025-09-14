@@ -36,7 +36,7 @@ const DeleteDialog = ({
   isShowSkeleton = false,
   textButtonShow = false,
   mutate,
-  className = "flex items-center flex-shrink-0 gap-2 border-none px-2 hover:bg-red-600/70 hover:text-white focus-visible:bg-red-600/70 focus-visible:text-white",
+  className = "flex items-center shrink-0 gap-2 border-none px-2 hover:bg-red-600/70 hover:text-white focus-visible:bg-red-600/70 focus-visible:text-white",
 }: DeleteDialogProps) => {
   return (
     <>
@@ -49,7 +49,7 @@ const DeleteDialog = ({
             size={!textButtonShow ? "icon" : "default"}
             className={cn(
               className,
-              textButtonShow ? "w-full justify-start" : "justify-center"
+              textButtonShow ? "justify-start" : "justify-center"
             )}
           >
             <Trash size={40} />

@@ -8,7 +8,7 @@ import DeleteDialog from "@/shared/custom-components/ui/DeleteDIalog";
 const DialogDeleteUser = ({
   user,
   textButtonShow = false,
-  className
+  className,
 }: {
   user: UserOmit;
   textButtonShow?: boolean;

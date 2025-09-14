@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
-const SubTitlePage = ({text}: {text: string}) => {
-  return (
-      <p className="text-md text-stone-600 text-center">{text}</p>
-  )
-}
+const SubTitlePage = ({ text }: { text: string }) => {
+  return <p className="text-md text-stone-600 text-center">{text}</p>;
+};
 
-export default SubTitlePage
+export default SubTitlePage;

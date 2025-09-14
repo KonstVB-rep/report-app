@@ -89,7 +89,7 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({
               .map(({ label, value }) => (
                 <p
                   key={label}
-                  className="flex items-center gap-1 rounded-sm bg-black/20 p-2 dark:bg-black/50"
+                  className="flex items-center gap-1 rounded bg-black/20 p-2 dark:bg-black/50"
                 >
                   <span className="font-bold">{label}:</span>
                   <span className="capitalize">{value}</span>

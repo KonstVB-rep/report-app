@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 
 import { Check, ChevronsUpDown, X } from "lucide-react";
 
-import { ny } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Command,
@@ -206,8 +206,8 @@ const MultiSelectTrigger = React.forwardRef<
         aria-disabled={disabled}
         data-disabled={disabled}
         {...props}
-        className={ny(
-          "flex size-full min-h-10 items-center justify-between whitespace-nowrap rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-white focus:outline-none focus:ring-1 focus:ring-neutral-950 dark:border-neutral-800 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 [&>span]:line-clamp-1",
+        className={cn(
+          "flex size-full min-h-10 items-center justify-between whitespace-nowrap rounded-md border border-neutral-200 bg-transparent px-3 py-2 text-sm shadow ring-offset-white focus:outline-hidden focus:ring-1 focus:ring-neutral-950 dark:border-neutral-800 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 [&>span]:line-clamp-1",
           disabled ? "cursor-not-allowed opacity-50" : "cursor-text",
           className
         )}
@@ -260,7 +260,7 @@ const MultiSelectValue = React.forwardRef<
     return (
       <TooltipProvider delayDuration={300}>
         <div
-          className={ny(
+          className={cn(
             "flex flex-1 flex-wrap items-center gap-1.5 overflow-x-hidden",
             className
           )}
@@ -299,11 +299,7 @@ const MultiSelectValue = React.forwardRef<
               return (
                 <Tooltip key={value}>
                   <TooltipTrigger className="inline-flex">{el}</TooltipTrigger>
-                  <TooltipContent
-                    side="bottom"
-                    align="start"
-                    className="z-[51]"
-                  >
+                  <TooltipContent side="bottom" align="start" className="z-51">
                     {content}
                   </TooltipContent>
                 </Tooltip>
@@ -343,7 +339,7 @@ const MultiSelectList = React.forwardRef<
   return (
     <CommandList
       ref={ref}
-      className={ny("max-h-[unset] px-0 py-1", className)}
+      className={cn("max-h-[unset] px-0 py-1", className)}
       {...props}
     />
   );
@@ -375,8 +371,8 @@ const MultiSelectContent = React.forwardRef<
         align="start"
         sideOffset={4}
         collisionPadding={10}
-        className={ny(
-          "z-50 w-full rounded-md border border-neutral-200 bg-white p-0 text-neutral-950 shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
+        className={cn(
+          "z-50 w-full rounded-md border border-neutral-200 bg-white p-0 text-neutral-950 shadow-md outline-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50"
         )}
         style={
           {
@@ -394,8 +390,8 @@ const MultiSelectContent = React.forwardRef<
         {...props}
       >
         <Command
-          className={ny(
-            "max-h-96 w-full min-w-[var(--radix-select-trigger-width)] px-1",
+          className={cn(
+            "max-h-96 w-full min-w-(--radix-select-trigger-width) px-1",
             className
           )}
           shouldFilter={!context.onSearch}
@@ -475,7 +471,7 @@ const MultiSelectItem = React.forwardRef<
       <CommandItem
         {...props}
         value={value}
-        className={ny(
+        className={cn(
           disabled &&
             "cursor-not-allowed text-neutral-500 dark:text-neutral-400",
           className

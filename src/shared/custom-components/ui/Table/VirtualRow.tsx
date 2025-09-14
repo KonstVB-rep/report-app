@@ -8,17 +8,13 @@ import { SkeletonTable } from "../Skeletons/SkeletonTable";
 interface Props<T> {
   rows: Row<T>[];
   virtualItems: VirtualItem[];
-   renderRow: (props: {
+  renderRow: (props: {
     row: Row<T>;
     virtualRow: VirtualItem;
   }) => React.ReactNode;
 }
 
-const VirtualRow = <T,>({
-  rows,
-  virtualItems,
-  renderRow,
-}: Props<T>) => {
+const VirtualRow = <T,>({ rows, virtualItems, renderRow }: Props<T>) => {
   const isHydrating = useHydrateDataTable();
   return (
     <>
@@ -27,11 +23,10 @@ const VirtualRow = <T,>({
         !isHydrating &&
         virtualItems.map((virtualRow) => {
           const row = rows[virtualRow.index];
-          return (renderRow({
-              row,
-              virtualRow,
-            })
-          );
+          return renderRow({
+            row,
+            virtualRow,
+          });
         })}
     </>
   );

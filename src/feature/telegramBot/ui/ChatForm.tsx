@@ -46,11 +46,11 @@ const ChatForm = ({
 
   return (
     <Card className="w-full max-w-sm m-auto border-none">
-      <CardHeader className="!px-2 !pt-4">
+      <CardHeader className="px-2! pt-4!">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="!p-2">
+      <CardContent className="p-2!">
         <form action={actionSubmit} className="space-y-6" autoComplete="on">
           <div className="grid gap-2 p-2">{bot.botName}</div>
           <SelectComponent

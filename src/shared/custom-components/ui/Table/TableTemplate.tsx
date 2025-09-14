@@ -2,6 +2,7 @@ import { flexRender, useReactTable } from "@tanstack/react-table";
 
 import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import {
   TableBody,
   TableHead,
@@ -22,18 +23,17 @@ const TableTemplate = <T extends Record<string, unknown>>({
   totalSize,
   children,
 }: TableTemplateProps<T>) => {
-
   return (
     <table
-      className={`w-full grid border-separate border-spacing-0 border ${className}`}
+      className={`w-full grid border-separate border-spacing-0 border border-border ${className}`}
     >
       <TableHeader className="sticky top-0 z-10 bg-white dark:bg-zinc-800">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow
             key={headerGroup.id}
-            className="flex w-full"
+            className="flex w-full rounded-se-sm rounded-ss-sm"
           >
-            {headerGroup.headers.map((header) => (
+            {headerGroup.headers.map((header, index) => (
               <TableHead
                 key={header.id}
                 style={{
@@ -42,7 +42,11 @@ const TableTemplate = <T extends Record<string, unknown>>({
                   maxWidth: header.column.columnDef.maxSize,
                 }}
                 data-size={header.getSize()}
-                className="border-r border-zinc-600 !p-2 flex-1"
+                className={cn(
+                  "p-2! flex-1 border-zinc-600 border-1 border-solid",
+                  index === headerGroup.headers.length - 1 && "rounded-se-sm",
+                  index === 0 && "rounded-ss-sm"
+                )}
               >
                 {header.isPlaceholder ? null : (
                   <div

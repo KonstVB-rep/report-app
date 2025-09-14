@@ -5,9 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import LogoutDialog from "@/feature/auth/ui/logout-dialog";
-import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
+import { SidebarInset } from "@/shared/components/ui/sidebar";
 import ButtonBack from "@/shared/custom-components/ui/Buttons/ButtonBack";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
 
@@ -37,26 +35,16 @@ const TemplateDashboard = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <div className="min-w-64 [--header-height:calc(theme(spacing.14))]">
-        <SidebarProvider className="flex flex-col">
-          <div className="flex bg-background">
-            <SiteHeader isHasSitebar={false} />
-            <div className="min-h-full border-b border-l px-2 items-center hidden md:flex">
-              <LogoutDialog withTitle={false} />
-            </div>
+      <SidebarInset className="h-auto">
+        <PageTransitionY>
+          <div className="max-h-[94vh] overflow-auto p-2">
+            {pathName?.includes("adminboard") && pathName !== "/adminboard" && (
+              <ButtonBack />
+            )}
+            {children}
           </div>
-
-          <SidebarInset className="h-auto">
-            <PageTransitionY>
-              <div className="max-h-[94vh] overflow-auto p-2">
-                {pathName?.includes("adminboard") &&
-                  pathName !== "/adminboard" && <ButtonBack />}
-                {children}
-              </div>
-            </PageTransitionY>
-          </SidebarInset>
-        </SidebarProvider>
-      </div>
+        </PageTransitionY>
+      </SidebarInset>
     </>
   );
 };

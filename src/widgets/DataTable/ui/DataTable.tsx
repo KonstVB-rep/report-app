@@ -9,8 +9,8 @@ import FiltersManagement from "@/feature/filter-persistence/ui/FiltersManagement
 import ButtonExportTableXls from "@/feature/table-export-excel/ui/ButtonExportTableXls";
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput";
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
-import { useTableState } from "@/shared/hooks/useTableState";
 import TableComponentDT from "@/shared/custom-components/ui/Table/TableComponentDT";
+import { useTableState } from "@/shared/hooks/useTableState";
 
 const FiltersBlock = dynamic(() => import("./Filters/FiltersBlock"), {
   ssr: false,
@@ -68,9 +68,9 @@ const DataTable = <T extends Record<string, unknown>>({
         <div
           className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
         >
-          {openFilters && <FiltersBlock
-            table={table as Table<Record<string, unknown>>}
-          />}
+          {openFilters && (
+            <FiltersBlock table={table as Table<Record<string, unknown>>} />
+          )}
         </div>
 
         {data.length ? (

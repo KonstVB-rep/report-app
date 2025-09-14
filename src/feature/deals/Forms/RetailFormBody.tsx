@@ -165,7 +165,7 @@ const RetailFormBody = <T extends FieldValues>({
                 type="email"
                 control={form.control}
                 errorMessage={getError("email")}
-                className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
+                className="w-full invalid:not-placeholder-shown:border-red-500"
               />
 
               <InputNumberForm

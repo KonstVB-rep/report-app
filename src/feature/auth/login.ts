@@ -49,6 +49,7 @@ export const login = async (prevState: unknown, formData: FormData) => {
       user_password,
       user.user_password
     );
+    console.log(isPasswordValid, "isPasswordValid");
 
     if (!isPasswordValid) {
       return {

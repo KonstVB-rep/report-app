@@ -6,6 +6,8 @@ import { X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { DateRangePicker } from "@/shared/components/ui/date-range-picker";
 
+import "./datePickerStyles.css";
+
 interface DateRangeFilterProps {
   onDateChange: (date: DateRange | undefined) => void;
   onClearDateFilter: (columnId: string) => void;

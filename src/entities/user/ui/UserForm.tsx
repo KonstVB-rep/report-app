@@ -6,6 +6,7 @@ import { DepartmentLabels } from "@/entities/department/types";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import InputPassword from "@/shared/custom-components/ui/Inputs/InputPassword";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import { MultiSelectNativeForm } from "@/shared/custom-components/ui/MultiSlectComponent";
 import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent";
@@ -107,7 +108,8 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
           <Label htmlFor="user_password" className="text-sm font-medium">
             Пароль
           </Label>
-          <Input
+
+          <InputPassword
             id="user_password"
             name={"user_password"}
             type="password"
@@ -118,6 +120,17 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             className={getFieldError("user_password") ? "border-red-500" : ""}
             disabled={isPending}
           />
+          {/* <Input
+            id="user_password"
+            name={"user_password"}
+            type="password"
+            autoComplete="off"
+            placeholder="Введите пароль..."
+            defaultValue={state.inputs?.user_password}
+            aria-describedby="user_password"
+            className={getFieldError("user_password") ? "border-red-500" : ""}
+            disabled={isPending}
+          /> */}
           {getFieldError("user_password") && (
             <p id="user_password" className="text-sm text-red-500">
               {getFieldError("user_password")}

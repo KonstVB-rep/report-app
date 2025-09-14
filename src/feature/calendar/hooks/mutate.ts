@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
@@ -12,7 +13,6 @@ import {
   updateEventCalendar,
 } from "../api";
 import { EventDataType, EventResponse } from "../types";
-import { Prisma } from "@prisma/client";
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
@@ -101,7 +101,7 @@ export const useDeleteEventCalendar = (closeModal?: () => void) => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-        console.log("authUser", authUser);
+      console.log("authUser", authUser);
       return handleMutationWithAuthCheck<{ id: string }, EventResponse>(
         deleteEventCalendar,
         { id },
@@ -138,23 +138,20 @@ export const useDeleteEventCalendar = (closeModal?: () => void) => {
   });
 };
 
-
 export const useDeleteEventsCalendar = (closeModal?: () => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
 
   return useMutation({
     mutationFn: async (ids: string[]) => {
-      return handleMutationWithAuthCheck<{ ids: string[] }, Prisma.BatchPayload>(
-        deleteArrayEventsCalendar,
-        { ids },
-        authUser,
-        isSubmittingRef
-      );
+      return handleMutationWithAuthCheck<
+        { ids: string[] },
+        Prisma.BatchPayload
+      >(deleteArrayEventsCalendar, { ids }, authUser, isSubmittingRef);
     },
     onSuccess: () => {
       closeModal?.();
       queryClient.invalidateQueries({
-        queryKey:  ["allEvents", authUser?.id],
+        queryKey: ["allEvents", authUser?.id],
       });
       TOAST.SUCCESS("Событие успешно удалено");
     },

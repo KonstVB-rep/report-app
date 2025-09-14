@@ -1,6 +1,5 @@
 import { cn } from "@/shared/lib/utils";
 
-
 export const SkeletonTable = ({
   className,
   number = 5,
@@ -18,7 +17,7 @@ export const SkeletonTable = ({
             <td
               key={i}
               className={cn(
-                "w-full bg-muted rounded-md animate-pulse h-[57px]",
+                "w-full bg-muted rounded-md animate-pulse h-[57px]"
               )}
             />
           ))}

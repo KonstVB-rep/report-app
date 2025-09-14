@@ -62,7 +62,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
           tooltip={item.title}
           onClick={handleDepartmentClick} // Используем мемоизированную функцию
           className={clsx(
-            "h-max border-2",
+            "h-max border-2 border-border",
             isActiveDepartment &&
               "border-blue-600 text-primary dark:text-stone-400"
           )}
@@ -83,14 +83,14 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
           <>
             <CollapsibleTrigger
               asChild
-              className="!top-[1.25px] !h-[38px] !w-[38px] !border-[1px] border-stone-400"
+              className="top-[1.25px]! h-[38px]! w-[38px]! border! border-stone-400"
             >
               <SidebarMenuAction className="h-[24px] w-[24px] border-2 data-[state=open]:rotate-90">
                 <ChevronRight
                   className={clsx(
-                    "h-max rounded-sm",
+                    "h-max rounded",
                     isActiveDepartment &&
-                      "!h-full !w-full p-[6px] text-primary dark:text-stone-400"
+                      "h-full! w-full! p-[6px] text-primary dark:text-stone-400"
                   )}
                 />
                 <span className="sr-only">Toggle</span>
@@ -116,7 +116,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
                         <Accordion
                           type="single"
                           collapsible
-                          className="w-full !pr-1"
+                          className="w-full pr-1!"
                         >
                           <AccordionItem
                             value="item-1"

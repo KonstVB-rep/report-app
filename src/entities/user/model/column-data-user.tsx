@@ -1,11 +1,16 @@
 import { PermissionEnum, User } from "@prisma/client";
+import { CheckedState } from "@radix-ui/react-checkbox";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { DateRange } from "react-day-picker";
 
 import { endOfDay, startOfDay } from "date-fns";
+import { UserCheck } from "lucide-react";
 
 import { DepartmentLabelsById } from "@/entities/department/types";
+import { cn } from "@/lib/utils";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Label } from "@/shared/components/ui/label";
 
 import { PermissionUser, RolesUser } from "./objectTypes";
 
@@ -44,38 +49,45 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
     },
     accessorFn: (row: UserTypeTable) => row.id,
   },
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //       <Label className={cn("flex items-center justify-center cursor-pointer gap-1",(table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected()) && "text-blue-600")}>
-  //         Выбрать
-  //         <Checkbox
-  //         checked={
-  //           table.getIsAllPageRowsSelected() ||
-  //           (table.getIsSomePageRowsSelected() && "indeterminate")
-  //         }
-  //         onCheckedChange={(value: CheckedState) =>
-  //           table.toggleAllPageRowsSelected(!!value)
-  //         }
-  //         className="opacity-0 w-0 h-0"
-  //         aria-label="Select all"
-  //       />
-  //       </Label>
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="flex items-center justify-center gap-1">
-  //       <Checkbox
-  //         checked={row.getIsSelected()}
-  //         onCheckedChange={(value: CheckedState) => row.toggleSelected(!!value)}
-  //         aria-label="Select row"
-  //       />
-  //     </div>
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  //   minSize: 100,
-  //   maxSize: 100,
-  // },
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Label
+        className={cn("flex items-center justify-center cursor-pointer gap-1")}
+      >
+        {table.getIsSomePageRowsSelected() ||
+        table.getIsAllPageRowsSelected() ? (
+          <UserCheck />
+        ) : (
+          "Выбрать"
+        )}
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value: CheckedState) =>
+            table.toggleAllPageRowsSelected(!!value)
+          }
+          className="opacity-0 w-0 h-0"
+          aria-label="Select all"
+        />
+      </Label>
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center gap-1">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value: CheckedState) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    minSize: 100,
+    maxSize: 100,
+  },
   {
     id: "username",
     header: "Имя",
@@ -109,6 +121,8 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
       return value;
     },
     accessorFn: (row: UserTypeTable) => row.phone,
+    minSize: 140,
+    maxSize: 140,
   },
   {
     id: "position",
@@ -208,6 +222,8 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
       return true;
     },
     accessorFn: (row: UserTypeTable) => row.lastlogin,
+    minSize: 120,
+    maxSize: 120,
   },
   {
     id: "createdAt",
@@ -248,6 +264,8 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
       return true;
     },
     accessorFn: (row: UserTypeTable) => row.createdAt,
+    minSize: 120,
+    maxSize: 120,
   },
   {
     id: "updatedAt",
@@ -289,5 +307,7 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
       return true;
     },
     accessorFn: (row: UserTypeTable) => row.updatedAt,
+    minSize: 120,
+    maxSize: 120,
   },
 ];

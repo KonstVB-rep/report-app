@@ -17,6 +17,7 @@ import {
   UnionTypeDepartmentsName,
 } from "@/entities/department/types";
 import { UserResponse } from "@/entities/user/types";
+import logo from "@/public/logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -82,12 +83,12 @@ const AppSidebar = () => {
 
   if (!departments || !departments.length) {
     return (
-      <Sidebar className="top-0 !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0 animate-pulse bg-primary-foreground"></Sidebar>
+      <Sidebar className="top-0 h-[calc(100svh-var(--header-height))]! min-w-64 shrink-0 animate-pulse bg-primary-foreground"></Sidebar>
     );
   }
 
   return (
-    <Sidebar className="top-0 !h-[calc(100svh-var(--header-height))] min-w-64 shrink-0">
+    <Sidebar className="top-0 h-[calc(100svh-var(--header-height))]! min-w-64 shrink-0">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -99,9 +100,9 @@ const AppSidebar = () => {
                     className="flex gap-2 w-full truncate text-lg font-semibold italic cursor-pointer"
                     title="На главную"
                   >
-                    <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
+                    <div className="flex aspect-square size-6 items-center justify-center rounded bg-blue-600 text-sidebar-primary-foreground">
                       <Image
-                        src="/logo.png"
+                        src={logo}
                         alt="logo"
                         width={16}
                         height={16}
@@ -114,10 +115,10 @@ const AppSidebar = () => {
                 </div>
               </SidebarMenuButton>
             ) : (
-              <div className="flex items-center rounded-md gap-2 w-full truncate text-lg font-semibold italic p-2 py-[9px] h-12 border-[1px] bg-background">
-                <div className="flex aspect-square size-[1.5rem] items-center justify-center rounded-sm bg-blue-600 text-sidebar-primary-foreground">
+              <div className="flex items-center rounded-md gap-2 w-full truncate text-lg font-semibold italic p-2 py-[9px] h-12 border bg-background">
+                <div className="flex aspect-square size-6 items-center justify-center rounded bg-blue-600 text-sidebar-primary-foreground">
                   <Image
-                    src="/logo.png"
+                    src={logo}
                     alt="logo"
                     width={16}
                     height={16}

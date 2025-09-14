@@ -221,7 +221,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Email"
                   control={form.control}
                   errorMessage={getError("email")}
-                  className="w-full invalid:[&:not(:placeholder-shown)]:border-red-500"
+                  className="w-full invalid:not-placeholder-shown:border-red-500"
                   type="email"
                 />
               </div>

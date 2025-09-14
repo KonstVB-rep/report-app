@@ -73,7 +73,7 @@ const LinkItem = memo(
           !isActive && "text-primary dark:text-stone-400"
         } relative flex items-center gap-2 overflow-hidden rounded-md p-1 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground`}
       >
-        <p className="relative z-[1] flex h-full w-full items-center gap-2 rounded-sm p-2">
+        <p className="relative z-1 flex h-full w-full items-center gap-2 rounded p-2">
           <Icon size={isActive ? 24 : 16} className="shrink-0" />
           {title}
         </p>
@@ -81,7 +81,7 @@ const LinkItem = memo(
           <div className="absolute right-0 top-1/2 h-full w-1 -translate-y-1/2 rounded-md bg-blue-600" />
         )}
       </Link>
-      <Separator className="my-[1px] h-[1px] bg-stone-600" />
+      <Separator className="my-px h-px bg-stone-600" />
     </Fragment>
   )
 );
@@ -161,7 +161,7 @@ export const DepartmentLinks = memo(
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="p-1 rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground">
-                  <p className="flex h-full w-full items-center gap-2 rounded-sm p-2 text-primary dark:text-stone-400">
+                  <p className="flex h-full w-full items-center gap-2 rounded p-2 text-primary dark:text-stone-400">
                     <TableProperties size="12px" />
                     <span>Сводные таблицы</span>
                   </p>
@@ -174,7 +174,7 @@ export const DepartmentLinks = memo(
                       user.id === userId;
                     return (
                       <Fragment key={type}>
-                        <div className="relative rounded-sm overflow-hidden">
+                        <div className="relative rounded overflow-hidden">
                           {isActiveSummaryTable && <MarketActiveItemSidebar />}
                           <SummaryTableLink
                             type={type}
@@ -183,7 +183,7 @@ export const DepartmentLinks = memo(
                           />
                         </div>
                         {index !== namePagesByDealType.length - 1 && (
-                          <Separator className="my-[1px] h-[1px] bg-stone-600" />
+                          <Separator className="my-px h-px bg-stone-600" />
                         )}
                       </Fragment>
                     );
@@ -191,7 +191,7 @@ export const DepartmentLinks = memo(
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <Separator className="my-[1px] h-[1px] bg-stone-600" />
+            <Separator className="my-px h-px bg-stone-600" />
           </ProtectedByPermissions>
         </>
       );

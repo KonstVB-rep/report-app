@@ -20,7 +20,7 @@ const CalendarFormModal = ({ events }: CalendarFormModalProps) => {
       trigger={undefined}
       open={openModal}
       onOpenChange={closeModalForm}
-      classNameContent="sm:max-w-[400px] !pb-3"
+      classNameContent="sm:max-w-[400px] pb-3!"
     >
       <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
         <Overlay isPending={isLoading} />

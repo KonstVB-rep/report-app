@@ -1,10 +1,9 @@
 import { PermissionEnum } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-
 import { getAllUsers, getUser } from "@/entities/user/api";
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 
 export const useGetUser = (
@@ -53,4 +52,4 @@ export const useGetAllUsers = () => {
     enabled: !!authUser?.id,
     retry: 0,
   });
-}
+};

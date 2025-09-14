@@ -149,10 +149,10 @@ export type ContactFieldError = {
 };
 
 export type DealBase = {
-    id: string;
-    dateRequest: Date;
-    nameDeal: string;
-    nameObject: string;
-    comments: string;
-    userId: string;
-}
+  id: string;
+  dateRequest: Date;
+  nameDeal: string;
+  nameObject: string;
+  comments: string;
+  userId: string;
+};

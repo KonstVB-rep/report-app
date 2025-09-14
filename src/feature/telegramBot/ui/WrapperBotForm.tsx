@@ -28,7 +28,7 @@ const WrapperBotForm = ({
   actionSubmit,
 }: Props) => {
   return (
-    <Card className="w-fit max-w-sm m-auto border-none !p-0">
+    <Card className="w-fit max-w-sm m-auto border-none p-0!">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

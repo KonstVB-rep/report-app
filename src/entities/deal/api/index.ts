@@ -586,7 +586,7 @@ export const getAllDealsByDepartment = async (
           departmentId: departmentId,
         },
       },
-     select: {
+      select: {
         id: true,
         dateRequest: true,
         nameDeal: true,

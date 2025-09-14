@@ -3,7 +3,6 @@
 import { PermissionEnum } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
-
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 
@@ -56,7 +55,6 @@ const Columns = (
   }
 };
 
-
 const PersonDealsTable = () => {
   const { userId, dealType } = useParams<{
     userId: string;
@@ -85,9 +83,9 @@ const PersonDealsTable = () => {
       <DealTableTemplate>
         <>
           <div className="flex flex-wrap justify-between gap-3 w-full">
-            <p className="border rounded-md p-2">
+            <h1 className="text-lg uppercase flex-1 p-2 bg-muted rounded-md font-semibold">
               {DealTypeLabels[dealType as string]}
-            </p>
+            </h1>
             <p className="border rounded-md p-2">
               Общее количество заявок: {data?.length}
             </p>

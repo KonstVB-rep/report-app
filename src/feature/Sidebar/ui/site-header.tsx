@@ -38,8 +38,8 @@ export function SiteHeader({
   const departmentId = authUser?.departmentId;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="flex h-[--header-height] items-center justify-between gap-2 px-4">
+    <header className="sticky top-0 z-40 w-full border-b bg-background border-border">
+      <div className="flex h-(--header-height) items-center justify-between gap-2 px-4">
         {isHasSitebar ? (
           <div className="flex items-center gap-4">
             <Button
@@ -55,7 +55,7 @@ export function SiteHeader({
           </div>
         ) : (
           <div className="hover:scale-125 transition-all duration-200">
-            <Logo isTitle={false} href="/dashboard" />
+            <Logo isTitle={false} href="/dashboard" title="На главную" />
           </div>
         )}
 
@@ -84,10 +84,7 @@ export function SiteHeader({
             >
               <HoverCardComponent title="Сводные таблицы">
                 {namePagesByDealType.map((type) => (
-                  <div
-                    key={type}
-                    className="relative overflow-hidden rounded-sm"
-                  >
+                  <div key={type} className="relative overflow-hidden rounded">
                     <SummaryTableLink
                       type={type}
                       departmentId="1"

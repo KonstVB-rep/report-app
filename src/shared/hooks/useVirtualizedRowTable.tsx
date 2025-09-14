@@ -1,6 +1,8 @@
-import { Row } from '@tanstack/react-table';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { RefObject } from 'react';
+import { Row } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+import { RefObject } from "react";
+
 const ROW_HEIGHT = 57;
 
 interface UseVirtualizedRowTableProps<T> {
@@ -12,29 +14,29 @@ export const useVirtualizedRowTable = <T,>({
   rows,
   tableContainerRef,
 }: UseVirtualizedRowTableProps<T>) => {
-    const rowVirtualizer = useVirtualizer({
-      count: rows.length,
-      estimateSize: () => ROW_HEIGHT,
-      getScrollElement: () => tableContainerRef.current,
-      overscan: 10,
-    });
-  
-    const virtualItems = rowVirtualizer.getVirtualItems();
-    const totalSize = rowVirtualizer.getTotalSize();
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    estimateSize: () => ROW_HEIGHT,
+    getScrollElement: () => tableContainerRef.current,
+    overscan: 10,
+  });
 
-    if (rows.length > 0) {
-      return {
-        virtualItems,
-        totalSize,
-        rowVirtualizer,
-      };
-    }
-  
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const totalSize = rowVirtualizer.getTotalSize();
+
+  if (rows.length > 0) {
     return {
-      virtualItems: [],
-      totalSize: 0,
+      virtualItems,
+      totalSize,
       rowVirtualizer,
     };
-}
+  }
 
-export default useVirtualizedRowTable
+  return {
+    virtualItems: [],
+    totalSize: 0,
+    rowVirtualizer,
+  };
+};
+
+export default useVirtualizedRowTable;

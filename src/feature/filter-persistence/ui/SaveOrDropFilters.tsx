@@ -29,7 +29,7 @@ const SaveOrDropFilters = ({ handleClearFilters }: SaveOrDropFiltersType) => {
             <Button
               variant={"destructive"}
               size={"icon"}
-              className="btn_hover w-fit"
+              className="btn_hover"
               onClick={() => {
                 handleClearFilters();
                 setSelectedColumns([]);

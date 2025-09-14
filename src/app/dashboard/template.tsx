@@ -8,8 +8,7 @@ import { usePathname } from "next/navigation";
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
-import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
+import { SidebarInset } from "@/shared/components/ui/sidebar";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
 
 const RedirectToPath = dynamic(
@@ -37,16 +36,11 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
 
   return (
     <>
-      <div className="min-w-64 [--header-height:calc(theme(spacing.14))]">
-        <SidebarProvider className="flex flex-col">
-          <SiteHeader />
-          <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] max-h-[calc(100svh-var(--header-height)-2px)] flex-1">
-            <AppSidebar />
-            <SidebarInset className="h-auto min-h-min" key={pathname}>
-              <PageTransitionY>{children}</PageTransitionY>
-            </SidebarInset>
-          </div>
-        </SidebarProvider>
+      <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] max-h-[calc(100svh-var(--header-height)-2px)] flex-1">
+        <AppSidebar />
+        <SidebarInset className="h-auto min-h-min" key={pathname}>
+          <PageTransitionY>{children}</PageTransitionY>
+        </SidebarInset>
       </div>
     </>
   );

@@ -30,7 +30,6 @@ export const useGetChatsByBotId = (botId: string | undefined) => {
   });
 };
 
-
 export const useGetAllBots = () => {
   const { authUser } = useStoreUser();
   return useQuery({

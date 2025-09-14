@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckedState } from "@radix-ui/react-checkbox";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { ReactNode } from "react";
@@ -7,12 +8,10 @@ import { DateRange } from "react-day-picker";
 
 import { endOfDay, startOfDay } from "date-fns";
 
-import { cn } from "@/shared/lib/utils";
-import { Label } from "@/shared/components/ui/label";
-import { Checkbox } from "@/shared/components/ui/checkbox";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import { DealBase } from "@/entities/deal/types";
-
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Label } from "@/shared/components/ui/label";
+import { cn } from "@/shared/lib/utils";
 
 export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
   {
@@ -28,7 +27,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       isNotSearchable: true,
     },
   },
-    {
+  {
     id: "select",
     header: ({ table }) => (
       <Label
@@ -88,10 +87,10 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     meta: {
       isDateFilter: true,
     },
-    size: 100, 
+    size: 100,
     minSize: 100,
     maxSize: 100,
-    enableResizing: false, 
+    enableResizing: false,
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date;
       const dateAtStartOfDay = startOfDay(date);
@@ -151,22 +150,22 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     enableHiding: true,
     accessorFn: (row: DealBase) => row.comments,
   },
-    {
-      id: "user",
-      header: "Менеджер",
-      cell: (info) => info.getValue(),
-      enableHiding: true, 
-      // meta: {
-      //   hidden: true,
-      // },
-      filterFn: (row, columnId, filterValues) => {
-        if (!filterValues || filterValues.length === 0) {
-          return true;
-        }
+  {
+    id: "user",
+    header: "Менеджер",
+    cell: (info) => info.getValue(),
+    enableHiding: true,
+    // meta: {
+    //   hidden: true,
+    // },
+    filterFn: (row, columnId, filterValues) => {
+      if (!filterValues || filterValues.length === 0) {
+        return true;
+      }
 
-        const userIdOfProject = row.original.userId;
-        return filterValues.includes(userIdOfProject);
-      },
-      accessorFn: (row: DealBase) => row.userId,
+      const userIdOfProject = row.original.userId;
+      return filterValues.includes(userIdOfProject);
     },
+    accessorFn: (row: DealBase) => row.userId,
+  },
 ];

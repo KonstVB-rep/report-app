@@ -19,21 +19,26 @@ const UserTable = () => {
   const { table, filtersContextValue, setGlobalFilter } =
     useTableState<UserTypeTable>(users, columnsDataUsers);
 
-  const { globalFilter } = table.getState();
+  const { globalFilter, rowSelection } = table.getState();
 
+  const usersSelected = table
+    .getRowModel()
+    .rows.filter((row) => rowSelection[row.id])
+    .map((row) => row.original);
 
   return (
     <div>
       <TableCaption title="Список пользователей" />
-        <DataTableFiltersProvider value={filtersContextValue}>
-          <div className="py-2 grid gap-2">
-            <UserTableToolbar
-              globalFilter={globalFilter ?? ""}
-              onGlobalFilterChange={(value) => setGlobalFilter(String(value))}
-            />
-            <UserTableContent table={table} isLoading={isLoading} />
-          </div>
-        </DataTableFiltersProvider>
+      <DataTableFiltersProvider value={filtersContextValue}>
+        <div className="py-2 grid gap-2">
+          <UserTableToolbar
+            globalFilter={globalFilter ?? ""}
+            onGlobalFilterChange={(value) => setGlobalFilter(String(value))}
+            rowSelection={usersSelected}
+          />
+          <UserTableContent table={table} isLoading={isLoading} />
+        </div>
+      </DataTableFiltersProvider>
     </div>
   );
 };

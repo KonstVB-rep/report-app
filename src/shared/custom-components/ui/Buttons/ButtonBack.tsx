@@ -1,11 +1,10 @@
-
 import { useRouter } from "next/navigation";
 
 import { ArrowBigLeft } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 
-const ButtonBack = ({className}: {className?: string  }) => {
+const ButtonBack = ({ className }: { className?: string }) => {
   const router = useRouter();
   return (
     <Button

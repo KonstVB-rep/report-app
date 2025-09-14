@@ -1,6 +1,7 @@
 import { Cell } from "@tanstack/react-table";
 
 import React, { CSSProperties } from "react";
+
 import { UserTypeTable } from "@/entities/user/model/column-data-user";
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment";
 
@@ -10,8 +11,7 @@ interface UserTableCellProps {
   styles?: CSSProperties;
 }
 
-
-const UserTableCell = ({ cell, children, styles,  }: UserTableCellProps) => {
+const UserTableCell = ({ cell, children, styles }: UserTableCellProps) => {
   const [show, setShow] = React.useState(false);
 
   const handleClick = () => {
@@ -19,7 +19,7 @@ const UserTableCell = ({ cell, children, styles,  }: UserTableCellProps) => {
   };
 
   return (
-    <TableCellComponent<UserTypeTable> 
+    <TableCellComponent<UserTypeTable>
       key={cell.id}
       styles={styles}
       cell={cell}

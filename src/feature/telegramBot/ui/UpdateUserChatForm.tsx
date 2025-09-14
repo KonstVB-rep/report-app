@@ -59,11 +59,11 @@ export const UpdateUserChatForm = ({ chat }: { chat: UserTelegramChat }) => {
 
   return (
     <Card className="w-full max-w-sm m-auto border-none">
-      <CardHeader className="!px-2 !pt-4">
+      <CardHeader className="px-2! pt-4!">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent className="!p-2">
+      <CardContent className="p-2!">
         <form action={actionSubmit} className="space-y-6" autoComplete="on">
           <Input
             name={"chatName"}

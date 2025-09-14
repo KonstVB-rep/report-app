@@ -1,6 +1,8 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { ListCheck } from "lucide-react";
+
 import { EventInputType } from "@/feature/calendar/types";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { Label } from "@/shared/components/ui/label";
@@ -21,14 +23,14 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
     id: "select",
     header: ({ table }) => (
       <Label
-        className={cn(
-          "flex items-center justify-center cursor-pointer gap-1",
-          (table.getIsSomePageRowsSelected() ||
-            table.getIsAllPageRowsSelected()) &&
-            "text-blue-600"
-        )}
+        className={cn("flex items-center justify-center cursor-pointer gap-1")}
       >
-        Выбрать
+        {table.getIsSomePageRowsSelected() ||
+        table.getIsAllPageRowsSelected() ? (
+          <ListCheck />
+        ) : (
+          "Выбрать"
+        )}
         <Checkbox
           checked={
             table.getIsAllPageRowsSelected() ||

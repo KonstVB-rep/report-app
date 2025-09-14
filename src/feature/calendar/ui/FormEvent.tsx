@@ -143,7 +143,7 @@ const FormEvent = ({ events }: FormEventProps) => {
                       }}
                     />
                   </FormControl>
-                  <FormLabel className="!m-0">Весь день</FormLabel>
+                  <FormLabel className="m-0!">Весь день</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}

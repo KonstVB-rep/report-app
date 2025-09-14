@@ -24,8 +24,10 @@ const EditProject = ({
   titleForm: string;
 }) => {
   return (
-
-    <ModalContent title="Редактировать проект"  className="max-h-[94vh] overflow-y-auto sm:max-w-[825px]">
+    <ModalContent
+      title="Редактировать проект"
+      className="max-h-[94vh] overflow-y-auto sm:max-w-[825px]"
+    >
       <EditProjectForm
         close={close}
         dealId={id}

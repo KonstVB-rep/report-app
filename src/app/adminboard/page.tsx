@@ -3,7 +3,6 @@ import { checkRole } from "@/shared/api/checkRole";
 import NotFound from "../not-found";
 import AdminPanel from "./ui/AdminPanel";
 
-
 const AdminPage = async () => {
   const isSuccess = await checkRole();
 
@@ -11,7 +10,7 @@ const AdminPage = async () => {
     return <NotFound />;
   }
 
-  return <AdminPanel/>;
+  return <AdminPanel />;
 };
 
 export default AdminPage;

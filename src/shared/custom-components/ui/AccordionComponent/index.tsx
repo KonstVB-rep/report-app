@@ -1,6 +1,17 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/shared/components/ui/accordion";
 
-const AccordionComponent = ({ title, children }: { title: string; children: React.ReactNode }) => {
+const AccordionComponent = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) => {
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1" className="grid gap-4">
@@ -8,11 +19,11 @@ const AccordionComponent = ({ title, children }: { title: string; children: Reac
           {title}
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-4 text-balance">
-         {children}
+          {children}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
   );
-}
+};
 
 export default AccordionComponent;

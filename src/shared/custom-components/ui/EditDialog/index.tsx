@@ -24,7 +24,7 @@ const EditDataDialog = ({
   icon,
   open,
   setOpen,
-  className = "flex items-center gap-2 border-none px-2 btn_hover flex-shrink-0",
+  className = "flex items-center gap-2 border-none px-2 btn_hover shrink-0",
 }: EditDataDialogProps) => {
   return (
     <DialogComponent
@@ -40,7 +40,7 @@ const EditDataDialog = ({
           size={!textButtonShow ? "icon" : "default"}
           className={cn(
             className,
-            textButtonShow ? "w-full justify-start" : "justify-center"
+            textButtonShow ? "justify-start" : "justify-center"
           )}
         >
           {icon}

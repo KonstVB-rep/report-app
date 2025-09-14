@@ -45,9 +45,9 @@ const SelectColumns = <TData extends Record<string, unknown>>({
           className="relative flex gap-1"
         >
           <ListChecks />
-          {hiddenColumns.length - 1 > 0 && (
+          {hiddenColumns.length - 2 > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {hiddenColumns.length - 1}
+              {hiddenColumns.length - 2}
             </span>
           )}
           {"Колонки показать/скрыть"}

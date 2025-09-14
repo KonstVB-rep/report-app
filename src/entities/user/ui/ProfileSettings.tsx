@@ -4,9 +4,7 @@ import React from "react";
 
 import Link from "next/link";
 
-import { EllipsisVertical, UserRound } from "lucide-react";
-
-import HoverCardComponent from "@/shared/custom-components/ui/HoverCard";
+import { UserRound } from "lucide-react";
 
 import { User } from "../types";
 
@@ -16,22 +14,17 @@ type Props = {
 
 export function ProfileSettings({ user }: Props) {
   return (
-    <HoverCardComponent
-      title={
-        <span className="flex w-full items-center gap-2 capitalize">
-          <EllipsisVertical className="mr-2 h-4 w-4" />
-          {user.username}
-        </span>
-      }
+    <Link
+      href={`/dashboard/profile/${user.departmentId}/${user.id}`}
+      className="btn_hover text-sm"
+      aria-label={`Перейти в профиль пользователя ${user.username}`}
+      title={`Перейти в профиль пользователя ${user.username}`}
     >
-      <Link
-        href={`/dashboard/profile/${user.departmentId}/${user.id}`}
-        className="btn_hover text-sm"
-        aria-label={`Перейти в профиль пользователя ${user.username}`}
-      >
-        <UserRound size="16" /> <span>Профиль пользователя</span>
-      </Link>
-    </HoverCardComponent>
+      <UserRound size="16" />{" "}
+      <span className="flex w-full items-center gap-2 capitalize">
+        {user.username}
+      </span>
+    </Link>
   );
 }
 

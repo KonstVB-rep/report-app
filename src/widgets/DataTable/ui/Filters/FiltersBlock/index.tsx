@@ -5,6 +5,7 @@ import { DateRange } from "react-day-picker";
 
 import { useParams, usePathname } from "next/navigation";
 
+import { getManagers } from "@/entities/department/lib/utils";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import {
   FormatedParamsType,
@@ -12,13 +13,11 @@ import {
   LABELS,
 } from "@/feature/deals/lib/constants";
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
+import FilterByUser from "@/feature/filter-persistence/ui/FilterByUsers";
+import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
 import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import SelectColumns from "@/shared/custom-components/ui/SelectColumns";
-
-import { getManagers } from "@/entities/department/lib/utils";
-import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
-import FilterByUser from "@/feature/filter-persistence/ui/FilterByUsers";
 
 type FiltersBlockProps = {
   table: Table<Record<string, unknown>>;
@@ -31,7 +30,6 @@ const FiltersBlock = ({ table }: FiltersBlockProps) => {
 
   const { handleDateChange, handleClearDateFilter } =
     useDataTableFiltersContext();
-
 
   const { columnFilters } = table.getState();
 
@@ -50,7 +48,7 @@ const FiltersBlock = ({ table }: FiltersBlockProps) => {
   return (
     <MotionDivY className="min-h-0">
       <div className="py-2 flex flex-wrap justify-start gap-2">
-        {hasTable && <FilterByUser label="Менеджер" managers={getManagers()}/>}
+        {hasTable && <FilterByUser label="Менеджер" managers={getManagers()} />}
 
         <div className="flex gap-2 justify-start flex-wrap">
           <DateRangeFilter

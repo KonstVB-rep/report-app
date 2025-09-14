@@ -10,9 +10,7 @@ import {
   startOfWeek,
   startOfYear,
 } from "date-fns";
-
-import { RADIAN } from "../lib/constants";
-import { CustomizedLabelProps } from "../types";
+import { Props as LabelProps } from "recharts/types/component/Label";
 
 export const getPeriodRange = (
   period: "week" | "month" | "year"
@@ -76,25 +74,28 @@ const dateFilter = (date: Date, filterValue?: DateRange): boolean => {
 };
 
 const renderCustomizedLabel = (isDark: boolean) => {
-  const Label = ({
-    cx = 0,
-    cy = 0,
-    midAngle = 0,
-    outerRadius = 0,
-    percent = 0,
-    payload = { name: "", value: 0 }, // Значение по умолчанию
-    width = 600, // Значение по умолчанию
-  }: CustomizedLabelProps & { width?: number }) => {
-    const padding = 16;
-    const dynamicRadius = Math.min(
-      outerRadius + 30,
-      (width ?? 600) / 2 - padding
-    );
+  const LabelComponent = (props: LabelProps) => {
+    const {
+      cx = 0,
+      cy = 0,
+      midAngle = 0,
+      outerRadius = 0,
+      percent = 0,
+      payload,
+    } = props as unknown as {
+      cx: number;
+      cy: number;
+      midAngle: number;
+      outerRadius: number;
+      percent: number;
+      payload?: { name: string; value: number };
+    };
 
-    const angle = midAngle ?? 0;
+    const RADIAN = Math.PI / 180;
+    const dynamicRadius = outerRadius + 30;
 
-    const x = cx + dynamicRadius * Math.cos(-angle * RADIAN);
-    const y = cy + dynamicRadius * Math.sin(-angle * RADIAN);
+    const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN);
+    const y = cy + dynamicRadius * Math.sin(-midAngle * RADIAN);
 
     return (
       <text
@@ -102,18 +103,21 @@ const renderCustomizedLabel = (isDark: boolean) => {
         y={y}
         fill={isDark ? "#ffffff" : "#111111"}
         textAnchor={x > cx ? "start" : "end"}
-        dominantBaseline="text-after-edge"
+        dominantBaseline="central"
         fontSize={14}
       >
-        <tspan x={x} dy="0">
+        <tspan x={x} dy="-0.6em">
           {payload?.name}
         </tspan>
-        <tspan x={x} dy="1.2em">{`${(percent * 100).toFixed(0)}%`}</tspan>
+        <tspan x={x} dy="1.2em">
+          {`${(percent * 100).toFixed(0)}%`}
+        </tspan>
       </text>
     );
   };
 
-  return Label;
+  LabelComponent.displayName = "CustomPieLabel";
+  return LabelComponent;
 };
 
 export { isFromSite, normalizeResource, dateFilter, renderCustomizedLabel };

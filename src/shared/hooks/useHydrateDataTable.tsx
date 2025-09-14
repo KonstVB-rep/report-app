@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react'
-
+import { useEffect, useState } from "react";
 
 const useHydrateDataTable = () => {
-    const [isHydrating, setIsHydrating] = useState(true);
-  
-    useEffect(() => {
-      setIsHydrating(false);
-    }, []);
-  
-    return isHydrating
-}
+  const [isHydrating, setIsHydrating] = useState(true);
 
-export default useHydrateDataTable
+  useEffect(() => {
+    setIsHydrating(false);
+  }, []);
+
+  return isHydrating;
+};
+
+export default useHydrateDataTable;

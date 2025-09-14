@@ -37,7 +37,7 @@ const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
       }
       open={confirmDelModal}
       onOpenChange={setConfirmDelModal}
-      classNameContent="sm:max-w-[400px] z-[51]"
+      classNameContent="sm:max-w-[400px] z-51"
     >
       <div className="w-full h-full grid gap-4">
         <div className="text-center grid gap-4">

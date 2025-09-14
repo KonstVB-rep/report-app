@@ -83,7 +83,7 @@ const Kanban = ({ data }: KanbanProps) => {
                       className={cn(
                         "flex flex-col gap-2 min-h-[120px] p-2 rounded-md transition-colors",
                         columnTasks.length <= 0 &&
-                          "border border-dashed rounded-sm border-primary grid place-content-center",
+                          "border border-dashed rounded border-primary grid place-content-center",
                         snapshot.isDraggingOver && "bg-primary/5"
                       )}
                     >

@@ -12,7 +12,7 @@ export const columnsDataProjectSummary: ColumnDef<ProjectResponse, unknown>[] =
       id: "user",
       header: "Менеджер",
       cell: (info) => info.getValue(),
-      enableHiding: true, 
+      enableHiding: true,
       meta: {
         hidden: true,
       },

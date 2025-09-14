@@ -32,7 +32,7 @@ const DownLoadOrCheckFile = ({
           {isPending ? (
             <Loader className="h-7 w-7 animate-spin" />
           ) : (
-            <FileDown strokeWidth={1} className="!h-7 !w-7" />
+            <FileDown strokeWidth={1} className="h-7! w-7!" />
           )}
         </Button>
       </div>

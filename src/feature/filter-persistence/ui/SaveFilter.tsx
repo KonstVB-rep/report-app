@@ -45,7 +45,7 @@ const SaveFilter = () => {
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button variant={"secondary"} size={"icon"} className="btn_hover w-fit">
+        <Button variant={"secondary"} size={"icon"} className="btn_hover">
           <Save />
         </Button>
       }

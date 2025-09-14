@@ -69,7 +69,10 @@ const EventsTableContent = ({
         />
       ) : (
         <tr className="flex items-center justify-center h-[57px]">
-          <TableCell colSpan={headers.length} className="text-center h-full flex items-center justify-center text-sm uppercase">
+          <TableCell
+            colSpan={headers.length}
+            className="text-center h-full flex items-center justify-center text-sm uppercase"
+          >
             Список событий календаря пуст
           </TableCell>
         </tr>

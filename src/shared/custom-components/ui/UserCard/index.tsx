@@ -30,13 +30,13 @@ const UserCard = ({
       <div className="grid w-full justify-items-center gap-2 p-2">
         <CircleUserRound size="80" />
 
-        <p className="capitalize bg-muted rounded-md w-full flex items-center justify-center">
+        <p className="capitalize bg-muted rounded-md w-full flex items-center justify-center p-1">
           {username}
         </p>
-        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold">
+        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold p-1">
           {departmentName}
         </p>
-        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold">
+        <p className="uppercase bg-muted rounded-md w-full flex items-center justify-center font-semibold p-1">
           {position}
         </p>
       </div>

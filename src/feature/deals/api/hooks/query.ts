@@ -439,9 +439,8 @@ export const useGetAdditionalContacts = (dealId: string) => {
   });
 };
 
-
 export const useGetAllDealsDepartment = () => {
-   const { authUser } = useStoreUser();
+  const { authUser } = useStoreUser();
   return useQuery({
     queryKey: ["getAllDealsDepartment", authUser?.departmentId, authUser?.id],
     queryFn: async () => {

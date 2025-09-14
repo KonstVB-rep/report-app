@@ -1,14 +1,15 @@
 "use server";
 
+import { Role } from "@prisma/client";
+
 import { endOfDay, startOfDay } from "date-fns";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
+import { checkRole } from "@/shared/api/checkRole";
 import { handleError } from "@/shared/api/handleError";
 
 import { EventDataType, EventInputType } from "../types";
-import { checkRole } from "@/shared/api/checkRole";
-import { Role } from "@prisma/client";
 
 export const createEventCalendar = async (
   eventData: Omit<EventDataType, "id">
@@ -99,13 +100,15 @@ export const deleteEventCalendar = async (eventData: { id: string }) => {
   }
 };
 
-export const deleteArrayEventsCalendar = async (eventData: { ids: string[] }) => {
+export const deleteArrayEventsCalendar = async (eventData: {
+  ids: string[];
+}) => {
   try {
-     await handleAuthorization();
+    await handleAuthorization();
 
     const { ids } = eventData;
 
-    console.log(ids,'ids')
+    console.log(ids, "ids");
 
     const existingEvents = await prisma.eventCalendar.findMany({
       where: {
@@ -113,9 +116,9 @@ export const deleteArrayEventsCalendar = async (eventData: { ids: string[] }) =>
       },
     });
 
-    console.log(existingEvents,'existingEvents')
+    console.log(existingEvents, "existingEvents");
 
-      if (existingEvents.length !== ids.length) {
+    if (existingEvents.length !== ids.length) {
       throw new Error("Некоторые события не найдены или нет прав на удаление");
     }
 
@@ -131,7 +134,6 @@ export const deleteArrayEventsCalendar = async (eventData: { ids: string[] }) =>
     return handleError((error as Error).message);
   }
 };
-
 
 export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
   try {
@@ -156,8 +158,6 @@ export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
     return [];
   }
 };
-
-
 
 export const getEventsCalendarUserToday = async (): Promise<
   EventInputType[]
@@ -197,14 +197,11 @@ export const getEventsCalendarUserToday = async (): Promise<
   }
 };
 
-
-export const getAllEventsCalendar = async (): Promise<
-  EventInputType[]
-> => {
+export const getAllEventsCalendar = async (): Promise<EventInputType[]> => {
   try {
     await handleAuthorization();
     await checkRole(Role.ADMIN);
-    
+
     const events = await prisma.eventCalendar.findMany({
       orderBy: {
         start: "asc",

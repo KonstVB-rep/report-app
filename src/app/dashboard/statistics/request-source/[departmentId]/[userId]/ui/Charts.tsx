@@ -258,7 +258,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
               <MobileCharts data={data} />
 
               <div className="flex gap-2 w-full md:w-auto flex-1 min-w-max">
-                <ul className="grid gap-2 flex-shrink-0 flex-1">
+                <ul className="grid gap-2 shrink-0 flex-1">
                   {data.map((item, index) => (
                     <ResourceRow
                       key={item.name}
@@ -269,7 +269,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                   ))}
                 </ul>
 
-                <ul className="hidden sm:grid gap-2 flex-shrink-0">
+                <ul className="hidden sm:grid gap-2 shrink-0">
                   {data.map((item, index) => (
                     <li
                       key={index}

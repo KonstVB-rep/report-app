@@ -95,7 +95,7 @@ const FileItem = ({
         {fileTypeIcons[fileType]}
       </p>
       <p className="truncate text-xs">{fileName}</p>
-      <div className="absolute inset-0 -z-[1] h-full w-full rounded-md bg-black/80 group-hover:z-[1] group-focus-visible:z-[2]" />
+      <div className="absolute inset-0 -z-1 h-full w-full rounded-md bg-black/80 group-hover:z-1 group-focus-visible:z-2" />
       <DownLoadOrCheckFile
         className="absolute inset-0 z-10 h-full w-full items-center justify-center"
         fileName={fileName}
@@ -108,7 +108,7 @@ const FileItem = ({
           id={file.name}
           onChange={onSelect}
           checked={selected}
-          className="absolute hidden checked:block group-hover:block group-focus-visible:block -right-1 -top-1 z-[11] h-5 w-5 cursor-pointer accent-red-700"
+          className="absolute hidden checked:block group-hover:block group-focus-visible:block -right-1 -top-1 z-11 h-5 w-5 cursor-pointer accent-red-700"
         />
       )}
     </animated.div>

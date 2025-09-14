@@ -77,7 +77,7 @@ const DeleteFile = ({
               className="h-10 w-10 p-1"
               disabled={isPending}
             >
-              <FileX strokeWidth={1} className="!h-7 !w-7" />
+              <FileX strokeWidth={1} className="h-7! w-7!" />
             </Button>
           }
           classNameContent="sm:max-w-[400px]"

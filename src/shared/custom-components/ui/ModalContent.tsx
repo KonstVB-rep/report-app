@@ -11,14 +11,14 @@ interface ModalContentProps {
   className: string;
   children: ReactNode;
   title?: string;
-  showX?:boolean
+  showX?: boolean;
 }
 
 const ModalContent = ({
   children,
   className,
   title,
-  showX=true
+  showX = true,
 }: ModalContentProps) => {
   return (
     <DialogContent className={className} showX={showX}>

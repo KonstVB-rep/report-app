@@ -49,7 +49,9 @@ const CalendarComponent = ({ field, ...props }: CalendarComponentProps) => {
         <Calendar
           mode="single"
           selected={selectedDate}
-          onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
+          onSelect={(date: Date | undefined) => {
+            field.onChange(date ? date.toISOString() : "");
+          }}
           required={props.required}
           locale={ru}
           {...props}

@@ -15,9 +15,11 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { findUserByEmail } from "@/app/api/utils/findUserByEmail";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
+import { checkRole } from "@/shared/api/checkRole";
 import { handleError } from "@/shared/api/handleError";
 import { ActionResponse } from "@/shared/types";
 
+import { UserTypeTable } from "../model/column-data-user";
 import { userFormEditSchema, userFormSchema } from "../model/schema";
 import {
   UserDataBase,
@@ -25,8 +27,6 @@ import {
   UserFormEditData,
   UserRequest,
 } from "../types";
-import { checkRole } from "@/shared/api/checkRole";
-import { UserTypeTable } from "../model/column-data-user";
 
 export interface ResponseDelUser<T> {
   error: boolean;
@@ -134,7 +134,7 @@ const handleDirectorAssignment = async (
 
 const addUserToDb = async <T extends UserDataBase>(
   dataForm: T,
-  hashedPassword: string,
+  hashedPassword: string | undefined,
   departmentId: number,
   action: string
 ) => {
@@ -148,7 +148,7 @@ const addUserToDb = async <T extends UserDataBase>(
     phone: true,
   };
 
-  if (action === "create") {
+  if (action === "create" && hashedPassword) {
     return await prisma.user.create({
       data: {
         email: dataForm.email!.toLowerCase().trim(),
@@ -305,7 +305,7 @@ export const createUser = async (
 export const updateUser = async (
   formData: FormData
 ): Promise<ActionResponse<UserFormEditData>> => {
-      console.log("formData", formData);
+  console.log("formData", formData);
   try {
     const parsedData = safeParseFormData<UserFormEditData>(
       formData,
@@ -327,7 +327,10 @@ export const updateUser = async (
         await checkEmailUnique(parsedData.email);
       }
 
-      const hashedPassword = await hashUserPassword(parsedData.user_password!);
+      let hashedPassword: string | undefined;
+      if (parsedData.user_password && parsedData.user_password.trim() !== "") {
+        hashedPassword = await hashUserPassword(parsedData.user_password);
+      }
       const departmentTarget = await findDepartment(
         parsedData.department as string
       );
@@ -378,11 +381,14 @@ export const updateUser = async (
 export const getUser = async (
   targetUserId: string,
   permissions?: PermissionEnum[]
-): Promise<(User & { 
-  departmentName: string;
-  permissions: PermissionEnum[];
-  lastSession?: Date;
-}) | undefined> => {
+): Promise<
+  | (User & {
+      departmentName: string;
+      permissions: PermissionEnum[];
+      lastSession?: Date;
+    })
+  | undefined
+> => {
   try {
     const { user, userId } = await handleAuthorization();
 
@@ -469,6 +475,60 @@ export const deleteUser = async (deletedUserData: {
   }
 };
 
+export const deleteUsersList = async (
+  deletedUserIds: string[]
+): Promise<ResponseDelUser<null>> => {
+  try {
+    const { user } = await handleAuthorization();
+
+    if (user)
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT]);
+
+    const existingUsers = await prisma.user.findMany({
+      where: {
+        id: {
+          in: deletedUserIds,
+        },
+      },
+      select: { id: true },
+    });
+
+    const existingUserIds = existingUsers.map((user) => user.id);
+    const nonExistingUserIds = deletedUserIds.filter(
+      (id) => !existingUserIds.includes(id)
+    );
+
+    if (nonExistingUserIds.length > 0) {
+      return {
+        error: true,
+        message: `Пользователи с ID: ${nonExistingUserIds.join(", ")} не найдены`,
+        data: null,
+      };
+    }
+
+    await prisma.user.deleteMany({
+      where: {
+        id: {
+          in: deletedUserIds,
+        },
+      },
+    });
+
+    return {
+      error: false,
+      message: `Успешно удалено пользователей: ${deletedUserIds.length}`,
+      data: null,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      error: true,
+      message: "Ошибка при удалении пользователей",
+      data: null,
+    };
+  }
+};
+
 export const getAllUsersByDepartment = async (
   id: number
 ): Promise<User[] | null> => {
@@ -498,18 +558,16 @@ export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
 
     await checkRole(Role.ADMIN);
 
-
     if (!user) {
       handleError("Пользователь не найден");
     }
 
     const lastLogins = await prisma.userLogin.groupBy({
-      by: ['userId'],
+      by: ["userId"],
       _max: {
-        loginAt: true
-      }
+        loginAt: true,
+      },
     });
-
 
     const users = await prisma.user.findMany({
       include: {
@@ -533,14 +591,14 @@ export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
       },
     });
 
-      const usersWithLastLogin: UserTypeTable[] = users.map(user => {
-      const lastLoginRecord = lastLogins.find(ll => ll.userId === user.id);
+    const usersWithLastLogin: UserTypeTable[] = users.map((user) => {
+      const lastLoginRecord = lastLogins.find((ll) => ll.userId === user.id);
       return {
         ...user,
-        login: user.username, 
+        login: user.username,
         telegramInfo: user.telegramInfo[0]?.tgUserName || "",
-        lastlogin: lastLoginRecord?._max.loginAt || new Date(0), 
-        permissions: user.permissions.map(p => p.permission.name),
+        lastlogin: lastLoginRecord?._max.loginAt || new Date(0),
+        permissions: user.permissions.map((p) => p.permission.name),
       };
     });
 

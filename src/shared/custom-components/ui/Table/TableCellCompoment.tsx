@@ -1,6 +1,8 @@
-import { TableCell } from "@/shared/components/ui/table";
 import { Cell, flexRender } from "@tanstack/react-table";
+
 import { CSSProperties } from "react";
+
+import { TableCell } from "@/shared/components/ui/table";
 
 type TableCellComponentProps<TData> = {
   cell: Cell<TData, unknown>;
@@ -10,13 +12,12 @@ type TableCellComponentProps<TData> = {
   classNameSpan?: string;
 };
 
-
 const TableCellComponent = <TData,>({
   cell,
   styles,
   handleOpenInfo,
   children,
-  classNameSpan = 'line-clamp-2 text-center text-sm'
+  classNameSpan = "line-clamp-2 text-center text-sm",
 }: TableCellComponentProps<TData>) => {
   return (
     <TableCell

@@ -1,16 +1,20 @@
 import { DepartmentLabelsById } from "@/entities/department/types";
+import { UserTypeTable } from "@/entities/user/model/column-data-user";
 import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput";
-import DialogAddUser from "../DialogAddUser";
+
+import UserActionsBlock from "./UserActionsBlock";
 
 interface UserTableToolbarProps {
   globalFilter: string;
   onGlobalFilterChange: (value: string) => void;
+  rowSelection: UserTypeTable[];
 }
 
-const UserTableToolbar = ({ 
-  globalFilter, 
-  onGlobalFilterChange 
+const UserTableToolbar = ({
+  globalFilter,
+  onGlobalFilterChange,
+  rowSelection,
 }: UserTableToolbarProps) => {
   return (
     <div className="flex items-center justify-between flex-wrap gap-1">
@@ -31,7 +35,7 @@ const UserTableToolbar = ({
           ]}
         />
       </div>
-      <DialogAddUser className="text-sm justify-start w-fit" />
+      <UserActionsBlock rowSelection={rowSelection} />
     </div>
   );
 };

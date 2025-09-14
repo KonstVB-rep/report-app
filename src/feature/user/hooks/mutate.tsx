@@ -8,6 +8,7 @@ import { DepartmentInfo } from "@/entities/department/types";
 import {
   createUser,
   deleteUser,
+  deleteUsersList,
   ResponseDelUser,
   updateUser,
 } from "@/entities/user/api";
@@ -39,7 +40,7 @@ export const useCreateUser = (
       >(createUser, data, authUser, isSubmittingRef);
     },
     onSuccess: (data) => {
-      if (pathname.includes("admindashboard")) {
+      if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
           queryKey: ["all-users", authUser?.id],
           exact: true,
@@ -134,40 +135,104 @@ export const useDeleteUser = (userId: string) => {
       >(mutateFn, { userId }, authUser, isSubmittingRef);
     },
     onMutate: async () => {
+      const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"]);
+
+      queryClient.setQueryData(
+        ["depsWithUsers"],
+        (oldData: DepartmentInfo[]) => {
+          return oldData.map((department: DepartmentInfo) => {
+            return {
+              ...department,
+              users: department.users.filter(
+                (user: UserResponse) => user.id !== userId
+              ),
+            };
+          });
+        }
+      );
+      return { previousDepsWithUsers };
+    },
+    onSuccess: async () => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
           queryKey: ["all-users", authUser?.id],
           exact: true,
         });
       } else {
-        const previousDepsWithUsers = queryClient.getQueryData([
-          "depsWithUsers",
-        ]);
+        await queryClient.invalidateQueries({
+          queryKey: ["depsWithUsers"],
+        });
 
-        queryClient.setQueryData(
-          ["depsWithUsers"],
-          (oldData: DepartmentInfo[]) => {
-            return oldData.map((department: DepartmentInfo) => {
-              return {
-                ...department,
-                users: department.users.filter(
-                  (user: UserResponse) => user.id !== userId
-                ),
-              };
-            });
-          }
-        );
-        return { previousDepsWithUsers };
+        queryClient.refetchQueries({
+          queryKey: ["depsWithUsers"],
+        });
       }
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["depsWithUsers"],
-      });
+    onError: (error, variables, context) => {
+      queryClient.setQueryData(
+        ["depsWithUsers"],
+        context?.previousDepsWithUsers
+      );
+      handleErrorSession(error);
+    },
+  });
+};
 
-      queryClient.refetchQueries({
-        queryKey: ["depsWithUsers"],
-      });
+export const useDeleteUsersList = (userIds: string[]) => {
+  const { authUser, isSubmittingRef } = useFormSubmission();
+  const pathname = usePathname();
+
+  return useMutation({
+    mutationFn: async () => {
+      const mutateFn = async (data: string[]) => {
+        await Promise.all([
+          checkTokens(),
+          checkRole(),
+          checkRole(Role.DIRECTOR),
+        ]);
+        const result = await deleteUsersList(data);
+        return result;
+      };
+      return handleMutationWithAuthCheck<string[], ResponseDelUser<null>>(
+        mutateFn,
+        userIds,
+        authUser,
+        isSubmittingRef
+      );
+    },
+    onMutate: async () => {
+      const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"]);
+
+      queryClient.setQueryData(
+        ["depsWithUsers"],
+        (oldData: DepartmentInfo[]) => {
+          return oldData.map((department: DepartmentInfo) => {
+            return {
+              ...department,
+              users: department.users.filter(
+                (user: UserResponse) => !userIds.includes(user.id)
+              ),
+            };
+          });
+        }
+      );
+      return { previousDepsWithUsers };
+    },
+    onSuccess: async () => {
+      if (pathname.includes("adminboard")) {
+        queryClient.invalidateQueries({
+          queryKey: ["all-users", authUser?.id],
+          exact: true,
+        });
+      } else {
+        await queryClient.invalidateQueries({
+          queryKey: ["depsWithUsers"],
+        });
+
+        queryClient.refetchQueries({
+          queryKey: ["depsWithUsers"],
+        });
+      }
     },
     onError: (error, variables, context) => {
       queryClient.setQueryData(

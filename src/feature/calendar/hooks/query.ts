@@ -3,7 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb";
 
-import { getAllEventsCalendar, getEventsCalendarUser, getEventsCalendarUserToday } from "../api";
+import {
+  getAllEventsCalendar,
+  getEventsCalendarUser,
+  getEventsCalendarUserToday,
+} from "../api";
 
 export const useGetEventsCalendarUser = () => {
   const { authUser } = useStoreUser();
@@ -98,5 +102,3 @@ export const useGetInfoChat = (botName: string) => {
     gcTime: 5 * 60 * 1000,
   });
 };
-
-

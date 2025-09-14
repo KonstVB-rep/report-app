@@ -1,9 +1,12 @@
+import { flexRender, Header, Row } from "@tanstack/react-table";
+import { VirtualItem } from "@tanstack/react-virtual";
+
+import { Fragment } from "react";
+
 import { TableRow } from "@/shared/components/ui/table";
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog";
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment";
-import { flexRender, Header, Row } from "@tanstack/react-table";
-import { VirtualItem } from "@tanstack/react-virtual";
-import { Fragment } from "react";
+
 import { EventInputType } from "../../types";
 
 interface EventTableRowProps {
@@ -15,7 +18,6 @@ interface EventTableRowProps {
   onCloseInfo: () => void;
 }
 
-
 const EventTableRow = ({
   row,
   virtualRow,
@@ -24,7 +26,6 @@ const EventTableRow = ({
   onOpenInfo,
   onCloseInfo,
 }: EventTableRowProps) => {
-
   return (
     <TableRow
       key={row.id}
@@ -37,7 +38,6 @@ const EventTableRow = ({
         display: "flex",
       }}
       onDoubleClick={() => onOpenInfo(row.original.id || "")}
-
     >
       <>
         {row.getVisibleCells().map((cell) => (
