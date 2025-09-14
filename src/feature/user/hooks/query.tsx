@@ -40,7 +40,7 @@ export const useGetAllUsers = () => {
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
-        await executeWithTokenCheck(getAllUsers);
+        return await executeWithTokenCheck(getAllUsers);
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
@@ -52,6 +52,6 @@ export const useGetAllUsers = () => {
     },
     enabled: !!authUser?.id,
     retry: 0,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1000 * 60 * 5,
   });
 };
