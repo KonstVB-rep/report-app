@@ -39,7 +39,7 @@ export const useGetAllUsers = () => {
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
-        await checkTokens();
+        // await checkTokens();
         return await getAllUsers();
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
