@@ -18,7 +18,7 @@ const ButtonLink = ({
   icon,
 }: EventsListLinkProps) => (
   <Button asChild variant="outline" className={className}>
-    <Link href={pathName} className="p-1">
+    <Link href={pathName} prefetch={false} className="p-1">
       {icon}
       {label}
     </Link>

@@ -55,6 +55,7 @@ const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
   return (
     <Card className="relative p-0 pb-3 grid gap-2 cursor-pointer drop-shadow-xl group">
       <Link
+        prefetch={false}
         href={`/dashboard/tasks/${departmentId}/${userId}/${task.id}`}
         className="group-hover:grid hidden place-items-center border-primary hover:border-2 absolute inset-0 bg-background/80 rounded-md"
       >

@@ -74,6 +74,7 @@ const LinkToUserTable = () => {
           className="btn_hover max-w-max border-muted px-4 text-sm"
           title={`Перейти на страницу - ${hasTable.title}`}
           onClick={handleClick}
+          prefetch={false}
         >
           {hasTable.title} <Redo2 size={14} />
         </Link>
@@ -88,6 +89,7 @@ const LinkToUserTable = () => {
             className="btn_hover max-w-max border-muted px-4 text-sm"
             title={`Перейти на страницу - ${hasSummaryTable.title}`}
             onClick={handleClick}
+            prefetch={false}
           >
             {hasSummaryTable.title} <Redo2 size={14} />
           </Link>
