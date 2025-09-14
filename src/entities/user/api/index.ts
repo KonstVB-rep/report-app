@@ -553,10 +553,15 @@ export const getAllUsersByDepartment = async (
 
 export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
   try {
+
+    console.log("Start getAllUsers");
     const data = await handleAuthorization();
+    console.log("Authorization done", data);
+    await checkRole(Role.ADMIN);
+    console.log("Role check done");
+
     const { user } = data!;
 
-    await checkRole(Role.ADMIN);
 
     if (!user) {
       handleError("Пользователь не найден");
@@ -601,6 +606,8 @@ export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
         permissions: user.permissions.map((p) => p.permission.name),
       };
     });
+
+    console.log(usersWithLastLogin, "usersWithLastLogin");
 
     return usersWithLastLogin;
   } catch (error) {
