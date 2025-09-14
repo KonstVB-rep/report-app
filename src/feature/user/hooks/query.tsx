@@ -6,6 +6,7 @@ import { getAllUsers, getUser } from "@/entities/user/api";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
+import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
 
 export const useGetUser = (
   userId: string,
@@ -39,8 +40,7 @@ export const useGetAllUsers = () => {
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
-        // await checkTokens();
-        return await getAllUsers();
+        await executeWithTokenCheck(getAllUsers);
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные");
@@ -52,5 +52,6 @@ export const useGetAllUsers = () => {
     },
     enabled: !!authUser?.id,
     retry: 0,
+    staleTime: 5 * 60 * 1000,
   });
 };
