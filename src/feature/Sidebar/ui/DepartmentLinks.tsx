@@ -67,6 +67,7 @@ const LinkItem = memo(
   }) => (
     <Fragment>
       <Link
+        prefetch={false}
         href={href}
         onClick={onClick}
         className={`${

@@ -31,6 +31,7 @@ const SummaryTableLink = ({ type, className = "", departmentId }: Props) => {
   return (
     <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
       <Link
+        prefetch={false}
         href={`/dashboard/summary-table/${departmentIdValue}/${type.toLowerCase()}s/${authUser.id}`}
         className={`${className} min-w-full max-w-max text-sm`}
         title="перейти на страницу сводной таблицы"

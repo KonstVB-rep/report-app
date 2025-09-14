@@ -52,6 +52,7 @@ const ContextRowTable = ({
             {path && (
               <ContextMenuItem className="flex gap-2 p-0">
                 <Link
+                  prefetch={false}
                   className="flex w-full items-center justify-start gap-2 p-2"
                   href={path}
                 >

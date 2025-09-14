@@ -61,6 +61,7 @@ export function SiteHeader({
 
         <div className="hidden items-center gap-2 md:flex">
           <Link
+            prefetch={false}
             href={`/dashboard/tasks/${departmentId}/${userId}`}
             className="btn_hover text-sm font-medium"
           >
@@ -71,6 +72,7 @@ export function SiteHeader({
             permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
           >
             <Link
+              prefetch={false}
               href={`/dashboard/tasks/${departmentId}`}
               className="btn_hover text-sm font-medium"
             >

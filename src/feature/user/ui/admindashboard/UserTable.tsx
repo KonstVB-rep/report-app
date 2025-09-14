@@ -14,6 +14,7 @@ import UserTableToolbar from "./UserTableToolbar";
 
 const UserTable = () => {
   const { data, isLoading } = useGetAllUsers();
+
   const users = data || [];
 
   const { table, filtersContextValue, setGlobalFilter } =
