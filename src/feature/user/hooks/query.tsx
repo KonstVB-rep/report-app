@@ -54,6 +54,7 @@ export const useGetAllUsers = () => {
     },
     enabled: !!userId,
     retry: 0,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 };

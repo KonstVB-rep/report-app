@@ -11,8 +11,11 @@ import { useTableState } from "@/shared/hooks/useTableState";
 import { useGetAllUsers } from "../../hooks/query";
 import UserTableContent from "./UserTableContent";
 import UserTableToolbar from "./UserTableToolbar";
+import useStoreUser from "@/entities/user/store/useStoreUser";
 
 const UserTable = () => {
+
+  const authUser = useStoreUser((state) => state.authUser);
   const { data, isLoading } = useGetAllUsers();
 
   console.log("data", data, "isLoading", isLoading);
@@ -28,6 +31,10 @@ const UserTable = () => {
     .getRowModel()
     .rows.filter((row) => rowSelection[row.id])
     .map((row) => row.original);
+
+    if (!authUser) {
+      return <h1 className="text-2xl p-2 text-center">Пользователь не авторизован</h1>;
+    }
 
   return (
     <div>

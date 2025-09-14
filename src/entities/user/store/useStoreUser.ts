@@ -13,16 +13,32 @@ type State = {
   hasPermissionByRole: boolean;
   resetStore: () => void;
 };
-
 const useStoreUser = create<State>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       authUser: null,
       isAuth: false,
       hasPermissionByRole: false,
+      
       setAuthUser: (user: User | null) =>
-        set({ authUser: user, hasPermissionByRole: checkUserPermission(user) }),
-      setIsAuth: (isAuth: boolean) => set({ isAuth }),
+        set({ 
+          authUser: user, 
+          hasPermissionByRole: checkUserPermission(user),
+          isAuth: !!user
+        }),
+        
+      setIsAuth: (isAuth: boolean) => {
+        if (!isAuth) {
+          set({ 
+            isAuth: false,
+            authUser: null,
+            hasPermissionByRole: false 
+          });
+        } else {
+          set({ isAuth });
+        }
+      },
+      
       resetStore: () => {
         set({
           authUser: null,
@@ -33,6 +49,10 @@ const useStoreUser = create<State>()(
     }),
     {
       name: "user-storage",
+      partialize: (state) => ({ 
+        authUser: state.authUser,
+        isAuth: state.isAuth 
+      }),
     }
   )
 );
