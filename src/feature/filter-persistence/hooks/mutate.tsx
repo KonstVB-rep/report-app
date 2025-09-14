@@ -1,7 +1,6 @@
 import { UserFilter } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { getQueryClient } from "@/app/provider/query-provider";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
@@ -19,8 +18,6 @@ import {
   SaveFilterType,
   UpdateFilterDataType,
 } from "../types";
-
-const queryClient = getQueryClient();
 
 export const useSaveFilter = (setOpen: (value: boolean) => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
@@ -98,6 +95,7 @@ export const useDeleteFilter = () => {
 
 export const useSelectFilter = () => {
   const { authUser } = useStoreUser();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["selectFilter", authUser?.id],
     mutationFn: (filterId: string) => {
@@ -120,6 +118,7 @@ export const useSelectFilter = () => {
 
 export const useDisableSavedFilters = () => {
   const { authUser } = useStoreUser();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => {
       if (!authUser?.id) {

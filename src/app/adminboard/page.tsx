@@ -3,7 +3,7 @@ import { checkRole } from "@/shared/api/checkRole";
 import NotFound from "../not-found";
 import AdminPanel from "./ui/AdminPanel";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 const AdminPage = async () => {

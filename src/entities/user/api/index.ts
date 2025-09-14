@@ -305,7 +305,6 @@ export const createUser = async (
 export const updateUser = async (
   formData: FormData
 ): Promise<ActionResponse<UserFormEditData>> => {
-  console.log("formData", formData);
   try {
     const parsedData = safeParseFormData<UserFormEditData>(
       formData,

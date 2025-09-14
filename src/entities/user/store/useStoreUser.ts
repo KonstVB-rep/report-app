@@ -19,26 +19,26 @@ const useStoreUser = create<State>()(
       authUser: null,
       isAuth: false,
       hasPermissionByRole: false,
-      
+
       setAuthUser: (user: User | null) =>
-        set({ 
-          authUser: user, 
+        set({
+          authUser: user,
           hasPermissionByRole: checkUserPermission(user),
-          isAuth: !!user
+          isAuth: !!user,
         }),
-        
+
       setIsAuth: (isAuth: boolean) => {
         if (!isAuth) {
-          set({ 
+          set({
             isAuth: false,
             authUser: null,
-            hasPermissionByRole: false 
+            hasPermissionByRole: false,
           });
         } else {
           set({ isAuth });
         }
       },
-      
+
       resetStore: () => {
         set({
           authUser: null,
@@ -49,9 +49,9 @@ const useStoreUser = create<State>()(
     }),
     {
       name: "user-storage",
-      partialize: (state) => ({ 
+      partialize: (state) => ({
         authUser: state.authUser,
-        isAuth: state.isAuth 
+        isAuth: state.isAuth,
       }),
     }
   )

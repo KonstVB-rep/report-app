@@ -18,6 +18,8 @@ import DealsToolbar from "./ui/DealsToolbar";
 
 // app/adminboard/all-deals/page.tsx
 
+// app/adminboard/all-deals/page.tsx
+
 const AllDealsPage = () => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null);

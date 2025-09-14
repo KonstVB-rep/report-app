@@ -1,7 +1,7 @@
 import { checkTokens } from "../lib/helpers/checkTokens";
 
 export const executeWithTokenCheck = async <T>(
-  actionFn: () => Promise<T> 
+  actionFn: () => Promise<T>
 ): Promise<T> => {
   try {
     const [tokenCheckResult, result] = await Promise.all([
