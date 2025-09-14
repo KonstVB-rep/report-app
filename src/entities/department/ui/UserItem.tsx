@@ -25,6 +25,7 @@ const ProfileLink = ({
 }) => (
   <Link
     href={`/dashboard/profile/${departmentId}/${id}`}
+    prefetch={false}
     className={`flex w-full sm:w-60 flex-col items-center justify-center rounded-md border border-solid px-4 py-2 ${className}`}
     title={`${username.toUpperCase()} - Перейти в профиль`}
   >
@@ -47,6 +48,7 @@ const TableLinks = ({
   <div className="flex gap-2 shrink-0 w-full sm:w-auto">
     <TooltipComponent content="Перейти к проектам">
       <Link
+        prefetch={false}
         href={`/dashboard/table/${departmentId}/projects/${id}`}
         className="h-14 flex flex-1 sm:aspect-square sm:max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
         rel="noopener noreferrer"
@@ -56,6 +58,7 @@ const TableLinks = ({
     </TooltipComponent>
     <TooltipComponent content="Перейти к розничным сделкам">
       <Link
+        prefetch={false}
         href={`/dashboard/table/${departmentId}/retails/${id}`}
         className="h-14 flex flex-1 sm:aspect-square sm:max-w-fit items-center justify-center rounded-md border hover:bg-muted-foreground/50"
         rel="noopener noreferrer"

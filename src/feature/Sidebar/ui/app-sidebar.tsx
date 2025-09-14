@@ -97,6 +97,7 @@ const AppSidebar = () => {
                 <div className="flex-1 text-left text-sm leading-tight">
                   <Link
                     href=""
+                    prefetch={false}
                     className="flex gap-2 w-full truncate text-lg font-semibold italic cursor-pointer"
                     title="На главную"
                   >
@@ -141,7 +142,7 @@ const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter className="border-t border-muted">
         <NavUser>
-          <Link href="/adminboard" className="btn_hover justify-center text-sm">
+          <Link href="/adminboard" className="btn_hover justify-center text-sm"prefetch={false}>
             Панель администратора
           </Link>
         </NavUser>

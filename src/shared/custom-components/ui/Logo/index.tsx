@@ -15,6 +15,7 @@ const Logo = ({ isTitle = true, href, title }: LogoProps) => {
   return (
     <div className="flex-1 text-left text-sm leading-tight">
       <Link
+        prefetch={false}
         href={href || ""}
         className="flex gap-2 w-full truncate text-lg font-semibold italic cursor-pointer"
         title={title}

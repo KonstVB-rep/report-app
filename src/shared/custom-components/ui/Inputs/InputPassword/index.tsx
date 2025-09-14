@@ -10,7 +10,7 @@ import { Input } from "@/shared/components/ui/input";
 type InputPasswordProps = React.InputHTMLAttributes<HTMLInputElement>;
 const InputPassword = (props: InputPasswordProps) => {
   const [visible, setVisible] = React.useState(false);
-  console.log(visible, "visible");
+
   const { type, ...restProps } = props;
 
   return (

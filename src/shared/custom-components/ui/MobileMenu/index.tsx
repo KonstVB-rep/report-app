@@ -99,6 +99,7 @@ const MobileMenu = () => {
 
           <DropdownMenuItem className="p-0">
             <Link
+              prefetch={false}
               href={`/dashboard/tasks/${authUser?.departmentId}/${authUser?.id}`}
               className="w-full px-3 py-2 font-semibold hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary rounded-md"
             >
@@ -110,6 +111,7 @@ const MobileMenu = () => {
               permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
             >
               <Link
+                prefetch={false}
                 href={`/dashboard/tasks/${authUser?.departmentId}`}
                 className="w-full px-3 py-2 font-semibold hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary rounded-md"
               >

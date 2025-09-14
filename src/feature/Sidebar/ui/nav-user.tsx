@@ -47,6 +47,7 @@ export const NavUser = ({ children }: { children?: ReactNode }) => {
         >
           <div className="grid min-w-40 gap-1">
             <Link
+              prefetch={false}
               href={`/dashboard/profile/${departmentId}/${userId}`}
               className="btn_hover w-full justify-center text-sm"
             >
