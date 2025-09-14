@@ -18,8 +18,6 @@ const UserTable = () => {
   const authUser = useStoreUser((state) => state.authUser);
   const { data, isLoading } = useGetAllUsers();
 
-  console.log("data", data, "isLoading", isLoading);
-
   const users = data || [];
 
   const { table, filtersContextValue, setGlobalFilter } =
