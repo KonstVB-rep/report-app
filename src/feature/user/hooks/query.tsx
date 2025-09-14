@@ -54,7 +54,9 @@ export const useGetAllUsers = () => {
     },
     enabled: !!userId,
     retry: 0,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: Infinity,
+    refetchOnMount: false,  
+    refetchOnWindowFocus: false, 
+    refetchOnReconnect: false, 
   });
 };
