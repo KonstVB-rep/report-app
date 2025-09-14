@@ -13,11 +13,12 @@ export const useGetUser = (
   permissions?: PermissionEnum[] | undefined
 ) => {
   const { authUser } = useStoreUser();
+  const authUserId = authUser?.id; 
   return useQuery({
-    queryKey: ["user", userId, authUser?.id],
+    queryKey: ["user", userId, authUserId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) throw new Error("Пользователь не авторизован");
+        if (!authUserId) throw new Error("Пользователь не авторизован");
         return await getUser(userId as string, permissions as PermissionEnum[]);
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
@@ -28,15 +29,16 @@ export const useGetUser = (
         throw error;
       }
     },
-    enabled: !!userId && !!authUser?.id,
+    enabled: !!userId && !!authUserId,
     retry: 0,
   });
 };
 
 export const useGetAllUsers = () => {
-  const { authUser } = useStoreUser();
+   const { authUser } = useStoreUser();
+  const userId = authUser?.id;
   return useQuery({
-    queryKey: ["all-users", authUser?.id],
+    queryKey: ["all-users", userId],
     queryFn: async () => {
       try {
         if (!authUser?.id) throw new Error("Пользователь не авторизован");
@@ -50,7 +52,7 @@ export const useGetAllUsers = () => {
         throw error;
       }
     },
-    enabled: !!authUser?.id,
+    enabled: !!userId,
     retry: 0,
     staleTime: 1000 * 60 * 5,
   });
