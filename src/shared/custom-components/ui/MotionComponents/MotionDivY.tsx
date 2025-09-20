@@ -1,37 +1,16 @@
-import { animated, useSpring } from "@react-spring/web";
-
-import React, { Ref } from "react";
+import React from "react";
 
 import { cn } from "@/shared/lib/utils";
 
 const MotionDivY = ({
   children,
-  keyValue,
   className = "",
-  ref,
 }: {
   children: React.ReactNode;
-  keyValue?: string;
   className?: string;
-  ref?: Ref<HTMLDivElement>;
 }) => {
-  const styles = useSpring({
-    opacity: 1,
-    transform: "translateY(0px)",
-    from: { opacity: 0, transform: "translateY(10px)" },
-    to: { opacity: 1, transform: "translateY(0px)" },
-    config: { duration: 250 }, // время анимации
-  });
-
   return (
-    <animated.div
-      style={styles}
-      key={keyValue || ""}
-      className={cn(className)}
-      ref={ref}
-    >
-      {children}
-    </animated.div>
+      <div className={cn("animate-slide-appear", className)}>{children}</div>
   );
 };
 

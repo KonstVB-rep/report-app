@@ -1,5 +1,4 @@
 import { DealFile } from "@prisma/client";
-import { animated, useSpring } from "@react-spring/web";
 
 import { useState } from "react";
 
@@ -13,6 +12,7 @@ import Overlay from "@/shared/custom-components/ui/Overlay";
 
 import { useDeleteFiles } from "../../hooks/mutate";
 import FormDeleteFileSkeleton from "./ui/FormDeleteFileSkeleton";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 
 const FormDeleteFile = dynamic(() => import("./ui/FormDeleteFile"), {
   ssr: false,
@@ -39,13 +39,6 @@ const DeleteFile = ({
 
   const { mutate, isPending } = useDeleteFiles(handleCloseDialog);
 
-  const styles = useSpring({
-    opacity: 1,
-    scale: 1,
-    from: { opacity: 0, scale: 0.5 },
-    config: { duration: 200 }, // Длительность анимации 0.2s
-  });
-
   const handleDeleteFromListSelected = (fileName: string) => {
     setSelectedFiles((prev) => {
       const updated = new Set(prev);
@@ -66,7 +59,7 @@ const DeleteFile = ({
   return (
     <>
       <Overlay isPending={isPending} />
-      <animated.div style={styles} className={`flex gap-2 ${className}`}>
+      <MotionDivY className={`flex gap-2 ${className}`}>
         <DialogComponent
           open={open}
           onOpenChange={setOpen}
@@ -91,7 +84,7 @@ const DeleteFile = ({
             isPending={isPending}
           />
         </DialogComponent>
-      </animated.div>
+      </MotionDivY>
     </>
   );
 };

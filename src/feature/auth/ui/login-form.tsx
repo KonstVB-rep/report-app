@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { animated, useSpring } from "@react-spring/web";
 
 import { useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,6 +18,7 @@ import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { cn } from "@/shared/lib/utils";
 
 import { loginFormSchema, LoginSchema } from "../model/schema";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 
 type ErrorState = {
   email: string;
@@ -30,7 +30,7 @@ const initialErrorState = {
   user_password: "",
 };
 
-const LoginForm = ({ className }: React.ComponentProps<"div">) => {
+const LoginForm = () => {
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -42,12 +42,12 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
   const [state, formAction] = useActionState(login, undefined);
   const { setAuthUser, setIsAuth } = useStoreUser();
 
-  const styles = useSpring({
-    opacity: 1,
-    transform: "translateY(0px)",
-    from: { opacity: 0, transform: "translateY(20px)" },
-    config: { duration: 350, easing: (t) => 1 - Math.pow(1 - t, 3) },
-  });
+  // const styles = useSpring({
+  //   opacity: 1,
+  //   transform: "translateY(0px)",
+  //   from: { opacity: 0, transform: "translateY(20px)" },
+  //   config: { duration: 350, easing: (t) => 1 - Math.pow(1 - t, 3) },
+  // });
 
   const onSubmit = (formData: FormData) => {
     const parsed = loginFormSchema.safeParse(Object.fromEntries(formData));
@@ -78,7 +78,7 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
   }, [setAuthUser, setIsAuth, state]);
 
   return (
-    <animated.div style={styles} className={`flex flex-col gap-6 ${className}`}>
+    <MotionDivY className={"flex flex-col gap-6"}>
       <Card className="overflow-hidden">
         <CardContent className="grid p-0">
           <Form {...form}>
@@ -121,7 +121,7 @@ const LoginForm = ({ className }: React.ComponentProps<"div">) => {
           </Form>
         </CardContent>
       </Card>
-    </animated.div>
+    </MotionDivY>
   );
 };
 
