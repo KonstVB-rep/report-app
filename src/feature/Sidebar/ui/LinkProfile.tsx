@@ -4,11 +4,18 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 
 import { UserRound } from "lucide-react";
+import z from "zod";
 
 import { DepartmentUserItem } from "@/entities/department/types";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
+
+const pageParamsSchema = z.object({
+  userId: z.string().optional(),
+});
 
 const LinkProfile = ({ user }: { user: DepartmentUserItem }) => {
-  const { userId } = useParams();
+  const { userId } = useTypedParams(pageParamsSchema);
+
   const pathname = usePathname();
 
   const id = user.id;

@@ -11,36 +11,28 @@ import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
 import { Button } from "@/shared/components/ui/button";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
+import WrapperFormDeleteDialog from "@/shared/custom-components/ui/WrapperFormDeleteDialog";
 
 const DelDealForm = dynamic(() => import("../Forms/DelDealForm"), {
   ssr: false,
   loading: () => <DelDealSkeleton />,
 });
 
-const DelButtonDealInfoPage = ({
+const DelButtonDeal = ({
   id,
   type,
+  isTextButton = false,
 }: {
   id: string;
   type: DealType;
+  isTextButton?: boolean;
 }) => {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
   return (
-    <ProtectedByPermissions permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}>
-      <DialogComponent
-        open={open}
-        onOpenChange={setOpen}
-        dialogTitle="Удалить данные"
-        contentTooltip="Удалить"
-        classNameContent="sm:max-w-[400px]"
-        trigger={
-          <Button size="icon" variant={"destructive"}>
-            <Trash2 />
-          </Button>
-        }
-      >
+    <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
+      <WrapperFormDeleteDialog open={open} setOpen={setOpen}>
         <DelDealForm
           id={id}
           type={type}
@@ -49,9 +41,9 @@ const DelButtonDealInfoPage = ({
             router.back();
           }}
         />
-      </DialogComponent>
+      </WrapperFormDeleteDialog>
     </ProtectedByPermissions>
   );
 };
 
-export default DelButtonDealInfoPage;
+export default DelButtonDeal;

@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckedState } from "@radix-ui/react-checkbox";
+import { DealType } from "@prisma/client";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { ReactNode } from "react";
@@ -9,63 +9,21 @@ import { DateRange } from "react-day-picker";
 import { endOfDay, startOfDay } from "date-fns";
 
 import { DealBase } from "@/entities/deal/types";
-import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Label } from "@/shared/components/ui/label";
-import { cn } from "@/shared/lib/utils";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
+import {
+  DealTypeLabels,
+  StatusProjectLabels,
+  StatusRetailLabels,
+} from "@/feature/deals/lib/constants";
+
+import RowNumber from "../columnsDataColsTemplate/RowNumber";
+import { SelectColDataColumn } from "../columnsDataColsTemplate/SelectColHeader";
 
 export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
   {
-    id: "rowNumber",
-    header: "№",
-    cell: ({ row }) => Number(row.index) + 1,
-    enableHiding: false,
-    enableSorting: false,
-    accessorFn: () => "",
-    maxSize: 100,
-    enableResizing: false,
-    meta: {
-      isNotSearchable: true,
-    },
+    ...RowNumber<DealBase>(),
   },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Label
-        className={cn(
-          "flex items-center justify-center cursor-pointer gap-1",
-          (table.getIsSomePageRowsSelected() ||
-            table.getIsAllPageRowsSelected()) &&
-            "text-blue-600"
-        )}
-      >
-        Выбрать
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value: CheckedState) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-          className="opacity-0 w-0 h-0"
-          aria-label="Select all"
-        />
-      </Label>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center gap-1">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value: CheckedState) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-    minSize: 100,
-    maxSize: 100,
-  },
+  { ...SelectColDataColumn<DealBase>() },
   {
     id: "id",
     header: "",
@@ -83,7 +41,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       const date = info.getValue() as Date;
       return date.toLocaleDateString("ru-RU");
     },
-    enableHiding: true,
+    enableHiding: false,
     meta: {
       isDateFilter: true,
     },
@@ -120,15 +78,27 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     accessorFn: (row: DealBase) => row.dateRequest,
   },
   {
-    id: "nameDeal",
-    header: "Название сделки",
+    id: "type",
+    header: "Тип",
     cell: (info: CellContext<DealBase, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as keyof typeof DealTypeLabels;
+      return DealTypeLabels[value];
     },
+    minSize: 100,
+    maxSize: 100,
     enableHiding: true,
-    accessorFn: (row: DealBase) => row.nameDeal,
+    accessorFn: (row: DealBase) => row.type,
   },
+  // {
+  //   id: "nameDeal",
+  //   header: "Название сделки",
+  //   cell: (info: CellContext<DealBase, unknown>) => {
+  //     const value = info.getValue() as ReactNode;
+  //     return value;
+  //   },
+  //   enableHiding: true,
+  //   accessorFn: (row: DealBase) => row.nameDeal,
+  // },
   {
     id: "nameObject",
     header: "Название объекта",
@@ -151,13 +121,58 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     accessorFn: (row: DealBase) => row.comments,
   },
   {
-    id: "user",
-    header: "Менеджер",
-    cell: (info) => info.getValue(),
+    id: "dealStatusR",
+    header: "Статус Розницы",
+    cell: (info: CellContext<DealBase, unknown>) => {
+      const type = info.row.original.type;
+      const value = info.getValue();
+
+      if (type !== DealType.RETAIL) {
+        return null;
+      }
+
+      const statusKey = String(value);
+      return StatusRetailLabels[statusKey as keyof typeof StatusRetailLabels];
+    },
     enableHiding: true,
-    // meta: {
-    //   hidden: true,
-    // },
+    accessorFn: (row: DealBase) =>
+      row.type === DealType.RETAIL ? row.dealStatus : null,
+    meta: {
+      hidden: true,
+    },
+  },
+
+  {
+    id: "dealStatusP",
+    header: "Статус Проекта",
+    cell: (info: CellContext<DealBase, unknown>) => {
+      const type = info.row.original.type;
+      const value = info.getValue();
+      if (type !== DealType.PROJECT) {
+        return null;
+      }
+      const statusKey = String(value);
+      return StatusProjectLabels[statusKey as keyof typeof StatusProjectLabels];
+    },
+    enableHiding: true,
+    accessorFn: (row: DealBase) =>
+      row.type === DealType.PROJECT ? row.dealStatus : null,
+    meta: {
+      hidden: true,
+    },
+  },
+  {
+    id: "employee",
+    header: "Менеджер",
+    cell: (info) => {
+      const value = info.getValue() as string;
+      const { deptsFormatted } = useStoreDepartment.getState();
+      const user = deptsFormatted
+        ?.map((dept) => dept.users)
+        .flat()
+        .find((user) => user[value]);
+      return <span className="capitalize">{user?.[value]}</span>;
+    },
     filterFn: (row, columnId, filterValues) => {
       if (!filterValues || filterValues.length === 0) {
         return true;

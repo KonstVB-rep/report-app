@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getAllUsers, getUser } from "@/entities/user/api";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 
@@ -42,9 +41,9 @@ export const useGetAllUsers = () => {
   return useQuery({
     queryKey: ["all-users", userId],
     queryFn: async () => {
-      if (!userId) throw new Error("Пользователь не авторизован");
       try {
-        return await executeWithTokenCheck(getAllUsers);
+        if (!userId) throw new Error("Пользователь не авторизован");
+        return await getAllUsers();
       } catch (error) {
         TOAST.ERROR((error as Error).message || "Не удалось получить данные");
         throw error;
@@ -52,6 +51,6 @@ export const useGetAllUsers = () => {
     },
     enabled: !!userId,
     retry: 0,
-    staleTime: 5 * 60 * 1000, // 5 минут
+    staleTime: 5 * 60 * 1000,
   });
 };

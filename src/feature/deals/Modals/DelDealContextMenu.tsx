@@ -28,7 +28,7 @@ const DelDealContextMenu = ({
   type: DealType;
 }) => {
   return (
-    <ProtectedByPermissions permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}>
+    <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle className="sr-only">Удалить проект</DialogTitle>

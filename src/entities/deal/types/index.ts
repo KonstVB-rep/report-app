@@ -155,4 +155,17 @@ export type DealBase = {
   nameObject: string;
   comments: string;
   userId: string;
+  type?: Omit<DealType, "ORDER">;
+  dealStatus: StatusProject | StatusRetail;
+};
+
+export type DeletingDealsListItem = {
+  id: string;
+  type: DealType;
+  title?: string;
+};
+
+export type ReAssignDeal = {
+  dealIds: { id: string; type: DealType }[];
+  newManagerId: string;
 };

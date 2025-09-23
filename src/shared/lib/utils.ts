@@ -37,7 +37,6 @@ export const formatPhoneNumber = (value: string): string => {
   // Очищаем от всего, кроме цифр
   let cleaned = value.replace(/\D/g, "");
 
-  // Ограничиваем длину
   if (cleaned.length > 11) {
     cleaned = cleaned.substring(0, 11);
   }
@@ -77,3 +76,17 @@ export const normalizePhone = (phone: string): string => {
     return "+" + normalized;
   }
 };
+
+export function capitalizeFirstLetter(str: string): string {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+export function capitalizeFullName(fullName: string): string {
+  if (!fullName) return "";
+
+  return fullName
+    .split(" ")
+    .map((word) => capitalizeFirstLetter(word))
+    .join(" ");
+}

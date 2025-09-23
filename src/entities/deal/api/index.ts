@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  DealFile,
   DealType,
   PermissionEnum,
   Prisma,
@@ -15,6 +16,7 @@ import cuid from "cuid";
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
+import { checkRole } from "@/shared/api/checkByServer";
 import { handleError } from "@/shared/api/handleError";
 
 import { AllStatusKeys } from "../lib/constants";
@@ -29,6 +31,7 @@ import {
   ProjectWithManagersIds,
   ProjectWithoutDateCreateAndUpdate,
   ProjectWithoutId,
+  ReAssignDeal,
   RetailResponse,
   RetailResponseWithContactsAndFiles,
   RetailWithManagersIds,
@@ -378,7 +381,7 @@ export const getRetailsUser = async (
 };
 
 export const getAllProjectsByDepartment = async (
-  departmentId?: string | undefined
+  departmentId?: number | undefined
 ): Promise<ProjectResponse[]> => {
   try {
     const { user } = await handleAuthorization();
@@ -386,7 +389,7 @@ export const getAllProjectsByDepartment = async (
     await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_UNION_REPORT]);
 
     const departmentIdValue =
-      departmentId !== undefined ? +departmentId : +user!.departmentId;
+      departmentId !== undefined ? departmentId : user!.departmentId;
 
     const deals = await prisma.project.findMany({
       where: {
@@ -434,7 +437,7 @@ export const getAllProjectsByDepartment = async (
 };
 
 export const getAllRetailsByDepartment = async (
-  departmentId: string
+  departmentId: number
 ): Promise<RetailResponse[]> => {
   try {
     const { user } = await handleAuthorization();
@@ -445,7 +448,7 @@ export const getAllRetailsByDepartment = async (
 
     if (permissionError) return permissionError;
     const departmentIdValue =
-      departmentId !== undefined ? +departmentId : +user!.departmentId;
+      departmentId !== undefined ? departmentId : user!.departmentId;
 
     const deals = await prisma.retail.findMany({
       where: {
@@ -515,7 +518,7 @@ export const getAllDealsRequestSourceByDepartment = async (
     const retailsRequestResorce = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
@@ -531,7 +534,7 @@ export const getAllDealsRequestSourceByDepartment = async (
     const projectsRequestResource = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
@@ -564,7 +567,7 @@ export const getAllDealsByDepartment = async (
     const retailsRequestResorce = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
@@ -574,6 +577,8 @@ export const getAllDealsByDepartment = async (
         nameObject: true,
         comments: true,
         userId: true,
+        type: true,
+        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
@@ -583,7 +588,7 @@ export const getAllDealsByDepartment = async (
     const projectsRequestResource = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
@@ -593,6 +598,8 @@ export const getAllDealsByDepartment = async (
         nameObject: true,
         comments: true,
         userId: true,
+        type: true,
+        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
@@ -613,7 +620,7 @@ export const getAllDealsByDepartment = async (
 export const getDealsByDateRange = async (
   idDealOwner: string,
   range: DateRange,
-  departmentId: string
+  departmentId: number
 ) => {
   const data = await handleAuthorization();
 
@@ -676,7 +683,7 @@ export const getDealsByDateRange = async (
         some: {
           userId: idDealOwner,
           user: {
-            departmentId: Number(departmentId),
+            departmentId,
           },
         },
       },
@@ -696,7 +703,7 @@ export const getDealsByDateRange = async (
         some: {
           userId: idDealOwner,
           user: {
-            departmentId: Number(departmentId),
+            departmentId,
           },
         },
       },
@@ -1015,18 +1022,20 @@ export const updateProject = async (
       },
     });
 
+    console.log("deal", deal);
+
     if (!deal) {
       return null;
     }
 
     const userOwnerProject = await prisma.user.findUnique({
       where: { id: deal.userId },
-      select: { role: true, departmentId: true },
+      select: { role: true, id: true, username: true, departmentId: true },
     });
 
     if (!userOwnerProject) {
       return handleError(
-        "Пользователь не найден илил у вас нет прав на операцию"
+        "Пользователь не найден или у вас нет прав на операцию"
       );
     }
 
@@ -1177,7 +1186,7 @@ export const updateProject = async (
       await prisma.additionalContact.deleteMany({
         where: {
           projects: {
-            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+            some: { id: updatedDeal.id },
           },
         },
       });
@@ -1457,11 +1466,10 @@ export const deleteDeal = async (
 
     await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
 
-    // Собираем ID контактов
     contactIdsToCheck = deal.additionalContacts.map((c) => c.id);
 
     let managers: { dealId: string; userId: string }[] = [];
-    // Удаляем связи
+
     await prisma.$transaction(async (tx) => {
       if (type === DealType.PROJECT) {
         await tx.project.update({
@@ -1544,6 +1552,148 @@ export const deleteDeal = async (
   }
 };
 
+export const deleteMultipleDeals = async (
+  dealIds: {
+    id: string;
+    type: DealType;
+  }[]
+): Promise<{
+  managers: { userId: string; dealId: string }[];
+  files: DealFile[];
+  message: string;
+  error: boolean;
+  deletedCount: number;
+}> => {
+  try {
+    await handleAuthorization();
+    await checkRole();
+
+    if (!dealIds || dealIds.length === 0) {
+      return handleError("Недостаточно данных");
+    }
+
+    // Разделяем по типу сделки
+    const projectsIds = dealIds
+      .filter((d) => d.type === DealType.PROJECT)
+      .map((p) => p.id);
+    const retailsIds = dealIds
+      .filter((d) => d.type === DealType.RETAIL)
+      .map((r) => r.id);
+
+    if (projectsIds.length === 0 && retailsIds.length === 0) {
+      return handleError("Нет проектов или розницы для удаления");
+    }
+
+    // === Получаем все связанные данные ДО удаления ===
+    const [projects, retails] = await Promise.all([
+      projectsIds.length
+        ? prisma.project.findMany({
+            where: { id: { in: projectsIds } },
+            include: { additionalContacts: { select: { id: true } } },
+          })
+        : Promise.resolve([]),
+      retailsIds.length
+        ? prisma.retail.findMany({
+            where: { id: { in: retailsIds } },
+            include: { additionalContacts: { select: { id: true } } },
+          })
+        : Promise.resolve([]),
+    ]);
+
+    const deals = [...projects, ...retails];
+    if (deals.length === 0) {
+      return handleError("Сделки не найдены");
+    }
+
+    // Собираем все контакты для возможного удаления
+    const allContactIds = new Set<string>();
+    deals.forEach((deal) =>
+      deal.additionalContacts.forEach((c) => allContactIds.add(c.id))
+    );
+
+    // Получаем всех менеджеров ДО удаления
+    const [projectManagers, retailManagers] = await Promise.all([
+      projectsIds.length
+        ? prisma.projectManager.findMany({
+            where: { dealId: { in: projectsIds } },
+          })
+        : Promise.resolve([]),
+      retailsIds.length
+        ? prisma.retailManager.findMany({
+            where: { dealId: { in: retailsIds } },
+          })
+        : Promise.resolve([]),
+    ]);
+
+    // Получаем все файлы ДО удаления
+    const allDealIds = [...projectsIds, ...retailsIds];
+    const dealFiles = await prisma.dealFile.findMany({
+      where: { dealId: { in: allDealIds } },
+    });
+
+    // === Удаляем все данные транзакционно ===
+    await prisma.$transaction(async (tx) => {
+      if (projectsIds.length > 0) {
+        await Promise.all([
+          tx.projectManager.deleteMany({
+            where: { dealId: { in: projectsIds } },
+          }),
+          tx.order.deleteMany({ where: { projectId: { in: projectsIds } } }),
+          tx.dealFile.deleteMany({
+            where: { dealId: { in: projectsIds }, dealType: DealType.PROJECT },
+          }),
+        ]);
+        await tx.project.deleteMany({ where: { id: { in: projectsIds } } });
+      }
+
+      if (retailsIds.length > 0) {
+        await Promise.all([
+          tx.retailManager.deleteMany({
+            where: { dealId: { in: retailsIds } },
+          }),
+          tx.order.deleteMany({ where: { retailId: { in: retailsIds } } }),
+          tx.dealFile.deleteMany({
+            where: { dealId: { in: retailsIds }, dealType: DealType.RETAIL },
+          }),
+        ]);
+        await tx.retail.deleteMany({ where: { id: { in: retailsIds } } });
+      }
+
+      // Удаляем неиспользуемые контакты
+      if (allContactIds.size > 0) {
+        const unusedContacts = await tx.additionalContact.findMany({
+          where: {
+            id: { in: Array.from(allContactIds) },
+            projects: { none: {} },
+            retails: { none: {} },
+          },
+          select: { id: true },
+        });
+
+        if (unusedContacts.length > 0) {
+          await tx.additionalContact.deleteMany({
+            where: { id: { in: unusedContacts.map((c) => c.id) } },
+          });
+        }
+      }
+    });
+
+    return {
+      managers: [
+        ...projectManagers.map((m) => ({ ...m, dealType: DealType.PROJECT })),
+        ...retailManagers.map((m) => ({ ...m, dealType: DealType.RETAIL })),
+      ],
+      files: dealFiles,
+      message: `Удалено сделок: ${deals.length} (Проектов: ${projects.length}, Розница: ${retails.length})`,
+      error: false,
+      deletedCount: deals.length,
+    };
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
 export const getAdditionalContacts = async (dealId: string) => {
   try {
     await handleAuthorization();
@@ -1562,3 +1712,245 @@ export const getAdditionalContacts = async (dealId: string) => {
     return handleError((error as Error).message);
   }
 };
+
+export const reassignDealsToManager = async (
+  data: ReAssignDeal
+): Promise<{
+  success: boolean;
+  message: string;
+  error?: boolean;
+}> => {
+  try {
+    await handleAuthorization();
+    await checkRole();
+
+    const { dealIds, newManagerId } = data;
+
+    // разделим сделки по типам
+    const projectIds = dealIds
+      .filter((d) => d.type === DealType.PROJECT)
+      .map((d) => d.id);
+    const retailIds = dealIds
+      .filter((d) => d.type === DealType.RETAIL)
+      .map((d) => d.id);
+
+    await prisma.$transaction(async (tx) => {
+      /** --- PROJECTS --- **/
+      if (projectIds.length > 0) {
+        // найти старых главных (чтобы удалить их из projectManager)
+        const oldProjects = await tx.project.findMany({
+          where: { id: { in: projectIds } },
+          select: { id: true, userId: true },
+        });
+        const oldManagerIds = oldProjects.map((p) => p.userId);
+
+        // удалить старого главного менеджера из projectManager
+        await tx.projectManager.deleteMany({
+          where: {
+            dealId: { in: projectIds },
+            userId: { in: oldManagerIds },
+          },
+        });
+
+        // добавить нового (skipDuplicates)
+        await tx.projectManager.createMany({
+          data: projectIds.map((id) => ({
+            dealId: id,
+            userId: newManagerId,
+          })),
+          skipDuplicates: true,
+        });
+
+        // обновить самого главного в project
+        await tx.project.updateMany({
+          where: { id: { in: projectIds } },
+          data: { userId: newManagerId },
+        });
+      }
+
+      /** --- RETAILS --- **/
+      if (retailIds.length > 0) {
+        const oldRetails = await tx.retail.findMany({
+          where: { id: { in: retailIds } },
+          select: { id: true, userId: true },
+        });
+        const oldRetailManagerIds = oldRetails.map((r) => r.userId);
+
+        // удалить старого главного менеджера из retailManager
+        await tx.retailManager.deleteMany({
+          where: {
+            dealId: { in: retailIds },
+            userId: { in: oldRetailManagerIds },
+          },
+        });
+
+        // добавить нового (skipDuplicates)
+        await tx.retailManager.createMany({
+          data: retailIds.map((id) => ({
+            dealId: id,
+            userId: newManagerId,
+          })),
+          skipDuplicates: true,
+        });
+
+        // обновить главного в retail
+        await tx.retail.updateMany({
+          where: { id: { in: retailIds } },
+          data: { userId: newManagerId },
+        });
+      }
+    });
+
+    return {
+      success: true,
+      message: `Переназначено ${projectIds.length + retailIds.length} сделок на нового менеджера`,
+    };
+  } catch (error) {
+    console.error(error);
+    return handleError((error as Error).message);
+  }
+};
+
+// export const reassignDealsWithChecks = async (data: ReAssignDeal): Promise<{
+//   success: boolean;
+//   message: string;
+//   error?: boolean;
+// }> => {
+//   try {
+//     await handleAuthorization();
+
+//     const { oldManagerId, newManagerId, options } = data;
+
+//     const [oldManager, newManager] = await Promise.all([
+//       prisma.user.findUnique({ where: { id: oldManagerId } }),
+//       prisma.user.findUnique({ where: { id: newManagerId } }),
+//     ]);
+
+//     if (!oldManager) {
+//       throw new Error("Прежний менеджер не найден");
+//     }
+
+//     if (!newManager) {
+//       throw new Error("Новый менеджер не найден");
+//     }
+
+//     if (!options?.projectIds || options.projectIds.length > 0) {
+//       const projects = options?.projectIds
+//         ? { userId: oldManagerId, id: { in: options.projectIds } }
+//         : { userId: oldManagerId };
+
+//       const projectsToTransfer = await prisma.project.findMany({
+//         where: projects,
+//       });
+
+//       if (projectsToTransfer.length > 0) {
+//         await prisma.$transaction(async (tx) => {
+//           const projectIds = projectsToTransfer.map((p) => p.id);
+//           /*проверяю связь проектов с новым менеджером*/
+//           const existingConnections = await tx.projectManager.findMany({
+//             where: {
+//               dealId: { in: projectIds },
+//               userId: newManagerId,
+//             },
+//           });
+
+//           const existingProjectIds = existingConnections.map((ep) => ep.dealId);
+//           /*удаляю связи проектов со старым менеджером*/
+//           await tx.projectManager.deleteMany({
+//             where: {
+//               dealId: { in: projectIds },
+//               userId: oldManagerId,
+//             },
+//           });
+//           /*создаю связь проектов со новым менеджером если их нет */
+
+//           const projectsToConnect = projectIds.filter(
+//             (projectId) => !existingProjectIds.includes(projectId)
+//           );
+
+//           if (projectsToConnect.length > 0) {
+//             await tx.projectManager.createMany({
+//               data: projectsToConnect.map((projectId) => ({
+//                 dealId: projectId,
+//                 userId: newManagerId,
+//               })),
+//             });
+//           }
+//           /*обновление проектов с новым менеджером в качестве главного*/
+//           await tx.project.updateMany({
+//             where: {
+//               id: { in: projectIds },
+//             },
+//             data: {
+//               userId: newManagerId,
+//             },
+//           });
+//         });
+//       }
+//     }
+//     if (!options?.retailIds || options.retailIds.length > 0) {
+//       const retails = options?.retailIds
+//         ? { userId: oldManagerId, id: { in: options.retailIds } }
+//         : { userId: oldManagerId };
+
+//       const retailsToTransfer = await prisma.retail.findMany({
+//         where: retails,
+//       });
+
+//       if (retailsToTransfer.length > 0) {
+//         await prisma.$transaction(async (tx) => {
+//           const retailsIds = retailsToTransfer.map((r) => r.id);
+
+//           const existingConnections = await tx.retailManager.findMany({
+//             where: {
+//               dealId: { in: retailsIds },
+//               userId: newManagerId,
+//             },
+//           });
+
+//           const existingRetailIds = existingConnections.map((er) => er.dealId);
+
+//           await tx.retailManager.deleteMany({
+//             where: {
+//               dealId: { in: retailsIds },
+//               userId: oldManagerId,
+//             },
+//           });
+
+//           const retailsToconnection = retailsIds.filter(
+//             (retailId) => !existingRetailIds.includes(retailId)
+//           );
+
+//           if (retailsToconnection.length > 0) {
+//             await tx.retailManager.createMany({
+//               data: retailsToconnection.map((retailId) => ({
+//                 dealId: retailId,
+//                 userId: newManagerId,
+//               })),
+//             });
+//           }
+
+//           await tx.retail.updateMany({
+//             where: {
+//               id: {
+//                 in: retailsIds,
+//               },
+//             },
+//             data: {
+//               userId: newManagerId,
+//             },
+//           });
+//         });
+//       }
+//     }
+
+//     const dealCount = (data.options?.projectIds?.length || 0) + (data.options?.retailIds?.length || 0);
+//     return {
+//       success: true,
+//       message: dealCount > 0 ? `Данные успешно переназначены - ${dealCount} шт`: "Данные успешно переназначены",
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return handleError((error as Error).message);
+//   }
+// };

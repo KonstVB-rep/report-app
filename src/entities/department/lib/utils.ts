@@ -1,6 +1,7 @@
 "use client";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { capitalizeFullName } from "@/shared/lib/utils";
 
 import useStoreDepartment, { DeptFormatted } from "../store/useStoreDepartment";
 import { NOT_MANAGERS_POSITIONS } from "./constants";
@@ -46,7 +47,7 @@ export const getManagers = (onlyManagers = true) => {
               item.position
             )
           ) {
-            acc[item.id] = item.username;
+            acc[item.id] = capitalizeFullName(item.username);
           }
           return acc;
         },
@@ -57,7 +58,7 @@ export const getManagers = (onlyManagers = true) => {
     return (
       currentDepartment?.users.reduce(
         (acc, item) => {
-          acc[item.id] = item.username;
+          acc[item.id] = capitalizeFullName(item.username);
           return acc;
         },
         {} as Record<string, string>

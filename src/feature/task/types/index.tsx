@@ -6,7 +6,7 @@ import { viewType } from "../model/constants";
 
 export type TaskFormType = {
   title: string;
-  departmentId: string;
+  departmentId: number;
   description: string;
   taskStatus: TaskStatus;
   taskPriority: TaskPriority;

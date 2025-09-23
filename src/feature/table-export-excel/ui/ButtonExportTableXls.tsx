@@ -26,17 +26,22 @@ type ButtonExportXlsType<T extends Record<string, unknown>> = {
   isShow: boolean;
 };
 
+// const pageParamsSchema = z.object({
+//   dealType: z.enum(TableTypes).optional(),
+// });
+
 const ButtonExportTableXls = <T extends Record<string, unknown>>({
   columns,
   table,
   isShow,
 }: ButtonExportXlsType<T>) => {
   const { dealType } = useParams();
+
   if (!isShow) {
     return null;
   }
   return (
-    <ProtectedByPermissions permissionArr={[PermissionEnum.DOWNLOAD_REPORTS]}>
+    <ProtectedByPermissions permission={PermissionEnum.DOWNLOAD_REPORTS}>
       <Button
         variant={"ghost"}
         onClick={() =>

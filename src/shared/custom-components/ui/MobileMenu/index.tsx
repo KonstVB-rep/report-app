@@ -79,7 +79,7 @@ const MobileMenu = () => {
                   </AccordionTrigger>
                   <AccordionContent className="flex pl-3 pt-2 flex-col gap-1 text-balance">
                     <ProtectedByPermissions
-                      permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+                      permission={PermissionEnum.VIEW_UNION_REPORT}
                     >
                       {namePagesByDealType.map((type) => (
                         <SummaryTableLink
@@ -108,7 +108,7 @@ const MobileMenu = () => {
           </DropdownMenuItem>
           <DropdownMenuItem className="p-0">
             <ProtectedByPermissions
-              permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+              permission={PermissionEnum.VIEW_UNION_REPORT}
             >
               <Link
                 prefetch={false}

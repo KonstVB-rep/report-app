@@ -76,10 +76,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --thumb-color: 240 5.9% 30%;
-  --track-color: 240 4.8% 60%;
-  --thumb-color-hover: 0 0% 10%;
-  --table-even-row: 240 5% 80%;
+  --thumb-color: oklch(39.5% 0.028 268);
+  --track-color: oklch(84.8% 0.018 269);
+  --thumb-color-hover: oklch(25.1% 0 0);
+  --table-even-row: oklch(84.5% 0.02 268);
 }
 
 .dark {
@@ -865,6 +865,6 @@ fill: var(--secondary);
 .rdp-week td[data-selected="true"]{
   background-color: var(--primary);
   & > .rdp-day_button{
-    color: black;
+    color: var(--secondary);
   }
 }

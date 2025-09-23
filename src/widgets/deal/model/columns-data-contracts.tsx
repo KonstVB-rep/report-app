@@ -15,6 +15,8 @@ import {
 } from "@/feature/deals/lib/constants";
 import { formatterCurrency } from "@/shared/lib/utils";
 
+import RowNumber from "./columnsDataColsTemplate/RowNumber";
+
 export type typeofDirections = keyof typeof DirectionProjectLabels;
 
 export type typeofDelivery = keyof typeof DeliveryProjectLabels;
@@ -23,12 +25,7 @@ export type typeofStatus = keyof typeof StatusContractLabels;
 
 export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
   {
-    id: "rowNumber",
-    header: "№",
-    cell: ({ row }) => Number(row.index) + 1,
-    enableHiding: false,
-    enableSorting: false,
-    accessorFn: () => "",
+    ...RowNumber<ContractResponse>(),
   },
   {
     id: "dateRequest",

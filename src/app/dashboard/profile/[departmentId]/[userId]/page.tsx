@@ -1,11 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
+
+import z from "zod";
 
 import { DepartmentLabels } from "@/entities/department/types";
 import { useGetUser } from "@/feature/user/hooks/query";
 import UserCard from "@/shared/custom-components/ui/UserCard";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import ProfileDealsData from "./ui/ProfileDealsData";
@@ -19,10 +21,14 @@ const Loading = dynamic(() => import("./loading"), { ssr: false });
 
 const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false });
 
-const ProfilePage = () => {
-  const { userId } = useParams();
+const pageParamsSchema = z.object({
+  userId: z.string(),
+});
 
-  const { data: user, error, isPending } = useGetUser(userId as string);
+const ProfilePage = () => {
+  const { userId } = useTypedParams(pageParamsSchema);
+
+  const { data: user, error, isPending } = useGetUser(userId);
 
   if (isPending) return <Loading />;
 
@@ -68,7 +74,6 @@ const ProfilePage = () => {
               <span>{user?.email}</span>
             </p>
           </div>
-          {/* </div> */}
         </div>
       </div>
 

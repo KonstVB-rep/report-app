@@ -73,8 +73,7 @@ const useChatBot = (botName: string) => {
     if (!authUser || !bot) return;
     try {
       setIsFetch(true);
-      console.log(bot, "bot");
-      // Если у бота ещё нет записи в БД
+
       if (!bot.id && bot.botName) {
         openTelegramLink(bot.botName, authUser.id);
         return;

@@ -26,7 +26,7 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
         className={cn("flex items-center justify-center cursor-pointer gap-1")}
       >
         {table.getIsSomePageRowsSelected() ||
-        table.getIsAllPageRowsSelected() ? (
+          table.getIsAllPageRowsSelected() ? (
           <ListCheck />
         ) : (
           "Выбрать"
@@ -89,7 +89,13 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
     header: "Конец",
     cell: (info) => {
       const { row } = info;
-      return row.original.end.toLocaleDateString("ru-RU", {
+      const endDate = row.original.end;
+
+      if (!endDate) {
+        return "-"; // или любое другое значение по умолчанию
+      }
+
+      return endDate.toLocaleDateString("ru-RU", {
         hour: "2-digit",
         minute: "2-digit",
       });

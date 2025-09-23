@@ -70,8 +70,6 @@ export const handleSubmit = (
     startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
     endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
 
-    console.log(endDate, startDate);
-
     if (endDate <= startDate) {
       return TOAST.ERROR(
         "Время окончания события не должно быть меньше времени начала!"

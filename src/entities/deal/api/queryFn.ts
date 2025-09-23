@@ -36,7 +36,7 @@ export const getContractsUserQuery = async (userId: string) => {
   }
 };
 
-export const getAllProjectsByDepartmentQuery = async (departmentId: string) => {
+export const getAllProjectsByDepartmentQuery = async (departmentId: number) => {
   try {
     return await getAllProjectsByDepartment(departmentId);
   } catch (error) {
@@ -45,7 +45,7 @@ export const getAllProjectsByDepartmentQuery = async (departmentId: string) => {
   }
 };
 
-export const getAllRetailsByDepartmentQuery = async (departmentId: string) => {
+export const getAllRetailsByDepartmentQuery = async (departmentId: number) => {
   try {
     return await getAllRetailsByDepartment(departmentId);
   } catch (error) {

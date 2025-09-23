@@ -1,8 +1,6 @@
 import React from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
-import { useParams } from "next/navigation";
-
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import { DepartmentInfo } from "@/entities/department/types";
 import {
@@ -16,6 +14,10 @@ import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
+import {
+  pageParamsSchemaDepsId,
+  useTypedParams,
+} from "@/shared/hooks/useTypedParams";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 
 type TaskFormProps<T extends FieldValues> = {
@@ -32,7 +34,7 @@ const TaskForm = <T extends FieldValues>({
   onSubmit,
   isPending,
 }: TaskFormProps<T>) => {
-  const { departmentId } = useParams();
+  const { departmentId } = useTypedParams(pageParamsSchemaDepsId);
   const getError = (name: keyof T) =>
     form.formState.errors[name]?.message as string | undefined;
 

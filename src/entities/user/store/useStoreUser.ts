@@ -10,7 +10,6 @@ type State = {
   isAuth: boolean;
   setAuthUser: (user: User | null) => void;
   setIsAuth: (isAuth: boolean) => void;
-  hasPermissionByRole: boolean;
   resetStore: () => void;
 };
 const useStoreUser = create<State>()(
@@ -18,12 +17,10 @@ const useStoreUser = create<State>()(
     (set, get) => ({
       authUser: null,
       isAuth: false,
-      hasPermissionByRole: false,
 
       setAuthUser: (user: User | null) =>
         set({
           authUser: user,
-          hasPermissionByRole: checkUserPermission(user),
           isAuth: !!user,
         }),
 
@@ -32,7 +29,6 @@ const useStoreUser = create<State>()(
           set({
             isAuth: false,
             authUser: null,
-            hasPermissionByRole: false,
           });
         } else {
           set({ isAuth });
@@ -43,7 +39,6 @@ const useStoreUser = create<State>()(
         set({
           authUser: null,
           isAuth: false,
-          hasPermissionByRole: false,
         });
       },
     }),

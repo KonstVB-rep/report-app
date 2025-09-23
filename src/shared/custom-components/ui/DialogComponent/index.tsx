@@ -40,12 +40,10 @@ const DialogComponent = ({
 }: DialogComponentProps) => {
   const [internalOpen, setInternalOpen] = React.useState(false);
 
-  // Проверка на контролируемое или неконтролируемое состояние
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const onOpenChange = isControlled ? controlledOnOpenChange! : setInternalOpen;
 
-  // Рендерим триггер, если передан
   const renderTrigger = () => {
     const triggerElement = trigger ? (
       <DialogTrigger asChild>{trigger}</DialogTrigger>

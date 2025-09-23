@@ -1,6 +1,6 @@
 import { Table } from "@tanstack/react-table";
 
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { ListChecks } from "lucide-react";
 
@@ -11,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
+import { TableMeta } from "@/shared/hooks/useTableState";
 
 interface SelectColumnsProps<TData extends Record<string, unknown>> {
   data: Table<TData>;
@@ -31,6 +32,11 @@ const SelectColumns = <TData extends Record<string, unknown>>({
     );
   };
 
+  const tableMeta = data.options.meta as TableMeta<TData>;
+  const tanleMetaHiddenCols = Object.entries(
+    tableMeta?.columnVisibility || {}
+  ).length;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
@@ -45,9 +51,9 @@ const SelectColumns = <TData extends Record<string, unknown>>({
           className="relative flex gap-1"
         >
           <ListChecks />
-          {hiddenColumns.length - 2 > 0 && (
+          {hiddenColumns.length - tanleMetaHiddenCols > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {hiddenColumns.length - 2}
+              {hiddenColumns.length - tanleMetaHiddenCols}
             </span>
           )}
           {"Колонки показать/скрыть"}
@@ -59,7 +65,12 @@ const SelectColumns = <TData extends Record<string, unknown>>({
           <div className="grid grid-cols-1 items-center gap-1">
             {data
               .getAllColumns()
-              .filter((col) => col.getCanHide() && col.id !== "user")
+              .filter((col) => {
+                return (
+                  col.getCanHide() &&
+                  !(col.columnDef.meta as { hidden: boolean | string })?.hidden
+                );
+              })
               .map((col) => (
                 <div key={col.id} className="flex items-center gap-1">
                   <Checkbox
@@ -74,13 +85,13 @@ const SelectColumns = <TData extends Record<string, unknown>>({
                 </div>
               ))}
           </div>
-          {hiddenColumns.length - 1 > 0 && (
+          {hiddenColumns.length - tanleMetaHiddenCols > 0 && (
             <Button
               onClick={handleResetVisibility}
               variant="outline"
               className="btn_hover w-full text-xs"
             >
-              Очистить фильтр
+              Очистить
             </Button>
           )}
         </div>

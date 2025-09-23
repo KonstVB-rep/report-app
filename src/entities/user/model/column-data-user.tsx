@@ -8,9 +8,9 @@ import { endOfDay, startOfDay } from "date-fns";
 import { UserCheck } from "lucide-react";
 
 import { DepartmentLabelsById } from "@/entities/department/types";
-import { cn } from "@/lib/utils";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { Label } from "@/shared/components/ui/label";
+import { cn } from "@/shared/lib/utils";
 
 import { PermissionUser, RolesUser } from "./objectTypes";
 
@@ -85,8 +85,8 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-    minSize: 100,
-    maxSize: 100,
+    minSize: 80,
+    maxSize: 80,
   },
   {
     id: "username",

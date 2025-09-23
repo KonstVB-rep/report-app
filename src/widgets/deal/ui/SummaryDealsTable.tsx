@@ -6,9 +6,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { JSX, useMemo } from "react";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
+
+import z from "zod";
 
 import Loading from "@/app/dashboard/summary-table/[departmentId]/[dealType]/[userId]/loading";
+import { TableTypes } from "@/entities/deal/lib/constants";
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import {
   DealsUnionType,
@@ -19,9 +21,14 @@ import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable";
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable";
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton";
+import {
+  DepartmentLabelsById,
+  DepartmentsUnionIds,
+} from "@/entities/department/types";
 import { useGetAllDealsByType } from "@/feature/deals/api/hooks/query";
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage";
 import { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import { columnsDataProjectSummary } from "../model/summary-columns-data-project";
@@ -55,12 +62,19 @@ export interface SummaryTableProps<TData extends { id: string }> {
   columns: ColumnDef<TData, unknown>[];
 }
 
+const pageParamsSchema = z.object({
+  dealType: z.enum(TableTypes),
+  userId: z.string(),
+  departmentId: z.coerce
+    .number()
+    .positive()
+    .transform((value) => {
+      return value as DepartmentsUnionIds;
+    }),
+});
+
 const SummaryDealsTable = () => {
-  const { userId, departmentId, dealType } = useParams<{
-    userId: string;
-    departmentId: string;
-    dealType: "projects" | "retails";
-  }>();
+  const { userId, departmentId, dealType } = useTypedParams(pageParamsSchema);
 
   const hasAccess = useMemo(
     () =>
@@ -96,7 +110,7 @@ const SummaryDealsTable = () => {
       <div className="flex gap-2 flex-wrap">
         <LinkToUserTable />
         <p className="border rounded-md p-2">
-          Общее количество заявок: {deals?.length}
+          Количество заявок: {deals?.length}
         </p>
       </div>
       <DealsTable

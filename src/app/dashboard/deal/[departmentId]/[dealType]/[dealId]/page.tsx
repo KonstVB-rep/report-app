@@ -5,7 +5,11 @@ import { DealType } from "@prisma/client";
 import React from "react";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
+
+import z from "zod";
+
+import { DealTypesArray } from "@/entities/deal/lib/constants";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 import Loading from "./loading";
 
@@ -35,9 +39,13 @@ function renderDealInfoByType(dealType?: string) {
   }
 }
 
+const pageParamsSchema = z.object({
+  dealType: z.enum(DealTypesArray),
+});
+
 const DealPageInfo = () => {
-  const { dealType } = useParams();
-  return renderDealInfoByType(dealType as string);
+  const { dealType } = useTypedParams(pageParamsSchema);
+  return renderDealInfoByType(dealType);
 };
 
 export default DealPageInfo;

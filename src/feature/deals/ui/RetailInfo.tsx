@@ -3,15 +3,16 @@
 import { Separator } from "@radix-ui/react-separator";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 
 import { Building, Info } from "lucide-react";
+import z from "zod";
 
 import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal";
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
 import {
@@ -50,8 +51,8 @@ const ContactCardInDealInfo = dynamic(
 const IntoDealItem = dynamic(() => import("@/entities/deal/ui/IntoDealItem"), {
   ssr: false,
 });
-const DelButtonDealInfoPage = dynamic(
-  () => import("@/feature/deals/ui/Modals/DelButtonDealInfoPage"),
+const DelButtonDeal = dynamic(
+  () => import("@/feature/deals/ui/Modals/DelButtonDeal"),
   {
     ssr: false,
   }
@@ -61,9 +62,13 @@ const EditDealButtonIcon = dynamic(
   { ssr: false }
 );
 
+const pageParamsSchema = z.object({
+  dealId: z.string(),
+});
+
 const RetailItemInfo = () => {
-  const { dealId } = useParams();
-  const { data: deal, isLoading } = useGetRetailById(dealId as string, false);
+  const { dealId } = useTypedParams(pageParamsSchema);
+  const { data: deal, isLoading } = useGetRetailById(dealId, false);
 
   const statusLabel =
     StatusRetailLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
@@ -114,7 +119,7 @@ const RetailItemInfo = () => {
             dealType="RETAIL"
           />
           <EditDealButtonIcon id={deal.id} type={deal.type} />
-          <DelButtonDealInfoPage id={deal.id} type={deal.type} />
+          <DelButtonDeal id={deal.id} type={deal.type} />
         </div>
       </div>
 
@@ -134,7 +139,7 @@ const RetailItemInfo = () => {
                   strokeWidth={1}
                   className="icon-deal_info"
                 />
-                <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
                   {dealInfo.nameObject}
                 </p>
               </div>
@@ -147,7 +152,7 @@ const RetailItemInfo = () => {
                       className="icon-deal_info"
                     />
                     <TooltipComponent content="Статус сделки">
-                      <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                      <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
                         {dealInfo.status}
                       </span>
                     </TooltipComponent>

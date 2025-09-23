@@ -3,7 +3,6 @@
 import { PermissionEnum } from "@prisma/client";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
 import LoadingView from "@/entities/task/ui/LoadingView";
@@ -17,6 +16,10 @@ import { Separator } from "@/shared/components/ui/separator";
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
+import {
+  pageParamsSchemaDepsId,
+  useTypedParams,
+} from "@/shared/hooks/useTypedParams";
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
@@ -36,9 +39,7 @@ const TasksPage = () => {
     PermissionEnum.TASK_MANAGEMENT
   );
 
-  const { departmentId } = useParams<{
-    departmentId: string;
-  }>();
+  const { departmentId } = useTypedParams(pageParamsSchemaDepsId);
 
   const { data, isPending } = useGetTasksDepartment();
 

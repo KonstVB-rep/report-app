@@ -50,10 +50,10 @@ const FilterSleketonLoader = () => {
   return (
     <div className="grid w-full min-w-[300px] gap-2 md:min-w-[400px]">
       <div className="grid w-full grid-cols-2 gap-2 rounded-xl bg-background p-4">
-        <div className="h-10 animate-pulse rounded-xl bg-muted/50" />
-        <div className="h-10 animate-pulse rounded-xl bg-muted/50" />
+        <div className="h-10 animate-pulse rounded-xl dark:bg-muted/50 bg-black/20" />
+        <div className="h-10 animate-pulse rounded-xl dark:bg-muted/50 bg-black/20" />
       </div>
-      <div className="h-52 w-full animate-pulse rounded-xl bg-muted/50" />
+      <div className="h-52 w-full animate-pulse rounded-xl dark:bg-muted/50 bg-black/20" />
     </div>
   );
 };

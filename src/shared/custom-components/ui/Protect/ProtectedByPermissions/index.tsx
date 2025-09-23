@@ -2,27 +2,35 @@
 
 import { PermissionEnum } from "@prisma/client";
 
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
+import { checkPermission } from "@/shared/api/checkByServer";
 
 type ProtectedProps = {
-  permissionArr?: PermissionEnum[];
+  permission: PermissionEnum;
   children: React.ReactNode;
 };
 
 const ProtectedByPermissions = memo(
-  ({ children, permissionArr }: ProtectedProps) => {
-    const { hasPermissionByRole, authUser } = useStoreUser();
+  ({ children, permission }: ProtectedProps) => {
+    const { authUser } = useStoreUser();
+    const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+
+    useEffect(() => {
+      let mounted = true;
+      if (!permission) return;
+
+      checkPermission(permission).then((result) => setHasAccess(result));
+
+      return () => {
+        mounted = false;
+      };
+    }, [permission]);
 
     if (!authUser) return null;
-    if (hasPermissionByRole) return children;
 
-    const hasPermissions = permissionArr?.every((p) =>
-      authUser.permissions?.includes(p)
-    );
-
-    return hasPermissions ? children : null;
+    return hasAccess ? children : null;
   }
 );
 

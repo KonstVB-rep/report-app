@@ -1,4 +1,4 @@
-import { checkRole } from "@/shared/api/checkRole";
+import { checkRole } from "@/shared/api/checkByServer";
 
 import NotFound from "../not-found";
 import AdminPanel from "./ui/AdminPanel";

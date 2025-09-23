@@ -2,24 +2,26 @@
 
 import React from "react";
 
-import { useParams } from "next/navigation";
-
 import { UserResponse } from "@/entities/user/types";
+import {
+  pageParamsSchemaDepsId,
+  useTypedParams,
+} from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 
 import useStoreDepartment from "../store/useStoreDepartment";
 import UserItem from "./UserItem";
 
 const UserDepartmentList = () => {
-  const { departmentId } = useParams();
+  const { departmentId } = useTypedParams(pageParamsSchemaDepsId);
   const { departments } = useStoreDepartment();
 
-  if (!departmentId || !departments || typeof departmentId !== "string") {
+  if (!departmentId || !departments) {
     return <p>Отдел не найден</p>;
   }
 
   const currentDepartment = departments.find(
-    (dept) => dept.id.toString() === departmentId
+    (dept) => dept.id === departmentId
   );
 
   if (!currentDepartment) {

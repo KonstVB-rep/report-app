@@ -13,6 +13,12 @@ import { useMemo, useState } from "react";
 
 import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters";
 
+export interface TableMeta<TData> {
+  columnVisibility: Partial<
+    Record<Extract<NonNullable<ColumnDef<TData>["id"]>, string>, boolean>
+  >;
+}
+
 const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value);
   addMeta({
@@ -23,8 +29,11 @@ const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
 };
 
 export const useTableState = <T extends Record<string, unknown>>(
-  data: T[], // принимаем данные любого типа, соответствующего Record<string, unknown>
-  columns: ColumnDef<T>[] // и колонки для этого типа
+  data: T[],
+  columns: ColumnDef<T>[],
+  hiddenColumns?: Partial<
+    Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>
+  >
 ) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -53,7 +62,7 @@ export const useTableState = <T extends Record<string, unknown>>(
     data: memoizedData,
     columns: memoizedColumns,
     filterFns: {
-      fuzzy: fuzzyFilter, // Возможно, тебе нужно будет уточнить, что такое fuzzyFilter
+      fuzzy: fuzzyFilter,
     },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -79,13 +88,16 @@ export const useTableState = <T extends Record<string, unknown>>(
         ...columnVisibility,
         user: false,
         id: false,
+        ...hiddenColumns,
       },
     },
     meta: {
       columnVisibility: {
-        resource: false,
+        user: false,
+        id: false,
+        ...hiddenColumns,
       },
-    },
+    } as TableMeta<T>,
   });
 
   const filtersContextValue = {

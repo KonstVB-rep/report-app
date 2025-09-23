@@ -1,14 +1,19 @@
-import { useParams } from "next/navigation";
+import z from "zod";
 
 import ProfileSettings from "@/entities/user/ui/ProfileSettings";
 import { useGetUser } from "@/feature/user/hooks/query";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 import LinkToUserTable from "./LinkToUserTable";
 
-const ButtonsGroupTable = () => {
-  const { userId } = useParams();
+const pageParamsSchema = z.object({
+  userId: z.string(),
+});
 
-  const { data: user } = useGetUser(userId as string);
+const ButtonsGroupTable = () => {
+  const { userId } = useTypedParams(pageParamsSchema);
+
+  const { data: user } = useGetUser(userId);
 
   if (!user) return null;
 

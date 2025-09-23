@@ -1,24 +1,20 @@
-// app/adminboard/all-deals/page.tsx
 "use client";
 
 import { useRef, useState } from "react";
 
-import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate";
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable";
 import { useGetAllDealsDepartment } from "@/feature/deals/api/hooks/query";
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider";
+import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage";
 import { useTableState } from "@/shared/hooks/useTableState";
 import { useVirtualizedRowTable } from "@/shared/hooks/useVirtualizedRowTable";
 import { columnsDataDeals } from "@/widgets/deal/model/adminboard/columns-data-deals";
 
-import Loading from "../loading";
-import DealsAllTable from "./ui/DealsAllTable";
-import DealsFilters from "./ui/DealsFilters";
-import DealsToolbar from "./ui/DealsToolbar";
-
-// app/adminboard/all-deals/page.tsx
-
-// app/adminboard/all-deals/page.tsx
+import DealsAllTable from "../ui/DealsAllTable";
+import DealsDrawer from "../ui/DealsDrawer";
+import DealsFilters from "../ui/DealsFilters";
+import DealsToolbar from "../ui/DealsToolbar";
+import Loading from "./loading";
 
 const AllDealsPage = () => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
@@ -26,9 +22,14 @@ const AllDealsPage = () => {
 
   const { data, error, isError, isPending } = useGetAllDealsDepartment();
   const { table, filtersContextValue, openFilters, setGlobalFilter } =
-    useTableState(data?.deals || [], columnsDataDeals);
+    useTableState(data?.deals || [], columnsDataDeals, {
+      resource: false,
+      dealStatusP: false,
+      dealStatusR: false,
+    });
 
   const { rows } = table.getRowModel();
+
   const { virtualItems, totalSize } = useVirtualizedRowTable({
     rows,
     tableContainerRef,
@@ -37,18 +38,25 @@ const AllDealsPage = () => {
   if (isPending) return <Loading />;
 
   return (
-    <DealTableTemplate>
+    <section className="px-4 py-2 grid gap-2 content-start relative flex-1">
       {isError && <ErrorMessageTable message={error?.message} />}
 
-      <DealsToolbar
-        totalCount={data?.totalDealsCount ?? 0}
-        table={table}
-        columns={columnsDataDeals}
-        globalFilter={table.getState().globalFilter ?? ""}
-        setGlobalFilter={setGlobalFilter}
+      <TitlePageBlock
+        title="Список всех заявок"
+        subTitle={`Количество сделок: ${data?.totalDealsCount}`}
+        infoText="Здесь вы можете удалять или переназначать клиентов между менеджерами."
       />
 
       <DataTableFiltersProvider value={filtersContextValue}>
+        <DealsToolbar
+          totalCount={data?.totalDealsCount ?? 0}
+          table={table}
+          columns={columnsDataDeals}
+          globalFilter={table.getState().globalFilter ?? ""}
+          setGlobalFilter={setGlobalFilter}
+          openFilters={openFilters}
+        />
+
         <DealsFilters table={table} open={openFilters} />
         <DealsAllTable
           table={table}
@@ -58,9 +66,11 @@ const AllDealsPage = () => {
           openFullInfoCell={openFullInfoCell}
           setOpenFullInfoCell={setOpenFullInfoCell}
           tableContainerRef={tableContainerRef}
+          openFilters={openFilters}
         />
       </DataTableFiltersProvider>
-    </DealTableTemplate>
+      <DealsDrawer table={table} />
+    </section>
   );
 };
 

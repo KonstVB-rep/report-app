@@ -6,7 +6,7 @@ import { endOfDay, startOfDay } from "date-fns";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
-import { checkRole } from "@/shared/api/checkRole";
+import { checkRole } from "@/shared/api/checkByServer";
 import { handleError } from "@/shared/api/handleError";
 
 import { EventDataType, EventInputType } from "../types";
@@ -22,7 +22,7 @@ export const createEventCalendar = async (
       data: {
         title,
         start: new Date(start),
-        end: new Date(end),
+        end: end ? new Date(end) : "",
         allDay,
         userId,
       },
@@ -57,7 +57,7 @@ export const updateEventCalendar = async (eventData: EventDataType) => {
       data: {
         title,
         start: new Date(start),
-        end: new Date(end),
+        end: end ? new Date(end) : "",
         allDay,
         notified: false,
       },
@@ -108,15 +108,11 @@ export const deleteArrayEventsCalendar = async (eventData: {
 
     const { ids } = eventData;
 
-    console.log(ids, "ids");
-
     const existingEvents = await prisma.eventCalendar.findMany({
       where: {
         id: { in: ids },
       },
     });
-
-    console.log(existingEvents, "existingEvents");
 
     if (existingEvents.length !== ids.length) {
       throw new Error("Некоторые события не найдены или нет прав на удаление");

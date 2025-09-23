@@ -1,32 +1,35 @@
-import { DealType } from "@prisma/client";
 import { Table } from "@tanstack/react-table";
 
 import { DateRange } from "react-day-picker";
 
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
+import z from "zod";
+
+import { TableTypesWithContracts } from "@/entities/deal/lib/constants";
 import { getManagers } from "@/entities/department/lib/utils";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import {
-  FormatedParamsType,
-  FormatedParamsTypeKey,
-  LABELS,
-} from "@/feature/deals/lib/constants";
+import { FormatedParamsType, LABELS } from "@/feature/deals/lib/constants";
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
 import FilterByUser from "@/feature/filter-persistence/ui/FilterByUsers";
 import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
 import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import SelectColumns from "@/shared/custom-components/ui/SelectColumns";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 type FiltersBlockProps = {
   table: Table<Record<string, unknown>>;
 };
 
+const pageParamsSchema = z.object({
+  dealType: z.enum(TableTypesWithContracts),
+});
+
 const FiltersBlock = ({ table }: FiltersBlockProps) => {
   const pathname = usePathname();
   const { authUser } = useStoreUser();
-  const { dealType } = useParams();
+  const { dealType } = useTypedParams(pageParamsSchema);
 
   const { handleDateChange, handleClearDateFilter } =
     useDataTableFiltersContext();
@@ -41,9 +44,7 @@ const FiltersBlock = ({ table }: FiltersBlockProps) => {
     `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
   );
 
-  const safeType = FormatedParamsType[
-    dealType as FormatedParamsTypeKey
-  ] as Exclude<DealType, "ORDER">;
+  const safeType = FormatedParamsType[dealType];
 
   return (
     <MotionDivY className="min-h-0">
@@ -57,9 +58,6 @@ const FiltersBlock = ({ table }: FiltersBlockProps) => {
             value={value}
           />
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-background">
         <div className="flex flex-wrap items-center justify-start gap-2 bg-background">
           <FilterPopoverGroup
             options={[

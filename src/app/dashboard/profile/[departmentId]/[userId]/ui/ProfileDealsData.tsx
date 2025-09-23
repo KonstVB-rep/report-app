@@ -1,8 +1,8 @@
-import { User } from "@prisma/client";
+import { PermissionEnum, User } from "@prisma/client";
 
 import { useEffect, useState } from "react";
 
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { DateRange } from "@/entities/deal/types";
 import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants";
@@ -10,6 +10,10 @@ import { useGetDealsByDateRange } from "@/feature/deals/api/hooks/query";
 import { Button } from "@/shared/components/ui/button";
 import { OverlayLocal } from "@/shared/custom-components/ui/Overlay";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
+import {
+  pageParamsSchemaDepsIsUserId,
+  useTypedParams,
+} from "@/shared/hooks/useTypedParams";
 import { formatterCurrency } from "@/shared/lib/utils";
 
 const dateRanges = [
@@ -21,7 +25,7 @@ const dateRanges = [
 ];
 
 const ProfileDealsData = ({ user }: { user: User }) => {
-  const { userId, departmentId } = useParams();
+  const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [dateRangeState, setDateRangeState] = useState<DateRange>("week");
@@ -36,9 +40,9 @@ const ProfileDealsData = ({ user }: { user: User }) => {
   };
 
   const { data, isPending } = useGetDealsByDateRange(
-    userId as string,
+    userId,
     dateRangeState,
-    departmentId as string
+    departmentId
   );
 
   const isPendingData = isPending;
@@ -49,18 +53,12 @@ const ProfileDealsData = ({ user }: { user: User }) => {
     router.push(`?dateRange=${param.toString()}`);
   }, [router, searchParams]);
 
-  if ((NOT_MANAGERS_POSITIONS_VALUES as string[]).includes(user.position)) {
+  if (NOT_MANAGERS_POSITIONS_VALUES.includes(user.position)) {
     return null;
   }
 
   return (
-    <ProtectedByPermissions
-      permissionArr={[
-        "DEAL_MANAGEMENT",
-        "VIEW_USER_REPORT",
-        "VIEW_UNION_REPORT",
-      ]}
-    >
+    <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
       <div className="flex flex-col gap-2">
         <p className="p-2">Сделки за период:</p>
         <div className="flex gap-1">

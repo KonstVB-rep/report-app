@@ -17,18 +17,12 @@ const DelDealForm = dynamic(() => import("../ui/Forms/DelDealForm"), {
   loading: () => <DelDealSkeleton />,
 });
 
-const DelButtonDealInfoPage = ({
-  id,
-  type,
-}: {
-  id: string;
-  type: DealType;
-}) => {
+const DelButtonDeal = ({ id, type }: { id: string; type: DealType }) => {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
   return (
-    <ProtectedByPermissions permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}>
+    <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
       <DialogComponent
         open={open}
         onOpenChange={setOpen}
@@ -54,4 +48,4 @@ const DelButtonDealInfoPage = ({
   );
 };
 
-export default DelButtonDealInfoPage;
+export default DelButtonDeal;

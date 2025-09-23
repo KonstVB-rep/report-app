@@ -15,6 +15,8 @@ import {
 } from "@/feature/deals/lib/constants";
 import { formatterCurrency } from "@/shared/lib/utils";
 
+import RowNumber from "./columnsDataColsTemplate/RowNumber";
+
 export type typeofDirections = keyof typeof DirectionProjectLabels;
 
 export type typeofDelivery = keyof typeof DeliveryProjectLabels;
@@ -23,17 +25,7 @@ export type typeofStatus = keyof typeof StatusProjectLabels;
 
 export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
-    id: "rowNumber",
-    header: "№",
-    cell: ({ row }) => Number(row.index) + 1,
-    enableHiding: false,
-    enableSorting: false,
-    accessorFn: () => "",
-    maxSize: 100,
-    enableResizing: false,
-    meta: {
-      isNotSearchable: true,
-    },
+    ...RowNumber<ProjectResponse>(),
   },
   {
     id: "dateRequest",
@@ -75,6 +67,21 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return true;
     },
     accessorFn: (row: ProjectResponse) => row.dateRequest,
+  },
+  {
+    id: "plannedDateConnection",
+    header: "Плановая дата контакта",
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const date = info.getValue() as Date | null;
+
+      if (date) {
+        return date.toLocaleDateString("ru-RU");
+      } else {
+        return "Дата не указана";
+      }
+    },
+    enableHiding: true,
+    accessorFn: (row: ProjectResponse) => row.plannedDateConnection,
   },
   {
     id: "nameDeal",
@@ -230,29 +237,14 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     accessorFn: (row: ProjectResponse) => row.comments,
   },
   {
-    id: "plannedDateConnection",
-    header: "Плановая дата контакта",
-    cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date | null;
-
-      if (date) {
-        return date.toLocaleDateString("ru-RU");
-      } else {
-        return "Дата не указана";
-      }
-    },
-    enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.plannedDateConnection,
-  },
-  {
     id: "resource",
     accessorKey: "resource",
     header: "Источник/Сайт",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
-    enableHiding: true,
-    // meta: {
-    //   hidden: true,
-    // },
+    enableHiding: false,
+    meta: {
+      hidden: true,
+    },
     accessorFn: (row: ProjectResponse) => row.resource,
   },
 ];

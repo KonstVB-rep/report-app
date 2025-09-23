@@ -1,22 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
 
-import { useParams } from "next/navigation";
+import z from "zod";
 
 import { Contact } from "@/entities/deal/types";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
+
+const pageParamsSchema = z.object({
+  userId: z.string(),
+});
 
 const useSendDealInfo = <T extends FieldValues>(
   onSubmit: (data: T) => void,
   managerId: string,
   additionalContacts: Contact[] = []
 ) => {
-  const { userId } = useParams();
+  const { userId } = useTypedParams(pageParamsSchema);
 
   const firstManagerId = managerId || userId;
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [managers, setManagers] = useState<{ userId: string }[]>([
-    { userId: firstManagerId as string },
+    { userId: firstManagerId },
   ]);
   const [firstManager, setFirstManager] = useState<string>("");
   const [selectedContacts, setSelectedContacts] = useState<Contact[]>([]);
@@ -43,7 +48,7 @@ const useSendDealInfo = <T extends FieldValues>(
   };
 
   useEffect(() => {
-    setFirstManager(firstManagerId as string);
+    setFirstManager(firstManagerId);
     if (additionalContacts) {
       setSelectedContacts(additionalContacts);
     }

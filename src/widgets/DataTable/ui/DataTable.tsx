@@ -31,7 +31,7 @@ const DataTable = <T extends Record<string, unknown>>({
   children,
 }: DataTableProps<T>) => {
   const { table, filtersContextValue, openFilters, setGlobalFilter } =
-    useTableState(data, columns);
+    useTableState(data, columns, { resource: false });
 
   const { globalFilter } = table.getState();
 
@@ -73,7 +73,7 @@ const DataTable = <T extends Record<string, unknown>>({
           )}
         </div>
 
-        {data.length ? (
+        {data.length > 0 ? (
           <TableComponentDT
             table={table}
             hasEditDeleteActions={hasEditDeleteActions}

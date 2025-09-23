@@ -103,7 +103,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           <TableProvider<T> getContextMenuActions={getContextMenuActions}>
             <TableTemplate
               table={table}
-              className="rounded-ee-md"
+              className="rounded-md"
               totalSize={totalSize}
             >
               <VirtualRow<T>

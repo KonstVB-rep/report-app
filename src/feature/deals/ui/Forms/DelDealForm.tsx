@@ -67,7 +67,7 @@ const DelDealForm = ({ id, type, close }: Props) => {
         <div className="grid grid-cols-2 gap-2">
           <DialogClose asChild>
             <Button type="button" variant="outline">
-              Передумал
+              Отменить
             </Button>
           </DialogClose>
           <SubmitFormButton

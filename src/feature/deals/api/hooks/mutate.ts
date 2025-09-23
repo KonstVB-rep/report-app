@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  DealFile,
   DealType,
   DeliveryProject,
   DeliveryRetail,
@@ -14,10 +15,14 @@ import { useMutation } from "@tanstack/react-query";
 import { Dispatch, SetStateAction } from "react";
 import { DeepPartial } from "react-hook-form";
 
+import { usePathname } from "next/navigation";
+
 import {
   createProject,
   createRetail,
   deleteDeal,
+  deleteMultipleDeals,
+  reassignDealsToManager,
   updateProject,
   updateRetail,
 } from "@/entities/deal/api";
@@ -27,6 +32,7 @@ import {
   ProjectWithManagersIds,
   ProjectWithoutDateCreateAndUpdate,
   ProjectWithoutId,
+  ReAssignDeal,
   RetailResponse,
   RetailWithManagersIds,
   RetailWithoutDateCreateAndUpdate,
@@ -40,12 +46,14 @@ import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthChec
 import handleErrorSession from "@/shared/auth/handleErrorSession";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
+import { SuccessResponse } from "@/shared/types";
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
   type: DealType,
   ownerId: string
 ) => {
+  const pathname = usePathname();
   const { queryClient, authUser } = useFormSubmission();
   return useMutation({
     mutationFn: async (nealId: string) => {
@@ -54,6 +62,16 @@ export const useDelDeal = (
       return await deleteDeal(nealId, ownerId, type);
     },
     onSuccess: (data, dealId) => {
+      if (pathname.includes("adminboard")) {
+        queryClient.invalidateQueries({
+          queryKey: [
+            "all-deals-department",
+            authUser?.departmentId,
+            authUser?.id,
+          ],
+        });
+        return;
+      }
       data.managers.forEach((manager) => {
         queryClient.invalidateQueries({
           queryKey: [`${type.toLowerCase()}s`, manager.userId],
@@ -73,6 +91,41 @@ export const useDelDeal = (
       });
 
       closeModalFn();
+    },
+    onError: (error) => {
+      handleErrorSession(error);
+    },
+  });
+};
+
+export const useDelListDeal = (
+  closeModalFn: (dataFiles: DealFile[]) => void
+) => {
+  const pathname = usePathname();
+  const { queryClient, authUser } = useFormSubmission();
+  return useMutation({
+    mutationFn: async (
+      deals: {
+        id: string;
+        type: DealType;
+      }[]
+    ) => {
+      await checkAuthorization(authUser?.id);
+
+      return await deleteMultipleDeals(deals);
+    },
+    onSuccess: (data) => {
+      if (pathname.includes("adminboard")) {
+        queryClient.invalidateQueries({
+          queryKey: [
+            "all-deals-department",
+            authUser?.departmentId,
+            authUser?.id,
+          ],
+        });
+      }
+
+      closeModalFn(data?.files || []);
     },
     onError: (error) => {
       handleErrorSession(error);
@@ -370,6 +423,34 @@ export const useCreateRetail = (
           exact: true,
         });
       }
+    },
+  });
+};
+
+export const useReassignDeal = () => {
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+
+  return useMutation({
+    mutationFn: (data: ReAssignDeal) => {
+      return handleMutationWithAuthCheck<ReAssignDeal, SuccessResponse | null>(
+        reassignDealsToManager,
+        data,
+        authUser,
+        isSubmittingRef
+      );
+    },
+    onError: (error) => {
+      handleErrorSession(error);
+    },
+    onSuccess: () => {
+      // close();
+      queryClient.invalidateQueries({
+        queryKey: [
+          "all-deals-department",
+          authUser?.departmentId,
+          authUser?.id,
+        ],
+      });
     },
   });
 };

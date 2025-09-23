@@ -120,7 +120,6 @@ export const useDeleteBot = () => {
     },
     onError: (error, variables, context) => {
       const err = error as Error & { status?: number };
-      console.log(error, variables, context, "useCreateChatBot");
 
       if (err.status === 401 || err.message === "Сессия истекла") {
         TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");

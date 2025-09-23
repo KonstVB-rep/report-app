@@ -71,7 +71,7 @@ const ContextRowTable = ({
                 </ContextMenuItem>
 
                 <ProtectedByPermissions
-                  permissionArr={[PermissionEnum.DEAL_MANAGEMENT]}
+                  permission={PermissionEnum.DEAL_MANAGEMENT}
                 >
                   <ContextMenuItem
                     onClick={() => setOpenModal("delete")}

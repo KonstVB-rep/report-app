@@ -3,9 +3,11 @@ import { flexRender, Header, Row } from "@tanstack/react-table";
 
 import { useState } from "react";
 
-import { useParams } from "next/navigation";
-
 import { TableRow } from "@/shared/components/ui/table";
+import {
+  pageParamsSchemaDepsId,
+  useTypedParams,
+} from "@/shared/hooks/useTypedParams";
 
 import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import { useTableContext } from "./context/TableContext";
@@ -28,7 +30,7 @@ const TableRowDealOrTask = <T extends Record<string, unknown>>({
   entityType,
   headers,
 }: TableRowDealOrTaskProps<T>) => {
-  const { departmentId } = useParams();
+  const { departmentId } = useTypedParams(pageParamsSchemaDepsId);
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null);
 
   const { getContextMenuActions, renderAdditionalInfo } = useTableContext<T>();

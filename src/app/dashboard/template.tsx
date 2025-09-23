@@ -9,19 +9,14 @@ import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import AppSidebar from "@/feature/Sidebar/ui/app-sidebar";
 import { SidebarInset } from "@/shared/components/ui/sidebar";
+import ExitAppScreen from "@/shared/custom-components/ui/ExitAppScreen";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
 
 const RedirectToPath = dynamic(
   () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),
   {
     ssr: false,
-    loading: () => (
-      <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
-        <p className="text-2xl sm:text-4xl opacity-30">
-          Идет завершение сессии...
-        </p>
-      </div>
-    ),
+    loading: () => <ExitAppScreen />,
   }
 );
 
@@ -31,7 +26,12 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
   useGetDepartmentsWithUsers();
 
   if (!authUser) {
-    return <RedirectToPath to="/login" />;
+    return (
+      <>
+        <ExitAppScreen />
+        <RedirectToPath to="/login" />;
+      </>
+    );
   }
 
   return (
@@ -39,7 +39,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
       <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] max-h-[calc(100svh-var(--header-height)-2px)] flex-1">
         <AppSidebar />
         <SidebarInset className="h-auto min-h-min" key={pathname}>
-          <PageTransitionY>{children}</PageTransitionY>
+          <PageTransitionY className="flex-1">{children}</PageTransitionY>
         </SidebarInset>
       </div>
     </>

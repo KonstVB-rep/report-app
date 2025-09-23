@@ -29,7 +29,7 @@ const SummaryTableLink = ({ type, className = "", departmentId }: Props) => {
     departmentId !== undefined ? departmentId : authUser.departmentId;
 
   return (
-    <ProtectedByPermissions permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}>
+    <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
       <Link
         prefetch={false}
         href={`/dashboard/summary-table/${departmentIdValue}/${type.toLowerCase()}s/${authUser.id}`}

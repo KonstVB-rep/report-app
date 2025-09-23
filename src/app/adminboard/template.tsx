@@ -7,19 +7,16 @@ import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { SidebarInset } from "@/shared/components/ui/sidebar";
 import ButtonBack from "@/shared/custom-components/ui/Buttons/ButtonBack";
+import ExitAppScreen from "@/shared/custom-components/ui/ExitAppScreen";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
+
+import LinksPageBlock from "./ui/LinksPageBlock";
 
 const RedirectToPath = dynamic(
   () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),
   {
     ssr: false,
-    loading: () => (
-      <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
-        <p className="text-2xl sm:text-4xl opacity-30">
-          Идет завершение сессии...
-        </p>
-      </div>
-    ),
+    loading: () => <ExitAppScreen />,
   }
 );
 
@@ -35,12 +32,14 @@ const TemplateDashboard = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <SidebarInset className="h-auto">
-        <PageTransitionY>
-          <div className="max-h-[94vh] overflow-auto p-2">
-            {pathName?.includes("adminboard") && pathName !== "/adminboard" && (
-              <ButtonBack />
-            )}
+      <SidebarInset className="h-full">
+        <PageTransitionY className="flex-1 flex flex-col">
+          <div className="max-h-[94vh] overflow-auto pt-2 px-2 flex-1 flex flex-col">
+            <div className="flex items-center justify-between">
+              {pathName?.includes("adminboard") &&
+                pathName !== "/adminboard" && <ButtonBack />}
+              <LinksPageBlock />
+            </div>
             {children}
           </div>
         </PageTransitionY>

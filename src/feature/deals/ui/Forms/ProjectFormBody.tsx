@@ -9,10 +9,10 @@ import {
   useWatch,
 } from "react-hook-form";
 
-import { useParams } from "next/navigation";
-
 import { ArrowLeft } from "lucide-react";
+import z from "zod";
 
+import { TableTypes } from "@/entities/deal/lib/constants";
 import { parseFormattedNumber } from "@/entities/deal/lib/helpers";
 import { Contact } from "@/entities/deal/types";
 import ContactDeal from "@/feature/contact/ui/ContactDeal";
@@ -34,6 +34,7 @@ import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
 import { formatNumber } from "@/shared/lib/utils";
 
@@ -65,6 +66,10 @@ const statusOptions = {
   contracts: statusOptionsContracts,
 };
 
+const pageParamsSchema = z.object({
+  dealType: z.enum(TableTypes),
+});
+
 const ProjectFormBody = <T extends FieldValues>({
   form,
   onSubmit,
@@ -73,9 +78,7 @@ const ProjectFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: ProjectFormBodyProps<T>) => {
-  const { dealType } = useParams<{
-    dealType: "projects" | "contracts";
-  }>();
+  const { dealType } = useTypedParams(pageParamsSchema);
 
   const {
     contacts,
@@ -275,7 +278,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Статус КП"
                   control={form.control}
                   errorMessage={getError("dealStatus")}
-                  options={statusOptions[dealType]}
+                  options={
+                    statusOptions[dealType as keyof typeof statusOptions]
+                  }
                   placeholder="Выберите статус КП"
                   disabled={isPending}
                 />

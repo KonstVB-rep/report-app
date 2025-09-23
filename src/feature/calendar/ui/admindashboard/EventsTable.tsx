@@ -5,8 +5,7 @@ import { useRef } from "react";
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider";
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput";
 import DeleteDialog from "@/shared/custom-components/ui/DeleteDIalog";
-import SubTitlePage from "@/shared/custom-components/ui/SubTitlePage";
-import TitlePage from "@/shared/custom-components/ui/TitlePage";
+import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage";
 import { useTableState } from "@/shared/hooks/useTableState";
 import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable";
 
@@ -45,9 +44,11 @@ const EventsTable = () => {
 
   return (
     <>
-      <TitlePage title="Список событий календаря" />
-      <SubTitlePage text={`Количество событий: ${events.length}`} />
-      <SubTitlePage text="Здесь вы можете удалять прошедшие события" />
+      <TitlePageBlock
+        title="Список событий календаря"
+        subTitle={`Количество событий: ${events.length}`}
+        infoText="Здесь вы можете удалять прошедшие события"
+      />
 
       <DataTableFiltersProvider value={filtersContextValue}>
         <div className="py-2 grid gap-2" ref={tableContainerRef}>

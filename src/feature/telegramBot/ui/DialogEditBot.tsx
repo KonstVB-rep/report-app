@@ -30,7 +30,7 @@ const DialogEditBot = ({ bot }: { bot: BotFormData }) => {
     formAction(data);
   };
   return (
-    <EditDataDialog icon={<SquarePen size={40} />}>
+    <EditDataDialog icon={<SquarePen size={40} />} title="Редактировать">
       <WrapperBotForm
         title="Редактировать"
         description="Заполните форму для создания бота"

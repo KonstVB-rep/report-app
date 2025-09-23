@@ -22,7 +22,6 @@ import {
   TableType,
 } from "@/entities/deal/types";
 import useStoreUser from "@/entities/user/store/useStoreUser";
-import { executeWithTokenCheck } from "@/shared/api/executeWithTokenCheck";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
 
@@ -42,7 +41,7 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        const deal = await executeWithTokenCheck(() => getProjectById(dealId));
+        const deal = await getProjectById(dealId);
 
         if (!deal) {
           return null;
@@ -85,7 +84,7 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        const deal = await executeWithTokenCheck(() => getRetailById(dealId));
+        const deal = await getRetailById(dealId);
 
         if (!deal) {
           return null;
@@ -143,14 +142,13 @@ export const useGetDealById = <
       let entity: T | undefined = undefined;
 
       if (type === DealType.PROJECT) {
-        const project = await executeWithTokenCheck(() =>
-          getProjectById(dealId)
-        );
+        const project = await getProjectById(dealId);
+
         entity = project as T | undefined;
       }
 
       if (type === DealType.RETAIL) {
-        const retail = await executeWithTokenCheck(() => getRetailById(dealId));
+        const retail = await getRetailById(dealId);
         entity = retail as T | undefined;
       }
 
@@ -176,7 +174,7 @@ export const useGetDealById = <
 
 export const useGetAllProjects = (
   userId: string | null,
-  departmentId: string
+  departmentId: number
 ) => {
   const { authUser } = useStoreUser();
 
@@ -188,11 +186,7 @@ export const useGetAllProjects = (
           throw new Error("Пользователь не авторизован");
         }
 
-        return (
-          (await executeWithTokenCheck(() =>
-            getAllProjectsByDepartmentQuery(departmentId)
-          )) ?? []
-        );
+        return (await getAllProjectsByDepartmentQuery(departmentId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAllProjects");
         if ((error as Error).message === "Failed to fetch") {
@@ -212,7 +206,7 @@ export const useGetAllProjects = (
 
 export const useGetAllRetails = (
   userId: string | null,
-  departmentId: string
+  departmentId: number
 ) => {
   const { authUser } = useStoreUser();
 
@@ -224,11 +218,7 @@ export const useGetAllRetails = (
           throw new Error("Пользователь не авторизован");
         }
 
-        return (
-          (await executeWithTokenCheck(() =>
-            getAllRetailsByDepartmentQuery(departmentId)
-          )) ?? []
-        );
+        return (await getAllRetailsByDepartmentQuery(departmentId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAllRetails");
         if ((error as Error).message === "Failed to fetch") {
@@ -256,11 +246,7 @@ export const useGetRetailsUser = (userId: string | undefined) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        return (
-          (await executeWithTokenCheck(() =>
-            getRetailsUser(userId as string)
-          )) ?? []
-        );
+        return (await getRetailsUser(userId as string)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetRetailsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -289,11 +275,7 @@ export const useGetProjectsUser = (userId: string | undefined) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        return (
-          (await executeWithTokenCheck(() =>
-            getProjectsUser(userId as string)
-          )) ?? []
-        );
+        return (await getProjectsUser(userId as string)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -320,11 +302,7 @@ export const useGetContractsUser = (userId: string | undefined) => {
           throw new Error("Пользователь не авторизован");
         }
 
-        return (
-          (await executeWithTokenCheck(() =>
-            getProjectsUser(userId as string)
-          )) ?? []
-        );
+        return (await getProjectsUser(userId as string)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetContactsUser");
         if ((error as Error).message === "Failed to fetch") {
@@ -344,7 +322,7 @@ export const useGetContractsUser = (userId: string | undefined) => {
 export const useGetDealsByDateRange = (
   userId: string,
   range: DateRange,
-  departmentId: string
+  departmentId: number
 ) => {
   const { authUser } = useStoreUser();
   return useQuery({
@@ -356,9 +334,8 @@ export const useGetDealsByDateRange = (
         }
 
         return (
-          (await executeWithTokenCheck(() =>
-            getDealsByDateRange(userId as string, range, departmentId)
-          )) ?? []
+          (await getDealsByDateRange(userId as string, range, departmentId)) ??
+          []
         );
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
@@ -392,7 +369,7 @@ export const useDealsUser = (type: TableType, userId?: string) => {
 export const useGetAllDealsByType = (
   type: DealsUnionType,
   userId: string | null,
-  departmentId: string
+  departmentId: number
 ) => {
   const fetchers = {
     projects: useGetAllProjects,
@@ -420,10 +397,7 @@ export const useGetAdditionalContacts = (dealId: string) => {
           TOAST.ERROR("Не удалось получить данные");
         }
 
-        return (
-          (await executeWithTokenCheck(() => getAdditionalContacts(dealId))) ??
-          []
-        );
+        return (await getAdditionalContacts(dealId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetAdditionalContracts");
         if ((error as Error).message === "Failed to fetch") {
@@ -442,18 +416,14 @@ export const useGetAdditionalContacts = (dealId: string) => {
 export const useGetAllDealsDepartment = () => {
   const { authUser } = useStoreUser();
   return useQuery({
-    queryKey: ["getAllDealsDepartment", authUser?.departmentId, authUser?.id],
+    queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
     queryFn: async () => {
       try {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
 
-        return (
-          (await executeWithTokenCheck(() =>
-            getAllDealsByDepartment(authUser?.departmentId)
-          )) ?? []
-        );
+        return (await getAllDealsByDepartment(authUser?.departmentId)) ?? [];
       } catch (error) {
         console.log(error, "Ошибка useGetProjectsUser");
         if ((error as Error).message === "Failed to fetch") {

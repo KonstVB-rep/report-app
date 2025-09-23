@@ -5,14 +5,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { Resolver, useForm } from "react-hook-form";
 
-import { useParams } from "next/navigation";
+import z from "zod";
 
 import { ProjectFormSchema, ProjectSchema } from "@/entities/deal/model/schema";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 import { useCreateProject } from "../../api/hooks/mutate";
 import { defaultProjectValues } from "../../model/defaultvaluesForm";
 import ProjectFormBody from "./ProjectFormBody";
+
+const pageParamsSchema = z.object({
+  userId: z.string(),
+});
 
 const ProjectForm = ({
   orderId,
@@ -21,13 +26,13 @@ const ProjectForm = ({
   orderId?: string;
   managerId?: string;
 }) => {
-  const { userId } = useParams();
+  const { userId } = useTypedParams(pageParamsSchema);
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,
     defaultValues: {
       ...defaultProjectValues,
-      managersIds: [{ userId: managerId ?? (userId as string) }],
+      managersIds: [{ userId: managerId ?? userId }],
     },
   });
 

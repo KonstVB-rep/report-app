@@ -6,10 +6,18 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 
 import clsx from "clsx";
 import { ChevronRight } from "lucide-react";
+import z from "zod";
 
 import {
+  SidebarParams,
+  TableTypes,
+  TableTypesWithContracts,
+} from "@/entities/deal/lib/constants";
+import {
   DepartmentLabels,
+  DepartmentLabelsById,
   DepartmentListItemType,
+  DepartmentsUnionIds,
 } from "@/entities/department/types";
 import {
   Accordion,
@@ -28,18 +36,32 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
 } from "@/shared/components/ui/sidebar";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 import { DepartmentLinks } from "./DepartmentLinks";
 import LinkProfile from "./LinkProfile";
 
+const pageParamsSchema = z.object({
+  dealType: z.enum(SidebarParams).optional(),
+  userId: z.string().optional(),
+  departmentId: z.coerce
+    .number()
+    .positive()
+    .transform((value) => {
+      return value as DepartmentsUnionIds;
+    })
+    .optional(),
+});
+
 const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
-  const params = useParams();
+  const { departmentId, dealType, userId } = useTypedParams(pageParamsSchema);
+
   const pathname = usePathname();
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
 
-  const isActiveDepartment = item.id === Number(params.departmentId);
+  const isActiveDepartment = item.id === Number(departmentId);
 
   const handleDepartmentClick = useCallback(
     (e: React.MouseEvent) => {
@@ -100,7 +122,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
             <CollapsibleContent>
               <SidebarMenuSub className="mr-auto mt-2 pr-1">
                 {item.items.map((user) => {
-                  const isActiveUser = user.id === params.userId;
+                  const isActiveUser = user.id === userId;
 
                   return (
                     <SidebarMenuItem key={user.id}>
@@ -137,8 +159,8 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
                               <DepartmentLinks
                                 departmentId={user.departmentId}
                                 user={user}
-                                userId={params.userId as string}
-                                dealType={params.dealType as string}
+                                userId={userId}
+                                dealType={dealType}
                                 pathName={pathname}
                               />
 

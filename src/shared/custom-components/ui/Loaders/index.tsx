@@ -20,7 +20,7 @@ export const LoaderCircle = ({
 
 export const LoaderCircleInWater = () => {
   return (
-    <div className="relative flex items-center justify-center h-full min-h-screen p-4">
+    <div className="relative flex items-center justify-center flex-1 p-4">
       <span className="loader" />
     </div>
   );

@@ -1,3 +1,5 @@
+import { Sidebar } from "lucide-react";
+
 export enum StatusProject {
   INVOICE_ISSUED = "Выставлен счет",
   ACTUAL = "Актуально",
@@ -27,3 +29,19 @@ export enum StatusRetail {
 export type AllStatusKeys =
   | keyof typeof StatusProject
   | keyof typeof StatusRetail;
+
+export const DealTypesArray = ["project", "retail", "contract"] as const;
+export const TableTypes = ["retails", "projects"] as const;
+export const TableTypesWithContracts = [
+  "retails",
+  "projects",
+  "contracts",
+] as const;
+
+export const SidebarParams = [
+  "retails",
+  "projects",
+  "contracts",
+  "project",
+  "retail",
+] as const;

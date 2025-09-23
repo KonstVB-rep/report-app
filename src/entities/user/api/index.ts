@@ -15,7 +15,7 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { findUserByEmail } from "@/app/api/utils/findUserByEmail";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
-import { checkRole } from "@/shared/api/checkRole";
+import { checkRole } from "@/shared/api/checkByServer";
 import { handleError } from "@/shared/api/handleError";
 import { ActionResponse } from "@/shared/types";
 
@@ -192,8 +192,6 @@ const assignPermissionsToUser = async (
     where: { name: { in: permissions } },
     select: { id: true, name: true },
   });
-
-  console.log(permissions, permissionRecords, "permissions");
 
   const userPermissions = permissionRecords.map((permission) => ({
     userId: userId,
@@ -600,7 +598,6 @@ export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
         permissions: user.permissions.map((p) => p.permission.name),
       };
     });
-
     return usersWithLastLogin;
   } catch (error) {
     console.error(error);

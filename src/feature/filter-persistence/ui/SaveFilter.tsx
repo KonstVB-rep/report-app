@@ -2,9 +2,10 @@
 
 import React, { useRef } from "react";
 
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { Save } from "lucide-react";
+import z from "zod";
 
 import { Button } from "@/shared/components/ui/button";
 import { DialogClose } from "@/shared/components/ui/dialog";
@@ -12,12 +13,17 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 import { useSaveFilter } from "../hooks/mutate";
 
+const pageParamsSchema = z.object({
+  userId: z.string(),
+});
+
 const SaveFilter = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { userId } = useParams();
+  const { userId } = useTypedParams(pageParamsSchema);
 
   const searchParams = useSearchParams();
   const [open, setOpen] = React.useState(false);

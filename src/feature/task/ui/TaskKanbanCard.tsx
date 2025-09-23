@@ -1,11 +1,12 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ExternalLink } from "lucide-react";
+import z from "zod";
 
+import { DepartmentLabelsById } from "@/entities/department/types";
 import { cleanDistance } from "@/entities/task/lib/helpers";
 import { TaskWithUserInfo } from "@/entities/task/types";
 import useStoreUser from "@/entities/user/store/useStoreUser";
@@ -21,6 +22,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/shared/components/ui/card";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 const EditTaskDialogButton = dynamic(
   () => import("@/feature/task/ui/Modals/EditTaskDialogButton")
@@ -34,8 +36,15 @@ type TaskKanbanCardProps = {
   task: TaskWithUserInfo;
 };
 
+const pageParamsSchema = z.object({
+  userId: z.string(),
+  departmentId: z.string().transform((value) => {
+    return value as keyof typeof DepartmentLabelsById;
+  }),
+});
+
 const TaskKanbanCard = ({ task }: TaskKanbanCardProps) => {
-  const { departmentId, userId } = useParams();
+  const { departmentId, userId } = useTypedParams(pageParamsSchema);
 
   const { authUser } = useStoreUser();
 

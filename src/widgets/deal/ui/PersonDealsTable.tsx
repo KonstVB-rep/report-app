@@ -4,8 +4,10 @@ import { PermissionEnum } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 
+import z from "zod";
+
+import { TableTypesWithContracts } from "@/entities/deal/lib/constants";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import {
   ContractResponse,
@@ -20,6 +22,7 @@ import { useDealsUser } from "@/feature/deals/api/hooks/query";
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage";
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition";
 import { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 import { columnsDataContract } from "../model/columns-data-contracts";
 import { columnsDataProject } from "../model/columns-data-project";
@@ -55,11 +58,13 @@ const Columns = (
   }
 };
 
+const pageParamsSchema = z.object({
+  userId: z.string(),
+  dealType: z.enum(TableTypesWithContracts),
+});
+
 const PersonDealsTable = () => {
-  const { userId, dealType } = useParams<{
-    userId: string;
-    dealType: TableType;
-  }>();
+  const { userId, dealType } = useTypedParams(pageParamsSchema);
 
   const hasAccess = hasAccessToData(
     userId as string,
@@ -87,7 +92,7 @@ const PersonDealsTable = () => {
               {DealTypeLabels[dealType as string]}
             </h1>
             <p className="border rounded-md p-2">
-              Общее количество заявок: {data?.length}
+              Количество заявок: {data?.length}
             </p>
           </div>
 

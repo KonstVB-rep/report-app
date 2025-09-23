@@ -35,12 +35,9 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
 
     startTransition(() => {
       setColumnFilters((prev) => {
-        // Если выбрано текущее значение - очищаем фильтр
         if (selectedValue === value) {
           return prev;
         }
-
-        // Иначе создаем новый фильтр с выбранным значением
         const oldFilters = prev.filter((f) => f.id !== columnId);
         return [...oldFilters, { id: columnId, value }];
       });
@@ -65,7 +62,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
             selectedValue ? "border-solid" : "border-dashed"
           } border-muted-foreground`}
         >
-          <Filter className="mr-2 h-4 w-4" />
+          <Filter className="h-4 w-4" />
           {label}
           {selectedValue && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
@@ -81,7 +78,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
           className="space-y-2"
         >
           {normalizedOptions.map(({ id, label }) => (
-            <div key={id} className="flex items-center space-x-2">
+            <div key={id} className="flex items-center space-x-1">
               <RadioGroupItem value={id} id={id} />
               <Label htmlFor={id} className="cursor-pointer capitalize">
                 {label}
@@ -95,7 +92,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
             variant="outline"
             className="mt-3 w-full text-xs"
           >
-            Очистить фильтр
+            Очистить
           </Button>
         )}
       </PopoverContent>

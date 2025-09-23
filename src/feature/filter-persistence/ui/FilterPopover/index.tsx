@@ -97,7 +97,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
             {normalizedOptions.map(({ id, label }) => (
               <div
                 key={id}
-                className="flex w-fit items-center gap-1 px-1 text-sm"
+                className="flex w-fit items-center gap-2 px-1 text-sm p-1"
               >
                 <Checkbox
                   id={id}
@@ -119,7 +119,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
               variant="outline"
               className="btn_hover w-full text-xs"
             >
-              Очистить фильтр
+              Очистить
             </Button>
           )}
         </div>

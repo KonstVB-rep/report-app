@@ -12,3 +12,9 @@ export type ActionResponse<T> = {
   inputs?: Partial<T>;
   result?: T;
 };
+
+export type SuccessResponse = {
+  success: boolean;
+  message: string;
+  error?: boolean;
+};

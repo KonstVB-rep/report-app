@@ -134,7 +134,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       </h1>
       <div className="flex gap-2 items-start justify-between">
         <h2 className="text-lg flex gap-2 p-2 items-center w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
-          <span>Общее количество заявок: </span>
+          <span>Количество заявок: </span>
           <span className="grid place-items-center aspect-square p-2 border border-solid rounded-md ">
             {totalDealsCount}
           </span>

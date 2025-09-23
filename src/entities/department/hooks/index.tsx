@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 
 import { getDepartmentsWithUsers } from "../api";
 import useStoreDepartment from "../store/useStoreDepartment";
@@ -19,17 +18,11 @@ export const useGetDepartmentsWithUsers = () => {
         if (!authUser?.id) {
           throw new Error("Пользователь не авторизован");
         }
-        const [tokenCheckResult, deps] = await Promise.all([
-          checkTokens(),
-          getDepartmentsWithUsers(),
-        ]);
 
-        if (tokenCheckResult) {
-          setDepartments(deps);
-          return deps;
-        } else {
-          throw new Error("Сессия недействительна");
-        }
+        const deps = await getDepartmentsWithUsers();
+        setDepartments(deps);
+
+        return deps;
       } catch (error) {
         console.error("Ошибка useGetDepartmentsWithUsers:", error);
 

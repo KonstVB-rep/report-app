@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { ArrowBigLeft } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 const ButtonBack = ({ className }: { className?: string }) => {
   const router = useRouter();
@@ -10,7 +11,7 @@ const ButtonBack = ({ className }: { className?: string }) => {
     <Button
       variant="outline"
       onClick={() => router.back()}
-      className={className}
+      className={cn("w-fit", className)}
     >
       <ArrowBigLeft />
       Назад

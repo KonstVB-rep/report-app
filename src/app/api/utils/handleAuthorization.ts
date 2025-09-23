@@ -2,6 +2,7 @@
 
 import { User } from "@/entities/user/types";
 import prisma from "@/prisma/prisma-client";
+import { checkTokens } from "@/shared/lib/helpers/checkTokens";
 
 import { requireAuth } from "./requireAuth ";
 
@@ -12,6 +13,8 @@ export const handleAuthorization = async (): Promise<{
   const userId = await requireAuth();
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  await checkTokens();
 
   if (!user) {
     throw new Error("Пользователь не авторизован");

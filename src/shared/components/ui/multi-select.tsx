@@ -9,7 +9,6 @@ import { createPortal } from "react-dom";
 
 import { Check, ChevronsUpDown, X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Command,
@@ -26,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { cn } from "@/shared/lib/utils";
 
 export interface MultiSelectOptionItem {
   value: string;
@@ -569,14 +569,14 @@ function renderMultiSelectOptions(list: MultiSelectOption[]) {
 
 export {
   MultiSelect,
+  MultiSelectContent,
+  MultiSelectEmpty,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectList,
+  MultiSelectSearch,
+  MultiSelectSeparator,
   MultiSelectTrigger,
   MultiSelectValue,
-  MultiSelectSearch,
-  MultiSelectContent,
-  MultiSelectList,
-  MultiSelectItem,
-  MultiSelectGroup,
-  MultiSelectSeparator,
-  MultiSelectEmpty,
   renderMultiSelectOptions,
 };

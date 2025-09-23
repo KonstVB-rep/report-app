@@ -16,7 +16,7 @@ import {
   UserFormEditData,
   UserResponse,
 } from "@/entities/user/types";
-import { checkRole } from "@/shared/api/checkRole";
+import { checkRole } from "@/shared/api/checkByServer";
 import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
 import handleErrorSession from "@/shared/auth/handleErrorSession";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
@@ -72,7 +72,6 @@ export const useUpdateUser = (
   const { authUser, isSubmittingRef } = useFormSubmission();
   return useMutation({
     mutationFn: (formData: FormData) => {
-      console.log("authUser", authUser);
       return handleMutationWithAuthCheck<
         FormData,
         ActionResponse<UserFormEditData>

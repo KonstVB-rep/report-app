@@ -46,7 +46,7 @@ const pagesMarkretingDepartment: DealsType[] = [
 type DepartmentLinksProps = {
   departmentId: number;
   user: DepartmentUserItem;
-  userId: string;
+  userId: string | undefined;
   dealType?: string;
   pathName?: string;
 };
@@ -130,35 +130,33 @@ export const DepartmentLinks = memo(
       [dealType, user.id, user.url, userId, getDealLinks, departmentId]
     );
 
-    if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) {
-      return null;
-    }
+    // if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) {
+    //   return null;
+    // }
 
-    if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) {
-      // return (
-      //   <LinkItem
-      //     key={user.id}
-      //     href={`${user.url}/orders`}
-      //     title={table.orders.title}
-      //     icon={departmentId === 1 ? BookText : ChartColumnBig}
-      //     isActive={
-      //       departmentId === user.departmentId &&
-      //       user.id === userId &&
-      //       dealType === table.orders.id
-      //     }
-      //     onClick={(e) => e.stopPropagation()}
-      //   />
-      // );
-      return null;
-    }
+    // if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) {
+    //   // return (
+    //   //   <LinkItem
+    //   //     key={user.id}
+    //   //     href={`${user.url}/orders`}
+    //   //     title={table.orders.title}
+    //   //     icon={departmentId === 1 ? BookText : ChartColumnBig}
+    //   //     isActive={
+    //   //       departmentId === user.departmentId &&
+    //   //       user.id === userId &&
+    //   //       dealType === table.orders.id
+    //   //     }
+    //   //     onClick={(e) => e.stopPropagation()}
+    //   //   />
+    //   // );
+    //   return null;
+    // }
 
     if (departmentId === 2) {
       return (
         <>
           {renderLinks}
-          <ProtectedByPermissions
-            permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
-          >
+          <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="p-1 rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground">

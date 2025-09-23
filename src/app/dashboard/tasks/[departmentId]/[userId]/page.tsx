@@ -3,7 +3,6 @@
 import { PermissionEnum } from "@prisma/client";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import LoadingView from "@/entities/task/ui/LoadingView";
@@ -17,6 +16,10 @@ import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
+import {
+  pageParamsSchemaDepsIsUserId,
+  useTypedParams,
+} from "@/shared/hooks/useTypedParams";
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
@@ -31,10 +34,7 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
 const UserTasksPage = () => {
   const { authUser } = useStoreUser();
 
-  const { userId, departmentId } = useParams<{
-    userId: string;
-    departmentId: string;
-  }>();
+  const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId);
 
   const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT);
 
@@ -45,9 +45,7 @@ const UserTasksPage = () => {
   if (!authUser) return;
 
   if (!hasAccess)
-    return (
-      <RedirectToPath to={`/tasks/${departmentId as string}/${authUser.id}`} />
-    );
+    return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />;
 
   return (
     <section className="p-5">

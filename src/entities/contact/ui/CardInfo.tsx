@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ContactRound, Mail, PhoneOutgoing } from "lucide-react";
+import { BookUser, ContactRound, Mail, PhoneOutgoing } from "lucide-react";
 
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { cn } from "@/shared/lib/utils";
@@ -8,9 +8,10 @@ import { cn } from "@/shared/lib/utils";
 import { CardInfoType } from "../types";
 
 const ICONS = {
-  phone: <PhoneOutgoing className="icon-deal_info" />,
-  email: <Mail className="icon-deal_info" />,
-  name: <ContactRound className="icon-deal_info" />,
+  phone: <PhoneOutgoing className="icon-deal_info" strokeWidth={1} />,
+  position: <BookUser className="icon-deal_info" strokeWidth={1} />,
+  email: <Mail className="icon-deal_info" strokeWidth={1} />,
+  name: <ContactRound className="icon-deal_info" strokeWidth={1} />,
 };
 
 const renderValue = (
@@ -19,7 +20,7 @@ const renderValue = (
   data: string
 ) => {
   const baseClasses =
-    "break-all prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold";
+    "break-normal prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-normal";
 
   const content = (
     <>

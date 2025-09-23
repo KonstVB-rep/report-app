@@ -68,9 +68,7 @@ export function SiteHeader({
             Мои задачи
           </Link>
 
-          <ProtectedByPermissions
-            permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
-          >
+          <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
             <Link
               prefetch={false}
               href={`/dashboard/tasks/${departmentId}`}
@@ -82,7 +80,7 @@ export function SiteHeader({
 
           {!pathName?.includes("summary-table") && (
             <ProtectedByPermissions
-              permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
+              permission={PermissionEnum.VIEW_UNION_REPORT}
             >
               <HoverCardComponent title="Сводные таблицы">
                 {namePagesByDealType.map((type) => (

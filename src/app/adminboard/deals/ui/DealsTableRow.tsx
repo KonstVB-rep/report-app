@@ -49,7 +49,7 @@ const DealsTableRow = ({
           <RowInfoDialog
             isActive
             text={flexRender(cell.column.columnDef.cell, cell.getContext())}
-            isTargetCell={cell.column.id === "contact"}
+            isTargetCell={true}
             closeFn={() => setOpenFullInfoCell(null)}
           />
         )}

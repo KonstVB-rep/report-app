@@ -2,7 +2,7 @@ export type EventInputType = {
   id?: string;
   title: string;
   start: Date;
-  end: Date;
+  end?: Date;
   allDay?: boolean;
 };
 
@@ -10,7 +10,7 @@ export type EventDataType = {
   id?: string;
   title: string;
   start: string;
-  end: string;
+  end?: string;
   allDay?: boolean;
 };
 

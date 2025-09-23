@@ -14,6 +14,8 @@ import {
 } from "@/feature/deals/lib/constants";
 import { formatterCurrency } from "@/shared/lib/utils";
 
+import RowNumber from "./columnsDataColsTemplate/RowNumber";
+
 export type typeofDirections = keyof typeof DirectionRetailLabels;
 
 export type typeofDelivery = keyof typeof DeliveryRetailLabels;
@@ -22,12 +24,7 @@ export type typeofStatus = keyof typeof StatusRetailLabels;
 
 export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
   {
-    id: "rowNumber",
-    header: "№",
-    cell: ({ row }) => row.index + 1,
-    enableHiding: false,
-    enableSorting: false,
-    accessorFn: () => "",
+    ...RowNumber<RetailResponse>(),
   },
   {
     id: "dateRequest",
@@ -68,6 +65,22 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       return true;
     },
     accessorFn: (row: RetailResponse) => row.dateRequest,
+  },
+  {
+    id: "plannedDateConnection",
+    accessorKey: "plannedDateConnection",
+    header: "Плановая дата контакта",
+    cell: (info: CellContext<RetailResponse, unknown>) => {
+      const date = info.getValue() as Date | null;
+
+      if (date) {
+        return date.toLocaleDateString("ru-RU");
+      } else {
+        return "Дата не указана";
+      }
+    },
+    enableHiding: true,
+    accessorFn: (row: RetailResponse) => row.plannedDateConnection,
   },
   {
     id: "nameDeal",
@@ -206,30 +219,14 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorFn: (row: RetailResponse) => row.comments,
   },
   {
-    id: "plannedDateConnection",
-    accessorKey: "plannedDateConnection",
-    header: "Плановая дата контакта",
-    cell: (info: CellContext<RetailResponse, unknown>) => {
-      const date = info.getValue() as Date | null;
-
-      if (date) {
-        return date.toLocaleDateString("ru-RU");
-      } else {
-        return "Дата не указана";
-      }
-    },
-    enableHiding: true,
-    accessorFn: (row: RetailResponse) => row.plannedDateConnection,
-  },
-  {
     id: "resource",
     accessorKey: "resource",
     header: "Источник/Сайт",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
-    enableHiding: true,
-    // meta: {
-    //   hidden: true,
-    // },
+    enableHiding: false,
+    meta: {
+      hidden: true,
+    },
     accessorFn: (row: RetailResponse) => row.resource,
   },
 ];

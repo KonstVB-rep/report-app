@@ -96,34 +96,72 @@ export const downloadToExcel = async <TData>(
       worksheet.addRow(rowData);
     });
 
-    // Стили для всех ячеек
+    // ФОРМАТИРОВАНИЕ ЯЧЕЕК ПО ТИПУ ДАННЫХ
     worksheet.eachRow((row, rowNumber) => {
-      row.eachCell((cell) => {
+      if (rowNumber === 1) return; // Пропускаем заголовки
+
+      row.eachCell((cell, colNumber) => {
+        const columnId = visibleColumns[colNumber - 1]?.id;
+        const value = cell.value;
+
+        // Устанавливаем формат в зависимости от типа данных
+        if (columnId && colsDefaultValue.includes(columnId)) {
+          // Текстовые колонки (телефоны, названия)
+          cell.numFmt = "@"; // Текстовый формат
+          cell.alignment = { vertical: "middle", horizontal: "left" };
+        } else if (typeof value === "number") {
+          // Числовые колонки
+          cell.numFmt = "#,##0.00"; // Числовой формат с разделителями
+          cell.alignment = { vertical: "middle", horizontal: "right" };
+        } else if (value instanceof Date) {
+          // Даты
+          cell.numFmt = "dd.mm.yyyy"; // Формат даты
+          cell.alignment = { vertical: "middle", horizontal: "center" };
+        } else {
+          // Остальные текстовые значения
+          cell.alignment = { vertical: "middle", horizontal: "left" };
+        }
+
+        // Общие стили
         cell.border = {
           top: { style: "thin" },
           left: { style: "thin" },
           bottom: { style: "thin" },
           right: { style: "thin" },
         };
-        if (rowNumber % 2 !== 0 && rowNumber !== 1) {
+
+        if (rowNumber % 2 !== 0) {
           cell.fill = {
             type: "pattern",
             pattern: "solid",
-            fgColor: { argb: "D3D3D3" }, // Серый цвет
+            fgColor: { argb: "D3D3D3" },
           };
         }
       });
     });
 
-    // Автоматическая ширина колонок
-    worksheet.columns = visibleColumns.map((col) => ({
-      header: col.header as string,
-      width: Math.max(10, Math.min(50, String(col.header).length + 2)),
-    }));
+    // АВТОМАТИЧЕСКАЯ ШИРИНА КОЛОНОК С УЧЕТОМ ТИПА ДАННЫХ
+    worksheet.columns = visibleColumns.map((col, index) => {
+      const isTextColumn = col.id && colsDefaultValue.includes(col.id);
+      const isNumericColumn =
+        col.id &&
+        ["amount", "price", "sum", "total"].some((prefix) =>
+          col.id?.toLowerCase().includes(prefix)
+        );
 
-    // Скачивание файла без дополнительной библиотеки
+      let width = Math.max(10, Math.min(50, String(col.header).length + 2));
+
+      if (isTextColumn) {
+        width = 25; // Шире для текстовых колонок
+      } else if (isNumericColumn) {
+        width = 15; // Уже для числовых колонок
+      }
+
+      return { width };
+    });
+
+    // Скачивание файла
     const buffer = await workbook.xlsx.writeBuffer();
-
     const blob = new Blob([buffer], { type: "application/octet-stream" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -135,6 +173,7 @@ export const downloadToExcel = async <TData>(
     throw new Error("Не удалось сгенерировать файл Excel");
   }
 };
+
 type ProjectTableType = "PROJECT";
 function isProjectType(type: string | undefined): type is ProjectTableType {
   return !!type && ["PROJECT"].includes(type);
@@ -144,6 +183,8 @@ type RetailTableType = "RETAIL";
 function isRetailType(type: string | undefined): type is RetailTableType {
   return !!type && ["RETAIL"].includes(type);
 }
+
+const colsDefaultValue = ["phone", "nameDeal", "nameObject", "comments"];
 
 // Маппинг значений под PROJECT и RETAIL
 function transformExcelValue(
@@ -155,6 +196,9 @@ function transformExcelValue(
 
   if (isProjectType(tableType)) {
     if (typeof value === "string") {
+      if (columnId && colsDefaultValue.includes(columnId)) {
+        return value;
+      }
       if (
         columnId === "direction" &&
         DirectionProjectLabels[value as typeofDirections]
@@ -176,6 +220,9 @@ function transformExcelValue(
     }
   } else if (isRetailType(tableType)) {
     if (typeof value === "string") {
+      if (columnId && colsDefaultValue.includes(columnId)) {
+        return value;
+      }
       if (
         columnId === "direction" &&
         DirectionRetailLabels[value as RetailDirection]
@@ -195,8 +242,27 @@ function transformExcelValue(
         return StatusRetailLabels[value as RetailStatus];
       }
     }
+  } else {
+    if (
+      typeof value === "string" &&
+      columnId &&
+      colsDefaultValue.includes(columnId)
+    ) {
+      return value;
+    }
+    if (
+      columnId === "dealStatusR" &&
+      StatusRetailLabels[value as RetailStatus]
+    ) {
+      return StatusRetailLabels[value as RetailStatus];
+    }
+    if (
+      columnId === "dealStatusP" &&
+      StatusProjectLabels[value as typeofStatus]
+    ) {
+      return StatusProjectLabels[value as typeofStatus];
+    }
   }
-
   // Преобразуем строку в число, если это возможно
   const numericValue = typeof value === "string" ? parseFloat(value) : value;
 

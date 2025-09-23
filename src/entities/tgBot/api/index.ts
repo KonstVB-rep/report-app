@@ -6,8 +6,9 @@ import { revalidatePath } from "next/cache";
 
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
 import prisma from "@/prisma/prisma-client";
-import { checkRole } from "@/shared/api/checkRole";
+import { checkRole } from "@/shared/api/checkByServer";
 import { handleError } from "@/shared/api/handleError";
+import { SuccessResponse } from "@/shared/types";
 
 import { BotWithChats } from "../types";
 
@@ -155,7 +156,7 @@ export const createUserTelegramChat = async (
   },
   chatName: string,
   isActive = true
-): Promise<{ success: boolean; message: string }> => {
+): Promise<SuccessResponse> => {
   try {
     await handleAuthorization();
     await checkRole();

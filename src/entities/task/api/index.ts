@@ -1,12 +1,6 @@
 "use server";
 
-import {
-  PermissionEnum,
-  Task,
-  // Prisma,
-  // TaskPriority,
-  // TaskStatus,
-} from "@prisma/client";
+import { PermissionEnum, Task } from "@prisma/client";
 
 import { AxiosError } from "axios";
 
@@ -22,14 +16,7 @@ import prisma from "@/prisma/prisma-client";
 import { handleError } from "@/shared/api/handleError";
 import { formatDateTime } from "@/shared/lib/helpers/formatDate";
 
-// import { formatDateTime } from "@/shared/lib/helpers/formatDate";
-
-// import { formatDate } from "../lib/helpers";
-// import { TOAST } from "@/shared/ui/Toast";
-
 import { TaskWithUserInfo } from "../types";
-
-// import { getDepartmentUsersWithTasks } from "./queryFn";
 
 export const getTasksDepartment = async (
   departmentId: number
@@ -37,7 +24,7 @@ export const getTasksDepartment = async (
   try {
     const { user } = await handleAuthorization();
 
-    if (user!.departmentId !== +departmentId) {
+    if (user!.departmentId !== departmentId) {
       return checkUserPermissionByRole(user!, [PermissionEnum.TASK_MANAGEMENT]);
     }
 
@@ -157,7 +144,7 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
     const newTask = await prisma.task.create({
       data: {
         ...task,
-        departmentId: +task.departmentId,
+        departmentId: task.departmentId,
         assignerId: userId,
         dueDate: new Date(task.dueDate),
         startDate: new Date(task.startDate),
@@ -295,22 +282,24 @@ export const deleteTask = async (taskData: DeleteTaskData): Promise<Task> => {
   }
 };
 
-export const updateTasksOrder = async (updatedTasks: TaskWithUserInfo[]) => {
+export const updateTasksOrder = async (
+  updatedTasks: TaskWithUserInfo[]
+): Promise<{ success: boolean; data: Task[] }> => {
   try {
     await handleAuthorization();
 
-    const tasks = await prisma.$transaction(async (prisma) => {
-      for (const task of updatedTasks) {
-        await prisma.task.update({
-          where: {
-            id: task.id,
-          },
+    const tasks: Task[] = await prisma.$transaction(async (tx) => {
+      const updatePromises = updatedTasks.map((task) =>
+        tx.task.update({
+          where: { id: task.id },
           data: {
             taskStatus: task.taskStatus,
             orderTask: task.orderTask,
           },
-        });
-      }
+        })
+      );
+
+      return Promise.all(updatePromises);
     });
 
     return { success: true, data: tasks };

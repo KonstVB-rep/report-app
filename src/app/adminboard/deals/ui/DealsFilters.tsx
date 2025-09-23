@@ -18,12 +18,18 @@ const DealsFilters = ({
 }: {
   table: Table<DealBase>;
   open: boolean;
-}) => (
-  <div
-    className={`grid overflow-hidden transition-all duration-200 ${open ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
-  >
-    {open && <Filters table={table} />}
-  </div>
-);
+}) => {
+  return (
+    <>
+      {open && (
+        <div
+          className={`grid overflow-hidden transition-all duration-200 ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+        >
+          <Filters table={table} />
+        </div>
+      )}
+    </>
+  );
+};
 
 export default DealsFilters;

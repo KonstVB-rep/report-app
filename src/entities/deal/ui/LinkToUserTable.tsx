@@ -8,11 +8,15 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 
 import { Redo2 } from "lucide-react";
+import z from "zod";
 
+import { DepartmentLabelsById } from "@/entities/department/types";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import Overlay from "@/shared/custom-components/ui/Overlay";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
+import { TableTypes, TableTypesWithContracts } from "../lib/constants";
 import { DealsUnionType } from "../types";
 
 const linksPersonTable = (deptId: string | number) => ({
@@ -37,8 +41,16 @@ const linksSummaryTable = (deptId: string | number) => ({
   },
 });
 
+const pageParamsSchema = z.object({
+  userId: z.string(),
+  departmentId: z.string().transform((value) => {
+    return value as keyof typeof DepartmentLabelsById;
+  }),
+  dealType: z.enum(TableTypesWithContracts),
+});
+
 const LinkToUserTable = () => {
-  const { dealType, userId, departmentId } = useParams();
+  const { dealType, userId, departmentId } = useTypedParams(pageParamsSchema);
   const { authUser } = useStoreUser();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
@@ -81,9 +93,7 @@ const LinkToUserTable = () => {
       )}
 
       {hasSummaryTable && (
-        <ProtectedByPermissions
-          permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
-        >
+        <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
           <Link
             href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}
             className="btn_hover max-w-max border-muted px-4 text-sm"

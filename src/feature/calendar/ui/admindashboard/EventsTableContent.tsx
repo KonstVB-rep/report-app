@@ -44,7 +44,6 @@ const EventsTableContent = ({
     return <SkeletonTable className="p-1 w-full" innerTable={false} />;
   }
 
-  console.log(table.getRowModel().rows, "visible columns");
   return (
     <TableTemplate
       table={table}

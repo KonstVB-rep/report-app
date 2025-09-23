@@ -6,6 +6,13 @@ import { useCallback } from "react";
 
 import { useParams } from "next/navigation";
 
+import z from "zod";
+
+import {
+  DealTypesArray,
+  TableTypes,
+  TableTypesWithContracts,
+} from "@/entities/deal/lib/constants";
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts";
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal";
 import DelDealContextMenu from "@/feature/deals/ui/Modals/DelDealContextMenu";
@@ -15,6 +22,7 @@ import {
   TableProvider,
 } from "@/shared/custom-components/ui/Table/context/TableContext";
 import { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import DataTable from "@/widgets/DataTable/ui/DataTable";
 
 interface DealsTableProps<T extends TypeBaseDT> {
@@ -23,8 +31,12 @@ interface DealsTableProps<T extends TypeBaseDT> {
   hasEditDeleteActions?: boolean;
 }
 
+const pageParamsSchema = z.object({
+  dealType: z.enum(TableTypesWithContracts),
+});
+
 const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
-  const { dealType } = useParams<{ dealType: string }>();
+  const { dealType } = useTypedParams(pageParamsSchema);
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =
     useCallback(

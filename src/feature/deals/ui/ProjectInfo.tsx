@@ -1,9 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
 
 import { Building, Info } from "lucide-react";
+import z from "zod";
 
 import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
@@ -13,13 +13,9 @@ import { Separator } from "@/shared/components/ui/separator";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation";
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
 import { formatterCurrency } from "@/shared/lib/utils";
-import {
-  typeofDelivery,
-  typeofDirections,
-  typeofStatus,
-} from "@/widgets/deal/model/columns-data-project";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetProjectById } from "../api/hooks/query";
@@ -48,8 +44,8 @@ const ContactCardInDealInfo = dynamic(
     ssr: false,
   }
 );
-const DelButtonDealInfoPage = dynamic(
-  () => import("@/feature/deals/ui/Modals/DelButtonDealInfoPage"),
+const DelButtonDeal = dynamic(
+  () => import("@/feature/deals/ui/Modals/DelButtonDeal"),
   { ssr: false }
 );
 const EditDealButtonIcon = dynamic(
@@ -57,18 +53,26 @@ const EditDealButtonIcon = dynamic(
   { ssr: false }
 );
 
+const pageParamsSchema = z.object({
+  dealId: z.string(),
+});
+
 const ProjectItemInfo = () => {
-  const params = useParams();
-  const dealId = params.dealId as string;
+  const { dealId } = useTypedParams(pageParamsSchema);
 
   const { data: deal, isLoading } = useGetProjectById(dealId, false);
 
   const statusLabel =
-    StatusProjectLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
+    StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] ||
+    "Нет данных";
   const directionLabel =
-    DirectionProjectLabels[deal?.direction as typeofDirections] || "Нет данных";
+    DirectionProjectLabels[
+      deal?.direction as keyof typeof DirectionProjectLabels
+    ] || "Нет данных";
   const deliveryLabel =
-    DeliveryProjectLabels[deal?.deliveryType as typeofDelivery] || "Нет данных";
+    DeliveryProjectLabels[
+      deal?.deliveryType as keyof typeof DeliveryProjectLabels
+    ] || "Нет данных";
   const typeLabel =
     DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
 
@@ -104,7 +108,7 @@ const ProjectItemInfo = () => {
               dealType="PROJECT"
             />
             <EditDealButtonIcon id={deal.id} type={deal.type} />
-            <DelButtonDealInfoPage id={deal.id} type={deal.type} />
+            <DelButtonDeal id={deal.id} type={deal.type} />
           </div>
         </ProtectedByDepartmentAffiliation>
       </div>
@@ -127,7 +131,7 @@ const ProjectItemInfo = () => {
                       strokeWidth={1}
                       className="icon-deal_info"
                     />
-                    <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                    <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
                       {deal.nameObject}
                     </p>
                   </div>
@@ -141,7 +145,7 @@ const ProjectItemInfo = () => {
                           className="icon-deal_info"
                         />
                         <TooltipComponent content="Статус сделки">
-                          <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
+                          <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
                             {statusLabel}
                           </span>
                         </TooltipComponent>

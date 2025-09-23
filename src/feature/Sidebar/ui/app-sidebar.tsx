@@ -27,6 +27,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/shared/components/ui/sidebar";
+import ProtectedByRole from "@/shared/custom-components/ui/Protect/ProtectByRole";
 
 import DepartmentPersonsList from "./DepartmentPersonsList";
 import { NavMain } from "./nav-main";
@@ -142,13 +143,15 @@ const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter className="border-t border-muted">
         <NavUser>
-          <Link
-            href="/adminboard"
-            className="btn_hover justify-center text-sm"
-            prefetch={false}
-          >
-            Панель администратора
-          </Link>
+          <ProtectedByRole>
+            <Link
+              href="/adminboard"
+              className="btn_hover justify-center text-sm"
+              prefetch={false}
+            >
+              Панель администратора
+            </Link>
+          </ProtectedByRole>
         </NavUser>
       </SidebarFooter>
     </Sidebar>

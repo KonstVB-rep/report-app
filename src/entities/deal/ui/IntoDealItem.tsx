@@ -21,7 +21,7 @@ const IntoDealItem = ({
       className
     )}
   >
-    <p className="break-all first-letter:capitalize bg-stone-100 dark:bg-black/40 p-4 font-medium">
+    <p className="break-all first-letter:capitalize bg-stone-100 dark:bg-black/40 p-4">
       {title}
     </p>
     <div className="flex-1 p-3 grid gap-2">{children}</div>

@@ -22,7 +22,7 @@ const UserCreateForm = dynamic(
 
 const DialogAddUser = ({ className }: { className?: string }) => {
   return (
-    <ProtectedByPermissions permissionArr={[PermissionEnum.USER_MANAGEMENT]}>
+    <ProtectedByPermissions permission={PermissionEnum.USER_MANAGEMENT}>
       <DialogComponent
         trigger={
           <Button

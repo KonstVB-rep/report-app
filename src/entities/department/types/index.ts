@@ -40,5 +40,6 @@ export const DepartmentLabelsById: Record<string, string> = {
   "2": "Отдел маркетинга",
   "3": "Технический отдел",
 } as const;
+export type DepartmentsUnionIds = 1 | 2 | 3;
 
 export type UnionTypeDepartmentsName = keyof typeof DepartmentLabels;

@@ -16,7 +16,7 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
       const endDate =
         row.original.end instanceof Date
           ? row.original.end
-          : new Date(row.original.end);
+          : row.original.end ? new Date(row.original.end) : new Date();
 
       if (
         startDate.toLocaleDateString("ru-RU") ===
@@ -37,7 +37,7 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
     header: "Время",
     cell: (info) => {
       const { row } = info;
-      return `${row.original.start.toLocaleTimeString("ru-RU", { timeStyle: "short" })} - ${row.original.end.toLocaleTimeString("ru-RU", { timeStyle: "short" })}`;
+      return `${row.original.start.toLocaleTimeString("ru-RU", { timeStyle: "short" })} - ${row.original?.end?.toLocaleTimeString("ru-RU", { timeStyle: "short" }) || "не определено"}`;
     },
     size: 100,
     minSize: 100,

@@ -101,7 +101,6 @@ export const useDeleteEventCalendar = (closeModal?: () => void) => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      console.log("authUser", authUser);
       return handleMutationWithAuthCheck<{ id: string }, EventResponse>(
         deleteEventCalendar,
         { id },

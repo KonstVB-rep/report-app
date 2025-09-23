@@ -50,7 +50,7 @@ const TableComponentDT = <T extends Record<string, unknown>>({
       className={cn(
         "rounded-lg relative h-full overflow-auto border transition-all duration-200",
         {
-          "max-h-[64vh]": openFilters,
+          "max-h-[68vh]": openFilters,
           "max-h-[75vh]": !openFilters,
         }
       )}
@@ -61,28 +61,34 @@ const TableComponentDT = <T extends Record<string, unknown>>({
           Количество выбранных заявок: {table.getRowModel().rows.length}
         </p>
       )}
-      <TableTemplate table={table} totalSize={totalSize}>
-        <VirtualRow
-          rows={rows}
-          virtualItems={virtualItems}
-          renderRow={({
-            row,
-            virtualRow,
-          }: {
-            row: Row<T>;
-            virtualRow: VirtualItem;
-          }) => (
-            <TableRowDealOrTask<T>
-              key={row.id}
-              row={row}
-              virtualRow={virtualRow}
-              hasEditDeleteActions={hasEditDeleteActions}
-              entityType={"deal"}
-              headers={table.getHeaderGroups()[0].headers}
-            />
-          )}
-        />
-      </TableTemplate>
+      {table.getRowModel().rows.length > 0 ? (
+        <TableTemplate table={table} totalSize={totalSize}>
+          <VirtualRow
+            rows={rows}
+            virtualItems={virtualItems}
+            renderRow={({
+              row,
+              virtualRow,
+            }: {
+              row: Row<T>;
+              virtualRow: VirtualItem;
+            }) => (
+              <TableRowDealOrTask<T>
+                key={row.id}
+                row={row}
+                virtualRow={virtualRow}
+                hasEditDeleteActions={hasEditDeleteActions}
+                entityType={"deal"}
+                headers={table.getHeaderGroups()[0].headers}
+              />
+            )}
+          />
+        </TableTemplate>
+      ) : (
+        <p className="border rounded-md flex items-center justify-center w-full px-2 py-1 bg-stone-700 text-white dark:bg-black">
+          Нет данных
+        </p>
+      )}
     </div>
   );
 };

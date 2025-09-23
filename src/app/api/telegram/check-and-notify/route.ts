@@ -7,6 +7,7 @@ import {
   getInfoChatNotificationChecked,
 } from "@/feature/calendar/api/server";
 import { EventInputType } from "@/feature/calendar/types";
+import prisma from "@/prisma/prisma-client";
 
 async function sendNotificationsToTelegram(
   events: (EventInputType & { chatId: string })[]
@@ -81,6 +82,59 @@ export async function GET() {
         // );
 
         await sendNotificationsToTelegram(eventsWithChatId);
+      }
+    }
+
+    // === Новый блок: проекты с plannedDateConnection ===
+    // Проверяем: если сейчас 09:00 по Москве, отправляем уведомления
+    const moscowNow = new Date(
+      now.toLocaleString("en-US", { timeZone: "Europe/Moscow" })
+    );
+
+    if (moscowNow.getHours() === 9 && moscowNow.getMinutes() === 0) {
+      const today = new Date(moscowNow);
+      const start = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        0,
+        0,
+        0
+      );
+      const end = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        23,
+        59,
+        59
+      );
+
+      for (const chat of allChats) {
+        if (!chat.isActive || !chat.chatId || !chat.userId) continue;
+
+        const projectsToday = await prisma.project.findMany({
+          where: {
+            userId: chat.userId,
+            plannedDateConnection: {
+              gte: start,
+              lte: end,
+            },
+          },
+          select: { id: true, nameDeal: true, plannedDateConnection: true },
+        });
+
+        if (projectsToday.length > 0) {
+          const notifications = projectsToday
+            .filter((project) => project.plannedDateConnection !== null)
+            .map((project) => ({
+              chatId: String(chat.chatId),
+              title: `Сегодня плановая дата контакта по сделке: ${project.nameDeal}`,
+              start: project.plannedDateConnection as Date,
+            }));
+
+          await sendNotificationsToTelegram(notifications);
+        }
       }
     }
 

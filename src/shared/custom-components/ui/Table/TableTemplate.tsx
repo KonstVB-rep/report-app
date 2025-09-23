@@ -2,13 +2,14 @@ import { flexRender, useReactTable } from "@tanstack/react-table";
 
 import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import {
   TableBody,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { HEIGHT_ROW } from "@/shared/lib/constants";
+import { cn } from "@/shared/lib/utils";
 
 type TableTemplateProps<T extends Record<string, unknown>> = {
   table: ReturnType<typeof useReactTable<T>>;
@@ -27,7 +28,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
     <table
       className={`w-full grid border-separate border-spacing-0 border border-border ${className}`}
     >
-      <TableHeader className="sticky top-0 z-10 bg-white dark:bg-zinc-800">
+      <TableHeader className="sticky top-0 z-10 bg-white dark:bg-zinc-800 rounded-se-sm rounded-ss-sm">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow
             key={headerGroup.id}
@@ -81,7 +82,13 @@ const TableTemplate = <T extends Record<string, unknown>>({
         ))}
       </TableHeader>
 
-      <TableBody style={{ height: `${totalSize}px`, position: "relative" }}>
+      <TableBody
+        style={{
+          height: `${totalSize}px`,
+          position: "relative",
+          minHeight: `${HEIGHT_ROW}px`,
+        }}
+      >
         {children}
       </TableBody>
     </table>

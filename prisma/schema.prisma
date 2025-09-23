@@ -261,9 +261,9 @@ model TelegramUserInfo {
 
 model UserTelegramChat {
   id        String   @id @default(cuid())
-  userId    String   // ID пользователя в вашей системе
-  botId     String   // ID бота
-  chatId    String   // ID чата в Telegram
+  userId    String 
+  botId     String
+  chatId    String
   chatName  String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
