@@ -39,7 +39,6 @@ export async function POST(req: Request) {
         );
       }
 
-      // Генерируем оба токена
       const { accessToken, refreshToken: newRefreshToken } =
         await generateTokens(
           payload.userId as string,

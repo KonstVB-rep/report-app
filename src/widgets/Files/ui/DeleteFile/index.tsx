@@ -8,11 +8,11 @@ import { FileX } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import Overlay from "@/shared/custom-components/ui/Overlay";
 
 import { useDeleteFiles } from "../../hooks/mutate";
 import FormDeleteFileSkeleton from "./ui/FormDeleteFileSkeleton";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 
 const FormDeleteFile = dynamic(() => import("./ui/FormDeleteFile"), {
   ssr: false,

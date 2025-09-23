@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 
 // src/shared/ui/Redirect.tsx
 
+// src/shared/ui/Redirect.tsx
+
 const RedirectToPath = ({ to }: { to: string }) => {
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);

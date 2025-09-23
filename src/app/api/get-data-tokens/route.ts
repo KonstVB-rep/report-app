@@ -1,7 +1,7 @@
-import { verifyToken } from "@/shared/lib/helpers/checkTokens";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import { verifyToken } from "@/shared/lib/helpers/checkTokens";
 
 export async function GET() {
   const cookieStore = await cookies();

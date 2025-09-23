@@ -26,7 +26,7 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
         className={cn("flex items-center justify-center cursor-pointer gap-1")}
       >
         {table.getIsSomePageRowsSelected() ||
-          table.getIsAllPageRowsSelected() ? (
+        table.getIsAllPageRowsSelected() ? (
           <ListCheck />
         ) : (
           "Выбрать"

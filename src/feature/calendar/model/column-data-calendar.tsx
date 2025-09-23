@@ -16,7 +16,9 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
       const endDate =
         row.original.end instanceof Date
           ? row.original.end
-          : row.original.end ? new Date(row.original.end) : new Date();
+          : row.original.end
+            ? new Date(row.original.end)
+            : new Date();
 
       if (
         startDate.toLocaleDateString("ru-RU") ===

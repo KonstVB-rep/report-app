@@ -14,11 +14,11 @@ import { Form } from "@/shared/components/ui/form";
 import SubmitFormActionBtn from "@/shared/custom-components/ui/Buttons/SubmitFormActionBtn";
 import InputFormPassword from "@/shared/custom-components/ui/Inputs/InputFormPassword";
 import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 import { cn } from "@/shared/lib/utils";
 
 import { loginFormSchema, LoginSchema } from "../model/schema";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 
 type ErrorState = {
   email: string;

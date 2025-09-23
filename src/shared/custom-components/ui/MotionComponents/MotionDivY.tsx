@@ -12,7 +12,9 @@ const MotionDivY = ({
   keyValue?: string | number;
 }) => {
   return (
-      <div key={keyValue} className={cn("animate-slide-appear", className)}>{children}</div>
+    <div key={keyValue} className={cn("animate-slide-appear", className)}>
+      {children}
+    </div>
   );
 };
 

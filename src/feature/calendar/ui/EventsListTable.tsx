@@ -31,23 +31,23 @@ const EventsListTable = <T extends EventInputType>({
 
   const { isMobile } = useSidebar();
 
-const handleClickRowEvent = (row: T) => {
-  const now = new Date();
-  
-  if (!row.end) {
-    handleRowClick?.(row);
-    return;
-  }
-  
-  try {
-    const endDate = new Date(row.end);
-    if (endDate < now) return;
-    handleRowClick?.(row);
-  } catch (error) {
-    console.error('Invalid date format:', row.end);
-    return;
-  }
-};
+  const handleClickRowEvent = (row: T) => {
+    const now = new Date();
+
+    if (!row.end) {
+      handleRowClick?.(row);
+      return;
+    }
+
+    try {
+      const endDate = new Date(row.end);
+      if (endDate < now) return;
+      handleRowClick?.(row);
+    } catch (error) {
+      console.error("Invalid date format:", row.end);
+      return;
+    }
+  };
 
   if (!table?.getRowModel()?.rows) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>;
@@ -95,7 +95,9 @@ const handleClickRowEvent = (row: T) => {
           {table?.getRowModel()?.rows?.length > 0 ? (
             table.getRowModel().rows.map((row) => {
               const EventDataType = row.original;
-              const isPastEvent = EventDataType.end ? new Date(EventDataType.end) < new Date() : false;
+              const isPastEvent = EventDataType.end
+                ? new Date(EventDataType.end) < new Date()
+                : false;
               return (
                 <TableRow
                   key={row.id}
