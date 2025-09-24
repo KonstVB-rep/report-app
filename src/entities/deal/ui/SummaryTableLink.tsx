@@ -2,8 +2,6 @@
 
 import { DealType, PermissionEnum } from "@prisma/client";
 
-import React from "react";
-
 import Link from "next/link";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
@@ -21,7 +19,12 @@ const DEAL_TYPE = {
   [DealType.RETAIL]: "Розничные сделки",
 };
 
-const SummaryTableLink = ({ type, className = "", departmentId, protect = true }: Props) => {
+const SummaryTableLink = ({
+  type,
+  className = "",
+  departmentId,
+  protect = true,
+}: Props) => {
   const { authUser } = useStoreUser();
 
   if (!authUser) return null;
@@ -29,19 +32,26 @@ const SummaryTableLink = ({ type, className = "", departmentId, protect = true }
   const departmentIdValue =
     departmentId !== undefined ? departmentId : authUser.departmentId;
 
-  return (
+  const href = `/dashboard/summary-table/${departmentIdValue}/${type.toLowerCase()}s/${authUser.id}`;
+
+  const LinkComponent = () => (
+    <Link
+      href={href}
+      className={`${className} min-w-full max-w-max text-sm`}
+      title="перейти на страницу сводной таблицы"
+    >
+      <span className="first-letter:capitalize">
+        {DEAL_TYPE[type as keyof typeof DEAL_TYPE] as string}
+      </span>
+    </Link>
+  );
+
+  return protect ? (
     <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
-      <Link
-        prefetch={false}
-        href={`/dashboard/summary-table/${departmentIdValue}/${type.toLowerCase()}s/${authUser.id}`}
-        className={`${className} min-w-full max-w-max text-sm`}
-        title="перейти на страницу сводной таблицы"
-      >
-        <span className="first-letter:capitalize">
-          {DEAL_TYPE[type as keyof typeof DEAL_TYPE] as string}
-        </span>
-      </Link>
+      <LinkComponent />
     </ProtectedByPermissions>
+  ) : (
+    <LinkComponent />
   );
 };
 
