@@ -23,6 +23,8 @@ const DEAL_TYPE = {
 const SummaryTableLink = ({ type, className = "", departmentId }: Props) => {
   const { authUser } = useStoreUser();
 
+  console.log(authUser, "authUser");
+
   if (!authUser) return null;
 
   const departmentIdValue =

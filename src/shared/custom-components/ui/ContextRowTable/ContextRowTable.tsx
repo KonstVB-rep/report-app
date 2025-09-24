@@ -16,8 +16,12 @@ import {
 } from "@/shared/components/ui/context-menu";
 import { Dialog } from "@/shared/components/ui/dialog";
 
-import ProtectedByDepartmentAffiliation from "../Protect/ProtectedByDepartmentAffiliation";
-import ProtectedByPermissions from "../Protect/ProtectedByPermissions";
+import dynamic from "next/dynamic";
+
+const ProtectedByPermissions = dynamic(
+  () => import("../Protect/ProtectedByPermissions"),
+  { ssr: false}
+);
 
 type ContextMenuTableProps = {
   children: React.ReactNode;
@@ -62,7 +66,7 @@ const ContextRowTable = ({
             )}
 
             {hasEditDeleteActions && (
-              <ProtectedByDepartmentAffiliation>
+               <>
                 <ContextMenuItem
                   onClick={() => setOpenModal("edit")}
                   className="flex cursor-pointer gap-2"
@@ -80,7 +84,7 @@ const ContextRowTable = ({
                     <Trash2 size="14" /> Удалить
                   </ContextMenuItem>
                 </ProtectedByPermissions>
-              </ProtectedByDepartmentAffiliation>
+               </>
             )}
           </ContextMenuContent>
         </ContextMenu>

@@ -5,11 +5,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 
-import { Trash2 } from "lucide-react";
-
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton";
-import { Button } from "@/shared/components/ui/button";
-import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 import WrapperFormDeleteDialog from "@/shared/custom-components/ui/WrapperFormDeleteDialog";
 
@@ -32,7 +28,7 @@ const DelButtonDeal = ({
 
   return (
     <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
-      <WrapperFormDeleteDialog open={open} setOpen={setOpen}>
+      <WrapperFormDeleteDialog open={open} setOpen={setOpen} isTextButton={isTextButton}>
         <DelDealForm
           id={id}
           type={type}

@@ -96,9 +96,10 @@ export const checkPermission = async (
 
     const userRole = await getRole(String(payload.userId));
     const userPermissions = await prisma.userPermission.findMany({
-      where: { id: String(payload.userId) },
+      where: { userId: String(payload.userId) },
       include: { permission: true },
     });
+
     if (userRole === Role.ADMIN) {
       return true;
     }
