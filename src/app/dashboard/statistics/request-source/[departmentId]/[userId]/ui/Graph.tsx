@@ -30,8 +30,8 @@ const CustomLabel: React.FC<CustomLabelProps> = (props) => {
   const isDarkMode = useCurrentTheme();
   const { x = 0, y = 0, value, width = 0 } = props;
   const padding = 4;
-  const rectWidth = 30;
-  const rectHeight = 30;
+  const rectWidth = 26;
+  const rectHeight = 26;
 
   return (
     <g>
@@ -65,7 +65,7 @@ interface GraphProps {
 const Graph: React.FC<GraphProps> = ({ data, className }) => {
   return (
     <div className={className}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="94%">
         <BarChart
           data={data}
           margin={{ top: 30, right: 10, bottom: 60, left: -30 }}
@@ -81,7 +81,7 @@ const Graph: React.FC<GraphProps> = ({ data, className }) => {
           />
           <YAxis stroke="#ccc" />
 
-          <Bar dataKey="value" radius={[2, 2, 0, 0]} barSize={30}>
+          <Bar dataKey="value" radius={[1, 1, 0, 0]} barSize={26}>
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}

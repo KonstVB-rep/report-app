@@ -11,6 +11,11 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { StatusesInWork } from "@/feature/deals/lib/constants";
 import { Button } from "@/shared/components/ui/button";
 import { DateRangePicker } from "@/shared/components/ui/date-range-picker";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import useAnimateOnDataChange from "@/shared/hooks/useAnimateOnDataChange";
@@ -29,6 +34,7 @@ import EmptyData from "./EmptyData";
 import Graph from "./Graph";
 import MobileCharts from "./MobileCharts";
 import ResourceRow from "./ResourceRow";
+import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage";
 
 type StatusGroup = "inWork" | "positive" | "negative";
 
@@ -128,41 +134,14 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   if (deals.length === 0) return <EmptyData />;
 
   return (
-    <div className="grid gap-5">
-      <h1 className="text-2xl font-semibold text-center">
-        Статистика заявок по источникам
-      </h1>
+    <div className="grid gap-3">
+      <TitlePageBlock
+        title="Статистика заявок"
+        subTitle={`Количество заявок: ${totalDealsCount}`}
+        infoText="Статистика заявок по источникам"
+        />
       <div className="flex gap-2 items-start justify-between">
-        <h2 className="text-lg flex gap-2 p-2 items-center w-fit font-semibold border border-solid border-primary dark:border-muted rounded-md">
-          <span>Количество заявок: </span>
-          <span className="grid place-items-center aspect-square p-2 border border-solid rounded-md ">
-            {totalDealsCount}
-          </span>
-        </h2>
-        <div className="flex gap-2">
-          <Button
-            id="circle"
-            variant={isCircleGraph ? "default" : "outline"}
-            onClick={handleChoiceDataDisplay}
-            size={"icon"}
-            title="Круговая диаграмма"
-          >
-            <ChartPie />
-          </Button>
-          <Button
-            id="graph"
-            variant={isGraph ? "default" : "outline"}
-            onClick={handleChoiceDataDisplay}
-            size={"icon"}
-            title="График"
-          >
-            <ChartColumnBig />
-          </Button>
-        </div>
-      </div>
-      <div className="flex gap-2 justify-between items-end flex-wrap">
-        <div className="grid gap-2">
-          <div className="flex gap-2 flex-wrap">
+        <div className="hidden gap-2 flex-wrap sm:flex">
             <Button
               variant="outline"
               onClick={(e) => handleClick(e, getPeriodRange("week"))}
@@ -188,15 +167,71 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
               Год
             </Button>
           </div>
-
-          <div>
+        <div className="gap-2 hidden sm:flex">
+          <Button
+            id="circle"
+            variant={isCircleGraph ? "default" : "outline"}
+            onClick={handleChoiceDataDisplay}
+            size={"icon"}
+            title="Круговая диаграмма"
+          >
+            <ChartPie />
+          </Button>
+          <Button
+            id="graph"
+            variant={isGraph ? "default" : "outline"}
+            onClick={handleChoiceDataDisplay}
+            size={"icon"}
+            title="График"
+          >
+            <ChartColumnBig />
+          </Button>
+        </div>
+      </div>
+      <div className="flex gap-2 justify-between items-center flex-wrap">
+        <div>
             <p className="p-2 border rounded-md w-fit">
               За период: {dataCountByDate}
             </p>
           </div>
+        <div className="flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="block sm:hidden">Период</Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit p-2">
+              <div className="grid gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  onClick={(e) => handleClick(e, getPeriodRange("week"))}
+                  className={`btn-active ${dateRangeState === "week" && "border-2 border-primary"}`}
+                  id="week"
+                >
+                  Неделя
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={(e) => handleClick(e, getPeriodRange("month"))}
+                  className={`btn-active ${dateRangeState === "month" && "border-2 border-primary"}`}
+                  id="month"
+                >
+                  Месяц
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={(e) => handleClick(e, getPeriodRange("year"))}
+                  className={`btn-active ${dateRangeState === "year" && "border-2 border-primary"}`}
+                  id="year"
+                >
+                  Год
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap w-full xs:w-auto">
+        
           <DateRangePicker
             value={selectedDate}
             onValueChange={setSelectedDate}
@@ -206,8 +241,10 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
               aria-label="Сбросить дату"
               variant="outline"
               onClick={() => setSelectedDate(undefined)}
+              className="flex-1"
             >
-              <X />
+              <X className="hidden xs:block"/>
+              <span className="p-2 flex items-center justify-center xs:hidden">Сбросить даты</span>
             </Button>
           )}
         </div>
@@ -218,7 +255,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
           {data.length > 0 ? (
             <MotionDivY
               keyValue={`chart-${JSON.stringify(selectedDate)}`}
-              className="grid-charts gap-4 items-center"
+              className="grid-charts gap-2 sm:gap-4 items-center"
             >
               {isCircleGraph && (
                 <ResponsiveContainer
@@ -252,7 +289,10 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
               )}
 
               {isGraph && (
-                <Graph data={data} className="block w-full h-[430px]" />
+                <Graph
+                  data={data}
+                  className="w-full h-[430px] hidden sm:block"
+                />
               )}
 
               <MobileCharts data={data} />
@@ -273,25 +313,25 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                   {data.map((item, index) => (
                     <li
                       key={index}
-                      className="grid grid-cols-4 gap-2 items-center"
+                      className="grid grid-cols-4 gap-2 items-center shrink-0"
                     >
-                      <span className="py-1 px-2 bg-muted border border-solid rounded-md border-primary dark:border-muted flex items-center justify-center">
+                      <span className="py-1 px-2 bg-muted border border-solid rounded-md border-primary dark:border-muted flex items-center justify-center shrink-0">
                         {item.value}
                       </span>
                       <TooltipComponent content={"Оплачен/Закрыт"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-green-600 border-2">
+                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-green-600 border-2 shrink-0">
                           {countsStatuses[item.name].positive}
                         </span>
                       </TooltipComponent>
 
                       <TooltipComponent content={"Не актуально/Отказ"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-red-600 border-2">
+                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-red-600 border-2 shrink-0">
                           {countsStatuses[item.name].negative}
                         </span>
                       </TooltipComponent>
 
                       <TooltipComponent content={"Актуально/В работе"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-blue-600 border-2">
+                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-blue-600 border-2 shrink-0">
                           {countsStatuses[item.name].inWork}
                         </span>
                       </TooltipComponent>
