@@ -12,7 +12,6 @@ import {
 import { ArrowLeft } from "lucide-react";
 import z from "zod";
 
-import { TableTypes } from "@/entities/deal/lib/constants";
 import { parseFormattedNumber } from "@/entities/deal/lib/helpers";
 import { Contact } from "@/entities/deal/types";
 import ContactDeal from "@/feature/contact/ui/ContactDeal";
@@ -46,6 +45,7 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
+import { DealTypesArray } from "@/entities/deal/lib/constants";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -67,7 +67,7 @@ const statusOptions = {
 };
 
 const pageParamsSchema = z.object({
-  dealType: z.enum(TableTypes),
+  dealType: z.enum(DealTypesArray),
 });
 
 const ProjectFormBody = <T extends FieldValues>({
