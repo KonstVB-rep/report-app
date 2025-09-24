@@ -7,7 +7,7 @@ import { Contact } from "@/entities/deal/types";
 import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 const pageParamsSchema = z.object({
-  userId: z.string(),
+  userId: z.string().optional(),
 });
 
 const useSendDealInfo = <T extends FieldValues>(
@@ -20,7 +20,7 @@ const useSendDealInfo = <T extends FieldValues>(
   const firstManagerId = managerId || userId;
 
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [managers, setManagers] = useState<{ userId: string }[]>([
+  const [managers, setManagers] = useState<{ userId: string | undefined }[]>([
     { userId: firstManagerId },
   ]);
   const [firstManager, setFirstManager] = useState<string>("");
@@ -48,7 +48,7 @@ const useSendDealInfo = <T extends FieldValues>(
   };
 
   useEffect(() => {
-    setFirstManager(firstManagerId);
+    setFirstManager(firstManagerId!);
     if (additionalContacts) {
       setSelectedContacts(additionalContacts);
     }

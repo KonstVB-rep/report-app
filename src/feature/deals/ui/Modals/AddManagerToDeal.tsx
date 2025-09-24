@@ -16,8 +16,8 @@ const AddManagerToDeal = ({
   firstManager,
   setFirstManager,
 }: {
-  managers: { userId: string }[];
-  setManagers: React.Dispatch<React.SetStateAction<{ userId: string }[]>>;
+  managers: { userId: string | undefined }[];
+  setManagers: React.Dispatch<React.SetStateAction<{ userId: string | undefined }[]>>;
   firstManager: string;
   setFirstManager: React.Dispatch<React.SetStateAction<string>>;
 }) => {
