@@ -13,6 +13,7 @@ type Props = {
   type: DealType;
   className?: string;
   departmentId?: string;
+  protect?: boolean;
 };
 
 const DEAL_TYPE = {
@@ -20,10 +21,8 @@ const DEAL_TYPE = {
   [DealType.RETAIL]: "Розничные сделки",
 };
 
-const SummaryTableLink = ({ type, className = "", departmentId }: Props) => {
+const SummaryTableLink = ({ type, className = "", departmentId, protect = true }: Props) => {
   const { authUser } = useStoreUser();
-
-  console.log(authUser, "authUser");
 
   if (!authUser) return null;
 

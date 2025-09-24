@@ -16,9 +16,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/shared/components/ui/accordion";
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
+// import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import MarketActiveItemSidebar from "./MarketActiveItemSidebar";
+import dynamic from "next/dynamic";
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
+// LoaderCircle
+const ProtectedByPermissions = dynamic(
+  () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
+  { ssr: false,
+    loading: () => <LoaderCircle className="h-10 bg-muted rounded-md w-full" classSpin="h-6 w-6"/>
+   }
+)
 
 type DealsType = {
   id: string;
@@ -178,6 +187,7 @@ export const DepartmentLinks = memo(
                           <SummaryTableLink
                             type={type}
                             departmentId="1"
+                            protect={false}
                             className="flex border p-3 text-primary dark:text-stone-400 border-solid border-transparent rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground"
                           />
                         </div>
