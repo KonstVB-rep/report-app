@@ -24,7 +24,7 @@ const ProtectedByPermissions = memo(
       checkPermission(permission)
       .then((result) => {
 
-        console.log(result, 'result')
+
         setHasAccess(result)
       });
 

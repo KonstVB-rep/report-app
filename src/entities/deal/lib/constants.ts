@@ -38,7 +38,7 @@ export const TableTypesWithContracts = [
   "contracts",
 ] as const;
 
-export const SidebarParams = [
+export const UnionParams = [
   "retails",
   "projects",
   "contracts",

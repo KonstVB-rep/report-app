@@ -45,7 +45,7 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
-import { DealTypesArray } from "@/entities/deal/lib/constants";
+import { UnionParams } from "@/entities/deal/lib/constants";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
@@ -67,7 +67,7 @@ const statusOptions = {
 };
 
 const pageParamsSchema = z.object({
-  dealType: z.enum(DealTypesArray),
+  dealType: z.enum(UnionParams),
 });
 
 const ProjectFormBody = <T extends FieldValues>({

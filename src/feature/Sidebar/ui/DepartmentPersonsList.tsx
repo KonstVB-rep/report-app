@@ -2,39 +2,36 @@
 
 import { memo, useCallback, useState } from "react";
 
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import clsx from "clsx";
 import { ChevronRight } from "lucide-react";
 import z from "zod";
 
 import {
-  SidebarParams,
-  TableTypes,
-  TableTypesWithContracts,
+    UnionParams
 } from "@/entities/deal/lib/constants";
 import {
-  DepartmentLabels,
-  DepartmentLabelsById,
-  DepartmentListItemType,
-  DepartmentsUnionIds,
+    DepartmentLabels,
+    DepartmentListItemType,
+    DepartmentsUnionIds
 } from "@/entities/department/types";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
 } from "@/shared/components/ui/accordion";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
 } from "@/shared/components/ui/collapsible";
 import {
-  SidebarMenuAction,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
+    SidebarMenuAction,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarMenuSub,
 } from "@/shared/components/ui/sidebar";
 import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
@@ -42,7 +39,7 @@ import { DepartmentLinks } from "./DepartmentLinks";
 import LinkProfile from "./LinkProfile";
 
 const pageParamsSchema = z.object({
-  dealType: z.enum(SidebarParams).optional(),
+  dealType: z.enum(UnionParams).optional(),
   userId: z.string().optional(),
   departmentId: z.coerce
     .number()
