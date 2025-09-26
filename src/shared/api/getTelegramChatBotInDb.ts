@@ -28,8 +28,14 @@ export const getTelegramChatBotInDb = async (
       },
     });
 
-    if (!getUser) {
-      return null;
+
+    if (!getUser || !getUser.telegramInfo[0]?.tgUserId) {
+      return {
+        ...bot,
+        isActive: false,
+        chatId: null,
+        chatName: null,
+      };
     }
 
     const chat = await prisma.userTelegramChat.findUnique({
@@ -42,7 +48,12 @@ export const getTelegramChatBotInDb = async (
     });
 
     if (!chat) {
-      return null;
+      return {
+        ...bot,
+        isActive: false,
+        chatId: null,
+        chatName: null,
+      };;
     }
 
     return {

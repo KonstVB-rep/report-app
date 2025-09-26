@@ -1,8 +1,6 @@
 import { useState } from "react";
 
 import useStoreUser from "@/entities/user/store/useStoreUser";
-// import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-
 import { useToggleSudscribeChatBot } from "@/feature/telegramBot/hooks/mutate";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 
@@ -11,77 +9,40 @@ import { sendNotify } from "../actions/send-notify";
 
 const useChatBot = (botName: string) => {
   const { authUser } = useStoreUser();
-
   const [isFetch, setIsFetch] = useState(false);
 
   const { data: bot, isFetching, refetch } = useGetInfoChat(botName);
-
   const isFetchingRequest = isFetching || isFetch;
 
   const { mutate: updateStatusChatBot } = useToggleSudscribeChatBot();
-
-  // const handleUnsubscribeChatBot = async (chatId: string) => {
-  //   if (!bot?.botName) return;
-
-  //   try {
-  //     await checkAuthorization(authUser?.id);
-  //     setIsFetch(true);
-  //     updateStatusChatBot({
-  //       botId: bot?.id || "",
-  //       chatId: String(chatId),
-  //       isActive: false,
-  //     });
-  //     if (chatId) {
-  //       await sendNotify(
-  //         "Вы успешно отписались от уведомлений",
-  //         chatId,
-  //         bot.botName
-  //       );
-  //     }
-  //   } catch (error) {
-  //     TOAST.ERROR(
-  //       "Не удалось отписаться от уведомлений. Попробуйте еще раз или позже."
-  //     );
-  //     console.error("Ошибка при отписке от бота:", error);
-  //   }
-  // };
-
   const isActiveBot = bot ? bot.isActive : false;
 
-  const openTelegramLink = (
-    botName: string,
-    userId: string,
-    chatName?: string
-  ) => {
-    // Формируем команду /start
+  const openTelegramLink = (botName: string, userId: string, chatName?: string) => {
     const startCommand = `${userId}-${botName}-${chatName ?? "default"}`;
-
-    // Кодируем в URL-safe Base64
     const encodedCommand = btoa(startCommand)
       .replace(/\+/g, "-")
       .replace(/\//g, "_")
       .replace(/=+$/, "");
-
-    // Формируем ссылку
     const url = `https://t.me/${botName}?start=${encodedCommand}`;
-
-    // Открываем Telegram
     window.open(url, "_blank");
   };
 
   const handleChange = async () => {
     if (!authUser || !bot) return;
+
     try {
       setIsFetch(true);
 
-      if (!bot.id && bot.botName) {
+      // Если чата нет — открываем ссылку на Telegram
+      if (!bot.chatId) {
         openTelegramLink(bot.botName, authUser.id);
         return;
       }
 
-      if (!isActiveBot) {
+      // Если чат есть и бот ещё не активен — подписываем на уведомления
+      if ((!isActiveBot && bot.id && bot.chatId)) {
         updateStatusChatBot({
-          botId: bot.id || "",
+          botId: bot.id,
           chatId: String(bot.chatId),
           isActive: true,
         });

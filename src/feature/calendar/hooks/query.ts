@@ -81,20 +81,24 @@ export const useGetInfoChat = (botName: string) => {
 
         const botInDb = await getTelegramChatBotInDb(botName, authUser.id);
 
-        if (!botInDb) {
-          return {
-            id: null,
-            botName,
-            isActive: false,
-            chatId: "",
-            chatName: "",
-            description: "",
-          };
-        }
-
-        return botInDb;
+        return botInDb || {
+          id: null,
+          botName,
+          isActive: false,
+          chatId: "",
+          chatName: "",
+          description: "",
+        };
       } catch (error) {
-        throw error;
+        console.error("Error in useGetInfoChat:", error);
+        return {
+          id: null,
+          botName,
+          isActive: false,
+          chatId: "",
+          chatName: "",
+          description: "",
+        };
       }
     },
     enabled: !!authUser?.id && !!botName,
