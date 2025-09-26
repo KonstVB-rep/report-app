@@ -50,8 +50,8 @@ const TableComponentDT = <T extends Record<string, unknown>>({
       className={cn(
         "rounded-lg relative h-full overflow-auto border transition-all duration-200",
         {
-          "max-h-[68vh]": openFilters,
-          "max-h-[75vh]": !openFilters,
+          "max-h-[72vh]": openFilters,
+          "max-h-[79vh]": !openFilters,
         }
       )}
       ref={tableContainerRef}

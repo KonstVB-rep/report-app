@@ -25,7 +25,7 @@ export type typeofStatus = keyof typeof StatusProjectLabels;
 
 export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
-    ...RowNumber<ProjectResponse>(),
+    ...RowNumber<ProjectResponse>()
   },
   {
     id: "dateRequest",

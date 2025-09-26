@@ -7,7 +7,7 @@ const RowNumber = <T,>() => {
     id: "rowNumber",
     header: "№",
     cell: ({ row }: { row: Row<T> }) => Number(row.index) + 1,
-    enableHiding: false,
+    enableHiding: true,
     enableSorting: false,
     accessorFn: () => "",
     maxSize: 100,
