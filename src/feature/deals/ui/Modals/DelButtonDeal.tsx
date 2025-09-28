@@ -28,7 +28,11 @@ const DelButtonDeal = ({
 
   return (
     <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
-      <WrapperFormDeleteDialog open={open} setOpen={setOpen} isTextButton={isTextButton}>
+      <WrapperFormDeleteDialog
+        open={open}
+        setOpen={setOpen}
+        isTextButton={isTextButton}
+      >
         <DelDealForm
           id={id}
           type={type}

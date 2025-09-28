@@ -62,6 +62,7 @@ const Dashboard = () => {
             {authUser?.username.split(" ")[1]}!
           </span>
         </h1>
+
         <p className="text-lg text-center">
           Вы можете начать свою работу с боковой панели.
         </p>

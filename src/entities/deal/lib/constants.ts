@@ -44,4 +44,5 @@ export const UnionParams = [
   "contracts",
   "project",
   "retail",
+  "contract",
 ] as const;

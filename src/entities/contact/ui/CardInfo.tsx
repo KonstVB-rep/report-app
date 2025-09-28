@@ -2,6 +2,7 @@ import React from "react";
 
 import { BookUser, ContactRound, Mail, PhoneOutgoing } from "lucide-react";
 
+import ValueSpan from "@/feature/deals/ui/ValueSpan";
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { cn } from "@/shared/lib/utils";
 
@@ -19,13 +20,10 @@ const renderValue = (
   classNameData: string | undefined,
   data: string
 ) => {
-  const baseClasses =
-    "break-normal prop-deal-value w-fit min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-normal";
-
   const content = (
     <>
       {ICONS[type]}
-      <span className={baseClasses}>{data}</span>
+      <ValueSpan>{data}</ValueSpan>
     </>
   );
 
@@ -44,7 +42,7 @@ const renderValue = (
     return (
       <a
         href={`mailto:${data}`}
-        className={cn("whitespace-nowrap hover:underline", classNameData)}
+        className={cn("whitespace-nowrap hover:underline ", classNameData)}
       >
         {content}
       </a>

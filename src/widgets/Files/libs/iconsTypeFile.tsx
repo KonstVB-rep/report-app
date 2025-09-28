@@ -11,8 +11,8 @@ const ICONS_TYPE_FILE = {
       y="0"
       version="1.1"
       viewBox="0 0 56 56"
-      width={40}
-      height={40}
+      width={32}
+      height={32}
       {...props}
     >
       <path

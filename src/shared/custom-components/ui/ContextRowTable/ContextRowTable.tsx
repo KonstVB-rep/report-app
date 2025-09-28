@@ -4,6 +4,7 @@ import { PermissionEnum } from "@prisma/client";
 
 import { Fragment, memo, useState } from "react";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { FilePenLine, FileText, Trash2 } from "lucide-react";
@@ -16,11 +17,9 @@ import {
 } from "@/shared/components/ui/context-menu";
 import { Dialog } from "@/shared/components/ui/dialog";
 
-import dynamic from "next/dynamic";
-
 const ProtectedByPermissions = dynamic(
   () => import("../Protect/ProtectedByPermissions"),
-  { ssr: false}
+  { ssr: false }
 );
 
 type ContextMenuTableProps = {
@@ -59,6 +58,7 @@ const ContextRowTable = ({
                   prefetch={false}
                   className="flex w-full items-center justify-start gap-2 p-2"
                   href={path}
+                  scroll={false}
                 >
                   <FileText size="14" /> Подробнее
                 </Link>
@@ -66,7 +66,7 @@ const ContextRowTable = ({
             )}
 
             {hasEditDeleteActions && (
-               <>
+              <>
                 <ContextMenuItem
                   onClick={() => setOpenModal("edit")}
                   className="flex cursor-pointer gap-2"
@@ -84,7 +84,7 @@ const ContextRowTable = ({
                     <Trash2 size="14" /> Удалить
                   </ContextMenuItem>
                 </ProtectedByPermissions>
-               </>
+              </>
             )}
           </ContextMenuContent>
         </ContextMenu>

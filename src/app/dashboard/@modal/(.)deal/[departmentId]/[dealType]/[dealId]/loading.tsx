@@ -22,6 +22,7 @@ const Loading = () => {
             {largeBlock}
           </div>
         ))}
+
         {smallBlock}
 
         {smallBlock}

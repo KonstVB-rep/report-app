@@ -12,6 +12,7 @@ import {
 import { ArrowLeft } from "lucide-react";
 import z from "zod";
 
+import { UnionParams } from "@/entities/deal/lib/constants";
 import { parseFormattedNumber } from "@/entities/deal/lib/helpers";
 import { Contact } from "@/entities/deal/types";
 import ContactDeal from "@/feature/contact/ui/ContactDeal";
@@ -45,7 +46,6 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants";
 import AddManagerToDeal from "../Modals/AddManagerToDeal";
-import { UnionParams } from "@/entities/deal/lib/constants";
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>;

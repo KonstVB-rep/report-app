@@ -1,5 +1,6 @@
-import { ColumnDef, Table } from '@tanstack/react-table';
-import ExcelJS from 'exceljs';
+import { ColumnDef, Table } from "@tanstack/react-table";
+
+import ExcelJS from "exceljs";
 
 import {
   DeliveryProjectLabels,
@@ -8,31 +9,31 @@ import {
   DirectionRetailLabels,
   StatusProjectLabels,
   StatusRetailLabels,
-} from '@/feature/deals/lib/constants';
-import { formatterCurrency } from '@/shared/lib/utils';
+} from "@/feature/deals/lib/constants";
+import { formatterCurrency } from "@/shared/lib/utils";
 import {
   typeofDelivery,
   typeofDirections,
   typeofStatus,
-} from '@/widgets/deal/model/columns-data-project';
+} from "@/widgets/deal/model/columns-data-project";
 import {
   typeofDelivery as RetailDelivery,
   typeofDirections as RetailDirection,
   typeofStatus as RetailStatus,
-} from '@/widgets/deal/model/columns-data-retail';
+} from "@/widgets/deal/model/columns-data-retail";
 
-import { TOAST } from '../../../shared/custom-components/ui/Toast';
+import { TOAST } from "../../../shared/custom-components/ui/Toast";
 
-const colsDefaultValue = ['phone', 'nameDeal', 'nameObject', 'comments'];
+const colsDefaultValue = ["phone", "nameDeal", "nameObject", "comments"];
 
-type ProjectTableType = 'PROJECT';
+type ProjectTableType = "PROJECT";
 function isProjectType(type: string | undefined): type is ProjectTableType {
-  return !!type && ['PROJECT'].includes(type);
+  return !!type && ["PROJECT"].includes(type);
 }
 
-type RetailTableType = 'RETAIL';
+type RetailTableType = "RETAIL";
 function isRetailType(type: string | undefined): type is RetailTableType {
-  return !!type && ['RETAIL'].includes(type);
+  return !!type && ["RETAIL"].includes(type);
 }
 
 /** Сериал Excel-даты (число дней с 1899-12-30) */
@@ -40,9 +41,7 @@ function dateToExcelSerial(date: Date): number {
   const y = date.getFullYear();
   const m = date.getMonth();
   const d = date.getDate();
-  return (
-    Math.floor((Date.UTC(y, m, d) - Date.UTC(1899, 11, 30)) / 86400000)
-  );
+  return Math.floor((Date.UTC(y, m, d) - Date.UTC(1899, 11, 30)) / 86400000);
 }
 
 /** Преобразование значения для Excel */
@@ -51,51 +50,51 @@ function transformExcelValue(
   columnId?: string,
   tableType?: string
 ): string | number | boolean | Date {
-  if (value == null) return '';
+  if (value == null) return "";
 
   if (isProjectType(tableType)) {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (columnId && colsDefaultValue.includes(columnId)) {
         return value;
       }
       if (
-        columnId === 'direction' &&
+        columnId === "direction" &&
         DirectionProjectLabels[value as typeofDirections]
       ) {
         return DirectionProjectLabels[value as typeofDirections];
       }
       if (
-        columnId === 'deliveryType' &&
+        columnId === "deliveryType" &&
         DeliveryProjectLabels[value as typeofDelivery]
       ) {
         return DeliveryProjectLabels[value as typeofDelivery];
       }
       if (
-        columnId === 'dealStatus' &&
+        columnId === "dealStatus" &&
         StatusProjectLabels[value as typeofStatus]
       ) {
         return StatusProjectLabels[value as typeofStatus];
       }
     }
   } else if (isRetailType(tableType)) {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (columnId && colsDefaultValue.includes(columnId)) {
         return value;
       }
       if (
-        columnId === 'direction' &&
+        columnId === "direction" &&
         DirectionRetailLabels[value as RetailDirection]
       ) {
         return DirectionRetailLabels[value as RetailDirection];
       }
       if (
-        columnId === 'deliveryType' &&
+        columnId === "deliveryType" &&
         DeliveryRetailLabels[value as RetailDelivery]
       ) {
         return DeliveryRetailLabels[value as RetailDelivery];
       }
       if (
-        columnId === 'dealStatus' &&
+        columnId === "dealStatus" &&
         StatusRetailLabels[value as RetailStatus]
       ) {
         return StatusRetailLabels[value as RetailStatus];
@@ -103,20 +102,20 @@ function transformExcelValue(
     }
   } else {
     if (
-      typeof value === 'string' &&
+      typeof value === "string" &&
       columnId &&
       colsDefaultValue.includes(columnId)
     ) {
       return value;
     }
     if (
-      columnId === 'dealStatusR' &&
+      columnId === "dealStatusR" &&
       StatusRetailLabels[value as RetailStatus]
     ) {
       return StatusRetailLabels[value as RetailStatus];
     }
     if (
-      columnId === 'dealStatusP' &&
+      columnId === "dealStatusP" &&
       StatusProjectLabels[value as typeofStatus]
     ) {
       return StatusProjectLabels[value as typeofStatus];
@@ -124,7 +123,7 @@ function transformExcelValue(
   }
 
   // Дата-строка
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     const parsed = new Date(value);
     if (!isNaN(parsed.getTime())) {
       return dateToExcelSerial(parsed);
@@ -137,20 +136,20 @@ function transformExcelValue(
   }
 
   // Число
-  const numericValue = typeof value === 'string' ? parseFloat(value) : value;
-  if (typeof numericValue === 'number' && !isNaN(numericValue)) {
+  const numericValue = typeof value === "string" ? parseFloat(value) : value;
+  if (typeof numericValue === "number" && !isNaN(numericValue)) {
     return numericValue; // оставляем число, формат зададим при выводе
   }
 
-  if (typeof value === 'string' || typeof value === 'boolean') {
+  if (typeof value === "string" || typeof value === "boolean") {
     return value;
   }
   if (Array.isArray(value)) {
     return value
       .map((v) => transformExcelValue(v, columnId, tableType))
-      .join(', ');
+      .join(", ");
   }
-  if (typeof value === 'object') {
+  if (typeof value === "object") {
     return JSON.stringify(value);
   }
 
@@ -170,7 +169,7 @@ export const downloadToExcel = async <TData>(
   try {
     const {
       fileName = `export-${new Date().toISOString().slice(0, 10)}.xlsx`,
-      sheetName = 'Sheet1',
+      sheetName = "Sheet1",
       includeHeaders = true,
       tableType,
     } = options || {};
@@ -183,7 +182,7 @@ export const downloadToExcel = async <TData>(
       const isVisible =
         col.id === undefined ||
         table.getState().columnVisibility[col.id] !== false;
-      return col.id !== 'rowNumber' && isVisible;
+      return col.id !== "rowNumber" && isVisible;
     });
 
     // Заголовки
@@ -193,22 +192,22 @@ export const downloadToExcel = async <TData>(
 
       const headerRow = worksheet.getRow(1);
       headerRow.eachCell((cell) => {
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+        cell.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 12 };
         cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: '27272A' },
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "27272A" },
         };
         cell.alignment = {
-          vertical: 'middle',
-          horizontal: 'center',
+          vertical: "middle",
+          horizontal: "center",
           wrapText: true,
         };
         cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
         };
       });
 
@@ -222,7 +221,7 @@ export const downloadToExcel = async <TData>(
     const rows = table.getFilteredRowModel().rows;
     rows.forEach((row) => {
       const rowData = visibleColumns.map((col) => {
-        const colId = col.id ?? '';
+        const colId = col.id ?? "";
         const value = row.getValue(colId);
         return transformExcelValue(value, colId, tableType);
       });
@@ -238,31 +237,34 @@ export const downloadToExcel = async <TData>(
         const value = cell.value;
 
         if (columnId && colsDefaultValue.includes(columnId)) {
-          cell.numFmt = '@';
-          cell.alignment = { vertical: 'middle', horizontal: 'left' };
-        } else if (typeof value === 'number' && columnId?.toLowerCase().includes('date')) {
+          cell.numFmt = "@";
+          cell.alignment = { vertical: "middle", horizontal: "left" };
+        } else if (
+          typeof value === "number" &&
+          columnId?.toLowerCase().includes("date")
+        ) {
           // Это дата (serial number)
-          cell.numFmt = 'dd.mm.yyyy';
-          cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        } else if (typeof value === 'number') {
-          cell.numFmt = '#,##0.00';
-          cell.alignment = { vertical: 'middle', horizontal: 'right' };
+          cell.numFmt = "dd.mm.yyyy";
+          cell.alignment = { vertical: "middle", horizontal: "center" };
+        } else if (typeof value === "number") {
+          cell.numFmt = "#,##0.00";
+          cell.alignment = { vertical: "middle", horizontal: "right" };
         } else {
-          cell.alignment = { vertical: 'middle', horizontal: 'left' };
+          cell.alignment = { vertical: "middle", horizontal: "left" };
         }
 
         cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
         };
 
         if (rowNumber % 2 !== 0) {
           cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'D3D3D3' },
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "D3D3D3" },
           };
         }
       });
@@ -272,7 +274,7 @@ export const downloadToExcel = async <TData>(
       const isTextColumn = col.id && colsDefaultValue.includes(col.id);
       const isNumericColumn =
         col.id &&
-        ['amount', 'price', 'sum', 'total'].some((prefix) =>
+        ["amount", "price", "sum", "total"].some((prefix) =>
           col.id?.toLowerCase().includes(prefix)
         );
 
@@ -288,14 +290,14 @@ export const downloadToExcel = async <TData>(
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
+    const blob = new Blob([buffer], { type: "application/octet-stream" });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = fileName;
     link.click();
   } catch (error) {
-    console.error('Excel export failed:', error);
-    TOAST.ERROR('Не удалось сгенерировать файл Excel');
-    throw new Error('Не удалось сгенерировать файл Excel');
+    console.error("Excel export failed:", error);
+    TOAST.ERROR("Не удалось сгенерировать файл Excel");
+    throw new Error("Не удалось сгенерировать файл Excel");
   }
 };

@@ -126,6 +126,21 @@
   --table-even-row: hsl(240, 5%, 10%);
 }
 
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    scale: 0
+  }
+  to {
+    opacity: 1;
+    scale: 1
+  }
+}
+
+.animate-fadeInScale {
+  animation: fadeInScale 0.3s ease-in-out;
+}
+
 @keyframes appear {
   from {
     opacity: 0;
@@ -145,7 +160,7 @@
   }
 }
 .animate-appear {
-  animation: appear 1s ease-in-out;
+  animation: appear 0.3s ease-in-out;
 }
 
 @keyframes slide {
@@ -173,7 +188,7 @@
 }
 
 .animate-slide-appear {
-  animation: slideAppear 0.75s ease-in-out;
+  animation: slideAppear 0.5s ease-in-out;
 }
 
 *::-webkit-scrollbar {
@@ -194,6 +209,16 @@
   filter: brightness(0.2);
 }
 
+.dark .modal-content-route{
+background: -webkit-linear-gradient(0deg,#000000,#1a1919,#4c484a,#272626,#000000);
+background: linear-gradient(0deg,#000000,#1a1919,#4c484a,#272626,#000000);
+box-shadow: none;
+}
+.modal-content-route{
+background: -webkit-linear-gradient(90deg,#d1d1cc,#dcdddb,#d1d1cc); 
+background: linear-gradient(90deg,#d1d1cc,#dcdddb,#d1d1cc);
+box-shadow: inset 0 0 1000px 5px rgba(0, 47, 255, 0.267);
+}
 .not-found-page {
   background: url("../../public/404-light.jpg") no-repeat center center fixed;
 }
@@ -277,7 +302,7 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 
 .btn_blue:hover {
   border-color: var(--muted-foreground);
-  background-color: var(--sidebar-accent);
+  background-color:rgb(5, 27, 97);
 }
 
 .btn_blue:focus-visible {
@@ -462,8 +487,7 @@ td:has(.abs-element) {
   height: 2.5rem;
   width: 2.5rem;
   border-radius: 0.375rem;
-  border: 1px solid;
-  border-color: var(--foreground);
+  background: rgba(128, 128, 128, 0.26);
   padding: 0.5rem;
 }
 
@@ -474,7 +498,7 @@ td:has(.abs-element) {
 .prop-deal-value {
   border-radius: 0.375rem;
   border: 1px solid;
-  border-color: var(--foreground);
+  border-color: rgba(128, 128, 128, 0.479);
   display: flex;
   align-items: center;
 }

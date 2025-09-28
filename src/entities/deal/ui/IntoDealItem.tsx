@@ -21,10 +21,10 @@ const IntoDealItem = ({
       className
     )}
   >
-    <p className="break-all first-letter:capitalize bg-stone-100 dark:bg-black/40 p-4">
+    <p className="break-normal first-letter:capitalize bg-stone-100 dark:bg-black/40 px-4 py-2">
       {title}
     </p>
-    <div className="flex-1 p-3 grid gap-2">{children}</div>
+    <div className="flex-1 px-3 py-2 grid gap-2">{children}</div>
   </div>
 );
 

@@ -28,7 +28,6 @@ export const getTelegramChatBotInDb = async (
       },
     });
 
-
     if (!getUser || !getUser.telegramInfo[0]?.tgUserId) {
       return {
         ...bot,
@@ -53,7 +52,7 @@ export const getTelegramChatBotInDb = async (
         isActive: false,
         chatId: null,
         chatName: null,
-      };;
+      };
     }
 
     return {

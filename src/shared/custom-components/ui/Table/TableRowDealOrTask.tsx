@@ -13,7 +13,6 @@ import ContextRowTable from "../ContextRowTable/ContextRowTable";
 import { useTableContext } from "./context/TableContext";
 import RowInfoDialog from "./RowInfoDialog";
 import TableCellComponent from "./TableCellCompoment";
-import { getRowClassName } from "./TableComponentDT";
 
 type TableRowDealOrTaskProps<T extends Record<string, unknown>> = {
   row: Row<T>;
@@ -21,6 +20,21 @@ type TableRowDealOrTaskProps<T extends Record<string, unknown>> = {
   hasEditDeleteActions?: boolean;
   entityType: string;
   headers?: Header<T, unknown>[];
+};
+
+export const getRowClassName = (dealStatus?: string) => {
+  const baseClass = "tr hover:bg-zinc-600 hover:text-white relative";
+  if (!dealStatus) return baseClass;
+
+  return `${baseClass} ${
+    dealStatus === "CLOSED"
+      ? "bg-green-950/50 darK:bg-green-950/30 dark:opacity-60"
+      : dealStatus === "REJECT"
+        ? "bg-red-900/40 dark:bg-red-900/40 opacity-80 dark:opacity-60"
+        : dealStatus === "PAID"
+          ? "bg-green-100 dark:bg-lime-200/20"
+          : ""
+  }`;
 };
 
 const TableRowDealOrTask = <T extends Record<string, unknown>>({

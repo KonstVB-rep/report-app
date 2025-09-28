@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 
 import z from "zod";
 
-import { TableTypesWithContracts } from "@/entities/deal/lib/constants";
+import { UnionParams } from "@/entities/deal/lib/constants";
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
 import {
   ContractResponse,
@@ -54,13 +54,13 @@ const Columns = (
     case "contracts":
       return columnsDataContract;
     default:
-      throw new Error(`Unknown table type: ${type}`);
+      return [];
   }
 };
 
 const pageParamsSchema = z.object({
   userId: z.string(),
-  dealType: z.enum(TableTypesWithContracts),
+  dealType: z.enum(UnionParams),
 });
 
 const PersonDealsTable = () => {
@@ -72,7 +72,7 @@ const PersonDealsTable = () => {
   );
 
   const { data = [] } = useDealsUser(
-    dealType,
+    dealType as TableType,
     hasAccess ? (userId as string) : undefined
   );
 

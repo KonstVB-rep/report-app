@@ -4,15 +4,9 @@ import { ColumnDef, Row } from "@tanstack/react-table";
 import React from "react";
 import { useCallback } from "react";
 
-import { useParams } from "next/navigation";
-
 import z from "zod";
 
-import {
-  DealTypesArray,
-  TableTypes,
-  TableTypesWithContracts,
-} from "@/entities/deal/lib/constants";
+import { UnionParams } from "@/entities/deal/lib/constants";
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts";
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal";
 import DelDealContextMenu from "@/feature/deals/ui/Modals/DelDealContextMenu";
@@ -32,7 +26,7 @@ interface DealsTableProps<T extends TypeBaseDT> {
 }
 
 const pageParamsSchema = z.object({
-  dealType: z.enum(TableTypesWithContracts),
+  dealType: z.enum(UnionParams),
 });
 
 const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {

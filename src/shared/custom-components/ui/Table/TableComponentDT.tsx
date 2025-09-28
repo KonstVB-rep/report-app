@@ -17,21 +17,6 @@ interface TableComponentDTProps<T extends Record<string, unknown>> {
   openFilters: boolean;
 }
 
-export const getRowClassName = (dealStatus?: string) => {
-  const baseClass = "tr hover:bg-zinc-600 hover:text-white relative";
-  if (!dealStatus) return baseClass;
-
-  return `${baseClass} ${
-    dealStatus === "CLOSED"
-      ? "bg-green-950/30 opacity-60"
-      : dealStatus === "REJECT"
-        ? "bg-red-900/40 opacity-60"
-        : dealStatus === "PAID"
-          ? "bg-lime-200/20"
-          : ""
-  }`;
-};
-
 const TableComponentDT = <T extends Record<string, unknown>>({
   table,
   hasEditDeleteActions = true,

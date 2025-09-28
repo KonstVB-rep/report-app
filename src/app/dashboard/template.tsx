@@ -39,7 +39,7 @@ const TemplateDashboard = ({ children }: PropsWithChildren) => {
       <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] max-h-[calc(100svh-var(--header-height)-2px)] flex-1">
         <AppSidebar />
         <SidebarInset className="h-auto min-h-min" key={pathname}>
-          <PageTransitionY className="flex-1">{children}</PageTransitionY>
+          <div className="flex-1">{children}</div>
         </SidebarInset>
       </div>
     </>

@@ -15,16 +15,12 @@ import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Prot
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-import { formatterCurrency } from "@/shared/lib/utils";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetProjectById } from "../api/hooks/query";
-import {
-  DealTypeLabels,
-  DeliveryProjectLabels,
-  DirectionProjectLabels,
-  StatusProjectLabels,
-} from "../lib/constants";
+import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData";
+import FinanceInfo from "./FinanceInfo";
+import ValueSpan from "./ValueSpan";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -62,39 +58,20 @@ const ProjectItemInfo = () => {
 
   const { data: deal, isLoading } = useGetProjectById(dealId, false);
 
-  const statusLabel =
-    StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] ||
-    "Нет данных";
-  const directionLabel =
-    DirectionProjectLabels[
-      deal?.direction as keyof typeof DirectionProjectLabels
-    ] || "Нет данных";
-  const deliveryLabel =
-    DeliveryProjectLabels[
-      deal?.deliveryType as keyof typeof DeliveryProjectLabels
-    ] || "Нет данных";
-  const typeLabel =
-    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
+  const {
+    dataFinance,
+    formattedDate,
+    statusLabel,
+    directionLabel,
+    deliveryLabel,
+    typeLabel,
+  } = useNormalizeProjectData(deal);
 
   if (isLoading) return <Loading />;
   if (!deal) return <NotFoundDeal />;
 
-  const formattedDate = deal.createdAt?.toLocaleDateString() || "Нет данных";
-  const formattedDelta = deal.delta
-    ? formatterCurrency.format(parseFloat(deal.delta))
-    : "Нет данных";
-  const formattedCP = deal.amountCP
-    ? formatterCurrency.format(parseFloat(deal.amountCP))
-    : "Нет данных";
-  const formattedPurchase = deal.amountPurchase
-    ? formatterCurrency.format(parseFloat(deal.amountPurchase))
-    : "Нет данных";
-  const formattedWork = deal.amountWork
-    ? formatterCurrency.format(parseFloat(deal.amountWork))
-    : "Нет данных";
-
   return (
-    <MotionDivY className="grid gap-2 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
+    <MotionDivY className="grid gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
@@ -120,7 +97,7 @@ const ProjectItemInfo = () => {
       <Separator />
 
       <div className="grid gap-2">
-        <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
+        <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[1fr_2fr]">
           <div className="grid-rows-auto grid gap-2">
             <div className="grid min-w-64 gap-4">
               <IntoDealItem title="Объект">
@@ -131,13 +108,11 @@ const ProjectItemInfo = () => {
                       strokeWidth={1}
                       className="icon-deal_info"
                     />
-                    <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
-                      {deal.nameObject}
-                    </p>
+                    <ValueSpan>{deal.nameObject}</ValueSpan>
                   </div>
 
                   <div className="first-letter:capitalize">
-                    <div className="flex flex-col items-start gap-2 justify-start">
+                    <div className="flex flex-col gap-2 justify-start">
                       <p className="flex items-center justify-start gap-4">
                         <Info
                           size="40"
@@ -145,9 +120,7 @@ const ProjectItemInfo = () => {
                           className="icon-deal_info"
                         />
                         <TooltipComponent content="Статус сделки">
-                          <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
-                            {statusLabel}
-                          </span>
+                          <ValueSpan>{statusLabel}</ValueSpan>
                         </TooltipComponent>
                       </p>
                     </div>
@@ -178,11 +151,13 @@ const ProjectItemInfo = () => {
                   value={deal.nameDeal}
                   direction="column"
                 />
+
                 <RowInfoDealProp
                   label="Тип сделки:"
                   value={typeLabel}
                   direction="column"
                 />
+
                 <RowInfoDealProp
                   label="Дата запроса:"
                   value={deal.dateRequest?.toLocaleDateString()}
@@ -192,17 +167,12 @@ const ProjectItemInfo = () => {
 
               <IntoDealItem title="Детали" className="flex-item-contact">
                 <RowInfoDealProp label="Направление:" value={directionLabel} />
-                <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
-              </IntoDealItem>
 
-              <IntoDealItem title="Финансы" className="flex-item-contact">
-                <RowInfoDealProp label="Дельта:" value={formattedDelta} />
-                <RowInfoDealProp label="Сумма КП:" value={formattedCP} />
-                <RowInfoDealProp
-                  label="Сумма закупки:"
-                  value={formattedPurchase}
-                />
-                <RowInfoDealProp label="Сумма работ:" value={formattedWork} />
+                <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
+
+                <hr className="w-full h-[1px] rounded-lg bg-gray-500" />
+
+                <FinanceInfo data={dataFinance} />
               </IntoDealItem>
             </div>
 
@@ -219,9 +189,9 @@ const ProjectItemInfo = () => {
         </div>
 
         <IntoDealItem title="Комментарии">
-          <p className="first-letter:capitalize">
+          <ValueSpan className="first-letter:capitalize">
             {deal.comments || "Нет данных"}
-          </p>
+          </ValueSpan>
         </IntoDealItem>
       </div>
 

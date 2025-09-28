@@ -22,7 +22,10 @@ const ResourceRow = memo(({ item, color, status }: ResourceRowProps) => (
       className="relative py-1 px-2 bg-muted sm:bg-transparent border border-solid rounded w-full sm:min-w-max overflow-hidden"
       style={{ borderColor: color }}
     >
-      <span className="block absolute top-0 left-0 w-2 h-full opacity-50 rounded" style={{ width: `${item.value * 2}px`, backgroundColor: color }}></span>
+      <span
+        className="block absolute top-0 left-0 w-2 h-full opacity-50 rounded"
+        style={{ width: `${item.value * 2}px`, backgroundColor: color }}
+      ></span>
       {item.name}
     </span>
     <div className="flex sm:hidden gap-2 items-center">

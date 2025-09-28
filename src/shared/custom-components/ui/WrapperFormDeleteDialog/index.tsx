@@ -30,7 +30,7 @@ const WrapperFormDeleteDialog = ({
         <Button
           size={!isTextButton ? "icon" : "default"}
           variant={"destructive"}
-          className="bg-red-500"
+          className="bg-red-500 text-white"
         >
           {isTextButton && <span>Удалить </span>} <Trash2 />
         </Button>

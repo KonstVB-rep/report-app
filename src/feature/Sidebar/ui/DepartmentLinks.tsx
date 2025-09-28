@@ -3,6 +3,7 @@ import { Separator } from "@radix-ui/react-separator";
 
 import { Fragment, memo, useMemo } from "react";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { BookText, ChartColumnBig, TableProperties } from "lucide-react";
@@ -16,18 +17,25 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/shared/components/ui/accordion";
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
+
 // import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 
 import MarketActiveItemSidebar from "./MarketActiveItemSidebar";
-import dynamic from "next/dynamic";
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
+
 // LoaderCircle
 const ProtectedByPermissions = dynamic(
   () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
-  { ssr: false,
-    loading: () => <LoaderCircle className="h-10 bg-muted rounded-md w-full" classSpin="h-6 w-6"/>
-   }
-)
+  {
+    ssr: false,
+    loading: () => (
+      <LoaderCircle
+        className="h-10 bg-muted rounded-md w-full"
+        classSpin="h-6 w-6"
+      />
+    ),
+  }
+);
 
 type DealsType = {
   id: string;

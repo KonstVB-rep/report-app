@@ -17,7 +17,11 @@ const useChatBot = (botName: string) => {
   const { mutate: updateStatusChatBot } = useToggleSudscribeChatBot();
   const isActiveBot = bot ? bot.isActive : false;
 
-  const openTelegramLink = (botName: string, userId: string, chatName?: string) => {
+  const openTelegramLink = (
+    botName: string,
+    userId: string,
+    chatName?: string
+  ) => {
     const startCommand = `${userId}-${botName}-${chatName ?? "default"}`;
     const encodedCommand = btoa(startCommand)
       .replace(/\+/g, "-")
@@ -40,7 +44,7 @@ const useChatBot = (botName: string) => {
       }
 
       // Если чат есть и бот ещё не активен — подписываем на уведомления
-      if ((!isActiveBot && bot.id && bot.chatId)) {
+      if (!isActiveBot && bot.id && bot.chatId) {
         updateStatusChatBot({
           botId: bot.id,
           chatId: String(bot.chatId),

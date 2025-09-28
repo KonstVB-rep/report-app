@@ -21,11 +21,8 @@ const ProtectedByPermissions = memo(
       let mounted = true;
       if (!permission) return;
 
-      checkPermission(permission)
-      .then((result) => {
-
-
-        setHasAccess(result)
+      checkPermission(permission).then((result) => {
+        setHasAccess(result);
       });
 
       return () => {

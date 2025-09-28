@@ -8,30 +8,28 @@ import clsx from "clsx";
 import { ChevronRight } from "lucide-react";
 import z from "zod";
 
+import { UnionParams } from "@/entities/deal/lib/constants";
 import {
-    UnionParams
-} from "@/entities/deal/lib/constants";
-import {
-    DepartmentLabels,
-    DepartmentListItemType,
-    DepartmentsUnionIds
+  DepartmentLabels,
+  DepartmentListItemType,
+  DepartmentsUnionIds,
 } from "@/entities/department/types";
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 } from "@/shared/components/ui/accordion";
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "@/shared/components/ui/collapsible";
 import {
-    SidebarMenuAction,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuSub,
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
 } from "@/shared/components/ui/sidebar";
 import { useTypedParams } from "@/shared/hooks/useTypedParams";
 

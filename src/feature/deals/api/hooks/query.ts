@@ -357,6 +357,9 @@ export const useDealsUser = (type: TableType, userId?: string) => {
     projects: useGetProjectsUser,
     retails: useGetRetailsUser,
     contracts: useGetContractsUser,
+    project: useGetProjectsUser,
+    retail: useGetRetailsUser,
+    contract: useGetContractsUser,
   };
 
   if (!(type in fetchers)) {

@@ -5,7 +5,7 @@ import { PermissionEnum } from "@prisma/client";
 import { useMemo, useState } from "react";
 
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import { Redo2 } from "lucide-react";
 import z from "zod";
@@ -16,7 +16,7 @@ import Overlay from "@/shared/custom-components/ui/Overlay";
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
 import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
-import { TableTypes, TableTypesWithContracts } from "../lib/constants";
+import { UnionParams } from "../lib/constants";
 import { DealsUnionType } from "../types";
 
 const linksPersonTable = (deptId: string | number) => ({
@@ -46,7 +46,7 @@ const pageParamsSchema = z.object({
   departmentId: z.string().transform((value) => {
     return value as keyof typeof DepartmentLabelsById;
   }),
-  dealType: z.enum(TableTypesWithContracts),
+  dealType: z.enum(UnionParams),
 });
 
 const LinkToUserTable = () => {

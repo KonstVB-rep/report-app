@@ -78,30 +78,34 @@ const FileItem = ({
   };
 
   const transitions = useTransition(file, {
-    keys: (file) => file.name, // Идентификатор для каждого файла
+    keys: (file) => file.name,
     from: { opacity: 0, transform: "translateY(20px)" },
     enter: { opacity: 1, transform: "translateY(0)" },
     leave: { opacity: 0, transform: "translateY(-20px)" },
-    config: { duration: 200, easing: (t) => 1 - Math.pow(1 - t, 3) }, // Эквивалент "easeInOut"
+    config: { duration: 200, easing: (t) => 1 - Math.pow(1 - t, 3) },
   });
 
   return transitions((styles, item) => (
     <animated.div
-      style={styles} // Применяем стили анимации
+      style={styles}
       key={item.name}
-      className="group relative grid w-20 h-full min-w-20 max-w-20 flex-1 gap-1 rounded-md border border-solid p-4 hover:border-blue-700 focus-visible:border-blue-700"
+      className="group relative grid w-14 h-full min-w-14 max-w-14 flex-1 gap-1 rounded-md border border-solid p-2 hover:border-blue-700 focus-visible:border-blue-700"
     >
       <p className="flex items-center justify-center group-hover:scale-0 group-focus-visible:scale-0">
         {fileTypeIcons[fileType]}
       </p>
+
       <p className="truncate text-xs">{fileName}</p>
+
       <div className="absolute inset-0 -z-1 h-full w-full rounded-md bg-black/80 group-hover:z-1 group-focus-visible:z-2" />
+
       <DownLoadOrCheckFile
         className="absolute inset-0 z-10 h-full w-full items-center justify-center"
         fileName={fileName}
         handleDownloadFile={handleDownloadFile}
         isPending={isPending}
       />
+
       {!isPending && (
         <input
           type="checkbox"
@@ -149,7 +153,6 @@ const FileList = ({ data }: FileListProps) => {
     config: { duration: 200 },
   });
 
-  // Анимация для ошибки
   const errorTransition = useTransition(isError, {
     from: { opacity: 0, transform: "translateY(20px)" },
     enter: { opacity: 1, transform: "translateY(0)" },
@@ -157,9 +160,8 @@ const FileList = ({ data }: FileListProps) => {
     config: { duration: 200 },
   });
 
-  // Анимация для файлов
   const filesTransition = useTransition(files || [], {
-    keys: (file) => file?.id ?? file?.name ?? "", // Используем уникальные ключи
+    keys: (file) => file?.id ?? file?.name ?? "",
     from: { opacity: 0, transform: "translateY(20px)" },
     enter: { opacity: 1, transform: "translateY(0)" },
     leave: { opacity: 0, transform: "translateY(-20px)" },
@@ -185,6 +187,7 @@ const FileList = ({ data }: FileListProps) => {
             className="flex items-center justify-center gap-2 p-2 text-red-600"
           >
             <FileWarning size="40" strokeWidth={1} className="text-red-600" />
+
             <span className="text-lg">Ошибка загрузки файлов</span>
           </animated.div>
         ) : null

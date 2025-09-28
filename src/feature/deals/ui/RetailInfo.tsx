@@ -14,21 +14,12 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-import { formatterCurrency } from "@/shared/lib/utils";
-import {
-  typeofDelivery,
-  typeofDirections,
-  typeofStatus,
-} from "@/widgets/deal/model/columns-data-retail";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetRetailById } from "../api/hooks/query";
-import {
-  DealTypeLabels,
-  DeliveryRetailLabels,
-  DirectionRetailLabels,
-  StatusRetailLabels,
-} from "../lib/constants";
+import useNormalizeRetailData from "../lib/hooks/useNormalizeRetailData";
+import FinanceInfo from "./FinanceInfo";
+import ValueSpan from "./ValueSpan";
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
@@ -70,29 +61,7 @@ const RetailItemInfo = () => {
   const { dealId } = useTypedParams(pageParamsSchema);
   const { data: deal, isLoading } = useGetRetailById(dealId, false);
 
-  const statusLabel =
-    StatusRetailLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
-  const directionLabel =
-    DirectionRetailLabels[deal?.direction as typeofDirections] || "Нет данных";
-  const deliveryLabel =
-    DeliveryRetailLabels[deal?.deliveryType as typeofDelivery] || "Нет данных";
-  const typeLabel =
-    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
-
-  const dealInfo = {
-    nameDeal: deal?.nameDeal,
-    nameObject: deal?.nameObject,
-    status: statusLabel,
-    dealType: typeLabel,
-    dateRequest: deal?.dateRequest?.toLocaleDateString(),
-    direction: directionLabel,
-    deliveryType: deliveryLabel,
-    delta: deal?.delta ? formatterCurrency.format(+deal.delta) : "0,00",
-    amountCP: deal?.amountCP
-      ? formatterCurrency.format(+deal.amountCP)
-      : "0,00",
-    comments: deal?.comments || "Нет данных",
-  };
+  const { dealInfo, dataFinance } = useNormalizeRetailData(deal);
 
   if (isLoading) {
     return <Loading />;
@@ -129,7 +98,7 @@ const RetailItemInfo = () => {
 
       <Separator />
 
-      <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
+      <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[1fr_2fr]">
         <div className="grid-rows-auto grid gap-2">
           <div className="grid min-w-64 gap-4">
             <IntoDealItem title={"Объект"}>
@@ -139,12 +108,10 @@ const RetailItemInfo = () => {
                   strokeWidth={1}
                   className="icon-deal_info"
                 />
-                <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
-                  {dealInfo.nameObject}
-                </p>
+                <ValueSpan>{dealInfo.nameObject}</ValueSpan>
               </div>
               <div className="first-letter:capitalize">
-                <div className="flex flex-col items-start gap-2 justify-start">
+                <div className="flex flex-col  gap-2 justify-start">
                   <p className="flex items-center justify-start gap-4">
                     <Info
                       size="40"
@@ -152,9 +119,7 @@ const RetailItemInfo = () => {
                       className="icon-deal_info"
                     />
                     <TooltipComponent content="Статус сделки">
-                      <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black">
-                        {dealInfo.status}
-                      </span>
+                      <ValueSpan>{dealInfo.status}</ValueSpan>
                     </TooltipComponent>
                   </p>
                 </div>
@@ -184,11 +149,13 @@ const RetailItemInfo = () => {
                 value={dealInfo?.nameDeal}
                 direction="column"
               />
+
               <RowInfoDealProp
                 label="Тип сделки:"
                 value={dealInfo.dealType}
                 direction="column"
               />
+
               <RowInfoDealProp
                 label="Дата запроса:"
                 value={dealInfo.dateRequest}
@@ -202,24 +169,16 @@ const RetailItemInfo = () => {
                 value={dealInfo.direction}
                 direction="column"
               />
+
               <RowInfoDealProp
                 label="Тип поставки:"
                 value={dealInfo.deliveryType}
                 direction="column"
               />
-            </IntoDealItem>
 
-            <IntoDealItem title={"Финансы"} className="flex-item-contact">
-              <RowInfoDealProp
-                label="Дельта:"
-                value={dealInfo.delta}
-                direction="column"
-              />
-              <RowInfoDealProp
-                label="Сумма КП:"
-                value={dealInfo.amountCP}
-                direction="column"
-              />
+              <hr className="w-full h-[1px] rounded-lg bg-gray-500" />
+
+              <FinanceInfo data={dataFinance} />
             </IntoDealItem>
           </div>
 
@@ -236,7 +195,9 @@ const RetailItemInfo = () => {
       </div>
 
       <IntoDealItem title={"Комментарии"}>
-        <p className="first-letter:capitalize">{dealInfo.comments}</p>
+        <ValueSpan className="first-letter:capitalize">
+          {dealInfo.comments}
+        </ValueSpan>
       </IntoDealItem>
 
       <FileList

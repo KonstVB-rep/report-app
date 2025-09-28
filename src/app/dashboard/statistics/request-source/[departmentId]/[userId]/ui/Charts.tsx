@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@/shared/components/ui/popover";
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage";
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import useAnimateOnDataChange from "@/shared/hooks/useAnimateOnDataChange";
 import useCurrentTheme from "@/shared/hooks/useCurrentTheme";
@@ -34,7 +35,6 @@ import EmptyData from "./EmptyData";
 import Graph from "./Graph";
 import MobileCharts from "./MobileCharts";
 import ResourceRow from "./ResourceRow";
-import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage";
 
 type StatusGroup = "inWork" | "positive" | "negative";
 
@@ -139,34 +139,34 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         title="Статистика заявок"
         subTitle={`Количество заявок: ${totalDealsCount}`}
         infoText="Статистика заявок по источникам"
-        />
+      />
       <div className="flex gap-2 items-start justify-between">
         <div className="hidden gap-2 flex-wrap sm:flex">
-            <Button
-              variant="outline"
-              onClick={(e) => handleClick(e, getPeriodRange("week"))}
-              className={`btn-active ${dateRangeState === "week" && "border-2 border-primary"}`}
-              id="week"
-            >
-              Неделя
-            </Button>
-            <Button
-              variant="outline"
-              onClick={(e) => handleClick(e, getPeriodRange("month"))}
-              className={`btn-active ${dateRangeState === "month" && "border-2 border-primary"}`}
-              id="month"
-            >
-              Месяц
-            </Button>
-            <Button
-              variant="outline"
-              onClick={(e) => handleClick(e, getPeriodRange("year"))}
-              className={`btn-active ${dateRangeState === "year" && "border-2 border-primary"}`}
-              id="year"
-            >
-              Год
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            onClick={(e) => handleClick(e, getPeriodRange("week"))}
+            className={`btn-active ${dateRangeState === "week" && "border-2 border-primary"}`}
+            id="week"
+          >
+            Неделя
+          </Button>
+          <Button
+            variant="outline"
+            onClick={(e) => handleClick(e, getPeriodRange("month"))}
+            className={`btn-active ${dateRangeState === "month" && "border-2 border-primary"}`}
+            id="month"
+          >
+            Месяц
+          </Button>
+          <Button
+            variant="outline"
+            onClick={(e) => handleClick(e, getPeriodRange("year"))}
+            className={`btn-active ${dateRangeState === "year" && "border-2 border-primary"}`}
+            id="year"
+          >
+            Год
+          </Button>
+        </div>
         <div className="gap-2 hidden sm:flex">
           <Button
             id="circle"
@@ -190,14 +190,16 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       </div>
       <div className="flex gap-2 justify-between items-center flex-wrap">
         <div>
-            <p className="p-2 border rounded-md w-fit">
-              За период: {dataCountByDate}
-            </p>
-          </div>
+          <p className="p-2 border rounded-md w-fit">
+            За период: {dataCountByDate}
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="block sm:hidden">Период</Button>
+              <Button variant="outline" className="block sm:hidden">
+                Период
+              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-fit p-2">
               <div className="grid gap-2 flex-wrap">
@@ -231,7 +233,6 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         </div>
 
         <div className="flex gap-2 flex-wrap w-full xs:w-auto">
-        
           <DateRangePicker
             value={selectedDate}
             onValueChange={setSelectedDate}
@@ -243,8 +244,10 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
               onClick={() => setSelectedDate(undefined)}
               className="flex-1"
             >
-              <X className="hidden xs:block"/>
-              <span className="p-2 flex items-center justify-center xs:hidden">Сбросить даты</span>
+              <X className="hidden xs:block" />
+              <span className="p-2 flex items-center justify-center xs:hidden">
+                Сбросить даты
+              </span>
             </Button>
           )}
         </div>

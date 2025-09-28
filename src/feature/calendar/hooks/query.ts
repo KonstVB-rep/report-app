@@ -81,14 +81,16 @@ export const useGetInfoChat = (botName: string) => {
 
         const botInDb = await getTelegramChatBotInDb(botName, authUser.id);
 
-        return botInDb || {
-          id: null,
-          botName,
-          isActive: false,
-          chatId: "",
-          chatName: "",
-          description: "",
-        };
+        return (
+          botInDb || {
+            id: null,
+            botName,
+            isActive: false,
+            chatId: "",
+            chatName: "",
+            description: "",
+          }
+        );
       } catch (error) {
         console.error("Error in useGetInfoChat:", error);
         return {
