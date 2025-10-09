@@ -161,6 +161,7 @@ const FilterTasks = ({
         onDateChange={handleDateChange("dueDate")}
         onClearDateFilter={handleClearDateFilter}
         value={value}
+        label="Дата"
       />
     </>
   );

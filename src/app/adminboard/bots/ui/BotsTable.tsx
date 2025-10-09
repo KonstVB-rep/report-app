@@ -99,8 +99,6 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
   const { rows } = table.getRowModel();
   const headers = table.getHeaderGroups()[0].headers;
 
-  console.log(rows);
-
   return (
     <TableTemplate table={table} className="rounded-md">
       {rows.map((row) => (
@@ -111,32 +109,35 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
             display: "flex",
           }}
         >
-          {row.getVisibleCells().map((cell, index) => (
-            <TableCellComponent<BotWithChats>
-              key={cell.id}
-              styles={{
-                width: headers?.[index]?.getSize(),
-                minWidth: headers?.[index]?.column.columnDef.minSize,
-                maxWidth: headers?.[index]?.column.columnDef.maxSize,
-              }}
-              cell={cell}
-              handleOpenInfo={(id) =>
-                setOpenFullInfoCell(openFullInfoCell === id ? null : id)
-              }
-            >
-              {openFullInfoCell === cell.id && (
-                <RowInfoDialog
-                  isActive
-                  text={flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                  isTargetCell={true}
-                  closeFn={() => setOpenFullInfoCell(null)}
-                />
-              )}
-            </TableCellComponent>
-          ))}
+          {row.getVisibleCells().map((cell, index) => {
+            return (
+              <TableCellComponent<BotWithChats>
+                key={cell.id}
+                styles={{
+                  width: headers?.[index]?.getSize(),
+                  minWidth: headers?.[index]?.column.columnDef.minSize,
+                  maxWidth: headers?.[index]?.column.columnDef.maxSize,
+                }}
+                cell={cell}
+                handleOpenInfo={(id) =>
+                  setOpenFullInfoCell(openFullInfoCell === id ? null : id)
+                }
+              >
+                {openFullInfoCell === cell.id &&
+                cell.column.id !== "actions" ? (
+                  <RowInfoDialog
+                    isActive
+                    text={flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                    isTargetCell={true}
+                    closeFn={() => setOpenFullInfoCell(null)}
+                  />
+                ) : null}
+              </TableCellComponent>
+            );
+          })}
         </TableRow>
       ))}
     </TableTemplate>

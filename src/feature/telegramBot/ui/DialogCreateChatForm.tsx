@@ -15,7 +15,7 @@ const DialogCreateChatForm = ({
 }) => {
   return (
     <DialogComponent
-      classNameContent="w-fit"
+      classNameContent="w-fit p-6 md:p-6"
       trigger={
         <Button
           variant="outline"

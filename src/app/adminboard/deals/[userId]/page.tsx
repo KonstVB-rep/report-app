@@ -69,7 +69,7 @@ const AllDealsPage = () => {
           openFilters={openFilters}
         />
       </DataTableFiltersProvider>
-      <DealsDrawer table={table} />
+      {<DealsDrawer table={table} />}
     </section>
   );
 };

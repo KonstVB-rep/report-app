@@ -1,5 +1,6 @@
 "use client";
 
+import { StatusRetail } from "@prisma/client";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { DateRange } from "react-day-picker";
@@ -80,6 +81,34 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       }
     },
     enableHiding: true,
+    filterFn: (row, columnId, filterValue) => {
+      if (row.original.dealStatus === StatusRetail.REJECT) return false;
+
+      const date = row.getValue(columnId) as Date;
+      const dateAtStartOfDay = startOfDay(date);
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange;
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to);
+          return (
+            dateAtStartOfDay >= startOfDay(from) &&
+            dateAtStartOfDay <= toAtEndOfDay
+          );
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from);
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to);
+        }
+        return false;
+      }
+
+      return true;
+    },
     accessorFn: (row: RetailResponse) => row.plannedDateConnection,
   },
   {

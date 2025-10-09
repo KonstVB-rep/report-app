@@ -40,6 +40,7 @@ const Filters = ({ table }: { table: Table<DealBase> }) => {
           onDateChange={handleDateChange("dateRequest")}
           onClearDateFilter={handleClearDateFilter}
           value={value}
+          label="Дата заявки"
         />
 
         <SelectColumns data={table as Table<DealBase>} />

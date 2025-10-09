@@ -67,6 +67,11 @@ async function getResourceInfo(resourcePath: string) {
   }
 }
 
+// function getPreviewUrl(fileData, sizeName = 'M') {
+//   const size = fileData.sizes.find(s => s.name === sizeName);
+//   return size ? size.url : fileData.preview;
+// }
+
 /**
  * Загрузка файла на Яндекс.Диск
  */

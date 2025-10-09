@@ -1,3 +1,5 @@
+import { StatusProject, StatusRetail } from "@prisma/client";
+
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
 
@@ -43,7 +45,12 @@ const useSendDealInfo = <T extends FieldValues>(
       userId: firstManager,
       contacts: selectedContacts,
       managersIds: managers,
+      plannedDateConnection:
+        data.dealStatus === (StatusProject.REJECT || StatusRetail.REJECT)
+          ? data.plannedDateConnection
+          : null,
     };
+    console.log(fullData, "fullData");
     onSubmit(fullData);
   };
 

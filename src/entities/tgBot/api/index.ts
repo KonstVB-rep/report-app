@@ -362,8 +362,6 @@ export const deleteChat = async (data: { botName: string; chatId: string }) => {
 
     const { botName, chatId } = data;
 
-    console.log(botName, chatId, "deleteChat");
-
     const bot = await prisma.telegramBot.findUnique({
       where: { botName },
     });

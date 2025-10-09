@@ -145,13 +145,15 @@ export const useMutationUpdateProject = (
     mutationFn: (data: ProjectSchema) => {
       const formData = {
         ...data,
-        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dateRequest: data.dateRequest
+          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          : new Date(),
         email: data.email || "",
         phone: data.phone || "",
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
+          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
           : null,
         direction: data.direction as DirectionProject,
         amountCP: data.amountCP
@@ -231,13 +233,15 @@ export const useMutationUpdateRetail = (
     ): Promise<RetailWithoutDateCreateAndUpdate | null | undefined> => {
       const formData = {
         ...data,
-        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dateRequest: data.dateRequest
+          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          : new Date(),
         email: data.email || "",
         phone: data.phone || "",
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
+          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
           : null,
         direction: data.direction as DirectionRetail,
         amountCP: data.amountCP
@@ -286,7 +290,7 @@ export const useMutationUpdateRetail = (
         ...new Set([...prevManagers, ...currManagers, userId]),
       ];
       allManagers.forEach((id) => {
-        queryClient.invalidateQueries({ queryKey: ["retails", id] }); // ✅ Условная инвалидация
+        queryClient.invalidateQueries({ queryKey: ["retails", id] });
       });
     },
   });
@@ -306,10 +310,12 @@ export const useCreateProject = (
           data.deliveryType === ""
             ? null
             : (data.deliveryType as DeliveryProject),
-        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dateRequest: data.dateRequest
+          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          : new Date(),
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
+          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
           : null,
         direction: data.direction as DirectionProject,
         amountCP: data.amountCP
@@ -382,10 +388,12 @@ export const useCreateRetail = (
           data.deliveryType === ""
             ? null
             : (data.deliveryType as DeliveryRetail),
-        dateRequest: data.dateRequest ? new Date(data.dateRequest) : new Date(),
+        dateRequest: data.dateRequest
+          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          : new Date(),
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(data.plannedDateConnection)
+          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
           : null,
         direction: data.direction as DirectionRetail,
         amountCP: data.amountCP

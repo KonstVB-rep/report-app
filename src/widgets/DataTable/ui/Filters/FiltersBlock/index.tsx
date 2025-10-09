@@ -36,9 +36,17 @@ const FiltersBlock = ({ table }: FiltersBlockProps) => {
 
   const { columnFilters } = table.getState();
 
-  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
-    | DateRange
-    | undefined;
+  const valueDateRequest = columnFilters.find((f) => f.id === "dateRequest")
+    ?.value as DateRange | undefined;
+
+  const valuePlannedDateConnection = columnFilters.find(
+    (f) => f.id === "plannedDateConnection"
+  )?.value as DateRange | undefined;
+
+  const value = {
+    dateRequest: valueDateRequest,
+    plannedDateConnection: valuePlannedDateConnection,
+  };
 
   const hasTable = pathname.includes(
     `/summary-table/${authUser?.departmentId}/${dealType}/${authUser?.id}`
@@ -55,7 +63,15 @@ const FiltersBlock = ({ table }: FiltersBlockProps) => {
           <DateRangeFilter
             onDateChange={handleDateChange("dateRequest")}
             onClearDateFilter={handleClearDateFilter}
-            value={value}
+            value={value.dateRequest}
+            label="Дата заявки"
+          />
+          <DateRangeFilter
+            onDateChange={handleDateChange("plannedDateConnection")}
+            onClearDateFilter={handleClearDateFilter}
+            value={value.plannedDateConnection}
+            columnId="plannedDateConnection"
+            label="Дата контакта"
           />
         </div>
         <div className="flex flex-wrap items-center justify-start gap-2 bg-background">

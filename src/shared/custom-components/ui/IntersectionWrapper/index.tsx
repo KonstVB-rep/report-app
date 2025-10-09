@@ -40,7 +40,7 @@ export const ModalContentRoute = ({
   return (
     <div
       className={cn(
-        "animate-fadeInScale modal-content-route relative max-h-[90vh] min-h-1/2 w-full m-auto rounded-xl shadow-xl max-w-7xl border border-gray-200 dark:border-gray-700",
+        "animate-fadeInScale modal-content-route relative max-h-[90vh] min-h-1/2 w-full max-w-[96vw] m-auto rounded-xl shadow-xl border border-gray-200 dark:border-gray-700",
         bgColorByTheme
       )}
     >

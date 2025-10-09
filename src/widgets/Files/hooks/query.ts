@@ -1,11 +1,12 @@
-import { DealType } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
+import { DealFile, DealType } from "@prisma/client";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
-import { getInfoDisk } from "@/app/api/yandex-disk/yandexDisk";
+import { getInfoDisk, getResourceInfo } from "@/app/api/yandex-disk/yandexDisk";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { TOAST } from "@/shared/custom-components/ui/Toast";
 
 import { getAllFilesDealFromDb } from "../api/actions_db";
+import { FileResourceYndx } from "../types";
 
 export const useGetHrefFilesDealFromDB = (
   data:
@@ -15,7 +16,7 @@ export const useGetHrefFilesDealFromDB = (
         dealType: DealType;
       }
     | undefined
-) => {
+): UseQueryResult<DealFile[], Error> => {
   const { isAuth } = useStoreUser();
   return useQuery({
     queryKey: ["get-deal-files", data?.userId, data?.dealId, data?.dealType],
@@ -53,5 +54,20 @@ export const useGetInfoYandexDisk = () => {
     },
     enabled: !!isAuth,
     refetchOnMount: true,
+  });
+};
+
+export const useGetResourceInfo = (
+  path: string
+): UseQueryResult<FileResourceYndx, Error> => {
+  const { isAuth } = useStoreUser();
+
+  return useQuery({
+    queryKey: ["get-resource-info", path],
+    queryFn: async () => {
+      if (!isAuth) throw new Error("Пользователь не авторизован");
+      return await getResourceInfo(path);
+    },
+    enabled: !!isAuth,
   });
 };

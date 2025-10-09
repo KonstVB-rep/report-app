@@ -20,9 +20,15 @@ import { cn } from "@/shared/lib/utils";
 type Props = React.HTMLAttributes<HTMLDivElement> & {
   value?: DateRange;
   onValueChange?: (value: DateRange | undefined) => void;
+  label: string;
 };
 
-export function DateRangePicker({ className, value, onValueChange }: Props) {
+export function DateRangePicker({
+  className,
+  value,
+  onValueChange,
+  label,
+}: Props) {
   const [date, setDate] = React.useState<DateRange | undefined>(value);
 
   const stableValue = React.useMemo(
@@ -69,13 +75,12 @@ export function DateRangePicker({ className, value, onValueChange }: Props) {
                 </span>
               )
             ) : (
-              <span>Диапазон дат</span>
+              <span>{label}</span>
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
             mode="range"
             defaultMonth={date?.from}
             selected={date}

@@ -12,30 +12,38 @@ interface DateRangeFilterProps {
   onDateChange: (date: DateRange | undefined) => void;
   onClearDateFilter: (columnId: string) => void;
   value?: DateRange;
+  columnId?: string;
+  label: string;
 }
 
 const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   onDateChange,
   onClearDateFilter,
   value,
+  columnId = "dateRequest",
+  label,
 }) => {
   const handleClear = () => {
     onDateChange(undefined);
-    onClearDateFilter("dateRequest");
+    onClearDateFilter(columnId);
   };
 
   return (
     <div
-      className={`relative flex max-w-fit items-center gap-4 rounded border ${
-        value ? "border-solid" : "border-dashed"
+      className={`relative flex items-center gap-4 rounded-md border ${
+        value ? "border-solid min-w-[280px]" : "border-dashed max-w-fit"
       } border-muted-foreground`}
     >
-      <DateRangePicker value={value} onValueChange={onDateChange} />
+      <DateRangePicker
+        value={value}
+        onValueChange={onDateChange}
+        label={label}
+      />
       {value && (
         <Button
           variant="outline"
           onClick={handleClear}
-          className="absolute right-0 h-full p-2"
+          className="absolute right-0 h-full p-2 rounded"
         >
           <X />
         </Button>

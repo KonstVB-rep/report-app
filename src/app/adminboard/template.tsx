@@ -7,6 +7,7 @@ import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
 import useStoreUser from "@/entities/user/store/useStoreUser";
 import { SidebarInset } from "@/shared/components/ui/sidebar";
 import ButtonBack from "@/shared/custom-components/ui/Buttons/ButtonBack";
+import ButtonLink from "@/shared/custom-components/ui/Buttons/ButtonLink";
 import ExitAppScreen from "@/shared/custom-components/ui/ExitAppScreen";
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY";
 
@@ -37,7 +38,16 @@ const TemplateDashboard = ({ children }: { children: React.ReactNode }) => {
           <div className="max-h-[94vh] overflow-auto pt-2 px-2 flex-1 flex flex-col">
             <div className="flex items-center justify-between">
               {pathName?.includes("adminboard") &&
-                pathName !== "/adminboard" && <ButtonBack />}
+                pathName !== "/adminboard" && (
+                  <div className="flex gap-4">
+                    <ButtonBack />
+                    <ButtonLink
+                      pathName="/adminboard"
+                      label="Админпанель"
+                      className="h-9"
+                    />
+                  </div>
+                )}
               <LinksPageBlock />
             </div>
             {children}

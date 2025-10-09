@@ -45,14 +45,16 @@ const ChatForm = ({
   } = useChatForm(bot, mutateAsync, state);
 
   return (
-    <Card className="w-full max-w-sm m-auto border-none">
+    <Card className="w-full max-w-sm m-auto border-none p-4">
       <CardHeader className="px-2! pt-4!">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="p-2!">
         <form action={actionSubmit} className="space-y-6" autoComplete="on">
-          <div className="grid gap-2 p-2">{bot.botName}</div>
+          <div className="grid gap-2 p-2  bg-secondary rounded">
+            Бот: {bot.botName}
+          </div>
           <SelectComponent
             placeholder="Выберите пользователя"
             options={[...Object.entries(managers)]}
@@ -62,15 +64,6 @@ const ChatForm = ({
             required
             disabled={isPending}
           />
-
-          {/* <SelectComponent
-            placeholder="Название бота..."
-            options={[...Object.entries(botsMap)]}
-            value={selectedBot} 
-        onValueChange={setSelectedBot}
-            name="botName"
-            required
-          /> */}
 
           <Input
             name={"username"}

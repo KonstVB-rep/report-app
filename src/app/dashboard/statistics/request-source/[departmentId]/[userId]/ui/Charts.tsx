@@ -236,6 +236,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
           <DateRangePicker
             value={selectedDate}
             onValueChange={setSelectedDate}
+            label="Дата"
           />
           {selectedDate && (
             <Button

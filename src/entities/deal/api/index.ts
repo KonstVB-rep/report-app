@@ -12,6 +12,7 @@ import {
 } from "@prisma/client";
 
 import cuid from "cuid";
+import { format, parseISO } from "date-fns";
 
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
@@ -1022,8 +1023,6 @@ export const updateProject = async (
       },
     });
 
-    console.log("deal", deal);
-
     if (!deal) {
       return null;
     }
@@ -1124,7 +1123,10 @@ export const updateProject = async (
         orderId: deal?.orderId || idOrder,
       },
     });
-
+    console.log(
+      "5. After update - plannedDateConnection in DB:",
+      updatedDeal.plannedDateConnection
+    );
     if (isExistOrder) {
       await prisma.order.update({
         where: {
@@ -1766,6 +1768,15 @@ export const reassignDealsToManager = async (
           where: { id: { in: projectIds } },
           data: { userId: newManagerId },
         });
+
+        await tx.dealFile.updateMany({
+          where: {
+            dealId: { in: projectIds },
+          },
+          data: {
+            userId: newManagerId,
+          },
+        });
       }
 
       /** --- RETAILS --- **/
@@ -1797,6 +1808,15 @@ export const reassignDealsToManager = async (
         await tx.retail.updateMany({
           where: { id: { in: retailIds } },
           data: { userId: newManagerId },
+        });
+
+        await tx.dealFile.updateMany({
+          where: {
+            dealId: { in: retailIds },
+          },
+          data: {
+            userId: newManagerId,
+          },
         });
       }
     });

@@ -1,5 +1,7 @@
 "use client";
 
+import { StatusRetail } from "@prisma/client";
+
 import { useEffect } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
@@ -204,13 +206,17 @@ const RetailFormBody = <T extends FieldValues>({
                 disabled={isPending}
               />
 
-              <DatePickerFormField
-                name={"plannedDateConnection" as Path<T>}
-                label="Планируемый контакт"
-                control={form.control}
-                errorMessage={getError("plannedDateConnection")}
-                disabled={isPending}
-              />
+              {form.formState.defaultValues?.dealStatus !==
+                StatusRetail.REJECT && (
+                <DatePickerFormField
+                  name={"plannedDateConnection" as Path<T>}
+                  label="Планируемый контакт"
+                  control={form.control}
+                  errorMessage={getError("plannedDateConnection")}
+                  disabled={isPending}
+                  className="mb-2"
+                />
+              )}
 
               <InputTextForm
                 name={"resource" as Path<T>}
@@ -220,6 +226,7 @@ const RetailFormBody = <T extends FieldValues>({
                 required
                 placeholder="Откуда пришёл клиент"
                 disabled={isPending}
+                className="mb-2"
               />
 
               <FormField

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 
 import { FileWarning } from "lucide-react";
 
+import { getResourceInfo } from "@/app/api/yandex-disk/yandexDisk";
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
 
 import { useDownLoadFile } from "../../hooks/mutate";

@@ -33,14 +33,14 @@ async function sendNotificationsToTelegram(
 
 export async function GET() {
   try {
-    const allChats = await getInfoChatNotificationChecked(); // Возвращает все активные чаты с chatId
+    const allChats = await getInfoChatNotificationChecked();
 
     if (!allChats.length) {
       return NextResponse.json({ message: "Нет активных чатов" });
     }
 
     const now = new Date();
-    now.setSeconds(0, 0); // Убираем секунды и миллисекунды для точного сравнения
+    now.setSeconds(0, 0);
 
     for (const chat of allChats) {
       if (!chat.isActive || !chat.chatId || !chat.userId) continue;
@@ -48,25 +48,28 @@ export async function GET() {
       const events = await getEventsCalendarUserTodayRoute(chat.userId);
       if (!events?.length) continue;
 
-      const isNowBetween = (time: Date) => {
-        const diff = Math.abs(now.getTime() - time.getTime());
-        return diff <= 60 * 1000; // допускаем погрешность в 1 минуту
-      };
-
       const upcomingEvents = events.filter((event) => {
         const eventStartTime = new Date(event.start);
-        const thirtyMinutesBefore = new Date(
-          eventStartTime.getTime() - 30 * 60 * 1000
-        );
-        const fifteenMinutesBefore = new Date(
-          eventStartTime.getTime() - 15 * 60 * 1000
-        );
+        const nowTime = now.getTime();
+        const eventTime = eventStartTime.getTime();
+
+        // Определяем временные окна для уведомлений (окно 2 минуты)
+        const notificationWindows = [
+          {
+            start: eventTime - 31 * 60 * 1000,
+            end: eventTime - 29 * 60 * 1000,
+          }, // окно 30 мин (±1 мин)
+          {
+            start: eventTime - 16 * 60 * 1000,
+            end: eventTime - 14 * 60 * 1000,
+          }, // окно 15 мин (±1 мин)
+          { start: eventTime - 1 * 60 * 1000, end: eventTime + 1 * 60 * 1000 }, // окно начала (±1 мин)
+        ];
 
         return (
-          (isNowBetween(thirtyMinutesBefore) ||
-            isNowBetween(fifteenMinutesBefore) ||
-            isNowBetween(eventStartTime)) &&
-          now <= eventStartTime
+          notificationWindows.some(
+            (window) => nowTime >= window.start && nowTime <= window.end
+          ) && nowTime <= eventTime
         );
       });
 
@@ -76,22 +79,26 @@ export async function GET() {
           chatId: String(chat.chatId),
         }));
 
-        // console.log(
-        //   `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
-        //   eventsWithChatId.map((e) => e.title).join(", ")
-        // );
+        console.log(
+          `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
+          eventsWithChatId.map((e) => e.title).join(", ")
+        );
 
         await sendNotificationsToTelegram(eventsWithChatId);
       }
     }
 
-    // === Новый блок: проекты с plannedDateConnection ===
-    // Проверяем: если сейчас 09:00 по Москве, отправляем уведомления
+    // === Блок для проектов с plannedDateConnection ===
     const moscowNow = new Date(
       now.toLocaleString("en-US", { timeZone: "Europe/Moscow" })
     );
 
-    if (moscowNow.getHours() === 9 && moscowNow.getMinutes() === 0) {
+    // Расширяем окно для проверки 09:00 (±2 минуты)
+    if (
+      moscowNow.getHours() === 9 &&
+      moscowNow.getMinutes() >= 0 &&
+      moscowNow.getMinutes() <= 2
+    ) {
       const today = new Date(moscowNow);
       const start = new Date(
         today.getFullYear(),

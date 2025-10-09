@@ -1,5 +1,6 @@
 "use client";
 
+import { StatusProject } from "@prisma/client";
 import { CellContext, ColumnDef } from "@tanstack/react-table";
 
 import { ReactNode } from "react";
@@ -38,8 +39,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     meta: {
       isDateFilter: true,
     },
-    // size: 100, // Фиксированная ширина
-    enableResizing: false, // Запрещаем изменение размера
+    enableResizing: false,
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date;
       const dateAtStartOfDay = startOfDay(date);
@@ -81,6 +81,34 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       }
     },
     enableHiding: true,
+    filterFn: (row, columnId, filterValue) => {
+      if (row.original.dealStatus === StatusProject.REJECT) return false;
+
+      const date = row.getValue(columnId) as Date;
+      const dateAtStartOfDay = startOfDay(date);
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange;
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to);
+          return (
+            dateAtStartOfDay >= startOfDay(from) &&
+            dateAtStartOfDay <= toAtEndOfDay
+          );
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from);
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to);
+        }
+        return false;
+      }
+
+      return true;
+    },
     accessorFn: (row: ProjectResponse) => row.plannedDateConnection,
   },
   {

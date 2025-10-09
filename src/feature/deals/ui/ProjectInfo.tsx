@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import { Building, Info } from "lucide-react";
+import { Building, Info, PhoneOutgoing } from "lucide-react";
 import z from "zod";
 
 import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
@@ -15,6 +15,7 @@ import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Prot
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
 import { useTypedParams } from "@/shared/hooks/useTypedParams";
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
+import PreviewImagesList from "@/widgets/Files/ui/PreviewImages";
 import FileUploadForm from "@/widgets/Files/ui/UploadFile";
 
 import { useGetProjectById } from "../api/hooks/query";
@@ -97,6 +98,16 @@ const ProjectItemInfo = () => {
       <Separator />
 
       <div className="grid gap-2">
+        {deal?.plannedDateConnection && (
+          <div className="flex gap-2 items-center p-2 mt-2 border-blue-500 rounded border-2">
+            <PhoneOutgoing className="text-orange-600" />
+            <span>
+              {" "}
+              Плановая дата контакта:{" "}
+              {deal?.plannedDateConnection?.toLocaleDateString()}
+            </span>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[1fr_2fr]">
           <div className="grid-rows-auto grid gap-2">
             <div className="grid min-w-64 gap-4">
@@ -195,13 +206,22 @@ const ProjectItemInfo = () => {
         </IntoDealItem>
       </div>
 
-      <FileList
-        data={{
-          userId: deal.userId,
-          dealId: deal.id,
-          dealType: deal.type,
-        }}
-      />
+      <div className="flex flex-wrap gap-2">
+        <FileList
+          data={{
+            userId: deal.userId,
+            dealId: deal.id,
+            dealType: deal.type,
+          }}
+        />
+        <PreviewImagesList
+          data={{
+            userId: deal.userId,
+            dealId: deal.id,
+            dealType: deal.type,
+          }}
+        />
+      </div>
     </MotionDivY>
   );
 };

@@ -1,5 +1,7 @@
 "use client";
 
+import { StatusProject } from "@prisma/client";
+
 import { useEffect } from "react";
 import {
   FieldValues,
@@ -63,7 +65,9 @@ const statusOptionsContracts = transformObjValueToArr(StatusContractLabels);
 
 const statusOptions = {
   projects: statusOptionsProject,
+  project: statusOptionsProject,
   contracts: statusOptionsContracts,
+  contract: statusOptionsContracts,
 };
 
 const pageParamsSchema = z.object({
@@ -144,6 +148,8 @@ const ProjectFormBody = <T extends FieldValues>({
 
   const getError = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
+
+  console.log(form, "form");
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -285,13 +291,17 @@ const ProjectFormBody = <T extends FieldValues>({
                   disabled={isPending}
                 />
 
-                <DatePickerFormField
-                  name={"plannedDateConnection" as Path<T>}
-                  label="Планируемый контакт"
-                  control={form.control}
-                  errorMessage={getError("plannedDateConnection")}
-                  disabled={isPending}
-                />
+                {form.formState.defaultValues?.dealStatus !==
+                  StatusProject.REJECT && (
+                  <DatePickerFormField
+                    name={"plannedDateConnection" as Path<T>}
+                    label="Планируемый контакт"
+                    control={form.control}
+                    errorMessage={getError("plannedDateConnection")}
+                    disabled={isPending}
+                    className="mb-2"
+                  />
+                )}
 
                 <InputTextForm
                   name={"resource" as Path<T>}
@@ -300,6 +310,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("resource")}
                   placeholder="Откуда пришёл клиент"
                   disabled={isPending}
+                  className="mb-2"
                 />
 
                 <FormField
