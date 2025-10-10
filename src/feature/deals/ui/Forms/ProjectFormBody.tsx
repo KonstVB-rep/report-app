@@ -149,8 +149,6 @@ const ProjectFormBody = <T extends FieldValues>({
   const getError = (name: keyof T) =>
     form.formState.errors[name]?.message as string;
 
-  console.log(form, "form");
-
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
       <Overlay isPending={isPending} />

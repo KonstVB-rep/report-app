@@ -1123,10 +1123,7 @@ export const updateProject = async (
         orderId: deal?.orderId || idOrder,
       },
     });
-    console.log(
-      "5. After update - plannedDateConnection in DB:",
-      updatedDeal.plannedDateConnection
-    );
+
     if (isExistOrder) {
       await prisma.order.update({
         where: {

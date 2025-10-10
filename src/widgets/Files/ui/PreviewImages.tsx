@@ -111,15 +111,15 @@ const PreviewImagesList = ({ data }: Props) => {
     null
   );
 
+
   if (!files || files?.length === 0) {
     return null;
   }
 
-  // const filesImages = files.filter((file) => {
-  //   const lastpoint = file.localPath.lastIndexOf(".") + 1;
-  //   return yandexDiskSupportedImages.includes(file.localPath.slice(lastpoint));
-  // });
-  const filesImages = files;
+  const filesImages = files.filter((file) => {
+    const lastpoint = file.localPath.lastIndexOf(".") + 1;
+    return yandexDiskSupportedImages.includes(file.localPath.slice(lastpoint));
+  }); 
 
   if (filesImages.length === 0) {
     return null;

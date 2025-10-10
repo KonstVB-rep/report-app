@@ -31,6 +31,31 @@ async function sendNotificationsToTelegram(
   }
 }
 
+// Глобальные функции кеша (не создаем каждый раз)
+async function getCache(key: string) {
+  const now = new Date();
+  
+  await prisma.notificationCache.deleteMany({
+    where: { expiresAt: { lt: now } }
+  });
+  
+  const cache = await prisma.notificationCache.findUnique({
+    where: { key }
+  });
+  
+  return cache ? cache.value : null;
+}
+
+async function setCache(key: string, value: string, ttlMinutes = 2) {
+  const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000);
+  
+  await prisma.notificationCache.upsert({
+    where: { key },
+    update: { value, expiresAt },
+    create: { key, value, expiresAt }
+  });
+}
+
 export async function GET() {
   try {
     const allChats = await getInfoChatNotificationChecked();
@@ -53,17 +78,16 @@ export async function GET() {
         const nowTime = now.getTime();
         const eventTime = eventStartTime.getTime();
 
-        // Определяем временные окна для уведомлений (окно 2 минуты)
         const notificationWindows = [
           {
             start: eventTime - 31 * 60 * 1000,
             end: eventTime - 29 * 60 * 1000,
-          }, // окно 30 мин (±1 мин)
+          },
           {
             start: eventTime - 16 * 60 * 1000,
             end: eventTime - 14 * 60 * 1000,
-          }, // окно 15 мин (±1 мин)
-          { start: eventTime - 1 * 60 * 1000, end: eventTime + 1 * 60 * 1000 }, // окно начала (±1 мин)
+          },
+          { start: eventTime - 1 * 60 * 1000, end: eventTime + 1 * 60 * 1000 },
         ];
 
         return (
@@ -79,25 +103,38 @@ export async function GET() {
           chatId: String(chat.chatId),
         }));
 
-        console.log(
-          `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
-          eventsWithChatId.map((e) => e.title).join(", ")
-        );
+        // Проверяем кеш в БД
+        const cacheKey = `chat_${chat.chatId}_events`;
+        const lastSent = await getCache(cacheKey);
+        const twoMinutesAgo = Date.now() - 3 * 60 * 1000;
 
-        await sendNotificationsToTelegram(eventsWithChatId);
+        if (!lastSent || parseInt(lastSent) < twoMinutesAgo) {
+          console.log(
+            `🔔 Отправка для пользователя ${chat.userId} (${chat.chatId}):`,
+            eventsWithChatId.map((e) => e.title).join(", ")
+          );
+
+          await sendNotificationsToTelegram(eventsWithChatId);
+          
+          // Сохраняем время отправки в БД
+          await setCache(cacheKey, Date.now().toString());
+        } else {
+          console.log(
+            `⏸️ Пропуск для чата ${chat.chatId} - уведомления уже отправлялись в последние 2 минуты`
+          );
+        }
       }
     }
 
-    // === Блок для проектов с plannedDateConnection ===
+    // === Блок для проектов ===
     const moscowNow = new Date(
       now.toLocaleString("en-US", { timeZone: "Europe/Moscow" })
     );
 
-    // Расширяем окно для проверки 09:00 (±2 минуты)
     if (
       moscowNow.getHours() === 9 &&
       moscowNow.getMinutes() >= 0 &&
-      moscowNow.getMinutes() <= 2
+      moscowNow.getMinutes() <= 30
     ) {
       const today = new Date(moscowNow);
       const start = new Date(
@@ -140,7 +177,22 @@ export async function GET() {
               start: project.plannedDateConnection as Date,
             }));
 
-          await sendNotificationsToTelegram(notifications);
+          // Проверяем кеш для проектов
+          const projectCacheKey = `chat_${chat.chatId}_projects`;
+          const lastProjectSent = await getCache(projectCacheKey);
+          const twoMinutesAgo = Date.now() - 3 * 60 * 1000;
+
+          if (!lastProjectSent || parseInt(lastProjectSent) < twoMinutesAgo) {
+            console.log(
+              `🔔 Утренние уведомления для чата ${chat.chatId}: ${projectsToday.length} проектов`
+            );
+            await sendNotificationsToTelegram(notifications);
+            await setCache(projectCacheKey, Date.now().toString());
+          } else {
+            console.log(
+              `⏸️ Пропуск проектов для чата ${chat.chatId} - уведомления уже отправлялись в последние 2 минуты`
+            );
+          }
         }
       }
     }

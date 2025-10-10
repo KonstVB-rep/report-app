@@ -41,7 +41,7 @@ const DataTable = <T extends Record<string, unknown>>({
 
   return (
     <DataTableFiltersProvider value={filtersContextValue}>
-      <div className="relative grid w-full overflow-auto rounded-lg border bg-background pt-2 px-2 auto-rows-max">
+      <div className="relative grid w-full overflow-auto rounded-lg border bg-background pt-2 px-2 auto-rows-max pb-2">
         <div className="flex items-center justify-between gap-2 pb-2">
           <ButtonExportTableXls
             isShow={currentData.length > 0}

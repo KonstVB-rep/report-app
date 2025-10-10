@@ -40,13 +40,14 @@ const useSendDealInfo = <T extends FieldValues>(
   };
 
   const handleSubmit = (data: T) => {
+    console.log(data, "data");
     const fullData = {
       ...data,
       userId: firstManager,
       contacts: selectedContacts,
       managersIds: managers,
       plannedDateConnection:
-        data.dealStatus === (StatusProject.REJECT || StatusRetail.REJECT)
+        data.dealStatus !== (StatusProject.REJECT || StatusRetail.REJECT)
           ? data.plannedDateConnection
           : null,
     };

@@ -83,7 +83,7 @@ model Project {
   amountPurchase        Decimal?            @db.Decimal(15, 2)
   amountWork            Decimal?            @db.Decimal(15, 2)
   delta                 Decimal?            @db.Decimal(15, 2)
-  comments              String
+  comments              String              @db.Text
   dealStatus            StatusProject
   plannedDateConnection DateTime?
   resource              String?
@@ -113,7 +113,7 @@ model Retail {
   amountCP              Decimal?            @db.Decimal(15, 2)
   delta                 Decimal?            @db.Decimal(15, 2)
   dealStatus            StatusRetail
-  comments              String
+  comments              String              @db.Text
   plannedDateConnection DateTime?
   resource              String?
   createdAt             DateTime            @default(now())
@@ -136,7 +136,7 @@ model Order {
   phone        String?
   email        String?
   manager      String
-  comments     String?
+  comments     String?     @db.Text
   departmentId Int
   orderStatus  StatusOrder @default(SUBMITTED_TO_WORK)
   resource     String?
@@ -306,6 +306,15 @@ model Task {
   executor User @relation("TaskExecutor", fields: [executorId], references: [id])
 
   @@index([orderTask, taskStatus])
+}
+
+model NotificationCache {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  expiresAt DateTime
+  
+  @@index([expiresAt])
 }
 
 

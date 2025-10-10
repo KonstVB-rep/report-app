@@ -146,14 +146,14 @@ export const useMutationUpdateProject = (
       const formData = {
         ...data,
         dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
         email: data.email || "",
         phone: data.phone || "",
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,
         direction: data.direction as DirectionProject,
         amountCP: data.amountCP
@@ -234,14 +234,14 @@ export const useMutationUpdateRetail = (
       const formData = {
         ...data,
         dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
         email: data.email || "",
         phone: data.phone || "",
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,
         direction: data.direction as DirectionRetail,
         amountCP: data.amountCP
@@ -311,11 +311,11 @@ export const useCreateProject = (
             ? null
             : (data.deliveryType as DeliveryProject),
         dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
         dealStatus: data.dealStatus as StatusProject,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,
         direction: data.direction as DirectionProject,
         amountCP: data.amountCP
@@ -389,11 +389,11 @@ export const useCreateRetail = (
             ? null
             : (data.deliveryType as DeliveryRetail),
         dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
         dealStatus: data.dealStatus as StatusRetail,
         plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(12, 0, 0, 0))
+          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,
         direction: data.direction as DirectionRetail,
         amountCP: data.amountCP
