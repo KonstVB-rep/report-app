@@ -1,4 +1,3 @@
-import type { User } from "@prisma/client"
 import { persist } from "zustand/middleware"
 import { create } from "@/shared/lib/helpers/сreate"
 import { formattedArr } from "../lib/utils"
@@ -8,7 +7,7 @@ export type DeptFormatted = {
   id: number
   name: string
   description: string
-  users: User[]
+  users: Record<string, string>[]
 }
 
 type State = {
