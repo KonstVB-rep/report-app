@@ -1,20 +1,17 @@
-import { persist } from "zustand/middleware";
-
-import { checkUserPermission } from "@/shared/lib/helpers/checkUserPermission";
-import { create } from "@/shared/lib/helpers/сreate";
-
-import { User } from "../types";
+import { persist } from "zustand/middleware"
+import { create } from "@/shared/lib/helpers/сreate"
+import type { User } from "../types"
 
 type State = {
-  authUser: User | null;
-  isAuth: boolean;
-  setAuthUser: (user: User | null) => void;
-  setIsAuth: (isAuth: boolean) => void;
-  resetStore: () => void;
-};
+  authUser: User | null
+  isAuth: boolean
+  setAuthUser: (user: User | null) => void
+  setIsAuth: (isAuth: boolean) => void
+  resetStore: () => void
+}
 const useStoreUser = create<State>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       authUser: null,
       isAuth: false,
 
@@ -29,9 +26,9 @@ const useStoreUser = create<State>()(
           set({
             isAuth: false,
             authUser: null,
-          });
+          })
         } else {
-          set({ isAuth });
+          set({ isAuth })
         }
       },
 
@@ -39,7 +36,7 @@ const useStoreUser = create<State>()(
         set({
           authUser: null,
           isAuth: false,
-        });
+        })
       },
     }),
     {
@@ -48,8 +45,8 @@ const useStoreUser = create<State>()(
         authUser: state.authUser,
         isAuth: state.isAuth,
       }),
-    }
-  )
-);
+    },
+  ),
+)
 
-export default useStoreUser;
+export default useStoreUser

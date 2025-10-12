@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from "react";
-
-import { Input } from "@/shared/components/ui/input";
+import React, { useEffect, useRef } from "react"
+import { Input } from "@/shared/components/ui/input"
 import {
   MultiSelect,
   MultiSelectContent,
@@ -8,19 +7,19 @@ import {
   MultiSelectTrigger,
   MultiSelectValue,
   renderMultiSelectOptions,
-} from "@/shared/components/ui/multi-select";
+} from "@/shared/components/ui/multi-select"
 
 type OptionItem = {
-  value: string;
-  label: string;
-};
+  value: string
+  label: string
+}
 
 type MultiSelectComponentProps = {
-  defaultValue?: string[];
-  options: OptionItem[];
-  placeholder: string;
-  onValueChange?: (value: string[]) => void;
-} & React.ComponentProps<"select">;
+  defaultValue?: string[]
+  options: OptionItem[]
+  placeholder: string
+  onValueChange?: (value: string[]) => void
+} & React.ComponentProps<"select">
 
 const MultiSelectComponent = ({
   defaultValue = [],
@@ -31,36 +30,28 @@ const MultiSelectComponent = ({
 }: MultiSelectComponentProps) => {
   return (
     // @ts-expect-error: TypeScript does not infer the correct type for MultiSelect props
-    <MultiSelect
-      onValueChange={onValueChange}
-      defaultValue={defaultValue}
-      {...props}
-    >
+    <MultiSelect defaultValue={defaultValue} onValueChange={onValueChange} {...props}>
       <MultiSelectTrigger className="h-10 border border-solid border-border text-black">
-        <MultiSelectValue
-          placeholder={placeholder}
-          maxDisplay={3}
-          maxItemLength={10}
-        />
+        <MultiSelectValue maxDisplay={3} maxItemLength={10} placeholder={placeholder} />
       </MultiSelectTrigger>
       <MultiSelectContent>
         <MultiSelectList>{renderMultiSelectOptions(options)}</MultiSelectList>
       </MultiSelectContent>
     </MultiSelect>
-  );
-};
+  )
+}
 
-export default MultiSelectComponent;
+export default MultiSelectComponent
 
 type MultiSelectNativeFormProps = {
-  defaultValue?: string[];
-  options: OptionItem[];
-  placeholder: string;
-  name: string;
-  onValueChange?: (value: string[]) => void;
-  id: string;
-  disabled?: boolean;
-};
+  defaultValue?: string[]
+  options: OptionItem[]
+  placeholder: string
+  name: string
+  onValueChange?: (value: string[]) => void
+  id: string
+  disabled?: boolean
+}
 
 export const MultiSelectNativeForm = ({
   defaultValue = [],
@@ -72,54 +63,50 @@ export const MultiSelectNativeForm = ({
   disabled,
   ...props
 }: MultiSelectNativeFormProps) => {
-  const hiddenInputRef = useRef<HTMLInputElement>(null);
+  const hiddenInputRef = useRef<HTMLInputElement>(null)
 
   const [selectedValues, setSelectedValues] = React.useState<string[]>(() =>
-    defaultValue.map((s) => s.trim())
-  );
+    defaultValue.map((s) => s.trim()),
+  )
 
   useEffect(() => {
     if (defaultValue && defaultValue.length > 0) {
-      setSelectedValues(defaultValue.map((s) => s.trim()));
+      setSelectedValues(defaultValue.map((s) => s.trim()))
     }
-  }, [defaultValue]);
+  }, [defaultValue])
 
   const handleValueChange = (values: string[]) => {
-    setSelectedValues(values);
-    onValueChange?.(values);
+    setSelectedValues(values)
+    onValueChange?.(values)
 
     if (hiddenInputRef.current) {
-      hiddenInputRef.current.value = JSON.stringify(values);
+      hiddenInputRef.current.value = JSON.stringify(values)
     }
-  };
+  }
 
   return (
     <>
       <Input
         id={id}
-        type="hidden"
-        ref={hiddenInputRef}
         name={name}
+        ref={hiddenInputRef}
+        type="hidden"
         value={JSON.stringify(selectedValues)}
       />
 
       <MultiSelect
-        value={selectedValues}
         disabled={disabled}
         onValueChange={handleValueChange}
+        value={selectedValues}
         {...props}
       >
         <MultiSelectTrigger className="h-10 border border-solid border-border text-black">
-          <MultiSelectValue
-            placeholder={placeholder}
-            maxDisplay={3}
-            maxItemLength={10}
-          />
+          <MultiSelectValue maxDisplay={3} maxItemLength={10} placeholder={placeholder} />
         </MultiSelectTrigger>
         <MultiSelectContent>
           <MultiSelectList>{renderMultiSelectOptions(options)}</MultiSelectList>
         </MultiSelectContent>
       </MultiSelect>
     </>
-  );
-};
+  )
+}

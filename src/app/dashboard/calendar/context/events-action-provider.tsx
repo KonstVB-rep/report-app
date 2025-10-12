@@ -1,56 +1,49 @@
-"use client";
+"use client"
 
-import React, { createContext, ReactNode, useContext } from "react";
-
+import { createContext, type ReactNode, useContext } from "react"
 import {
   useCreateEventCalendar,
   useDeleteEventCalendar,
   useUpdateEventCalendar,
-} from "@/feature/calendar/hooks/mutate";
-import { useGetEventsCalendarUser } from "@/feature/calendar/hooks/query";
-import { EventDataType, EventInputType } from "@/feature/calendar/types";
-
-import { useCalendarContext } from "./calendar-context";
+} from "@/feature/calendar/hooks/mutate"
+import { useGetEventsCalendarUser } from "@/feature/calendar/hooks/query"
+import type { EventDataType, EventInputType } from "@/feature/calendar/types"
+import { useCalendarContext } from "./calendar-context"
 
 interface EventsActionContextType {
-  isLoading: boolean;
-  events: EventInputType[] | undefined;
-  createEvent: (event: Omit<EventDataType, "id">) => void;
-  updateEvent: (event: EventDataType) => void;
-  deleteEvent: (id: string) => void;
-  isPendingLoad: boolean;
-  isPendingDelete: boolean;
+  isLoading: boolean
+  events: EventInputType[] | undefined
+  createEvent: (event: Omit<EventDataType, "id">) => void
+  updateEvent: (event: EventDataType) => void
+  deleteEvent: (id: string) => void
+  isPendingLoad: boolean
+  isPendingDelete: boolean
 }
 
-const EventActionContext = createContext<EventsActionContextType | undefined>(
-  undefined
-);
+const EventActionContext = createContext<EventsActionContextType | undefined>(undefined)
 
 export const useEventActionContext = (): EventsActionContextType => {
-  const context = useContext(EventActionContext);
+  const context = useContext(EventActionContext)
   if (!context) {
-    throw new Error(
-      "useEventActionContext must be used within EventsActionProvider"
-    );
+    throw new Error("useEventActionContext must be used within EventsActionProvider")
   }
-  return context;
-};
+  return context
+}
 
 export const EventsActionProvider = ({ children }: { children: ReactNode }) => {
-  const { handleResetAndClose, handleCloseModalAfterDeleteEvent } =
-    useCalendarContext();
+  const { handleResetAndClose, handleCloseModalAfterDeleteEvent } = useCalendarContext()
 
-  const { data: events, isPending: isPendingLoad } = useGetEventsCalendarUser();
-  const { mutate: createEvent, isPending } =
-    useCreateEventCalendar(handleResetAndClose);
+  const { data: events, isPending: isPendingLoad } = useGetEventsCalendarUser()
+  const { mutate: createEvent, isPending } = useCreateEventCalendar(handleResetAndClose)
 
   const { mutate: updateEvent, isPending: isPendingUpdate } =
-    useUpdateEventCalendar(handleResetAndClose);
+    useUpdateEventCalendar(handleResetAndClose)
 
-  const { mutate: deleteEvent, isPending: isPendingDelete } =
-    useDeleteEventCalendar(handleCloseModalAfterDeleteEvent);
+  const { mutate: deleteEvent, isPending: isPendingDelete } = useDeleteEventCalendar(
+    handleCloseModalAfterDeleteEvent,
+  )
 
-  const isLoading = isPendingUpdate || isPending || isPendingDelete;
+  const isLoading = isPendingUpdate || isPending || isPendingDelete
 
   return (
     <EventActionContext.Provider
@@ -66,5 +59,5 @@ export const EventsActionProvider = ({ children }: { children: ReactNode }) => {
     >
       {children}
     </EventActionContext.Provider>
-  );
-};
+  )
+}

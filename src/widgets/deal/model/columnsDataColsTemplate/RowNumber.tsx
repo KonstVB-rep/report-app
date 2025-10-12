@@ -1,6 +1,4 @@
-import { Row } from "@tanstack/react-table";
-
-import React from "react";
+import type { Row } from "@tanstack/react-table"
 
 const RowNumber = <T,>() => {
   return {
@@ -15,7 +13,7 @@ const RowNumber = <T,>() => {
     meta: {
       isNotSearchable: true,
     },
-  };
-};
+  }
+}
 
-export default RowNumber;
+export default RowNumber

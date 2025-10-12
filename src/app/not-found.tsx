@@ -1,6 +1,5 @@
-import Link from "next/link";
-
-import { Button } from "@/shared/components/ui/button";
+import Link from "next/link"
+import { Button } from "@/shared/components/ui/button"
 
 export default function NotFound() {
   return (
@@ -11,5 +10,5 @@ export default function NotFound() {
         <Link href="/">Вернуться на главную страницу</Link>
       </Button>
     </div>
-  );
+  )
 }

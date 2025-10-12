@@ -1,18 +1,16 @@
-import React, { Dispatch, SetStateAction } from "react";
-
+import type { Dispatch, SetStateAction } from "react"
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/shared/components/ui/dialog";
-
-import DelTaskForm from "../Forms/DelTaskForm";
+} from "@/shared/components/ui/dialog"
+import DelTaskForm from "../Forms/DelTaskForm"
 
 type Props = {
-  id: string;
-  close: Dispatch<SetStateAction<void>>;
-};
+  id: string
+  close: Dispatch<SetStateAction<void>>
+}
 
 const DelTaskDialogContextMenu = ({ id, close }: Props) => {
   return (
@@ -21,9 +19,9 @@ const DelTaskDialogContextMenu = ({ id, close }: Props) => {
         <DialogTitle className="sr-only">Удалить проект</DialogTitle>
         <DialogDescription className="sr-only" />
       </DialogHeader>
-      <DelTaskForm id={id} close={close} />
+      <DelTaskForm close={close} id={id} />
     </DialogContent>
-  );
-};
+  )
+}
 
-export default DelTaskDialogContextMenu;
+export default DelTaskDialogContextMenu

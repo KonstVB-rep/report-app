@@ -1,9 +1,8 @@
-"use client";
+"use client"
 
-import { ColumnDef } from "@tanstack/react-table";
-
-import { RetailResponse } from "@/entities/deal/types";
-import { columnsDataRetail } from "@/widgets/deal/model/columns-data-retail";
+import type { ColumnDef } from "@tanstack/react-table"
+import type { RetailResponse } from "@/entities/deal/types"
+import { columnsDataRetail } from "@/widgets/deal/model/columns-data-retail"
 
 export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [
   ...columnsDataRetail,
@@ -15,14 +14,14 @@ export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [
     meta: {
       hidden: true,
     },
-    filterFn: (row, columnId, filterValues) => {
+    filterFn: (row, _, filterValues) => {
       if (!filterValues || filterValues.length === 0) {
-        return true;
+        return true
       }
 
-      const userIdOfProject = row.original.userId;
-      return filterValues.includes(userIdOfProject);
+      const userIdOfProject = row.original.userId
+      return filterValues.includes(userIdOfProject)
     },
     accessorFn: (row: RetailResponse) => row.userId,
   },
-];
+]

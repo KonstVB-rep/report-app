@@ -1,29 +1,26 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
+import { useEffect } from "react"
+import { Button } from "@/shared/components/ui/button"
 
-import { Button } from "@/shared/components/ui/button";
-
-export default function Error({
+export default function ErrorFallback({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
   useEffect(() => {
-    console.error(error);
-  }, [error]);
+    console.error(error)
+  }, [error])
 
   return (
     <section className="grid h-full place-items-center content-center gap-4">
       <h2 className="text-2xl">Что-то пошло не так!!!</h2>
-      <h3 className="lg">
-        Попробуйте повторить запрос или перезагрузите страницу.
-      </h3>
-      <Button variant="outline" onClick={() => reset()}>
+      <h3 className="lg">Попробуйте повторить запрос или перезагрузите страницу.</h3>
+      <Button onClick={() => reset()} variant="outline">
         Повторить запрос
       </Button>
     </section>
-  );
+  )
 }

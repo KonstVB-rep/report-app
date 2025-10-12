@@ -1,27 +1,23 @@
-"use client";
+"use client"
 
-import { CellContext, ColumnDef } from "@tanstack/react-table";
-
-import { ReactNode } from "react";
-import { DateRange } from "react-day-picker";
-
-import { endOfDay, startOfDay } from "date-fns";
-
-import { ContractResponse } from "@/entities/deal/types";
+import type { ReactNode } from "react"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { DateRange } from "react-day-picker"
+import type { ContractResponse } from "@/entities/deal/types"
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
   StatusContractLabels,
-} from "@/feature/deals/lib/constants";
-import { formatterCurrency } from "@/shared/lib/utils";
+} from "@/feature/deals/lib/constants"
+import { formatterCurrency } from "@/shared/lib/utils"
+import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
-import RowNumber from "./columnsDataColsTemplate/RowNumber";
+export type typeofDirections = keyof typeof DirectionProjectLabels
 
-export type typeofDirections = keyof typeof DirectionProjectLabels;
+export type typeofDelivery = keyof typeof DeliveryProjectLabels
 
-export type typeofDelivery = keyof typeof DeliveryProjectLabels;
-
-export type typeofStatus = keyof typeof StatusContractLabels;
+export type typeofStatus = keyof typeof StatusContractLabels
 
 export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
   {
@@ -31,8 +27,8 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     id: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<ContractResponse, unknown>) => {
-      const date = info.getValue() as Date;
-      return date.toLocaleDateString("ru-RU");
+      const date = info.getValue() as Date
+      return date.toLocaleDateString("ru-RU")
     },
     enableHiding: true,
     meta: {
@@ -41,30 +37,27 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     size: 100, // Фиксированная ширина
     enableResizing: false, // Запрещаем изменение размера
     filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: ContractResponse) => row.dateRequest,
   },
@@ -72,8 +65,8 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     id: "nameDeal",
     header: "Название сделки",
     cell: (info: CellContext<ContractResponse, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.nameDeal,
@@ -82,8 +75,8 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     id: "nameObject",
     header: "Название объекта",
     cell: (info: CellContext<ContractResponse, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.nameObject,
@@ -92,16 +85,16 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     id: "direction",
     header: "Направление",
     cell: (info: CellContext<ContractResponse, unknown>) => {
-      const value = info.getValue() as typeofDirections;
-      return <span>{DirectionProjectLabels[value]}</span>;
+      const value = info.getValue() as typeofDirections
+      return <span>{DirectionProjectLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
-      if (!rowValue) return false;
+      const rowValue = row.getValue(columnId)
+      if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     enableHiding: true,
     meta: {
@@ -113,22 +106,22 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     id: "deliveryType",
     header: "Тип поставки",
     cell: (info: CellContext<ContractResponse, unknown>) => {
-      const value = info.getValue() as typeofDelivery;
-      return <span>{DeliveryProjectLabels[value]}</span>;
+      const value = info.getValue() as typeofDelivery
+      return <span>{DeliveryProjectLabels[value]}</span>
     },
     filterFn: (row, columnId, filterValue) => {
-      if (!filterValue || !Array.isArray(filterValue)) return true;
-      const rowValue = row.getValue(columnId);
+      if (!filterValue || !Array.isArray(filterValue)) return true
+      const rowValue = row.getValue(columnId)
 
-      if (!rowValue) return false; // Проверяем, есть ли значение в ячейке
+      if (!rowValue) return false // Проверяем, есть ли значение в ячейке
 
       if (Array.isArray(filterValue)) {
         return filterValue.some(
-          (direction) => String(rowValue).includes(direction) // Приводим rowValue к строке, чтобы избежать ошибок
-        );
+          (direction) => String(rowValue).includes(direction), // Приводим rowValue к строке, чтобы избежать ошибок
+        )
       }
 
-      return rowValue === filterValue;
+      return rowValue === filterValue
     },
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.deliveryType,
@@ -147,7 +140,7 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     cell: (info: CellContext<ContractResponse, unknown>) => {
       return (
         <span className="whitespace-nowrap">{info.getValue() as string}</span> //тег
-      );
+      )
     },
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.phone,
@@ -197,16 +190,16 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     id: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<ContractResponse, unknown>) => {
-      const value = info.getValue() as typeofStatus;
-      return <span>{StatusContractLabels[value]}</span>;
+      const value = info.getValue() as typeofStatus
+      return <span>{StatusContractLabels[value]}</span>
     },
     enableHiding: true,
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
+      const rowValue = row.getValue(columnId)
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     accessorFn: (row: ContractResponse) => row.dealStatus,
   },
@@ -214,12 +207,12 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     id: "comments",
     header: "Комментарии",
     cell: (info: CellContext<ContractResponse, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     size: 300,
     minSize: 300,
     enableHiding: true,
     accessorFn: (row: ContractResponse) => row.comments,
   },
-];
+]

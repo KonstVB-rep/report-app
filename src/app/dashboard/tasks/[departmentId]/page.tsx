@@ -1,60 +1,50 @@
-"use client";
+"use client"
 
-import { PermissionEnum } from "@prisma/client";
-
-import dynamic from "next/dynamic";
-
-import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData";
-import LoadingView from "@/entities/task/ui/LoadingView";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { useGetTasksDepartment } from "@/feature/task/hooks/query";
-import useViewType from "@/feature/task/hooks/useViewType";
-import { viewType } from "@/feature/task/model/constants";
-import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog";
-import { Button } from "@/shared/components/ui/button";
-import { Separator } from "@/shared/components/ui/separator";
-import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
-import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
-import {
-  pageParamsSchemaDepsId,
-  useTypedParams,
-} from "@/shared/hooks/useTypedParams";
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
+import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
+import LoadingView from "@/entities/task/ui/LoadingView"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { useGetTasksDepartment } from "@/feature/task/hooks/query"
+import useViewType from "@/feature/task/hooks/useViewType"
+import { viewType } from "@/feature/task/model/constants"
+import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
+import { Button } from "@/shared/components/ui/button"
+import { Separator } from "@/shared/components/ui/separator"
+import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
+import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
+import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
   loading: () => <LoadingView />,
-});
+})
 
 const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   ssr: false,
   loading: () => <LoadingView />,
-});
+})
 
 const TasksPage = () => {
-  const { authUser } = useStoreUser();
+  const { authUser } = useStoreUser()
 
-  const hasAccess = hasAccessToDataSummary(
-    authUser?.id as string,
-    PermissionEnum.TASK_MANAGEMENT
-  );
+  const hasAccess = hasAccessToDataSummary(authUser?.id as string, PermissionEnum.TASK_MANAGEMENT)
 
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId);
+  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
 
-  const { data, isPending } = useGetTasksDepartment();
+  const { data, isPending } = useGetTasksDepartment()
 
-  const { handleViewChange, currentView } = useViewType();
+  const { handleViewChange, currentView } = useViewType()
 
-  if (!authUser) return null;
+  if (!authUser) return null
 
   if (!hasAccess) {
-    return (
-      <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />
-    );
+    return <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />
   }
 
   if (isPending) {
-    return <LoaderCircleInWater />;
+    return <LoaderCircleInWater />
   }
 
   return (
@@ -67,14 +57,10 @@ const TasksPage = () => {
         <div className="flex gap-2">
           {viewType.map((item) => {
             return (
-              <Button
-                key={item.id}
-                variant="outline"
-                onClick={() => handleViewChange(item.id)}
-              >
+              <Button key={item.id} onClick={() => handleViewChange(item.id)} variant="outline">
                 {item.value}
               </Button>
-            );
+            )
           })}
         </div>
 
@@ -87,7 +73,7 @@ const TasksPage = () => {
         {currentView === "kanban" && data && <Kanban data={data} />}
       </MotionDivY>
     </section>
-  );
-};
+  )
+}
 
-export default TasksPage;
+export default TasksPage

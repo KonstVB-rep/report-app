@@ -1,11 +1,8 @@
-import { useState } from "react";
-
-import { useRouter } from "next/navigation";
-
-import { LogOut } from "lucide-react";
-
-import { logout } from "@/shared/auth/logout";
-import { Button } from "@/shared/components/ui/button";
+import { useState } from "react"
+import { LogOut } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { logout } from "@/shared/auth/logout"
+import { Button } from "@/shared/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -14,37 +11,34 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shared/components/ui/dialog";
-import Overlay from "@/shared/custom-components/ui/Overlay";
-import { resetAllStores } from "@/shared/lib/helpers/сreate";
+} from "@/shared/components/ui/dialog"
+import Overlay from "@/shared/custom-components/ui/Overlay"
+import { resetAllStores } from "@/shared/lib/helpers/сreate"
 
 const LogoutDialog = ({ withTitle = true }: { withTitle?: boolean }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const router = useRouter();
+  const router = useRouter()
   const handleLogout = async () => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      await logout();
-      resetAllStores();
-      router.replace("/login");
+      await logout()
+      resetAllStores()
+      router.replace("/login")
     } catch (error) {
-      console.error("Ошибка при выходе:", error);
+      console.error("Ошибка при выходе:", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <>
       <Overlay isPending={loading} />
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            className="btn_hover w-full justify-center text-sm"
-          >
+          <Button className="btn_hover w-full justify-center text-sm" variant="outline">
             <LogOut /> {withTitle && "Выход"}
           </Button>
         </DialogTrigger>
@@ -56,15 +50,13 @@ const LogoutDialog = ({ withTitle = true }: { withTitle?: boolean }) => {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-8 py-4">
-            <p className="text-center text-base font-medium">
-              Вы уверены что хотите выйти?
-            </p>
+            <p className="text-center text-base font-medium">Вы уверены что хотите выйти?</p>
             <div className="flex justify-between gap-4">
-              <Button onClick={handleLogout} className="flex-1">
+              <Button className="flex-1" onClick={handleLogout}>
                 {loading ? "Выход..." : "Да, выйти"}
               </Button>
               <DialogClose asChild>
-                <Button variant="outline" className="flex-1">
+                <Button className="flex-1" variant="outline">
                   Отмена
                 </Button>
               </DialogClose>
@@ -73,7 +65,7 @@ const LogoutDialog = ({ withTitle = true }: { withTitle?: boolean }) => {
         </DialogContent>
       </Dialog>
     </>
-  );
-};
+  )
+}
 
-export default LogoutDialog;
+export default LogoutDialog

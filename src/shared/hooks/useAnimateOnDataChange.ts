@@ -1,13 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react"
 
 function useAnimateOnDataChange<T>(data: T[]): boolean {
-  const [shouldRender, setShouldRender] = useState<boolean>(false);
+  const [shouldRender, setShouldRender] = useState(false)
+  const prevDataRef = useRef<T[]>([])
 
   useEffect(() => {
-    setShouldRender(true);
-  }, [data]);
+    const prevData = prevDataRef.current
 
-  return shouldRender;
+    const isChanged =
+      prevData.length !== data.length || prevData.some((item, index) => item !== data[index])
+
+    if (isChanged) {
+      setShouldRender(true)
+    }
+
+    prevDataRef.current = data
+  }, [data])
+
+  return shouldRender
 }
 
-export default useAnimateOnDataChange;
+export default useAnimateOnDataChange

@@ -1,46 +1,36 @@
-"use client";
+"use client"
 
-import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
-import { ProjectResponseWithContactsAndFiles } from "@/entities/deal/types";
-import { formatterCurrency } from "@/shared/lib/utils";
-
+import type { ProjectResponseWithContactsAndFiles } from "@/entities/deal/types"
+import { formatterCurrency } from "@/shared/lib/utils"
 import {
   DealTypeLabels,
   DeliveryProjectLabels,
   DirectionProjectLabels,
   StatusProjectLabels,
-} from "../constants";
+} from "../constants"
 
-const useNormalizeProjectData = (
-  deal: ProjectResponseWithContactsAndFiles | null | undefined
-) => {
+const useNormalizeProjectData = (deal: ProjectResponseWithContactsAndFiles | null | undefined) => {
   const statusLabel =
-    StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] ||
-    "Нет данных";
+    StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] || "Нет данных"
   const directionLabel =
-    DirectionProjectLabels[
-      deal?.direction as keyof typeof DirectionProjectLabels
-    ] || "Нет данных";
+    DirectionProjectLabels[deal?.direction as keyof typeof DirectionProjectLabels] || "Нет данных"
   const deliveryLabel =
-    DeliveryProjectLabels[
-      deal?.deliveryType as keyof typeof DeliveryProjectLabels
-    ] || "Нет данных";
-  const typeLabel =
-    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
+    DeliveryProjectLabels[deal?.deliveryType as keyof typeof DeliveryProjectLabels] || "Нет данных"
+  const typeLabel = DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных"
 
-  const formattedDate = deal?.createdAt?.toLocaleDateString() || "Нет данных";
+  const formattedDate = deal?.createdAt?.toLocaleDateString() || "Нет данных"
   const formattedDelta = deal?.delta
     ? formatterCurrency.format(parseFloat(deal.delta))
-    : "Нет данных";
+    : "Нет данных"
   const formattedCP = deal?.amountCP
     ? formatterCurrency.format(parseFloat(deal.amountCP))
-    : "Нет данных";
+    : "Нет данных"
   const formattedPurchase = deal?.amountPurchase
     ? formatterCurrency.format(parseFloat(deal?.amountPurchase))
-    : "Нет данных";
+    : "Нет данных"
   const formattedWork = deal?.amountWork
     ? formatterCurrency.format(parseFloat(deal?.amountWork))
-    : "Нет данных";
+    : "Нет данных"
 
   const dataFinance = [
     {
@@ -59,7 +49,7 @@ const useNormalizeProjectData = (
       label: "Сумма работ:",
       value: formattedWork,
     },
-  ];
+  ]
 
   return {
     dataFinance,
@@ -68,7 +58,7 @@ const useNormalizeProjectData = (
     directionLabel,
     deliveryLabel,
     typeLabel,
-  };
-};
+  }
+}
 
-export default useNormalizeProjectData;
+export default useNormalizeProjectData

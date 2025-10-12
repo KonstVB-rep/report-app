@@ -2,9 +2,9 @@ export const RolesUser = {
   DIRECTOR: "Руководитель",
   EMPLOYEE: "Сотрудник",
   ADMIN: "Администратор",
-} as const;
+} as const
 
-export const RolesWithDefaultPermissions = ["ADMIN", "DIRECTOR", "SUPERADMIN"];
+export const RolesWithDefaultPermissions = ["ADMIN", "DIRECTOR", "SUPERADMIN"]
 
 export const PermissionUser = {
   VIEW_USER_REPORT: "Просмотр отчета пользователя",
@@ -13,4 +13,4 @@ export const PermissionUser = {
   USER_MANAGEMENT: "Управление пользователями",
   DEAL_MANAGEMENT: "Редактирование/удаление сделок",
   TASK_MANAGEMENT: "Редактирование/удаление задач",
-} as const;
+} as const

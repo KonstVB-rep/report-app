@@ -3,12 +3,12 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
+} from "@/shared/components/ui/tooltip"
 
 type TooltipProps = {
-  children: React.ReactNode;
-  textTooltip: string;
-};
+  children: React.ReactNode
+  textTooltip: string
+}
 
 const TooltipWrapper = ({ children, textTooltip }: TooltipProps) => {
   return (
@@ -20,7 +20,7 @@ const TooltipWrapper = ({ children, textTooltip }: TooltipProps) => {
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
-};
+  )
+}
 
-export default TooltipWrapper;
+export default TooltipWrapper

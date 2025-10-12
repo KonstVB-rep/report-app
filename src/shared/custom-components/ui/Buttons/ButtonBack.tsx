@@ -1,22 +1,16 @@
-import { useRouter } from "next/navigation";
-
-import { ArrowBigLeft } from "lucide-react";
-
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
+import { ArrowBigLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/shared/components/ui/button"
+import { cn } from "@/shared/lib/utils"
 
 const ButtonBack = ({ className }: { className?: string }) => {
-  const router = useRouter();
+  const router = useRouter()
   return (
-    <Button
-      variant="outline"
-      onClick={() => router.back()}
-      className={cn("w-fit", className)}
-    >
+    <Button className={cn("w-fit", className)} onClick={() => router.back()} variant="outline">
       <ArrowBigLeft />
       Назад
     </Button>
-  );
-};
+  )
+}
 
-export default ButtonBack;
+export default ButtonBack

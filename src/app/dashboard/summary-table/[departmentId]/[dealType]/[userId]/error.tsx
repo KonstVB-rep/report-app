@@ -1,24 +1,23 @@
-"use client";
+"use client"
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react"
+import { Button } from "@/shared/components/ui/button"
 
-import { Button } from "@/shared/components/ui/button";
-
-export default function Error({
+export default function ErrorFallback({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
-  const didHandleError = useRef(false);
+  const didHandleError = useRef(false)
 
   useEffect(() => {
     if (!didHandleError.current) {
-      console.error(error);
-      didHandleError.current = true;
+      console.error(error)
+      didHandleError.current = true
     }
-  }, [error]);
+  }, [error])
 
   return (
     <section className="grid h-full place-items-center content-center gap-4 text-center">
@@ -26,9 +25,9 @@ export default function Error({
       <p className="text-muted-foreground">
         Попробуйте повторить запрос или перезагрузите страницу.
       </p>
-      <Button variant="outline" onClick={reset}>
+      <Button onClick={reset} variant="outline">
         Повторить запрос
       </Button>
     </section>
-  );
+  )
 }

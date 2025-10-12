@@ -11,7 +11,7 @@ export function getErrorMessageUploadByCode(statusCode: number) {
     429: "Слишком много запросов.",
     503: "Сервис временно недоступен.",
     507: "Недостаточно свободного места.",
-  };
+  }
 
-  return messages[statusCode] || "Ошибка при загрузке файла.";
+  return messages[statusCode] || "Ошибка при загрузке файла."
 }

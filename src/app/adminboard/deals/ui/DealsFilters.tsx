@@ -1,24 +1,16 @@
-"use client";
+"use client"
 
-import { Table } from "@tanstack/react-table";
-
-import dynamic from "next/dynamic";
-
-import { DealBase } from "@/entities/deal/types";
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
+import type { Table } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
+import type { DealBase } from "@/entities/deal/types"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 
 const Filters = dynamic(() => import("./Filters"), {
   ssr: false,
   loading: () => <LoaderCircle />,
-});
+})
 
-const DealsFilters = ({
-  table,
-  open,
-}: {
-  table: Table<DealBase>;
-  open: boolean;
-}) => {
+const DealsFilters = ({ table, open }: { table: Table<DealBase>; open: boolean }) => {
   return (
     <>
       {open && (
@@ -29,7 +21,7 @@ const DealsFilters = ({
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default DealsFilters;
+export default DealsFilters

@@ -1,11 +1,11 @@
-import { getUserIdFromRequest } from "./getUserIdFromRequest";
+import { getUserIdFromRequest } from "./getUserIdFromRequest"
 
 export const requireAuth = async (): Promise<string> => {
-  const userId = await getUserIdFromRequest();
+  const userId = await getUserIdFromRequest()
 
   if (!userId) {
-    throw new Error("Пользователь не авторизован");
+    throw new Error("Пользователь не авторизован")
   }
 
-  return userId;
-};
+  return userId
+}

@@ -1,13 +1,11 @@
-import { flexRender, Header, Row } from "@tanstack/react-table";
-
-import { UserTypeTable } from "@/entities/user/model/column-data-user";
-import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog";
-
-import UserTableCell from "./UserTableCell";
+import { flexRender, type Header, type Row } from "@tanstack/react-table"
+import type { UserTypeTable } from "@/entities/user/model/column-data-user"
+import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
+import UserTableCell from "./UserTableCell"
 
 interface UserTableCellContentProps {
-  row: Row<UserTypeTable>;
-  headers: Header<UserTypeTable, unknown>[];
+  row: Row<UserTypeTable>
+  headers: Header<UserTypeTable, unknown>[]
 }
 
 const UserTableCellContent = ({ row, headers }: UserTableCellContentProps) => {
@@ -15,8 +13,8 @@ const UserTableCellContent = ({ row, headers }: UserTableCellContentProps) => {
     <>
       {row.getVisibleCells().map((cell, index) => (
         <UserTableCell
-          key={cell.id}
           cell={cell}
+          key={cell.id}
           styles={{
             padding: "0.5rem",
             position: "relative",
@@ -28,17 +26,17 @@ const UserTableCellContent = ({ row, headers }: UserTableCellContentProps) => {
           {(closeFn) => (
             <>
               <RowInfoDialog
-                isActive={true}
-                text={flexRender(cell.column.columnDef.cell, cell.getContext())}
                 closeFn={closeFn}
+                isActive={true}
                 isTargetCell={true}
+                text={flexRender(cell.column.columnDef.cell, cell.getContext())}
               />
             </>
           )}
         </UserTableCell>
       ))}
     </>
-  );
-};
+  )
+}
 
-export default UserTableCellContent;
+export default UserTableCellContent

@@ -1,5 +1,3 @@
-import React from "react";
-
 const NotFoundUser = () => {
   return (
     <section className="grid h-full place-items-center p-4">
@@ -7,7 +5,7 @@ const NotFoundUser = () => {
         Пользователь не найден
       </h1>
     </section>
-  );
-};
+  )
+}
 
-export default NotFoundUser;
+export default NotFoundUser

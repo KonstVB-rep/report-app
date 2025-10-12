@@ -1,58 +1,53 @@
-import { UserFilter } from "@prisma/client";
-
-import React, { useEffect, useState } from "react";
-
-import { useSearchParams } from "next/navigation";
-
+import type React from "react"
+import { useEffect, useState } from "react"
+import type { UserFilter } from "@prisma/client"
+import { useSearchParams } from "next/navigation"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
-
-import { useUpdateFilter } from "../hooks/mutate";
+} from "@/shared/components/ui/card"
+import { Checkbox } from "@/shared/components/ui/checkbox"
+import { Input } from "@/shared/components/ui/input"
+import { Label } from "@/shared/components/ui/label"
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
+import { useUpdateFilter } from "../hooks/mutate"
 
 const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams()
 
-  const { mutate, isPending } = useUpdateFilter();
+  const { mutate, isPending } = useUpdateFilter()
 
-  const [filterName, setFilterName] = useState("");
-  const [isUpdateParams, setIsUpdateParams] = useState(false);
+  const [filterName, setFilterName] = useState("")
+  const [isUpdateParams, setIsUpdateParams] = useState(false)
 
   useEffect(() => {
     if (filter?.filterName) {
-      setFilterName(filter.filterName);
+      setFilterName(filter.filterName)
     }
-  }, [filter?.filterName]);
+  }, [filter?.filterName])
 
   const handleChange = () => {
-    setIsUpdateParams(!isUpdateParams);
-  };
+    setIsUpdateParams(!isUpdateParams)
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!filter?.userId) {
-      throw new Error("Не найден идентификатор пользователя фильтра");
+      throw new Error("Не найден идентификатор пользователя фильтра")
     }
     mutate({
       data: {
         id: filter.id,
         userId: filter.userId,
         filterName,
-        filterValue: isUpdateParams
-          ? searchParams.toString()
-          : filter.filterValue,
+        filterValue: isUpdateParams ? searchParams.toString() : filter.filterValue,
         isActive: false,
       },
-    });
-  };
+    })
+  }
 
   return (
     <Card>
@@ -67,33 +62,25 @@ const UpdateSavedFilterForm = ({ filter }: { filter: UserFilter }) => {
           <Label className="grid gap-4">
             <p className="first-letter:uppercase">наименование фильтра</p>
             <Input
+              onChange={(e) => setFilterName(e.target.value)}
               placeholder="Новое название фильтра"
               value={filterName}
-              onChange={(e) => setFilterName(e.target.value)}
             />
           </Label>
           <div className="flex items-center space-x-2">
-            <Checkbox
-              id="params"
-              checked={isUpdateParams}
-              onCheckedChange={handleChange}
-            />
+            <Checkbox checked={isUpdateParams} id="params" onCheckedChange={handleChange} />
             <label
-              htmlFor="params"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              htmlFor="params"
             >
               Обновить параметры
             </label>
           </div>
-          <SubmitFormButton
-            title="Обновить"
-            disabled={isPending}
-            isPending={isPending}
-          />
+          <SubmitFormButton disabled={isPending} isPending={isPending} title="Обновить" />
         </form>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default UpdateSavedFilterForm;
+export default UpdateSavedFilterForm

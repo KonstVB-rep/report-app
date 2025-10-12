@@ -1,76 +1,65 @@
-"use client";
+"use client"
 
-import { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table";
-import { VirtualItem } from "@tanstack/react-virtual";
-
-import { useCallback, useRef } from "react";
-import { DateRange } from "react-day-picker";
-
-import { getManagers } from "@/entities/department/lib/utils";
-import { columnsDataTask } from "@/entities/task/model/column-data-tasks";
-import { TaskWithUserInfo } from "@/entities/task/types";
-import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider";
-import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
-import FilterByUsers from "@/feature/filter-persistence/ui/FilterByUsers";
-import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup";
-import { LABEL_TASK_STATUS } from "@/feature/task/model/constants";
-import DelTaskDialogContextMenu from "@/feature/task/ui/Modals/DelTaskDialogContextMenu";
-import EditTaskDialogContextMenu from "@/feature/task/ui/Modals/EditTaskDialogContextMenu";
-import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter";
+import { useCallback, useRef } from "react"
+import type { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table"
+import type { VirtualItem } from "@tanstack/react-virtual"
+import type { DateRange } from "react-day-picker"
+import { getManagers } from "@/entities/department/lib/utils"
+import { columnsDataTask } from "@/entities/task/model/column-data-tasks"
+import type { TaskWithUserInfo } from "@/entities/task/types"
+import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider"
+import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
+import FilterByUsers from "@/feature/filter-persistence/ui/FilterByUsers"
+import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup"
+import { LABEL_TASK_STATUS } from "@/feature/task/model/constants"
+import DelTaskDialogContextMenu from "@/feature/task/ui/Modals/DelTaskDialogContextMenu"
+import EditTaskDialogContextMenu from "@/feature/task/ui/Modals/EditTaskDialogContextMenu"
+import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter"
 import {
-  TableContextType,
+  type TableContextType,
   TableProvider,
-} from "@/shared/custom-components/ui/Table/context/TableContext";
-import TableRowDealOrTask from "@/shared/custom-components/ui/Table/TableRowDealOrTask";
-import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate";
-import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow";
-import { useTableState } from "@/shared/hooks/useTableState";
-import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable";
+} from "@/shared/custom-components/ui/Table/context/TableContext"
+import TableRowDealOrTask from "@/shared/custom-components/ui/Table/TableRowDealOrTask"
+import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
+import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow"
+import { useTableState } from "@/shared/hooks/useTableState"
+import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable"
 
 interface TaskTableProps<TData extends TaskWithUserInfo> {
-  data: TData[];
+  data: TData[]
 }
 
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
-  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const getContextMenuActions: TableContextType<T>["getContextMenuActions"] =
-    useCallback(
-      (
-        setOpenModal: React.Dispatch<
-          React.SetStateAction<"delete" | "edit" | null>
-        >,
-        row: Row<T>
-      ) => ({
-        edit: (
-          <EditTaskDialogContextMenu
-            close={() => setOpenModal(null)}
-            id={row.original.id as string}
-          />
-        ),
-        delete: (
-          <DelTaskDialogContextMenu
-            close={() => setOpenModal(null)}
-            id={row.original.id as string}
-          />
-        ),
-      }),
-      []
-    );
+  const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
+    (
+      setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>,
+      row: Row<T>,
+    ) => ({
+      edit: (
+        <EditTaskDialogContextMenu
+          close={() => setOpenModal(null)}
+          id={row.original.id as string}
+        />
+      ),
+      delete: (
+        <DelTaskDialogContextMenu close={() => setOpenModal(null)} id={row.original.id as string} />
+      ),
+    }),
+    [],
+  )
 
-  const { table, filtersContextValue } = useTableState(
-    data,
-    columnsDataTask as ColumnDef<T>[]
-  );
+  const { table, filtersContextValue } = useTableState(data, columnsDataTask as ColumnDef<T>[])
 
-  const { rows } = table.getRowModel();
+  const { rows } = table.getRowModel()
 
-  const { columnFilters } = table.getState();
+  const { columnFilters } = table.getState()
 
   const { virtualItems, totalSize } = useVirtualizedRowTable<T>({
     rows,
     tableContainerRef,
-  });
+  })
 
   if (rows.length === 0) {
     return (
@@ -81,18 +70,14 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           </h1>
         </div>
       </div>
-    );
+    )
   }
   return (
     <DataTableFiltersProvider value={filtersContextValue}>
       <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
         <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
           <div className="flex items-center">
-            <FilterByUsers
-              label="Исполнитель"
-              columnId="executorId"
-              managers={getManagers()}
-            />
+            <FilterByUsers columnId="executorId" label="Исполнитель" managers={getManagers()} />
           </div>
           <FilterTasks columnFilters={columnFilters} />
         </div>
@@ -101,51 +86,34 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           ref={tableContainerRef}
         >
           <TableProvider<T> getContextMenuActions={getContextMenuActions}>
-            <TableTemplate
-              table={table}
-              className="rounded-md"
-              totalSize={totalSize}
-            >
+            <TableTemplate className="rounded-md" table={table} totalSize={totalSize}>
               <VirtualRow<T>
-                rows={rows}
-                virtualItems={virtualItems}
-                renderRow={({
-                  row,
-                  virtualRow,
-                }: {
-                  row: Row<T>;
-                  virtualRow: VirtualItem;
-                }) => (
+                renderRow={({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
                   <TableRowDealOrTask<T>
+                    entityType={"task"}
+                    headers={table.getHeaderGroups()[0].headers}
                     key={row.id}
                     row={row}
                     virtualRow={virtualRow}
-                    entityType={"task"}
-                    headers={table.getHeaderGroups()[0].headers}
                   />
                 )}
+                rows={rows}
+                virtualItems={virtualItems}
               />
             </TableTemplate>
           </TableProvider>
         </div>
       </div>
     </DataTableFiltersProvider>
-  );
-};
+  )
+}
 
-export default TaskTable;
+export default TaskTable
 
-const FilterTasks = ({
-  columnFilters,
-}: {
-  columnFilters: ColumnFiltersState;
-}) => {
-  const { handleDateChange, handleClearDateFilter } =
-    useDataTableFiltersContext();
+const FilterTasks = ({ columnFilters }: { columnFilters: ColumnFiltersState }) => {
+  const { handleDateChange, handleClearDateFilter } = useDataTableFiltersContext()
 
-  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
-    | DateRange
-    | undefined;
+  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as DateRange | undefined
   return (
     <>
       <FilterPopoverGroup
@@ -158,11 +126,11 @@ const FilterTasks = ({
         ]}
       />
       <DateRangeFilter
-        onDateChange={handleDateChange("dueDate")}
-        onClearDateFilter={handleClearDateFilter}
-        value={value}
         label="Дата"
+        onClearDateFilter={handleClearDateFilter}
+        onDateChange={handleDateChange("dueDate")}
+        value={value}
       />
     </>
-  );
-};
+  )
+}

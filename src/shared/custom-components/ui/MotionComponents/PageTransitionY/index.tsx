@@ -1,14 +1,14 @@
-"use client";
+"use client"
 
-import MotionDivY from "../MotionDivY";
+import MotionDivY from "../MotionDivY"
 
 interface PageTransitionYProps {
-  children: React.ReactNode;
-  className?: string;
+  children: React.ReactNode
+  className?: string
 }
 
 const PageTransitionY = ({ children, className }: PageTransitionYProps) => {
-  return <MotionDivY className={className}>{children}</MotionDivY>;
-};
+  return <MotionDivY className={className}>{children}</MotionDivY>
+}
 
-export default PageTransitionY;
+export default PageTransitionY

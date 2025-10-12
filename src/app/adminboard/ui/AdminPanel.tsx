@@ -1,10 +1,6 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-
-import { ChevronRight } from "lucide-react";
-
-import UserTable from "@/feature/user/ui/admindashboard/UserTable";
+import UserTable from "@/feature/user/ui/admindashboard/UserTable"
 
 const AdminPanel = () => {
   return (
@@ -13,7 +9,7 @@ const AdminPanel = () => {
         <UserTable />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminPanel;
+export default AdminPanel

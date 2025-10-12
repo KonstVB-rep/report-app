@@ -9,4 +9,4 @@ export const defaultTaskValues = {
   startDate: undefined,
   startTime: "",
   endTime: "",
-};
+}

@@ -1,6 +1,7 @@
-"use client";
+"use client"
 
-import {
+import type { Dispatch, SetStateAction } from "react"
+import type {
   DealFile,
   DealType,
   DeliveryProject,
@@ -9,14 +10,10 @@ import {
   DirectionRetail,
   StatusProject,
   StatusRetail,
-} from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
-
-import { Dispatch, SetStateAction } from "react";
-import { DeepPartial } from "react-hook-form";
-
-import { usePathname } from "next/navigation";
-
+} from "@prisma/client"
+import { useMutation } from "@tanstack/react-query"
+import { usePathname } from "next/navigation"
+import type { DeepPartial } from "react-hook-form"
 import {
   createProject,
   createRetail,
@@ -25,9 +22,9 @@ import {
   reassignDealsToManager,
   updateProject,
   updateRetail,
-} from "@/entities/deal/api";
-import { ProjectSchema, RetailSchema } from "@/entities/deal/model/schema";
-import {
+} from "@/entities/deal/api"
+import type { ProjectSchema, RetailSchema } from "@/entities/deal/model/schema"
+import type {
   ProjectResponse,
   ProjectWithManagersIds,
   ProjectWithoutDateCreateAndUpdate,
@@ -37,109 +34,96 @@ import {
   RetailWithManagersIds,
   RetailWithoutDateCreateAndUpdate,
   RetailWithoutId,
-} from "@/entities/deal/types";
-import {
-  defaultProjectValues,
-  defaultRetailValues,
-} from "@/feature/deals/model/defaultvaluesForm";
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
-import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-import { SuccessResponse } from "@/shared/types";
+} from "@/entities/deal/types"
+import { defaultProjectValues, defaultRetailValues } from "@/feature/deals/model/defaultvaluesForm"
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
+import handleErrorSession from "@/shared/auth/handleErrorSession"
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization"
+import type { SuccessResponse } from "@/shared/types"
 
 export const useDelDeal = (
   closeModalFn: Dispatch<SetStateAction<void>>,
   type: DealType,
-  ownerId: string
+  ownerId: string,
 ) => {
-  const pathname = usePathname();
-  const { queryClient, authUser } = useFormSubmission();
+  const pathname = usePathname()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
     mutationFn: async (nealId: string) => {
-      await checkAuthorization(authUser?.id);
+      await checkAuthorization(authUser?.id)
 
-      return await deleteDeal(nealId, ownerId, type);
+      return await deleteDeal(nealId, ownerId, type)
     },
     onSuccess: (data, dealId) => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
-          queryKey: [
-            "all-deals-department",
-            authUser?.departmentId,
-            authUser?.id,
-          ],
-        });
-        return;
+          queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
+        })
+        return
       }
       data.managers.forEach((manager) => {
         queryClient.invalidateQueries({
           queryKey: [`${type.toLowerCase()}s`, manager.userId],
-        });
-      });
+        })
+      })
 
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}s`, ownerId],
-      });
+      })
 
       queryClient.invalidateQueries({
         queryKey: [`${type.toLowerCase()}`, dealId],
-      });
+      })
 
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
-      });
+      })
 
-      closeModalFn();
+      closeModalFn()
     },
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
-  });
-};
+  })
+}
 
-export const useDelListDeal = (
-  closeModalFn: (dataFiles: DealFile[]) => void
-) => {
-  const pathname = usePathname();
-  const { queryClient, authUser } = useFormSubmission();
+export const useDelListDeal = (closeModalFn: (dataFiles: DealFile[]) => void) => {
+  const pathname = usePathname()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
     mutationFn: async (
       deals: {
-        id: string;
-        type: DealType;
-      }[]
+        id: string
+        type: DealType
+      }[],
     ) => {
-      await checkAuthorization(authUser?.id);
+      await checkAuthorization(authUser?.id)
 
-      return await deleteMultipleDeals(deals);
+      return await deleteMultipleDeals(deals)
     },
     onSuccess: (data) => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
-          queryKey: [
-            "all-deals-department",
-            authUser?.departmentId,
-            authUser?.id,
-          ],
-        });
+          queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
+        })
       }
 
-      closeModalFn(data?.files || []);
+      closeModalFn(data?.files || [])
     },
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
-  });
-};
+  })
+}
 
 export const useMutationUpdateProject = (
   dealId: string,
   userId: string,
   close: () => void,
-  isInvalidate: boolean = false
+  isInvalidate: boolean = false,
 ) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: (data: ProjectSchema) => {
@@ -157,79 +141,64 @@ export const useMutationUpdateProject = (
           : null,
         direction: data.direction as DirectionProject,
         amountCP: data.amountCP
-          ? parseFloat(
-              data.amountCP.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         amountPurchase: data.amountPurchase
-          ? parseFloat(
-              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountPurchase.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         amountWork: data.amountWork
-          ? parseFloat(
-              data.amountWork.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountWork.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         delta: data.delta
-          ? parseFloat(
-              data.delta.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         managersIds: data.managersIds,
-      };
+      }
 
       return handleMutationWithAuthCheck<
         ProjectWithManagersIds,
         ProjectWithoutDateCreateAndUpdate | null
-      >(updateProject, formData, authUser, isSubmittingRef);
+      >(updateProject, formData, authUser, isSubmittingRef)
     },
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
     onSuccess: (_, variables) => {
-      close();
+      close()
 
-      const previousData = queryClient.getQueryData<ProjectResponse>([
-        "project",
-        dealId,
-      ]);
+      const previousData = queryClient.getQueryData<ProjectResponse>(["project", dealId])
 
-      const prevManagers =
-        previousData?.managers?.map((m) => m.id).sort() || [];
-      const currManagers =
-        variables.managersIds?.map((m) => m.userId).sort() || [];
+      const prevManagers = previousData?.managers?.map((m) => m.id).sort() || []
+      const currManagers = variables.managersIds?.map((m) => m.userId).sort() || []
 
       if (isInvalidate) {
-        queryClient.invalidateQueries({ queryKey: ["project", dealId] });
+        queryClient.invalidateQueries({ queryKey: ["project", dealId] })
       }
 
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
-      });
+      })
 
-      const allManagers = [
-        ...new Set([...prevManagers, ...currManagers, userId]),
-      ];
+      const allManagers = [...new Set([...prevManagers, ...currManagers, userId])]
 
       allManagers.forEach((id) => {
-        queryClient.invalidateQueries({ queryKey: ["projects", id] });
-        queryClient.invalidateQueries({ queryKey: ["contracts", id] });
-      });
+        queryClient.invalidateQueries({ queryKey: ["projects", id] })
+        queryClient.invalidateQueries({ queryKey: ["contracts", id] })
+      })
     },
-  });
-};
+  })
+}
 
 export const useMutationUpdateRetail = (
   dealId: string,
   userId: string,
   close: () => void,
-  isInvalidate: boolean = false
+  isInvalidate: boolean = false,
 ) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
   return useMutation({
     mutationFn: (
-      data: RetailSchema
+      data: RetailSchema,
     ): Promise<RetailWithoutDateCreateAndUpdate | null | undefined> => {
       const formData = {
         ...data,
@@ -245,71 +214,55 @@ export const useMutationUpdateRetail = (
           : null,
         direction: data.direction as DirectionRetail,
         amountCP: data.amountCP
-          ? parseFloat(
-              data.amountCP.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         delta: data.delta
-          ? parseFloat(
-              data.delta.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         managersIds: data.managersIds,
-      };
+      }
 
       return handleMutationWithAuthCheck<
         RetailWithManagersIds,
         RetailWithoutDateCreateAndUpdate | null
-      >(updateRetail, formData, authUser, isSubmittingRef);
+      >(updateRetail, formData, authUser, isSubmittingRef)
     },
 
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
     onSuccess: (_, variables) => {
-      close();
+      close()
 
-      const previousData = queryClient.getQueryData<RetailResponse>([
-        "retail",
-        dealId,
-      ]);
-      const prevManagers =
-        previousData?.managers?.map((m) => m.id).sort() || [];
-      const currManagers =
-        variables.managersIds?.map((m) => m.userId).sort() || [];
+      const previousData = queryClient.getQueryData<RetailResponse>(["retail", dealId])
+      const prevManagers = previousData?.managers?.map((m) => m.id).sort() || []
+      const currManagers = variables.managersIds?.map((m) => m.userId).sort() || []
 
       if (isInvalidate) {
-        queryClient.invalidateQueries({ queryKey: ["retail", dealId] });
+        queryClient.invalidateQueries({ queryKey: ["retail", dealId] })
       }
 
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
-      });
+      })
 
-      const allManagers = [
-        ...new Set([...prevManagers, ...currManagers, userId]),
-      ];
+      const allManagers = [...new Set([...prevManagers, ...currManagers, userId])]
       allManagers.forEach((id) => {
-        queryClient.invalidateQueries({ queryKey: ["retails", id] });
-      });
+        queryClient.invalidateQueries({ queryKey: ["retails", id] })
+      })
     },
-  });
-};
+  })
+}
 
-export const useCreateProject = (
-  reset: (values?: DeepPartial<ProjectSchema>) => void
-) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) => void) => {
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
   return useMutation({
     mutationFn: async (data: ProjectSchema) => {
       const formData = {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        deliveryType:
-          data.deliveryType === ""
-            ? null
-            : (data.deliveryType as DeliveryProject),
+        deliveryType: data.deliveryType === "" ? null : (data.deliveryType as DeliveryProject),
         dateRequest: data.dateRequest
           ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
@@ -319,75 +272,62 @@ export const useCreateProject = (
           : null,
         direction: data.direction as DirectionProject,
         amountCP: data.amountCP
-          ? parseFloat(
-              data.amountCP.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         amountPurchase: data.amountPurchase
-          ? parseFloat(
-              data.amountPurchase.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountPurchase.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         amountWork: data.amountWork
-          ? parseFloat(
-              data.amountWork.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountWork.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         delta: data.delta
-          ? parseFloat(
-              data.delta.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         managersIds: data.managersIds,
-      };
+      }
 
       return handleMutationWithAuthCheck<
         ProjectWithoutId & { managersIds: { userId: string }[] },
         ProjectResponse
-      >(createProject, formData, authUser, isSubmittingRef);
+      >(createProject, formData, authUser, isSubmittingRef)
     },
 
     onSuccess: (data) => {
-      if (!data) return;
+      if (!data) return
 
-      reset(defaultProjectValues);
+      reset(defaultProjectValues)
 
       queryClient.invalidateQueries({
         queryKey: ["projects", data?.userId],
         exact: true,
-      });
+      })
 
       queryClient.invalidateQueries({
         queryKey: ["orders", authUser?.departmentId],
         exact: true,
-      });
+      })
     },
 
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
-  });
-};
+  })
+}
 
-export const useCreateRetail = (
-  reset: (values?: DeepPartial<RetailSchema>) => void
-) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => void) => {
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: (data: RetailSchema) => {
       if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован");
+        throw new Error("Пользователь не авторизован")
       }
 
       const formData = {
         ...data,
         email: data.email || "",
         phone: data.phone || "",
-        deliveryType:
-          data.deliveryType === ""
-            ? null
-            : (data.deliveryType as DeliveryRetail),
+        deliveryType: data.deliveryType === "" ? null : (data.deliveryType as DeliveryRetail),
         dateRequest: data.dateRequest
           ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
@@ -397,46 +337,42 @@ export const useCreateRetail = (
           : null,
         direction: data.direction as DirectionRetail,
         amountCP: data.amountCP
-          ? parseFloat(
-              data.amountCP.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         delta: data.delta
-          ? parseFloat(
-              data.delta.replace(/\s/g, "").replace(",", ".")
-            ).toString()
+          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
           : "0",
         managersIds: data.managersIds,
-      };
+      }
 
       return handleMutationWithAuthCheck<
         RetailWithoutId & { managersIds: { userId: string }[] },
         RetailResponse
-      >(createRetail, formData, authUser, isSubmittingRef);
+      >(createRetail, formData, authUser, isSubmittingRef)
     },
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
     onSuccess: (data) => {
       if (data) {
-        reset(defaultRetailValues);
+        reset(defaultRetailValues)
 
         queryClient.invalidateQueries({
           queryKey: ["retails", data.userId],
           exact: true,
-        });
+        })
 
         queryClient.invalidateQueries({
           queryKey: ["orders", authUser?.departmentId],
           exact: true,
-        });
+        })
       }
     },
-  });
-};
+  })
+}
 
 export const useReassignDeal = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: (data: ReAssignDeal) => {
@@ -444,21 +380,17 @@ export const useReassignDeal = () => {
         reassignDealsToManager,
         data,
         authUser,
-        isSubmittingRef
-      );
+        isSubmittingRef,
+      )
     },
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
     onSuccess: () => {
       // close();
       queryClient.invalidateQueries({
-        queryKey: [
-          "all-deals-department",
-          authUser?.departmentId,
-          authUser?.id,
-        ],
-      });
+        queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
+      })
     },
-  });
-};
+  })
+}

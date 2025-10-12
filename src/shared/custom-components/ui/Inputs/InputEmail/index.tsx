@@ -1,18 +1,17 @@
-import React from "react";
+import type React from "react"
+import { Input } from "@/shared/components/ui/input"
 
-import { Input } from "@/shared/components/ui/input";
-
-type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>
 
 const InputEmail = (props: InputProps) => {
   return (
     <Input
       {...props}
+      className={`w-full ${props.className}`}
       placeholder="m@example.com"
       type="email"
-      className={`w-full ${props.className}`}
     />
-  );
-};
+  )
+}
 
-export default InputEmail;
+export default InputEmail

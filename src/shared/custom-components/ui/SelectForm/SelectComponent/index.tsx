@@ -1,5 +1,4 @@
-import * as React from "react";
-
+import type * as React from "react"
 import {
   Select,
   SelectContent,
@@ -7,13 +6,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/components/ui/select";
+} from "@/shared/components/ui/select"
 
 type SelectComponentProps = {
-  placeholder: string;
-  options: [string, string][]; // Это массив кортежей [key, value]
-  className?: string;
-} & React.ComponentProps<typeof Select>;
+  placeholder: string
+  options: [string, string][] // Это массив кортежей [key, value]
+  className?: string
+} & React.ComponentProps<typeof Select>
 
 const SelectComponent = ({
   placeholder,
@@ -24,12 +23,7 @@ const SelectComponent = ({
   ...props
 }: SelectComponentProps) => {
   return (
-    <Select
-      key={value}
-      value={value}
-      onValueChange={(val) => onValueChange?.(val)}
-      {...props}
-    >
+    <Select key={value} onValueChange={(val) => onValueChange?.(val)} value={value} {...props}>
       <SelectTrigger className="w-full border border-solid">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
@@ -37,14 +31,14 @@ const SelectComponent = ({
       <SelectContent>
         <SelectGroup>
           {options?.map(([key, value]) => (
-            <SelectItem key={key} value={key} className={`${className}`}>
+            <SelectItem className={`${className}`} key={key} value={key}>
               <span className={`${className}`}>{value}</span>
             </SelectItem>
           ))}
         </SelectGroup>
       </SelectContent>
     </Select>
-  );
-};
+  )
+}
 
-export default SelectComponent;
+export default SelectComponent

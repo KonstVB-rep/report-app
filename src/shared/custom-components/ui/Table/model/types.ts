@@ -1,23 +1,21 @@
-import { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table";
-import { VirtualItem, Virtualizer } from "@tanstack/react-virtual";
+import type { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table"
+import type { VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 
 export type DataTableType<TData, TValue> = {
-  data: TData[];
-  columns: ColumnDef<TData, TValue>[];
-};
+  data: TData[]
+  columns: ColumnDef<TData, TValue>[]
+}
 
 export type FilterPopoverProps = {
-  columnFilters: ColumnFiltersState;
-  setColumnFilters: (
-    callback: (prev: ColumnFiltersState) => ColumnFiltersState
-  ) => void;
-};
+  columnFilters: ColumnFiltersState
+  setColumnFilters: (callback: (prev: ColumnFiltersState) => ColumnFiltersState) => void
+}
 
 export type TableBodyRowProps<T> = {
-  row: Row<T>;
-  virtualRow: VirtualItem;
-  rowVirtualizer: Virtualizer<HTMLDivElement, Element>;
-};
+  row: Row<T>
+  virtualRow: VirtualItem
+  rowVirtualizer: Virtualizer<HTMLDivElement, Element>
+}
 
 // type CommonProperties<Types extends unknown[]> = {
 //   [Key in keyof Types[0]]:  // Берем ключи из первого типа
@@ -31,7 +29,7 @@ export type TableBodyRowProps<T> = {
 //  export type AllCommonKeys = CommonProperties<[ProjectResponse, RetailResponse, ContractResponse]>;
 
 export type TypeBaseDT = {
-  id: string;
-  dealStatus?: string;
-  type?: string;
-};
+  id: string
+  dealStatus?: string
+  type?: string
+}

@@ -1,5 +1,3 @@
-import React from "react";
-
 const loading = () => {
   return (
     <div className="grid gap-5 p-5">
@@ -11,7 +9,7 @@ const loading = () => {
         <div className="h-60 w-full animate-pulse rounded-xl dark:bg-muted/50 bg-black/20" />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default loading;
+export default loading
