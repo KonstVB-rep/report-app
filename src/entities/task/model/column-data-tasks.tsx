@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import type { User } from "@prisma/client"
 import { TaskStatus } from "@prisma/client"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { endOfDay, startOfDay } from "date-fns"
@@ -172,11 +171,12 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
       const users = deptsFormatted?.reduce(
         (acc, curr) => {
           curr.users.forEach((user) => {
-            acc[user.id] = user
+            const [[key, value]] = Object.entries(user)
+            acc[key] = value
           })
           return acc
         },
-        {} as Record<string, User>,
+        {} as Record<string, string>,
       )
 
       if (!users) {
