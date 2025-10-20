@@ -1,37 +1,47 @@
 import { cookies } from "next/headers";
-
 import { SignJWT } from "jose";
 
 export const generateTokens = async (
   userId: string,
   departmentId: string | number
 ) => {
-  const [accessToken, refreshToken] = await Promise.all([
-    new SignJWT({ userId, departmentId })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("7d")
-      .sign(new TextEncoder().encode(process.env.JWT_SECRET_KEY)),
+  try {
+    if (!process.env.JWT_SECRET_KEY || !process.env.REFRESH_SECRET_KEY) {
+      throw new Error("JWT_SECRET_KEY or REFRESH_SECRET_KEY is missing");
+    }
 
-    new SignJWT({ userId, departmentId })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("30d")
-      .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)),
-  ]);
+    const [accessToken, refreshToken] = await Promise.all([
+      new SignJWT({ userId, departmentId })
+        .setProtectedHeader({ alg: "HS256" })
+        .setExpirationTime("7d")
+        .sign(new TextEncoder().encode(process.env.JWT_SECRET_KEY)),
 
-  const cookiesStore = await cookies();
+      new SignJWT({ userId, departmentId })
+        .setProtectedHeader({ alg: "HS256" })
+        .setExpirationTime("30d")
+        .sign(new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)),
+    ]);
 
-  cookiesStore.set("accessToken", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24,
-  });
-  cookiesStore.set("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 30,
-  });
+    const cookiesStore = await cookies();
+    cookiesStore.set("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24,
+    });
+    cookiesStore.set("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 30,
+    });
 
-  return { accessToken, refreshToken };
+    return { accessToken, refreshToken };
+  } catch (error: any) {
+    console.error("generateTokens error:", {
+      message: error.message,
+      stack: error.stack,
+    });
+    throw error;
+  }
 };

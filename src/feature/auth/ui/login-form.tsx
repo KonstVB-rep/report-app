@@ -42,13 +42,6 @@ const LoginForm = () => {
   const [state, formAction] = useActionState(login, undefined);
   const { setAuthUser, setIsAuth } = useStoreUser();
 
-  // const styles = useSpring({
-  //   opacity: 1,
-  //   transform: "translateY(0px)",
-  //   from: { opacity: 0, transform: "translateY(20px)" },
-  //   config: { duration: 350, easing: (t) => 1 - Math.pow(1 - t, 3) },
-  // });
-
   const onSubmit = (formData: FormData) => {
     const parsed = loginFormSchema.safeParse(Object.fromEntries(formData));
     if (!parsed.success) {

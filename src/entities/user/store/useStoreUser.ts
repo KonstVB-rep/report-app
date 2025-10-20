@@ -6,9 +6,9 @@ import { create } from "@/shared/lib/helpers/сreate";
 import { User } from "../types";
 
 type State = {
-  authUser: User | null;
+  authUser: Omit<User, "user_password"> | null;
   isAuth: boolean;
-  setAuthUser: (user: User | null) => void;
+  setAuthUser: (user: Omit<User, "user_password"> | null) => void;
   setIsAuth: (isAuth: boolean) => void;
   resetStore: () => void;
 };
@@ -18,7 +18,7 @@ const useStoreUser = create<State>()(
       authUser: null,
       isAuth: false,
 
-      setAuthUser: (user: User | null) =>
+      setAuthUser: (user: Omit<User, "user_password"> | null) =>
         set({
           authUser: user,
           isAuth: !!user,
