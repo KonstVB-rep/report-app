@@ -1,29 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
+import { checkDepartment } from "@/shared/api/checkByServer"
+import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 
-import { checkDepartment } from "@/shared/api/checkByServer";
-import {
-  pageParamsSchemaDepsId,
-  useTypedParams,
-} from "@/shared/hooks/useTypedParams";
-
-const ProtectedByDepartmentAffiliation = ({
-  children,
-}: React.PropsWithChildren) => {
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId);
+const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren) => {
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
+  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
 
   useEffect(() => {
-    let mounted = true;
-    if (!departmentId) return;
+    let mounted = true
+    if (!departmentId) return
 
-    checkDepartment(departmentId).then((result) => setHasAccess(result));
+    checkDepartment(departmentId).then((result) => {
+      if (mounted) setHasAccess(result)
+    })
 
     return () => {
-      mounted = false;
-    };
-  }, [departmentId]);
+      mounted = false
+    }
+  }, [departmentId])
+  return hasAccess ? children : null
+}
 
-  return hasAccess ? <>{children}</> : null;
-};
-
-export default ProtectedByDepartmentAffiliation;
+export default ProtectedByDepartmentAffiliation

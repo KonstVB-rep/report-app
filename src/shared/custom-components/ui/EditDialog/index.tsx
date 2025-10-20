@@ -1,20 +1,18 @@
-import React from "react";
-
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
-
-import DialogComponent from "../DialogComponent";
+import type React from "react"
+import { Button } from "@/shared/components/ui/button"
+import { cn } from "@/shared/lib/utils"
+import DialogComponent from "../DialogComponent"
 
 type EditDataDialogProps = {
-  children: React.ReactNode;
-  textButtonShow?: boolean;
-  title?: string;
-  description?: string;
-  open?: boolean;
-  setOpen?: (open: boolean) => void;
-  icon?: React.ReactNode;
-  className?: string;
-};
+  children: React.ReactNode
+  textButtonShow?: boolean
+  title?: string
+  description?: string
+  open?: boolean
+  setOpen?: (open: boolean) => void
+  icon?: React.ReactNode
+  className?: string
+}
 
 const EditDataDialog = ({
   children,
@@ -28,30 +26,27 @@ const EditDataDialog = ({
 }: EditDataDialogProps) => {
   return (
     <DialogComponent
-      open={open}
-      onOpenChange={setOpen}
-      dialogTitle={title}
+      classNameContent="sm:max-w-[600px] w-full"
       description={description}
+      dialogTitle={title}
+      onOpenChange={setOpen}
+      open={open}
       trigger={
         <Button
-          variant="outline"
           aria-label={title}
-          title={title}
+          className={cn(className, textButtonShow ? "justify-start" : "justify-center")}
           size={!textButtonShow ? "icon" : "default"}
-          className={cn(
-            className,
-            textButtonShow ? "justify-start" : "justify-center"
-          )}
+          title={title}
+          variant="outline"
         >
           {icon}
           {textButtonShow && "Редактировать"}
         </Button>
       }
-      classNameContent="sm:max-w-[600px] w-full"
     >
       {children}
     </DialogComponent>
-  );
-};
+  )
+}
 
-export default EditDataDialog;
+export default EditDataDialog

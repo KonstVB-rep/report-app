@@ -1,50 +1,44 @@
-"use client";
+"use client"
 
-import { DepartmentEnum, PermissionEnum, Role } from "@prisma/client";
-
-import React, { useEffect, useState } from "react";
-
-import { toast } from "sonner";
-
-import {
-  UserFormEditData,
-  UserWithdepartmentName,
-} from "@/entities/user/types";
-import UserForm from "@/entities/user/ui/UserForm";
-import Overlay from "@/shared/custom-components/ui/Overlay";
-import { ActionResponse } from "@/shared/types";
-
-import { useUpdateUser } from "../hooks/mutate";
+import type React from "react"
+import { useEffect, useState } from "react"
+import type { DepartmentEnum, PermissionEnum, Role } from "@prisma/client"
+import { toast } from "sonner"
+import type { UserFormEditData, UserWithdepartmentName } from "@/entities/user/types"
+import UserForm from "@/entities/user/ui/UserForm"
+import Overlay from "@/shared/custom-components/ui/Overlay"
+import type { ActionResponse } from "@/shared/types"
+import { useUpdateUser } from "../hooks/mutate"
 
 const initialState: ActionResponse<UserFormEditData> = {
   success: false,
   message: "",
-};
+}
 
 const UserEditForm = ({
   user,
   setOpen,
 }: {
-  user: UserWithdepartmentName | undefined;
-  setOpen: (value: boolean) => void;
+  user: UserWithdepartmentName | undefined
+  setOpen: (value: boolean) => void
 }) => {
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState(initialState)
 
   const { mutateAsync, isPending } = useUpdateUser(
     user?.id as string,
     (data: ActionResponse<UserFormEditData>) => {
-      setState(data);
+      setState(data)
       if (data.success) {
-        setOpen(false);
+        setOpen(false)
       }
-    }
-  );
+    },
+  )
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const formData = new FormData(event.currentTarget);
-    formData.append("id", user?.id as string);
+    const formData = new FormData(event.currentTarget)
+    formData.append("id", user?.id as string)
     state.inputs = {
       username: formData.get("username") as string,
       phone: formData.get("phone") as string,
@@ -52,16 +46,14 @@ const UserEditForm = ({
       position: formData.get("position") as string,
       department: formData.get("department") as DepartmentEnum,
       role: formData.get("role") as Role,
-      permissions: JSON.parse(
-        formData.get("permissions") as string
-      ) as PermissionEnum[],
-    };
-    mutateAsync(formData);
-  };
+      permissions: JSON.parse(formData.get("permissions") as string) as PermissionEnum[],
+    }
+    mutateAsync(formData)
+  }
 
   useEffect(() => {
     if (!user) {
-      return;
+      return
     }
 
     setState({
@@ -75,37 +67,32 @@ const UserEditForm = ({
         role: user.role,
         permissions: user.permissions,
       },
-    });
-  }, [user]);
+    })
+  }, [user])
 
   useEffect(() => {
-    let toastId: string | number | null = null;
+    let toastId: string | number | null = null
 
     if (isPending) {
-      toastId = toast.loading("Идет сохранение...");
+      toastId = toast.loading("Идет сохранение...")
     } else {
       if (toastId) {
-        toast.dismiss(toastId);
+        toast.dismiss(toastId)
       }
     }
 
     return () => {
       if (toastId) {
-        toast.dismiss(toastId);
+        toast.dismiss(toastId)
       }
-    };
-  }, [isPending]);
+    }
+  }, [isPending])
 
   return (
     <>
       <Overlay isPending={isPending} />
-      <UserForm
-        state={state}
-        onSubmit={onSubmit}
-        isPending={isPending}
-        setState={setState}
-      />
+      <UserForm isPending={isPending} onSubmit={onSubmit} setState={setState} state={state} />
     </>
-  );
-};
-export default UserEditForm;
+  )
+}
+export default UserEditForm

@@ -1,5 +1,3 @@
-import React from "react";
-
 const FormDeleteFileSkeleton = () => {
   return (
     <div className="grid w-full gap-2">
@@ -7,7 +5,7 @@ const FormDeleteFileSkeleton = () => {
       <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
       <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
     </div>
-  );
-};
+  )
+}
 
-export default FormDeleteFileSkeleton;
+export default FormDeleteFileSkeleton

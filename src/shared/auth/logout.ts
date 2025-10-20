@@ -1,15 +1,15 @@
-import axiosInstance from "@/shared/api/axiosInstance";
-import { resetAllStores } from "@/shared/lib/helpers/сreate";
+import axiosInstance from "@/shared/api/axiosInstance"
+import { resetAllStores } from "@/shared/lib/helpers/сreate"
 
 export const logout = async () => {
   try {
-    await axiosInstance.post("/auth/logout");
+    await axiosInstance.post("/auth/logout")
 
-    resetAllStores();
+    resetAllStores()
 
-    window.location.href = "/login";
+    window.location.href = "/login"
   } catch (error) {
-    console.error("Ошибка при выходе:", error);
-    throw error;
+    console.error("Ошибка при выходе:", error)
+    throw error
   }
-};
+}

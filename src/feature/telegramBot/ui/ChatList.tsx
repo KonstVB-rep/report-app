@@ -1,34 +1,31 @@
-"use client";
+"use client"
 
-import { UserTelegramChat } from "@prisma/client";
+import type { UserTelegramChat } from "@prisma/client"
+import { BotMessageSquareIcon } from "lucide-react"
+import { getManagers } from "@/entities/department/lib/utils"
+import type { BotData } from "@/entities/tgBot/types"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import DeleteChat from "./DeleteChat"
+import DialogCreateChatForm from "./DialogCreateChatForm"
+import DialogEditChatForm from "./DialogEditChatForm"
 
-import { BotMessageSquareIcon } from "lucide-react";
-
-import { getManagers } from "@/entities/department/lib/utils";
-import { BotData } from "@/entities/tgBot/types";
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
-
-import DeleteChat from "./DeleteChat";
-import DialogCreateChatForm from "./DialogCreateChatForm";
-import DialogEditChatForm from "./DialogEditChatForm";
-
-const managers = getManagers(false);
+const managers = getManagers(false)
 
 const ChatList = ({
   bot,
   chats,
   isFetching,
 }: {
-  bot: BotData;
-  chats: UserTelegramChat[];
-  isFetching: boolean;
+  bot: BotData
+  chats: UserTelegramChat[]
+  isFetching: boolean
 }) => {
   if (chats.length === 0 && !isFetching) {
     return (
       <div className="flex flex-col items-center justify-center w-full gap-2 p-3 pt-5 rounded-md self-start border-none max-h-[86vh] text-lg font-semibold">
         Нет чатов
       </div>
-    );
+    )
   }
 
   return (
@@ -38,9 +35,7 @@ const ChatList = ({
         Список чатов: {bot.description}
       </p>
 
-      {isFetching && chats.length === 0 && (
-        <LoaderCircle className="self-center" />
-      )}
+      {isFetching && chats.length === 0 && <LoaderCircle className="self-center" />}
 
       <div className="absolute top-2 left-2">
         <DialogCreateChatForm bot={bot} />
@@ -50,8 +45,8 @@ const ChatList = ({
         <ul className="flex flex-col gap-2">
           {chats.map((chat) => (
             <li
-              key={chat.id}
               className="flex justify-between items-center gap-3 w-full p-2 border rounded-md italic"
+              key={chat.id}
             >
               <p className="flex flex-col gap-2 flex-1">
                 <span className="block py-1 px-3 bg-muted rounded-md w-full">
@@ -71,7 +66,7 @@ const ChatList = ({
         </ul>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ChatList;
+export default ChatList

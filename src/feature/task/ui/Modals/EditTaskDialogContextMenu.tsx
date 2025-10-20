@@ -1,18 +1,16 @@
-import React, { Dispatch, SetStateAction } from "react";
-
+import type { Dispatch, SetStateAction } from "react"
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/shared/components/ui/dialog";
-
-import EditTaskForm from "../Forms/EditTaskForm";
+} from "@/shared/components/ui/dialog"
+import EditTaskForm from "../Forms/EditTaskForm"
 
 type Props = {
-  id: string;
-  close: Dispatch<SetStateAction<void>>;
-};
+  id: string
+  close: Dispatch<SetStateAction<void>>
+}
 
 const EditTaskDialogContextMenu = ({ id, close }: Props) => {
   return (
@@ -23,7 +21,7 @@ const EditTaskDialogContextMenu = ({ id, close }: Props) => {
       </DialogHeader>
       <EditTaskForm close={close} taskId={id} />
     </DialogContent>
-  );
-};
+  )
+}
 
-export default EditTaskDialogContextMenu;
+export default EditTaskDialogContextMenu

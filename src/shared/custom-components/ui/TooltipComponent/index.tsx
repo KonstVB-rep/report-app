@@ -1,16 +1,15 @@
-import React from "react";
-
+import type React from "react"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
+} from "@/shared/components/ui/tooltip"
 
 type TooltipComponent = {
-  children: React.ReactNode;
-  content: string;
-};
+  children: React.ReactNode
+  content: string
+}
 
 const TooltipComponent = ({ children, content }: TooltipComponent) => {
   return (
@@ -23,7 +22,7 @@ const TooltipComponent = ({ children, content }: TooltipComponent) => {
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
-};
+  )
+}
 
-export default TooltipComponent;
+export default TooltipComponent

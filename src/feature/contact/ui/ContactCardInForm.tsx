@@ -1,38 +1,27 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import React from "react";
-import { useForm } from "react-hook-form";
-
-import { Pen, Trash } from "lucide-react";
-
-import {
-  SingleContactFormSchema,
-  SingleContactSchema,
-} from "@/entities/contact/model/schema";
-import { Contact } from "@/entities/deal/types";
-import { Button } from "@/shared/components/ui/button";
-
-import ContactsDealFormBody from "./ContactsDealFormBody";
+import React from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Pen, Trash } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { SingleContactFormSchema, type SingleContactSchema } from "@/entities/contact/model/schema"
+import type { Contact } from "@/entities/deal/types"
+import { Button } from "@/shared/components/ui/button"
+import ContactsDealFormBody from "./ContactsDealFormBody"
 
 interface ContactCardProps {
-  contact: Contact;
-  onDelete: (id: string) => void;
-  updateContacts: (data: SingleContactSchema) => void;
+  contact: Contact
+  onDelete: (id: string) => void
+  updateContacts: (data: SingleContactSchema) => void
 }
 
-const ContactCardInForm: React.FC<ContactCardProps> = ({
-  contact,
-  onDelete,
-  updateContacts,
-}) => {
+const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, updateContacts }) => {
   const fieldsList: { label: string; value?: string | null }[] = [
     { label: "Имя", value: contact.name },
     { label: "Должность", value: contact.position },
     { label: "Телефон", value: contact.phone },
     { label: "Email", value: contact.email },
-  ];
+  ]
 
-  const [editContact, setEditContact] = React.useState(false);
+  const [editContact, setEditContact] = React.useState(false)
 
   const form = useForm<SingleContactSchema>({
     resolver: zodResolver(SingleContactFormSchema),
@@ -43,79 +32,74 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({
       position: contact.position,
       id: contact.id,
     },
-  });
+  })
 
   const handleEdit = () => {
-    setEditContact((prev) => !prev);
-  };
+    setEditContact((prev) => !prev)
+  }
 
   const onSubmit = (data: SingleContactSchema) => {
-    updateContacts(data);
-    handleEdit();
-  };
+    updateContacts(data)
+    handleEdit()
+  }
 
   return (
     <div className="flex items-start justify-between gap-2">
       <div className="grid w-full gap-1 rounded-md text-sm [word-break:break-word]">
         {editContact ? (
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <form className="space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid gap-2 overflow-y-auto max-h-[60vh] box-border">
               <ContactsDealFormBody form={form} />
             </div>
 
             <div className="flex justify-end gap-2">
               <Button
-                variant="default"
-                onClick={() => handleEdit()}
                 className="active:scale-95 transition-transform duration-150"
-                title="Отменить редактирование"
+                onClick={() => handleEdit()}
                 size={"icon"}
+                title="Отменить редактирование"
+                variant="default"
               >
                 <Pen />
               </Button>
 
-              <Button
-                type="submit"
-                className="active:scale-95 transition-transform duration-150"
-              >
+              <Button className="active:scale-95 transition-transform duration-150" type="submit">
                 Сохранить
               </Button>
             </div>
           </form>
         ) : (
-          <>
-            {fieldsList
-              .filter(({ value }) => value)
-              .map(({ label, value }) => (
-                <p
-                  key={label}
-                  className="flex items-center gap-1 rounded bg-black/20 p-2 dark:bg-black/50"
-                >
-                  <span className="font-bold">{label}:</span>
-                  <span className="capitalize">{value}</span>
-                </p>
-              ))}
-          </>
+          fieldsList
+            .filter(({ value }) => value)
+            .map(({ label, value }) => (
+              <p
+                className="flex items-center gap-1 rounded bg-black/20 p-2 dark:bg-black/50"
+                key={label}
+              >
+                <span className="font-bold">{label}:</span>
+                <span className="capitalize">{value}</span>
+              </p>
+            ))
         )}
         <div className="flex items-center justify-end gap-2">
           {!editContact && (
             <>
               <Button
-                variant="destructive"
-                onClick={() => onDelete(contact.id)}
                 className="active:scale-95 transition-transform duration-150"
-                title="Удалить контакт"
+                onClick={() => onDelete(contact.id)}
                 size={"icon"}
+                title="Удалить контакт"
+                variant="destructive"
               >
                 <Trash />
               </Button>
 
               <Button
-                variant="outline"
-                onClick={() => handleEdit()}
                 className="active:scale-95 transition-transform duration-150"
-                title="Редактировать контакт"
+                onClick={() => handleEdit()}
                 size={"icon"}
+                title="Редактировать контакт"
+                variant="outline"
               >
                 <Pen />
               </Button>
@@ -124,7 +108,7 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ContactCardInForm;
+export default ContactCardInForm

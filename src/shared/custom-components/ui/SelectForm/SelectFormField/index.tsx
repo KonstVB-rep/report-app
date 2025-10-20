@@ -1,24 +1,22 @@
-import React from "react";
-import { Control, FieldValues, Path } from "react-hook-form";
-
+import type React from "react"
+import type { Control, FieldValues, Path } from "react-hook-form"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-
-import SelectComponent from "../SelectComponent";
+} from "@/shared/components/ui/form"
+import SelectComponent from "../SelectComponent"
 
 type SelectFormFieldProps<T extends FieldValues> = {
-  name: Path<T>;
-  label: string;
-  control: Control<T>;
-  errorMessage?: string;
-  onValueChange?: (value: string) => void | undefined;
-  className?: string;
-} & React.ComponentProps<typeof SelectComponent>;
+  name: Path<T>
+  label: string
+  control: Control<T>
+  errorMessage?: string
+  onValueChange?: (value: string) => void
+  className?: string
+} & React.ComponentProps<typeof SelectComponent>
 
 const SelectFormField = <T extends FieldValues>({
   name,
@@ -37,19 +35,17 @@ const SelectFormField = <T extends FieldValues>({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <SelectComponent
-              value={field.value || ""}
               onValueChange={onValueChange || field.onChange}
+              value={field.value || ""}
               {...rest}
             />
           </FormControl>
 
-          {errorMessage && (
-            <FormMessage className="text-red-500">{errorMessage}</FormMessage>
-          )}
+          {errorMessage && <FormMessage className="text-red-500">{errorMessage}</FormMessage>}
         </FormItem>
       )}
     />
-  );
-};
+  )
+}
 
-export default SelectFormField;
+export default SelectFormField

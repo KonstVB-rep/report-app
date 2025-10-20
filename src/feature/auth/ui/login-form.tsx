@@ -1,34 +1,30 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useActionState, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-
-import { treeifyError } from "zod";
-
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { login } from "@/feature/auth/login";
-import { Card, CardContent } from "@/shared/components/ui/card";
-import { Form } from "@/shared/components/ui/form";
-import SubmitFormActionBtn from "@/shared/custom-components/ui/Buttons/SubmitFormActionBtn";
-import InputFormPassword from "@/shared/custom-components/ui/Inputs/InputFormPassword";
-import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { cn } from "@/shared/lib/utils";
-
-import { loginFormSchema, LoginSchema } from "../model/schema";
+import { useActionState, useEffect, useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { treeifyError } from "zod"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { login } from "@/feature/auth/login"
+import { Card, CardContent } from "@/shared/components/ui/card"
+import { Form } from "@/shared/components/ui/form"
+import SubmitFormActionBtn from "@/shared/custom-components/ui/Buttons/SubmitFormActionBtn"
+import InputFormPassword from "@/shared/custom-components/ui/Inputs/InputFormPassword"
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { cn } from "@/shared/lib/utils"
+import { type LoginSchema, loginFormSchema } from "../model/schema"
 
 type ErrorState = {
-  email: string;
-  user_password: string;
-};
+  email: string
+  user_password: string
+}
 
 const initialErrorState = {
   email: "",
   user_password: "",
-};
+}
 
 const LoginForm = () => {
   const form = useForm<LoginSchema>({
@@ -37,45 +33,44 @@ const LoginForm = () => {
       email: "",
       user_password: "",
     },
-  });
-  const [errors, setErrors] = useState<ErrorState>(() => initialErrorState);
-  const [state, formAction] = useActionState(login, undefined);
-  const { setAuthUser, setIsAuth } = useStoreUser();
+  })
+  const [errors, setErrors] = useState<ErrorState>(() => initialErrorState)
+  const [state, formAction] = useActionState(login, undefined)
+  const { setAuthUser, setIsAuth } = useStoreUser()
 
   const onSubmit = (formData: FormData) => {
-    const parsed = loginFormSchema.safeParse(Object.fromEntries(formData));
+    const parsed = loginFormSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) {
-      const flattenedErrors = treeifyError(parsed.error);
+      const flattenedErrors = treeifyError(parsed.error)
       setErrors({
         email: flattenedErrors.properties?.email?.errors[0] || "",
-        user_password:
-          flattenedErrors.properties?.user_password?.errors[0] || "",
-      });
-      return;
+        user_password: flattenedErrors.properties?.user_password?.errors[0] || "",
+      })
+      return
     }
-    setErrors(initialErrorState);
-    formAction(formData);
-  };
+    setErrors(initialErrorState)
+    formAction(formData)
+  }
 
   useEffect(() => {
-    if (!state) return;
+    if (!state) return
 
     if (state?.error) {
-      TOAST.ERROR(state.message);
+      TOAST.ERROR(state.message)
     }
 
     if (state?.data) {
-      setAuthUser(state.data);
-      setIsAuth(true);
+      setAuthUser(state.data)
+      setIsAuth(true)
     }
-  }, [setAuthUser, setIsAuth, state]);
+  }, [setAuthUser, setIsAuth, state])
 
   return (
     <MotionDivY className={"flex flex-col gap-6"}>
       <Card className="overflow-hidden">
         <CardContent className="grid p-0">
           <Form {...form}>
-            <form className="p-6 md:p-8" action={onSubmit}>
+            <form action={onSubmit} className="p-6 md:p-8">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Добро пожаловать</h1>
@@ -85,37 +80,34 @@ const LoginForm = () => {
                 </div>
 
                 <InputTextForm
-                  name="email"
-                  label="Email"
+                  className={cn("w-full", errors.email && "border-red-500")}
                   control={form.control}
                   errorMessage={errors.email}
-                  type="email"
+                  label="Email"
+                  name="email"
                   placeholder="Введите email"
-                  className={cn("w-full", errors.email && "border-red-500")}
                   required
+                  type="email"
                 />
 
                 <InputFormPassword
-                  name="user_password"
-                  label="Пароль"
+                  autoComplete="current-user_password"
+                  className={cn("w-full", errors.user_password && "border-red-500")}
                   control={form.control}
                   errorMessage={errors.user_password}
-                  className={cn(
-                    "w-full",
-                    errors.user_password && "border-red-500"
-                  )}
-                  autoComplete="current-user_password"
+                  label="Пароль"
+                  name="user_password"
                   required
                 />
 
-                <SubmitFormActionBtn title="Войти" aria-label="Войти" />
+                <SubmitFormActionBtn aria-label="Войти" title="Войти" />
               </div>
             </form>
           </Form>
         </CardContent>
       </Card>
     </MotionDivY>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm

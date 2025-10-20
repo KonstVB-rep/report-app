@@ -1,4 +1,4 @@
-import React from "react";
+import { v4 as uuid } from "uuid"
 
 const FormDealSkeleton = () => {
   return (
@@ -8,8 +8,8 @@ const FormDealSkeleton = () => {
         <div className="flex flex-col gap-4">
           {Array(6)
             .fill("")
-            .map((item, index) => (
-              <div key={index} className="flex flex-col gap-4">
+            .map(() => (
+              <div className="flex flex-col gap-4" key={uuid()}>
                 <div className="h-5 w-32 animate-pulse rounded-lg dark:bg-muted/50 bg-black/20" />
                 <div className="h-10 w-full animate-pulse rounded-lg dark:bg-muted/50 bg-black/20" />
               </div>
@@ -18,8 +18,8 @@ const FormDealSkeleton = () => {
         <div className="flex flex-col gap-4">
           {Array(6)
             .fill("")
-            .map((item, index) => (
-              <div key={index} className="flex flex-col gap-4">
+            .map(() => (
+              <div className="flex flex-col gap-4" key={uuid()}>
                 <div className="h-5 w-32 animate-pulse rounded-lg dark:bg-muted/50 bg-black/20" />
                 <div className="h-10 w-full animate-pulse rounded-lg dark:bg-muted/50 bg-black/20" />
               </div>
@@ -28,7 +28,7 @@ const FormDealSkeleton = () => {
       </div>
       <div className="ml-auto h-12 w-32 animate-pulse rounded-lg dark:bg-muted/50 bg-black/20" />
     </div>
-  );
-};
+  )
+}
 
-export default FormDealSkeleton;
+export default FormDealSkeleton

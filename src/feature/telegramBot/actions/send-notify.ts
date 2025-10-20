@@ -1,12 +1,8 @@
-"use server";
+"use server"
 
-import axiosInstance from "@/shared/api/axiosInstance";
+import axiosInstance from "@/shared/api/axiosInstance"
 
-export const sendNotify = async (
-  message: string,
-  chatId: string,
-  botName: string
-) => {
+export const sendNotify = async (message: string, chatId: string, botName: string) => {
   try {
     return await axiosInstance.post(
       `/telegram/send-message-bot`,
@@ -19,9 +15,9 @@ export const sendNotify = async (
         headers: {
           "Content-Type": "application/json",
         },
-      }
-    );
+      },
+    )
   } catch (error) {
-    console.error("Ошибка при отправке:", error);
+    console.error("Ошибка при отправке:", error)
   }
-};
+}

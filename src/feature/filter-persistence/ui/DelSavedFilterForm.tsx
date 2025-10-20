@@ -1,29 +1,21 @@
-import React from "react";
-
+import type React from "react"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+} from "@/shared/components/ui/card"
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
+import { useDeleteFilter } from "../hooks/mutate"
 
-import { useDeleteFilter } from "../hooks/mutate";
-
-const DelSavedFilterForm = ({
-  filterName,
-  filterId,
-}: {
-  filterName: string;
-  filterId: string;
-}) => {
-  const { mutate, isPending } = useDeleteFilter();
+const DelSavedFilterForm = ({ filterName, filterId }: { filterName: string; filterId: string }) => {
+  const { mutate, isPending } = useDeleteFilter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate(filterId);
-  };
+    e.preventDefault()
+    mutate(filterId)
+  }
 
   return (
     <Card>
@@ -39,15 +31,11 @@ const DelSavedFilterForm = ({
             <p>Вы уверены что хотите удалить фильтр?</p>
             <p className="text-xl font-bold">{filterName}</p>
           </div>
-          <SubmitFormButton
-            title="Удалить"
-            disabled={isPending}
-            isPending={isPending}
-          />
+          <SubmitFormButton disabled={isPending} isPending={isPending} title="Удалить" />
         </form>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default DelSavedFilterForm;
+export default DelSavedFilterForm

@@ -1,21 +1,17 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import React, {
+import type React from "react"
+import {
   createContext,
-  ReactNode,
-  SetStateAction,
+  type ReactNode,
+  type SetStateAction,
   useCallback,
   useContext,
   useState,
-} from "react";
-import { Resolver, useForm, UseFormReturn } from "react-hook-form";
-
-import {
-  EventCalendarFormSchema,
-  EventCalendarSchema,
-} from "@/feature/calendar/model/schema";
+} from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { type Resolver, type UseFormReturn, useForm } from "react-hook-form"
+import { EventCalendarFormSchema, type EventCalendarSchema } from "@/feature/calendar/model/schema"
 
 const defaultValuesForm = {
   eventTitle: "",
@@ -24,69 +20,63 @@ const defaultValuesForm = {
   endDateEvent: undefined,
   endTimeEvent: "",
   allDay: false,
-};
-
-interface CalendareContextType {
-  openModal: boolean;
-  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
-  confirmDelModal: boolean;
-  setConfirmDelModal: React.Dispatch<SetStateAction<boolean>>;
-  editingId: string | null;
-  setEditingId: (id: string) => void;
-  form: UseFormReturn<EventCalendarSchema>;
-  handleResetAndClose: () => void;
-  handleCloseModalAfterDeleteEvent: () => void;
-  closeModalForm: () => void;
 }
 
-const CalendarContext = createContext<CalendareContextType | undefined>(
-  undefined
-);
+interface CalendareContextType {
+  openModal: boolean
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+  confirmDelModal: boolean
+  setConfirmDelModal: React.Dispatch<SetStateAction<boolean>>
+  editingId: string | null
+  setEditingId: (id: string) => void
+  form: UseFormReturn<EventCalendarSchema>
+  handleResetAndClose: () => void
+  handleCloseModalAfterDeleteEvent: () => void
+  closeModalForm: () => void
+}
+
+const CalendarContext = createContext<CalendareContextType | undefined>(undefined)
 
 export const useCalendarContext = (): CalendareContextType => {
-  const context = useContext(CalendarContext);
+  const context = useContext(CalendarContext)
 
   if (!context) {
-    throw new Error(
-      "useCalendarContext must be used within a CalendarProvider"
-    );
+    throw new Error("useCalendarContext must be used within a CalendarProvider")
   }
-  return context;
-};
+  return context
+}
 
 export const CalendarProvider = ({ children }: { children: ReactNode }) => {
-  const [openModal, setOpenModal] = useState(false);
-  const [confirmDelModal, setConfirmDelModal] = useState(false);
-  const [editingId, setEditingId] = useState<string>("");
+  const [openModal, setOpenModal] = useState(false)
+  const [confirmDelModal, setConfirmDelModal] = useState(false)
+  const [editingId, setEditingId] = useState<string>("")
 
   const form = useForm<EventCalendarSchema>({
-    resolver: zodResolver(
-      EventCalendarFormSchema
-    ) as Resolver<EventCalendarSchema>,
+    resolver: zodResolver(EventCalendarFormSchema) as Resolver<EventCalendarSchema>,
     defaultValues: defaultValuesForm,
-  });
+  })
 
-  const { reset } = form;
+  const { reset } = form
 
   const handleResetAndClose = useCallback(() => {
-    setOpenModal(false);
-    setEditingId("");
-    reset();
-  }, [reset]);
+    setOpenModal(false)
+    setEditingId("")
+    reset()
+  }, [reset])
 
   const handleCloseModalAfterDeleteEvent = useCallback(() => {
-    setConfirmDelModal(false);
+    setConfirmDelModal(false)
 
-    handleResetAndClose();
-  }, [handleResetAndClose]);
+    handleResetAndClose()
+  }, [handleResetAndClose])
 
   const closeModalForm = useCallback(() => {
     if (openModal) {
-      handleResetAndClose();
+      handleResetAndClose()
     } else {
-      setOpenModal(true);
+      setOpenModal(true)
     }
-  }, [handleResetAndClose, openModal]);
+  }, [handleResetAndClose, openModal])
 
   return (
     <CalendarContext.Provider
@@ -105,5 +95,5 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
     >
       {children}
     </CalendarContext.Provider>
-  );
-};
+  )
+}

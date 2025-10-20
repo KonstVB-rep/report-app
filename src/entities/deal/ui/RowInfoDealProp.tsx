@@ -1,18 +1,16 @@
-import React from "react";
-
-import ValueSpan from "@/feature/deals/ui/ValueSpan";
+import ValueSpan from "@/feature/deals/ui/ValueSpan"
 
 const RowInfoDealProp = ({
   label,
   value,
   direction = "row",
 }: {
-  label: string;
-  value: string | undefined;
-  direction?: "row" | "column";
+  label: string
+  value: string | undefined
+  direction?: "row" | "column"
 }) => {
   if (!value) {
-    return null;
+    return null
   }
   return (
     <p
@@ -24,7 +22,7 @@ const RowInfoDealProp = ({
 
       <ValueSpan>{value}</ValueSpan>
     </p>
-  );
-};
+  )
+}
 
-export default RowInfoDealProp;
+export default RowInfoDealProp

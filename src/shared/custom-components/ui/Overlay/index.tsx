@@ -1,15 +1,15 @@
-import React from "react";
-import { createPortal } from "react-dom";
+import { createPortal } from "react-dom"
 
 export const OverlayLocal = ({
   className = "",
   isPending,
 }: {
-  className?: string;
-  isPending: boolean;
+  className?: string
+  isPending: boolean
 }) => {
-  if (!isPending) return null;
+  if (!isPending) return null
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: this overlay he must be div
     <div
       className={`absolute inset-0 z-1000 flex items-center justify-center bg-black/20 ${className}`}
       onClick={(e) => e.stopPropagation()}
@@ -18,32 +18,27 @@ export const OverlayLocal = ({
         pointerEvents: "auto", // <- важно: блокирует взаимодействие с подложкой
       }}
     />
-  );
-};
+  )
+}
 
-const Overlay = ({
-  className = "",
-  isPending,
-}: {
-  className?: string;
-  isPending: boolean;
-}) => {
-  if (!isPending) return null;
+const Overlay = ({ className = "", isPending }: { className?: string; isPending: boolean }) => {
+  if (!isPending) return null
   return (
     <>
       {createPortal(
+        // biome-ignore lint/a11y/noStaticElementInteractions: this overlay he must be div
         <div
-          style={{
-            pointerEvents: "auto", // <- важно: блокирует взаимодействие с подложкой
-          }}
           className={`fixed inset-0 z-1000 flex items-center justify-center bg-black/20 ${className}`}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
+          style={{
+            pointerEvents: "auto", // <- важно: блокирует взаимодействие с подложкой
+          }}
         />,
-        document.body
+        document.body,
       )}
     </>
-  );
-};
+  )
+}
 
-export default Overlay;
+export default Overlay

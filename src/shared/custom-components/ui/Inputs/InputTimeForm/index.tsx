@@ -1,16 +1,13 @@
-import React from "react";
-import { FieldValues } from "react-hook-form";
-
+import type { FieldValues } from "react-hook-form"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
-
-import { InputFormProps } from "../type";
+} from "@/shared/components/ui/form"
+import { Input } from "@/shared/components/ui/input"
+import type { InputFormProps } from "../type"
 
 const InputTimeForm = <T extends FieldValues>({
   name,
@@ -29,12 +26,10 @@ const InputTimeForm = <T extends FieldValues>({
           <FormControl>
             <Input type="time" {...field} {...rest} />
           </FormControl>
-          {errorMessage && (
-            <FormMessage className="text-red-500">{errorMessage}</FormMessage>
-          )}
+          {errorMessage && <FormMessage className="text-red-500">{errorMessage}</FormMessage>}
         </FormItem>
       )}
     />
-  );
-};
-export default InputTimeForm;
+  )
+}
+export default InputTimeForm

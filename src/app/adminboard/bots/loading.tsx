@@ -1,7 +1,7 @@
-import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders";
+import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 
 const Loading = () => {
-  return <LoaderCircleInWater />;
-};
+  return <LoaderCircleInWater />
+}
 
-export default Loading;
+export default Loading

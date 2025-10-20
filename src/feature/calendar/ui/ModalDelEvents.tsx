@@ -1,50 +1,43 @@
-import { DialogClose } from "@radix-ui/react-dialog";
-
-import { Loader } from "lucide-react";
-
-import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context";
-import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider";
-import { Button } from "@/shared/components/ui/button";
-import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
-
-import { EventInputType } from "../types";
+import { DialogClose } from "@radix-ui/react-dialog"
+import { Loader } from "lucide-react"
+import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context"
+import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider"
+import { Button } from "@/shared/components/ui/button"
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
+import type { EventInputType } from "../types"
 
 type ModalDelEventsProps = {
-  events: EventInputType[];
-};
+  events: EventInputType[]
+}
 
 const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
-  const { deleteEvent, isPendingDelete } = useEventActionContext();
-  const { confirmDelModal, setConfirmDelModal, editingId } =
-    useCalendarContext();
+  const { deleteEvent, isPendingDelete } = useEventActionContext()
+  const { confirmDelModal, setConfirmDelModal, editingId } = useCalendarContext()
 
-  const eventTitle =
-    events.find((e) => e.id === editingId)?.title ?? "Неизвестное событие";
+  const eventTitle = events.find((e) => e.id === editingId)?.title ?? "Неизвестное событие"
 
   const handleDelete = () => {
     if (editingId) {
-      deleteEvent(editingId);
+      deleteEvent(editingId)
     }
-  };
+  }
 
-  if (!editingId) return null;
+  if (!editingId) return null
   return (
     <DialogComponent
+      classNameContent="sm:max-w-[400px] z-51"
+      onOpenChange={setConfirmDelModal}
+      open={confirmDelModal}
       trigger={
-        <Button variant="outline" className="w-full">
+        <Button className="w-full" variant="outline">
           Удалить
         </Button>
       }
-      open={confirmDelModal}
-      onOpenChange={setConfirmDelModal}
-      classNameContent="sm:max-w-[400px] z-51"
     >
       <div className="w-full h-full grid gap-4">
         <div className="text-center grid gap-4">
           <p>Вы уверены что хотите удалить событие?</p>
-          <p className="p-2 border border-solid rounded-md break-all">
-            {eventTitle}
-          </p>
+          <p className="p-2 border border-solid rounded-md break-all">{eventTitle}</p>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <DialogClose asChild>
@@ -52,7 +45,7 @@ const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
               Отмена
             </Button>
           </DialogClose>
-          <Button onClick={handleDelete} disabled={isPendingDelete}>
+          <Button disabled={isPendingDelete} onClick={handleDelete}>
             {isPendingDelete ? (
               <span className="flex gap-2 items-center">
                 <Loader className="animate-spin w-5 h-5" /> Удаление...
@@ -64,7 +57,7 @@ const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
         </div>
       </div>
     </DialogComponent>
-  );
-};
+  )
+}
 
-export default ModalDelEvents;
+export default ModalDelEvents

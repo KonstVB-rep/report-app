@@ -1,20 +1,18 @@
-"use client";
+"use client"
 
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import { TaskStatus } from "@prisma/client";
-
-import { CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
-
-import { TaskWithUserInfo } from "@/entities/task/types";
-import UpdateLoaderKanban from "@/entities/task/ui/UpdateLoaderKanban";
-import useDragEnd from "@/feature/task/hooks/useDragEnd";
-import TaskKanbanCard from "@/feature/task/ui/TaskKanbanCard";
-import { cn } from "@/shared/lib/utils";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
+import { TaskStatus } from "@prisma/client"
+import { CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react"
+import type { TaskWithUserInfo } from "@/entities/task/types"
+import UpdateLoaderKanban from "@/entities/task/ui/UpdateLoaderKanban"
+import useDragEnd from "@/feature/task/hooks/useDragEnd"
+import TaskKanbanCard from "@/feature/task/ui/TaskKanbanCard"
+import { cn } from "@/shared/lib/utils"
 
 type KanbanProps = {
-  data: TaskWithUserInfo[];
-  onChange?: (tasks: TaskWithUserInfo[]) => void;
-};
+  data: TaskWithUserInfo[]
+  onChange?: (tasks: TaskWithUserInfo[]) => void
+}
 
 const StatusesTask = [
   {
@@ -30,17 +28,12 @@ const StatusesTask = [
   {
     name: "Завершена",
     key: TaskStatus.DONE,
-    icon: (
-      <CheckCircle2Icon
-        size={16}
-        className="text-green-500 dark:text-green-400"
-      />
-    ),
+    icon: <CheckCircle2Icon className="text-green-500 dark:text-green-400" size={16} />,
   },
-] as const;
+] as const
 
 const Kanban = ({ data }: KanbanProps) => {
-  const { onDragEnd, tasks, isPending } = useDragEnd(data);
+  const { onDragEnd, tasks, isPending } = useDragEnd(data)
 
   return (
     <div className="relative grid gap-2">
@@ -50,10 +43,10 @@ const Kanban = ({ data }: KanbanProps) => {
           {StatusesTask.map((column) => {
             const columnTasks = tasks
               .filter((t) => t.taskStatus === column.key)
-              .sort((a, b) => a.orderTask - b.orderTask);
+              .sort((a, b) => a.orderTask - b.orderTask)
 
             return (
-              <div key={column.key} className="space-y-2">
+              <div className="space-y-2" key={column.key}>
                 <h3 className="flex gap-1 items-center justify-center font-semibold text-center text-sm p-3 rounded-md bg-card">
                   {column.icon}
                   {column.name}
@@ -61,19 +54,19 @@ const Kanban = ({ data }: KanbanProps) => {
 
                 <Droppable
                   droppableId={column.key}
-                  renderClone={(provided, snapshot, rubric) => {
-                    const task = columnTasks[rubric.source.index];
+                  renderClone={(provided, _, rubric) => {
+                    const task = columnTasks[rubric.source.index]
                     return (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        style={provided.draggableProps.style}
                         className="shadow-lg"
+                        style={provided.draggableProps.style}
                       >
                         <TaskKanbanCard task={task} />
                       </div>
-                    );
+                    )
                   }}
                 >
                   {(provided, snapshot) => (
@@ -84,16 +77,12 @@ const Kanban = ({ data }: KanbanProps) => {
                         "flex flex-col gap-2 min-h-[120px] p-2 rounded-md transition-colors",
                         columnTasks.length <= 0 &&
                           "border border-dashed rounded border-primary grid place-content-center",
-                        snapshot.isDraggingOver && "bg-primary/5"
+                        snapshot.isDraggingOver && "bg-primary/5",
                       )}
                     >
                       {columnTasks.length > 0 ? (
                         columnTasks.map((task, index) => (
-                          <Draggable
-                            key={task.id}
-                            draggableId={task.id}
-                            index={index}
-                          >
+                          <Draggable draggableId={task.id} index={index} key={task.id}>
                             {(provided) => (
                               <div
                                 ref={provided.innerRef}
@@ -106,21 +95,19 @@ const Kanban = ({ data }: KanbanProps) => {
                           </Draggable>
                         ))
                       ) : (
-                        <p className="text-sm text-muted-foreground">
-                          Нет задач
-                        </p>
+                        <p className="text-sm text-muted-foreground">Нет задач</p>
                       )}
                       {provided.placeholder}
                     </div>
                   )}
                 </Droppable>
               </div>
-            );
+            )
           })}
         </div>
       </DragDropContext>
     </div>
-  );
-};
+  )
+}
 
-export default Kanban;
+export default Kanban

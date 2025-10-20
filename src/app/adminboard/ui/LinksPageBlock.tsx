@@ -1,31 +1,27 @@
-import React from "react";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-import { ChevronRight } from "lucide-react";
-
-import useStoreUser from "@/entities/user/store/useStoreUser";
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import useStoreUser from "@/entities/user/store/useStoreUser"
 
 const LinkPage = ({ path, title }: { path: string; title: string }) => {
-  const pathname = usePathname();
+  const pathname = usePathname()
   return (
     <>
       {pathname !== path ? (
         <Link
+          className="flex items-center justify-between p-1 px-3 border w-fit rounded-md border-blue-600 bg-muted self-end"
           href={path}
           prefetch={false}
-          className="flex items-center justify-between p-1 px-3 border w-fit rounded-md border-blue-600 bg-muted self-end"
         >
           {title} <ChevronRight />
         </Link>
       ) : null}
     </>
-  );
-};
+  )
+}
 
 const LinksPageBlock = () => {
-  const { authUser } = useStoreUser();
+  const { authUser } = useStoreUser()
 
   return (
     <div className="flex flex-wrap gap-3 self-end px-2 pb-2">
@@ -35,7 +31,7 @@ const LinksPageBlock = () => {
 
       <LinkPage path="/adminboard/events" title="Календарь" />
     </div>
-  );
-};
+  )
+}
 
-export default LinksPageBlock;
+export default LinksPageBlock

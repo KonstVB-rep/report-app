@@ -1,66 +1,60 @@
-import React, { useState, useTransition } from "react";
-
-import { Filter } from "lucide-react";
-
-import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
-import { Button } from "@/shared/components/ui/button";
-import { Label } from "@/shared/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+import React, { useState, useTransition } from "react"
+import { Filter } from "lucide-react"
+import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
+import { Button } from "@/shared/components/ui/button"
+import { Label } from "@/shared/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
 
 type Props = {
-  columnId: string;
-  options: Record<string, string> | { id: string; label: string }[];
-  label: string;
-};
+  columnId: string
+  options: Record<string, string> | { id: string; label: string }[]
+  label: string
+}
 
 const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
-  const [, startTransition] = useTransition();
-  const [open, setOpen] = useState(false);
-  const { columnFilters, setColumnFilters } = useDataTableFiltersContext();
+  const [, startTransition] = useTransition()
+  const [open, setOpen] = useState(false)
+  const { columnFilters, setColumnFilters } = useDataTableFiltersContext()
 
-  const existingFilter = columnFilters?.find((f) => f.id === columnId);
-  const selectedValue = existingFilter?.value as string | undefined;
+  const existingFilter = columnFilters?.find((f) => f.id === columnId)
+  const selectedValue = existingFilter?.value as string | undefined
 
   const normalizedOptions = Array.isArray(options)
     ? options
-    : Object.entries(options).map(([id, label]) => ({ id, label }));
+    : Object.entries(options).map(([id, label]) => ({ id, label }))
 
   const handleChange = (value: string) => {
-    if (!setColumnFilters) return;
+    if (!setColumnFilters) return
 
     startTransition(() => {
       setColumnFilters((prev) => {
         if (selectedValue === value) {
-          return prev;
+          return prev
         }
-        const oldFilters = prev.filter((f) => f.id !== columnId);
-        return [...oldFilters, { id: columnId, value }];
-      });
-    });
-  };
+        const oldFilters = prev.filter((f) => f.id !== columnId)
+        return [...oldFilters, { id: columnId, value }]
+      })
+    })
+  }
 
   const handleClear = () => {
     if (setColumnFilters) {
       startTransition(() => {
-        setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
-      });
+        setColumnFilters((prev) => prev.filter((f) => f.id !== columnId))
+      })
     }
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
           className={`relative h-auto ${
             selectedValue ? "border-solid" : "border-dashed"
           } border-muted-foreground`}
+          variant="outline"
         >
           <Filter className="h-4 w-4" />
           {label}
@@ -72,34 +66,26 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-fit p-2">
-        <RadioGroup
-          value={selectedValue || ""}
-          onValueChange={handleChange}
-          className="space-y-2"
-        >
+        <RadioGroup className="space-y-2" onValueChange={handleChange} value={selectedValue || ""}>
           {normalizedOptions.map(({ id, label }) => (
-            <div key={id} className="flex items-center space-x-1">
-              <RadioGroupItem value={id} id={id} />
-              <Label htmlFor={id} className="cursor-pointer capitalize">
+            <div className="flex items-center space-x-1" key={id}>
+              <RadioGroupItem id={id} value={id} />
+              <Label className="cursor-pointer capitalize" htmlFor={id}>
                 {label}
               </Label>
             </div>
           ))}
         </RadioGroup>
         {selectedValue && (
-          <Button
-            onClick={handleClear}
-            variant="outline"
-            className="mt-3 w-full text-xs"
-          >
+          <Button className="mt-3 w-full text-xs" onClick={handleClear} variant="outline">
             Очистить
           </Button>
         )}
       </PopoverContent>
     </Popover>
-  );
-});
+  )
+})
 
-FilterPopover.displayName = "FilterPopover";
+FilterPopover.displayName = "FilterPopover"
 
-export default FilterPopover;
+export default FilterPopover

@@ -1,23 +1,18 @@
-"use client";
+"use client"
 
-import { PermissionEnum } from "@prisma/client";
-
-import { useMemo, useState } from "react";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-import { Redo2 } from "lucide-react";
-import z from "zod";
-
-import { DepartmentLabelsById } from "@/entities/department/types";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import Overlay from "@/shared/custom-components/ui/Overlay";
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
-import { useTypedParams } from "@/shared/hooks/useTypedParams";
-
-import { UnionParams } from "../lib/constants";
-import { DealsUnionType } from "../types";
+import { useMemo, useState } from "react"
+import { PermissionEnum } from "@prisma/client"
+import { Redo2 } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import z from "zod"
+import type { DepartmentLabelsById } from "@/entities/department/types"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import Overlay from "@/shared/custom-components/ui/Overlay"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import { UnionParams } from "../lib/constants"
+import type { DealsUnionType } from "../types"
 
 const linksPersonTable = (deptId: string | number) => ({
   retails: {
@@ -28,7 +23,7 @@ const linksPersonTable = (deptId: string | number) => ({
     title: "Розничные сделки",
     url: `/table/${deptId}/retails`,
   },
-});
+})
 
 const linksSummaryTable = (deptId: string | number) => ({
   retails: {
@@ -39,54 +34,49 @@ const linksSummaryTable = (deptId: string | number) => ({
     title: "Розничные сделки/Сводная таблица",
     url: `/summary-table/${deptId}/retails`,
   },
-});
+})
 
 const pageParamsSchema = z.object({
   userId: z.string(),
   departmentId: z.string().transform((value) => {
-    return value as keyof typeof DepartmentLabelsById;
+    return value as keyof typeof DepartmentLabelsById
   }),
   dealType: z.enum(UnionParams),
-});
+})
 
 const LinkToUserTable = () => {
-  const { dealType, userId, departmentId } = useTypedParams(pageParamsSchema);
-  const { authUser } = useStoreUser();
-  const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
+  const { dealType, userId, departmentId } = useTypedParams(pageParamsSchema)
+  const { authUser } = useStoreUser()
+  const pathname = usePathname()
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleClick = () => setIsLoading(true);
+  const handleClick = () => setIsLoading(true)
 
   const hasTable = useMemo(() => {
-    if (!dealType || !userId || !departmentId) return null;
-    if (!pathname.includes(`/table/${departmentId}/${dealType}/${userId}`))
-      return null;
-    return linksPersonTable(departmentId as string)[dealType as DealsUnionType];
-  }, [pathname, dealType, departmentId, userId]);
+    if (!dealType || !userId || !departmentId) return null
+    if (!pathname.includes(`/table/${departmentId}/${dealType}/${userId}`)) return null
+    return linksPersonTable(departmentId as string)[dealType as DealsUnionType]
+  }, [pathname, dealType, departmentId, userId])
 
   const hasSummaryTable = useMemo(() => {
-    if (!authUser || !dealType) return null;
-    if (
-      !pathname.includes(
-        `/summary-table/${authUser.departmentId}/${dealType}/${authUser.id}`
-      )
-    )
-      return null;
-    return linksSummaryTable(authUser.departmentId)[dealType as DealsUnionType];
-  }, [pathname, dealType, authUser]);
+    if (!authUser || !dealType) return null
+    if (!pathname.includes(`/summary-table/${authUser.departmentId}/${dealType}/${authUser.id}`))
+      return null
+    return linksSummaryTable(authUser.departmentId)[dealType as DealsUnionType]
+  }, [pathname, dealType, authUser])
 
-  if (!authUser) return null;
+  if (!authUser) return null
 
   return (
     <>
-      <Overlay isPending={isLoading} className="animate animate-pulse" />
+      <Overlay className="animate animate-pulse" isPending={isLoading} />
       {hasTable && (
         <Link
-          href={`/dashboard/${hasTable.url}/${userId}`}
           className="btn_hover max-w-max border-muted px-4 text-sm"
-          title={`Перейти на страницу - ${hasTable.title}`}
+          href={`/dashboard/${hasTable.url}/${userId}`}
           onClick={handleClick}
           prefetch={false}
+          title={`Перейти на страницу - ${hasTable.title}`}
         >
           {hasTable.title} <Redo2 size={14} />
         </Link>
@@ -95,18 +85,18 @@ const LinkToUserTable = () => {
       {hasSummaryTable && (
         <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
           <Link
-            href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}
             className="btn_hover max-w-max border-muted px-4 text-sm"
-            title={`Перейти на страницу - ${hasSummaryTable.title}`}
+            href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}
             onClick={handleClick}
             prefetch={false}
+            title={`Перейти на страницу - ${hasSummaryTable.title}`}
           >
             {hasSummaryTable.title} <Redo2 size={14} />
           </Link>
         </ProtectedByPermissions>
       )}
     </>
-  );
-};
+  )
+}
 
-export default LinkToUserTable;
+export default LinkToUserTable

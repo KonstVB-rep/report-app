@@ -1,44 +1,38 @@
-import { rankItem } from "@tanstack/match-sorter-utils";
+import { useMemo, useState } from "react"
+import { rankItem } from "@tanstack/match-sorter-utils"
 import {
-  ColumnDef,
-  FilterFn,
+  type ColumnDef,
+  type FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  SortingState,
+  type SortingState,
   useReactTable,
-} from "@tanstack/react-table";
-
-import { useMemo, useState } from "react";
-
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters";
+} from "@tanstack/react-table"
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 
 export interface TableMeta<TData> {
-  columnVisibility: Partial<
-    Record<Extract<NonNullable<ColumnDef<TData>["id"]>, string>, boolean>
-  >;
+  columnVisibility: Partial<Record<Extract<NonNullable<ColumnDef<TData>["id"]>, string>, boolean>>
 }
 
 const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value);
+  const itemRank = rankItem(row.getValue(columnId), value)
   addMeta({
     itemRank,
-  });
+  })
 
-  return itemRank.passed;
-};
+  return itemRank.passed
+}
 
 export const useTableState = <T extends Record<string, unknown>>(
   data: T[],
   columns: ColumnDef<T>[],
-  hiddenColumns?: Partial<
-    Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>
-  >
+  hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>,
 ) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
-  const memoizedData = useMemo(() => data, [data]);
-  const memoizedColumns = useMemo(() => columns, [columns]);
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({})
+  const memoizedData = useMemo(() => data, [data])
+  const memoizedColumns = useMemo(() => columns, [columns])
 
   const {
     selectedColumns,
@@ -56,7 +50,7 @@ export const useTableState = <T extends Record<string, unknown>>(
     includedColumns,
     globalFilter,
     setGlobalFilter,
-  } = useDataTableFilters();
+  } = useDataTableFilters()
 
   const table = useReactTable({
     data: memoizedData,
@@ -98,7 +92,7 @@ export const useTableState = <T extends Record<string, unknown>>(
         ...hiddenColumns,
       },
     } as TableMeta<T>,
-  });
+  })
 
   const filtersContextValue = {
     selectedColumns,
@@ -115,7 +109,7 @@ export const useTableState = <T extends Record<string, unknown>>(
     setColumnVisibility,
     includedColumns,
     columns: memoizedColumns,
-  };
+  }
 
-  return { table, filtersContextValue, openFilters, setGlobalFilter };
-};
+  return { table, filtersContextValue, openFilters, setGlobalFilter }
+}

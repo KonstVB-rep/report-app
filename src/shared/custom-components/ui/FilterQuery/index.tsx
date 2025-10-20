@@ -1,19 +1,18 @@
-import { Column } from "@tanstack/react-table";
-
-import DebouncedInput from "../DebouncedInput";
+import type { Column } from "@tanstack/react-table"
+import DebouncedInput from "../DebouncedInput"
 
 const FilterQuery = ({ column }: { column: Column<unknown, unknown> }) => {
-  const columnFilterValue = column.getFilterValue();
+  const columnFilterValue = column.getFilterValue()
 
   return (
     <DebouncedInput
-      type="text"
-      value={(columnFilterValue ?? "") as string}
+      className="w-36 rounded border shadow"
       onChange={(value: string | number) => column.setFilterValue(value)}
       placeholder={`Search...`}
-      className="w-36 rounded border shadow"
+      type="text"
+      value={(columnFilterValue ?? "") as string}
     />
-  );
-};
+  )
+}
 
-export default FilterQuery;
+export default FilterQuery

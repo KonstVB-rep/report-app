@@ -5,19 +5,17 @@ import {
   DirectionRetail,
   StatusProject,
   StatusRetail,
-} from "@prisma/client";
-
-import { z } from "zod";
-
-import { SingleContactFormSchema } from "@/entities/contact/model/schema";
+} from "@prisma/client"
+import { z } from "zod"
+import { SingleContactFormSchema } from "@/entities/contact/model/schema"
 
 export const ProjectFormSchema = z
   .object({
     id: z.string().optional(),
     dateRequest: z.preprocess((val) => {
-      if (val instanceof Date) return val.toISOString();
-      if (!val) return "";
-      return val;
+      if (val instanceof Date) return val.toISOString()
+      if (!val) return ""
+      return val
     }, z.string()),
     nameDeal: z.string({
       error: "Введите название сделки",
@@ -25,12 +23,9 @@ export const ProjectFormSchema = z
     nameObject: z.string({
       error: "Введите название объекта",
     }),
-    direction: z.enum(
-      Object.values(DirectionProject).filter(Boolean) as [string, ...string[]],
-      {
-        error: "Выберите направление",
-      }
-    ),
+    direction: z.enum(Object.values(DirectionProject).filter(Boolean) as [string, ...string[]], {
+      error: "Выберите направление",
+    }),
     deliveryType: z
       .enum(Object.values(DeliveryProject) as [string, ...string[]], {
         error: "Выберите тип поставки",
@@ -51,9 +46,9 @@ export const ProjectFormSchema = z
     }),
     comments: z.string(),
     plannedDateConnection: z.preprocess((val) => {
-      if (val instanceof Date) return val.toISOString();
-      if (!val) return null;
-      return val;
+      if (val instanceof Date) return val.toISOString()
+      if (!val) return null
+      return val
     }, z.string().nullable().optional()),
     orderId: z.string().nullable().optional(),
     resource: z.string().nullable().optional(),
@@ -61,22 +56,19 @@ export const ProjectFormSchema = z
     managersIds: z.array(
       z.object({
         userId: z.string(),
-      })
+      }),
     ),
   })
   .check((ctx) => {
-    const data = ctx.value;
+    const data = ctx.value
 
-    if (
-      data.dealStatus !== StatusProject.REJECT &&
-      !data.plannedDateConnection?.trim()
-    ) {
+    if (data.dealStatus !== StatusProject.REJECT && !data.plannedDateConnection?.trim()) {
       ctx.issues.push({
         code: "custom",
         message: "Укажите планируемую дату подключения",
         path: ["plannedDateConnection"],
         input: data.plannedDateConnection,
-      });
+      })
     }
 
     if (data.dealStatus !== StatusProject.REJECT && !data.resource?.trim()) {
@@ -85,11 +77,11 @@ export const ProjectFormSchema = z
         message: "Укажите ресурс",
         path: ["resource"],
         input: data.resource,
-      });
+      })
     }
 
-    const hasPhone = !!data.phone?.trim();
-    const hasEmail = !!data.email?.trim();
+    const hasPhone = !!data.phone?.trim()
+    const hasEmail = !!data.email?.trim()
 
     if (!hasPhone && !hasEmail) {
       ctx.issues.push({
@@ -97,24 +89,24 @@ export const ProjectFormSchema = z
         message: "Укажите телефон или email",
         path: ["phone"],
         input: data.phone,
-      });
+      })
 
       ctx.issues.push({
         code: "custom",
         message: "Укажите телефон или email",
         path: ["email"],
         input: data.email,
-      });
+      })
     }
-  });
+  })
 
 export const RetailFormSchema = z
   .object({
     id: z.string().optional(),
     dateRequest: z.preprocess((val) => {
-      if (val instanceof Date) return val.toISOString();
-      if (!val) return "";
-      return val;
+      if (val instanceof Date) return val.toISOString()
+      if (!val) return ""
+      return val
     }, z.string()),
     nameDeal: z
       .string({
@@ -126,12 +118,9 @@ export const RetailFormSchema = z
         error: "Название объекта должно быть строкой",
       })
       .min(1, "Название объекта не может быть пустым"),
-    direction: z.enum(
-      Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]],
-      {
-        error: "Выберите направление",
-      }
-    ),
+    direction: z.enum(Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]], {
+      error: "Выберите направление",
+    }),
     deliveryType: z
       .enum(Object.values(DeliveryRetail) as [string, ...string[]], {
         error: "Выберите тип поставки",
@@ -150,9 +139,9 @@ export const RetailFormSchema = z
     }),
     comments: z.string(),
     plannedDateConnection: z.preprocess((val) => {
-      if (val instanceof Date) return val.toISOString();
-      if (!val) return "";
-      return val;
+      if (val instanceof Date) return val.toISOString()
+      if (!val) return ""
+      return val
     }, z.string()),
     orderId: z.string().nullable().optional(),
     resource: z.string().optional(),
@@ -160,26 +149,23 @@ export const RetailFormSchema = z
     managersIds: z.array(
       z.object({
         userId: z.string(),
-      })
+      }),
     ),
   })
   .check((ctx) => {
-    const data = ctx.value;
+    const data = ctx.value
 
-    if (
-      data.dealStatus !== StatusProject.REJECT &&
-      !data.plannedDateConnection?.trim()
-    ) {
+    if (data.dealStatus !== StatusProject.REJECT && !data.plannedDateConnection?.trim()) {
       ctx.issues.push({
         code: "custom",
         message: "Укажите планируемую дату подключения",
         path: ["plannedDateConnection"],
         input: data.plannedDateConnection,
-      });
+      })
     }
 
-    const hasPhone = !!data.phone?.trim();
-    const hasEmail = !!data.email?.trim();
+    const hasPhone = !!data.phone?.trim()
+    const hasEmail = !!data.email?.trim()
 
     if (!hasPhone && !hasEmail) {
       ctx.issues.push({
@@ -187,16 +173,16 @@ export const RetailFormSchema = z
         message: "Укажите телефон или email",
         path: ["phone"],
         input: data.phone,
-      });
+      })
 
       ctx.issues.push({
         code: "custom",
         message: "Укажите телефон или email",
         path: ["email"],
         input: data.email,
-      });
+      })
     }
-  });
+  })
 
-export type ProjectSchema = z.infer<typeof ProjectFormSchema>;
-export type RetailSchema = z.infer<typeof RetailFormSchema>;
+export type ProjectSchema = z.infer<typeof ProjectFormSchema>
+export type RetailSchema = z.infer<typeof RetailFormSchema>

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const SingleContactFormSchema = z
   .object({
@@ -11,11 +11,11 @@ export const SingleContactFormSchema = z
   .refine((contact) => contact.phone?.trim() || contact.email?.trim(), {
     error: "Укажите либо телефон, либо email",
     path: ["_common"],
-  });
+  })
 
 export const ContactFormSchema = z.object({
   contacts: z.array(SingleContactFormSchema),
-});
+})
 
-export type ContactSchema = z.infer<typeof ContactFormSchema>;
-export type SingleContactSchema = z.infer<typeof SingleContactFormSchema>;
+export type ContactSchema = z.infer<typeof ContactFormSchema>
+export type SingleContactSchema = z.infer<typeof SingleContactFormSchema>

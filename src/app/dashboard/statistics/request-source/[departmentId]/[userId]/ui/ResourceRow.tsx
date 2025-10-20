@@ -1,21 +1,20 @@
-import React, { memo } from "react";
-
-import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
+import { memo } from "react"
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
 
 type ItemType = {
-  name: string;
-  value: number;
-};
+  name: string
+  value: number
+}
 
 type ResourceRowProps = {
-  item: ItemType;
-  color: string;
+  item: ItemType
+  color: string
   status: {
-    positive: number;
-    negative: number;
-    inWork: number;
-  };
-};
+    positive: number
+    negative: number
+    inWork: number
+  }
+}
 const ResourceRow = memo(({ item, color, status }: ResourceRowProps) => (
   <li className="grid gap-2 sm:flex sm:gap-4 items-center border border-solid sm:border-none rounded p-2 sm:p-0">
     <span
@@ -51,8 +50,8 @@ const ResourceRow = memo(({ item, color, status }: ResourceRowProps) => (
       </TooltipComponent>
     </div>
   </li>
-));
+))
 
-ResourceRow.displayName = "ResourceRow";
+ResourceRow.displayName = "ResourceRow"
 
-export default ResourceRow;
+export default ResourceRow

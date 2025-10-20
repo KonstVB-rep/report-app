@@ -1,3 +1,3 @@
-import loginBg from "../../public/login-page-bg.webp";
+import loginBg from "../../public/login-page-bg.webp"
 
-export default loginBg;
+export default loginBg

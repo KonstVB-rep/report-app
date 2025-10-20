@@ -1,1 +1,1 @@
-export type CardInfoType = "phone" | "email" | "name" | "position";
+export type CardInfoType = "phone" | "email" | "name" | "position"

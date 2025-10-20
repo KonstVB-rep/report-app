@@ -1,4 +1,4 @@
-export const RADIAN = Math.PI / 180;
+export const RADIAN = Math.PI / 180
 
 export const COLORS = [
   "#8884d8",
@@ -13,4 +13,4 @@ export const COLORS = [
   "#ffbb28",
   "#ff6384",
   "#36a2eb",
-];
+]

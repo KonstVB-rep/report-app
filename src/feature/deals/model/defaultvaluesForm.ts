@@ -18,7 +18,7 @@ export const defaultProjectValues = {
   resource: "",
   contacts: [],
   managersIds: [],
-};
+}
 
 export const defaultRetailValues = {
   dateRequest: undefined,
@@ -38,4 +38,4 @@ export const defaultRetailValues = {
   resource: "",
   contacts: [],
   managersIds: [],
-};
+}

@@ -1,13 +1,9 @@
-import { CheckedState } from "@radix-ui/react-checkbox";
-import { Row, Table } from "@tanstack/react-table";
-
-import React from "react";
-
-import { ClipboardCheck } from "lucide-react";
-
-import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Label } from "@/shared/components/ui/label";
-import { cn } from "@/shared/lib/utils";
+import type { CheckedState } from "@radix-ui/react-checkbox"
+import type { Row, Table } from "@tanstack/react-table"
+import { ClipboardCheck } from "lucide-react"
+import { Checkbox } from "@/shared/components/ui/checkbox"
+import { Label } from "@/shared/components/ui/label"
+import { cn } from "@/shared/lib/utils"
 
 export const SelectColHeader = <T,>() => ({
   label: (table: Table<T>) => (
@@ -18,28 +14,25 @@ export const SelectColHeader = <T,>() => ({
         "Выбрать"
       )}
       <Checkbox
+        aria-label="Select all"
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value: CheckedState) =>
-          table.toggleAllPageRowsSelected(!!value)
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         className="opacity-0 w-0 h-0"
-        aria-label="Select all"
+        onCheckedChange={(value: CheckedState) => table.toggleAllPageRowsSelected(!!value)}
       />
     </Label>
   ),
   cell: (row: Row<T>) => (
     <div className="flex items-center justify-center gap-1">
       <Checkbox
+        aria-label="Select row"
         checked={row.getIsSelected()}
         onCheckedChange={(value: CheckedState) => row.toggleSelected(!!value)}
-        aria-label="Select row"
       />
     </div>
   ),
-});
+})
 
 export const SelectColDataColumn = <T,>() => ({
   id: "select",
@@ -52,4 +45,4 @@ export const SelectColDataColumn = <T,>() => ({
   },
   minSize: 80,
   maxSize: 80,
-});
+})

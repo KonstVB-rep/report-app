@@ -1,13 +1,14 @@
-"use server";
+"use server"
 
-import bcrypt from "bcrypt";
-import { generateTokens } from "@/feature/auth/lib/generateTokens";
-import prisma from "@/prisma/prisma-client";
+import bcrypt from "bcrypt"
+import { generateTokens } from "@/feature/auth/lib/generateTokens"
+import prisma from "@/prisma/prisma-client"
 
-export const login = async (prevState: unknown, formData: FormData) => {
+export const login = async (_: unknown, formData: FormData) => {
   try {
-    const email = (formData.get("email") as string)?.trim().toLowerCase();
-    const user_password = formData.get("user_password") as string;
+    const user_password = formData.get("user_password") as string
+    const email = formData.get("email") as string
+
 
     if (!email || !user_password) {
       return {
@@ -15,7 +16,7 @@ export const login = async (prevState: unknown, formData: FormData) => {
         message: "Все поля обязательны для заполнения",
         error: true,
         code: "MISSING_FIELDS",
-      };
+      }
     }
 
     const user = await prisma.user.findUnique({
@@ -24,7 +25,7 @@ export const login = async (prevState: unknown, formData: FormData) => {
         permissions: { select: { permission: true } },
         telegramInfo: { select: { tgUserId: true, tgUserName: true } },
       },
-    });
+    })
 
     if (!user) {
       return {
@@ -64,7 +65,7 @@ export const login = async (prevState: unknown, formData: FormData) => {
       create: { userId: user.id, loginAt: new Date() },
     });
 
-    await generateTokens(user.id, user.departmentId);
+    await generateTokens(user.id, user.departmentId)
 
     const {user_password: _password, ...userWithoutPassword} = user
 
@@ -90,3 +91,4 @@ export const login = async (prevState: unknown, formData: FormData) => {
     };
   }
 };
+

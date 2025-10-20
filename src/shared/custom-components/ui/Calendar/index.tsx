@@ -1,40 +1,30 @@
-"use client";
+"use client"
 
-import React from "react";
-import { FieldValues } from "react-hook-form";
-
-import { format } from "date-fns";
-import { ru } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
-
-import { Button } from "@/shared/components/ui/button";
-import { Calendar } from "@/shared/components/ui/calendar";
-import { FormControl } from "@/shared/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
-import { cn } from "@/shared/lib/utils";
+import { format } from "date-fns"
+import { ru } from "date-fns/locale"
+import { CalendarIcon } from "lucide-react"
+import type { FieldValues } from "react-hook-form"
+import { Button } from "@/shared/components/ui/button"
+import { Calendar } from "@/shared/components/ui/calendar"
+import { FormControl } from "@/shared/components/ui/form"
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
+import { cn } from "@/shared/lib/utils"
 
 type CalendarComponentProps = {
-  required?: boolean;
-  field: FieldValues;
-};
+  required?: boolean
+  field: FieldValues
+}
 
 const CalendarComponent = ({ field, ...props }: CalendarComponentProps) => {
-  const selectedDate = field.value ? new Date(field.value) : undefined;
+  const selectedDate = field.value ? new Date(field.value) : undefined
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <FormControl>
           <Button
+            className={cn("w-full text-left font-normal", !field.value && "text-muted-foreground")}
             variant={"outline"}
-            className={cn(
-              "w-full text-left font-normal",
-              !field.value && "text-muted-foreground"
-            )}
           >
             {selectedDate ? (
               format(selectedDate, "dd.MM.yyyy", { locale: ru })
@@ -45,20 +35,20 @@ const CalendarComponent = ({ field, ...props }: CalendarComponentProps) => {
           </Button>
         </FormControl>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent align="start" className="w-auto p-0">
         <Calendar
+          locale={ru}
           mode="single"
-          selected={selectedDate}
           onSelect={(date: Date | undefined) => {
-            field.onChange(date || null);
+            field.onChange(date || null)
           }}
           required={props.required}
-          locale={ru}
+          selected={selectedDate}
           {...props}
         />
       </PopoverContent>
     </Popover>
-  );
-};
+  )
+}
 
-export default CalendarComponent;
+export default CalendarComponent

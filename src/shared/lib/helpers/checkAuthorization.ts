@@ -1,9 +1,9 @@
-import { checkTokens } from "./checkTokens";
+import { checkTokens } from "./checkTokens"
 
 export const checkAuthorization = async (authUserId: string | undefined) => {
   if (!authUserId) {
-    throw new Error("Пользователь не авторизован");
+    throw new Error("Пользователь не авторизован")
   }
 
-  await checkTokens();
-};
+  await checkTokens()
+}

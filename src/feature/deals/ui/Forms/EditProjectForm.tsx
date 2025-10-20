@@ -1,56 +1,44 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  DeliveryProject,
-  DirectionProject,
-  StatusProject,
-} from "@prisma/client";
-
-import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { Resolver, useForm } from "react-hook-form";
-
-import { ProjectFormSchema, ProjectSchema } from "@/entities/deal/model/schema";
-import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-
-import { useMutationUpdateProject } from "../../api/hooks/mutate";
-import { useGetProjectById } from "../../api/hooks/query";
-import { defaultProjectValues } from "../../model/defaultvaluesForm";
-import ProjectFormBody from "./ProjectFormBody";
+import { type Dispatch, type SetStateAction, useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { DeliveryProject, DirectionProject, StatusProject } from "@prisma/client"
+import { type Resolver, useForm } from "react-hook-form"
+import { ProjectFormSchema, type ProjectSchema } from "@/entities/deal/model/schema"
+import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { useMutationUpdateProject } from "../../api/hooks/mutate"
+import { useGetProjectById } from "../../api/hooks/query"
+import { defaultProjectValues } from "../../model/defaultvaluesForm"
+import ProjectFormBody from "./ProjectFormBody"
 
 type Props = {
-  close: Dispatch<SetStateAction<void>>;
-  dealId: string;
-  isInvalidate: boolean;
-  titleForm: string;
-};
+  close: Dispatch<SetStateAction<void>>
+  dealId: string
+  isInvalidate: boolean
+  titleForm: string
+}
 
-const EditProjectForm = ({
-  close,
-  dealId,
-  isInvalidate = false,
-  titleForm,
-}: Props) => {
-  const { data, isPending: isLoading } = useGetProjectById(dealId, false);
-  const { authUser } = useStoreUser();
+const EditProjectForm = ({ close, dealId, isInvalidate = false, titleForm }: Props) => {
+  const { data, isPending: isLoading } = useGetProjectById(dealId, false)
+  const { authUser } = useStoreUser()
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,
     defaultValues: defaultProjectValues,
-  });
+  })
 
   const { mutateAsync, isPending } = useMutationUpdateProject(
     dealId,
     data?.userId ?? "",
     close,
-    isInvalidate
-  );
+    isInvalidate,
+  )
 
   const onSubmit = (data: ProjectSchema) => {
-    TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-  };
+    TOAST.PROMISE(mutateAsync(data), "Данные обновлены")
+  }
 
-  const { reset } = form;
+  const { reset } = form
 
   useEffect(() => {
     if (data && !isLoading) {
@@ -72,22 +60,22 @@ const EditProjectForm = ({
         managersIds: Array.isArray(data.managers)
           ? data.managers.map((manager) => ({ userId: manager.id }))
           : [],
-      });
+      })
     }
-  }, [data, reset, isLoading]);
+  }, [data, reset, isLoading])
 
-  if (isLoading) return <FormDealSkeleton />;
+  if (isLoading) return <FormDealSkeleton />
 
   return (
     <ProjectFormBody
-      form={form}
-      onSubmit={onSubmit}
-      isPending={isPending}
       contactsKey="contacts"
+      form={form}
+      isPending={isPending}
       managerId={data?.userId || authUser?.id}
+      onSubmit={onSubmit}
       titleForm={titleForm}
     />
-  );
-};
+  )
+}
 
-export default EditProjectForm;
+export default EditProjectForm

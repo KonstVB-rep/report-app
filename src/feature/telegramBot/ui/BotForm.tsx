@@ -1,81 +1,75 @@
-import React from "react";
-
-import { BotFormData } from "@/entities/tgBot/types";
-import { Input } from "@/shared/components/ui/input";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
-import { ActionResponse } from "@/shared/types";
+import type { BotFormData } from "@/entities/tgBot/types"
+import { Input } from "@/shared/components/ui/input"
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
+import type { ActionResponse } from "@/shared/types"
 
 type BotFormProps = {
-  state: ActionResponse<BotFormData>;
-  isPending: boolean;
-  actionSubmit: (data: FormData) => void;
-};
+  state: ActionResponse<BotFormData>
+  isPending: boolean
+  actionSubmit: (data: FormData) => void
+}
 
 const BotForm = ({ state, isPending, actionSubmit }: BotFormProps) => {
   const getFieldError = (fieldName: keyof BotFormData) => {
-    return state?.errors?.properties?.[fieldName]?.errors[0];
-  };
+    return state?.errors?.properties?.[fieldName]?.errors[0]
+  }
 
   return (
-    <form action={actionSubmit} className="space-y-6" autoComplete="on">
+    <form action={actionSubmit} autoComplete="on" className="space-y-6">
       <Input
+        aria-describedby="botName"
+        className={getFieldError("botName") ? "border-red-500" : ""}
+        defaultValue={state.inputs?.botName}
+        disabled={isPending}
+        minLength={3}
         name="botName"
         placeholder="Название бота..."
         required
-        minLength={3}
-        defaultValue={state.inputs?.botName}
-        aria-describedby="botName"
-        className={getFieldError("botName") ? "border-red-500" : ""}
-        disabled={isPending}
       />
 
       {getFieldError("botName") && (
-        <p id="botName" className="text-sm text-red-500">
+        <p className="text-sm text-red-500" id="botName">
           {getFieldError("botName")}
         </p>
       )}
 
       <Input
+        aria-describedby="description"
+        className={getFieldError("description") ? "border-red-500" : ""}
+        defaultValue={state.inputs?.description}
+        disabled={isPending}
+        minLength={5}
         name="description"
         placeholder="Описание бота..."
         required
-        minLength={5}
-        defaultValue={state.inputs?.description}
-        aria-describedby="description"
-        className={getFieldError("description") ? "border-red-500" : ""}
-        disabled={isPending}
       />
 
       {getFieldError("description") && (
-        <p id="description" className="text-sm text-red-500">
+        <p className="text-sm text-red-500" id="description">
           {getFieldError("description")}
         </p>
       )}
 
       <Input
+        aria-describedby="token"
+        className={getFieldError("token") ? "border-red-500" : ""}
+        defaultValue={state.inputs?.token}
+        disabled={isPending}
+        minLength={10}
         name="token"
         placeholder="Токен..."
         required
-        minLength={10}
-        defaultValue={state.inputs?.token}
-        aria-describedby="token"
-        className={getFieldError("token") ? "border-red-500" : ""}
-        disabled={isPending}
       />
 
       {getFieldError("token") && (
-        <p id="token" className="text-sm text-red-500">
+        <p className="text-sm text-red-500" id="token">
           {getFieldError("token")}
         </p>
       )}
 
-      <SubmitFormButton
-        title="Сохранить"
-        isPending={isPending}
-        className="ml-auto mr-2 w-max"
-      />
+      <SubmitFormButton className="ml-auto mr-2 w-max" isPending={isPending} title="Сохранить" />
     </form>
-  );
-};
+  )
+}
 
-export default BotForm;
+export default BotForm

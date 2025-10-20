@@ -1,9 +1,9 @@
 export class AuthError extends Error {
-  status: number;
+  status: number
 
   constructor(message = "Сессия истекла") {
-    super(message);
-    this.name = "AuthError";
-    this.status = 401;
+    super(message)
+    this.name = "AuthError"
+    this.status = 401
   }
 }

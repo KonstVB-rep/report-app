@@ -1,5 +1,3 @@
-import React from "react";
-
 const DelDealSkeleton = () => {
   return (
     <div className="w-full h-full">
@@ -13,7 +11,7 @@ const DelDealSkeleton = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DelDealSkeleton;
+export default DelDealSkeleton

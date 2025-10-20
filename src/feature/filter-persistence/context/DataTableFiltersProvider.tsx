@@ -1,26 +1,21 @@
-import { ReactNode } from "react";
-
+import type { ReactNode } from "react"
 import {
   DataTableFiltersContext,
-  DataTableFiltersContextType,
-} from "./useDataTableFiltersContext";
+  type DataTableFiltersContextType,
+} from "./useDataTableFiltersContext"
 
-export const DataTableFiltersProvider = <
-  TData extends Record<string, unknown>,
->({
+export const DataTableFiltersProvider = <TData extends Record<string, unknown>>({
   children,
   value,
 }: {
-  children: ReactNode;
-  value: DataTableFiltersContextType<TData>;
+  children: ReactNode
+  value: DataTableFiltersContextType<TData>
 }) => {
   return (
     <DataTableFiltersContext.Provider
-      value={
-        value as unknown as DataTableFiltersContextType<Record<string, unknown>>
-      }
+      value={value as unknown as DataTableFiltersContextType<Record<string, unknown>>}
     >
       {children}
     </DataTableFiltersContext.Provider>
-  );
-};
+  )
+}

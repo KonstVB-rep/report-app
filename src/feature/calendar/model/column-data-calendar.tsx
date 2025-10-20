@@ -1,6 +1,5 @@
-import { ColumnDef } from "@tanstack/react-table";
-
-import { EventInputType } from "@/feature/calendar/types";
+import type { ColumnDef } from "@tanstack/react-table"
+import type { EventInputType } from "@/feature/calendar/types"
 
 export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
   {
@@ -8,25 +7,20 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
     header: "Дата",
     accessorKey: "start",
     cell: (info) => {
-      const { row } = info;
+      const { row } = info
       const startDate =
-        row.original.start instanceof Date
-          ? row.original.start
-          : new Date(row.original.start);
+        row.original.start instanceof Date ? row.original.start : new Date(row.original.start)
       const endDate =
         row.original.end instanceof Date
           ? row.original.end
           : row.original.end
             ? new Date(row.original.end)
-            : new Date();
+            : new Date()
 
-      if (
-        startDate.toLocaleDateString("ru-RU") ===
-        endDate.toLocaleDateString("ru-RU")
-      ) {
-        return startDate.toLocaleDateString("ru-RU");
+      if (startDate.toLocaleDateString("ru-RU") === endDate.toLocaleDateString("ru-RU")) {
+        return startDate.toLocaleDateString("ru-RU")
       }
-      return `${startDate.toLocaleDateString("ru-RU")} - ${endDate.toLocaleDateString("ru-RU")}`;
+      return `${startDate.toLocaleDateString("ru-RU")} - ${endDate.toLocaleDateString("ru-RU")}`
     },
     enableHiding: false,
     enableSorting: false,
@@ -38,8 +32,8 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
     id: "eventTime",
     header: "Время",
     cell: (info) => {
-      const { row } = info;
-      return `${row.original.start.toLocaleTimeString("ru-RU", { timeStyle: "short" })} - ${row.original?.end?.toLocaleTimeString("ru-RU", { timeStyle: "short" }) || "не определено"}`;
+      const { row } = info
+      return `${row.original.start.toLocaleTimeString("ru-RU", { timeStyle: "short" })} - ${row.original?.end?.toLocaleTimeString("ru-RU", { timeStyle: "short" }) || "не определено"}`
     },
     size: 100,
     minSize: 100,
@@ -56,4 +50,4 @@ export const columnsDataCalendar: ColumnDef<EventInputType, unknown>[] = [
     enableHiding: false,
     enableSorting: false,
   },
-];
+]

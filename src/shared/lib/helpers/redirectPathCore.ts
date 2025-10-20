@@ -1,14 +1,14 @@
 export const redirectPathCore = (
-  departmentId: number
+  departmentId: number,
   // userId: string
 ): string => {
   switch (departmentId) {
     case 1:
       // return `/table/${departmentId}/projects/${userId}`;
-      return `/dashboard`;
+      return `/dashboard`
     case 2:
-      return `/dashboard`;
+      return `/dashboard`
     default:
-      return "/dashboard";
+      return "/dashboard"
   }
-};
+}

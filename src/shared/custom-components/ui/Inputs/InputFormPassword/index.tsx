@@ -1,16 +1,13 @@
-import React from "react";
-import { FieldValues } from "react-hook-form";
-
+import type { FieldValues } from "react-hook-form"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-
-import InputPassword from "../InputPassword";
-import { InputFormProps } from "../type";
+} from "@/shared/components/ui/form"
+import InputPassword from "../InputPassword"
+import type { InputFormProps } from "../type"
 
 const InputFormPassword = <T extends FieldValues>({
   name,
@@ -30,18 +27,16 @@ const InputFormPassword = <T extends FieldValues>({
             <InputPassword
               placeholder="Введите пароль"
               {...field}
-              minLength={6}
               maxLength={30}
+              minLength={6}
               {...rest}
             />
           </FormControl>
-          {errorMessage && (
-            <FormMessage className="text-red-500">{errorMessage}</FormMessage>
-          )}
+          {errorMessage && <FormMessage className="text-red-500">{errorMessage}</FormMessage>}
         </FormItem>
       )}
     />
-  );
-};
+  )
+}
 
-export default InputFormPassword;
+export default InputFormPassword

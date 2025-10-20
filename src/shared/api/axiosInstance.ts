@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from "axios"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -9,6 +9,6 @@ const axiosInstance = axios.create({
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   },
   withCredentials: true,
-});
+})
 
-export default axiosInstance;
+export default axiosInstance

@@ -1,19 +1,17 @@
-import React from "react";
-import { DateRange } from "react-day-picker";
+import type React from "react"
+import { X } from "lucide-react"
+import type { DateRange } from "react-day-picker"
+import { Button } from "@/shared/components/ui/button"
+import { DateRangePicker } from "@/shared/components/ui/date-range-picker"
 
-import { X } from "lucide-react";
-
-import { Button } from "@/shared/components/ui/button";
-import { DateRangePicker } from "@/shared/components/ui/date-range-picker";
-
-import "./datePickerStyles.css";
+import "./datePickerStyles.css"
 
 interface DateRangeFilterProps {
-  onDateChange: (date: DateRange | undefined) => void;
-  onClearDateFilter: (columnId: string) => void;
-  value?: DateRange;
-  columnId?: string;
-  label: string;
+  onDateChange: (date: DateRange | undefined) => void
+  onClearDateFilter: (columnId: string) => void
+  value?: DateRange
+  columnId?: string
+  label: string
 }
 
 const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
@@ -24,9 +22,9 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   label,
 }) => {
   const handleClear = () => {
-    onDateChange(undefined);
-    onClearDateFilter(columnId);
-  };
+    onDateChange(undefined)
+    onClearDateFilter(columnId)
+  }
 
   return (
     <div
@@ -34,22 +32,18 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         value ? "border-solid min-w-[280px]" : "border-dashed max-w-fit"
       } border-muted-foreground`}
     >
-      <DateRangePicker
-        value={value}
-        onValueChange={onDateChange}
-        label={label}
-      />
+      <DateRangePicker label={label} onValueChange={onDateChange} value={value} />
       {value && (
         <Button
-          variant="outline"
-          onClick={handleClear}
           className="absolute right-0 h-full p-2 rounded"
+          onClick={handleClear}
+          variant="outline"
         >
           <X />
         </Button>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default DateRangeFilter;
+export default DateRangeFilter

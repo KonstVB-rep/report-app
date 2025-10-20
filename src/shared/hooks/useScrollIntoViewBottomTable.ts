@@ -1,28 +1,20 @@
-import { useReactTable } from "@tanstack/react-table";
+import { useEffect, useRef } from "react"
 
-import { useEffect, useRef } from "react";
-
-const useScrollIntoViewBottom = <T, E extends HTMLElement = HTMLDivElement>(
-  dep: ReturnType<typeof useReactTable<T>>
-) => {
-  const ref = useRef<E>(null);
-
-  const filterLength = dep?.getState().columnFilters?.length ?? 0;
-  const columnHiddenLength = Object.values(
-    dep?.getState().columnFilters ?? {}
-  ).length;
+const useScrollIntoViewBottom = <E extends HTMLElement = HTMLDivElement>() => {
+  const ref = useRef<E>(null)
 
   useEffect(() => {
-    if (!ref.current) return;
+    const timeoutId = setTimeout(() => {
+      ref.current?.scrollTo?.({
+        top: ref.current.scrollHeight,
+        behavior: "smooth",
+      })
+    }, 100)
 
-    setTimeout(() => {
-      if (ref.current) {
-        ref.current.scrollTop = ref.current.scrollHeight;
-      }
-    }, 100);
-  }, [dep, filterLength, columnHiddenLength]);
+    return () => clearTimeout(timeoutId)
+  }, []) // Пустой массив зависимостей - только при монтировании
 
-  return ref;
-};
+  return ref
+}
 
-export default useScrollIntoViewBottom;
+export default useScrollIntoViewBottom

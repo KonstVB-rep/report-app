@@ -1,36 +1,33 @@
-"use client";
+"use client"
 
-import { ReactNode, useEffect, useRef } from "react";
-
-import { useRouter } from "next/navigation";
-
-import useStoreUser from "@/entities/user/store/useStoreUser";
-
-import { resetAllStores } from "../../../lib/helpers/сreate";
+import { type ReactNode, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { resetAllStores } from "../../../lib/helpers/сreate"
 
 const RedirectLastPath = ({ children }: { children: ReactNode }) => {
-  const { isAuth, authUser } = useStoreUser();
-  const router = useRouter();
-  const hasRedirectedRef = useRef(false);
+  const { isAuth, authUser } = useStoreUser()
+  const router = useRouter()
+  const hasRedirectedRef = useRef(false)
 
   useEffect(() => {
-    if (!isAuth || !authUser) return;
+    if (!isAuth || !authUser) return
     // Если пользователь авторизован, редиректим
     if (isAuth && authUser && !hasRedirectedRef.current) {
-      const lastAppPath = localStorage.getItem("lastAppPath");
-      const redirectUrl = lastAppPath || "/dashboard";
-      hasRedirectedRef.current = true;
-      router.push(redirectUrl);
+      const lastAppPath = localStorage.getItem("lastAppPath")
+      const redirectUrl = lastAppPath || "/dashboard"
+      hasRedirectedRef.current = true
+      router.push(redirectUrl)
     }
 
     // Сбрасываем флаг при разлогине
     if (!isAuth) {
-      hasRedirectedRef.current = false;
-      resetAllStores();
+      hasRedirectedRef.current = false
+      resetAllStores()
     }
-  }, [isAuth, authUser, router]);
+  }, [isAuth, authUser, router])
 
-  return <>{children}</>;
-};
+  return <>{children}</>
+}
 
-export default RedirectLastPath;
+export default RedirectLastPath

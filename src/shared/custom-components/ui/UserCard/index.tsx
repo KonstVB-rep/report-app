@@ -1,17 +1,15 @@
-import React, { memo } from "react";
-
-import { CircleUserRound } from "lucide-react";
-
-import Contacts from "../Contacts";
+import { memo } from "react"
+import { CircleUserRound } from "lucide-react"
+import Contacts from "../Contacts"
 
 type UserCardProps = {
-  email: string;
-  phone: string;
-  username: string;
-  position: string;
-  isLink?: boolean;
-  departmentName: string;
-};
+  email: string
+  phone: string
+  username: string
+  position: string
+  isLink?: boolean
+  departmentName: string
+}
 
 const UserCard = ({
   email,
@@ -21,12 +19,10 @@ const UserCard = ({
   isLink = false,
   departmentName,
 }: UserCardProps) => {
-  const styles = isLink ? "border border-solid rounded-md" : "";
+  const styles = isLink ? "border border-solid rounded-md" : ""
 
   return (
-    <div
-      className={`grid gap-2 p-3 ${styles} justify-items-center text-sm h-full`}
-    >
+    <div className={`grid gap-2 p-3 ${styles} justify-items-center text-sm h-full`}>
       <div className="grid w-full justify-items-center gap-2 p-2">
         <CircleUserRound size="80" />
 
@@ -41,10 +37,10 @@ const UserCard = ({
         </p>
       </div>
       <div className="flex gap-2 overflow-hidden rounded-md w-full items-center">
-        <Contacts email={email} phone={phone} className="rounded-full" />
+        <Contacts className="rounded-full" email={email} phone={phone} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default memo(UserCard);
+export default memo(UserCard)

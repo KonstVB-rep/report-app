@@ -1,48 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
-
-import { verifyToken } from "./shared/lib/helpers/checkTokens";
-import { AuthError } from "./shared/lib/helpers/customErrors";
+import { type NextRequest, NextResponse } from "next/server"
+import { verifyToken } from "./shared/lib/helpers/checkTokens"
+import { AuthError } from "./shared/lib/helpers/customErrors"
 
 async function redirectToLogin(request: NextRequest) {
-  const loginUrl = new URL("/login", request.url);
-  const response = NextResponse.redirect(loginUrl);
+  const loginUrl = new URL("/login", request.url)
+  const response = NextResponse.redirect(loginUrl)
 
-  response.cookies.delete("accessToken");
-  response.cookies.delete("refreshToken");
+  response.cookies.delete("accessToken")
+  response.cookies.delete("refreshToken")
 
-  return response;
+  return response
 }
 
 const refreshTokenRequest = async (refreshToken: string) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
-    }
-  );
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refreshToken }),
+  })
 
   if (!res.ok) {
     if (res.status === 401) {
-      throw new AuthError("Refresh token expired");
+      throw new AuthError("Refresh token expired")
     } else {
-      throw new AuthError("Error refreshing tokens");
+      throw new AuthError("Error refreshing tokens")
     }
   }
 
-  return await res.json();
-};
+  return await res.json()
+}
 
-async function refreshTokens(request: NextRequest, refreshToken: string) {
+async function refreshTokens(_request: NextRequest, refreshToken: string) {
   try {
-    const tokens = await refreshTokenRequest(refreshToken);
+    const tokens = await refreshTokenRequest(refreshToken)
 
     if (!tokens.accessToken) {
-      throw new Error("Новый accessToken не получен");
+      throw new Error("Новый accessToken не получен")
     }
 
-    const response = NextResponse.next();
+    const response = NextResponse.next()
 
     response.cookies.set("accessToken", tokens.accessToken, {
       httpOnly: true,
@@ -50,7 +46,7 @@ async function refreshTokens(request: NextRequest, refreshToken: string) {
       sameSite: "strict",
       maxAge: 60 * 60 * 24,
       path: "/",
-    });
+    })
 
     if (tokens.refreshToken) {
       response.cookies.set("refreshToken", tokens.refreshToken, {
@@ -59,54 +55,54 @@ async function refreshTokens(request: NextRequest, refreshToken: string) {
         sameSite: "strict",
         maxAge: 60 * 60 * 24 * 30,
         path: "/",
-      });
+      })
     }
 
-    return response;
+    return response
   } catch (err) {
-    console.error("refreshTokens error:", err);
-    return null;
+    console.error("refreshTokens error:", err)
+    return null
   }
 }
 
 export default async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const accessToken = request.cookies.get("accessToken")?.value;
-  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const { pathname } = request.nextUrl
+  const accessToken = request.cookies.get("accessToken")?.value
+  const refreshToken = request.cookies.get("refreshToken")?.value
 
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
-        await verifyToken(accessToken);
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-      } catch (err) {
-        return NextResponse.next();
+        await verifyToken(accessToken)
+        return NextResponse.redirect(new URL("/dashboard", request.url))
+      } catch (_err) {
+        return NextResponse.next()
       }
     }
-    return NextResponse.next();
+    return NextResponse.next()
   }
 
   if (!accessToken && !refreshToken) {
-    return redirectToLogin(request);
+    return redirectToLogin(request)
   }
 
   if (accessToken) {
     try {
-      await verifyToken(accessToken);
-      return NextResponse.next();
+      await verifyToken(accessToken)
+      return NextResponse.next()
     } catch (error) {
-      console.log("Access token недействителен", error);
+      console.log("Access token недействителен", error)
     }
   }
 
   if (refreshToken) {
-    const response = await refreshTokens(request, refreshToken);
+    const response = await refreshTokens(request, refreshToken)
     if (response) {
-      return response;
+      return response
     }
   }
 
-  return redirectToLogin(request);
+  return redirectToLogin(request)
 }
 
 export const config = {
@@ -124,4 +120,4 @@ export const config = {
     "/orders/:path*",
     "/",
   ],
-};
+}

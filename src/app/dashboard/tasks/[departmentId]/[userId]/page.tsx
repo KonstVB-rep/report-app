@@ -1,51 +1,45 @@
-"use client";
+"use client"
 
-import { PermissionEnum } from "@prisma/client";
-
-import dynamic from "next/dynamic";
-
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-import LoadingView from "@/entities/task/ui/LoadingView";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink";
-import { useGetUserTasks } from "@/feature/task/hooks/query";
-import useViewType from "@/feature/task/hooks/useViewType";
-import { viewType } from "@/feature/task/model/constants";
-import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog";
-import { Button } from "@/shared/components/ui/button";
-import { Separator } from "@/shared/components/ui/separator";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
-import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
-import {
-  pageParamsSchemaDepsIsUserId,
-  useTypedParams,
-} from "@/shared/hooks/useTypedParams";
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
+import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
+import LoadingView from "@/entities/task/ui/LoadingView"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink"
+import { useGetUserTasks } from "@/feature/task/hooks/query"
+import useViewType from "@/feature/task/hooks/useViewType"
+import { viewType } from "@/feature/task/model/constants"
+import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
+import { Button } from "@/shared/components/ui/button"
+import { Separator } from "@/shared/components/ui/separator"
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
+import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
+import { pageParamsSchemaDepsIsUserId, useTypedParams } from "@/shared/hooks/useTypedParams"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
   loading: () => <LoadingView />,
-});
+})
 
 const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   ssr: false,
   loading: () => <LoadingView />,
-});
+})
 
 const UserTasksPage = () => {
-  const { authUser } = useStoreUser();
+  const { authUser } = useStoreUser()
 
-  const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId);
+  const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
 
-  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT);
+  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 
-  const { data } = useGetUserTasks();
+  const { data } = useGetUserTasks()
 
-  const { handleViewChange, currentView } = useViewType();
+  const { handleViewChange, currentView } = useViewType()
 
-  if (!authUser) return;
+  if (!authUser) return
 
-  if (!hasAccess)
-    return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />;
+  if (!hasAccess) return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />
 
   return (
     <section className="p-5">
@@ -60,14 +54,10 @@ const UserTasksPage = () => {
         <div className="flex gap-2">
           {viewType.map((item) => {
             return (
-              <Button
-                key={item.id}
-                variant="outline"
-                onClick={() => handleViewChange(item.id)}
-              >
+              <Button key={item.id} onClick={() => handleViewChange(item.id)} variant="outline">
                 {item.value}
               </Button>
-            );
+            )
           })}
         </div>
 
@@ -80,7 +70,7 @@ const UserTasksPage = () => {
         {currentView === "kanban" && data && <Kanban data={data} />}
       </MotionDivY>
     </section>
-  );
-};
+  )
+}
 
-export default UserTasksPage;
+export default UserTasksPage
