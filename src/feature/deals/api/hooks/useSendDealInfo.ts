@@ -14,15 +14,18 @@ const useSendDealInfo = <T extends FieldValues>(
   onSubmit: (data: T) => void,
   managerId: string,
   additionalContacts: Contact[] = [],
+  managersIds: {
+    userId: string
+  }[] = [],
 ) => {
   const { userId } = useTypedParams(pageParamsSchema)
 
   const firstManagerId = managerId || userId
 
   const [contacts, setContacts] = useState<Contact[]>([])
-  const [managers, setManagers] = useState<{ userId: string | undefined }[]>([
-    { userId: firstManagerId },
-  ])
+  const [managers, setManagers] = useState<{ userId: string | undefined }[]>(
+    managersIds.length === 0 ? [{ userId: firstManagerId }] : managersIds,
+  )
   const [firstManager, setFirstManager] = useState<string>("")
   const [selectedContacts, setSelectedContacts] = useState<Contact[]>([])
   const [isAddContact, setIsAddContact] = useState(false)
@@ -36,7 +39,6 @@ const useSendDealInfo = <T extends FieldValues>(
   }
 
   const handleSubmit = (data: T) => {
-    console.log(data, "data")
     const fullData = {
       ...data,
       userId: firstManager,
@@ -47,7 +49,7 @@ const useSendDealInfo = <T extends FieldValues>(
           ? data.plannedDateConnection
           : null,
     }
-    console.log(fullData, "fullData")
+
     onSubmit(fullData)
   }
 
@@ -61,6 +63,12 @@ const useSendDealInfo = <T extends FieldValues>(
       setSelectedContacts(additionalContacts)
     }
   }, [additionalContacts, firstManagerId])
+
+  useEffect(() => {
+    if (managersIds?.length > 0) {
+      setManagers(managersIds)
+    }
+  }, [managersIds])
 
   return {
     contacts,

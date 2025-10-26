@@ -79,6 +79,13 @@ const ProjectFormBody = <T extends FieldValues>({
 }: ProjectFormBodyProps<T>) => {
   const { dealType } = useTypedParams(pageParamsSchema)
 
+  const initialManagersIds = form.getValues("managersIds" as Path<T>)
+  const initialManagers = initialManagersIds?.length
+    ? initialManagersIds
+    : managerId
+      ? [{ userId: managerId }]
+      : []
+
   const {
     contacts,
     setContacts,
@@ -92,19 +99,17 @@ const ProjectFormBody = <T extends FieldValues>({
     setManagers,
     firstManager,
     setFirstManager,
-  } = useSendDealInfo<T>(onSubmit, managerId, form.getValues("contacts" as Path<T>))
+  } = useSendDealInfo<T>(
+    onSubmit,
+    managerId,
+    form.getValues("contacts" as Path<T>),
+    initialManagers,
+  )
 
   const watchedValues = useWatch({
     control: form.control,
     name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
   })
-
-  const { getValues } = form
-
-  useEffect(() => {
-    const ids = getValues("managersIds" as Path<T>)
-    if (ids?.length > 0) setManagers(ids)
-  }, [getValues, setManagers])
 
   useEffect(() => {
     if (!watchedValues) return

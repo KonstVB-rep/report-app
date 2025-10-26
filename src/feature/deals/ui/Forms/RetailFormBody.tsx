@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
 import { StatusRetail } from "@prisma/client"
 import { ArrowLeft } from "lucide-react"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
@@ -54,6 +53,13 @@ const RetailFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: RetailFormBodyProps<T>) => {
+  const initialManagersIds = form.getValues("managersIds" as Path<T>)
+  const initialManagers = initialManagersIds?.length
+    ? initialManagersIds
+    : managerId
+      ? [{ userId: managerId }]
+      : []
+
   const {
     contacts,
     setContacts,
@@ -67,14 +73,12 @@ const RetailFormBody = <T extends FieldValues>({
     setManagers,
     firstManager,
     setFirstManager,
-  } = useSendDealInfo<T>(onSubmit, managerId, form.getValues("contacts" as Path<T>))
-
-  const { getValues } = form
-
-  useEffect(() => {
-    const ids = getValues("managersIds" as Path<T>)
-    if (ids?.length > 0) setManagers(ids)
-  }, [getValues, setManagers])
+  } = useSendDealInfo<T>(
+    onSubmit,
+    managerId,
+    form.getValues("contacts" as Path<T>),
+    initialManagers,
+  )
 
   const getError = (name: keyof T) => form.formState.errors[name]?.message as string
 

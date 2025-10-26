@@ -30,11 +30,12 @@ export const useGetHrefFilesDealFromDB = (
 
         return files
       } catch (error) {
-        console.error("Ошибка при получении файлов сделки:", error)
         if ((error as Error).message === "Failed to fetch") {
-          TOAST.ERROR("Не удалось получить данные")
+          TOAST.ERROR("Не удалось получить документы по проекту")
+          console.error("Ошибка при получении файлов сделки:", "Failed to fetch")
         } else {
-          TOAST.ERROR((error as Error).message)
+          TOAST.ERROR("Не удалось получить документы по проекту")
+          console.log(error)
         }
         throw error
       }
