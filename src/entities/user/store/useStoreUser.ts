@@ -1,21 +1,24 @@
+import type { PermissionEnum } from "@prisma/client"
 import { persist } from "zustand/middleware"
 import { create } from "@/shared/lib/helpers/сreate"
-import type { User } from "../types"
+import type { UserWithoutPassword } from "@/shared/types"
+
+type AuthUserType = UserWithoutPassword & { permissions?: PermissionEnum[] }
 
 type State = {
-  authUser: Omit<User, "user_password"> | null;
-  isAuth: boolean;
-  setAuthUser: (user: Omit<User, "user_password"> | null) => void;
-  setIsAuth: (isAuth: boolean) => void;
-  resetStore: () => void;
-};
+  authUser: AuthUserType | null
+  isAuth: boolean
+  setAuthUser: (user: AuthUserType | null) => void
+  setIsAuth: (isAuth: boolean) => void
+  resetStore: () => void
+}
 const useStoreUser = create<State>()(
   persist(
     (set) => ({
       authUser: null,
       isAuth: false,
 
-      setAuthUser: (user: Omit<User, "user_password"> | null) =>
+      setAuthUser: (user: AuthUserType | null) =>
         set({
           authUser: user,
           isAuth: !!user,

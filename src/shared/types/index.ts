@@ -1,3 +1,5 @@
+import type { User } from "@prisma/client"
+
 export type ActionResponse<T> = {
   success: boolean
   message: string
@@ -18,3 +20,5 @@ export type SuccessResponse = {
   message: string
   error?: boolean
 }
+
+export type UserWithoutPassword = Omit<User, "user_password">

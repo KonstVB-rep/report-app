@@ -1,6 +1,6 @@
 import { type DepartmentEnum, PermissionEnum, type Role } from "@prisma/client"
 import { z } from "zod"
-import { DepartmentLabels } from "@/entities/department/types"
+import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { RolesUser } from "./objectTypes"
 
 export const userFormSchema = z.object({

@@ -1,5 +1,5 @@
 import type React from "react"
-import { DepartmentLabels } from "@/entities/department/types"
+import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label"
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"

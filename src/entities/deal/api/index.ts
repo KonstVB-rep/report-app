@@ -16,7 +16,6 @@ import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
 import prisma from "@/prisma/prisma-client"
 import { checkRole } from "@/shared/api/checkByServer"
 import { handleError } from "@/shared/api/handleError"
-import type { AllStatusKeys } from "../lib/constants"
 import type {
   Contact,
   ContractResponse,
@@ -464,7 +463,6 @@ type DealsListWithResource =
       deals: {
         dateRequest: Date
         resource: string
-        dealStatus: AllStatusKeys
       }[]
       totalDealsCount: number
     }
@@ -492,7 +490,6 @@ export const getAllDealsRequestSourceByDepartment = async (
       select: {
         dateRequest: true,
         resource: true,
-        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
@@ -508,7 +505,6 @@ export const getAllDealsRequestSourceByDepartment = async (
       select: {
         dateRequest: true,
         resource: true,
-        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",

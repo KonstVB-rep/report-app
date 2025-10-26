@@ -4,9 +4,8 @@ import dynamic from "next/dynamic"
 import { usePathname } from "next/navigation"
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import useStoreUser from "@/entities/user/store/useStoreUser"
+import AdminSidebar from "@/feature/Sidebar/ui/AdminSidebar"
 import { SidebarInset } from "@/shared/components/ui/sidebar"
-import ButtonBack from "@/shared/custom-components/ui/Buttons/ButtonBack"
-import ButtonLink from "@/shared/custom-components/ui/Buttons/ButtonLink"
 import ExitAppScreen from "@/shared/custom-components/ui/ExitAppScreen"
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY"
 import LinksPageBlock from "./ui/LinksPageBlock"
@@ -30,22 +29,18 @@ const TemplateDashboard = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <SidebarInset className="h-full">
-      <PageTransitionY className="flex-1 flex flex-col">
-        <div className="max-h-[94vh] overflow-auto pt-2 px-2 flex-1 flex flex-col">
-          <div className="flex items-center justify-between">
-            {pathName?.includes("adminboard") && pathName !== "/adminboard" && (
-              <div className="flex gap-4">
-                <ButtonBack />
-                <ButtonLink className="h-9" label="Админпанель" pathName="/adminboard" />
-              </div>
-            )}
-            <LinksPageBlock />
+    <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] max-h-[calc(100svh-var(--header-height)-2px)] flex-1">
+      <AdminSidebar>
+        <LinksPageBlock />
+      </AdminSidebar>
+      <SidebarInset className="h-auto min-h-min" key={pathName}>
+        <PageTransitionY className="flex-1 flex flex-col">
+          <div className="max-h-[94vh] overflow-auto pt-2 px-2 flex-1 flex flex-col">
+            {children}
           </div>
-          {children}
-        </div>
-      </PageTransitionY>
-    </SidebarInset>
+        </PageTransitionY>
+      </SidebarInset>
+    </div>
   )
 }
 

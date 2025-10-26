@@ -66,7 +66,6 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     header: "Плановая дата контакта",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const date = info.getValue() as Date | null
-      console.log(info, "date")
       if (date) {
         return date.toLocaleDateString("ru-RU")
       } else {
@@ -205,8 +204,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "amountWork",
     header: "Сумма работ",
-    cell: (info: CellContext<ProjectResponse, unknown>) =>
-      formatterCurrency.format(parseFloat(info.getValue() as string)),
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      return formatterCurrency.format(parseFloat(info.getValue() as string))
+    },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountWork,
   },

@@ -1,18 +1,12 @@
 "use client"
 
-import { type MouseEvent, useEffect, useMemo, useState } from "react"
-import { ChartColumnBig, ChartPie, X } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { v4 as uuid } from "uuid"
-import { StatusesInWork } from "@/feature/deals/lib/constants"
-import { Button } from "@/shared/components/ui/button"
-import { DateRangePicker } from "@/shared/components/ui/date-range-picker"
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage"
-import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
 import useAnimateOnDataChange from "@/shared/hooks/useAnimateOnDataChange"
 import useCurrentTheme from "@/shared/hooks/useCurrentTheme"
 import { COLORS } from "../lib/constants"
@@ -24,24 +18,19 @@ import {
   normalizeResource,
   renderCustomizedLabel,
 } from "../utils"
+import DateFilters from "./DateFilters"
+import DisplayTypeSwitch from "./DisplayTypeSwitch"
 import EmptyData from "./EmptyData"
 import Graph from "./Graph"
 import MobileCharts from "./MobileCharts"
 import ResourceRow from "./ResourceRow"
 
-type StatusGroup = "inWork" | "positive" | "negative"
-
-type CountItem = Record<string, Record<StatusGroup, number>>
+type CountItem = Record<string, number>
+type DateRequestsType = Record<string, string[]>
 
 type DateRangeParams = "week" | "month" | "year"
 
 const emptyResourceKey = "Другое"
-
-const defaultValuesCount = () => ({
-  inWork: 0,
-  positive: 0,
-  negative: 0,
-})
 
 const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const isDarkMode = useCurrentTheme()
@@ -54,46 +43,39 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const isGraph = typeDataDisplay === "graph"
   const isCircleGraph = typeDataDisplay === "circle"
 
-  const { data, countsStatuses } = useMemo(() => {
+  const { data } = useMemo(() => {
     const countsStatuses: CountItem = {}
+    const dateRequests: DateRequestsType = {}
+
     const filteredDate = deals.filter(({ dateRequest }) => dateFilter(dateRequest, selectedDate))
 
     if (filteredDate.length === 0) return { data: [], countsStatuses }
 
-    filteredDate.forEach(({ resource, dealStatus }) => {
+    filteredDate.forEach(({ resource, dateRequest }) => {
       const key = isFromSite(resource) ? normalizeResource(resource) : emptyResourceKey
-      countsStatuses[key] ??= defaultValuesCount()
-
-      if (dealStatus in StatusesInWork) {
-        countsStatuses[key].inWork++
-      } else if (["PAID", "CLOSED"].includes(dealStatus)) {
-        countsStatuses[key].positive++
-      } else if (dealStatus === "REJECT") {
-        countsStatuses[key].negative++
+      if (!dateRequests[key]) {
+        dateRequests[key] = []
       }
+
+      const dateString =
+        typeof dateRequest === "string" ? dateRequest : dateRequest.toLocaleDateString("ru-RU")
+
+      dateRequests[key].push(dateString)
+      countsStatuses[key] = (countsStatuses[key] || 0) + 1
     })
 
     const data = Object.entries(countsStatuses).map(([name, statusCounts]) => ({
       name,
-      value: statusCounts.inWork + statusCounts.positive + statusCounts.negative,
+      value: statusCounts,
+      dateRequets: dateRequests[name],
     }))
+
+    console.log(data, "data")
 
     return { data, countsStatuses }
   }, [deals, selectedDate])
 
   const shouldRender = useAnimateOnDataChange(data)
-
-  const dataCountByDate = data.reduce((acc, item) => acc + item.value, 0)
-
-  const handleClick = (e: MouseEvent<HTMLButtonElement>, obj: DateRange) => {
-    const id = e.currentTarget.id as DateRangeParams
-    setSelectedDate(obj)
-    setDateRangeState(id)
-
-    const params = new URLSearchParams(searchParams)
-    params.set("dateRange", id)
-    router.replace(`?${params.toString()}`)
-  }
 
   useEffect(() => {
     const param = searchParams.get("dateRange") as DateRangeParams | null
@@ -105,13 +87,24 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
     setTypeDataDisplay(displayType || "circle")
   }, [searchParams])
 
-  const handleChoiceDataDisplay: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    const type = e.currentTarget.id
+  const handleChangeDateRange = (range: DateRange | undefined, id?: DateRangeParams) => {
+    setSelectedDate(range)
+    if (id) {
+      setDateRangeState(id)
+      const params = new URLSearchParams(searchParams)
+      params.set("dateRange", id)
+      router.replace(`?${params.toString()}`)
+    }
+  }
+
+  const handleDisplayChange = (type: string) => {
     setTypeDataDisplay(type)
     const params = new URLSearchParams(searchParams)
     params.set("displayType", type)
     router.replace(`?${params.toString()}`)
   }
+
+  console.log(data, "data")
 
   if (deals.length === 0) return <EmptyData />
 
@@ -122,125 +115,30 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         subTitle={`Количество заявок: ${totalDealsCount}`}
         title="Статистика заявок"
       />
+      <div className="px-4 py-2 border rounded-md w-fit">Выбранные за период: {data.length}</div>
       <div className="flex gap-2 items-start justify-between">
-        <div className="hidden gap-2 flex-wrap sm:flex">
-          <Button
-            className={`btn-active ${dateRangeState === "week" && "border-2 border-primary"}`}
-            id="week"
-            onClick={(e) => handleClick(e, getPeriodRange("week"))}
-            variant="outline"
-          >
-            Неделя
-          </Button>
-          <Button
-            className={`btn-active ${dateRangeState === "month" && "border-2 border-primary"}`}
-            id="month"
-            onClick={(e) => handleClick(e, getPeriodRange("month"))}
-            variant="outline"
-          >
-            Месяц
-          </Button>
-          <Button
-            className={`btn-active ${dateRangeState === "year" && "border-2 border-primary"}`}
-            id="year"
-            onClick={(e) => handleClick(e, getPeriodRange("year"))}
-            variant="outline"
-          >
-            Год
-          </Button>
-        </div>
-        <div className="gap-2 hidden sm:flex">
-          <Button
-            id="circle"
-            onClick={handleChoiceDataDisplay}
-            size={"icon"}
-            title="Круговая диаграмма"
-            variant={isCircleGraph ? "default" : "outline"}
-          >
-            <ChartPie />
-          </Button>
-          <Button
-            id="graph"
-            onClick={handleChoiceDataDisplay}
-            size={"icon"}
-            title="График"
-            variant={isGraph ? "default" : "outline"}
-          >
-            <ChartColumnBig />
-          </Button>
-        </div>
-      </div>
-      <div className="flex gap-2 justify-between items-center flex-wrap">
-        <div>
-          <p className="p-2 border rounded-md w-fit">За период: {dataCountByDate}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button className="block sm:hidden" variant="outline">
-                Период
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-fit p-2">
-              <div className="grid gap-2 flex-wrap">
-                <Button
-                  className={`btn-active ${dateRangeState === "week" && "border-2 border-primary"}`}
-                  id="week"
-                  onClick={(e) => handleClick(e, getPeriodRange("week"))}
-                  variant="outline"
-                >
-                  Неделя
-                </Button>
-                <Button
-                  className={`btn-active ${dateRangeState === "month" && "border-2 border-primary"}`}
-                  id="month"
-                  onClick={(e) => handleClick(e, getPeriodRange("month"))}
-                  variant="outline"
-                >
-                  Месяц
-                </Button>
-                <Button
-                  className={`btn-active ${dateRangeState === "year" && "border-2 border-primary"}`}
-                  id="year"
-                  onClick={(e) => handleClick(e, getPeriodRange("year"))}
-                  variant="outline"
-                >
-                  Год
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="flex gap-2 flex-wrap w-full xs:w-auto">
-          <DateRangePicker label="Дата" onValueChange={setSelectedDate} value={selectedDate} />
-          {selectedDate && (
-            <Button
-              aria-label="Сбросить дату"
-              className="flex-1"
-              onClick={() => setSelectedDate(undefined)}
-              variant="outline"
-            >
-              <X className="hidden xs:block" />
-              <span className="p-2 flex items-center justify-center xs:hidden">Сбросить даты</span>
-            </Button>
-          )}
-        </div>
+        <DateFilters
+          dateRangeState={dateRangeState}
+          onChange={handleChangeDateRange}
+          selectedDate={selectedDate}
+        />
+        <DisplayTypeSwitch activeType={typeDataDisplay} onChange={handleDisplayChange} />
       </div>
 
       {shouldRender && (
         <div>
           {data.length > 0 ? (
             <MotionDivY
-              className="grid-charts gap-2 sm:gap-4 items-center"
+              className="grid-charts grid gap-2 sm:gap-4 items-start pt-20"
               keyValue={`chart-${JSON.stringify(selectedDate)}`}
             >
               {isCircleGraph && (
                 <ResponsiveContainer
-                  className="hidden sm:block justify-self-center w-full h-auto"
-                  height={420}
+                  className="hidden sm:block justify-self-center"
+                  height="100%"
+                  minHeight={480}
                   minWidth={480}
-                  width={640}
+                  width="100%"
                 >
                   <PieChart>
                     <Pie
@@ -274,34 +172,16 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                       color={COLORS[index % COLORS.length]}
                       item={item}
                       key={item.name}
-                      status={countsStatuses[item.name]}
                     />
                   ))}
                 </ul>
 
                 <ul className="hidden sm:grid gap-2 shrink-0">
                   {data.map((item) => (
-                    <li className="grid grid-cols-4 gap-2 items-center shrink-0" key={uuid()}>
+                    <li className="shrink-0" key={uuid()}>
                       <span className="py-1 px-2 bg-muted border border-solid rounded-md border-primary dark:border-muted flex items-center justify-center shrink-0">
                         {item.value}
                       </span>
-                      <TooltipComponent content={"Оплачен/Закрыт"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-green-600 border-2 shrink-0">
-                          {countsStatuses[item.name].positive}
-                        </span>
-                      </TooltipComponent>
-
-                      <TooltipComponent content={"Не актуально/Отказ"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-red-600 border-2 shrink-0">
-                          {countsStatuses[item.name].negative}
-                        </span>
-                      </TooltipComponent>
-
-                      <TooltipComponent content={"Актуально/В работе"}>
-                        <span className="py-1 px-2 border-solid rounded-md flex items-center justify-center border-blue-600 border-2 shrink-0">
-                          {countsStatuses[item.name].inWork}
-                        </span>
-                      </TooltipComponent>
                     </li>
                   ))}
                 </ul>
@@ -314,6 +194,8 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
           )}
         </div>
       )}
+
+      {/* <CustomizedLabelLineChart data={data} /> */}
     </div>
   )
 }

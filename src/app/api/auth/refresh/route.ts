@@ -34,10 +34,16 @@ export async function POST(req: Request) {
         )
       }
 
-      const { accessToken, refreshToken: newRefreshToken } = await generateTokens(
+      const tokens = await generateTokens(
         payload.userId as string,
         payload.departmentId as string | number,
       )
+
+      if (!tokens) {
+        throw new Error("Failed to generate tokens")
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } = tokens
 
       return NextResponse.json(
         {

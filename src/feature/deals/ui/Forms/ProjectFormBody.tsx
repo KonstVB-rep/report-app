@@ -12,7 +12,7 @@ import {
 } from "react-hook-form"
 import z from "zod"
 import { UnionParams } from "@/entities/deal/lib/constants"
-import { parseFormattedNumber } from "@/entities/deal/lib/helpers"
+import { formatNumber, parseFormattedNumber } from "@/entities/deal/lib/helpers"
 import type { Contact } from "@/entities/deal/types"
 import ContactDeal from "@/feature/contact/ui/ContactDeal"
 import { Button } from "@/shared/components/ui/button"
@@ -35,7 +35,6 @@ import Overlay from "@/shared/custom-components/ui/Overlay"
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
-import { formatNumber } from "@/shared/lib/utils"
 import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryProjectLabels,
@@ -126,14 +125,12 @@ const ProjectFormBody = <T extends FieldValues>({
 
     const calculatedDelta = parsedAmountCP - parsedAmountWork - parsedAmountPurchase
 
-    form.setValue(
-      "delta" as Path<T>,
-      formatNumber(String(calculatedDelta)) as PathValue<T, Path<T>>,
-      {
-        shouldValidate: true,
-        shouldDirty: true,
-      },
-    )
+    const calculateDeltaFixed = Number(calculatedDelta.toFixed(2))
+
+    form.setValue("delta" as Path<T>, formatNumber(calculateDeltaFixed) as PathValue<T, Path<T>>, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
   }, [form, watchedValues])
 
   const getError = (name: keyof T) => form.formState.errors[name]?.message as string

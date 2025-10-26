@@ -1,5 +1,4 @@
 import { memo } from "react"
-import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
 
 type ItemType = {
   name: string
@@ -9,14 +8,9 @@ type ItemType = {
 type ResourceRowProps = {
   item: ItemType
   color: string
-  status: {
-    positive: number
-    negative: number
-    inWork: number
-  }
 }
-const ResourceRow = memo(({ item, color, status }: ResourceRowProps) => (
-  <li className="grid gap-2 sm:flex sm:gap-4 items-center border border-solid sm:border-none rounded p-2 sm:p-0">
+const ResourceRow = memo(({ item, color }: ResourceRowProps) => (
+  <li className="gap-2 flex sm:gap-4 items-center rounded">
     <span
       className="relative py-1 px-2 bg-muted sm:bg-transparent border border-solid rounded w-full sm:min-w-max overflow-hidden"
       style={{ borderColor: color }}
@@ -31,23 +25,6 @@ const ResourceRow = memo(({ item, color, status }: ResourceRowProps) => (
       <span className="py-1 flex-1 h-10 aspect-square bg-muted px-2 border border-solid rounded-md border-primary dark:border-muted flex items-center justify-center shrink-0">
         {item.value}
       </span>
-      <TooltipComponent content={"Оплачен/Закрыт"}>
-        <span className="py-1 flex-1 h-10 aspect-square px-2 border-solid rounded-md flex items-center justify-center border-green-600 border-2 shrink-0">
-          {status.positive}
-        </span>
-      </TooltipComponent>
-
-      <TooltipComponent content={"Не актуально/Отказ"}>
-        <span className="py-1 flex-1 h-10 aspect-square px-2 border-solid rounded-md flex items-center justify-center border-red-600 border-2 shrink-0">
-          {status.negative}
-        </span>
-      </TooltipComponent>
-
-      <TooltipComponent content={"Акуально/В работе"}>
-        <span className="py-1 flex-1 h-10 aspect-square px-2 border-solid rounded-md flex items-center justify-center border-blue-600 border-2 shrink-0">
-          {status.inWork}
-        </span>
-      </TooltipComponent>
     </div>
   </li>
 ))

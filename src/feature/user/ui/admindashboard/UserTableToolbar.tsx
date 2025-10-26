@@ -1,4 +1,4 @@
-import { DepartmentLabelsById } from "@/entities/department/types"
+import { DepartmentLabelsById } from "@/entities/department/lib/constants"
 import type { UserTypeTable } from "@/entities/user/model/column-data-user"
 import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup"
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"

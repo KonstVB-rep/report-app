@@ -1,5 +1,7 @@
-import type React from "react"
-import { useEffect, useState } from "react"
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+import { formatNumberCurrency } from "@/entities/deal/lib/helpers"
 import { Input } from "@/shared/components/ui/input"
 
 interface InputNumberProps {
@@ -10,33 +12,16 @@ interface InputNumberProps {
   onBlur?: () => void
 }
 
-const formatOnBlur = (raw: string): string => {
-  if (!raw) return ""
-
-  const cleaned = raw.replace(/\s/g, "").replace(",", ".")
-  const num = parseFloat(cleaned)
-
-  if (Number.isNaN(num)) return ""
-
-  const [integer, fractional = ""] = num.toFixed(2).split(".")
-  const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, " ")
-  return `${formattedInteger},${fractional}`
-}
-
 const InputNumber: React.FC<InputNumberProps> = ({
   placeholder,
   value,
   onChange,
   disabled = false,
+  onBlur,
 }) => {
   const [inputValue, setInputValue] = useState("")
-
-  useEffect(() => {
-    if (value) {
-      const formatted = formatOnBlur(value)
-      setInputValue(formatted)
-    }
-  }, [value])
+  const inputRef = useRef<HTMLInputElement>(null)
+  const cursorPos = useRef<number | null>(null)
 
   useEffect(() => {
     if (value !== undefined) {
@@ -46,25 +31,34 @@ const InputNumber: React.FC<InputNumberProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value
-
-    // Разрешаем только цифры, запятую и точку
     const cleaned = raw
-      .replace(/[^\d,.]/g, "")
+      .replace(/[^\d,.]/g, "") // только цифры, точка, запятая
       .replace(/\.(?=.*\.)/g, "") // только одна точка
       .replace(/,(?=.*,)/g, "") // только одна запятая
+      .replace(".", ",") // точка в запятую
 
-    // Преобразуем точку в запятую
-    const normalized = cleaned.replace(".", ",")
+    // сохраняем позицию курсора
+    cursorPos.current = e.target.selectionStart
 
-    setInputValue(normalized)
-    onChange(normalized)
+    setInputValue(cleaned)
+    onChange(cleaned)
   }
 
   const handleBlur = () => {
-    const formatted = formatOnBlur(inputValue)
+    const formatted = formatNumberCurrency(inputValue)
     setInputValue(formatted)
     onChange(formatted)
+    if (onBlur) onBlur()
   }
+
+  // восстанавливаем курсор после рендера
+  // biome-ignore lint/correctness/useExhaustiveDependencies: code working good
+  useEffect(() => {
+    const el = inputRef.current
+    if (el && cursorPos.current !== null) {
+      el.setSelectionRange(cursorPos.current, cursorPos.current)
+    }
+  }, [cursorPos.current])
 
   return (
     <Input
@@ -73,6 +67,7 @@ const InputNumber: React.FC<InputNumberProps> = ({
       onBlur={handleBlur}
       onChange={handleChange}
       placeholder={placeholder}
+      ref={inputRef}
       type="text"
       value={inputValue}
     />

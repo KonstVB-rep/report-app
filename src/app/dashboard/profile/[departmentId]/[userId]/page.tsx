@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 import z from "zod"
-import { DepartmentLabels } from "@/entities/department/types"
+import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { useGetUser } from "@/feature/user/hooks/query"
 import UserCard from "@/shared/custom-components/ui/UserCard"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
@@ -53,7 +53,7 @@ const ProfilePage = () => {
             />
           </div>
 
-          <div className="grid gap-2 h-full">
+          <div className="flex flex-col gap-2 h-full">
             <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
               <span className="first-letter:capitalize">Дата регистрации:</span>
               <span>{user?.createdAt?.toLocaleDateString()}</span>

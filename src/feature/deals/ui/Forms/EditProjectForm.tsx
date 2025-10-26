@@ -2,6 +2,7 @@ import { type Dispatch, type SetStateAction, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { DeliveryProject, DirectionProject, StatusProject } from "@prisma/client"
 import { type Resolver, useForm } from "react-hook-form"
+import { formatNumberCurrency } from "@/entities/deal/lib/helpers"
 import { ProjectFormSchema, type ProjectSchema } from "@/entities/deal/model/schema"
 import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -51,9 +52,9 @@ const EditProjectForm = ({ close, dealId, isInvalidate = false, titleForm }: Pro
         dealStatus: data.dealStatus as StatusProject,
         direction: data.direction as DirectionProject,
         plannedDateConnection: data.plannedDateConnection?.toISOString(),
-        amountCP: data.amountCP,
-        amountPurchase: data.amountPurchase,
-        amountWork: data.amountWork,
+        amountCP: formatNumberCurrency(data.amountCP),
+        amountPurchase: formatNumberCurrency(data.amountPurchase),
+        amountWork: formatNumberCurrency(data.amountWork),
         delta: data.delta,
         resource: data.resource ?? "",
         contacts: data.additionalContacts ?? [],

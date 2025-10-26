@@ -10,7 +10,7 @@ const AdminboardLayout = ({ children }: PropsWithChildren) => {
     <div className="min-w-64 [--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
         <div className="flex bg-background">
-          <SiteHeader isHasSitebar={false} />
+          <SiteHeader />
           <div className="min-h-full border-b border-l px-2 items-center hidden md:flex border-border">
             <LogoutDialog withTitle={false} />
           </div>

@@ -12,3 +12,15 @@ export const formatNumber = (value: number): string => {
     .replace(".", ",")
     .replace(/\B(?=(\d{3})+(?!\d))/g, "\u00A0")
 }
+
+export const formatNumberCurrency = (raw: string): string => {
+  if (!raw) return ""
+
+  const cleaned = raw.replace(/\s/g, "").replace(",", ".")
+  const num = parseFloat(cleaned)
+  if (Number.isNaN(num)) return ""
+
+  const [integer, fractional = ""] = num.toFixed(2).split(".")
+  const formattedInt = integer.replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+  return `${formattedInt},${fractional}`
+}

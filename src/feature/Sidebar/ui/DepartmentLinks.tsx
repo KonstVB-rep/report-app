@@ -14,12 +14,8 @@ import {
   AccordionTrigger,
 } from "@/shared/components/ui/accordion"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
-
-// import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
-
 import MarketActiveItemSidebar from "./MarketActiveItemSidebar"
 
-// LoaderCircle
 const ProtectedByPermissions = dynamic(
   () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
   {
@@ -38,12 +34,6 @@ const dealsSalesDepartment: DealsType[] = [
   { id: "retails", title: "Розница" },
   { id: "contracts", title: "Договора" },
 ]
-
-// const table: {
-//   [key in string]: DealsType;
-// } = {
-//   orders: { id: "orders", title: "Заявки" },
-// };
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL]
 

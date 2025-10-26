@@ -387,7 +387,7 @@ td:has(.abs-element) {
   width: 12px;
   height: 12px;
   margin: 15px auto;
-  color: var(var(--primary));
+  color: var(--primary);
   border-radius: 50%;
   animation: animloader_2 1s linear infinite alternate;
 }
@@ -517,14 +517,22 @@ td:has(.abs-element) {
 
 .grid-charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
+  grid-template-columns: 1fr;
   gap: 20px;
 }
 
-.grid-charts_md {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+@media (min-width: 640px) {
+  .grid-charts {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 20px;
+  }
+}
+
+.recharts-layer.recharts-pie:focus,
+.recharts-layer.recharts-pie-sector:focus,
+.recharts-layer.recharts-pie-sector path:focus {
+  outline: none;
 }
 
 .fc .fc-toolbar-title {

@@ -8,28 +8,38 @@ import { checkPermission } from "@/shared/api/checkByServer"
 type ProtectedProps = {
   permission: PermissionEnum
   children: React.ReactNode
+  defaultNode?: React.ReactNode
 }
 
-const ProtectedByPermissions = memo(({ children, permission }: ProtectedProps) => {
+const ProtectedByPermissions = memo(({ children, permission, defaultNode }: ProtectedProps) => {
   const { authUser } = useStoreUser()
+  const [loading, setloading] = useState(false)
   const [hasAccess, setHasAccess] = useState<boolean | null>(null)
 
   useEffect(() => {
     let mounted = true
     if (!permission) return
 
-    checkPermission(permission).then((result) => {
-      if (mounted) setHasAccess(result)
-    })
+    setloading(true)
+
+    checkPermission(permission)
+      .then((result) => {
+        if (mounted) {
+          setHasAccess(result)
+        }
+      })
+      .finally(() => setloading(false))
 
     return () => {
       mounted = false
     }
   }, [permission])
 
-  if (!authUser) return null
+  if (hasAccess === null || loading) return null
 
-  return hasAccess ? children : null
+  if (!authUser) return defaultNode ?? null
+
+  return hasAccess ? children : (defaultNode ?? null)
 })
 
 ProtectedByPermissions.displayName = "ProtectedByPermissions"

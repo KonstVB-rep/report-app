@@ -2,21 +2,23 @@ import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import useStoreUser from "@/entities/user/store/useStoreUser"
+import { cn } from "@/shared/lib/utils"
 
 const LinkPage = ({ path, title }: { path: string; title: string }) => {
   const pathname = usePathname()
+
+  const isThisPath = pathname === path
   return (
-    <>
-      {pathname !== path ? (
-        <Link
-          className="flex items-center justify-between p-1 px-3 border w-fit rounded-md border-blue-600 bg-muted self-end"
-          href={path}
-          prefetch={false}
-        >
-          {title} <ChevronRight />
-        </Link>
-      ) : null}
-    </>
+    <Link
+      className={cn(
+        "flex items-center justify-between p-1 px-3 border w-full rounded-md bg-muted self-end",
+        isThisPath && "border-blue-600",
+      )}
+      href={path}
+      prefetch={false}
+    >
+      {title} <ChevronRight />
+    </Link>
   )
 }
 
@@ -24,7 +26,7 @@ const LinksPageBlock = () => {
   const { authUser } = useStoreUser()
 
   return (
-    <div className="flex flex-wrap gap-3 self-end px-2 pb-2">
+    <div className="grid gap-3 self-end px-2 pb-2 w-full">
       <LinkPage path="/adminboard/bots" title="Боты" />
 
       <LinkPage path={`/adminboard/deals/${authUser?.id}`} title="Сделки" />
