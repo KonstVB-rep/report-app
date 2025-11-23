@@ -2,9 +2,9 @@
 
 import type { PropsWithChildren } from "react"
 import Link from "next/link"
+import { NavMain } from "@/feature/Sidebar/ui/nav-main"
+import SidebarHeaderComponent from "@/feature/Sidebar/ui/SidebarHeaderComponent"
 import { Sidebar, SidebarContent, SidebarFooter } from "@/shared/components/ui/sidebar"
-import { NavMain } from "./nav-main"
-import SidebarHeaderComponent from "./SidebarHeaderComponent"
 
 const AdminSidebar = ({ children }: PropsWithChildren) => {
   return (

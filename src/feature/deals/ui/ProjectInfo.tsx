@@ -2,18 +2,15 @@
 
 import { Building, Info, PhoneOutgoing } from "lucide-react"
 import dynamic from "next/dynamic"
-import z from "zod"
-import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
 import { Separator } from "@/shared/components/ui/separator"
+import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
-import PreviewImagesList from "@/widgets/Files/ui/PreviewImages"
 import FileUploadForm from "@/widgets/Files/ui/UploadFile"
 import { useGetProjectById } from "../api/hooks/query"
 import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData"
@@ -22,6 +19,12 @@ import ValueSpan from "./ValueSpan"
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
+  loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
+})
+
+const PreviewImagesList = dynamic(() => import("@/widgets/Files/ui/PreviewImages"), {
+  ssr: false,
+  loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
 })
 const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
   ssr: false,
@@ -39,19 +42,13 @@ const EditDealButtonIcon = dynamic(() => import("@/feature/deals/ui/Modals/EditD
   ssr: false,
 })
 
-const pageParamsSchema = z.object({
-  dealId: z.string(),
-})
-
-const ProjectItemInfo = () => {
-  const { dealId } = useTypedParams(pageParamsSchema)
-
+const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
   const { data: deal, isLoading } = useGetProjectById(dealId, false)
 
   const { dataFinance, formattedDate, statusLabel, directionLabel, deliveryLabel, typeLabel } =
     useNormalizeProjectData(deal)
 
-  if (isLoading) return <Loading />
+  if (isLoading) return <LoaderCircleInWater />
   if (!deal) return <NotFoundDeal />
 
   return (

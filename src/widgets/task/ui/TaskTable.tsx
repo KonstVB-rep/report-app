@@ -3,8 +3,11 @@
 import { useCallback, useRef } from "react"
 import type { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
+import dynamic from "next/dynamic"
 import type { DateRange } from "react-day-picker"
+import z from "zod"
 import { getManagers } from "@/entities/department/lib/utils"
+import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { columnsDataTask } from "@/entities/task/model/column-data-tasks"
 import type { TaskWithUserInfo } from "@/entities/task/types"
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider"
@@ -12,8 +15,6 @@ import { useDataTableFiltersContext } from "@/feature/filter-persistence/context
 import FilterByUsers from "@/feature/filter-persistence/ui/FilterByUsers"
 import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup"
 import { LABEL_TASK_STATUS } from "@/feature/task/model/constants"
-import DelTaskDialogContextMenu from "@/feature/task/ui/Modals/DelTaskDialogContextMenu"
-import EditTaskDialogContextMenu from "@/feature/task/ui/Modals/EditTaskDialogContextMenu"
 import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter"
 import {
   type TableContextType,
@@ -23,18 +24,48 @@ import TableRowDealOrTask from "@/shared/custom-components/ui/Table/TableRowDeal
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow"
 import { useTableState } from "@/shared/hooks/useTableState"
+import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable"
+
+const EditTaskDialogContextMenu = dynamic(
+  () => import("@/feature/task/ui/Modals/EditTaskDialogContextMenu"),
+  {
+    ssr: false,
+  },
+)
+
+const ModalTaskDetails = dynamic(() => import("@/feature/task/ui/Modals/ModalTaskInfo"), {
+  ssr: false,
+})
+
+const DelTaskDialogContextMenu = dynamic(
+  () => import("@/feature/task/ui/Modals/DelTaskDialogContextMenu"),
+  {
+    ssr: false,
+  },
+)
 
 interface TaskTableProps<TData extends TaskWithUserInfo> {
   data: TData[]
 }
 
+const pageParamsSchema = z.object({
+  departmentId: z.coerce
+    .number()
+    .positive()
+    .transform((value) => {
+      return value as DepartmentsUnionIds
+    }),
+})
+
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
 
+  const { departmentId } = useTypedParams(pageParamsSchema)
+
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
     (
-      setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>,
+      setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | "more" | null>>,
       row: Row<T>,
     ) => ({
       edit: (
@@ -46,8 +77,9 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
       delete: (
         <DelTaskDialogContextMenu close={() => setOpenModal(null)} id={row.original.id as string} />
       ),
+      more: <ModalTaskDetails departmentId={departmentId} taskId={row.original.id as string} />,
     }),
-    [],
+    [departmentId],
   )
 
   const { table, filtersContextValue } = useTableState(data, columnsDataTask as ColumnDef<T>[])

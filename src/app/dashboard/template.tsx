@@ -5,9 +5,9 @@ import dynamic from "next/dynamic"
 import { usePathname } from "next/navigation"
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import useStoreUser from "@/entities/user/store/useStoreUser"
-import AppSidebar from "@/feature/Sidebar/ui/AppSidebar"
 import { SidebarInset } from "@/shared/components/ui/sidebar"
 import ExitAppScreen from "@/shared/custom-components/ui/ExitAppScreen"
+import AppSidebar from "@/widgets/AppSidebar"
 
 const RedirectToPath = dynamic(
   () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),

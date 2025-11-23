@@ -2,12 +2,11 @@ import type React from "react"
 import { useCallback } from "react"
 import type { DealType } from "@prisma/client"
 import type { ColumnDef, Row } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
 import z from "zod"
 import { UnionParams } from "@/entities/deal/lib/constants"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
-import DelDealContextMenu from "@/feature/deals/ui/Modals/DelDealContextMenu"
-import EditDealContextMenu from "@/feature/deals/ui/Modals/EditDealContextMenu"
 import {
   type TableContextType,
   TableProvider,
@@ -15,6 +14,18 @@ import {
 import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
+
+const EditDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/EditDealContextMenu"), {
+  ssr: false,
+})
+
+const DelDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/DelDealContextMenu"), {
+  ssr: false,
+})
+
+const ModalDealInfo = dynamic(() => import("@/feature/deals/ui/Modals/ModalDealInfo"), {
+  ssr: false,
+})
 
 interface DealsTableProps<T extends TypeBaseDT> {
   columns: ColumnDef<T>[]
@@ -31,7 +42,7 @@ const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
     (
-      setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>,
+      setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | "more" | null>>,
       row: Row<T>,
     ) => ({
       edit: (
@@ -48,6 +59,7 @@ const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
           type={row.original.type as DealType}
         />
       ),
+      more: <ModalDealInfo id={row.original.id as string} type={row.original.type as DealType} />,
     }),
     [],
   )

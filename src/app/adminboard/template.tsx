@@ -4,10 +4,10 @@ import dynamic from "next/dynamic"
 import { usePathname } from "next/navigation"
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import useStoreUser from "@/entities/user/store/useStoreUser"
-import AdminSidebar from "@/feature/Sidebar/ui/AdminSidebar"
 import { SidebarInset } from "@/shared/components/ui/sidebar"
 import ExitAppScreen from "@/shared/custom-components/ui/ExitAppScreen"
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY"
+import AdminSidebar from "@/widgets/AminSidebar"
 import LinksPageBlock from "./ui/LinksPageBlock"
 
 const RedirectToPath = dynamic(

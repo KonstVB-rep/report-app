@@ -3,13 +3,11 @@
 import { Separator } from "@radix-ui/react-separator"
 import { Building, Info } from "lucide-react"
 import dynamic from "next/dynamic"
-import z from "zod"
-import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
+import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
 import FileUploadForm from "@/widgets/Files/ui/UploadFile"
 import { useGetRetailById } from "../api/hooks/query"
@@ -19,6 +17,11 @@ import ValueSpan from "./ValueSpan"
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
+  loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
+})
+const PreviewImagesList = dynamic(() => import("@/widgets/Files/ui/PreviewImages"), {
+  ssr: false,
+  loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
 })
 const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
   ssr: false,
@@ -39,18 +42,13 @@ const EditDealButtonIcon = dynamic(() => import("@/feature/deals/ui/Modals/EditD
   ssr: false,
 })
 
-const pageParamsSchema = z.object({
-  dealId: z.string(),
-})
-
-const RetailItemInfo = () => {
-  const { dealId } = useTypedParams(pageParamsSchema)
+const RetailItemInfo = ({ dealId }: { dealId: string }) => {
   const { data: deal, isLoading } = useGetRetailById(dealId, false)
 
   const { dealInfo, dataFinance } = useNormalizeRetailData(deal)
 
   if (isLoading) {
-    return <Loading />
+    return <LoaderCircleInWater />
   }
 
   if (!deal) {
@@ -155,13 +153,22 @@ const RetailItemInfo = () => {
         <ValueSpan className="first-letter:capitalize">{dealInfo.comments}</ValueSpan>
       </IntoDealItem>
 
-      <FileList
-        data={{
-          userId: deal?.userId,
-          dealId: deal?.id,
-          dealType: deal?.type,
-        }}
-      />
+      <div className="flex flex-wrap gap-2">
+        <FileList
+          data={{
+            userId: deal.userId,
+            dealId: deal.id,
+            dealType: deal.type,
+          }}
+        />
+        <PreviewImagesList
+          data={{
+            userId: deal.userId,
+            dealId: deal.id,
+            dealType: deal.type,
+          }}
+        />
+      </div>
     </MotionDivY>
   )
 }

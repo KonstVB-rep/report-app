@@ -3,7 +3,7 @@ import type { Row } from "@tanstack/react-table"
 
 export type TableContextType<T> = {
   getContextMenuActions: (
-    setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | null>>,
+    setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | "more" | null>>,
     row: Row<T>,
   ) => {
     edit: React.ReactNode

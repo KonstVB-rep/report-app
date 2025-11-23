@@ -76,7 +76,7 @@ const PreviewListItem = ({ filePath }: { filePath: string }) => {
   return (
     <>
       <Link href={encodeURIComponent(fileData.file)}></Link>
-      <Button className="relative p-0 h-[80px] w-[80px] rounded overflow-hidden top-0 left-0 transition-transform duraion-150 ease-in-out border-[2px] border-transparent hover:border-primary focus-visible:border-primary">
+      <div className="relative p-0 h-[80px] w-[80px] rounded overflow-hidden top-0 left-0 transition-transform duraion-150 ease-in-out border-[2px] border-transparent hover:border-primary focus-visible:border-primary">
         <Image
           alt={fileData.name}
           className="object-cover rounded hover:scale-110 transition-transform duration-150"
@@ -85,7 +85,7 @@ const PreviewListItem = ({ filePath }: { filePath: string }) => {
           sizes="80px"
           src={fileData.file}
         />
-      </Button>
+      </div>
     </>
   )
 }
@@ -123,14 +123,14 @@ const PreviewImagesList = ({ data }: Props) => {
         {isError && <div>Произошла ошибка</div>}
 
         {filesImages.map((file, index) => (
-          <button
+          <Button
             className="cursor-pointer rounded-md border-none bg-transparent p-0"
             key={file.name}
             onClick={() => setSelectedImageIndex(index)}
             type="button"
           >
             <PreviewListItem filePath={file.localPath} />
-          </button>
+          </Button>
         ))}
       </div>
 

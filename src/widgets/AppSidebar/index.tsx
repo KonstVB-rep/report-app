@@ -1,12 +1,12 @@
 "use client"
 
 import Link from "next/link"
+import DepartmentListWrapper from "@/feature/Sidebar/ui/DepartmentListWrapper"
+import { NavMain } from "@/feature/Sidebar/ui/nav-main"
+import { NavUser } from "@/feature/Sidebar/ui/nav-user"
+import SidebarHeaderComponent from "@/feature/Sidebar/ui/SidebarHeaderComponent"
 import { Sidebar, SidebarContent, SidebarFooter } from "@/shared/components/ui/sidebar"
 import ProtectedByRole from "@/shared/custom-components/ui/Protect/ProtectByRole"
-import DepartmentListWrapper from "./DepartmentListWrapper"
-import { NavMain } from "./nav-main"
-import { NavUser } from "./nav-user"
-import SidebarHeaderComponent from "./SidebarHeaderComponent"
 
 const AppSidebar = () => {
   return (
