@@ -3,7 +3,7 @@
 // import { NextResponse } from "next/server";
 // import axios from "axios";
 
-// import prisma from "@/prisma/prisma-client";
+// import { prisma } from "@/prisma/prisma-client";
 // import { createTelegramBot, createUserTelegramChat } from "@/entities/tgBot/api";
 
 // const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;
@@ -114,14 +114,14 @@
 import axios from "axios"
 import { NextResponse } from "next/server"
 import { createTelegramBot, createUserTelegramChat } from "@/entities/tgBot/api"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 
 // "use server";
 
 // import { NextResponse } from "next/server";
 // import axios from "axios";
 
-// import prisma from "@/prisma/prisma-client";
+// import { prisma } from "@/prisma/prisma-client";
 // import { createTelegramBot, createUserTelegramChat } from "@/entities/tgBot/api";
 
 // const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;
@@ -232,7 +232,7 @@ import prisma from "@/prisma/prisma-client"
 // import { NextResponse } from "next/server";
 // import axios from "axios";
 
-// import prisma from "@/prisma/prisma-client";
+// import { prisma } from "@/prisma/prisma-client";
 // import { createTelegramBot, createUserTelegramChat } from "@/entities/tgBot/api";
 
 // const TELEGRAM_API_URL = process.env.TELEGRAM_API_URL;

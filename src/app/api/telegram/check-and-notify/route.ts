@@ -5,7 +5,7 @@ import {
   getInfoChatNotificationChecked,
 } from "@/feature/calendar/api/server"
 import type { Chat, EventInputType } from "@/feature/calendar/types"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 
 type DealItem = {
   id: string

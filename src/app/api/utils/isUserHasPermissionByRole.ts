@@ -1,6 +1,6 @@
 import type { PermissionEnum } from "@prisma/client"
 import type { User } from "@/entities/user/types"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 
 export async function isUserHasPermissionByRole(
   user: User,

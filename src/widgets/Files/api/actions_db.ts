@@ -3,7 +3,7 @@
 import { DealType, PermissionEnum } from "@prisma/client"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { FileInfo } from "../types"
 

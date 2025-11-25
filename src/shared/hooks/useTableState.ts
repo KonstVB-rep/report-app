@@ -1,27 +1,19 @@
+// src/shared/hooks/useTableState.ts
+
 import { useMemo, useState } from "react"
-import { rankItem } from "@tanstack/match-sorter-utils"
 import {
   type ColumnDef,
-  type FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   type SortingState,
   useReactTable,
+  type VisibilityState,
 } from "@tanstack/react-table"
 import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 
 export interface TableMeta<TData> {
   columnVisibility: Partial<Record<Extract<NonNullable<ColumnDef<TData>["id"]>, string>, boolean>>
-}
-
-const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value)
-  addMeta({
-    itemRank,
-  })
-
-  return itemRank.passed
 }
 
 export const useTableState = <T extends Record<string, unknown>>(
@@ -31,60 +23,56 @@ export const useTableState = <T extends Record<string, unknown>>(
 ) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
-  const memoizedData = useMemo(() => data, [data])
-  const memoizedColumns = useMemo(() => columns, [columns])
 
   const {
-    selectedColumns,
-    setSelectedColumns,
-    filterValueSearchByCol,
-    setFilterValueSearchByCol,
+    columnFilters,
+    setColumnFilters,
+    columnVisibility: visibilityFromHook,
+    setColumnVisibility,
+    globalFilter,
+    setGlobalFilter,
     openFilters,
     setOpenFilters,
     handleDateChange,
     handleClearDateFilter,
-    columnFilters,
-    setColumnFilters,
-    columnVisibility,
-    setColumnVisibility,
-    includedColumns,
-    globalFilter,
-    setGlobalFilter,
+    selectedSearchColumns,
+    setSelectedSearchColumns,
+    searchableColumns,
   } = useDataTableFilters()
 
+  const columnVisibility = useMemo(() => {
+    const visibility: VisibilityState = { ...visibilityFromHook }
+
+    ;(["id", "user", "resource"] as const).forEach((col) => {
+      if (!(col in visibility)) {
+        visibility[col] = false
+      }
+    })
+
+    return visibility
+  }, [visibilityFromHook])
+
   const table = useReactTable({
-    data: memoizedData,
-    columns: memoizedColumns,
-    filterFns: {
-      fuzzy: fuzzyFilter,
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
-    enableRowSelection: true,
-    enableColumnResizing: true,
-    columnResizeMode: "onChange",
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString",
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
+    data,
+    columns,
     state: {
       sorting,
       rowSelection,
       columnFilters,
       globalFilter,
-      columnVisibility: {
-        ...columnVisibility,
-        user: false,
-        id: false,
-        ...hiddenColumns,
-      },
+      columnVisibility,
     },
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: true,
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
     meta: {
       columnVisibility: {
         user: false,
@@ -95,10 +83,8 @@ export const useTableState = <T extends Record<string, unknown>>(
   })
 
   const filtersContextValue = {
-    selectedColumns,
-    setSelectedColumns,
-    filterValueSearchByCol,
-    setFilterValueSearchByCol,
+    selectedColumns: selectedSearchColumns,
+    setSelectedColumns: setSelectedSearchColumns,
     openFilters,
     setOpenFilters,
     handleDateChange,
@@ -107,9 +93,15 @@ export const useTableState = <T extends Record<string, unknown>>(
     columnVisibility,
     setColumnFilters,
     setColumnVisibility,
-    includedColumns,
-    columns: memoizedColumns,
+    includedColumns: searchableColumns,
+    columns,
   }
 
-  return { table, filtersContextValue, openFilters, setGlobalFilter }
+  return {
+    table,
+    filtersContextValue,
+    openFilters,
+    setGlobalFilter,
+    globalFilter: table.getState().globalFilter ?? "",
+  }
 }

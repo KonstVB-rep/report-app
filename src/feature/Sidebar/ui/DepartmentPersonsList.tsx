@@ -89,7 +89,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
             tooltip={item.title}
           >
             <div
-              className={clsx(!item.icon && "grid gap-[2px]", "cursor-pointer")}
+              className={clsx(!item.icon && "grid gap-0.5", "cursor-pointer")}
               style={{ width: "calc(100% - 45px)" }}
             >
               {item.icon ?? null}
@@ -127,8 +127,8 @@ const SideBarMenuItemWrapper = ({ user }: { user: DepartmentUserItem }) => {
       >
         <Accordion className="w-full pr-1!" collapsible type="single">
           <AccordionItem className="group/item w-full border-none" value="item-1">
-            <AccordionTrigger className="mr-[2px] w-full py-1 hover:no-underline">
-              <div className="relative flex flex-col gap-[2px]">
+            <AccordionTrigger className="mr-0.5 w-full py-1 hover:no-underline">
+              <div className="relative flex flex-col gap-0.5">
                 <span className="font-semibold capitalize">{user.username}</span>
                 <span className="text-xs text-zinc-500">{user.position}</span>
               </div>
@@ -165,11 +165,11 @@ const DrppdownSidebarItem = ({
         asChild
         className="top-[1.25px]! h-[38px]! w-[38px]! border! border-stone-400"
       >
-        <SidebarMenuAction className="h-[24px] w-[24px] border-2 data-[state=open]:rotate-90">
+        <SidebarMenuAction className="h-6 w-6 border-2 data-[state=open]:rotate-90">
           <ChevronRight
             className={clsx(
               "h-max rounded",
-              isActiveDepartment && "h-full! w-full! p-[6px] text-primary dark:text-stone-400",
+              isActiveDepartment && "h-full! w-full! p-1.5 text-primary dark:text-stone-400",
             )}
           />
           <span className="sr-only">Toggle</span>

@@ -6,7 +6,7 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
 import type { DeleteTaskData, TaskFormType, TaskFormTypeWithId } from "@/feature/task/types"
 import { sendNotify } from "@/feature/telegramBot/actions/send-notify"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import { formatDateTime } from "@/shared/lib/helpers/formatDate"
 import type { TaskWithUserInfo } from "../types"

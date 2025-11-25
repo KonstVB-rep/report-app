@@ -3,7 +3,7 @@
 import { type PermissionEnum, Role } from "@prisma/client"
 import { jwtVerify } from "jose"
 import { cookies } from "next/headers"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 
 const accessTokenSecretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
 

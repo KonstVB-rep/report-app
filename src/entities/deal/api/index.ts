@@ -13,7 +13,7 @@ import {
 import cuid from "cuid"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { checkRole } from "@/shared/api/checkByServer"
 import { handleError } from "@/shared/api/handleError"
 import type {

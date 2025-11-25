@@ -1,6 +1,6 @@
 "use server"
 
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { DepartmentInfo } from "../types"
 

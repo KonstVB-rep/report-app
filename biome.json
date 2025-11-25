@@ -28,10 +28,11 @@
     "rules": {
       "recommended": true,
       "a11y": {
-        "useAltText":"error"
+        "useAltText": "error"
       },
       "suspicious": {
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noRedeclare": "off"
       }
     },
     "domains": {
@@ -60,6 +61,14 @@
         "useSortedProperties": "on",
         "useSortedAttributes": "on"
       }
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": false
+    },
+    "formatter": {
+      "enabled": false
     }
   }
 }

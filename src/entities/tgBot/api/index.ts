@@ -3,7 +3,7 @@
 import { Prisma, type UserTelegramChat } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { checkRole } from "@/shared/api/checkByServer"
 import { handleError } from "@/shared/api/handleError"
 import type { SuccessResponse } from "@/shared/types"

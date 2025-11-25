@@ -5,8 +5,8 @@ import type { DateRange } from "react-day-picker"
 export type DataTableFiltersContextType<TData, TValue = unknown> = {
   selectedColumns: string[]
   setSelectedColumns: Dispatch<SetStateAction<string[]>>
-  filterValueSearchByCol: string
-  setFilterValueSearchByCol: Dispatch<SetStateAction<string>>
+  // filterValueSearchByCol: string
+  // setFilterValueSearchByCol: Dispatch<SetStateAction<string>>
   openFilters: boolean
   setOpenFilters: Dispatch<SetStateAction<boolean>>
   handleDateChange: (columnId: string) => (range?: DateRange) => void

@@ -1,7 +1,7 @@
 "use server"
 
 import type { User } from "@/entities/user/types"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { checkTokens } from "@/shared/lib/helpers/checkTokens"
 import { requireAuth } from "./requireAuth "
 

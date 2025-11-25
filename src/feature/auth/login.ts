@@ -2,7 +2,7 @@
 
 import bcrypt from "bcrypt"
 import { generateTokens } from "@/feature/auth/lib/generateTokens"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 
 export const login = async (_: unknown, formData: FormData) => {
   try {

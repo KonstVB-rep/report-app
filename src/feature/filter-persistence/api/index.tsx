@@ -2,7 +2,7 @@
 
 import type { UserFilter } from "@prisma/client"
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { DeleteFilterReturnType, SaveFilterType, UpdateFilterDataType } from "../types"
 

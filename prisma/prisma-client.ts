@@ -1,9 +1,29 @@
+// prisma/db.ts
+
 import { PrismaClient } from "@prisma/client"
+import { PrismaMariaDb } from "@prisma/adapter-mariadb"
 
-const globalForPrisma = global as unknown as { prisma?: PrismaClient }
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined
+}
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+// Защита от undefined — если DATABASE_URL нет, сразу падаем с понятной ошибкой
+if (!process.env.DATABASE_URL) {
+  throw new Error(
+    "DATABASE_URL is missing in .env — Prisma cannot connect to MySQL",
+  )
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
+const adapter = new PrismaMariaDb(process.env.DATABASE_URL)
 
-export default prisma
+export const prisma =
+  global.prisma ||
+  new PrismaClient({
+    adapter,
+    log: ["error"],
+  })
+
+if (process.env.NODE_ENV !== "production") {
+  global.prisma = prisma
+}

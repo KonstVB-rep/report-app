@@ -28,17 +28,14 @@ const DataTable = <T extends Record<string, unknown>>({
   hasEditDeleteActions = true,
   children,
 }: DataTableProps<T>) => {
-  const { table, filtersContextValue, openFilters, setGlobalFilter } = useTableState(
+  const { table, filtersContextValue, openFilters, setGlobalFilter, globalFilter } = useTableState(
     data,
     columns,
     { resource: false },
   )
 
-  const { globalFilter } = table.getState()
-
-  const currentData = table.getRowModel().rows.map((row) => row.original) // Получаем текущие данные (с учётом всех применённых фильтров/сортировок)
-
-  const originalData = table.getCoreRowModel().rows.map((row) => row.original) // Получаем исходные данные (без фильтров/сортировок)
+  const currentData = table.getRowModel().rows.map((row) => row.original)
+  const originalData = table.getCoreRowModel().rows.map((row) => row.original)
 
   return (
     <DataTableFiltersProvider value={filtersContextValue}>
@@ -51,7 +48,7 @@ const DataTable = <T extends Record<string, unknown>>({
               className="p-2 font-lg shadow border border-block"
               onChange={(value) => setGlobalFilter(String(value))}
               placeholder="Поиск..."
-              value={globalFilter ?? ""}
+              value={globalFilter}
             />
           </div>
 
@@ -59,6 +56,7 @@ const DataTable = <T extends Record<string, unknown>>({
 
           {children}
         </div>
+
         <div
           className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
         >

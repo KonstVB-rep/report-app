@@ -1,6 +1,6 @@
 "use server"
 
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "./handleError"
 
 export const getTelegramChatBotInDb = async (botName: string, userId: string) => {

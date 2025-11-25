@@ -1,7 +1,7 @@
 import axios from "axios"
 import { type NextRequest, NextResponse } from "next/server"
 import type { EventInputType } from "@/feature/calendar/types"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 
 async function sendNotification(message: string, chatId: string) {
   try {

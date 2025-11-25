@@ -3,7 +3,7 @@
 import { Role } from "@prisma/client"
 import { endOfDay, startOfDay } from "date-fns"
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
-import prisma from "@/prisma/prisma-client"
+import { prisma } from "@/prisma/prisma-client"
 import { checkRole } from "@/shared/api/checkByServer"
 import { handleError } from "@/shared/api/handleError"
 import type { EventDataType, EventInputType } from "../types"
