@@ -52,7 +52,7 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
   if (!deal) return <NotFoundDeal />
 
   return (
-    <MotionDivY className="grid gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
+    <MotionDivY className="grid gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto w-full">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
