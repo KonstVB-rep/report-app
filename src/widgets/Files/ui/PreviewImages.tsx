@@ -1,7 +1,6 @@
 import { useState } from "react"
 import type { DealType } from "@prisma/client"
 import Image from "next/image"
-import Link from "next/link"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import { Button } from "@/shared/components/ui/button"
 import {
@@ -68,25 +67,20 @@ const CarouselItemImage = ({ filePath }: { filePath: string }) => {
 const PreviewListItem = ({ filePath }: { filePath: string }) => {
   const { data: fileData, isPending } = useGetResourceInfo(filePath)
 
-  console.log(fileData, "fileData")
-
   if (isPending) return <LoaderFileX />
   if (!fileData?.preview || fileData.media_type !== "image") return null
 
   return (
-    <>
-      <Link href={encodeURIComponent(fileData.file)}></Link>
-      <div className="relative p-0 h-[80px] w-[80px] rounded overflow-hidden top-0 left-0 transition-transform duraion-150 ease-in-out border-[2px] border-transparent hover:border-primary focus-visible:border-primary">
-        <Image
-          alt={fileData.name}
-          className="object-cover rounded hover:scale-110 transition-transform duration-150"
-          fill={true}
-          quality={90}
-          sizes="80px"
-          src={fileData.file}
-        />
-      </div>
-    </>
+    <div className="relative p-0 h-full w-20 rounded overflow-hidden top-0 left-0 transition-transform duraion-150 ease-in-out border-2 border-transparent hover:border-primary focus-visible:border-primary">
+      <Image
+        alt={fileData.name}
+        className="object-cover rounded hover:scale-110 transition-transform duration-150"
+        fill={true}
+        quality={90}
+        sizes="80px"
+        src={fileData.file}
+      />
+    </div>
   )
 }
 
@@ -117,14 +111,14 @@ const PreviewImagesList = ({ data }: Props) => {
   }
 
   return (
-    <IntoDealItem title="Галлерея">
+    <IntoDealItem title="Галерея">
       <div className="flex flex-wrap gap-2">
         {isPending && <LoaderFileX />}
         {isError && <div>Произошла ошибка</div>}
 
         {filesImages.map((file, index) => (
           <Button
-            className="cursor-pointer rounded-md border-none bg-transparent p-0"
+            className="cursor-pointer rounded-md border-none bg-transparent p-0 min-h-20"
             key={file.name}
             onClick={() => setSelectedImageIndex(index)}
             type="button"
@@ -150,8 +144,8 @@ const PreviewImagesList = ({ data }: Props) => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-[10px]" />
-            <CarouselNext className="right-[10px]" />
+            <CarouselPrevious className="left-2.5" />
+            <CarouselNext className="right-2.5" />
           </Carousel>
         )}
       </DialogComponent>
