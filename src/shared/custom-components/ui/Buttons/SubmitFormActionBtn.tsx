@@ -1,19 +1,17 @@
-import React from "react";
-import { useFormStatus } from "react-dom";
+import type React from "react"
+import { Loader } from "lucide-react"
+import { useFormStatus } from "react-dom"
+import { Button } from "@/shared/components/ui/button"
 
-import { Loader } from "lucide-react";
-
-import { Button } from "@/shared/components/ui/button";
-
-type SubmitButtonProps = {} & React.ComponentProps<"button">;
+type SubmitButtonProps = {} & React.ComponentProps<"button">
 
 const SubmitFormActionBtn = ({ title, ...props }: SubmitButtonProps) => {
-  const { pending } = useFormStatus();
+  const { pending } = useFormStatus()
   return (
     <Button
-      type="submit"
-      className="flex w-full items-center"
       aria-label="Отправить форму"
+      className="flex w-full items-center"
+      type="submit"
       {...props}
     >
       {pending ? (
@@ -24,7 +22,7 @@ const SubmitFormActionBtn = ({ title, ...props }: SubmitButtonProps) => {
         title
       )}
     </Button>
-  );
-};
+  )
+}
 
-export default SubmitFormActionBtn;
+export default SubmitFormActionBtn

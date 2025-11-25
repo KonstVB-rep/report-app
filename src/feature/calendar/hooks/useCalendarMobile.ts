@@ -1,60 +1,55 @@
-import React, { useState } from "react";
-import { Matcher } from "react-day-picker";
-
-import { useGetEventsCalendarUserToday } from "./query";
+import React, { useState } from "react"
+import type { Matcher } from "react-day-picker"
+import { useGetEventsCalendarUserToday } from "./query"
 
 const useCalendarMobile = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [openList, setOpenList] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [openList, setOpenList] = useState(false)
 
-  const { data: events, isPending } = useGetEventsCalendarUserToday();
+  const { data: events, isPending } = useGetEventsCalendarUserToday()
 
   const futureEvents = events?.filter(
-    (event) => new Date(event.start) >= new Date(new Date().toDateString())
-  );
+    (event) => new Date(event.start) >= new Date(new Date().toDateString()),
+  )
 
-  const eventDates = futureEvents?.map((event) => new Date(event.start)) as
-    | Matcher
-    | Matcher[];
+  const eventDates = futureEvents?.map((event) => new Date(event.start)) as Matcher | Matcher[]
 
   const eventsDate =
     futureEvents?.filter(
-      (event) =>
-        new Date(event.start).toDateString() === selectedDate?.toDateString()
-    ) || [];
+      (event) => new Date(event.start).toDateString() === selectedDate?.toDateString(),
+    ) || []
 
   const handleSelect = (date: Date | undefined) => {
-    if (!date) return;
+    if (!date) return
 
-    setSelectedDate(date);
-    return showEventsOnDate(date);
-  };
+    setSelectedDate(date)
+    return showEventsOnDate(date)
+  }
 
   const showEventsOnDate = (date: Date) => {
     const eventsOnDate =
       futureEvents?.filter(
-        (event) => new Date(event.start).toDateString() === date.toDateString()
-      ) || [];
+        (event) => new Date(event.start).toDateString() === date.toDateString(),
+      ) || []
 
     if (eventsOnDate.length > 0) {
-      setOpenList(true);
-      return true;
+      setOpenList(true)
+      return true
     }
-    return false;
-  };
+    return false
+  }
 
   React.useEffect(() => {
-    if (!selectedDate) return;
+    if (!selectedDate) return
 
     const isExistEventInDate = futureEvents?.some(
-      (event) =>
-        new Date(event.start).toDateString() === selectedDate.toDateString()
-    );
+      (event) => new Date(event.start).toDateString() === selectedDate.toDateString(),
+    )
 
     if (!isExistEventInDate && openList) {
-      setOpenList(false);
+      setOpenList(false)
     }
-  }, [futureEvents, openList, selectedDate]);
+  }, [futureEvents, openList, selectedDate])
 
   return {
     events,
@@ -65,7 +60,7 @@ const useCalendarMobile = () => {
     eventDates,
     handleSelect,
     isPending,
-  };
-};
+  }
+}
 
-export default useCalendarMobile;
+export default useCalendarMobile

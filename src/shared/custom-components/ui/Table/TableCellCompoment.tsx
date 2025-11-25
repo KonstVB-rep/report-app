@@ -1,16 +1,14 @@
-import { Cell, flexRender } from "@tanstack/react-table";
-
-import { CSSProperties } from "react";
-
-import { TableCell } from "@/shared/components/ui/table";
+import type { CSSProperties } from "react"
+import { type Cell, flexRender } from "@tanstack/react-table"
+import { TableCell } from "@/shared/components/ui/table"
 
 type TableCellComponentProps<TData> = {
-  cell: Cell<TData, unknown>;
-  styles?: CSSProperties;
-  handleOpenInfo?: (cellId: string) => void;
-  children?: React.ReactNode;
-  classNameSpan?: string;
-};
+  cell: Cell<TData, unknown>
+  styles?: CSSProperties
+  handleOpenInfo?: (cellId: string) => void
+  children?: React.ReactNode
+  classNameSpan?: string
+}
 
 const TableCellComponent = <TData,>({
   cell,
@@ -21,16 +19,16 @@ const TableCellComponent = <TData,>({
 }: TableCellComponentProps<TData>) => {
   return (
     <TableCell
-      style={styles}
       className="p-2 td td_inline-grid flex-1 min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
       onDoubleClick={() => handleOpenInfo?.(cell.id)}
+      style={styles}
     >
       <span className={classNameSpan}>
         {flexRender(cell.column.columnDef.cell, cell.getContext())}
       </span>
       {children}
     </TableCell>
-  );
-};
+  )
+}
 
-export default TableCellComponent;
+export default TableCellComponent

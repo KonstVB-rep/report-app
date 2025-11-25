@@ -1,49 +1,43 @@
-import { NextResponse } from "next/server";
-
-import axios from "axios";
+import axios from "axios"
+import { NextResponse } from "next/server"
 
 const botTokens: Record<string, string> = {
-  ertel_report_app_task_bot:
-    process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_TASK_BOT || "",
-  ertel_report_app_bot:
-    process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT || "",
-};
+  ertel_report_app_task_bot: process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_TASK_BOT || "",
+  ertel_report_app_bot: process.env.TELEGRAM_BOT_TOKEN_ERTEL_REPORT_APP_BOT || "",
+}
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    const data = await request.json()
 
-    const { message, chatId, botName } = data;
+    const { message, chatId, botName } = data
 
     if (!message || !chatId) {
       return NextResponse.json(
         { error: "Не переданы обязательные параметры message или chatId" },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
-    const resolvedBotName = botName ?? "";
+    const resolvedBotName = botName ?? ""
 
     if (!resolvedBotName) {
       return NextResponse.json(
         { error: "Bot token не найден в переменных окружения" },
-        { status: 500 }
-      );
+        { status: 500 },
+      )
     }
 
-    const token = botTokens[resolvedBotName];
-    const telegramUrl = `${process.env.TELEGRAM_API_URL}${token}/sendMessage`;
+    const token = botTokens[resolvedBotName]
+    const telegramUrl = `${process.env.TELEGRAM_API_URL}${token}/sendMessage`
     const response = await axios.post(telegramUrl, {
       chat_id: chatId,
       text: message,
-    });
+    })
 
-    return NextResponse.json({ success: true, data: response.data });
+    return NextResponse.json({ success: true, data: response.data })
   } catch (error) {
-    console.error("Ошибка при обработке уведомлений:", error);
-    return NextResponse.json(
-      { message: "Ошибка при отправке уведомлений" },
-      { status: 500 }
-    );
+    console.error("Ошибка при обработке уведомлений:", error)
+    return NextResponse.json({ message: "Ошибка при отправке уведомлений" }, { status: 500 })
   }
 }

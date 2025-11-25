@@ -1,96 +1,58 @@
-"use client";
+"use client"
 
-import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-
-import { Building, Info } from "lucide-react";
-
-import Loading from "@/app/dashboard/deal/[departmentId]/[dealType]/[dealId]/loading";
-import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
-import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal";
-import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp";
-import { Separator } from "@/shared/components/ui/separator";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
-import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation";
-import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-import { formatterCurrency } from "@/shared/lib/utils";
-import {
-  typeofDelivery,
-  typeofDirections,
-  typeofStatus,
-} from "@/widgets/deal/model/columns-data-project";
-import FileUploadForm from "@/widgets/Files/ui/UploadFile";
-
-import { useGetProjectById } from "../api/hooks/query";
-import {
-  DealTypeLabels,
-  DeliveryProjectLabels,
-  DirectionProjectLabels,
-  StatusProjectLabels,
-} from "../lib/constants";
+import { Building, Info, PhoneOutgoing } from "lucide-react"
+import dynamic from "next/dynamic"
+import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
+import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
+import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
+import { Separator } from "@/shared/components/ui/separator"
+import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
+import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation"
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
+import FileUploadForm from "@/widgets/Files/ui/UploadFile"
+import { useGetProjectById } from "../api/hooks/query"
+import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData"
+import FinanceInfo from "./FinanceInfo"
+import ValueSpan from "./ValueSpan"
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
   ssr: false,
-});
+  loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
+})
+
+const PreviewImagesList = dynamic(() => import("@/widgets/Files/ui/PreviewImages"), {
+  ssr: false,
+  loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
+})
 const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
   ssr: false,
-});
-const CardMainContact = dynamic(
-  () => import("@/entities/contact/ui/CardMainContact"),
-  {
-    ssr: false,
-  }
-);
-const ContactCardInDealInfo = dynamic(
-  () => import("@/entities/contact/ui/ContactCardInDealInfo"),
-  {
-    ssr: false,
-  }
-);
-const DelButtonDealInfoPage = dynamic(
-  () => import("@/feature/deals/ui/Modals/DelButtonDealInfoPage"),
-  { ssr: false }
-);
-const EditDealButtonIcon = dynamic(
-  () => import("@/feature/deals/ui/Modals/EditDealButtonIcon"),
-  { ssr: false }
-);
+})
+const CardMainContact = dynamic(() => import("@/entities/contact/ui/CardMainContact"), {
+  ssr: false,
+})
+const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/ContactCardInDealInfo"), {
+  ssr: false,
+})
+const DelButtonDeal = dynamic(() => import("@/feature/deals/ui/Modals/DelButtonDeal"), {
+  ssr: false,
+})
+const EditDealButtonIcon = dynamic(() => import("@/feature/deals/ui/Modals/EditDealButtonIcon"), {
+  ssr: false,
+})
 
-const ProjectItemInfo = () => {
-  const params = useParams();
-  const dealId = params.dealId as string;
+const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
+  const { data: deal, isLoading } = useGetProjectById(dealId, false)
 
-  const { data: deal, isLoading } = useGetProjectById(dealId, false);
+  const { dataFinance, formattedDate, statusLabel, directionLabel, deliveryLabel, typeLabel } =
+    useNormalizeProjectData(deal)
 
-  const statusLabel =
-    StatusProjectLabels[deal?.dealStatus as typeofStatus] || "Нет данных";
-  const directionLabel =
-    DirectionProjectLabels[deal?.direction as typeofDirections] || "Нет данных";
-  const deliveryLabel =
-    DeliveryProjectLabels[deal?.deliveryType as typeofDelivery] || "Нет данных";
-  const typeLabel =
-    DealTypeLabels[deal?.type as keyof typeof DealTypeLabels] || "Нет данных";
-
-  if (isLoading) return <Loading />;
-  if (!deal) return <NotFoundDeal />;
-
-  const formattedDate = deal.createdAt?.toLocaleDateString() || "Нет данных";
-  const formattedDelta = deal.delta
-    ? formatterCurrency.format(parseFloat(deal.delta))
-    : "Нет данных";
-  const formattedCP = deal.amountCP
-    ? formatterCurrency.format(parseFloat(deal.amountCP))
-    : "Нет данных";
-  const formattedPurchase = deal.amountPurchase
-    ? formatterCurrency.format(parseFloat(deal.amountPurchase))
-    : "Нет данных";
-  const formattedWork = deal.amountWork
-    ? formatterCurrency.format(parseFloat(deal.amountWork))
-    : "Нет данных";
+  if (isLoading) return <LoaderCircleInWater />
+  if (!deal) return <NotFoundDeal />
 
   return (
-    <MotionDivY className="grid gap-2 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
+    <MotionDivY className="grid gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
@@ -98,13 +60,9 @@ const ProjectItemInfo = () => {
         </div>
         <ProtectedByDepartmentAffiliation>
           <div className="flex justify-end gap-2">
-            <FileUploadForm
-              userId={deal.userId}
-              dealId={dealId}
-              dealType="PROJECT"
-            />
+            <FileUploadForm dealId={dealId} dealType="PROJECT" userId={deal.userId} />
             <EditDealButtonIcon id={deal.id} type={deal.type} />
-            <DelButtonDealInfoPage id={deal.id} type={deal.type} />
+            <DelButtonDeal id={deal.id} type={deal.type} />
           </div>
         </ProtectedByDepartmentAffiliation>
       </div>
@@ -116,34 +74,31 @@ const ProjectItemInfo = () => {
       <Separator />
 
       <div className="grid gap-2">
-        <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[auto_1fr]">
+        {deal?.plannedDateConnection && (
+          <div className="flex gap-2 items-center p-2 mt-2 border-blue-500 rounded border-2">
+            <PhoneOutgoing className="text-orange-600" />
+            <span>
+              {" "}
+              Плановая дата контакта: {deal?.plannedDateConnection?.toLocaleDateString()}
+            </span>
+          </div>
+        )}
+        <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[1fr_2fr]">
           <div className="grid-rows-auto grid gap-2">
             <div className="grid min-w-64 gap-4">
               <IntoDealItem title="Объект">
                 <div className="grid w-full gap-2">
                   <div className="flex w-full items-start justify-start gap-4 text-lg">
-                    <Building
-                      size="40"
-                      strokeWidth={1}
-                      className="icon-deal_info"
-                    />
-                    <p className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-                      {deal.nameObject}
-                    </p>
+                    <Building className="icon-deal_info" size="40" strokeWidth={1} />
+                    <ValueSpan>{deal.nameObject}</ValueSpan>
                   </div>
 
                   <div className="first-letter:capitalize">
-                    <div className="flex flex-col items-start gap-2 justify-start">
+                    <div className="flex flex-col gap-2 justify-start">
                       <p className="flex items-center justify-start gap-4">
-                        <Info
-                          size="40"
-                          strokeWidth={1}
-                          className="icon-deal_info"
-                        />
+                        <Info className="icon-deal_info" size="40" strokeWidth={1} />
                         <TooltipComponent content="Статус сделки">
-                          <span className="break-all text-md prop-deal-value min-h-10 px-2 flex-1 bg-stone-300 dark:bg-black font-semibold">
-                            {statusLabel}
-                          </span>
+                          <ValueSpan>{statusLabel}</ValueSpan>
                         </TooltipComponent>
                       </p>
                     </div>
@@ -154,51 +109,37 @@ const ProjectItemInfo = () => {
 
             <div className="grid gap-2">
               <IntoDealItem title="Основной контакт">
-                <CardMainContact
-                  contact={deal.contact}
-                  phone={deal.phone}
-                  email={deal.email}
-                />
+                <CardMainContact contact={deal.contact} email={deal.email} phone={deal.phone} />
               </IntoDealItem>
             </div>
           </div>
 
           <div className="grid-rows-auto grid gap-2">
             <div className="flex flex-wrap gap-2">
-              <IntoDealItem
-                title="Информация о сделке"
-                className="flex-item-contact"
-              >
+              <IntoDealItem className="flex-item-contact" title="Информация о сделке">
                 <RowInfoDealProp
+                  direction="column"
                   label="Название сделки:"
                   value={deal.nameDeal}
-                  direction="column"
                 />
+
+                <RowInfoDealProp direction="column" label="Тип сделки:" value={typeLabel} />
+
                 <RowInfoDealProp
-                  label="Тип сделки:"
-                  value={typeLabel}
                   direction="column"
-                />
-                <RowInfoDealProp
                   label="Дата запроса:"
                   value={deal.dateRequest?.toLocaleDateString()}
-                  direction="column"
                 />
               </IntoDealItem>
 
-              <IntoDealItem title="Детали" className="flex-item-contact">
+              <IntoDealItem className="flex-item-contact" title="Детали">
                 <RowInfoDealProp label="Направление:" value={directionLabel} />
-                <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
-              </IntoDealItem>
 
-              <IntoDealItem title="Финансы" className="flex-item-contact">
-                <RowInfoDealProp label="Дельта:" value={formattedDelta} />
-                <RowInfoDealProp label="Сумма КП:" value={formattedCP} />
-                <RowInfoDealProp
-                  label="Сумма закупки:"
-                  value={formattedPurchase}
-                />
-                <RowInfoDealProp label="Сумма работ:" value={formattedWork} />
+                <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
+
+                <hr className="w-full h-[1px] rounded-lg bg-gray-500" />
+
+                <FinanceInfo data={dataFinance} />
               </IntoDealItem>
             </div>
 
@@ -206,7 +147,7 @@ const ProjectItemInfo = () => {
               <IntoDealItem title="Дополнительные контакты">
                 <div className="flex h-full flex-wrap gap-2">
                   {deal.additionalContacts.map((contact) => (
-                    <ContactCardInDealInfo key={contact.id} contact={contact} />
+                    <ContactCardInDealInfo contact={contact} key={contact.id} />
                   ))}
                 </div>
               </IntoDealItem>
@@ -215,23 +156,30 @@ const ProjectItemInfo = () => {
         </div>
 
         <IntoDealItem title="Комментарии">
-          <p className="first-letter:capitalize">
-            {deal.comments || "Нет данных"}
-          </p>
+          <ValueSpan className="first-letter:capitalize">{deal.comments || "Нет данных"}</ValueSpan>
         </IntoDealItem>
       </div>
 
-      <FileList
-        data={{
-          userId: deal.userId,
-          dealId: deal.id,
-          dealType: deal.type,
-        }}
-      />
+      <div className="flex flex-wrap gap-2">
+        <FileList
+          data={{
+            userId: deal.userId,
+            dealId: deal.id,
+            dealType: deal.type,
+          }}
+        />
+        <PreviewImagesList
+          data={{
+            userId: deal.userId,
+            dealId: deal.id,
+            dealType: deal.type,
+          }}
+        />
+      </div>
     </MotionDivY>
-  );
-};
+  )
+}
 
-export default withAuthGuard(ProjectItemInfo);
+export default withAuthGuard(ProjectItemInfo)
 
-ProjectItemInfo.displayName = "ProjectItemInfo";
+ProjectItemInfo.displayName = "ProjectItemInfo"

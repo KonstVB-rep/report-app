@@ -1,97 +1,92 @@
-"use server";
+"use server"
 
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"
+import { generateTokens } from "@/feature/auth/lib/generateTokens"
+import { prisma } from "@/prisma/prisma-client"
 
-import { generateTokens } from "@/feature/auth/lib/generateTokens";
-import prisma from "@/prisma/prisma-client";
-
-export const login = async (prevState: unknown, formData: FormData) => {
+export const login = async (_: unknown, formData: FormData) => {
   try {
-    const user_password = formData.get("user_password") as string;
-    const email = formData.get("email") as string;
+    const user_password = formData.get("user_password") as string
+    const email = formData.get("email") as string
 
     if (!email || !user_password) {
       return {
         data: null,
-        message: "Пожалуйста, заполните все поля",
+        message: "Все поля обязательны для заполнения",
         error: true,
-      };
+        code: "MISSING_FIELDS",
+      }
     }
 
     const user = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
+      where: { email },
       include: {
-        permissions: {
-          select: {
-            permission: true,
-          },
-        },
-        telegramInfo: {
-          select: {
-            tgUserId: true,
-            tgUserName: true,
-          },
-        },
+        permissions: { select: { permission: true } },
+        telegramInfo: { select: { tgUserId: true, tgUserName: true } },
       },
-    });
+    })
 
     if (!user) {
       return {
         data: null,
-        message: "Пользователь не найден",
+        message: "Пользователь не найден",
         error: true,
-      };
+        code: "USER_NOT_FOUND",
+      }
     }
 
-    const isPasswordValid = await bcrypt.compare(
-      user_password,
-      user.user_password
-    );
+    if (!user.user_password) {
+      return {
+        data: null,
+        message: "Пароль не установлен",
+        error: true,
+        code: "PASSWORD_NOT_SET",
+      }
+    }
 
+    const isPasswordValid = await bcrypt.compare(user_password, user.user_password)
     if (!isPasswordValid) {
       return {
         data: null,
-        message: "Неверные данные авторизации",
+        message: "Неверный пароль",
         error: true,
-      };
+        code: "INVALID_CREDENTIALS",
+      }
     }
 
     const lastLoginDate = await prisma.userLogin.findFirst({
       where: { userId: user.id },
       orderBy: { loginAt: "desc" },
-    });
+    })
+    await prisma.userLogin.upsert({
+      where: { id: lastLoginDate?.id ?? "-1" },
+      update: { loginAt: new Date() },
+      create: { userId: user.id, loginAt: new Date() },
+    })
 
-    if (!lastLoginDate) {
-      await prisma.userLogin.create({
-        data: {
-          userId: user.id,
-          loginAt: new Date(),
-        },
-      });
-    } else {
-      await prisma.userLogin.update({
-        where: { id: lastLoginDate.id },
-        data: { loginAt: new Date() },
-      });
-    }
+    await generateTokens(user.id, user.departmentId)
 
-    await generateTokens(user.id, user.departmentId);
+    const { user_password: _password, ...userWithoutPassword } = user
 
     return {
       data: {
-        ...user,
+        ...userWithoutPassword,
         permissions: user.permissions.map((p) => p.permission.name),
-        lastlogin: lastLoginDate?.loginAt,
+        lastlogin: lastLoginDate?.loginAt ?? null,
       },
-      message: "Авторизация прошла успешно",
-    };
+      message: "Авторизация успешна",
+      error: false,
+    }
   } catch (error) {
-    console.log(error, "error");
+    console.error("Ошибка входа:", {
+      message: (error as Error).message,
+      stack: (error as Error).stack,
+    })
     return {
-      message: "Ошибка авторизации",
+      data: null,
+      message: "Внутренняя ошибка сервера",
       error: true,
-    };
+      code: "SERVER_ERROR",
+    }
   }
-};
+}

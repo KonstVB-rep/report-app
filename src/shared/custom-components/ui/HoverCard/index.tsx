@@ -1,23 +1,17 @@
-import { HoverCardArrow } from "@radix-ui/react-hover-card";
-
-import React from "react";
-
-import { Button } from "@/shared/components/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/shared/components/ui/hover-card";
+import type React from "react"
+import { HoverCardArrow } from "@radix-ui/react-hover-card"
+import { Button } from "@/shared/components/ui/button"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/shared/components/ui/hover-card"
 
 type Props = {
-  children: React.ReactNode;
-  title: React.ReactNode;
-  align?: "start" | "center" | "end";
-  side?: "top" | "right" | "bottom" | "left";
-  sideOffset?: number;
-  alignOffset?: number;
-  className?: string;
-};
+  children: React.ReactNode
+  title: React.ReactNode
+  align?: "start" | "center" | "end"
+  side?: "top" | "right" | "bottom" | "left"
+  sideOffset?: number
+  alignOffset?: number
+  className?: string
+}
 
 const HoverCardComponent = ({
   children,
@@ -28,18 +22,15 @@ const HoverCardComponent = ({
   ...props
 }: Props) => {
   return (
-    <HoverCard openDelay={50} closeDelay={150}>
+    <HoverCard closeDelay={150} openDelay={50}>
       <HoverCardTrigger>
-        <Button
-          variant="outline"
-          className="h-full w-full items-center first-letter:capitalize"
-        >
+        <Button className="h-full w-full items-center first-letter:capitalize" variant="outline">
           {title}
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
-        className={`grid w-max gap-1 p-1 ${className}`}
         align={align}
+        className={`grid w-max gap-1 p-1 ${className}`}
         sideOffset={sideOffset}
         {...props}
       >
@@ -47,7 +38,7 @@ const HoverCardComponent = ({
         {children}
       </HoverCardContent>
     </HoverCard>
-  );
-};
+  )
+}
 
-export default HoverCardComponent;
+export default HoverCardComponent

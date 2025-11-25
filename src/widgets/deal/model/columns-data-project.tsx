@@ -1,87 +1,111 @@
-"use client";
+"use client"
 
-import { CellContext, ColumnDef } from "@tanstack/react-table";
-
-import { ReactNode } from "react";
-import { DateRange } from "react-day-picker";
-
-import { endOfDay, startOfDay } from "date-fns";
-
-import { ProjectResponse } from "@/entities/deal/types";
+import type { ReactNode } from "react"
+import { StatusProject } from "@prisma/client"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { DateRange } from "react-day-picker"
+import type { ProjectResponse } from "@/entities/deal/types"
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
   StatusProjectLabels,
-} from "@/feature/deals/lib/constants";
-import { formatterCurrency } from "@/shared/lib/utils";
+} from "@/feature/deals/lib/constants"
+import { formatterCurrency } from "@/shared/lib/utils"
+import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
-export type typeofDirections = keyof typeof DirectionProjectLabels;
+export type typeofDirections = keyof typeof DirectionProjectLabels
 
-export type typeofDelivery = keyof typeof DeliveryProjectLabels;
+export type typeofDelivery = keyof typeof DeliveryProjectLabels
 
-export type typeofStatus = keyof typeof StatusProjectLabels;
+export type typeofStatus = keyof typeof StatusProjectLabels
 
 export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
-    id: "rowNumber",
-    header: "№",
-    cell: ({ row }) => Number(row.index) + 1,
-    enableHiding: false,
-    enableSorting: false,
-    accessorFn: () => "",
-    maxSize: 100,
-    enableResizing: false,
-    meta: {
-      isNotSearchable: true,
-    },
+    ...RowNumber<ProjectResponse>(),
   },
   {
     id: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date;
-      return date.toLocaleDateString("ru-RU");
+      const date = info.getValue() as Date
+      return date.toLocaleDateString("ru-RU")
     },
     enableHiding: true,
     meta: {
       isDateFilter: true,
     },
-    // size: 100, // Фиксированная ширина
-    enableResizing: false, // Запрещаем изменение размера
+    enableResizing: false,
     filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: ProjectResponse) => row.dateRequest,
+  },
+  {
+    id: "plannedDateConnection",
+    header: "Плановая дата контакта",
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const date = info.getValue() as Date | null
+      if (date) {
+        return date.toLocaleDateString("ru-RU")
+      } else {
+        return "Дата не указана"
+      }
+    },
+    enableHiding: true,
+    filterFn: (row, columnId, filterValue) => {
+      if (row.original.dealStatus === StatusProject.REJECT) return false
+
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from)
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to)
+        }
+        return false
+      }
+
+      return true
+    },
+    accessorFn: (row: ProjectResponse) => row.plannedDateConnection,
   },
   {
     id: "nameDeal",
     header: "Название сделки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.nameDeal,
@@ -90,8 +114,8 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "nameObject",
     header: "Название объекта",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.nameObject,
@@ -100,16 +124,16 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "direction",
     header: "Направление",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as typeofDirections;
-      return <span>{DirectionProjectLabels[value]}</span>;
+      const value = info.getValue() as typeofDirections
+      return <span>{DirectionProjectLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
-      if (!rowValue) return false;
+      const rowValue = row.getValue(columnId)
+      if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     enableHiding: true,
     meta: {
@@ -121,22 +145,22 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "deliveryType",
     header: "Тип поставки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as typeofDelivery;
-      return <span>{DeliveryProjectLabels[value]}</span>;
+      const value = info.getValue() as typeofDelivery
+      return <span>{DeliveryProjectLabels[value]}</span>
     },
     filterFn: (row, columnId, filterValue) => {
-      if (!filterValue || !Array.isArray(filterValue)) return true;
-      const rowValue = row.getValue(columnId);
+      if (!filterValue || !Array.isArray(filterValue)) return true
+      const rowValue = row.getValue(columnId)
 
-      if (!rowValue) return false; // Проверяем, есть ли значение в ячейке
+      if (!rowValue) return false // Проверяем, есть ли значение в ячейке
 
       if (Array.isArray(filterValue)) {
         return filterValue.some(
-          (direction) => String(rowValue).includes(direction) // Приводим rowValue к строке, чтобы избежать ошибок
-        );
+          (direction) => String(rowValue).includes(direction), // Приводим rowValue к строке, чтобы избежать ошибок
+        )
       }
 
-      return rowValue === filterValue;
+      return rowValue === filterValue
     },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.deliveryType,
@@ -155,7 +179,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       return (
         <span className="whitespace-nowrap">{info.getValue() as string}</span> //тег
-      );
+      )
     },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.phone,
@@ -180,8 +204,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "amountWork",
     header: "Сумма работ",
-    cell: (info: CellContext<ProjectResponse, unknown>) =>
-      formatterCurrency.format(parseFloat(info.getValue() as string)),
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      return formatterCurrency.format(parseFloat(info.getValue() as string))
+    },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.amountWork,
   },
@@ -205,16 +230,16 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as typeofStatus;
-      return <span>{StatusProjectLabels[value]}</span>;
+      const value = info.getValue() as typeofStatus
+      return <span>{StatusProjectLabels[value]}</span>
     },
     enableHiding: true,
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
+      const rowValue = row.getValue(columnId)
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     accessorFn: (row: ProjectResponse) => row.dealStatus,
   },
@@ -222,37 +247,22 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "comments",
     header: "Комментарии",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     minSize: 300,
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.comments,
   },
   {
-    id: "plannedDateConnection",
-    header: "Плановая дата контакта",
-    cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date | null;
-
-      if (date) {
-        return date.toLocaleDateString("ru-RU");
-      } else {
-        return "Дата не указана";
-      }
-    },
-    enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.plannedDateConnection,
-  },
-  {
     id: "resource",
     accessorKey: "resource",
     header: "Источник/Сайт",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
-    enableHiding: true,
-    // meta: {
-    //   hidden: true,
-    // },
+    enableHiding: false,
+    meta: {
+      hidden: true,
+    },
     accessorFn: (row: ProjectResponse) => row.resource,
   },
-];
+]

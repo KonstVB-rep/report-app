@@ -1,38 +1,39 @@
-import React from "react";
-
-import { BookUser } from "lucide-react";
-
-import { Contact } from "../../deal/types";
-import CardInfo from "./CardInfo";
+import type React from "react"
+import type { Contact } from "../../deal/types"
+import type { CardInfoType } from "../types"
+import CardInfo from "./CardInfo"
 
 const ContactCardInDealInfo: React.FC<{ contact: Contact }> = ({ contact }) => {
-  const fields: { label: string; value?: string | null }[] = [
-    { label: "Имя", value: contact.name },
-    { label: "Должность", value: contact.position },
-    { label: "Телефон", value: contact.phone },
-    { label: "Email", value: contact.email },
-  ];
+  const fields: {
+    label: string
+    value?: string | null
+    type?: CardInfoType
+  }[] = [
+    { label: "Имя", value: contact.name, type: "name" },
+    { label: "Должность", value: contact.position, type: "position" },
+    { label: "Телефон", value: contact.phone, type: "phone" },
+    { label: "Email", value: contact.email, type: "email" },
+  ]
 
   return (
-    <div className="grid flex-1 rounded-md border border-solid">
+    <div className="grid flex-1 rounded-md border border-solid min-w-[240px]">
       <div className="flex items-start justify-start gap-4 p-2">
-        <BookUser size="32" strokeWidth={1} className="shrink-0 pt-1" />
-
-        <div className="text-md flex flex-col gap-2 items-start justify-start">
+        <div className="text-md flex flex-col gap-1 items-start justify-start w-full">
           {fields
             .filter(({ value }) => value)
-            .map(({ label, value }) => (
+            .map(({ label, value, type }) => (
               <CardInfo
-                key={label}
+                classNameData="flex flex-wrap items-center"
                 data={value}
-                classNameData="flex flex-wrap"
+                key={label}
                 title={label}
+                type={type}
               />
             ))}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ContactCardInDealInfo;
+export default ContactCardInDealInfo

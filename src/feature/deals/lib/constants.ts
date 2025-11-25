@@ -1,10 +1,5 @@
-import { DealType, StatusContract } from "@prisma/client";
-
-import {
-  AllStatusKeys,
-  StatusProject,
-  StatusRetail,
-} from "@/entities/deal/lib/constants";
+import { DealType, type StatusContract } from "@prisma/client"
+import type { AllStatusKeys, StatusProject, StatusRetail } from "@/entities/deal/lib/constants"
 
 export enum DirectionProject {
   PARKING = "Парковка",
@@ -53,10 +48,7 @@ export enum EquipmentTypeEnum {
 
 // Labels
 
-export const DirectionProjectLabels: Record<
-  keyof typeof DirectionProject,
-  string
-> = {
+export const DirectionProjectLabels: Record<keyof typeof DirectionProject, string> = {
   PARKING: "Парковка",
   GLK: "ГЛК",
   SKD: "СКД",
@@ -69,39 +61,32 @@ export const DirectionProjectLabels: Record<
   PARK_ATTRACTION: "Парк/Аттракцион",
   STADIUM_ARENA: "Стадион/Арена",
   LOCKER: "Камеры хранения",
-} as const;
+} as const
 
-export const DirectionRetailLabels: Record<
-  keyof typeof DirectionRetail,
-  string
-> = {
+export const DirectionRetailLabels: Record<keyof typeof DirectionRetail, string> = {
   PARKING_EQUIPMENT: "Парковочное оборудование",
   SCUD: "СКУД",
   LOCKER: "Камеры хранения",
   IDS_CONSUMABLES: "Идентификаторы и расходники",
   OTHER: "Иное",
-} as const;
+} as const
 
-export const DeliveryProjectLabels: Record<
-  keyof typeof DeliveryProject,
-  string
-> = {
+export const DeliveryProjectLabels: Record<keyof typeof DeliveryProject, string> = {
   COMPLEX: "Комплекс",
   EQUIPMENT_SUPPLY: "Поставка оборудования",
   WORK_SERVICES: "Работы и услуги",
   RENT: "Аренда",
   SOFTWARE_DELIVERY: "Доставка ПО",
   OTHER: "Иное",
-} as const;
+} as const
 
-export const DeliveryRetailLabels: Record<keyof typeof DeliveryRetail, string> =
-  {
-    EXPENDABLE_MATERIALS: "Расходные материалы",
-    SUPPLY: "Поставка оборудования",
-    WORK: "Работы",
-  } as const;
+export const DeliveryRetailLabels: Record<keyof typeof DeliveryRetail, string> = {
+  EXPENDABLE_MATERIALS: "Расходные материалы",
+  SUPPLY: "Поставка оборудования",
+  WORK: "Работы",
+} as const
 
-type StatusProjectLabelsType = Record<keyof typeof StatusProject, string>;
+type StatusProjectLabelsType = Record<keyof typeof StatusProject, string>
 
 export const StatusProjectLabels: StatusProjectLabelsType = {
   INVOICE_ISSUED: "Выставлен счет",
@@ -116,13 +101,18 @@ export const StatusProjectLabels: StatusProjectLabelsType = {
   // DELIVERY_WORKS: "Поставка / Выполнение работ",
   // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
-} as const;
+} as const
 
-export const DealTypeLabels: Record<keyof typeof DealType, string> = {
+// export const DealTypeLabels: Record<keyof typeof DealType, string> = {
+//   PROJECT: "Проект",
+//   RETAIL: "Розница",
+//   // ORDER: "Заявки",
+// } as const;
+
+export const DealTypeLabels: Record<keyof Pick<typeof DealType, "PROJECT" | "RETAIL">, string> = {
   PROJECT: "Проект",
   RETAIL: "Розница",
-  ORDER: "Заявки",
-} as const;
+} as const
 
 export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
@@ -133,13 +123,13 @@ export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   PROGRESS: "Проект в работе / Закупка / Производство",
   PAID: "Оплачено",
   CLOSED: "Закрыт",
-} as const;
+} as const
 
-type ExcludedKeys = "PAID" | "CLOSED" | "REJECT";
+type ExcludedKeys = "PAID" | "CLOSED" | "REJECT"
 
 export type StatusesInWorkType = {
-  [K in Exclude<AllStatusKeys, ExcludedKeys>]?: string;
-};
+  [K in Exclude<AllStatusKeys, ExcludedKeys>]?: string
+}
 export const StatusesInWork: StatusesInWorkType = {
   INVOICE_ISSUED: "Выставлен счет",
   ACTUAL: "Актуально",
@@ -149,7 +139,7 @@ export const StatusesInWork: StatusesInWorkType = {
   PROGRESS: "Проект в работе / Закупка / Производство",
   // DELIVERY_WORKS: "Поставка / Выполнение работ",
   // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
-};
+}
 
 export const StatusesContract = {
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
@@ -157,12 +147,9 @@ export const StatusesContract = {
   DELIVERY_WORKS: "Поставка / Выполнение работ",
   SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
-};
+}
 
-export type StatusContractLabelsType = Record<
-  keyof typeof StatusContract,
-  string
->;
+export type StatusContractLabelsType = Record<keyof typeof StatusContract, string>
 
 export const StatusContractLabels: StatusContractLabelsType = {
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
@@ -170,7 +157,7 @@ export const StatusContractLabels: StatusContractLabelsType = {
   DELIVERY_WORKS: "Поставка / Выполнение работ",
   SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
-} as const;
+} as const
 
 export const LABELS = {
   RETAIL: {
@@ -188,13 +175,13 @@ export const LABELS = {
     DELIVERY: DeliveryProjectLabels,
     STATUS: StatusesContract,
   },
-} as const;
+} as const
 
 export const FormatedParamsType = {
   projects: DealType.PROJECT,
   retails: DealType.RETAIL,
-  orders: DealType.ORDER,
+  // orders: DealType.ORDER,
   contracts: "CONTRACT",
-};
+} as const
 
-export type FormatedParamsTypeKey = keyof typeof FormatedParamsType;
+export type FormatedParamsTypeKey = keyof typeof FormatedParamsType

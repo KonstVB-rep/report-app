@@ -1,55 +1,53 @@
-import { DealType, PermissionEnum } from "@prisma/client";
-import { Separator } from "@radix-ui/react-separator";
-
-import { Fragment, memo, useMemo } from "react";
-
-import Link from "next/link";
-
-import { BookText, ChartColumnBig, TableProperties } from "lucide-react";
-
-import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink";
-import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants";
-import { DepartmentUserItem } from "@/entities/department/types";
+import { Fragment, memo, useMemo } from "react"
+import { DealType, PermissionEnum } from "@prisma/client"
+import { Separator } from "@radix-ui/react-separator"
+import { BookText, ChartColumnBig, TableProperties } from "lucide-react"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink"
+import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants"
+import type { DepartmentUserItem } from "@/entities/department/types"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/shared/components/ui/accordion";
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
+} from "@/shared/components/ui/accordion"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import MarketActiveItemSidebar from "./MarketActiveItemSidebar"
 
-import MarketActiveItemSidebar from "./MarketActiveItemSidebar";
+const ProtectedByPermissions = dynamic(
+  () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
+  {
+    ssr: false,
+    loading: () => <LoaderCircle className="h-10 bg-muted rounded-md w-full" classSpin="h-6 w-6" />,
+  },
+)
 
 type DealsType = {
-  id: string;
-  title: string;
-};
+  id: string
+  title: string
+}
 
 const dealsSalesDepartment: DealsType[] = [
   { id: "projects", title: "Проекты" },
   { id: "retails", title: "Розница" },
   { id: "contracts", title: "Договора" },
-];
+]
 
-// const table: {
-//   [key in string]: DealsType;
-// } = {
-//   orders: { id: "orders", title: "Заявки" },
-// };
-
-const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL];
+const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL]
 
 const pagesMarkretingDepartment: DealsType[] = [
   { id: "statistics/request-source", title: "Источники сделок" },
-];
+]
 
 type DepartmentLinksProps = {
-  departmentId: number;
-  user: DepartmentUserItem;
-  userId: string;
-  dealType?: string;
-  pathName?: string;
-};
+  departmentId: number
+  user: DepartmentUserItem
+  userId: string | undefined
+  dealType?: string
+  pathName?: string
+}
 
 const LinkItem = memo(
   ({
@@ -59,23 +57,23 @@ const LinkItem = memo(
     isActive,
     onClick,
   }: {
-    href: string;
-    title: string;
-    icon: React.ComponentType<{ size: number; className?: string }>;
-    isActive: boolean;
-    onClick: (e: React.MouseEvent) => void;
+    href: string
+    title: string
+    icon: React.ComponentType<{ size: number; className?: string }>
+    isActive: boolean
+    onClick: (e: React.MouseEvent) => void
   }) => (
     <Fragment>
       <Link
-        prefetch={false}
-        href={href}
-        onClick={onClick}
         className={`${
           !isActive && "text-primary dark:text-stone-400"
         } relative flex items-center gap-2 overflow-hidden rounded-md p-1 transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground`}
+        href={href}
+        onClick={onClick}
+        prefetch={false}
       >
         <p className="relative z-1 flex h-full w-full items-center gap-2 rounded p-2">
-          <Icon size={isActive ? 24 : 16} className="shrink-0" />
+          <Icon className="shrink-0" size={isActive ? 24 : 16} />
           {title}
         </p>
         {isActive && (
@@ -84,54 +82,48 @@ const LinkItem = memo(
       </Link>
       <Separator className="my-px h-px bg-stone-600" />
     </Fragment>
-  )
-);
+  ),
+)
 
-LinkItem.displayName = "LinkItem";
+LinkItem.displayName = "LinkItem"
 
 export const DepartmentLinks = memo(
-  ({
-    departmentId,
-    user,
-    userId,
-    dealType,
-    pathName,
-  }: DepartmentLinksProps) => {
+  ({ departmentId, user, userId, dealType, pathName }: DepartmentLinksProps) => {
     const getDealLinks = useMemo(() => {
       switch (departmentId) {
         case 1:
-          return dealsSalesDepartment;
+          return dealsSalesDepartment
         case 2:
-          return pagesMarkretingDepartment;
+          return pagesMarkretingDepartment
         default:
-          return [];
+          return []
       }
-    }, [departmentId]);
+    }, [departmentId])
 
     const renderLinks = useMemo(
       () =>
         getDealLinks.map((deal) => {
-          const isActive = dealType === deal.id && user.id === userId;
+          const isActive = dealType === deal.id && user.id === userId
           const href =
             departmentId === 1
               ? `${user.url}/${deal.id}/${user.id}`
-              : `${user.url}/${departmentId}/${user.id}`;
+              : `${user.url}/${departmentId}/${user.id}`
           return (
             <LinkItem
-              key={deal.id}
               href={href}
-              title={deal.title}
               icon={departmentId === 1 ? BookText : ChartColumnBig}
               isActive={isActive}
+              key={deal.id}
               onClick={(e) => e.stopPropagation()}
+              title={deal.title}
             />
-          );
+          )
         }),
-      [dealType, user.id, user.url, userId, getDealLinks, departmentId]
-    );
+      [dealType, user.id, user.url, userId, getDealLinks, departmentId],
+    )
 
     if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) {
-      return null;
+      return null
     }
 
     if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) {
@@ -149,17 +141,15 @@ export const DepartmentLinks = memo(
       //     onClick={(e) => e.stopPropagation()}
       //   />
       // );
-      return null;
+      return null
     }
 
     if (departmentId === 2) {
       return (
         <>
           {renderLinks}
-          <ProtectedByPermissions
-            permissionArr={[PermissionEnum.VIEW_UNION_REPORT]}
-          >
-            <Accordion type="single" collapsible className="w-full">
+          <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+            <Accordion className="w-full" collapsible type="single">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="p-1 rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground">
                   <p className="flex h-full w-full items-center gap-2 rounded p-2 text-primary dark:text-stone-400">
@@ -172,22 +162,23 @@ export const DepartmentLinks = memo(
                     const isActiveSummaryTable =
                       pathName?.includes("summary-table") &&
                       pathName?.includes(type.toLocaleLowerCase()) &&
-                      user.id === userId;
+                      user.id === userId
                     return (
                       <Fragment key={type}>
                         <div className="relative rounded overflow-hidden">
                           {isActiveSummaryTable && <MarketActiveItemSidebar />}
                           <SummaryTableLink
-                            type={type}
-                            departmentId="1"
                             className="flex border p-3 text-primary dark:text-stone-400 border-solid border-transparent rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground"
+                            departmentId="1"
+                            protect={false}
+                            type={type}
                           />
                         </div>
                         {index !== namePagesByDealType.length - 1 && (
                           <Separator className="my-px h-px bg-stone-600" />
                         )}
                       </Fragment>
-                    );
+                    )
                   })}
                 </AccordionContent>
               </AccordionItem>
@@ -195,11 +186,11 @@ export const DepartmentLinks = memo(
             <Separator className="my-px h-px bg-stone-600" />
           </ProtectedByPermissions>
         </>
-      );
+      )
     }
 
-    return <>{renderLinks}</>;
-  }
-);
+    return <>{renderLinks}</>
+  },
+)
 
-DepartmentLinks.displayName = "DepartmentLinks";
+DepartmentLinks.displayName = "DepartmentLinks"

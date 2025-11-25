@@ -1,17 +1,33 @@
-import { Role } from "@prisma/client";
+"use client"
 
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react"
+import type { Role } from "@prisma/client"
+import { checkRole } from "@/shared/api/checkByServer"
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
+interface ProtectedByRoleProps {
+  children: React.ReactNode
+  role?: string
+}
 
-const ProtectedByRole = ({ children }: React.PropsWithChildren) => {
-  const { authUser } = useStoreUser();
+const ProtectedByRole = ({ children, role = "ADMIN" }: ProtectedByRoleProps) => {
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
 
-  const router = useRouter();
+  useEffect(() => {
+    let mounted = true
 
-  const hasAccess = authUser?.role === Role.ADMIN;
+    checkRole(role as Role).then((result) => {
+      if (mounted) setHasAccess(result)
+    })
 
-  return hasAccess ? <>{children}</> : router.back();
-};
+    return () => {
+      mounted = false
+    }
+  }, [role])
 
-export default ProtectedByRole;
+  if (hasAccess === null) return null
+  if (!hasAccess) return null
+
+  return <>{children}</>
+}
+
+export default ProtectedByRole

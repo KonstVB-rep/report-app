@@ -1,37 +1,40 @@
-"use client";
+"use client"
 
-import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-
-import { DepartmentLabels } from "@/entities/department/types";
-import { useGetUser } from "@/feature/user/hooks/query";
-import UserCard from "@/shared/custom-components/ui/UserCard";
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard";
-
-import ProfileDealsData from "./ui/ProfileDealsData";
+import dynamic from "next/dynamic"
+import z from "zod"
+import { DepartmentLabels } from "@/entities/department/lib/constants"
+import { useGetUser } from "@/feature/user/hooks/query"
+import UserCard from "@/shared/custom-components/ui/UserCard"
+import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
+import ProfileDealsData from "./ui/ProfileDealsData"
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/custom-components/ui/AccessDeniedMessage"),
-  { ssr: false }
-);
+  { ssr: false },
+)
 
-const Loading = dynamic(() => import("./loading"), { ssr: false });
+const Loading = dynamic(() => import("./loading"), { ssr: false })
 
-const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false });
+const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false })
+
+const pageParamsSchema = z.object({
+  userId: z.string(),
+})
 
 const ProfilePage = () => {
-  const { userId } = useParams();
+  const { userId } = useTypedParams(pageParamsSchema)
 
-  const { data: user, error, isPending } = useGetUser(userId as string);
+  const { data: user, error, isPending } = useGetUser(userId)
 
-  if (isPending) return <Loading />;
+  if (isPending) return <Loading />
 
   if (error) {
-    return <AccessDeniedMessage error={error} />;
+    return <AccessDeniedMessage error={error} />
   }
 
   if (!user) {
-    return <NotFoundUser />;
+    return <NotFoundUser />
   }
 
   return (
@@ -40,19 +43,17 @@ const ProfilePage = () => {
         <div className="grid w-full md:max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
           <div className="@container flex h-full min-w-[260px] flex-col justify-between">
             <UserCard
+              departmentName={
+                DepartmentLabels[user?.departmentName as keyof typeof DepartmentLabels]
+              }
               email={user?.email}
-              username={user?.username}
               phone={user?.phone}
               position={user?.position}
-              departmentName={
-                DepartmentLabels[
-                  user?.departmentName as keyof typeof DepartmentLabels
-                ]
-              }
+              username={user?.username}
             />
           </div>
 
-          <div className="grid gap-2 h-full">
+          <div className="flex flex-col gap-2 h-full">
             <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
               <span className="first-letter:capitalize">Дата регистрации:</span>
               <span>{user?.createdAt?.toLocaleDateString()}</span>
@@ -68,13 +69,12 @@ const ProfilePage = () => {
               <span>{user?.email}</span>
             </p>
           </div>
-          {/* </div> */}
         </div>
       </div>
 
       <ProfileDealsData user={user} />
     </section>
-  );
-};
+  )
+}
 
-export default withAuthGuard(ProfilePage);
+export default withAuthGuard(ProfilePage)

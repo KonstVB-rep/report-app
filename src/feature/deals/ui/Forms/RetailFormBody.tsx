@@ -1,13 +1,11 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
-import { FieldValues, Path, UseFormReturn } from "react-hook-form";
-
-import { ArrowLeft } from "lucide-react";
-
-import { Contact } from "@/entities/deal/types";
-import ContactDeal from "@/feature/contact/ui/ContactDeal";
-import { Button } from "@/shared/components/ui/button";
+import { StatusRetail } from "@prisma/client"
+import { ArrowLeft } from "lucide-react"
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
+import type { Contact } from "@/entities/deal/types"
+import ContactDeal from "@/feature/contact/ui/ContactDeal"
+import { Button } from "@/shared/components/ui/button"
 import {
   Form,
   FormControl,
@@ -15,38 +13,37 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-import { Textarea } from "@/shared/components/ui/textarea";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
-import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
-import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm";
-import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/custom-components/ui/Overlay";
-import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
-import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-
-import useSendDealInfo from "../../api/hooks/useSendDealInfo";
+} from "@/shared/components/ui/form"
+import { Textarea } from "@/shared/components/ui/textarea"
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField"
+import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm"
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm"
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
+import Overlay from "@/shared/custom-components/ui/Overlay"
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
+import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
+import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
   StatusRetailLabels,
-} from "../../lib/constants";
-import AddManagerToDeal from "../Modals/AddManagerToDeal";
+} from "../../lib/constants"
+import AddManagerToDeal from "../Modals/AddManagerToDeal"
 
 type RetailFormBodyProps<T extends FieldValues> = {
-  form: UseFormReturn<T>;
-  onSubmit: (data: T) => void;
-  isPending: boolean;
-  contactsKey?: keyof T;
-  managerId: string | undefined;
-  titleForm: string;
-};
+  form: UseFormReturn<T>
+  onSubmit: (data: T) => void
+  isPending: boolean
+  contactsKey?: keyof T
+  managerId: string | undefined
+  titleForm: string
+}
 
-const directionOptions = transformObjValueToArr(DirectionRetailLabels);
-const deliveryOptions = transformObjValueToArr(DeliveryRetailLabels);
-const statusOptions = transformObjValueToArr(StatusRetailLabels);
+const directionOptions = transformObjValueToArr(DirectionRetailLabels)
+const deliveryOptions = transformObjValueToArr(DeliveryRetailLabels)
+const statusOptions = transformObjValueToArr(StatusRetailLabels)
 
 const RetailFormBody = <T extends FieldValues>({
   form,
@@ -56,6 +53,13 @@ const RetailFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: RetailFormBodyProps<T>) => {
+  const initialManagersIds = form.getValues("managersIds" as Path<T>)
+  const initialManagers = initialManagersIds?.length
+    ? initialManagersIds
+    : managerId
+      ? [{ userId: managerId }]
+      : []
+
   const {
     contacts,
     setContacts,
@@ -72,154 +76,151 @@ const RetailFormBody = <T extends FieldValues>({
   } = useSendDealInfo<T>(
     onSubmit,
     managerId,
-    form.getValues("contacts" as Path<T>)
-  );
+    form.getValues("contacts" as Path<T>),
+    initialManagers,
+  )
 
-  const { getValues } = form;
-
-  useEffect(() => {
-    const ids = getValues("managersIds" as Path<T>);
-    if (ids?.length > 0) setManagers(ids);
-  }, [getValues, setManagers]);
-
-  const getError = (name: keyof T) =>
-    form.formState.errors[name]?.message as string;
+  const getError = (name: keyof T) => form.formState.errors[name]?.message as string
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleSubmit)}
           className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="text-center font-semibold uppercase">{titleForm}</div>
           <div className="grid gap-2 p-2 sm:grid-cols-2">
             <div className="flex flex-col gap-1">
               <DatePickerFormField
-                name={"dateRequest" as Path<T>}
-                label="Дата запроса"
                 control={form.control}
+                disabled={isPending}
                 errorMessage={getError("dateRequest")}
-                disabled={isPending}
+                label="Дата запроса"
+                name={"dateRequest" as Path<T>}
               />
 
               <InputTextForm
-                name={"nameDeal" as Path<T>}
-                label="Название сделки"
                 control={form.control}
+                disabled={isPending}
                 errorMessage={getError("nameDeal")}
-                required
+                label="Название сделки"
+                name={"nameDeal" as Path<T>}
                 placeholder="Название..."
-                disabled={isPending}
+                required
               />
 
               <InputTextForm
-                name={"nameObject" as Path<T>}
-                label="Название объекта/Город"
                 control={form.control}
-                errorMessage={getError("nameObject")}
-                required
-                placeholder="Название..."
                 disabled={isPending}
+                errorMessage={getError("nameObject")}
+                label="Название объекта/Город"
+                name={"nameObject" as Path<T>}
+                placeholder="Название..."
+                required
               />
 
               <SelectFormField
-                name={"direction" as Path<T>}
-                label="Направление"
                 control={form.control}
+                disabled={isPending}
                 errorMessage={getError("direction")}
+                label="Направление"
+                name={"direction" as Path<T>}
                 options={directionOptions}
                 placeholder="Выберите направление"
                 required
-                disabled={isPending}
               />
 
               <SelectFormField
-                name={"deliveryType" as Path<T>}
-                label="Тип поставки"
                 control={form.control}
+                disabled={isPending}
                 errorMessage={getError("deliveryType")}
+                label="Тип поставки"
+                name={"deliveryType" as Path<T>}
                 options={deliveryOptions}
                 placeholder="Выберите тип поставки"
-                disabled={isPending}
               />
 
               <InputTextForm
-                name={"contact" as Path<T>}
-                label="Контакты"
                 control={form.control}
-                errorMessage={getError("contact")}
-                required
-                placeholder="Имя контакта"
                 disabled={isPending}
+                errorMessage={getError("contact")}
+                label="Контакты"
+                name={"contact" as Path<T>}
+                placeholder="Имя контакта"
+                required
               />
 
               <InputPhoneForm
-                name={"phone" as Path<T>}
-                label="Телефон"
                 control={form.control}
-                errorMessage={getError("phone")}
-                placeholder="Введите телефон пользователя"
                 disabled={isPending}
+                errorMessage={getError("phone")}
+                label="Телефон"
+                name={"phone" as Path<T>}
+                placeholder="Введите телефон пользователя"
               />
             </div>
 
             <div className="flex flex-col gap-1">
               <InputTextForm
-                name={"email" as Path<T>}
-                label="Email"
-                type="email"
-                control={form.control}
-                errorMessage={getError("email")}
                 className="w-full invalid:not-placeholder-shown:border-red-500"
+                control={form.control}
                 disabled={isPending}
+                errorMessage={getError("email")}
+                label="Email"
+                name={"email" as Path<T>}
+                type="email"
               />
 
               <InputNumberForm
-                name={"amountCP" as Path<T>}
-                label="Сумма КП"
                 control={form.control}
+                disabled={isPending}
                 errorMessage={getError("amountCP")}
+                label="Сумма КП"
+                name={"amountCP" as Path<T>}
                 placeholder="Сумма КП"
-                disabled={isPending}
               />
 
               <InputNumberForm
-                name={"delta" as Path<T>}
-                label="Дельта"
                 control={form.control}
-                errorMessage={getError("delta")}
-                placeholder="Дельта"
                 disabled={isPending}
+                errorMessage={getError("delta")}
+                label="Дельта"
+                name={"delta" as Path<T>}
+                placeholder="Дельта"
               />
 
               <SelectFormField
-                name={"dealStatus" as Path<T>}
-                label="Статус КП"
                 control={form.control}
+                disabled={isPending}
                 errorMessage={getError("dealStatus")}
+                label="Статус КП"
+                name={"dealStatus" as Path<T>}
                 options={statusOptions}
                 placeholder="Выберите статус КП"
-                disabled={isPending}
               />
 
-              <DatePickerFormField
-                name={"plannedDateConnection" as Path<T>}
-                label="Планируемый контакт"
-                control={form.control}
-                errorMessage={getError("plannedDateConnection")}
-                disabled={isPending}
-              />
+              {form.formState.defaultValues?.dealStatus !== StatusRetail.REJECT && (
+                <DatePickerFormField
+                  className="mb-2"
+                  control={form.control}
+                  disabled={isPending}
+                  errorMessage={getError("plannedDateConnection")}
+                  label="Планируемый контакт"
+                  name={"plannedDateConnection" as Path<T>}
+                />
+              )}
 
               <InputTextForm
-                name={"resource" as Path<T>}
-                label="Источник"
+                className="mb-2"
                 control={form.control}
-                errorMessage={getError("resource")}
-                required
-                placeholder="Откуда пришёл клиент"
                 disabled={isPending}
+                errorMessage={getError("resource")}
+                label="Источник"
+                name={"resource" as Path<T>}
+                placeholder="Откуда пришёл клиент"
+                required
               />
 
               <FormField
@@ -230,16 +231,14 @@ const RetailFormBody = <T extends FieldValues>({
                     <FormLabel>Примечание / Комментарии</FormLabel>
                     <FormControl>
                       <Textarea
+                        disabled={isPending}
                         placeholder="Введите комментарии"
                         required
-                        disabled={isPending}
                         {...field}
                       />
                     </FormControl>
                     {getError("comments") && (
-                      <FormMessage className="text-red-500">
-                        {getError("comments")}
-                      </FormMessage>
+                      <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
                     )}
                   </FormItem>
                 )}
@@ -250,26 +249,26 @@ const RetailFormBody = <T extends FieldValues>({
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex gap-2">
               <Button
-                type="button"
-                variant="outline"
                 onClick={toggleAddContact}
                 size={isAddContact ? "icon" : undefined}
+                type="button"
+                variant="outline"
               >
                 {isAddContact ? <ArrowLeft /> : "Добавить доп.контакт"}
               </Button>
 
               <AddManagerToDeal
-                setManagers={setManagers}
-                managers={managers}
                 firstManager={firstManager}
+                managers={managers}
                 setFirstManager={setFirstManager}
+                setManagers={setManagers}
               />
             </div>
 
             <SubmitFormButton
-              title="Сохранить"
-              isPending={isPending}
               className="ml-auto mr-2 w-max"
+              isPending={isPending}
+              title="Сохранить"
             />
           </div>
         </form>
@@ -277,26 +276,21 @@ const RetailFormBody = <T extends FieldValues>({
         <div
           className={`min-w-full flex flex-col gap-2 transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
-          <Button
-            type="button"
-            variant="outline"
-            onClick={toggleAddContact}
-            size="icon"
-          >
+          <Button onClick={toggleAddContact} size="icon" type="button" variant="outline">
             <ArrowLeft />
           </Button>
           <ContactDeal
-            onContactsChange={setContacts}
-            selectedContacts={selectedContacts as Contact[]}
-            setSelectedContacts={setSelectedContacts}
             contacts={contactsKey ? (contacts as T[typeof contactsKey]) : []}
             contactsKey={contactsKey as string}
             handleDeleteContact={handleDeleteContact}
+            onContactsChange={setContacts}
+            selectedContacts={selectedContacts as Contact[]}
+            setSelectedContacts={setSelectedContacts}
           />
         </div>
       </Form>
     </MotionDivY>
-  );
-};
+  )
+}
 
-export default RetailFormBody;
+export default RetailFormBody

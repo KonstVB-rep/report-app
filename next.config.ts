@@ -1,8 +1,26 @@
-import withBundleAnalyzer from "@next/bundle-analyzer";
+import withBundleAnalyzer from "@next/bundle-analyzer"
 
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "downloader.disk.yandex.ru",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.storage.yandex.net",
+      },
+    ],
+    qualities: [25, 50, 75, 80, 90, 100],
+    formats: ["image/webp", "image/avif"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
   compiler: {
     // removeConsole: process.env.NODE_ENV === "production",
     reactRemoveProperties: process.env.NODE_ENV === "production",
@@ -19,12 +37,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   experimental: {
-
     staleTimes: {
       dynamic: 0,
       static: 0,
     },
-    
+
     serverActions: {
       allowedOrigins: [
         process.env.NEXT_PUBLIC_API_BASE_URL
@@ -55,7 +72,7 @@ const nextConfig: NextConfig = {
       "react-hook-form",
       "react-starfield",
       "react-dropzone",
-      "@fullcalendar/*"
+      "@fullcalendar/*",
     ],
   },
 
@@ -69,16 +86,16 @@ const nextConfig: NextConfig = {
 
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
-      config.resolve.alias["react-devtools"] = false;
+      config.resolve.alias["react-devtools"] = false
     }
 
-    return config;
+    return config
   },
-};
+}
 
 const withBundleAnalyzerConfig = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
-  openAnalyzer: true
-});
+  openAnalyzer: true,
+})
 
-export default withBundleAnalyzerConfig(nextConfig);
+export default withBundleAnalyzerConfig(nextConfig)

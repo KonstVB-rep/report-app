@@ -1,23 +1,14 @@
-"use server";
+"use server"
 
-import { UserTelegramChat } from "@prisma/client";
+import type { UserTelegramChat } from "@prisma/client"
+import { revalidatePath } from "next/cache"
+import { z } from "zod"
+import { createUserTelegramChat, updateUserTelegramChat } from "@/entities/tgBot/api"
+import type { ChatFormData } from "@/entities/tgBot/types"
+import type { ActionResponse } from "@/shared/types"
+import { createChatFormSchema, updateChatFormSchema } from "../lib/schema"
 
-import { revalidatePath } from "next/cache";
-
-import { z } from "zod";
-
-import {
-  createUserTelegramChat,
-  updateUserTelegramChat,
-} from "@/entities/tgBot/api";
-import { ChatFormData } from "@/entities/tgBot/types";
-import { ActionResponse } from "@/shared/types";
-
-import { createChatFormSchema, updateChatFormSchema } from "../lib/schema";
-
-export async function saveChat(
-  formData: FormData
-): Promise<ActionResponse<ChatFormData>> {
+export async function saveChat(formData: FormData): Promise<ActionResponse<ChatFormData>> {
   try {
     const rawData: ChatFormData = {
       userId: formData.get("userId") as string,
@@ -25,15 +16,13 @@ export async function saveChat(
       chatId: formData.get("chatId") as string,
       telegramUserInfoId: formData.get("telegramUserInfoId") as string,
       chatName: formData.get("chatName") as string,
-      username: formData.get("username")
-        ? (formData.get("username") as string)
-        : undefined,
+      username: formData.get("username") ? (formData.get("username") as string) : undefined,
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
       isActive: formData.get("isActive") === "true",
-    };
+    }
 
-    const { data, success, error } = createChatFormSchema.safeParse(rawData);
+    const { data, success, error } = createChatFormSchema.safeParse(rawData)
 
     if (!success) {
       return {
@@ -41,7 +30,7 @@ export async function saveChat(
         message: "Пожалуйста, исправьте ошибки в форме",
         errors: z.treeifyError(error),
         inputs: rawData,
-      };
+      }
     }
 
     const savedResult = await createUserTelegramChat(
@@ -56,31 +45,31 @@ export async function saveChat(
         isBot: false,
       },
       data.chatName,
-      data.isActive
-    );
+      data.isActive,
+    )
 
-    revalidatePath("/adminboard/bots");
+    revalidatePath("/adminboard/bots")
     return {
       ...savedResult,
       result: data,
-    };
+    }
   } catch (error) {
-    console.log("Произошла ошибка при сохранении чата", error);
+    console.log("Произошла ошибка при сохранении чата", error)
     return {
       success: false,
       message: "Произошла ошибка при сохранении чата",
-    };
+    }
   }
 }
-type UpdateChatInput = Pick<UserTelegramChat, "chatName" | "isActive">;
+type UpdateChatInput = Pick<UserTelegramChat, "chatName" | "isActive">
 export const updateChat = async (formData: FormData) => {
   try {
     const rawData: UpdateChatInput = {
       chatName: formData.get("chatName") as string,
       isActive: formData.get("isActive") === "true",
-    };
+    }
 
-    const { data, success, error } = updateChatFormSchema.safeParse(rawData);
+    const { data, success, error } = updateChatFormSchema.safeParse(rawData)
 
     if (!success) {
       return {
@@ -88,19 +77,19 @@ export const updateChat = async (formData: FormData) => {
         message: "Пожалуйста, исправьте ошибки в форме",
         errors: z.treeifyError(error),
         inputs: rawData,
-      };
+      }
     }
 
     return await updateUserTelegramChat({
       ...data,
       chatId: formData.get("chatId") as string,
       botId: formData.get("botId") as string,
-    });
+    })
   } catch (error) {
-    console.log("Произошла ошибка при сохранении чата", error);
+    console.log("Произошла ошибка при сохранении чата", error)
     return {
       success: false,
       message: "Произошла ошибка при сохранении чата",
-    };
+    }
   }
-};
+}

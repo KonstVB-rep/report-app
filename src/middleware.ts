@@ -1,105 +1,108 @@
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server"
+import { verifyToken } from "./shared/lib/helpers/checkTokens"
+import { AuthError } from "./shared/lib/helpers/customErrors"
 
-import { jwtVerify } from "jose";
+async function redirectToLogin(request: NextRequest) {
+  const loginUrl = new URL("/login", request.url)
+  const response = NextResponse.redirect(loginUrl)
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-const secretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+  response.cookies.delete("accessToken")
+  response.cookies.delete("refreshToken")
 
-export async function verifyToken(token: string) {
+  return response
+}
+
+const refreshTokenRequest = async (refreshToken: string) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refreshToken }),
+  })
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      throw new AuthError("Refresh token expired")
+    } else {
+      throw new AuthError("Error refreshing tokens")
+    }
+  }
+
+  return await res.json()
+}
+
+async function refreshTokens(_request: NextRequest, refreshToken: string) {
   try {
-    const { payload } = await jwtVerify(token, secretKey);
-    return payload;
-  } catch (error) {
-    console.error("Token verification failed:", error);
-    return null;
+    const tokens = await refreshTokenRequest(refreshToken)
+
+    if (!tokens.accessToken) {
+      throw new Error("Новый accessToken не получен")
+    }
+
+    const response = NextResponse.next()
+
+    response.cookies.set("accessToken", tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24,
+      path: "/",
+    })
+
+    if (tokens.refreshToken) {
+      response.cookies.set("refreshToken", tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 30,
+        path: "/",
+      })
+    }
+
+    return response
+  } catch (err) {
+    console.error("refreshTokens error:", err)
+    return null
   }
 }
 
-async function redirectToLogin(request: NextRequest) {
-  const loginUrl = new URL("/login", request.url);
-
-  const response = NextResponse.redirect(loginUrl);
-
-  response.cookies.set("accessToken", "", { path: "/", maxAge: 0 });
-  response.cookies.set("refreshToken", "", { path: "/", maxAge: 0 });
-
-  return response;
-}
-
 export default async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const cookiesStore = await cookies();
-  const accessToken = cookiesStore.get("accessToken")?.value;
-  const refreshToken = cookiesStore.get("refreshToken")?.value;
+  const { pathname } = request.nextUrl
+  const accessToken = request.cookies.get("accessToken")?.value
+  const refreshToken = request.cookies.get("refreshToken")?.value
 
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
-        await jwtVerify(accessToken, secretKey);
-
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-      } catch (err) {
-        console.log(err, "middleware error");
-        return NextResponse.next();
+        await verifyToken(accessToken)
+        return NextResponse.redirect(new URL("/dashboard", request.url))
+      } catch (_err) {
+        return NextResponse.next()
       }
     }
-    return NextResponse.next();
+    return NextResponse.next()
   }
 
   if (!accessToken && !refreshToken) {
-    return redirectToLogin(request);
+    return redirectToLogin(request)
   }
 
   if (accessToken) {
     try {
-      await jwtVerify(accessToken, secretKey);
-      return NextResponse.next();
+      await verifyToken(accessToken)
+      return NextResponse.next()
     } catch (error) {
-      console.log("Access token недействителен", error);
+      console.log("Access token недействителен", error)
     }
   }
 
   if (refreshToken) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken: refreshToken }),
-      });
-
-      if (!res.ok) throw new Error("Ошибка обновления токенов");
-
-      const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-        await res.json();
-
-      const response = NextResponse.next();
-      response.cookies.set("accessToken", newAccessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24,
-        path: "/",
-      });
-
-      if (newRefreshToken) {
-        response.cookies.set("refreshToken", newRefreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV !== "development",
-          sameSite: "strict",
-          maxAge: 60 * 60 * 24 * 30,
-          path: "/",
-        });
-      }
-
-      return response;
-    } catch (error) {
-      console.log("Ошибка обновления токенов:", error);
-      return redirectToLogin(request);
+    const response = await refreshTokens(request, refreshToken)
+    if (response) {
+      return response
     }
   }
 
-  return redirectToLogin(request);
+  return redirectToLogin(request)
 }
 
 export const config = {
@@ -117,5 +120,4 @@ export const config = {
     "/orders/:path*",
     "/",
   ],
-  // runtime: "experimental-edge",
-};
+}

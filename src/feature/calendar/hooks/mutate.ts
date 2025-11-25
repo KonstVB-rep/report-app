@@ -1,21 +1,19 @@
-import { Prisma } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
-
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
-import { logout } from "@/shared/auth/logout";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-
+import type { Prisma } from "@prisma/client"
+import { useMutation } from "@tanstack/react-query"
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
+import { logout } from "@/shared/auth/logout"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
 import {
   createEventCalendar,
   deleteArrayEventsCalendar,
   deleteEventCalendar,
   updateEventCalendar,
-} from "../api";
-import { EventDataType, EventResponse } from "../types";
+} from "../api"
+import type { EventDataType, EventResponse } from "../types"
 
 export const useCreateEventCalendar = (closeModal: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: (EventDataType: EventDataType) => {
@@ -23,40 +21,38 @@ export const useCreateEventCalendar = (closeModal: () => void) => {
         createEventCalendar,
         EventDataType,
         authUser,
-        isSubmittingRef
-      );
+        isSubmittingRef,
+      )
     },
     onSuccess: () => {
-      closeModal();
+      closeModal()
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
-      });
+      })
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendarToday", authUser?.id],
-      });
-      TOAST.SUCCESS("Событие успешно добавлено в календарь");
+      })
+      TOAST.SUCCESS("Событие успешно добавлено в календарь")
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
+      const err = error as Error & { status?: number }
 
       if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.")
+        logout()
+        return
       }
 
       const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при добавлении события";
+        err.message === "Failed to fetch" ? "Ошибка соединения" : "Ошибка при добавлении события"
 
-      TOAST.ERROR(errorMessage);
+      TOAST.ERROR(errorMessage)
     },
-  });
-};
+  })
+}
 
 export const useUpdateEventCalendar = (closeModal: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: (EventDataType: EventDataType) => {
@@ -64,112 +60,107 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
         updateEventCalendar,
         EventDataType,
         authUser,
-        isSubmittingRef
-      );
+        isSubmittingRef,
+      )
     },
     onSuccess: () => {
-      closeModal();
+      closeModal()
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
-      });
+      })
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendarToday", authUser?.id],
-      });
-      TOAST.SUCCESS("Событие успешно обновлено");
+      })
+      TOAST.SUCCESS("Событие успешно обновлено")
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
+      const err = error as Error & { status?: number }
 
       if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.")
+        logout()
+        return
       }
 
       const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при обновлении события";
+        err.message === "Failed to fetch" ? "Ошибка соединения" : "Ошибка при обновлении события"
 
-      TOAST.ERROR(errorMessage);
+      TOAST.ERROR(errorMessage)
     },
-  });
-};
+  })
+}
 
 export const useDeleteEventCalendar = (closeModal?: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: async (id: string) => {
-      console.log("authUser", authUser);
       return handleMutationWithAuthCheck<{ id: string }, EventResponse>(
         deleteEventCalendar,
         { id },
         authUser,
-        isSubmittingRef
-      );
+        isSubmittingRef,
+      )
     },
     onSuccess: () => {
-      closeModal?.();
+      closeModal?.()
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendar", authUser?.id],
-      });
+      })
       queryClient.invalidateQueries({
         queryKey: ["eventsCalendarToday", authUser?.id],
-      });
-      TOAST.SUCCESS("Событие успешно удалено");
+      })
+      TOAST.SUCCESS("Событие успешно удалено")
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
+      const err = error as Error & { status?: number }
 
       if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.")
+        logout()
+        return
       }
 
       const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при удалении события";
+        err.message === "Failed to fetch" ? "Ошибка соединения" : "Ошибка при удалении события"
 
-      TOAST.ERROR(errorMessage);
+      TOAST.ERROR(errorMessage)
     },
-  });
-};
+  })
+}
 
 export const useDeleteEventsCalendar = (closeModal?: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: async (ids: string[]) => {
-      return handleMutationWithAuthCheck<
-        { ids: string[] },
-        Prisma.BatchPayload
-      >(deleteArrayEventsCalendar, { ids }, authUser, isSubmittingRef);
+      return handleMutationWithAuthCheck<{ ids: string[] }, Prisma.BatchPayload>(
+        deleteArrayEventsCalendar,
+        { ids },
+        authUser,
+        isSubmittingRef,
+      )
     },
     onSuccess: () => {
-      closeModal?.();
+      closeModal?.()
       queryClient.invalidateQueries({
         queryKey: ["allEvents", authUser?.id],
-      });
-      TOAST.SUCCESS("Событие успешно удалено");
+      })
+      TOAST.SUCCESS("Событие успешно удалено")
     },
     onError: (error) => {
-      const err = error as Error & { status?: number };
-      console.log("error", err);
+      const err = error as Error & { status?: number }
+      console.log("error", err)
       if (err.status === 401 || err.message === "Сессия истекла") {
-        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.");
-        logout();
-        return;
+        TOAST.ERROR("Сессия истекла. Пожалуйста, войдите снова.")
+        logout()
+        return
       }
 
       const errorMessage =
-        err.message === "Failed to fetch"
-          ? "Ошибка соединения"
-          : "Ошибка при удалении события";
+        err.message === "Failed to fetch" ? "Ошибка соединения" : "Ошибка при удалении события"
 
-      TOAST.ERROR(errorMessage);
+      TOAST.ERROR(errorMessage)
     },
-  });
-};
+  })
+}

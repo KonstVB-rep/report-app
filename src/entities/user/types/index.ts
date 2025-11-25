@@ -1,53 +1,46 @@
-import { DepartmentEnum, PermissionEnum, Role } from "@prisma/client";
-
-import { PermissionUser } from "../model/objectTypes";
+import { type DepartmentEnum, PermissionEnum, type Role } from "@prisma/client"
+import { PermissionUser } from "../model/objectTypes"
 
 export type User = {
-  id: string;
-  username: string;
-  phone: string;
-  user_password: string;
-  email: string;
-  position: string;
-  departmentId: number;
-  role: Role;
-  lastlogin?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-  permissions?: PermissionEnum[];
-  tgUserId?: string;
-  tgUserName?: string;
-};
+  id: string
+  username: string
+  phone: string
+  user_password: string
+  email: string
+  position: string
+  departmentId: number
+  role: Role
+  lastlogin?: Date | null
+  createdAt: Date
+  updatedAt: Date
+  permissions?: PermissionEnum[]
+  tgUserId?: string
+  tgUserName?: string
+}
 
-export type UserOmit = Omit<
-  User,
-  "user_password" | "lastlogin" | "createdAt" | "updatedAt"
->;
+export type UserOmit = Omit<User, "user_password" | "lastlogin" | "createdAt" | "updatedAt">
 
 export type UserWithdepartmentName = Omit<
   User,
   "user_password" | "lastlogin" | "createdAt" | "updatedAt"
 > & {
-  departmentName: DepartmentEnum;
-};
+  departmentName: DepartmentEnum
+}
 
 export type UserRequest = Omit<
   User,
   "id" | "lastlogin" | "createdAt" | "updatedAt" | "departmentId"
 > & {
-  department: DepartmentEnum;
-  permissions: PermissionType[];
-};
-export type UserResponse = Omit<
-  User,
-  "lastlogin" | "createdAt" | "updatedAt" | "user_password"
->;
+  department: DepartmentEnum
+  permissions: PermissionType[]
+}
+export type UserResponse = Omit<User, "lastlogin" | "createdAt" | "updatedAt" | "user_password">
 
 export type Option = {
-  label: string;
-  value: PermissionEnum;
-  disable?: boolean;
-};
+  label: string
+  value: PermissionEnum
+  disable?: boolean
+}
 
 export const OPTIONS: Option[] = [
   {
@@ -74,26 +67,26 @@ export const OPTIONS: Option[] = [
     label: PermissionUser.TASK_MANAGEMENT,
     value: PermissionEnum.TASK_MANAGEMENT,
   },
-];
+]
 
-export type PermissionType = keyof typeof PermissionEnum;
+export type PermissionType = keyof typeof PermissionEnum
 
 export type UserDataBase = {
-  id?: string;
-  username: string;
-  phone: string;
-  email: string;
-  position: string;
-  department: DepartmentEnum;
-  role: Role;
-  permissions?: PermissionEnum[];
-};
+  id?: string
+  username: string
+  phone: string
+  email: string
+  position: string
+  department: DepartmentEnum
+  role: Role
+  permissions?: PermissionEnum[]
+}
 
 export type UserFormData = UserDataBase & {
-  user_password: string;
-};
+  user_password: string
+}
 
 export type UserFormEditData = UserDataBase & {
-  id: string;
-  user_password?: string | undefined;
-};
+  id: string
+  user_password?: string | undefined
+}

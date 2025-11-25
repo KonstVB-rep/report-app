@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
-
-import prisma from "@/prisma/prisma-client";
+import { NextResponse } from "next/server"
+import { prisma } from "@/prisma/prisma-client"
 
 export async function POST() {
   try {
@@ -15,11 +14,11 @@ export async function POST() {
         userId: true,
         isActive: true,
       },
-    });
+    })
 
-    return NextResponse.json(chats);
+    return NextResponse.json(chats)
   } catch (error) {
-    console.error("❌ Ошибка при получении активных чатов:", error);
-    return NextResponse.json({ message: "Ошибка сервера" }, { status: 500 });
+    console.error("❌ Ошибка при получении активных чатов:", error)
+    return NextResponse.json({ message: "Ошибка сервера" }, { status: 500 })
   }
 }

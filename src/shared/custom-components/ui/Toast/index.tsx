@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "sonner"
 
 export const TOAST = {
   ERROR: (message: string) =>
@@ -107,7 +107,7 @@ export const TOAST = {
             display: "flex",
             justifyContent: "center",
           },
-        };
+        }
       },
       style: {
         backgroundColor: "oklch(0.809 0.105 251.813)",
@@ -119,4 +119,4 @@ export const TOAST = {
       duration: 3000,
       icon: null,
     }),
-};
+}

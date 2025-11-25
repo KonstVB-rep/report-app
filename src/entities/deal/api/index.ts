@@ -1,6 +1,7 @@
-"use server";
+"use server"
 
 import {
+  type DealFile,
   DealType,
   PermissionEnum,
   Prisma,
@@ -8,17 +9,14 @@ import {
   StatusOrder,
   StatusProject,
   StatusRetail,
-} from "@prisma/client";
-
-import cuid from "cuid";
-
-import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole";
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
-import prisma from "@/prisma/prisma-client";
-import { handleError } from "@/shared/api/handleError";
-
-import { AllStatusKeys } from "../lib/constants";
-import {
+} from "@prisma/client"
+import cuid from "cuid"
+import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
+import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { prisma } from "@/prisma/prisma-client"
+import { checkRole } from "@/shared/api/checkByServer"
+import { handleError } from "@/shared/api/handleError"
+import type {
   Contact,
   ContractResponse,
   DateRange,
@@ -29,46 +27,38 @@ import {
   ProjectWithManagersIds,
   ProjectWithoutDateCreateAndUpdate,
   ProjectWithoutId,
+  ReAssignDeal,
   RetailResponse,
   RetailResponseWithContactsAndFiles,
   RetailWithManagersIds,
   RetailWithoutDateCreateAndUpdate,
   RetailWithoutId,
-} from "../types";
+} from "../types"
 
-const requiredFields = [
-  "nameObject",
-  "direction",
-  "comments",
-  "contact",
-  "dealStatus",
-];
+const requiredFields = ["nameObject", "direction", "comments", "contact", "dealStatus"]
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
-  const data = await handleAuthorization();
+  const data = await handleAuthorization()
 
   for (const field of requiredFields as (keyof ProjectWithoutId)[]) {
     if (!projectData[field]) {
-      return handleError(`Отсутствует поле: ${field}`);
+      return handleError(`Отсутствует поле: ${field}`)
     }
   }
 
-  return data;
-};
+  return data
+}
 /********************************************** Получить ****************************************************************/
 export const getProjectById = async (
-  dealId: string
-): Promise<
-  | (ProjectResponseWithContactsAndFiles & { managers: ManagerShortInfo[] })
-  | null
-> => {
+  dealId: string,
+): Promise<(ProjectResponseWithContactsAndFiles & { managers: ManagerShortInfo[] }) | null> => {
   try {
-    const data = await handleAuthorization();
+    const data = await handleAuthorization()
 
-    const { user, userId } = data!;
+    const { user, userId } = data
 
     if (!dealId) {
-      handleError("Недостаточно данных");
+      handleError("Недостаточно данных")
     }
 
     const deal = await prisma.project.findUnique({
@@ -79,48 +69,44 @@ export const getProjectById = async (
           include: { user: true },
         },
       },
-    });
+    })
 
     if (!deal) {
-      return null;
+      return null
     }
 
     const userOwnerProject = await prisma.user.findUnique({
       where: { id: deal.userId },
       select: { role: true, departmentId: true },
-    });
+    })
 
     if (!userOwnerProject) {
-      return handleError(
-        "Пользователь не найден илил у вас нет прав на операцию"
-      );
+      return handleError("Пользователь не найден илил у вас нет прав на операцию")
     }
 
-    const { projectManagers, ...rest } = deal;
+    const { projectManagers, ...rest } = deal
 
     const managers = projectManagers.map((pm) => ({
       id: pm.user.id,
       managerName: pm.user.username,
       position: pm.user.position,
-    }));
+    }))
 
-    const isExistUserInManagersList = managers.some((man) => man.id === userId);
+    const isExistUserInManagersList = managers.some((man) => man.id === userId)
 
-    const isOwner = userId === deal.userId;
+    const isOwner = userId === deal.userId
 
     if (!user) {
-      return handleError(
-        "Пользователь не найден или у вас нет прав на операцию"
-      );
+      return handleError("Пользователь не найден или у вас нет прав на операцию")
     }
 
     if (!isOwner && !isExistUserInManagersList) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
     }
 
     const dealFiles = await prisma.dealFile.findMany({
       where: { dealId: dealId }, // Фильтруем по dealId
-    });
+    })
 
     const formattedProject = {
       ...rest,
@@ -130,27 +116,25 @@ export const getProjectById = async (
       delta: deal.delta ? deal.delta.toString() : "",
       dealFiles,
       managers,
-    };
+    }
 
-    return formattedProject;
+    return formattedProject
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 export const getRetailById = async (
-  dealId: string
-): Promise<
-  (RetailResponseWithContactsAndFiles & { managers: ManagerShortInfo[] }) | null
-> => {
+  dealId: string,
+): Promise<(RetailResponseWithContactsAndFiles & { managers: ManagerShortInfo[] }) | null> => {
   try {
-    const data = await handleAuthorization();
+    const data = await handleAuthorization()
 
-    const { user, userId } = data!;
+    const { user, userId } = data
 
     if (!dealId) {
-      return handleError("Недостаточно данных");
+      return handleError("Недостаточно данных")
     }
 
     const deal = await prisma.retail.findUnique({
@@ -161,48 +145,44 @@ export const getRetailById = async (
           include: { user: true },
         },
       },
-    });
+    })
 
     if (!deal) {
-      return null;
+      return null
     }
 
     const userOwnerProject = await prisma.user.findUnique({
       where: { id: deal.userId },
       select: { role: true, departmentId: true },
-    });
+    })
 
     if (!userOwnerProject) {
-      return handleError(
-        "Пользователь не найден или у вас нет прав на операцию"
-      );
+      return handleError("Пользователь не найден или у вас нет прав на операцию")
     }
 
-    const { retailManagers, ...rest } = deal;
+    const { retailManagers, ...rest } = deal
 
     const managers = retailManagers.map((rm) => ({
       id: rm.user.id,
       managerName: rm.user.username,
       position: rm.user.position,
-    }));
+    }))
 
-    const isExistUserInManagersList = managers.some((man) => man.id === userId);
+    const isExistUserInManagersList = managers.some((man) => man.id === userId)
 
-    const isOwner = userId === deal.userId;
+    const isOwner = userId === deal.userId
 
     if (!user) {
-      return handleError(
-        "Пользователь не найден или у вас нет прав на операцию"
-      );
+      return handleError("Пользователь не найден или у вас нет прав на операцию")
     }
 
     if (!isOwner && !isExistUserInManagersList) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
     }
 
     const dealFiles = await prisma.dealFile.findMany({
       where: { dealId: dealId }, // Фильтруем по dealId
-    });
+    })
 
     const formattedRetail = {
       ...rest,
@@ -210,29 +190,28 @@ export const getRetailById = async (
       delta: deal.delta ? deal.delta.toString() : "",
       dealFiles,
       managers,
-    };
-
-    return formattedRetail;
-  } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
-  }
-};
-
-export const getProjectsUser = async (
-  idDealOwner: string
-): Promise<ProjectResponse[] | null> => {
-  try {
-    const data = await handleAuthorization();
-    const { user, userId } = data!;
-
-    if (!idDealOwner) {
-      return handleError("Недостаточно данных");
     }
 
-    const isOwner = userId === idDealOwner;
+    return formattedRetail
+  } catch (error) {
+    console.error(error)
+    return handleError((error as Error).message)
+  }
+}
+
+export const getProjectsUser = async (idDealOwner: string): Promise<ProjectResponse[] | null> => {
+  try {
+    const data = await handleAuthorization()
+
+    const { user, userId } = data
+
+    if (!idDealOwner) {
+      return handleError("Недостаточно данных")
+    }
+
+    const isOwner = userId === idDealOwner
     if (!isOwner) {
-      await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
     }
 
     const deals = await prisma.project.findMany({
@@ -252,7 +231,7 @@ export const getProjectsUser = async (
           include: { project: true },
         },
       },
-    });
+    })
 
     return deals.length
       ? deals.map((deal) => ({
@@ -263,32 +242,29 @@ export const getProjectsUser = async (
           delta: deal.delta?.toString() || "",
           projectManagers: JSON.stringify(deal.projectManagers),
         }))
-      : [];
+      : []
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
-export const getContractsUser = async (
-  idDealOwner: string
-): Promise<ContractResponse[] | null> => {
+export const getContractsUser = async (idDealOwner: string): Promise<ContractResponse[] | null> => {
   try {
-    const data = await handleAuthorization();
-    const { user, userId } = data!;
+    const data = await handleAuthorization()
+
+    const { user, userId } = data
 
     if (!idDealOwner) {
-      return handleError("Недостаточно данных");
+      return handleError("Недостаточно данных")
     }
 
-    const isOwner = userId === idDealOwner;
+    const isOwner = userId === idDealOwner
     if (!isOwner) {
-      await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
     }
 
-    const statuses = Object.keys(StatusContract) as Array<
-      keyof typeof StatusContract
-    >;
+    const statuses = Object.keys(StatusContract) as Array<keyof typeof StatusContract>
 
     const deals = await prisma.project.findMany({
       where: {
@@ -304,42 +280,40 @@ export const getContractsUser = async (
       orderBy: {
         dateRequest: "asc",
       },
-    });
+    })
 
     return deals.length
       ? deals.map((deal) => {
-          const { amountCP, amountWork, amountPurchase, delta, ...restDeal } =
-            deal;
+          const { amountCP, amountWork, amountPurchase, delta, ...restDeal } = deal
           return {
             ...restDeal,
             amountCP: amountCP?.toString() || "",
             amountWork: amountWork?.toString() || "",
             amountPurchase: amountPurchase?.toString() || "",
             delta: delta?.toString() || "",
-          };
+          }
         })
-      : [];
+      : []
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
-export const getRetailsUser = async (
-  idDealOwner: string
-): Promise<RetailResponse[] | null> => {
+export const getRetailsUser = async (idDealOwner: string): Promise<RetailResponse[] | null> => {
   try {
-    const data = await handleAuthorization();
-    const { user, userId } = data!;
+    const data = await handleAuthorization()
+
+    const { user, userId } = data
 
     if (!idDealOwner) {
-      return handleError("Недостаточно данных");
+      return handleError("Недостаточно данных")
     }
 
-    const isOwner = userId === idDealOwner;
+    const isOwner = userId === idDealOwner
 
     if (!isOwner) {
-      await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
     }
 
     const deals = await prisma.retail.findMany({
@@ -359,7 +333,7 @@ export const getRetailsUser = async (
           include: { retail: true },
         },
       },
-    });
+    })
 
     const dealsFormat = deals.length
       ? deals.map((deal) => ({
@@ -368,25 +342,24 @@ export const getRetailsUser = async (
           delta: deal.delta ? deal.delta.toString() : "",
           retailManagers: JSON.stringify(deal.retailManagers),
         }))
-      : [];
+      : []
 
-    return dealsFormat;
+    return dealsFormat
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 export const getAllProjectsByDepartment = async (
-  departmentId?: string | undefined
+  departmentId?: number | undefined,
 ): Promise<ProjectResponse[]> => {
   try {
-    const { user } = await handleAuthorization();
+    const { user } = await handleAuthorization()
 
-    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_UNION_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_UNION_REPORT])
 
-    const departmentIdValue =
-      departmentId !== undefined ? +departmentId : +user!.departmentId;
+    const departmentIdValue = departmentId !== undefined ? departmentId : user.departmentId
 
     const deals = await prisma.project.findMany({
       where: {
@@ -413,7 +386,7 @@ export const getAllProjectsByDepartment = async (
       orderBy: {
         dateRequest: "asc",
       },
-    });
+    })
 
     return deals.length
       ? deals.map((deal) => ({
@@ -421,31 +394,28 @@ export const getAllProjectsByDepartment = async (
           user: deal.user.username,
           amountCP: deal.amountCP ? deal.amountCP.toString() : "",
           amountWork: deal.amountWork ? deal.amountWork.toString() : "",
-          amountPurchase: deal.amountPurchase
-            ? deal.amountPurchase.toString()
-            : "",
+          amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
           delta: deal.delta ? deal.delta.toString() : "",
         }))
-      : [];
+      : []
   } catch (error) {
-    console.log(error);
-    return handleError((error as Error).message);
+    console.log(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 export const getAllRetailsByDepartment = async (
-  departmentId: string
+  departmentId: number,
 ): Promise<RetailResponse[]> => {
   try {
-    const { user } = await handleAuthorization();
+    const { user } = await handleAuthorization()
 
-    const permissionError = await checkUserPermissionByRole(user!, [
+    const permissionError = await checkUserPermissionByRole(user, [
       PermissionEnum.VIEW_UNION_REPORT,
-    ]);
+    ])
 
-    if (permissionError) return permissionError;
-    const departmentIdValue =
-      departmentId !== undefined ? +departmentId : +user!.departmentId;
+    if (permissionError) return permissionError
+    const departmentIdValue = departmentId !== undefined ? departmentId : user.departmentId
 
     const deals = await prisma.retail.findMany({
       where: {
@@ -472,7 +442,7 @@ export const getAllRetailsByDepartment = async (
       orderBy: {
         dateRequest: "asc",
       },
-    });
+    })
 
     return deals.length
       ? deals.map((deal) => ({
@@ -481,90 +451,85 @@ export const getAllRetailsByDepartment = async (
           amountCP: deal.amountCP ? deal.amountCP.toString() : "",
           delta: deal.delta ? deal.delta.toString() : "",
         }))
-      : [];
+      : []
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 type DealsListWithResource =
   | {
       deals: {
-        dateRequest: Date;
-        resource: string;
-        dealStatus: AllStatusKeys;
-      }[];
-      totalDealsCount: number;
+        dateRequest: Date
+        resource: string
+      }[]
+      totalDealsCount: number
     }
-  | { deals: []; totalDealsCount: number };
+  | { deals: []; totalDealsCount: number }
 
 type DealsList =
   | {
-      deals: DealBase[];
-      totalDealsCount: number;
+      deals: DealBase[]
+      totalDealsCount: number
     }
-  | { deals: []; totalDealsCount: number };
+  | { deals: []; totalDealsCount: number }
 
 export const getAllDealsRequestSourceByDepartment = async (
-  departmentId: number
+  departmentId: number,
 ): Promise<DealsListWithResource> => {
   try {
-    await handleAuthorization();
+    await handleAuthorization()
 
     const retailsRequestResorce = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
         dateRequest: true,
         resource: true,
-        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
       },
-    });
+    })
 
     const projectsRequestResource = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
         dateRequest: true,
         resource: true,
-        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
       },
-    });
+    })
 
-    const allDeals = [...retailsRequestResorce, ...projectsRequestResource];
+    const allDeals = [...retailsRequestResorce, ...projectsRequestResource]
 
-    const totalDealsCount = allDeals.length || 0;
+    const totalDealsCount = allDeals.length || 0
 
-    return { deals: allDeals, totalDealsCount } as DealsListWithResource;
+    return { deals: allDeals, totalDealsCount } as DealsListWithResource
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
-export const getAllDealsByDepartment = async (
-  departmentId: number
-): Promise<DealsList> => {
+export const getAllDealsByDepartment = async (departmentId: number): Promise<DealsList> => {
   try {
-    await handleAuthorization();
+    await handleAuthorization()
 
     const retailsRequestResorce = await prisma.retail.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
@@ -574,16 +539,18 @@ export const getAllDealsByDepartment = async (
         nameObject: true,
         comments: true,
         userId: true,
+        type: true,
+        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
       },
-    });
+    })
 
     const projectsRequestResource = await prisma.project.findMany({
       where: {
         user: {
-          departmentId: departmentId,
+          departmentId,
         },
       },
       select: {
@@ -593,78 +560,80 @@ export const getAllDealsByDepartment = async (
         nameObject: true,
         comments: true,
         userId: true,
+        type: true,
+        dealStatus: true,
       },
       orderBy: {
         dateRequest: "asc",
       },
-    });
+    })
 
-    const allDeals = [...retailsRequestResorce, ...projectsRequestResource];
+    const allDeals = [...retailsRequestResorce, ...projectsRequestResource]
 
-    const totalDealsCount = allDeals.length || 0;
+    const totalDealsCount = allDeals.length || 0
 
-    return { deals: allDeals, totalDealsCount } as DealsList;
+    return { deals: allDeals, totalDealsCount } as DealsList
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 export const getDealsByDateRange = async (
   idDealOwner: string,
   range: DateRange,
-  departmentId: string
+  departmentId: number,
 ) => {
-  const data = await handleAuthorization();
+  const data = await handleAuthorization()
 
-  const { user, userId } = data!;
+  const { user, userId } = data
 
   if (!idDealOwner) {
-    return handleError("Недостаточно данных");
+    handleError("Недостаточно данных")
   }
 
-  const isOwner = userId === idDealOwner;
+  const isOwner = userId === idDealOwner
 
   if (!isOwner) {
-    await checkUserPermissionByRole(user!, [PermissionEnum.VIEW_USER_REPORT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
   }
 
-  const now = new Date();
-  now.setHours(23, 59, 59, 999);
+  const now = new Date()
+  now.setHours(23, 59, 59, 999)
 
-  let startDate: Date;
+  let startDate: Date
 
   switch (range) {
     case "week":
-      startDate = new Date();
-      startDate.setDate(now.getDate() - 7);
-      break;
+      startDate = new Date()
+      startDate.setDate(now.getDate() - 7)
+      break
 
     case "month":
-      startDate = new Date();
-      startDate.setMonth(now.getMonth() - 1);
-      break;
+      startDate = new Date()
+      startDate.setMonth(now.getMonth() - 1)
+      break
 
     case "threeMonths":
-      startDate = new Date();
-      startDate.setMonth(now.getMonth() - 3);
-      break;
+      startDate = new Date()
+      startDate.setMonth(now.getMonth() - 3)
+      break
 
     case "halfYear":
-      startDate = new Date();
-      startDate.setMonth(now.getMonth() - 6);
-      break;
+      startDate = new Date()
+      startDate.setMonth(now.getMonth() - 6)
+      break
 
     case "year":
-      startDate = new Date();
-      startDate.setFullYear(now.getFullYear() - 1);
-      break;
+      startDate = new Date()
+      startDate.setFullYear(now.getFullYear() - 1)
+      break
 
     default:
-      throw new Error("Некорректный диапазон дат");
+      throw new Error("Некорректный диапазон дат")
   }
 
-  startDate.setHours(0, 0, 0, 0);
+  startDate.setHours(0, 0, 0, 0)
 
   const dealsP = (await prisma.project.findMany({
     where: {
@@ -676,7 +645,7 @@ export const getDealsByDateRange = async (
         some: {
           userId: idDealOwner,
           user: {
-            departmentId: Number(departmentId),
+            departmentId,
           },
         },
       },
@@ -684,7 +653,7 @@ export const getDealsByDateRange = async (
     orderBy: {
       dateRequest: "asc",
     },
-  })) as unknown as ProjectResponse[];
+  })) as unknown as ProjectResponse[]
 
   const dealsR = (await prisma.retail.findMany({
     where: {
@@ -696,7 +665,7 @@ export const getDealsByDateRange = async (
         some: {
           userId: idDealOwner,
           user: {
-            departmentId: Number(departmentId),
+            departmentId,
           },
         },
       },
@@ -704,36 +673,36 @@ export const getDealsByDateRange = async (
     orderBy: {
       dateRequest: "asc",
     },
-  })) as unknown as RetailResponse[];
+  })) as unknown as RetailResponse[]
 
-  const paidDealsP = dealsP.filter((item) => item.dealStatus === "PAID");
-  const closedDealsP = dealsP.filter((item) => item.dealStatus === "CLOSED");
-  const rejectDealsP = dealsP.filter((item) => item.dealStatus === "REJECT");
-  const paidDealsR = dealsR.filter((item) => item.dealStatus === "PAID");
-  const closedDealsR = dealsR.filter((item) => item.dealStatus === "CLOSED");
-  const rejectDealsR = dealsR.filter((item) => item.dealStatus === "REJECT");
+  const paidDealsP = dealsP.filter((item) => item.dealStatus === "PAID")
+  const closedDealsP = dealsP.filter((item) => item.dealStatus === "CLOSED")
+  const rejectDealsP = dealsP.filter((item) => item.dealStatus === "REJECT")
+  const paidDealsR = dealsR.filter((item) => item.dealStatus === "PAID")
+  const closedDealsR = dealsR.filter((item) => item.dealStatus === "CLOSED")
+  const rejectDealsR = dealsR.filter((item) => item.dealStatus === "REJECT")
   const dealPwithMoney = dealsP.filter(
-    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID"
-  );
+    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID",
+  )
   const dealRwithMoney = dealsR.filter(
-    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID"
-  );
+    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID",
+  )
   const commercialOfferAmountsP = dealPwithMoney.reduce(
     (acc, item) => {
-      acc.sumCp += Number(item.amountCP);
-      acc.sumDelta += Number(item.delta);
-      return acc;
+      acc.sumCp += Number(item.amountCP)
+      acc.sumDelta += Number(item.delta)
+      return acc
     },
-    { sumCp: 0, sumDelta: 0 }
-  );
+    { sumCp: 0, sumDelta: 0 },
+  )
   const commercialOfferAmountsR = dealRwithMoney.reduce(
     (acc, item) => {
-      acc.sumCp += Number(item.amountCP);
-      acc.sumDelta += Number(item.delta);
-      return acc;
+      acc.sumCp += Number(item.amountCP)
+      acc.sumDelta += Number(item.delta)
+      return acc
     },
-    { sumCp: 0, sumDelta: 0 }
-  );
+    { sumCp: 0, sumDelta: 0 },
+  )
 
   return {
     projects: {
@@ -750,43 +719,35 @@ export const getDealsByDateRange = async (
       closed: closedDealsR.length,
       money: commercialOfferAmountsR,
     },
-  };
-};
+  }
+}
 
 /******************************************Создать *********************************************************/
 
 export const createProject = async (
-  data: ProjectWithoutId & { managersIds: { userId: string }[] }
+  data: ProjectWithoutId & { managersIds: { userId: string }[] },
 ): Promise<ProjectResponse> => {
   try {
     if (!data) {
-      return handleError("Ошибка: данные не переданы");
+      return handleError("Ошибка: данные не переданы")
     }
 
-    const { user } = await checkAuthAndDataFill(data);
+    const { user } = await checkAuthAndDataFill(data)
 
-    const {
-      amountCP,
-      amountPurchase,
-      amountWork,
-      delta,
-      contacts,
-      managersIds,
-      ...dealData
-    } = data;
+    const { amountCP, amountPurchase, amountWork, delta, contacts, managersIds, ...dealData } = data
 
-    const safeAmountCP = new Prisma.Decimal(amountCP as string);
-    const safeDelta = new Prisma.Decimal(delta as string);
-    const safeAmountWork = new Prisma.Decimal(amountWork as string);
-    const safeAmountPurchase = new Prisma.Decimal(amountPurchase as string);
-    const idDeal = cuid();
-    const idOrder = cuid();
+    const safeAmountCP = new Prisma.Decimal(amountCP as string)
+    const safeDelta = new Prisma.Decimal(delta as string)
+    const safeAmountWork = new Prisma.Decimal(amountWork as string)
+    const safeAmountPurchase = new Prisma.Decimal(amountPurchase as string)
+    const idDeal = cuid()
+    const idOrder = cuid()
 
     const isExistOrder = await prisma.order.findUnique({
       where: {
         id: (dealData.orderId as string) || idOrder,
       },
-    });
+    })
 
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "",
@@ -798,15 +759,11 @@ export const createProject = async (
       resource: (dealData.resource as string) ?? "",
       type: DealType.PROJECT,
       projectId: (dealData.id as string) || idDeal,
-      dateRequest: dealData.dateRequest
-        ? new Date(dealData.dateRequest as string)
-        : new Date(),
+      dateRequest: dealData.dateRequest ? new Date(dealData.dateRequest as string) : new Date(),
       departmentId: user?.departmentId ?? 0,
       orderStatus:
-        dealData.dealStatus !== StatusProject.CLOSED
-          ? StatusOrder.AT_WORK
-          : StatusOrder.CLOSED,
-    };
+        dealData.dealStatus !== StatusProject.CLOSED ? StatusOrder.AT_WORK : StatusOrder.CLOSED,
+    }
 
     if (isExistOrder) {
       await prisma.order.update({
@@ -827,14 +784,14 @@ export const createProject = async (
           departmentId: orderData.departmentId,
           orderStatus: orderData.orderStatus,
         },
-      });
+      })
     } else {
       await prisma.order.create({
         data: {
           ...orderData,
           id: idOrder,
         },
-      });
+      })
     }
 
     const newDeal = await prisma.project.create({
@@ -861,7 +818,7 @@ export const createProject = async (
           })),
         },
       },
-    });
+    })
 
     const formattedDeal = {
       ...newDeal,
@@ -869,38 +826,38 @@ export const createProject = async (
       amountWork: safeAmountWork.toString(),
       amountPurchase: safeAmountPurchase.toString(),
       delta: safeDelta.toString(),
-    };
+    }
 
-    return formattedDeal;
+    return formattedDeal
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 export const createRetail = async (
-  data: RetailWithoutId & { managersIds: { userId: string }[] }
+  data: RetailWithoutId & { managersIds: { userId: string }[] },
 ) => {
   try {
     if (!data) {
-      return handleError("Ошибка: данные не переданы");
+      return handleError("Ошибка: данные не переданы")
     }
 
-    const { user } = await checkAuthAndDataFill(data);
+    const { user } = await checkAuthAndDataFill(data)
 
-    const { amountCP, delta, contacts, managersIds, ...dealData } = data;
+    const { amountCP, delta, contacts, managersIds, ...dealData } = data
 
-    const safeamountCP = new Prisma.Decimal(amountCP as string);
-    const safeDelta = new Prisma.Decimal(delta as string);
+    const safeamountCP = new Prisma.Decimal(amountCP as string)
+    const safeDelta = new Prisma.Decimal(delta as string)
 
-    const idDeal = cuid();
-    const idOrder = cuid();
+    const idDeal = cuid()
+    const idOrder = cuid()
 
     const isExistOrder = await prisma.order.findUnique({
       where: {
         id: (dealData.orderId as string) || idOrder,
       },
-    });
+    })
 
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "",
@@ -912,15 +869,11 @@ export const createRetail = async (
       resource: (dealData.resource as string) ?? "",
       type: DealType.RETAIL,
       retailId: (dealData.id as string) || idDeal,
-      dateRequest: dealData.dateRequest
-        ? new Date(dealData.dateRequest as string)
-        : new Date(),
+      dateRequest: dealData.dateRequest ? new Date(dealData.dateRequest as string) : new Date(),
       departmentId: user?.departmentId ?? 0,
       orderStatus:
-        dealData.dealStatus !== StatusRetail.CLOSED
-          ? StatusOrder.AT_WORK
-          : StatusOrder.CLOSED,
-    };
+        dealData.dealStatus !== StatusRetail.CLOSED ? StatusOrder.AT_WORK : StatusOrder.CLOSED,
+    }
 
     if (isExistOrder) {
       await prisma.order.update({
@@ -941,14 +894,14 @@ export const createRetail = async (
           departmentId: orderData.departmentId,
           orderStatus: orderData.orderStatus,
         },
-      });
+      })
     } else {
       await prisma.order.create({
         data: {
           ...orderData,
           id: idOrder,
         },
-      });
+      })
     }
 
     const newDeal = await prisma.retail.create({
@@ -973,37 +926,29 @@ export const createRetail = async (
           })),
         },
       },
-    });
+    })
 
     const formattedDeal = {
       ...newDeal,
       amountCP: safeamountCP.toString(),
       delta: safeDelta.toString(),
-    };
+    }
 
-    return formattedDeal;
+    return formattedDeal
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 /********************************************************* Обновить проект ********************************************/
 export const updateProject = async (
-  data: ProjectWithManagersIds
+  data: ProjectWithManagersIds,
 ): Promise<ProjectWithoutDateCreateAndUpdate | null> => {
   try {
-    const { userId, user } = await checkAuthAndDataFill(data);
-    const {
-      id,
-      amountCP,
-      amountPurchase,
-      amountWork,
-      delta,
-      contacts,
-      managersIds,
-      ...dealData
-    } = data;
+    const { userId, user } = await checkAuthAndDataFill(data)
+    const { id, amountCP, amountPurchase, amountWork, delta, contacts, managersIds, ...dealData } =
+      data
 
     const deal = await prisma.project.findUnique({
       where: { id: id as string },
@@ -1013,57 +958,51 @@ export const updateProject = async (
           include: { user: true },
         },
       },
-    });
+    })
 
     if (!deal) {
-      return null;
+      return null
     }
 
     const userOwnerProject = await prisma.user.findUnique({
       where: { id: deal.userId },
-      select: { role: true, departmentId: true },
-    });
+      select: { role: true, id: true, username: true, departmentId: true },
+    })
 
     if (!userOwnerProject) {
-      return handleError(
-        "Пользователь не найден илил у вас нет прав на операцию"
-      );
+      return handleError("Пользователь не найден или у вас нет прав на операцию")
     }
 
     const managers = deal.projectManagers.map((pm) => ({
       id: pm.user.id,
       managerName: pm.user.username,
       position: pm.user.position,
-    }));
+    }))
 
-    const isExistUserInManagersList = managers.some((man) => man.id === userId);
+    const isExistUserInManagersList = managers.some((man) => man.id === userId)
 
-    const isOwner =
-      deal.userId === userId ||
-      managersIds.find((item) => item.userId === userId);
+    const isOwner = deal.userId === userId || managersIds.find((item) => item.userId === userId)
 
     if (!user) {
-      return handleError(
-        "Пользователь не найден или у вас нет прав на операцию"
-      );
+      return handleError("Пользователь не найден или у вас нет прав на операцию")
     }
 
     if (!isOwner && !isExistUserInManagersList) {
-      await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT])
     }
 
-    const safeAmountCP = new Prisma.Decimal(amountCP as string);
-    const safeDelta = new Prisma.Decimal(delta as string);
-    const safeAmountWork = new Prisma.Decimal(amountWork as string);
-    const safeAmountPurchase = new Prisma.Decimal(amountPurchase as string);
+    const safeAmountCP = new Prisma.Decimal(amountCP as string)
+    const safeDelta = new Prisma.Decimal(delta as string)
+    const safeAmountWork = new Prisma.Decimal(amountWork as string)
+    const safeAmountPurchase = new Prisma.Decimal(amountPurchase as string)
 
-    const idOrder = cuid();
+    const idOrder = cuid()
 
     const isExistOrder = await prisma.order.findUnique({
       where: {
         projectId: deal.id,
       },
-    });
+    })
 
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "",
@@ -1075,15 +1014,11 @@ export const updateProject = async (
       resource: (dealData.resource as string) ?? "",
       type: DealType.PROJECT,
       projectId: id as string,
-      dateRequest: dealData.dateRequest
-        ? new Date(dealData.dateRequest as string)
-        : new Date(),
+      dateRequest: dealData.dateRequest ? new Date(dealData.dateRequest as string) : new Date(),
       departmentId: user?.departmentId ?? 0,
       orderStatus:
-        dealData.dealStatus !== StatusProject.CLOSED
-          ? StatusOrder.AT_WORK
-          : StatusOrder.CLOSED,
-    };
+        dealData.dealStatus !== StatusProject.CLOSED ? StatusOrder.AT_WORK : StatusOrder.CLOSED,
+    }
 
     await prisma.$transaction(async (prisma) => {
       // 1. Удаляем старых менеджеров
@@ -1091,7 +1026,7 @@ export const updateProject = async (
         where: {
           dealId: deal.id,
         },
-      });
+      })
 
       // 2. Добавляем новых менеджеров (если они есть)
       if (managersIds.length > 0) {
@@ -1100,9 +1035,9 @@ export const updateProject = async (
             dealId: deal.id,
             userId: manager.userId,
           })),
-        });
+        })
       }
-    });
+    })
 
     const updatedDeal = await prisma.project.update({
       where: { id: deal.id },
@@ -1114,7 +1049,7 @@ export const updateProject = async (
         amountPurchase: safeAmountPurchase,
         orderId: deal?.orderId || idOrder,
       },
-    });
+    })
 
     if (isExistOrder) {
       await prisma.order.update({
@@ -1135,14 +1070,14 @@ export const updateProject = async (
           departmentId: orderData.departmentId,
           orderStatus: orderData.orderStatus,
         },
-      });
+      })
     } else {
       await prisma.order.create({
         data: {
           ...orderData,
           id: idOrder,
         },
-      });
+      })
     }
 
     if (contacts && (contacts as Contact[]).length > 0) {
@@ -1153,7 +1088,7 @@ export const updateProject = async (
             some: { id: updatedDeal.id },
           },
         },
-      });
+      })
 
       // Добавление новых контактов
       const newContacts = (contacts as Contact[]).map((contact) => ({
@@ -1164,23 +1099,23 @@ export const updateProject = async (
         projects: {
           connect: { id: updatedDeal.id }, // Связываем контакты с обновленным проектом
         },
-      }));
+      }))
 
       // Используем create вместо createMany
       for (const contact of newContacts) {
         await prisma.additionalContact.create({
           data: contact,
-        });
+        })
       }
     } else {
       // Если контакты не переданы, удаляем все контакты для этого проекта
       await prisma.additionalContact.deleteMany({
         where: {
           projects: {
-            some: { id: updatedDeal.id }, // Удаляем все старые контакты для текущего проекта
+            some: { id: updatedDeal.id },
           },
         },
-      });
+      })
     }
 
     const finalDeal = await prisma.project.findUnique({
@@ -1188,37 +1123,35 @@ export const updateProject = async (
       include: {
         additionalContacts: true,
       },
-    });
+    })
 
-    if (!finalDeal) return null;
+    if (!finalDeal) return null
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdAt, updatedAt, ...restDeal } = finalDeal;
+    const { createdAt: _createdAt, updatedAt: _updatedAt, ...restDeal } = finalDeal
 
     const formattedDeal = {
       ...restDeal,
       amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "",
       amountWork: restDeal.amountWork ? restDeal.amountWork.toString() : "",
-      amountPurchase: restDeal.amountPurchase
-        ? restDeal.amountPurchase.toString()
-        : "",
+      amountPurchase: restDeal.amountPurchase ? restDeal.amountPurchase.toString() : "",
       delta: restDeal.delta ? restDeal.delta.toString() : "",
-    };
+    }
 
-    return formattedDeal;
+    return formattedDeal
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 export const updateRetail = async (
-  data: RetailWithManagersIds
+  data: RetailWithManagersIds,
 ): Promise<RetailWithoutDateCreateAndUpdate | null> => {
   try {
-    const { userId, user } = await checkAuthAndDataFill(data);
+    const { userId, user } = await checkAuthAndDataFill(data)
 
-    const { id, amountCP, delta, contacts, managersIds, ...dealData } = data;
+    const { id, amountCP, delta, contacts, managersIds, ...dealData } = data
 
     const deal = await prisma.retail.findUnique({
       where: { id: id as string },
@@ -1228,44 +1161,40 @@ export const updateRetail = async (
           include: { user: true },
         },
       },
-    });
+    })
 
     if (!deal) {
-      return null;
+      return null
     }
 
     const managers = deal.retailManagers.map((rm) => ({
       id: rm.user.id,
       managerName: rm.user.username,
       position: rm.user.position,
-    }));
+    }))
 
-    const isExistUserInManagersList = managers.some((man) => man.id === userId);
+    const isExistUserInManagersList = managers.some((man) => man.id === userId)
 
     if (!user) {
-      return handleError(
-        "Пользователь не найден или у вас нет прав на операцию"
-      );
+      return handleError("Пользователь не найден или у вас нет прав на операцию")
     }
 
-    const isOwner =
-      deal.userId === userId ||
-      managersIds.find((item) => item.userId === userId);
+    const isOwner = deal.userId === userId || managersIds.find((item) => item.userId === userId)
 
     if (!isOwner && !isExistUserInManagersList) {
-      await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
+      await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT])
     }
 
-    const safeAmountCP = new Prisma.Decimal(amountCP as string);
-    const safeDelta = new Prisma.Decimal(delta as string);
+    const safeAmountCP = new Prisma.Decimal(amountCP as string)
+    const safeDelta = new Prisma.Decimal(delta as string)
 
-    const idOrder = cuid();
+    const idOrder = cuid()
 
     const isExistOrder = await prisma.order.findUnique({
       where: {
         retailId: id as string,
       },
-    });
+    })
 
     const orderData = {
       nameDeal: (dealData.nameDeal as string) ?? "",
@@ -1277,15 +1206,11 @@ export const updateRetail = async (
       resource: (dealData.resource as string) ?? "",
       type: DealType.RETAIL,
       retailId: (id as string) ?? "",
-      dateRequest: dealData.dateRequest
-        ? new Date(dealData.dateRequest as string)
-        : new Date(),
+      dateRequest: dealData.dateRequest ? new Date(dealData.dateRequest as string) : new Date(),
       departmentId: user?.departmentId ?? 0,
       orderStatus:
-        dealData.dealStatus !== StatusRetail.CLOSED
-          ? StatusOrder.AT_WORK
-          : StatusOrder.CLOSED,
-    };
+        dealData.dealStatus !== StatusRetail.CLOSED ? StatusOrder.AT_WORK : StatusOrder.CLOSED,
+    }
 
     await prisma.$transaction(async (prisma) => {
       // 1. Удаляем старых менеджеров
@@ -1293,7 +1218,7 @@ export const updateRetail = async (
         where: {
           dealId: deal.id,
         },
-      });
+      })
 
       // 2. Добавляем новых менеджеров (если они есть)
       if (managersIds.length > 0) {
@@ -1302,9 +1227,9 @@ export const updateRetail = async (
             dealId: deal.id,
             userId: manager.userId,
           })),
-        });
+        })
       }
-    });
+    })
 
     const updatedDeal = await prisma.retail.update({
       where: { id: deal.id },
@@ -1314,7 +1239,7 @@ export const updateRetail = async (
         delta: safeDelta,
         orderId: deal.orderId || idOrder,
       },
-    });
+    })
 
     if (isExistOrder) {
       // Обновляем существующий заказ
@@ -1336,14 +1261,14 @@ export const updateRetail = async (
           departmentId: orderData.departmentId,
           orderStatus: orderData.orderStatus,
         },
-      });
+      })
     } else {
       await prisma.order.create({
         data: {
           ...orderData,
           id: idOrder,
         },
-      });
+      })
     }
 
     if (contacts && (contacts as Contact[]).length > 0) {
@@ -1354,7 +1279,7 @@ export const updateRetail = async (
             some: { id: updatedDeal.id },
           },
         },
-      });
+      })
 
       // Добавление новых контактов
       const newContacts = (contacts as Contact[]).map((contact) => ({
@@ -1365,12 +1290,12 @@ export const updateRetail = async (
         retails: {
           connect: { id: updatedDeal.id },
         },
-      }));
+      }))
 
       for (const contact of newContacts) {
         await prisma.additionalContact.create({
           data: contact,
-        });
+        })
       }
     } else {
       // Если контакты не переданы, удаляем все контакты для этого проекта
@@ -1380,7 +1305,7 @@ export const updateRetail = async (
             some: { id: updatedDeal.id },
           },
         },
-      });
+      })
     }
 
     const finalDeal = await prisma.retail.findUnique({
@@ -1388,43 +1313,39 @@ export const updateRetail = async (
       include: {
         additionalContacts: true,
       },
-    });
+    })
 
-    if (!finalDeal) return null;
+    if (!finalDeal) return null
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdAt, updatedAt, ...restDeal } = finalDeal;
+    const { createdAt: _createdAt, updatedAt: _updatedAt, ...restDeal } = finalDeal
 
     const formattedDeal = {
       ...restDeal,
       amountCP: restDeal.amountCP ? restDeal.amountCP.toString() : "",
       delta: restDeal.delta ? restDeal.delta.toString() : "",
-    };
+    }
 
-    return formattedDeal;
+    return formattedDeal
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
 
 /******************************************************* Удалить проект *********************************************/
 
-export const deleteDeal = async (
-  dealId: string,
-  idDealOwner: string,
-  type: DealType
-) => {
+export const deleteDeal = async (dealId: string, idDealOwner: string, type: DealType) => {
   try {
-    const { user } = await handleAuthorization();
+    const { user } = await handleAuthorization()
 
     if (!dealId || !idDealOwner) {
-      return handleError("Недостаточно данных");
+      return handleError("Недостаточно данных")
     }
 
-    let deal;
-    let message;
-    let contactIdsToCheck: string[] = [];
+    let deal = null
+    let message = ""
+    let contactIdsToCheck: string[] = []
 
     switch (type) {
       case DealType.PROJECT:
@@ -1433,9 +1354,9 @@ export const deleteDeal = async (
           include: {
             additionalContacts: { select: { id: true } },
           },
-        });
-        message = "Проект успешно удален";
-        break;
+        })
+        message = "Проект успешно удален"
+        break
 
       case DealType.RETAIL:
         deal = await prisma.retail.findUnique({
@@ -1443,74 +1364,73 @@ export const deleteDeal = async (
           include: {
             additionalContacts: { select: { id: true } },
           },
-        });
-        message = "Розничная сделка успешно удалена";
-        break;
+        })
+        message = "Розничная сделка успешно удалена"
+        break
 
       default:
-        return handleError("Неверный тип сделки");
+        return handleError("Неверный тип сделки")
     }
 
     if (!deal) {
-      return handleError("Сделка не найдена");
+      return handleError("Сделка не найдена")
     }
 
-    await checkUserPermissionByRole(user!, [PermissionEnum.DEAL_MANAGEMENT]);
+    await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT])
 
-    // Собираем ID контактов
-    contactIdsToCheck = deal.additionalContacts.map((c) => c.id);
+    contactIdsToCheck = deal.additionalContacts.map((c) => c.id)
 
-    let managers: { dealId: string; userId: string }[] = [];
-    // Удаляем связи
+    let managers: { dealId: string; userId: string }[] = []
+
     await prisma.$transaction(async (tx) => {
       if (type === DealType.PROJECT) {
         await tx.project.update({
           where: { id: dealId },
           data: { additionalContacts: { set: [] } },
-        });
+        })
 
         managers = await tx.projectManager.findMany({
           where: { dealId: dealId },
-        });
+        })
 
         await tx.projectManager.deleteMany({
           where: { dealId: dealId },
-        });
+        })
 
         await tx.order.delete({
           where: { projectId: dealId },
-        });
+        })
 
         await tx.dealFile.deleteMany({
           where: {
             dealId: dealId,
             dealType: type,
           },
-        });
+        })
 
-        await tx.project.delete({ where: { id: dealId } });
+        await tx.project.delete({ where: { id: dealId } })
       } else {
         await tx.retail.update({
           where: { id: dealId },
           data: { additionalContacts: { set: [] } },
-        });
+        })
 
         await tx.retailManager.deleteMany({
           where: { dealId: dealId },
-        });
+        })
 
         await tx.order.delete({
           where: { retailId: dealId },
-        });
+        })
 
         await tx.dealFile.deleteMany({
           where: {
             dealId: dealId,
             dealType: type,
           },
-        });
+        })
 
-        await tx.retail.delete({ where: { id: dealId } });
+        await tx.retail.delete({ where: { id: dealId } })
       }
 
       // Удаляем контакты, не связанные больше ни с чем
@@ -1522,31 +1442,167 @@ export const deleteDeal = async (
               projects: true,
               retails: true,
             },
-          });
+          })
 
-          if (
-            contact &&
-            contact.projects.length === 0 &&
-            contact.retails.length === 0
-          ) {
+          if (contact && contact.projects.length === 0 && contact.retails.length === 0) {
             await tx.additionalContact.delete({
               where: { id: contactId },
-            });
+            })
           }
-        })
-      );
-    });
+        }),
+      )
+    })
 
-    return { managers, message, error: false };
+    return { managers, message, error: false }
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
+
+export const deleteMultipleDeals = async (
+  dealIds: {
+    id: string
+    type: DealType
+  }[],
+): Promise<{
+  managers: { userId: string; dealId: string }[]
+  files: DealFile[]
+  message: string
+  error: boolean
+  deletedCount: number
+}> => {
+  try {
+    await handleAuthorization()
+    await checkRole()
+
+    if (!dealIds || dealIds.length === 0) {
+      return handleError("Недостаточно данных")
+    }
+
+    // Разделяем по типу сделки
+    const projectsIds = dealIds.filter((d) => d.type === DealType.PROJECT).map((p) => p.id)
+    const retailsIds = dealIds.filter((d) => d.type === DealType.RETAIL).map((r) => r.id)
+
+    if (projectsIds.length === 0 && retailsIds.length === 0) {
+      return handleError("Нет проектов или розницы для удаления")
+    }
+
+    // === Получаем все связанные данные ДО удаления ===
+    const [projects, retails] = await Promise.all([
+      projectsIds.length
+        ? prisma.project.findMany({
+            where: { id: { in: projectsIds } },
+            include: { additionalContacts: { select: { id: true } } },
+          })
+        : Promise.resolve([]),
+      retailsIds.length
+        ? prisma.retail.findMany({
+            where: { id: { in: retailsIds } },
+            include: { additionalContacts: { select: { id: true } } },
+          })
+        : Promise.resolve([]),
+    ])
+
+    const deals = [...projects, ...retails]
+    if (deals.length === 0) {
+      return handleError("Сделки не найдены")
+    }
+
+    // Собираем все контакты для возможного удаления
+    const allContactIds = new Set<string>()
+    deals.forEach((deal) => {
+      deal.additionalContacts.forEach((c) => {
+        allContactIds.add(c.id)
+      })
+    })
+
+    // Получаем всех менеджеров ДО удаления
+    const [projectManagers, retailManagers] = await Promise.all([
+      projectsIds.length
+        ? prisma.projectManager.findMany({
+            where: { dealId: { in: projectsIds } },
+          })
+        : Promise.resolve([]),
+      retailsIds.length
+        ? prisma.retailManager.findMany({
+            where: { dealId: { in: retailsIds } },
+          })
+        : Promise.resolve([]),
+    ])
+
+    // Получаем все файлы ДО удаления
+    const allDealIds = [...projectsIds, ...retailsIds]
+    const dealFiles = await prisma.dealFile.findMany({
+      where: { dealId: { in: allDealIds } },
+    })
+
+    // === Удаляем все данные транзакционно ===
+    await prisma.$transaction(async (tx) => {
+      if (projectsIds.length > 0) {
+        await Promise.all([
+          tx.projectManager.deleteMany({
+            where: { dealId: { in: projectsIds } },
+          }),
+          tx.order.deleteMany({ where: { projectId: { in: projectsIds } } }),
+          tx.dealFile.deleteMany({
+            where: { dealId: { in: projectsIds }, dealType: DealType.PROJECT },
+          }),
+        ])
+        await tx.project.deleteMany({ where: { id: { in: projectsIds } } })
+      }
+
+      if (retailsIds.length > 0) {
+        await Promise.all([
+          tx.retailManager.deleteMany({
+            where: { dealId: { in: retailsIds } },
+          }),
+          tx.order.deleteMany({ where: { retailId: { in: retailsIds } } }),
+          tx.dealFile.deleteMany({
+            where: { dealId: { in: retailsIds }, dealType: DealType.RETAIL },
+          }),
+        ])
+        await tx.retail.deleteMany({ where: { id: { in: retailsIds } } })
+      }
+
+      // Удаляем неиспользуемые контакты
+      if (allContactIds.size > 0) {
+        const unusedContacts = await tx.additionalContact.findMany({
+          where: {
+            id: { in: Array.from(allContactIds) },
+            projects: { none: {} },
+            retails: { none: {} },
+          },
+          select: { id: true },
+        })
+
+        if (unusedContacts.length > 0) {
+          await tx.additionalContact.deleteMany({
+            where: { id: { in: unusedContacts.map((c) => c.id) } },
+          })
+        }
+      }
+    })
+
+    return {
+      managers: [
+        ...projectManagers.map((m) => ({ ...m, dealType: DealType.PROJECT })),
+        ...retailManagers.map((m) => ({ ...m, dealType: DealType.RETAIL })),
+      ],
+      files: dealFiles,
+      message: `Удалено сделок: ${deals.length} (Проектов: ${projects.length}, Розница: ${retails.length})`,
+      error: false,
+      deletedCount: deals.length,
+    }
+  } catch (error) {
+    console.error(error)
+    return handleError((error as Error).message)
+  }
+}
 
 export const getAdditionalContacts = async (dealId: string) => {
   try {
-    await handleAuthorization();
+    await handleAuthorization()
 
     return await prisma.additionalContact.findMany({
       where: {
@@ -1556,9 +1612,121 @@ export const getAdditionalContacts = async (dealId: string) => {
           },
         },
       },
-    });
+    })
   } catch (error) {
-    console.error(error);
-    return handleError((error as Error).message);
+    console.error(error)
+    return handleError((error as Error).message)
   }
-};
+}
+
+export const reassignDealsToManager = async (
+  data: ReAssignDeal,
+): Promise<{
+  success: boolean
+  message: string
+  error?: boolean
+}> => {
+  try {
+    await handleAuthorization()
+    await checkRole()
+
+    const { dealIds, newManagerId } = data
+
+    // разделим сделки по типам
+    const projectIds = dealIds.filter((d) => d.type === DealType.PROJECT).map((d) => d.id)
+    const retailIds = dealIds.filter((d) => d.type === DealType.RETAIL).map((d) => d.id)
+
+    await prisma.$transaction(async (tx) => {
+      /** --- PROJECTS --- **/
+      if (projectIds.length > 0) {
+        // найти старых главных (чтобы удалить их из projectManager)
+        const oldProjects = await tx.project.findMany({
+          where: { id: { in: projectIds } },
+          select: { id: true, userId: true },
+        })
+        const oldManagerIds = oldProjects.map((p) => p.userId)
+
+        // удалить старого главного менеджера из projectManager
+        await tx.projectManager.deleteMany({
+          where: {
+            dealId: { in: projectIds },
+            userId: { in: oldManagerIds },
+          },
+        })
+
+        // добавить нового (skipDuplicates)
+        await tx.projectManager.createMany({
+          data: projectIds.map((id) => ({
+            dealId: id,
+            userId: newManagerId,
+          })),
+          skipDuplicates: true,
+        })
+
+        // обновить самого главного в project
+        await tx.project.updateMany({
+          where: { id: { in: projectIds } },
+          data: { userId: newManagerId },
+        })
+
+        await tx.dealFile.updateMany({
+          where: {
+            dealId: { in: projectIds },
+          },
+          data: {
+            userId: newManagerId,
+          },
+        })
+      }
+
+      /** --- RETAILS --- **/
+      if (retailIds.length > 0) {
+        const oldRetails = await tx.retail.findMany({
+          where: { id: { in: retailIds } },
+          select: { id: true, userId: true },
+        })
+        const oldRetailManagerIds = oldRetails.map((r) => r.userId)
+
+        // удалить старого главного менеджера из retailManager
+        await tx.retailManager.deleteMany({
+          where: {
+            dealId: { in: retailIds },
+            userId: { in: oldRetailManagerIds },
+          },
+        })
+
+        // добавить нового (skipDuplicates)
+        await tx.retailManager.createMany({
+          data: retailIds.map((id) => ({
+            dealId: id,
+            userId: newManagerId,
+          })),
+          skipDuplicates: true,
+        })
+
+        // обновить главного в retail
+        await tx.retail.updateMany({
+          where: { id: { in: retailIds } },
+          data: { userId: newManagerId },
+        })
+
+        await tx.dealFile.updateMany({
+          where: {
+            dealId: { in: retailIds },
+          },
+          data: {
+            userId: newManagerId,
+          },
+        })
+      }
+    })
+
+    return {
+      success: true,
+      message: `Переназначено ${projectIds.length + retailIds.length} сделок на нового менеджера`,
+    }
+  } catch (error) {
+    console.error(error)
+    return handleError((error as Error).message)
+  }
+}

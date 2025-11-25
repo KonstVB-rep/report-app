@@ -1,73 +1,105 @@
-"use client";
+"use client"
 
-import { CellContext, ColumnDef } from "@tanstack/react-table";
-
-import { DateRange } from "react-day-picker";
-
-import { endOfDay, startOfDay } from "date-fns";
-
-import { RetailResponse } from "@/entities/deal/types";
+import { StatusRetail } from "@prisma/client"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { DateRange } from "react-day-picker"
+import type { RetailResponse } from "@/entities/deal/types"
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
   StatusRetailLabels,
-} from "@/feature/deals/lib/constants";
-import { formatterCurrency } from "@/shared/lib/utils";
+} from "@/feature/deals/lib/constants"
+import { formatterCurrency } from "@/shared/lib/utils"
+import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
-export type typeofDirections = keyof typeof DirectionRetailLabels;
+export type typeofDirections = keyof typeof DirectionRetailLabels
 
-export type typeofDelivery = keyof typeof DeliveryRetailLabels;
+export type typeofDelivery = keyof typeof DeliveryRetailLabels
 
-export type typeofStatus = keyof typeof StatusRetailLabels;
+export type typeofStatus = keyof typeof StatusRetailLabels
 
 export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
   {
-    id: "rowNumber",
-    header: "№",
-    cell: ({ row }) => row.index + 1,
-    enableHiding: false,
-    enableSorting: false,
-    accessorFn: () => "",
+    ...RowNumber<RetailResponse>(),
   },
   {
     id: "dateRequest",
     accessorKey: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const date = info.getValue() as Date;
-      return date.toLocaleDateString("ru-RU");
+      const date = info.getValue() as Date
+      return date.toLocaleDateString("ru-RU")
     },
     enableHiding: true,
     meta: {
       isDateFilter: true,
     },
     filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: RetailResponse) => row.dateRequest,
+  },
+  {
+    id: "plannedDateConnection",
+    accessorKey: "plannedDateConnection",
+    header: "Плановая дата контакта",
+    cell: (info: CellContext<RetailResponse, unknown>) => {
+      const date = info.getValue() as Date | null
+
+      if (date) {
+        return date.toLocaleDateString("ru-RU")
+      } else {
+        return "Дата не указана"
+      }
+    },
+    enableHiding: true,
+    filterFn: (row, columnId, filterValue) => {
+      if (row.original.dealStatus === StatusRetail.REJECT) return false
+
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from)
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to)
+        }
+        return false
+      }
+
+      return true
+    },
+    accessorFn: (row: RetailResponse) => row.plannedDateConnection,
   },
   {
     id: "nameDeal",
@@ -90,18 +122,16 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "direction",
     header: "Направление",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofDirections;
-      return <span>{DirectionRetailLabels[value]}</span>;
+      const value = info.getValue() as typeofDirections
+      return <span>{DirectionRetailLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
-      if (!rowValue) return false;
+      const rowValue = row.getValue(columnId)
+      if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.some((direction) =>
-          (rowValue as typeofDirections).includes(direction)
-        );
+        return value.some((direction) => (rowValue as typeofDirections).includes(direction))
       }
-      return rowValue === value;
+      return rowValue === value
     },
     enableHiding: true,
     accessorFn: (row: RetailResponse) => row.direction,
@@ -111,17 +141,17 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "deliveryType",
     header: "Тип поставки",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofDelivery;
-      return <span>{DeliveryRetailLabels[value]}</span>;
+      const value = info.getValue() as typeofDelivery
+      return <span>{DeliveryRetailLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
+      const rowValue = row.getValue(columnId)
 
-      if (!rowValue) return false;
+      if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     enableHiding: true,
     accessorFn: (row: RetailResponse) => row.deliveryType,
@@ -141,7 +171,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     cell: (info: CellContext<RetailResponse, unknown>) => {
       return (
         <span className="whitespace-nowrap">{info.getValue() as string}</span> //тег
-      );
+      )
     },
     enableHiding: true,
     accessorFn: (row: RetailResponse) => row.phone,
@@ -179,18 +209,16 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofStatus;
-      return (
-        <span className="whitespace-nowrap">{StatusRetailLabels[value]}</span>
-      );
+      const value = info.getValue() as typeofStatus
+      return <span className="whitespace-nowrap">{StatusRetailLabels[value]}</span>
     },
     enableHiding: true,
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
+      const rowValue = row.getValue(columnId)
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     accessorFn: (row: RetailResponse) => row.dealStatus,
   },
@@ -206,30 +234,14 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorFn: (row: RetailResponse) => row.comments,
   },
   {
-    id: "plannedDateConnection",
-    accessorKey: "plannedDateConnection",
-    header: "Плановая дата контакта",
-    cell: (info: CellContext<RetailResponse, unknown>) => {
-      const date = info.getValue() as Date | null;
-
-      if (date) {
-        return date.toLocaleDateString("ru-RU");
-      } else {
-        return "Дата не указана";
-      }
-    },
-    enableHiding: true,
-    accessorFn: (row: RetailResponse) => row.plannedDateConnection,
-  },
-  {
     id: "resource",
     accessorKey: "resource",
     header: "Источник/Сайт",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
-    enableHiding: true,
-    // meta: {
-    //   hidden: true,
-    // },
+    enableHiding: false,
+    meta: {
+      hidden: true,
+    },
     accessorFn: (row: RetailResponse) => row.resource,
   },
-];
+]

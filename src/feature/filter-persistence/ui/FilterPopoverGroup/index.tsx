@@ -1,34 +1,31 @@
-import React from "react";
-
-import FilterPopover from "../FilterPopover";
+import React from "react"
+import FilterPopover from "../FilterPopover"
 
 export type OptionGroup = {
-  label: string;
-  columnId: string;
-  options: Record<string, string>;
-};
+  label: string
+  columnId: string
+  options: Record<string, string>
+}
 
 type FilterPopoverGroupProps = {
-  options: OptionGroup[];
-};
+  options: OptionGroup[]
+}
 
-const FilterPopoverGroup = React.memo(
-  ({ options }: FilterPopoverGroupProps) => {
-    return (
-      <div className="flex flex-wrap items-center justify-start gap-2 bg-background">
-        {options.map((option) => (
-          <FilterPopover
-            key={option.columnId}
-            columnId={option.columnId}
-            options={option.options}
-            label={option.label}
-          />
-        ))}
-      </div>
-    );
-  }
-);
+const FilterPopoverGroup = React.memo(({ options }: FilterPopoverGroupProps) => {
+  return (
+    <div className="flex flex-wrap items-center justify-start gap-2 bg-background">
+      {options.map((option) => (
+        <FilterPopover
+          columnId={option.columnId}
+          key={option.columnId}
+          label={option.label}
+          options={option.options}
+        />
+      ))}
+    </div>
+  )
+})
 
-FilterPopoverGroup.displayName = "FilterPopoverGroup";
+FilterPopoverGroup.displayName = "FilterPopoverGroup"
 
-export default FilterPopoverGroup;
+export default FilterPopoverGroup

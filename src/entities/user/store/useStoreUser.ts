@@ -1,29 +1,26 @@
-import { persist } from "zustand/middleware";
+import type { PermissionEnum } from "@prisma/client"
+import { persist } from "zustand/middleware"
+import { create } from "@/shared/lib/helpers/сreate"
+import type { UserWithoutPassword } from "@/shared/types"
 
-import { checkUserPermission } from "@/shared/lib/helpers/checkUserPermission";
-import { create } from "@/shared/lib/helpers/сreate";
-
-import { User } from "../types";
+type AuthUserType = UserWithoutPassword & { permissions?: PermissionEnum[] }
 
 type State = {
-  authUser: User | null;
-  isAuth: boolean;
-  setAuthUser: (user: User | null) => void;
-  setIsAuth: (isAuth: boolean) => void;
-  hasPermissionByRole: boolean;
-  resetStore: () => void;
-};
+  authUser: AuthUserType | null
+  isAuth: boolean
+  setAuthUser: (user: AuthUserType | null) => void
+  setIsAuth: (isAuth: boolean) => void
+  resetStore: () => void
+}
 const useStoreUser = create<State>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       authUser: null,
       isAuth: false,
-      hasPermissionByRole: false,
 
-      setAuthUser: (user: User | null) =>
+      setAuthUser: (user: AuthUserType | null) =>
         set({
           authUser: user,
-          hasPermissionByRole: checkUserPermission(user),
           isAuth: !!user,
         }),
 
@@ -32,10 +29,9 @@ const useStoreUser = create<State>()(
           set({
             isAuth: false,
             authUser: null,
-            hasPermissionByRole: false,
-          });
+          })
         } else {
-          set({ isAuth });
+          set({ isAuth })
         }
       },
 
@@ -43,8 +39,7 @@ const useStoreUser = create<State>()(
         set({
           authUser: null,
           isAuth: false,
-          hasPermissionByRole: false,
-        });
+        })
       },
     }),
     {
@@ -53,8 +48,8 @@ const useStoreUser = create<State>()(
         authUser: state.authUser,
         isAuth: state.isAuth,
       }),
-    }
-  )
-);
+    },
+  ),
+)
 
-export default useStoreUser;
+export default useStoreUser

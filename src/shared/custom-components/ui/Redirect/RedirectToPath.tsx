@@ -1,32 +1,16 @@
-// src/shared/ui/Redirect.tsx
-"use client";
+"use client"
 
-import { useEffect } from "react";
-
-import { useRouter } from "next/navigation";
-
-// src/shared/ui/Redirect.tsx
-
-// src/shared/ui/Redirect.tsx
-
-// src/shared/ui/Redirect.tsx
-
-// src/shared/ui/Redirect.tsx
-
-// src/shared/ui/Redirect.tsx
-
-// src/shared/ui/Redirect.tsx
-
-// src/shared/ui/Redirect.tsx
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 const RedirectToPath = ({ to }: { to: string }) => {
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
-    router.replace(to);
-  }, [to, router]);
+    router.replace(to)
+  }, [to, router])
 
-  return null;
-};
+  return null
+}
 
-export default RedirectToPath;
+export default RedirectToPath

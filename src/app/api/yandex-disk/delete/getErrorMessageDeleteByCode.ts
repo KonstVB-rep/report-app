@@ -8,7 +8,7 @@ export function getErrorMessageDeleteByCode(statusCode: number) {
     423: "Технические работы. Сейчас можно только просматривать и скачивать файлы.",
     429: "Слишком много запросов.",
     503: "Сервис временно недоступен.",
-  };
+  }
 
-  return messages[statusCode] || "Ошибка при удалении файла.";
+  return messages[statusCode] || "Ошибка при удалении файла."
 }

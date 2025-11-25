@@ -1,44 +1,56 @@
-import { Table } from "@tanstack/react-table";
+import type { Table } from "@tanstack/react-table"
+import type { DateRange } from "react-day-picker"
+import type { DealBase } from "@/entities/deal/types"
+import { getManagers } from "@/entities/department/lib/utils"
+import { DealTypeLabels, LABELS } from "@/feature/deals/lib/constants"
+import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
+import FilterByUser from "@/feature/filter-persistence/ui/FilterByUsers"
+import FilterPopover from "@/feature/filter-persistence/ui/FilterPopover"
+import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter"
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
+import SelectColumns from "@/shared/custom-components/ui/SelectColumns"
 
-import React from "react";
-import { DateRange } from "react-day-picker";
-
-import { DealBase } from "@/entities/deal/types";
-import { getManagers } from "@/entities/department/lib/utils";
-import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext";
-import FilterByUser from "@/feature/filter-persistence/ui/FilterByUsers";
-import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
-import SelectColumns from "@/shared/custom-components/ui/SelectColumns";
+const OptionDealType = Object.entries(DealTypeLabels).map(([key, label]) => ({
+  id: key,
+  label,
+}))
 
 const Filters = ({ table }: { table: Table<DealBase> }) => {
-  const { handleDateChange, handleClearDateFilter } =
-    useDataTableFiltersContext();
+  const { handleDateChange, handleClearDateFilter } = useDataTableFiltersContext()
 
-  const { columnFilters } = table.getState();
+  const { columnFilters } = table.getState()
 
-  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as
-    | DateRange
-    | undefined;
+  const value = columnFilters.find((f) => f.id === "dateRequest")?.value as DateRange | undefined
   return (
     <MotionDivY className="min-h-0">
-      <div className="py-2 flex flex-wrap justify-start gap-2">
-        <FilterByUser label="Менеджер" managers={getManagers()} />
+      <div className="flex flex-wrap justify-start items-center gap-2 py-2">
+        <FilterByUser columnId="employee" label="Менеджер" managers={getManagers()} />
 
-        <div className="flex gap-2 justify-start flex-wrap">
-          <DateRangeFilter
-            onDateChange={handleDateChange("dateRequest")}
-            onClearDateFilter={handleClearDateFilter}
-            value={value}
-          />
-        </div>
-      </div>
+        <DateRangeFilter
+          label="Дата заявки"
+          onClearDateFilter={handleClearDateFilter}
+          onDateChange={handleDateChange("dateRequest")}
+          value={value}
+        />
 
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-background">
         <SelectColumns data={table as Table<DealBase>} />
+
+        <FilterPopover columnId="type" label={"Тип"} options={OptionDealType} />
+
+        <FilterPopover
+          columnId="dealStatusR"
+          label={"Статус розницы"}
+          options={LABELS.RETAIL.STATUS}
+        />
+
+        <FilterPopover
+          columnId="dealStatusP"
+          label={"Статус проекта"}
+          options={LABELS.PROJECT.STATUS}
+        />
       </div>
     </MotionDivY>
-  );
-};
+  )
+}
 
-export default Filters;
+export default Filters

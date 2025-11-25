@@ -1,98 +1,90 @@
-import { rankItem } from "@tanstack/match-sorter-utils";
+// src/shared/hooks/useTableState.ts
+
+import { useMemo, useState } from "react"
 import {
-  ColumnDef,
-  FilterFn,
+  type ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  SortingState,
+  type SortingState,
   useReactTable,
-} from "@tanstack/react-table";
+  type VisibilityState,
+} from "@tanstack/react-table"
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 
-import { useMemo, useState } from "react";
-
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters";
-
-const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value);
-  addMeta({
-    itemRank,
-  });
-
-  return itemRank.passed;
-};
+export interface TableMeta<TData> {
+  columnVisibility: Partial<Record<Extract<NonNullable<ColumnDef<TData>["id"]>, string>, boolean>>
+}
 
 export const useTableState = <T extends Record<string, unknown>>(
-  data: T[], // принимаем данные любого типа, соответствующего Record<string, unknown>
-  columns: ColumnDef<T>[] // и колонки для этого типа
+  data: T[],
+  columns: ColumnDef<T>[],
+  hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>,
 ) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
-  const memoizedData = useMemo(() => data, [data]);
-  const memoizedColumns = useMemo(() => columns, [columns]);
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({})
 
   const {
-    selectedColumns,
-    setSelectedColumns,
-    filterValueSearchByCol,
-    setFilterValueSearchByCol,
+    columnFilters,
+    setColumnFilters,
+    columnVisibility: visibilityFromHook,
+    setColumnVisibility,
+    globalFilter,
+    setGlobalFilter,
     openFilters,
     setOpenFilters,
     handleDateChange,
     handleClearDateFilter,
-    columnFilters,
-    setColumnFilters,
-    columnVisibility,
-    setColumnVisibility,
-    includedColumns,
-    globalFilter,
-    setGlobalFilter,
-  } = useDataTableFilters();
+    selectedSearchColumns,
+    setSelectedSearchColumns,
+    searchableColumns,
+  } = useDataTableFilters()
+
+  const columnVisibility = useMemo(() => {
+    const visibility: VisibilityState = { ...visibilityFromHook }
+
+    ;(["id", "user", "resource"] as const).forEach((col) => {
+      if (!(col in visibility)) {
+        visibility[col] = false
+      }
+    })
+
+    return visibility
+  }, [visibilityFromHook])
 
   const table = useReactTable({
-    data: memoizedData,
-    columns: memoizedColumns,
-    filterFns: {
-      fuzzy: fuzzyFilter, // Возможно, тебе нужно будет уточнить, что такое fuzzyFilter
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
-    enableRowSelection: true,
-    enableColumnResizing: true,
-    columnResizeMode: "onChange",
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString",
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
+    data,
+    columns,
     state: {
       sorting,
       rowSelection,
       columnFilters,
       globalFilter,
-      columnVisibility: {
-        ...columnVisibility,
-        user: false,
-        id: false,
-      },
+      columnVisibility,
     },
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: true,
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
     meta: {
       columnVisibility: {
-        resource: false,
+        user: false,
+        id: false,
+        ...hiddenColumns,
       },
-    },
-  });
+    } as TableMeta<T>,
+  })
 
   const filtersContextValue = {
-    selectedColumns,
-    setSelectedColumns,
-    filterValueSearchByCol,
-    setFilterValueSearchByCol,
+    selectedColumns: selectedSearchColumns,
+    setSelectedColumns: setSelectedSearchColumns,
     openFilters,
     setOpenFilters,
     handleDateChange,
@@ -101,9 +93,15 @@ export const useTableState = <T extends Record<string, unknown>>(
     columnVisibility,
     setColumnFilters,
     setColumnVisibility,
-    includedColumns,
-    columns: memoizedColumns,
-  };
+    includedColumns: searchableColumns,
+    columns,
+  }
 
-  return { table, filtersContextValue, openFilters, setGlobalFilter };
-};
+  return {
+    table,
+    filtersContextValue,
+    openFilters,
+    setGlobalFilter,
+    globalFilter: table.getState().globalFilter ?? "",
+  }
+}

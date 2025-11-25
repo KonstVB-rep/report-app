@@ -1,20 +1,16 @@
-"use server";
+"use server"
 
-import prisma from "@/prisma/prisma-client";
+import { prisma } from "@/prisma/prisma-client"
+import { handleError } from "./handleError"
 
-import { handleError } from "./handleError";
-
-export const getTelegramChatBotInDb = async (
-  botName: string,
-  userId: string
-) => {
+export const getTelegramChatBotInDb = async (botName: string, userId: string) => {
   try {
     const bot = await prisma.telegramBot.findUnique({
       where: { botName },
-    });
+    })
 
     if (!bot) {
-      return null;
+      return null
     }
 
     const getUser = await prisma.user.findUnique({
@@ -26,10 +22,15 @@ export const getTelegramChatBotInDb = async (
           },
         },
       },
-    });
+    })
 
-    if (!getUser) {
-      return null;
+    if (!getUser || !getUser.telegramInfo[0]?.tgUserId) {
+      return {
+        ...bot,
+        isActive: false,
+        chatId: null,
+        chatName: null,
+      }
     }
 
     const chat = await prisma.userTelegramChat.findUnique({
@@ -39,10 +40,15 @@ export const getTelegramChatBotInDb = async (
           chatId: getUser.telegramInfo[0]?.tgUserId,
         },
       },
-    });
+    })
 
     if (!chat) {
-      return null;
+      return {
+        ...bot,
+        isActive: false,
+        chatId: null,
+        chatName: null,
+      }
     }
 
     return {
@@ -50,11 +56,9 @@ export const getTelegramChatBotInDb = async (
       isActive: chat.isActive,
       chatId: chat.chatId,
       chatName: chat.chatName,
-    };
+    }
   } catch (error) {
-    console.error(error);
-    throw handleError(
-      typeof error === "string" ? error : "Ошибка получения Telegram данных"
-    );
+    console.error(error)
+    throw handleError(typeof error === "string" ? error : "Ошибка получения Telegram данных")
   }
-};
+}

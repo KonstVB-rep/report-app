@@ -1,12 +1,10 @@
-import React from "react";
-
-const Skeleton = ({ className }: { className?: string }) => (
+export const Skeleton = ({ className }: { className?: string }) => (
   <div
+    aria-hidden="true"
     className={`animate-pulse rounded-md bg-muted ${className}`}
     role="presentation"
-    aria-hidden="true"
   />
-);
+)
 
 const DeleteModalContentSkeleton = () => {
   return (
@@ -24,7 +22,7 @@ const DeleteModalContentSkeleton = () => {
         <Skeleton className="h-9" />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DeleteModalContentSkeleton;
+export default DeleteModalContentSkeleton

@@ -1,14 +1,13 @@
-"use client";
+"use client"
 
-import React, { useEffect } from "react";
-
-import { useSidebar } from "@/shared/components/ui/sidebar";
+import { useEffect } from "react"
+import { useSidebar } from "@/shared/components/ui/sidebar"
 
 interface Props {
-  speedFactor?: number;
-  backgroundColor?: string;
-  starColor?: [number, number, number];
-  starCount?: number;
+  speedFactor?: number
+  backgroundColor?: string
+  starColor?: [number, number, number]
+  starCount?: number
 }
 
 export default function Starfield(props: Props) {
@@ -17,50 +16,50 @@ export default function Starfield(props: Props) {
     backgroundColor = "black",
     starColor = [255, 255, 255],
     starCount = 5000,
-  } = props;
+  } = props
 
-  const { open } = useSidebar();
+  const { open } = useSidebar()
 
   useEffect(() => {
-    const canvas = document.getElementById("starfield") as HTMLCanvasElement;
+    const canvas = document.getElementById("starfield") as HTMLCanvasElement
 
     if (canvas) {
-      const c = canvas.getContext("2d");
+      const c = canvas.getContext("2d")
 
       if (c) {
-        let w = open ? window.innerWidth - 260 : window.innerWidth;
-        let h = window.innerHeight - 60;
+        let w = open ? window.innerWidth - 260 : window.innerWidth
+        let h = window.innerHeight - 60
 
         const setCanvasExtents = () => {
-          canvas.width = w;
-          canvas.height = h;
-        };
+          canvas.width = w
+          canvas.height = h
+        }
 
-        setCanvasExtents();
+        setCanvasExtents()
 
         window.onresize = () => {
-          setCanvasExtents();
-        };
+          setCanvasExtents()
+        }
 
         const makeStars = (count: number) => {
-          const out = [];
+          const out = []
           for (let i = 0; i < count; i++) {
             const s = {
               x: Math.random() * 1600 - 800,
               y: Math.random() * 900 - 450,
               z: Math.random() * 1000,
-            };
-            out.push(s);
+            }
+            out.push(s)
           }
-          return out;
-        };
+          return out
+        }
 
-        const stars = makeStars(starCount);
+        const stars = makeStars(starCount)
 
         const clear = () => {
-          c.fillStyle = backgroundColor;
-          c.fillRect(0, 0, canvas.width, canvas.height);
-        };
+          c.fillStyle = backgroundColor
+          c.fillRect(0, 0, canvas.width, canvas.height)
+        }
 
         const putPixel = (x: number, y: number, brightness: number) => {
           const rgb =
@@ -72,78 +71,78 @@ export default function Starfield(props: Props) {
             starColor[2] +
             "," +
             brightness +
-            ")";
-          c.fillStyle = rgb;
-          c.fillRect(x, y, 1, 1);
-        };
+            ")"
+          c.fillStyle = rgb
+          c.fillRect(x, y, 1, 1)
+        }
 
         const moveStars = (distance: number) => {
-          const count = stars.length;
+          const count = stars.length
           for (let i = 0; i < count; i++) {
-            const s = stars[i];
-            s.z -= distance;
+            const s = stars[i]
+            s.z -= distance
             while (s.z <= 1) {
-              s.z += 1000;
+              s.z += 1000
             }
           }
-        };
+        }
 
-        let prevTime: number;
+        let prevTime: number
         const init = (time: number) => {
-          prevTime = time;
-          requestAnimationFrame(tick);
-        };
+          prevTime = time
+          requestAnimationFrame(tick)
+        }
 
         const tick = (time: number) => {
-          const elapsed = time - prevTime;
-          prevTime = time;
+          const elapsed = time - prevTime
+          prevTime = time
 
-          moveStars(elapsed * speedFactor);
+          moveStars(elapsed * speedFactor)
 
-          clear();
+          clear()
 
-          const cx = w / 2;
-          const cy = h / 2;
+          const cx = w / 2
+          const cy = h / 2
 
-          const count = stars.length;
+          const count = stars.length
           for (let i = 0; i < count; i++) {
-            const star = stars[i];
+            const star = stars[i]
 
-            const x = cx + star.x / (star.z * 0.001);
-            const y = cy + star.y / (star.z * 0.001);
+            const x = cx + star.x / (star.z * 0.001)
+            const y = cy + star.y / (star.z * 0.001)
 
             if (x < 0 || x >= w || y < 0 || y >= h) {
-              continue;
+              continue
             }
 
-            const d = star.z / 1000.0;
-            const b = 1 - d * d;
+            const d = star.z / 1000.0
+            const b = 1 - d * d
 
-            putPixel(x, y, b);
+            putPixel(x, y, b)
           }
 
-          requestAnimationFrame(tick);
-        };
+          requestAnimationFrame(tick)
+        }
 
-        requestAnimationFrame(init);
+        requestAnimationFrame(init)
 
         // add window resize listener:
-        window.addEventListener("resize", function () {
-          w = window.innerWidth;
-          h = window.innerHeight;
-          setCanvasExtents();
-        });
+        window.addEventListener("resize", () => {
+          w = window.innerWidth
+          h = window.innerHeight
+          setCanvasExtents()
+        })
       } else {
-        console.error("Could not get 2d context from canvas element");
+        console.error("Could not get 2d context from canvas element")
       }
     } else {
-      console.error('Could not find canvas element with id "starfield"');
+      console.error('Could not find canvas element with id "starfield"')
     }
 
     return () => {
-      window.onresize = null;
-    };
-  }, [starColor, backgroundColor, speedFactor, starCount, open]);
+      window.onresize = null
+    }
+  }, [starColor, backgroundColor, speedFactor, starCount, open])
 
   return (
     <canvas
@@ -162,5 +161,5 @@ export default function Starfield(props: Props) {
         mixBlendMode: "normal",
       }}
     ></canvas>
-  );
+  )
 }

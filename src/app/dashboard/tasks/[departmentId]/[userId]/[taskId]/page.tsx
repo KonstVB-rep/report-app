@@ -1,53 +1,53 @@
-"use client";
+"use client"
 
-import { PermissionEnum } from "@prisma/client";
-
-import React from "react";
-
-import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData";
-// import TaskCard from '@/entities/task/ui/TaskCard'
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { useGetTask } from "@/feature/task/hooks/query";
-import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath";
-
-import Loading from "./loading";
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
+import z from "zod"
+import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
+import type { DepartmentsUnionIds } from "@/entities/department/types"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { useGetTask } from "@/feature/task/hooks/query"
+import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
+import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import Loading from "./loading"
 
 const TaskCard = dynamic(() => import("@/entities/task/ui/TaskCard"), {
   loading: () => <Loading />,
   ssr: false,
-});
+})
+
+const pageParamsSchema = z.object({
+  taskId: z.string(),
+  userId: z.string(),
+  departmentId: z.coerce
+    .number()
+    .positive()
+    .transform((value) => {
+      return value as DepartmentsUnionIds
+    }),
+})
 
 const TaskPage = () => {
-  const { authUser } = useStoreUser();
+  const { authUser } = useStoreUser()
 
-  const { taskId, userId, departmentId } = useParams<{
-    taskId: string;
-    userId: string;
-    departmentId: string;
-  }>();
+  const { taskId, userId, departmentId } = useTypedParams(pageParamsSchema)
 
-  const { data, isPending } = useGetTask(taskId);
+  const { data, isPending } = useGetTask(taskId)
 
-  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT);
+  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 
   if (!hasAccess) {
-    return <RedirectToPath to={`/tasks/${departmentId}/${authUser?.id}`} />;
+    return <RedirectToPath to={`/tasks/${departmentId}/${authUser?.id}`} />
   }
 
-  if (isPending) return <Loading />;
-  if (!data)
-    return (
-      <h1 className="p-5 pt-20 text-2xl text-center">Задача не найдена</h1>
-    );
+  if (isPending) return <Loading />
+  if (!data) return <h1 className="p-5 pt-20 text-2xl text-center">Задача не найдена</h1>
 
   return (
     <div className="p-5">
       <TaskCard task={data} />
     </div>
-  );
-};
+  )
+}
 
-export default TaskPage;
+export default TaskPage

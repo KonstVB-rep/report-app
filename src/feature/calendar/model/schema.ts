@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 export const EventCalendarFormSchema = z
   .object({
@@ -13,19 +13,13 @@ export const EventCalendarFormSchema = z
 
     startDateEvent: z.coerce.date({
       error: (issue) => ({
-        message:
-          issue.input === undefined
-            ? "Укажите дату начала"
-            : "Некорректный формат даты",
+        message: issue.input === undefined ? "Укажите дату начала" : "Некорректный формат даты",
       }),
     }),
 
     endDateEvent: z.coerce.date({
       error: (issue) => ({
-        message:
-          issue.input === undefined
-            ? "Укажите дату окончания"
-            : "Некорректный формат даты",
+        message: issue.input === undefined ? "Укажите дату окончания" : "Некорректный формат даты",
       }),
     }),
 
@@ -44,26 +38,20 @@ export const EventCalendarFormSchema = z
       }),
   })
   .check((ctx) => {
-    const {
-      allDay,
-      startDateEvent,
-      endDateEvent,
-      startTimeEvent,
-      endTimeEvent,
-    } = ctx.value;
+    const { allDay, startDateEvent, endDateEvent, startTimeEvent, endTimeEvent } = ctx.value
 
-    if (allDay) return;
+    if (allDay) return
 
-    const now = new Date();
-    const startDate = new Date(startDateEvent);
-    const endDate = new Date(endDateEvent);
+    const now = new Date()
+    const startDate = new Date(startDateEvent)
+    const endDate = new Date(endDateEvent)
 
-    const [startH, startM] = startTimeEvent.split(":");
-    const [endH, endM] = endTimeEvent.split(":");
+    const [startH, startM] = startTimeEvent.split(":")
+    const [endH, endM] = endTimeEvent.split(":")
 
-    startDate.setHours(parseInt(startH, 10), parseInt(startM, 10));
-    endDate.setHours(parseInt(endH, 10), parseInt(endM, 10));
-    now.setSeconds(0, 0);
+    startDate.setHours(parseInt(startH, 10), parseInt(startM, 10))
+    endDate.setHours(parseInt(endH, 10), parseInt(endM, 10))
+    now.setSeconds(0, 0)
 
     // Проверка на то, что дата начала не позже даты окончания
     if (startDate > endDate) {
@@ -72,7 +60,7 @@ export const EventCalendarFormSchema = z
         message: "Дата начала не может быть позже даты окончания",
         path: ["startDateEvent"],
         input: startDateEvent,
-      });
+      })
     }
 
     // Проверка на то, что дата начала не в прошлом
@@ -82,7 +70,7 @@ export const EventCalendarFormSchema = z
         message: "Дата начала не может быть в прошлом",
         path: ["startDateEvent"],
         input: startDateEvent,
-      });
+      })
     }
 
     // Проверка на то, что дата окончания должна быть в будущем
@@ -92,18 +80,17 @@ export const EventCalendarFormSchema = z
         message: "Дата окончания должна быть в будущем",
         path: ["endDateEvent"],
         input: endDateEvent,
-      });
+      })
     }
 
     // Если времени окончания меньше времени начала
     if (startDate >= endDate) {
       ctx.issues.push({
         code: "custom",
-        message:
-          "Время окончания события не должно быть меньше времени начала!",
+        message: "Время окончания события не должно быть меньше времени начала!",
         path: ["startDateEvent"],
         input: startDateEvent,
-      });
+      })
     }
-  });
-export type EventCalendarSchema = z.infer<typeof EventCalendarFormSchema>;
+  })
+export type EventCalendarSchema = z.infer<typeof EventCalendarFormSchema>

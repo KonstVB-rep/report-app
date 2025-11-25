@@ -1,22 +1,20 @@
-"use client";
+"use client"
 
-import { Button } from "@/shared/components/ui/button";
+import { Button } from "@/shared/components/ui/button"
 
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
   return (
-    <html>
+    <html lang="ru">
       <body>
         <section className="grid h-screen w-screen place-items-center content-center gap-4 p-5 bg-background text-foreground">
           <div className="max-w-xl text-center">
-            <h1 className="mb-4 text-3xl font-bold text-destructive">
-              Что-то пошло не так 😢
-            </h1>
+            <h1 className="mb-4 text-3xl font-bold text-destructive">Что-то пошло не так 😢</h1>
             <p className="mb-4 text-muted-foreground">
               {error.message || "Произошла непредвиденная ошибка."}
             </p>
@@ -27,5 +25,5 @@ export default function GlobalError({
         </section>
       </body>
     </html>
-  );
+  )
 }

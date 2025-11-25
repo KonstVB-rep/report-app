@@ -1,11 +1,9 @@
-"use client";
+"use client"
 
-import React from "react";
-
-import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton";
+import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton"
 
 const Loading = () => {
-  return <DealsSkeleton />;
-};
+  return <DealsSkeleton />
+}
 
-export default Loading;
+export default Loading

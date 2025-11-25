@@ -1,21 +1,15 @@
-import { flexRender, useReactTable } from "@tanstack/react-table";
-
-import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-import {
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/components/ui/table";
+import { flexRender, type useReactTable } from "@tanstack/react-table"
+import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react"
+import { TableBody, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table"
+import { HEIGHT_ROW } from "@/shared/lib/constants"
+import { cn } from "@/shared/lib/utils"
 
 type TableTemplateProps<T extends Record<string, unknown>> = {
-  table: ReturnType<typeof useReactTable<T>>;
-  className?: string;
-  totalSize?: number;
-  children: React.ReactNode;
-};
+  table: ReturnType<typeof useReactTable<T>>
+  className?: string
+  totalSize?: number
+  children: React.ReactNode
+}
 
 const TableTemplate = <T extends Record<string, unknown>>({
   table,
@@ -27,28 +21,27 @@ const TableTemplate = <T extends Record<string, unknown>>({
     <table
       className={`w-full grid border-separate border-spacing-0 border border-border ${className}`}
     >
-      <TableHeader className="sticky top-0 z-10 bg-white dark:bg-zinc-800">
+      <TableHeader className="sticky top-0 z-10 bg-white dark:bg-zinc-800 rounded-se-sm rounded-ss-sm">
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow
-            key={headerGroup.id}
-            className="flex w-full rounded-se-sm rounded-ss-sm"
-          >
+          <TableRow className="flex w-full rounded-se-sm rounded-ss-sm" key={headerGroup.id}>
             {headerGroup.headers.map((header, index) => (
               <TableHead
+                className={cn(
+                  "p-2! flex-1 border-zinc-600 border-1 border-solid",
+                  index === headerGroup.headers.length - 1 && "rounded-se-sm",
+                  index === 0 && "rounded-ss-sm",
+                )}
+                data-size={header.getSize()}
                 key={header.id}
                 style={{
                   width: header.getSize(),
                   minWidth: header.column.columnDef.minSize,
                   maxWidth: header.column.columnDef.maxSize,
                 }}
-                data-size={header.getSize()}
-                className={cn(
-                  "p-2! flex-1 border-zinc-600 border-1 border-solid",
-                  index === headerGroup.headers.length - 1 && "rounded-se-sm",
-                  index === 0 && "rounded-ss-sm"
-                )}
               >
                 {header.isPlaceholder ? null : (
+                  // biome-ignore lint/a11y/noStaticElementInteractions: not button
+                  // biome-ignore lint/a11y/useKeyWithClickEvents: not button
                   <div
                     className={
                       header.column.getCanSort()
@@ -58,10 +51,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <span className="text-xs font-semibold first-letter:capitalize">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                     </span>
                     {header.column.getCanSort() && (
                       <span>
@@ -81,11 +71,17 @@ const TableTemplate = <T extends Record<string, unknown>>({
         ))}
       </TableHeader>
 
-      <TableBody style={{ height: `${totalSize}px`, position: "relative" }}>
+      <TableBody
+        style={{
+          height: `${totalSize}px`,
+          position: "relative",
+          minHeight: `${HEIGHT_ROW}px`,
+        }}
+      >
         {children}
       </TableBody>
     </table>
-  );
-};
+  )
+}
 
-export default TableTemplate;
+export default TableTemplate

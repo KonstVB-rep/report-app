@@ -1,35 +1,32 @@
-import React, { useState } from "react";
-
-import { Trash2 } from "lucide-react";
-
-import { Button } from "@/shared/components/ui/button";
-import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
-
-import DelTaskForm from "../Forms/DelTaskForm";
+import { useState } from "react"
+import { Trash2 } from "lucide-react"
+import { Button } from "@/shared/components/ui/button"
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
+import DelTaskForm from "../Forms/DelTaskForm"
 
 type Props = {
-  id: string;
-};
+  id: string
+}
 
 const DelTaskDialogButton = ({ id }: Props) => {
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
+  const [open, setOpen] = useState(false)
+  const close = () => setOpen(false)
   return (
     <DialogComponent
-      open={open}
-      onOpenChange={setOpen}
-      dialogTitle="Удалить данные"
-      contentTooltip="Удалить"
       classNameContent="sm:max-w-[600px]"
+      contentTooltip="Удалить"
+      dialogTitle="Удалить данные"
+      onOpenChange={setOpen}
+      open={open}
       trigger={
         <Button size="icon" variant={"destructive"}>
           <Trash2 />
         </Button>
       }
     >
-      <DelTaskForm id={id} close={close} />
+      <DelTaskForm close={close} id={id} />
     </DialogComponent>
-  );
-};
+  )
+}
 
-export default DelTaskDialogButton;
+export default DelTaskDialogButton

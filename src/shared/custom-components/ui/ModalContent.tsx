@@ -1,25 +1,19 @@
-import { ReactNode } from "react";
-
+import type { ReactNode } from "react"
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/shared/components/ui/dialog";
+} from "@/shared/components/ui/dialog"
 
 interface ModalContentProps {
-  className: string;
-  children: ReactNode;
-  title?: string;
-  showX?: boolean;
+  className: string
+  children: ReactNode
+  title?: string
+  showX?: boolean
 }
 
-const ModalContent = ({
-  children,
-  className,
-  title,
-  showX = true,
-}: ModalContentProps) => {
+const ModalContent = ({ children, className, title, showX = true }: ModalContentProps) => {
   return (
     <DialogContent className={className} showX={showX}>
       <DialogHeader>
@@ -28,7 +22,7 @@ const ModalContent = ({
       </DialogHeader>
       {children}
     </DialogContent>
-  );
-};
+  )
+}
 
-export default ModalContent;
+export default ModalContent

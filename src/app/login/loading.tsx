@@ -1,7 +1,11 @@
-import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders";
+import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 
 const Loading = () => {
-  return <LoaderCircleInWater />;
-};
+  return (
+    <div className="h-dvh grid place-items-center">
+      <LoaderCircleInWater />
+    </div>
+  )
+}
 
-export default Loading;
+export default Loading

@@ -1,23 +1,18 @@
-import { TaskStatus } from "@prisma/client";
-// import { CheckedState } from "@radix-ui/react-checkbox";
-import { CellContext, ColumnDef } from "@tanstack/react-table";
-
-import { ReactNode } from "react";
-import { DateRange } from "react-day-picker";
-
-import { endOfDay, startOfDay } from "date-fns";
-import { Ban, CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react";
-
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
-import { TaskWithUserInfo } from "@/entities/task/types";
+import type { ReactNode } from "react"
+import { TaskStatus } from "@prisma/client"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import { Ban, CheckCircle2Icon, LoaderIcon, StickyNote } from "lucide-react"
+import type { DateRange } from "react-day-picker"
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
+import type { TaskWithUserInfo } from "@/entities/task/types"
 import {
   LABEL_TASK_PRIORITY,
   LABEL_TASK_STATUS,
   TASK_PRIORITY_COLOR_BG,
-} from "@/feature/task/model/constants";
-// import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Badge } from "@/shared/components/ui/badge";
-import { formatDateTime } from "@/shared/lib/helpers/formatDate";
+} from "@/feature/task/model/constants"
+import { Badge } from "@/shared/components/ui/badge"
+import { formatDateTime } from "@/shared/lib/helpers/formatDate"
 
 export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
   {
@@ -62,34 +57,31 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "startDate",
     header: "Дата начала",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const date = info.getValue() as string;
-      return formatDateTime(date);
+      const date = info.getValue() as string
+      return formatDateTime(date)
     },
     filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: TaskWithUserInfo) => row.startDate,
   },
@@ -97,19 +89,19 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "title",
     header: "Задача",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     accessorFn: (row: TaskWithUserInfo) => {
-      return row.title;
+      return row.title
     },
   },
   {
     id: "description",
     header: "Описание",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     accessorFn: (row: TaskWithUserInfo) => row.description,
   },
@@ -117,39 +109,32 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "taskStatus",
     header: "Статус",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const value = info.getValue() as keyof typeof LABEL_TASK_STATUS;
+      const value = info.getValue() as keyof typeof LABEL_TASK_STATUS
       // return <span>{LABEL_TASK_STATUS[value]}</span>;
       const icon = {
         [TaskStatus.OPEN]: <StickyNote />,
         [TaskStatus.IN_PROGRESS]: <LoaderIcon />,
         // [TaskStatus.IN_REVIEW]:  <MessageCircleWarning />,
-        [TaskStatus.DONE]: (
-          <CheckCircle2Icon className="text-green-500 dark:text-green-400" />
-        ),
-        [TaskStatus.CANCELED]: (
-          <Ban className="text-red-500 dark:text-red-400" />
-        ),
-      };
+        [TaskStatus.DONE]: <CheckCircle2Icon className="text-green-500 dark:text-green-400" />,
+        [TaskStatus.CANCELED]: <Ban className="text-red-500 dark:text-red-400" />,
+      }
       return (
-        <Badge
-          variant="outline"
-          className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
-        >
+        <Badge className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3" variant="outline">
           {icon[value]}
           {LABEL_TASK_STATUS[value]}
         </Badge>
-      );
+      )
     },
     meta: {
       isMultiSelect: true,
     },
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
-      if (!rowValue) return false;
+      const rowValue = row.getValue(columnId)
+      if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     accessorFn: (row: TaskWithUserInfo) => row.taskStatus,
   },
@@ -157,7 +142,7 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "taskPriority",
     header: "Приоритет",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const value = info.getValue() as keyof typeof LABEL_TASK_PRIORITY;
+      const value = info.getValue() as keyof typeof LABEL_TASK_PRIORITY
       // const bgColor =
       //   value === TaskPriority.LOW
       //     ? "bg-green-600"
@@ -173,7 +158,7 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
         >
           {LABEL_TASK_PRIORITY[value]}
         </span>
-      );
+      )
     },
     accessorFn: (row: TaskWithUserInfo) => row.taskPriority,
   },
@@ -181,27 +166,31 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "assignerId",
     header: "Автор",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const userId = info.getValue() as string;
-      const { deptsFormatted } = useStoreDepartment.getState();
-      const users = deptsFormatted?.reduce((acc, curr) => {
-        curr.users.forEach((user) => {
-          acc = { ...acc, ...user };
-        });
-        return acc;
-      }, {});
+      const userId = info.getValue() as string
+      const { deptsFormatted } = useStoreDepartment.getState()
+      const users = deptsFormatted?.reduce(
+        (acc, curr) => {
+          curr.users.forEach((user) => {
+            const [[key, value]] = Object.entries(user)
+            acc[key] = value
+          })
+          return acc
+        },
+        {} as Record<string, string>,
+      )
 
       if (!users) {
-        return null;
+        return null
       }
 
-      const userName = (users[userId as keyof typeof users] as string)
+      const userName = (users[userId as keyof typeof users] as unknown as string)
         .split(" ")
         .map((word) => {
-          return word.charAt(0).toUpperCase() + word.slice(1);
+          return word.charAt(0).toUpperCase() + word.slice(1)
         })
-        .join(" ");
+        .join(" ")
 
-      return userName;
+      return userName
     },
     accessorFn: (row: TaskWithUserInfo) => row.assignerId,
   },
@@ -209,13 +198,13 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "executorId",
     header: "Исполнитель",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => info.getValue(),
-    filterFn: (row, columnId, filterValues) => {
+    filterFn: (row, _, filterValues) => {
       if (!filterValues || filterValues.length === 0) {
-        return true;
+        return true
       }
 
-      const userIdOfProject = row.original.executorId;
-      return filterValues.includes(userIdOfProject);
+      const userIdOfProject = row.original.executorId
+      return filterValues.includes(userIdOfProject)
     },
     meta: {
       isMultiSelect: true,
@@ -228,35 +217,32 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     id: "dueDate",
     header: "Срок до",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
-      const date = info.getValue() as string;
-      return formatDateTime(date);
+      const date = info.getValue() as string
+      return formatDateTime(date)
     },
     filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: TaskWithUserInfo) => row.dueDate,
   },
-];
+]

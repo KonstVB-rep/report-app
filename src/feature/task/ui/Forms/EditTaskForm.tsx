@@ -1,59 +1,46 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TaskPriority, TaskStatus } from "@prisma/client";
-
-import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { Resolver, useForm } from "react-hook-form";
-
-import { addCorrectTimeInDates, formatDate } from "@/entities/task/lib/helpers";
-import { defaultTaskValues } from "@/feature/task/model/defaultvaluesForm";
-import {
-  TaskFormSchemaUpdate,
-  TaskSchemaUpdate,
-} from "@/feature/task/model/schema";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-
-import { useUpdateTask } from "../../hooks/mutate";
-import { useGetTask } from "../../hooks/query";
-import TaskForm from "./TaskForm";
+import { type Dispatch, type SetStateAction, useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { TaskPriority, TaskStatus } from "@prisma/client"
+import { type Resolver, useForm } from "react-hook-form"
+import { addCorrectTimeInDates, formatDate } from "@/entities/task/lib/helpers"
+import { defaultTaskValues } from "@/feature/task/model/defaultvaluesForm"
+import { TaskFormSchemaUpdate, type TaskSchemaUpdate } from "@/feature/task/model/schema"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { useUpdateTask } from "../../hooks/mutate"
+import { useGetTask } from "../../hooks/query"
+import TaskForm from "./TaskForm"
 
 type EditTaskFormProps = {
-  close: Dispatch<SetStateAction<void>>;
-  taskId: string;
-};
+  close: Dispatch<SetStateAction<void>>
+  taskId: string
+}
 
 const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
-  const { data: task, isPending: isLoading } = useGetTask(taskId);
+  const { data: task, isPending: isLoading } = useGetTask(taskId)
 
   const form = useForm<TaskSchemaUpdate>({
     resolver: zodResolver(TaskFormSchemaUpdate) as Resolver<TaskSchemaUpdate>,
     defaultValues: defaultTaskValues,
-  });
+  })
 
-  const { mutateAsync, isPending } = useUpdateTask();
+  const { mutateAsync, isPending } = useUpdateTask()
 
   const onSubmit = (updatedTask: TaskSchemaUpdate) => {
-    if (!task) return;
+    if (!task) return
 
-    const {
-      startTime,
-      endTime,
-      startDate,
-      dueDate,
-      taskPriority,
-      taskStatus,
-      ...taskRest
-    } = updatedTask;
+    const { startTime, endTime, startDate, dueDate, taskPriority, taskStatus, ...taskRest } =
+      updatedTask
     const [startDateWithTime, dueDateWithTime] = addCorrectTimeInDates(
       startTime,
       endTime,
       startDate,
-      dueDate
-    );
+      dueDate,
+    )
 
     // ✅ Выносим `id` и `departmentId` до вызова `mutateAsync`
-    const taskId = task.id;
-    const departmentId = task.departmentId;
-    const orderTask = task.orderTask;
+    const taskId = task.id
+    const departmentId = task.departmentId
+    const orderTask = task.orderTask
 
     TOAST.PROMISE(
       mutateAsync({
@@ -66,13 +53,13 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
         startDate: formatDate(startDateWithTime),
         dueDate: formatDate(dueDateWithTime),
       }),
-      "Данные обновлены"
-    );
+      "Данные обновлены",
+    )
 
-    close();
-  };
+    close()
+  }
 
-  const { reset } = form;
+  const { reset } = form
 
   useEffect(() => {
     if (task && !isLoading) {
@@ -94,13 +81,13 @@ const EditTaskForm = ({ close, taskId }: EditTaskFormProps) => {
           minute: "2-digit",
           hour12: false,
         }),
-      });
+      })
     }
-  }, [reset, task, isLoading]);
+  }, [reset, task, isLoading])
 
   // if (isLoading) <FormDealSkeleton />;
 
-  return <TaskForm form={form} isPending={isPending} onSubmit={onSubmit} />;
-};
+  return <TaskForm form={form} isPending={isPending} onSubmit={onSubmit} />
+}
 
-export default EditTaskForm;
+export default EditTaskForm

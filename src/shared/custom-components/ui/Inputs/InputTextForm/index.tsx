@@ -1,16 +1,13 @@
-import React from "react";
-import { FieldValues } from "react-hook-form";
-
+import type { FieldValues } from "react-hook-form"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
-
-import { InputFormProps } from "../type";
+} from "@/shared/components/ui/form"
+import { Input } from "@/shared/components/ui/input"
+import type { InputFormProps } from "../type"
 
 const InputTextForm = <T extends FieldValues>({
   name,
@@ -27,19 +24,13 @@ const InputTextForm = <T extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input
-              placeholder="Введите имя пользователя"
-              {...field}
-              {...rest}
-            />
+            <Input placeholder="Введите имя пользователя" {...field} {...rest} />
           </FormControl>
-          {errorMessage && (
-            <FormMessage className="text-red-500">{errorMessage}</FormMessage>
-          )}
+          {errorMessage && <FormMessage className="text-red-500">{errorMessage}</FormMessage>}
         </FormItem>
       )}
     />
-  );
-};
+  )
+}
 
-export default InputTextForm;
+export default InputTextForm

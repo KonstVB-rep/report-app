@@ -1,10 +1,5 @@
-import {
-  isServer,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
-
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react"
+import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 function makeQueryClient() {
   return new QueryClient({
@@ -13,25 +8,24 @@ function makeQueryClient() {
         refetchOnWindowFocus: false,
       },
     },
-  });
+  })
 }
 
-let browserQueryClient: QueryClient | undefined = undefined;
+let browserQueryClient: QueryClient | undefined
+
 export const getQueryClient = () => {
   if (isServer) {
-    return makeQueryClient();
+    return makeQueryClient()
   } else {
-    if (!browserQueryClient) browserQueryClient = makeQueryClient();
-    return browserQueryClient;
+    if (!browserQueryClient) browserQueryClient = makeQueryClient()
+    return browserQueryClient
   }
-};
+}
 
 const QueryProvider = ({ children }: PropsWithChildren) => {
-  const queryClient = getQueryClient();
+  const queryClient = getQueryClient()
 
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+}
 
-export default QueryProvider;
+export default QueryProvider

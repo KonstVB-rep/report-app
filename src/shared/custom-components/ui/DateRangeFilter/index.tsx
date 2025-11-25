@@ -1,47 +1,49 @@
-import React from "react";
-import { DateRange } from "react-day-picker";
+import type React from "react"
+import { X } from "lucide-react"
+import type { DateRange } from "react-day-picker"
+import { Button } from "@/shared/components/ui/button"
+import { DateRangePicker } from "@/shared/components/ui/date-range-picker"
 
-import { X } from "lucide-react";
-
-import { Button } from "@/shared/components/ui/button";
-import { DateRangePicker } from "@/shared/components/ui/date-range-picker";
-
-import "./datePickerStyles.css";
+import "./datePickerStyles.css"
 
 interface DateRangeFilterProps {
-  onDateChange: (date: DateRange | undefined) => void;
-  onClearDateFilter: (columnId: string) => void;
-  value?: DateRange;
+  onDateChange: (date: DateRange | undefined) => void
+  onClearDateFilter: (columnId: string) => void
+  value?: DateRange
+  columnId?: string
+  label: string
 }
 
 const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   onDateChange,
   onClearDateFilter,
   value,
+  columnId = "dateRequest",
+  label,
 }) => {
   const handleClear = () => {
-    onDateChange(undefined);
-    onClearDateFilter("dateRequest");
-  };
+    onDateChange(undefined)
+    onClearDateFilter(columnId)
+  }
 
   return (
     <div
-      className={`relative flex max-w-fit items-center gap-4 rounded border ${
-        value ? "border-solid" : "border-dashed"
+      className={`relative flex items-center gap-4 rounded-md border ${
+        value ? "border-solid min-w-[280px]" : "border-dashed max-w-fit"
       } border-muted-foreground`}
     >
-      <DateRangePicker value={value} onValueChange={onDateChange} />
+      <DateRangePicker label={label} onValueChange={onDateChange} value={value} />
       {value && (
         <Button
-          variant="outline"
+          className="absolute right-0 h-full p-2 rounded"
           onClick={handleClear}
-          className="absolute right-0 h-full p-2"
+          variant="outline"
         >
           <X />
         </Button>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default DateRangeFilter;
+export default DateRangeFilter

@@ -1,20 +1,24 @@
-import { Role } from "@prisma/client";
+import { useEffect, useState } from "react"
+import { checkDepartment } from "@/shared/api/checkByServer"
+import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 
-import { useParams } from "next/navigation";
+const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren) => {
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
+  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
 
-import useStoreUser from "@/entities/user/store/useStoreUser";
+  useEffect(() => {
+    let mounted = true
+    if (!departmentId) return
 
-const ProtectedByDepartmentAffiliation = ({
-  children,
-}: React.PropsWithChildren) => {
-  const { authUser } = useStoreUser();
-  const { departmentId } = useParams();
+    checkDepartment(departmentId).then((result) => {
+      if (mounted) setHasAccess(result)
+    })
 
-  const hasAccess =
-    authUser?.departmentId === Number(departmentId) ||
-    authUser?.role === Role.ADMIN;
+    return () => {
+      mounted = false
+    }
+  }, [departmentId])
+  return hasAccess ? children : null
+}
 
-  return hasAccess ? <>{children}</> : null;
-};
-
-export default ProtectedByDepartmentAffiliation;
+export default ProtectedByDepartmentAffiliation

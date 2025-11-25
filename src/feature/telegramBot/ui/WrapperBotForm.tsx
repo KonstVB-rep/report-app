@@ -1,32 +1,23 @@
-import React from "react";
-
-import { BotFormData } from "@/entities/tgBot/types";
+import type { BotFormData } from "@/entities/tgBot/types"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { ActionResponse } from "@/shared/types";
-
-import BotForm from "./BotForm";
+} from "@/shared/components/ui/card"
+import type { ActionResponse } from "@/shared/types"
+import BotForm from "./BotForm"
 
 type Props = {
-  title: string;
-  description: string;
-  state: ActionResponse<BotFormData>;
-  isPending: boolean;
-  actionSubmit: (data: FormData) => void;
-};
+  title: string
+  description: string
+  state: ActionResponse<BotFormData>
+  isPending: boolean
+  actionSubmit: (data: FormData) => void
+}
 
-const WrapperBotForm = ({
-  title,
-  description,
-  state,
-  isPending,
-  actionSubmit,
-}: Props) => {
+const WrapperBotForm = ({ title, description, state, isPending, actionSubmit }: Props) => {
   return (
     <Card className="w-fit max-w-sm m-auto border-none p-0!">
       <CardHeader>
@@ -34,14 +25,10 @@ const WrapperBotForm = ({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <BotForm
-          state={state}
-          isPending={isPending}
-          actionSubmit={actionSubmit}
-        />
+        <BotForm actionSubmit={actionSubmit} isPending={isPending} state={state} />
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default WrapperBotForm;
+export default WrapperBotForm

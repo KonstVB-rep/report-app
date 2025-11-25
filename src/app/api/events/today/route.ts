@@ -1,21 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
-
-import prisma from "@/prisma/prisma-client";
+import { type NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/prisma/prisma-client"
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("userId");
+  const { searchParams } = new URL(req.url)
+  const userId = searchParams.get("userId")
 
   if (!userId) {
-    return NextResponse.json({ message: "userId обязателен" }, { status: 400 });
+    return NextResponse.json({ message: "userId обязателен" }, { status: 400 })
   }
 
-  const now = new Date();
+  const now = new Date()
 
   // 30 минут от текущего времени
-  const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000);
-  thirtyMinutesLater.setSeconds(0, 0); // Округляем до начала минуты
-  const thirtyOneMinutesLater = new Date(thirtyMinutesLater.getTime() + 60000);
+  const thirtyMinutesLater = new Date(now.getTime() + 30 * 60000)
+  thirtyMinutesLater.setSeconds(0, 0) // Округляем до начала минуты
+  const thirtyOneMinutesLater = new Date(thirtyMinutesLater.getTime() + 60000)
 
   try {
     const events = await prisma.eventCalendar.findMany({
@@ -30,10 +29,10 @@ export async function GET(req: NextRequest) {
       orderBy: {
         start: "asc",
       },
-    });
-    return NextResponse.json(events);
+    })
+    return NextResponse.json(events)
   } catch (error) {
-    console.error("❌ Ошибка при получении событий:", error);
-    return NextResponse.json({ message: "Ошибка сервера" }, { status: 500 });
+    console.error("❌ Ошибка при получении событий:", error)
+    return NextResponse.json({ message: "Ошибка сервера" }, { status: 500 })
   }
 }

@@ -24,6 +24,17 @@ export enum StatusRetail {
   CLOSED = "Закрыт",
 }
 
-export type AllStatusKeys =
-  | keyof typeof StatusProject
-  | keyof typeof StatusRetail;
+export type AllStatusKeys = keyof typeof StatusProject | keyof typeof StatusRetail
+
+export const DealTypesArray = ["project", "retail", "contract"] as const
+export const TableTypes = ["retails", "projects"] as const
+export const TableTypesWithContracts = ["retails", "projects", "contracts"] as const
+
+export const UnionParams = [
+  "retails",
+  "projects",
+  "contracts",
+  "project",
+  "retail",
+  "contract",
+] as const

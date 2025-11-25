@@ -1,34 +1,33 @@
-import { User } from "@/entities/user/types";
-
-import { checkTokens } from "../lib/helpers/checkTokens";
+import { checkTokens } from "../lib/helpers/checkTokens"
+import type { UserWithoutPassword } from "../types"
 
 // Общая логика для блокировки отправки и проверки авторизации
 const handleMutationWithAuthCheck = async <T, U>(
-  mutateFn: (data: T) => Promise<U>, // Основная функция для мутации
+  mutateFn: (data: T) => Promise<U>,
   data: T,
-  authUser: User | null,
-  isSubmittingRef: React.RefObject<boolean> // Ссылка для блокировки отправки
+  authUser: UserWithoutPassword | null,
+  isSubmittingRef: React.RefObject<boolean>,
 ) => {
   if (isSubmittingRef.current) {
-    throw new Error("Операция уже выполняется");
+    throw new Error("Операция уже выполняется")
   }
 
-  isSubmittingRef.current = true; // Блокируем отправку
+  isSubmittingRef.current = true // Блокируем отправку
 
   if (!authUser?.id) {
-    throw new Error("User ID is missing");
+    throw new Error("User ID is missing")
   }
 
   try {
-    await checkTokens(); // Проверка авторизации
+    await checkTokens()
 
-    return await mutateFn(data); // Выполнение основной мутации
+    return await mutateFn(data)
   } catch (error) {
-    console.error("Error in mutation:", error);
-    throw error;
+    console.error("Error in mutation:", error)
+    throw error
   } finally {
-    isSubmittingRef.current = false; // Разблокируем отправку
+    isSubmittingRef.current = false
   }
-};
+}
 
-export default handleMutationWithAuthCheck;
+export default handleMutationWithAuthCheck

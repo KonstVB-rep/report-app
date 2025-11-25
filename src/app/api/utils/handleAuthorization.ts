@@ -1,21 +1,23 @@
-"use server";
+"use server"
 
-import { User } from "@/entities/user/types";
-import prisma from "@/prisma/prisma-client";
-
-import { requireAuth } from "./requireAuth ";
+import type { User } from "@/entities/user/types"
+import { prisma } from "@/prisma/prisma-client"
+import { checkTokens } from "@/shared/lib/helpers/checkTokens"
+import { requireAuth } from "./requireAuth "
 
 export const handleAuthorization = async (): Promise<{
-  user: User;
-  userId: string;
+  user: User
+  userId: string
 }> => {
-  const userId = await requireAuth();
+  const userId = await requireAuth()
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+
+  await checkTokens()
 
   if (!user) {
-    throw new Error("Пользователь не авторизован");
+    throw new Error("Пользователь не авторизован")
   }
 
-  return { user, userId };
-};
+  return { user, userId }
+}

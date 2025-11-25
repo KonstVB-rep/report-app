@@ -1,104 +1,104 @@
-"use client";
+"use client"
 
-import { UserTelegramChat } from "@prisma/client";
-import { useQueryClient } from "@tanstack/react-query";
-
-import React, { useState } from "react";
-
-import { ChatFormData } from "@/entities/tgBot/types";
+import type React from "react"
+import { useState } from "react"
+import type { UserTelegramChat } from "@prisma/client"
+import { useQueryClient } from "@tanstack/react-query"
+import type { ChatFormData } from "@/entities/tgBot/types"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shared/components/ui/card";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
-import { Switch } from "@/shared/components/ui/switch";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
-import { ActionResponse } from "@/shared/types";
+} from "@/shared/components/ui/card"
+import { Input } from "@/shared/components/ui/input"
+import { Label } from "@/shared/components/ui/label"
+import { Switch } from "@/shared/components/ui/switch"
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
+import type { ActionResponse } from "@/shared/types"
+import { useUpdateChatBot } from "../hooks/mutate"
 
-import { useUpdateChatBot } from "../hooks/mutate";
-
-const initialState: ActionResponse<UserTelegramChat> = {
+const initialResponse: ActionResponse<UserTelegramChat> = {
   success: false,
   message: "",
-};
+}
 
 export const UpdateUserChatForm = ({ chat }: { chat: UserTelegramChat }) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
-  const [state, setState] = useState(initialState);
-  const { mutateAsync, isPending } = useUpdateChatBot(
-    (data: ActionResponse<UserTelegramChat>) => {
-      setState(data);
-      queryClient.invalidateQueries({
-        queryKey: ["chats", chat.botId],
-      });
-    }
-  );
+  const [chatName, setChatName] = useState(chat.chatName)
+  const [isActive, setIsActive] = useState(chat.isActive)
+  const [response, setResponse] = useState<ActionResponse<UserTelegramChat>>(initialResponse)
 
-  const [isActive, setIsActive] = useState(false);
+  const { mutateAsync, isPending } = useUpdateChatBot((data) => {
+    setResponse(data)
+    queryClient.invalidateQueries({ queryKey: ["chats", chat.botId] })
+  })
 
-  const actionSubmit = (data: FormData) => {
-    data.append("botId", chat.botId.toString());
-    data.append("chatId", chat.chatId.toString());
-    data.append("isActive", isActive.toString());
-    mutateAsync(data);
-  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
 
-  const getFieldError = (
-    fieldName: keyof Pick<ChatFormData, "chatName" | "isActive">
-  ) => {
-    return state?.errors?.properties?.[fieldName]?.errors[0];
-  };
+    const formData = new FormData()
+    formData.append("botId", chat.botId)
+    formData.append("chatId", chat.chatId)
+    formData.append("chatName", chatName)
+    formData.append("isActive", String(isActive))
 
-  const title = "Изменение чата";
-  const description = "Заполните форму для изменения чата";
+    await mutateAsync(formData)
+  }
+
+  // --- Получение ошибки для поля ---
+  const getFieldError = (fieldName: keyof Pick<ChatFormData, "chatName" | "isActive">) =>
+    response?.errors?.properties?.[fieldName]?.errors?.[0]
 
   return (
-    <Card className="w-full max-w-sm m-auto border-none">
-      <CardHeader className="px-2! pt-4!">
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+    <Card className="w-full max-w-sm m-auto border-none p-4">
+      <CardHeader className="px-2 pt-4">
+        <CardTitle>Изменение чата</CardTitle>
+        <CardDescription>Заполните форму для изменения чата</CardDescription>
       </CardHeader>
-      <CardContent className="p-2!">
-        <form action={actionSubmit} className="space-y-6" autoComplete="on">
-          <Input
-            name={"chatName"}
-            placeholder="Имя чата..."
-            required
-            minLength={3}
-            defaultValue={state.inputs?.chatName}
-            aria-describedby="chatName"
-            className={getFieldError("chatName") ? "border-red-500" : ""}
-          />
 
-          {getFieldError("chatName") && (
-            <p id="chatName" className="text-sm text-red-500">
-              {getFieldError("chatName")}
-            </p>
-          )}
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="isActive-chat"
-              value={isActive ? "true" : "false"}
-              onCheckedChange={setIsActive}
+      <CardContent className="p-2">
+        <form autoComplete="on" className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <Input
+              aria-describedby="chatName"
+              className={getFieldError("chatName") ? "border-red-500" : ""}
+              minLength={3}
+              name="chatName"
+              onChange={(e) => setChatName(e.target.value)}
+              placeholder="Имя чата..."
+              required
+              value={chatName}
             />
-            <Label htmlFor="isActive-chat">
-              {isActive ? "Активен" : "Не активен"}
-            </Label>
+
+            {getFieldError("chatName") && (
+              <p className="text-sm text-red-500 mt-1" id="chatName">
+                {getFieldError("chatName")}
+              </p>
+            )}
+          </div>
+
+          {/* === Переключатель активности === */}
+          <div className="flex items-center space-x-2">
+            <Switch checked={isActive} id="isActive-chat" onCheckedChange={setIsActive} />
+            <Label htmlFor="isActive-chat">{isActive ? "Активен" : "Не активен"}</Label>
           </div>
 
           <SubmitFormButton
-            title="Сохранить"
-            isPending={isPending}
             className="ml-auto mr-2 w-max"
+            isPending={isPending}
+            title="Сохранить"
           />
+
+          {response.message && (
+            <p className={`text-sm ${response.success ? "text-green-600" : "text-red-600"}`}>
+              {response.message}
+            </p>
+          )}
         </form>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

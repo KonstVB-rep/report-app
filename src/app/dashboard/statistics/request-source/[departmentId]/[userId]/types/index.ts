@@ -1,14 +1,11 @@
-import { AllStatusKeys } from "@/entities/deal/lib/constants";
-
 export type Deal = {
-  dateRequest: Date;
-  resource: string;
-  dealStatus: AllStatusKeys;
-};
+  dateRequest: Date
+  resource: string
+}
 
 export type Props = {
   data: {
-    deals: Deal[] | [];
-    totalDealsCount: number;
-  };
-};
+    deals: Deal[] | []
+    totalDealsCount: number
+  }
+}

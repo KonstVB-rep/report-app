@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "format": "npx prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "prisma:generate": "prisma generate",
     "build": "npm run prisma:generate && cross-env NODE_OPTIONS=--max-old-space-size=16384 next build",
     "start": "next start",
-    "lint": "next lint",
-    "analyze": "next build --profile"
+    "format": "biome check --write --enforce-assist=true src && biome format --write src",
+    "lint": "biome lint src",
+    "analyze": "next build --profile",
+    "prepare": "husky"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.17",
@@ -20,6 +21,7 @@
     "@fullcalendar/timegrid": "^6.1.17",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^5.1.1",
+    "@prisma/adapter-mariadb": "^7.0.1",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-avatar": "^1.1.3",
     "@radix-ui/react-checkbox": "^1.1.4",
@@ -58,17 +60,19 @@
     "cmdk": "^1.0.4",
     "cuid": "^3.0.0",
     "date-fns": "^4.1.0",
+    "embla-carousel-react": "^8.6.0",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "jose": "^6.0.8",
     "lucide-react": "^0.544.0",
+    "mariadb": "^3.4.5",
     "mime-types": "^3.0.1",
-    "next": "15.5.3",
+    "next": "^15.5.4",
     "next-themes": "^0.4.4",
     "postcss": "^8.5.6",
-    "react": "^19.1.1",
+    "react": "^19.2.0",
     "react-day-picker": "^9.9.0",
-    "react-dom": "^19.1.1",
+    "react-dom": "^19.2.0",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.54.2",
     "react-imask": "^7.6.1",
@@ -83,25 +87,32 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
+    "@biomejs/biome": "^2.3.7",
     "@next/bundle-analyzer": "^15.4.3",
-    "@prisma/client": "^6.14.0",
+    "@prisma/client": "^7.0.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/bcrypt": "^6.0.0",
     "@types/file-saver": "^2.0.7",
     "@types/mime-types": "^3.0.1",
     "@types/node": "^24.3.3",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
     "@types/uuid": "^10.0.0",
     "cross-env": "^10.0.0",
-    "prettier": "^3.6.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "prisma": "^6.15.0",
+    "prisma": "^7.0.1",
     "tailwindcss": "^4.1.13",
     "tsx": "^4.19.3",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "npx @biomejs/biome format --write",
+      "npx @biomejs/biome lint || true"
+    ]
   }
 }

@@ -1,31 +1,47 @@
-"use client";
+"use client"
 
-import { PermissionEnum } from "@prisma/client";
-
-import { memo } from "react";
-
-import useStoreUser from "@/entities/user/store/useStoreUser";
+import { memo, useEffect, useState } from "react"
+import type { PermissionEnum } from "@prisma/client"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { checkPermission } from "@/shared/api/checkByServer"
 
 type ProtectedProps = {
-  permissionArr?: PermissionEnum[];
-  children: React.ReactNode;
-};
+  permission: PermissionEnum
+  children: React.ReactNode
+  defaultNode?: React.ReactNode
+}
 
-const ProtectedByPermissions = memo(
-  ({ children, permissionArr }: ProtectedProps) => {
-    const { hasPermissionByRole, authUser } = useStoreUser();
+const ProtectedByPermissions = memo(({ children, permission, defaultNode }: ProtectedProps) => {
+  const { authUser } = useStoreUser()
+  const [loading, setloading] = useState(false)
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
 
-    if (!authUser) return null;
-    if (hasPermissionByRole) return children;
+  useEffect(() => {
+    let mounted = true
+    if (!permission) return
 
-    const hasPermissions = permissionArr?.every((p) =>
-      authUser.permissions?.includes(p)
-    );
+    setloading(true)
 
-    return hasPermissions ? children : null;
-  }
-);
+    checkPermission(permission)
+      .then((result) => {
+        if (mounted) {
+          setHasAccess(result)
+        }
+      })
+      .finally(() => setloading(false))
 
-ProtectedByPermissions.displayName = "ProtectedByPermissions";
+    return () => {
+      mounted = false
+    }
+  }, [permission])
 
-export default ProtectedByPermissions;
+  if (hasAccess === null || loading) return null
+
+  if (!authUser) return defaultNode ?? null
+
+  return hasAccess ? children : (defaultNode ?? null)
+})
+
+ProtectedByPermissions.displayName = "ProtectedByPermissions"
+
+export default ProtectedByPermissions
