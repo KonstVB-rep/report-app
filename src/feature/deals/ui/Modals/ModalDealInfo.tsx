@@ -6,7 +6,7 @@ import RetailItemInfo from "../RetailInfo"
 const ModalDealInfo = ({ id, type }: { id: string; type: DealType }) => {
   return (
     <ModalContent
-      className="max-h-[94vh] overflow-y-auto overflow-x-hidden max-w-[94%] min-h-[90vh] flex md:p-5"
+      className="max-h-[94vh] w-full overflow-y-auto overflow-x-hidden max-w-[94%] min-h-[90vh] flex md:p-5"
       closeStyle="bg-background p-1 -right-1 -top-1 rounded"
       title="Редактировать проект"
     >
