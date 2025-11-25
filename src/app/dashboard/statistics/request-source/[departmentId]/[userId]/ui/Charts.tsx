@@ -104,8 +104,6 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
     router.replace(`?${params.toString()}`)
   }
 
-  console.log(data, "data")
-
   if (deals.length === 0) return <EmptyData />
 
   return (

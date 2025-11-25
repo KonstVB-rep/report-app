@@ -9,6 +9,7 @@ import {
   startOfYear,
 } from "date-fns"
 import type { DateRange } from "react-day-picker"
+import type { PieLabelRenderProps } from "recharts"
 import type { Props as LabelProps } from "recharts/types/component/Label"
 
 export const getPeriodRange = (period: "week" | "month" | "year"): DateRange => {
@@ -69,28 +70,13 @@ const dateFilter = (date: Date, filterValue?: DateRange): boolean => {
 }
 
 const renderCustomizedLabel = (isDark: boolean) => {
-  const LabelComponent = (props: LabelProps) => {
-    const {
-      cx = 0,
-      cy = 0,
-      midAngle = 0,
-      outerRadius = 0,
-      percent = 0,
-      payload,
-    } = props as unknown as {
-      cx: number
-      cy: number
-      midAngle: number
-      outerRadius: number
-      percent: number
-      payload?: { name: string; value: number }
-    }
+  return (props: PieLabelRenderProps) => {
+    const { cx = 0, cy = 0, midAngle = 0, outerRadius = 0, percent = 0, payload } = props
 
     const RADIAN = Math.PI / 180
-    const dynamicRadius = outerRadius + 30
-
-    const x = cx + dynamicRadius * Math.cos(-midAngle * RADIAN)
-    const y = cy + dynamicRadius * Math.sin(-midAngle * RADIAN)
+    const radius = outerRadius + 30
+    const x = cx + radius * Math.cos(-midAngle * RADIAN)
+    const y = cy + radius * Math.sin(-midAngle * RADIAN)
 
     return (
       <text
@@ -110,9 +96,6 @@ const renderCustomizedLabel = (isDark: boolean) => {
       </text>
     )
   }
-
-  LabelComponent.displayName = "CustomPieLabel"
-  return LabelComponent
 }
 
 export { isFromSite, normalizeResource, dateFilter, renderCustomizedLabel }
