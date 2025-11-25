@@ -137,7 +137,7 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
 
                 <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
 
-                <hr className="w-full h-[1px] rounded-lg bg-gray-500" />
+                <hr className="w-full h-px rounded-lg bg-gray-500" />
 
                 <FinanceInfo data={dataFinance} />
               </IntoDealItem>

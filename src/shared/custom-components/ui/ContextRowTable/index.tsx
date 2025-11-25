@@ -49,7 +49,7 @@ const ContextRowTable = ({
           <ContextMenuContent className="grid gap-1 bg-background">
             {path && (
               <ContextMenuItem
-                className="flex w-full items-center justify-start gap-2 p-2"
+                className="flex w-full items-center justify-start gap-2 p-2 cursor-pointer"
                 onClick={() => setOpenModal("more")}
               >
                 <FileText size="14" /> Подробнее

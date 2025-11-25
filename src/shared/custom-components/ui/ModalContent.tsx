@@ -11,12 +11,19 @@ interface ModalContentProps {
   children: ReactNode
   title?: string
   showX?: boolean
+  closeStyle?: string
 }
 
-const ModalContent = ({ children, className, title, showX = true }: ModalContentProps) => {
+const ModalContent = ({
+  children,
+  className,
+  title,
+  showX = true,
+  closeStyle,
+}: ModalContentProps) => {
   return (
-    <DialogContent className={className} showX={showX}>
-      <DialogHeader>
+    <DialogContent className={className} closeStyle={closeStyle} showX={showX}>
+      <DialogHeader className="sr-only">
         <DialogTitle className="sr-only">{title}</DialogTitle>
         <DialogDescription></DialogDescription>
       </DialogHeader>
