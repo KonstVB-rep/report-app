@@ -10,7 +10,6 @@ import {
 } from "date-fns"
 import type { DateRange } from "react-day-picker"
 import type { PieLabelRenderProps } from "recharts"
-import type { Props as LabelProps } from "recharts/types/component/Label"
 
 export const getPeriodRange = (period: "week" | "month" | "year"): DateRange => {
   const now = new Date()

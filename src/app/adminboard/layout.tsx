@@ -1,21 +1,26 @@
 "use client"
 
 import type { PropsWithChildren } from "react"
-import LogoutDialog from "@/feature/auth/ui/logout-dialog"
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header"
-import { SidebarProvider } from "@/shared/components/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
+import AdminSidebar from "@/widgets/AminSidebar"
+import LinksPageBlock from "./ui/LinksPageBlock"
 
 const AdminboardLayout = ({ children }: PropsWithChildren) => {
   return (
     <div className="min-w-64 [--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
-        <div className="flex bg-background">
-          <SiteHeader />
-          <div className="min-h-full border-b border-l px-2 items-center hidden md:flex border-border">
-            <LogoutDialog withTitle={false} />
-          </div>
-        </div>
-        {children}
+        <SidebarProvider className="h-full bottom-0">
+          <AdminSidebar>
+            <LinksPageBlock />
+          </AdminSidebar>
+          <main className="w-full px-2">
+            <SiteHeader />
+            <SidebarInset className="h-auto min-h-min">
+              <div className="flex-1">{children}</div>
+            </SidebarInset>
+          </main>
+        </SidebarProvider>
       </SidebarProvider>
     </div>
   )

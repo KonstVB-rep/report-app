@@ -925,3 +925,8 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
     color: var(--secondary);
   }
 }
+
+.pie-no-outline *[tabindex] {
+  outline: none !important;
+  box-shadow: none !important;
+}
