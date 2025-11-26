@@ -33,7 +33,7 @@ const DealTableTemplate = ({ children }: DealTableTemplateProps) => {
     return <ErrorMessageTable message={error?.message || "Пользователь не найден"} />
   }
 
-  return <section className="h-full p-4 grid gap-2 content-start">{children}</section>
+  return <section className="h-full p-2 grid gap-2 content-start">{children}</section>
 }
 
 export default DealTableTemplate

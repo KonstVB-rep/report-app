@@ -21,7 +21,7 @@ export const TitlePageBlock = ({
       <TitlePage title={title} />
       {subTitle && <SubTitlePage text={subTitle} />}
       <TooltipComponent content={infoText}>
-        <Button className="absolute rounded-xs top-0 left-0" size="icon" variant="ghost">
+        <Button className="absolute rounded-md top-0 left-0" size="icon" variant="ghost">
           <Info size="20" />
         </Button>
       </TooltipComponent>

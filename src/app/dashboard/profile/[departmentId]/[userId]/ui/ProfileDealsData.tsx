@@ -51,7 +51,7 @@ const ProfileDealsData = ({ user }: { user: User }) => {
     <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
       <div className="flex flex-col gap-2">
         <p className="p-2">Сделки за период:</p>
-        <div className="flex gap-1">
+        <div className="flex gap-1 justify-around">
           {dateRanges.map((item) => (
             <Button
               className={`${dateRangeState === item.name && "border-2 border-foreground border-solid disabled:opacity-70"}`}
