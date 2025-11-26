@@ -70,8 +70,6 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       dateRequets: dateRequests[name],
     }))
 
-    console.log(data, "data")
-
     return { data, countsStatuses }
   }, [deals, selectedDate])
 
@@ -113,7 +111,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         subTitle={`Количество заявок: ${totalDealsCount}`}
         title="Статистика заявок"
       />
-      <div className="px-4 py-2 border rounded-md w-fit">Выбранные за период: {data.length}</div>
+      <div className="px-4 py-2 border rounded-md w-fit">Выбранные за период: {deals.length}</div>
       <div className="flex gap-2 items-start justify-between">
         <DateFilters
           dateRangeState={dateRangeState}
@@ -140,6 +138,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                 >
                   <PieChart>
                     <Pie
+                      className="pie-no-outline"
                       cx="40%"
                       cy="50%"
                       data={data}

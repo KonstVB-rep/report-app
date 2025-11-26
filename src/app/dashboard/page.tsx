@@ -45,7 +45,7 @@ const Dashboard = () => {
       : Themes[currentTheme]
 
   return (
-    <div className="min-h-[calc(100svh-var(--header-height)-2px)] grid place-items-center relative overflow-hidden ">
+    <div className="min-h-[calc(100svh-var(--header-height)-2px)] w-full grid place-items-center relative overflow-hidden ">
       <Starfield
         backgroundColor={currentThemeOptions.backgroundColor}
         speedFactor={0.005}

@@ -1,4 +1,3 @@
-import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -11,13 +10,13 @@ const LinkPage = ({ path, title }: { path: string; title: string }) => {
   return (
     <Link
       className={cn(
-        "flex items-center justify-between p-1 px-3 border w-full rounded-md bg-muted self-end",
+        "flex items-center justify-between py-2 px-3 border w-full rounded-md bg-muted self-end",
         isThisPath && "border-blue-600",
       )}
       href={path}
       prefetch={false}
     >
-      {title} <ChevronRight />
+      {title}
     </Link>
   )
 }
