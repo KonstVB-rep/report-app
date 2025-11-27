@@ -76,3 +76,14 @@ export function toMoscowISOString(date: Date): string {
 
   return moscowTime.toISOString()
 }
+
+export async function subscribeUser() {
+  if (!("serviceWorker" in navigator)) return null
+
+  const reg = await navigator.serviceWorker.ready
+
+  return await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+  })
+}

@@ -1,20 +1,16 @@
 import withBundleAnalyzer from "@next/bundle-analyzer"
+import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD } from "next/constants"
 
-import type { NextConfig } from "next"
+const withAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: true,
+})
 
-const nextConfig: NextConfig = {
+const baseConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "downloader.disk.yandex.ru",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.storage.yandex.net",
-      },
+      { protocol: "https", hostname: "downloader.disk.yandex.ru", pathname: "/**" },
+      { protocol: "https", hostname: "*.storage.yandex.net" },
     ],
     qualities: [25, 50, 75, 80, 90, 100],
     formats: ["image/webp", "image/avif"],
@@ -22,52 +18,32 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   compiler: {
-    // removeConsole: process.env.NODE_ENV === "production",
     reactRemoveProperties: process.env.NODE_ENV === "production",
   },
-
-  eslint: {
-    ignoreDuringBuilds: !!process.env.CI,
-  },
-  typescript: {
-    ignoreBuildErrors: false,
-  },
-
-  productionBrowserSourceMaps: false,
+  eslint: { ignoreDuringBuilds: !!process.env.CI },
+  typescript: { ignoreBuildErrors: false },
   reactStrictMode: true,
-
   experimental: {
-    staleTimes: {
-      dynamic: 0,
-      static: 0,
-    },
-
+    staleTimes: { dynamic: 0, static: 0 },
     serverActions: {
       allowedOrigins: [
         process.env.NEXT_PUBLIC_API_BASE_URL
           ? new URL(process.env.NEXT_PUBLIC_API_BASE_URL).origin
           : "http://localhost:3000",
-      ].filter(Boolean) as string[],
+      ],
     },
     optimizePackageImports: [
-      // UI-библиотеки
-      "@radix-ui/react-*", // Все Radix UI компоненты
+      "@radix-ui/react-*",
       "lucide-react",
       "recharts",
-
-      // Утилиты
       "date-fns",
       "clsx",
       "tailwind-merge",
       "zod",
       "exceljs",
-
-      // Работа с данными
       "@tanstack/react-table",
       "@tanstack/react-query",
       "@tanstack/react-virtual",
-
-      // Другое
       "react-day-picker",
       "react-hook-form",
       "react-starfield",
@@ -75,27 +51,34 @@ const nextConfig: NextConfig = {
       "@fullcalendar/*",
     ],
   },
-
-  // Отключаем in-memory cache
   onDemandEntries: {
-    // период удержания страниц в памяти (мс)
-    maxInactiveAge: 25 * 1000,
-    // количество страниц, которые должны сохраняться в памяти
-    pagesBufferLength: 2,
+    maxInactiveAge: 5 * 60 * 1000,
+    pagesBufferLength: 5,
   },
-
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       config.resolve.alias["react-devtools"] = false
     }
-
     return config
   },
 }
 
-const withBundleAnalyzerConfig = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-  openAnalyzer: true,
-})
+const nextConfig = async (phase) => {
+  let config = baseConfig
 
-export default withBundleAnalyzerConfig(nextConfig)
+  // Serwist PWA
+  if (phase === PHASE_PRODUCTION_BUILD) {
+    const withSerwist = (await import("@serwist/next")).default({
+      swSrc: "src/service-worker/app-worker.ts", // В продакшене Serwist транспилирует TS
+      swDest: "public/sw.js",
+      reloadOnOnline: true,
+    })
+    config = withSerwist(config)
+  } else {
+    console.warn("Service Worker disabled in development mode")
+  }
+
+  return withAnalyzer(config)
+}
+
+export default nextConfig

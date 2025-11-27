@@ -45,6 +45,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@react-spring/web": "^10.0.1",
+    "@serwist/next": "^9.2.3",
     "@tailwindcss/postcss": "^4.1.13",
     "@tanstack/match-sorter-utils": "^8.19.4",
     "@tanstack/react-query": "^5.66.11",

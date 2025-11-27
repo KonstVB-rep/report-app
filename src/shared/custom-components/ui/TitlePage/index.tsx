@@ -17,7 +17,7 @@ export const TitlePageBlock = ({
   infoText: string
 }) => {
   return (
-    <div className="py-1 dark:bg-black/50 bg-black/10 rounded relative min-h-9">
+    <div className="py-1 dark:bg-black/50 bg-black/10 rounded-md relative min-h-9 border border-gray-600">
       <TitlePage title={title} />
       {subTitle && <SubTitlePage text={subTitle} />}
       <TooltipComponent content={infoText}>
