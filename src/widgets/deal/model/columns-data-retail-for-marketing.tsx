@@ -19,7 +19,7 @@ export type typeofDelivery = keyof typeof DeliveryRetailLabels
 
 export type typeofStatus = keyof typeof StatusRetailLabels
 
-export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
+export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[] = [
   {
     ...RowNumber<RetailResponse>(),
   },
@@ -251,5 +251,23 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       hidden: true,
     },
     accessorFn: (row: RetailResponse) => row.resource,
+  },
+  {
+    id: "user",
+    header: "Менеджер",
+    cell: (info) => info.getValue(),
+    enableHiding: true,
+    meta: {
+      hidden: true,
+    },
+    filterFn: (row, _, filterValues) => {
+      if (!filterValues || filterValues.length === 0) {
+        return true
+      }
+
+      const userIdOfProject = row.original.userId
+      return filterValues.includes(userIdOfProject)
+    },
+    accessorFn: (row: RetailResponse) => row.userId,
   },
 ]

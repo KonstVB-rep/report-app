@@ -28,9 +28,10 @@ const ModalDealInfo = dynamic(() => import("@/feature/deals/ui/Modals/ModalDealI
 })
 
 interface DealsTableProps<T extends TypeBaseDT> {
-  columns: ColumnDef<T>[]
+  columns: ColumnDef<T, unknown>[]
   data: T[]
   hasEditDeleteActions?: boolean
+  hiddenCols?: Record<NonNullable<ColumnDef<T, unknown>["id"]>, boolean>
 }
 
 const pageParamsSchema = z.object({

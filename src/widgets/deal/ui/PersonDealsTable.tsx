@@ -86,6 +86,7 @@ const PersonDealsTable = () => {
         <DealsTable
           columns={Columns(dealType as TableType) as ColumnDef<TypeBaseDT>[]}
           data={data as TypeBaseDT[]}
+          hiddenCols={{ resource: false, user: false, id: false }}
         />
       </DealTableTemplate>
     </NotFoundByPosition>

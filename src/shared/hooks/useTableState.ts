@@ -19,7 +19,6 @@ export interface TableMeta<TData> {
 export const useTableState = <T extends Record<string, unknown>>(
   data: T[],
   columns: ColumnDef<T>[],
-  hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>,
 ) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
@@ -73,13 +72,6 @@ export const useTableState = <T extends Record<string, unknown>>(
     enableRowSelection: true,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
-    meta: {
-      columnVisibility: {
-        user: false,
-        id: false,
-        ...hiddenColumns,
-      },
-    } as TableMeta<T>,
   })
 
   const filtersContextValue = {

@@ -9,6 +9,7 @@ import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import TableComponentDT from "@/shared/custom-components/ui/Table/TableComponentDT"
 import { useTableState } from "@/shared/hooks/useTableState"
+import { ReactNode } from "react"
 
 const FiltersBlock = dynamic(() => import("./Filters/FiltersBlock"), {
   ssr: false,
@@ -20,6 +21,7 @@ interface DataTableProps<T> {
   data: T[]
   hasEditDeleteActions?: boolean
   children?: React.ReactNode
+  row: ReactNode
 }
 
 const DataTable = <T extends Record<string, unknown>>({
@@ -27,11 +29,11 @@ const DataTable = <T extends Record<string, unknown>>({
   data,
   hasEditDeleteActions = true,
   children,
+  row,
 }: DataTableProps<T>) => {
   const { table, filtersContextValue, openFilters, setGlobalFilter, globalFilter } = useTableState(
     data,
     columns,
-    { resource: false },
   )
 
   const currentData = table.getRowModel().rows.map((row) => row.original)

@@ -4,7 +4,6 @@ import { ListChecks } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
-import type { TableMeta } from "@/shared/hooks/useTableState"
 
 interface SelectColumnsProps<TData extends Record<string, unknown>> {
   data: Table<TData>
@@ -23,22 +22,23 @@ const SelectColumns = <TData extends Record<string, unknown>>({
     data.setColumnVisibility(Object.fromEntries(data.getAllColumns().map((col) => [col.id, true])))
   }
 
-  const tableMeta = data.options.meta as TableMeta<TData>
-  const tanleMetaHiddenCols = Object.entries(tableMeta?.columnVisibility || {}).length
+  const defaultHiddensColsCount = data
+    .getAllColumns()
+    .filter((col) => col.columnDef.meta?.hidden).length
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger
         asChild
         className={`${
-          hiddenColumns.length - 2 > 0 ? "border-solid" : "border-dashed"
+          hiddenColumns.length - defaultHiddensColsCount > 0 ? "border-solid" : "border-dashed"
         } border-muted-foreground`}
       >
         <Button className="relative flex gap-1" title="Visibility columns" variant="outline">
           <ListChecks />
-          {hiddenColumns.length - tanleMetaHiddenCols > 0 && (
+          {hiddenColumns.length - defaultHiddensColsCount > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {hiddenColumns.length - tanleMetaHiddenCols}
+              {hiddenColumns.length - defaultHiddensColsCount}
             </span>
           )}
           {"Колонки показать/скрыть"}
@@ -69,7 +69,7 @@ const SelectColumns = <TData extends Record<string, unknown>>({
                 </div>
               ))}
           </div>
-          {hiddenColumns.length - tanleMetaHiddenCols > 0 && (
+          {hiddenColumns.length - defaultHiddensColsCount > 0 && (
             <Button
               className="btn_hover w-full text-xs"
               onClick={handleResetVisibility}
