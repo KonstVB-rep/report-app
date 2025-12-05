@@ -1,10 +1,4 @@
-import type React from "react"
-import { useCallback } from "react"
-import type { DealType } from "@prisma/client"
-import type { ColumnDef, Row } from "@tanstack/react-table"
-import dynamic from "next/dynamic"
-import z from "zod"
-import { UnionParams } from "@/entities/deal/lib/constants"
+import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
 import {
@@ -12,8 +6,15 @@ import {
   TableProvider,
 } from "@/shared/custom-components/ui/Table/context/TableContext"
 import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
+import TableComponentDT from "@/shared/custom-components/ui/Table/TableComponentDT"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
+import type { DealType } from "@prisma/client"
+import type { ColumnDef, Row } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
+import type React from "react"
+import { useCallback } from "react"
+import z from "zod"
 
 const EditDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/EditDealContextMenu"), {
   ssr: false,
@@ -31,11 +32,11 @@ interface DealsTableProps<T extends TypeBaseDT> {
   columns: ColumnDef<T, unknown>[]
   data: T[]
   hasEditDeleteActions?: boolean
-  hiddenCols?: Record<NonNullable<ColumnDef<T, unknown>["id"]>, boolean>
+  hiddenCols?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>
 }
 
 const pageParamsSchema = z.object({
-  dealType: z.enum(UnionParams),
+  dealType: z.enum(UnionDealTypeParams),
 })
 
 const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
@@ -70,7 +71,18 @@ const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
       getContextMenuActions={getContextMenuActions}
       renderAdditionalInfo={(dealId: string) => <AdditionalContacts dealId={dealId} />}
     >
-      <DataTable {...props}>
+      <DataTable
+        {...props}
+        dealType={dealType}
+        hiddenColumns={props.hiddenCols}
+        rowData={({ table, openFilters, hasEditDeleteActions }) => (
+          <TableComponentDT
+            table={table}
+            openFilters={openFilters}
+            hasEditDeleteActions={hasEditDeleteActions}
+          />
+        )}
+      >
         <AddNewDeal type={dealType} />
       </DataTable>
     </TableProvider>

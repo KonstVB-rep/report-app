@@ -26,7 +26,7 @@ export type TableBodyRowProps<T> = {
 //   ? { [K in keyof Result as Result[K] extends never ? never : K]: Result[K] }
 //   : never;
 
-//  export type AllCommonKeys = CommonProperties<[ProjectResponse, RetailResponse, ContractResponse]>;
+//  export type AllCommonKeys = CommonProperties<[ProjectResponse, RetailResponse, ProjectResponse]>;
 
 export type TypeBaseDT = {
   id: string

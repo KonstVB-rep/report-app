@@ -3,9 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google"
 
 import "@/shared/custom-components/ui/DateRangeFilter/datePickerStyles.css"
 
+import type { Viewport } from "next"
 import "./globals.css"
 import AppProvider from "./provider"
-import type { Viewport } from "next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

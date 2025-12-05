@@ -1,9 +1,5 @@
 "use client"
 
-import type { ReactNode } from "react"
-import type { CellContext, ColumnDef } from "@tanstack/react-table"
-import { endOfDay, startOfDay } from "date-fns"
-import type { DateRange } from "react-day-picker"
 import type { ProjectResponse } from "@/entities/deal/types"
 import {
   DeliveryProjectLabels,
@@ -11,6 +7,10 @@ import {
   StatusProjectLabels,
 } from "@/feature/deals/lib/constants"
 import { formatterCurrency } from "@/shared/lib/utils"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { ReactNode } from "react"
+import type { DateRange } from "react-day-picker"
 import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
 export type typeofDirections = keyof typeof DirectionProjectLabels
@@ -29,6 +29,7 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     meta: {
       isNotSearchable: true,
       hidden: true,
+      title: "id",
     },
   },
   {
@@ -41,6 +42,7 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     enableHiding: true,
     meta: {
       isDateFilter: true,
+      title: "Дата заявки",
     },
     enableResizing: false,
     filterFn: (row, columnId, filterValue) => {
@@ -70,10 +72,11 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
   },
   {
     id: "plannedDateConnection",
-    enableHiding: false,
+    enableHiding: true,
     meta: {
       isNotSearchable: true,
       hidden: true,
+      title: "Плановая дата контакта",
     },
     // header: "Плановая дата контакта",
     // cell: (info: CellContext<ProjectResponse, unknown>) => {
@@ -123,6 +126,9 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
       return value
     },
     enableHiding: true,
+    meta: {
+      title: "Название сделки",
+    },
     accessorFn: (row: ProjectResponse) => row.nameDeal,
   },
   {
@@ -133,6 +139,9 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
       return value
     },
     enableHiding: true,
+    meta: {
+      title: "Название объекта",
+    },
     accessorFn: (row: ProjectResponse) => row.nameObject,
   },
   {
@@ -153,8 +162,10 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     enableHiding: true,
     meta: {
       isMultiSelect: true,
+      hidden: true,
+      title: "Направление",
     },
-    accessorFn: (row: ProjectResponse) => row.direction,
+    // accessorFn: (row: ProjectResponse) => row.direction,
   },
   {
     id: "deliveryType",
@@ -177,8 +188,12 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
 
       return rowValue === filterValue
     },
+    meta: {
+      hidden: true,
+      title: "Тип поставки",
+    },
     enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.deliveryType,
+    // accessorFn: (row: ProjectResponse) => row.deliveryType,
   },
   {
     id: "contact",
@@ -186,6 +201,7 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     meta: {
       isNotSearchable: true,
       hidden: true,
+      title: "Контактное лицо",
     },
     // header: "Контактное лицо",
     // cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
@@ -198,6 +214,7 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     meta: {
       isNotSearchable: true,
       hidden: true,
+      title: "Телефон",
     },
     // accessorKey: "phone",
     // header: "Телефон",
@@ -215,6 +232,7 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     meta: {
       isNotSearchable: true,
       hidden: true,
+      title: "Email",
     },
     // header: "Email",
     // cell: (info: CellContext<ProjectResponse, unknown>) => (
@@ -229,6 +247,9 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
+    meta: {
+      title: "Сумма КП",
+    },
     accessorFn: (row: ProjectResponse) => row.amountCP,
   },
   {
@@ -237,6 +258,7 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     meta: {
       isNotSearchable: true,
       hidden: true,
+      title: "Сумма работ",
     },
     // header: "Сумма работ",
     // cell: (info: CellContext<ProjectResponse, unknown>) => {
@@ -251,6 +273,7 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     meta: {
       isNotSearchable: true,
       hidden: true,
+      title: "Сумма закупки",
     },
     // header: "Сумма закупки",
     // cell: (info: CellContext<ProjectResponse, unknown>) =>
@@ -260,11 +283,16 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
   },
   {
     id: "delta",
-    header: "Дельта",
-    cell: (info: CellContext<ProjectResponse, unknown>) =>
-      formatterCurrency.format(parseFloat(info.getValue() as string)),
-    enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.delta,
+    enableHiding: false,
+    meta: {
+      title: "Дельта",
+      hidden: true,
+    },
+    // header: "Дельта",
+    // cell: (info: CellContext<ProjectResponse, unknown>) =>
+    //   formatterCurrency.format(parseFloat(info.getValue() as string)),
+    // enableHiding: true,
+    // accessorFn: (row: ProjectResponse) => row.delta,
   },
   {
     id: "dealStatus",
@@ -281,6 +309,9 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
       }
       return rowValue === value
     },
+    meta: {
+      title: "Статус",
+    },
     accessorFn: (row: ProjectResponse) => row.dealStatus,
   },
   {
@@ -292,26 +323,61 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     },
     minSize: 300,
     enableHiding: true,
-    accessorFn: (row: ProjectResponse) => row.comments,
-  },
-  {
-    id: "resource",
-    accessorKey: "resource",
-    header: "Источник/Сайт",
-    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
-    enableHiding: false,
     meta: {
-      hidden: true,
+      title: "Комментарии",
     },
-    accessorFn: (row: ProjectResponse) => row.resource,
+    accessorFn: (row: ProjectResponse) => row.comments,
   },
   {
     id: "user",
     header: "Менеджер",
     cell: (info) => info.getValue(),
     enableHiding: true,
+    // meta: {
+    //   hidden: false,
+    // },
+    meta: {
+      title: "Менеджер",
+    },
+    filterFn: (row, _, filterValues) => {
+      if (!filterValues || filterValues.length === 0) {
+        return true
+      }
+
+      const userIdOfProject = row.original.userId
+      return filterValues.includes(userIdOfProject)
+    },
+    accessorFn: (row: ProjectResponse) => row.userId,
+  },
+  {
+    id: "resource",
+    header: "Ресурс",
+    cell: (info) => info.getValue(),
+    enableHiding: true,
+    // meta: {
+    //   hidden: true,
+    // },
+    meta: {
+      title: "Ресурс",
+    },
+    // filterFn: (row, _, filterValues) => {
+    //   if (!filterValues || filterValues.length === 0) {
+    //     return true
+    //   }
+
+    //   const userIdOfProject = row.original.userId
+    //   return filterValues.includes(userIdOfProject)
+    // },
+    accessorFn: (row: ProjectResponse) => row.resource,
+  },
+  {
+    id: "user",
+    header: "Менеджер",
+    cell: (info) => info.getValue(),
+    enableHiding: false,
     meta: {
       hidden: true,
+      title: "Менеджер",
     },
     filterFn: (row, _, filterValues) => {
       if (!filterValues || filterValues.length === 0) {

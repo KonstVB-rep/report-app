@@ -1,3 +1,4 @@
+import { TableType, DealsUnionType } from "@/entities/deal/types"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -87,3 +88,13 @@ export async function subscribeUser() {
     applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
   })
 }
+
+export const TAB_TO_DEAL_TYPE: Record<TableType, DealsUnionType> = {
+  projects: "projects",
+  retails: "retails",
+  contracts: "projects",
+}
+
+// export const mapTabToDealType = (tab: TableType): DealsUnionType => {
+//   return TAB_TO_DEAL_TYPE[tab]
+// }

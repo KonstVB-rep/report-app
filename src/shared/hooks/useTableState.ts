@@ -1,6 +1,6 @@
 // src/shared/hooks/useTableState.ts
 
-import { useMemo, useState } from "react"
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -10,7 +10,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
+import { useState } from "react"
 
 export interface TableMeta<TData> {
   columnVisibility: Partial<Record<Extract<NonNullable<ColumnDef<TData>["id"]>, string>, boolean>>
@@ -19,6 +19,7 @@ export interface TableMeta<TData> {
 export const useTableState = <T extends Record<string, unknown>>(
   data: T[],
   columns: ColumnDef<T>[],
+  hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>,
 ) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
@@ -39,17 +40,24 @@ export const useTableState = <T extends Record<string, unknown>>(
     searchableColumns,
   } = useDataTableFilters()
 
-  const columnVisibility = useMemo(() => {
-    const visibility: VisibilityState = { ...visibilityFromHook }
+  // const columnVisibility = useMemo(() => {
+  //   const visibility: VisibilityState = { ...visibilityFromHook };
 
-    ;(["id", "user", "resource"] as const).forEach((col) => {
-      if (!(col in visibility)) {
-        visibility[col] = false
-      }
-    })
+  //   // (["id", "user", "resource"] as const).forEach((col) => {
+  //   //   if (!(col in visibility)) {
+  //   //     visibility[col] = false;
+  //   //   }
+  //   // });
 
-    return visibility
-  }, [visibilityFromHook])
+  //   return visibility;
+  // }, [visibilityFromHook]);
+
+  const mergedColumnVisibility: VisibilityState = {
+    ...visibilityFromHook,
+    ...Object.fromEntries(
+      Object.entries(hiddenColumns || {}).map(([key, value]) => [key, !!value]),
+    ),
+  }
 
   const table = useReactTable({
     data,
@@ -59,7 +67,7 @@ export const useTableState = <T extends Record<string, unknown>>(
       rowSelection,
       columnFilters,
       globalFilter,
-      columnVisibility,
+      columnVisibility: mergedColumnVisibility,
     },
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
@@ -82,7 +90,7 @@ export const useTableState = <T extends Record<string, unknown>>(
     handleDateChange,
     handleClearDateFilter,
     columnFilters,
-    columnVisibility,
+    columnVisibility: visibilityFromHook,
     setColumnFilters,
     setColumnVisibility,
     includedColumns: searchableColumns,

@@ -1,17 +1,17 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { PermissionEnum } from "@prisma/client"
-import { Redo2 } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import z from "zod"
 import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
-import { UnionParams } from "../lib/constants"
+import { PermissionEnum } from "@prisma/client"
+import { Redo2 } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useMemo, useState } from "react"
+import z from "zod"
+import { UnionDealTypeParams } from "../lib/constants"
 import type { DealsUnionType } from "../types"
 
 const linksPersonTable = (deptId: string | number) => ({
@@ -41,7 +41,7 @@ const pageParamsSchema = z.object({
   departmentId: z.string().transform((value) => {
     return value as keyof typeof DepartmentLabelsById
   }),
-  dealType: z.enum(UnionParams),
+  dealType: z.enum(UnionDealTypeParams),
 })
 
 const LinkToUserTable = () => {

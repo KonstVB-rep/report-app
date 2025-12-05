@@ -165,15 +165,15 @@ export const useGetDealById = <
 }
 
 export const useGetAllProjects = (userId: string | null, departmentId: number) => {
-  const { authUser } = useStoreUser()
+  // const { authUser } = useStoreUser()
 
   return useQuery({
-    queryKey: ["all-projects", authUser?.departmentId],
+    queryKey: ["all-projects", departmentId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
+        // if (!authUser?.id) {
+        //   throw new Error("Пользователь не авторизован")
+        // }
 
         return (await getAllProjectsByDepartmentQuery(departmentId)) ?? []
       } catch (error) {
@@ -186,7 +186,7 @@ export const useGetAllProjects = (userId: string | null, departmentId: number) =
         throw error
       }
     },
-    enabled: !!userId && !!authUser?.departmentId,
+    enabled: !!userId && !!departmentId,
     retry: 2,
     staleTime: 1000 * 60,
     refetchInterval: 60 * 1000 * 5,
@@ -194,15 +194,15 @@ export const useGetAllProjects = (userId: string | null, departmentId: number) =
 }
 
 export const useGetAllRetails = (userId: string | null, departmentId: number) => {
-  const { authUser } = useStoreUser()
+  // const { authUser } = useStoreUser()
 
   return useQuery({
-    queryKey: ["all-retails", authUser?.departmentId],
+    queryKey: ["all-retails", departmentId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
+        // if (!authUser?.id) {
+        //   throw new Error("Пользователь не авторизован")
+        // }
 
         return (await getAllRetailsByDepartmentQuery(departmentId)) ?? []
       } catch (error) {
@@ -215,7 +215,7 @@ export const useGetAllRetails = (userId: string | null, departmentId: number) =>
         throw error
       }
     },
-    enabled: !!userId && !!authUser?.departmentId,
+    enabled: !!userId && !!departmentId,
     placeholderData: undefined,
     staleTime: 1000 * 60,
     refetchInterval: 60 * 1000 * 5,
@@ -223,14 +223,14 @@ export const useGetAllRetails = (userId: string | null, departmentId: number) =>
 }
 
 export const useGetRetailsUser = (userId: string | undefined) => {
-  const { authUser } = useStoreUser()
+  // const { authUser } = useStoreUser()
   const { data, isError, ...restData } = useQuery({
     queryKey: ["retails", userId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
+        // if (!authUser?.id) {
+        //   throw new Error("Пользователь не авторизован")
+        // }
 
         return (await getRetailsUser(userId as string)) ?? []
       } catch (error) {
@@ -252,14 +252,14 @@ export const useGetRetailsUser = (userId: string | undefined) => {
 }
 
 export const useGetProjectsUser = (userId: string | undefined) => {
-  const { authUser } = useStoreUser()
+  // const { authUser } = useStoreUser()
   return useQuery({
     queryKey: ["projects", userId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
+        // if (!authUser?.id) {
+        //   throw new Error("Пользователь не авторизован")
+        // }
 
         return (await getProjectsUser(userId as string)) ?? []
       } catch (error) {
@@ -279,14 +279,14 @@ export const useGetProjectsUser = (userId: string | undefined) => {
 }
 
 export const useGetContractsUser = (userId: string | undefined) => {
-  const { authUser } = useStoreUser()
+  // const { authUser } = useStoreUser()
   return useQuery({
     queryKey: ["contracts", userId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
+        // if (!authUser?.id) {
+        //   throw new Error("Пользователь не авторизован")
+        // }
 
         return (await getProjectsUser(userId as string)) ?? []
       } catch (error) {
@@ -306,14 +306,14 @@ export const useGetContractsUser = (userId: string | undefined) => {
 }
 
 export const useGetDealsByDateRange = (userId: string, range: DateRange, departmentId: number) => {
-  const { authUser } = useStoreUser()
+  // const { authUser } = useStoreUser()
   return useQuery({
     queryKey: ["dealsByRange", userId, range, departmentId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
+        // if (!authUser?.id) {
+        //   throw new Error("Пользователь не авторизован")
+        // }
 
         return (await getDealsByDateRange(userId as string, range, departmentId)) ?? []
       } catch (error) {
@@ -326,7 +326,7 @@ export const useGetDealsByDateRange = (userId: string, range: DateRange, departm
         throw error
       }
     },
-    enabled: !!userId && !!authUser?.id && !!departmentId && !!range,
+    enabled: !!userId && !!departmentId && !!range,
     staleTime: 1000 * 60,
   })
 }
@@ -353,27 +353,22 @@ export const useGetAllDealsByType = (
   userId: string | null,
   departmentId: number,
 ) => {
-  const fetchers = {
-    projects: useGetAllProjects,
-    retails: useGetAllRetails,
-  }
+  // Просто пробрасываем аргументы дальше
+  if (type === "projects") return useGetAllProjects(userId, departmentId)
+  if (type === "retails") return useGetAllRetails(userId, departmentId)
 
-  if (!(type in fetchers)) {
-    throw new Error(`Invalid deal type: ${type}`)
-  }
-
-  return fetchers[type](userId, departmentId)
+  throw new Error(`Invalid deal type: ${type}`)
 }
 
 export const useGetAdditionalContacts = (dealId: string) => {
-  const { authUser } = useStoreUser()
+  // const { authUser } = useStoreUser()
   return useQuery({
     queryKey: ["additionalContacts", dealId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
+        // if (!authUser?.id) {
+        //   throw new Error("Пользователь не авторизован")
+        // }
 
         if (!dealId) {
           TOAST.ERROR("Не удалось получить данные")

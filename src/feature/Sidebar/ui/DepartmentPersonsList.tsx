@@ -1,12 +1,6 @@
 "use client"
 
-import { memo, type PropsWithChildren, useCallback, useState } from "react"
-import { PermissionEnum } from "@prisma/client"
-import clsx from "clsx"
-import { ChevronRight } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
-import z from "zod"
-import { UnionParams } from "@/entities/deal/lib/constants"
+import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import type {
   DepartmentListItemType,
@@ -33,11 +27,17 @@ import {
 } from "@/shared/components/ui/sidebar"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import { PermissionEnum } from "@prisma/client"
+import clsx from "clsx"
+import { ChevronRight } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { memo, type PropsWithChildren, useCallback, useState } from "react"
+import z from "zod"
 import { DepartmentLinks } from "./DepartmentLinks"
 import LinkProfile from "./LinkProfile"
 
 const pageParamsSchema = z.object({
-  dealType: z.enum(UnionParams).optional(),
+  dealType: z.enum(UnionDealTypeParams).optional(),
   userId: z.string().optional(),
   departmentId: z.coerce
     .number()

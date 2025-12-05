@@ -1,20 +1,12 @@
-import { Fragment, memo, useMemo } from "react"
-import { DealType, PermissionEnum } from "@prisma/client"
-import { Separator } from "@radix-ui/react-separator"
-import { BookText, ChartColumnBig, TableProperties } from "lucide-react"
-import dynamic from "next/dynamic"
-import Link from "next/link"
-import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink"
 import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants"
 import type { DepartmentUserItem } from "@/entities/department/types"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/shared/components/ui/accordion"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
-import MarketActiveItemSidebar from "./MarketActiveItemSidebar"
+import { PermissionEnum } from "@prisma/client"
+import { Separator } from "@radix-ui/react-separator"
+import { BookText, ChartColumnBig } from "lucide-react"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import { Fragment, memo, useMemo } from "react"
 
 const ProtectedByPermissions = dynamic(
   () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
@@ -27,6 +19,7 @@ const ProtectedByPermissions = dynamic(
 type DealsType = {
   id: string
   title: string
+  resourcePath?: string
 }
 
 const dealsSalesDepartment: DealsType[] = [
@@ -34,8 +27,6 @@ const dealsSalesDepartment: DealsType[] = [
   { id: "retails", title: "Розница" },
   { id: "contracts", title: "Договора" },
 ]
-
-const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL]
 
 const pagesMarkretingDepartment: DealsType[] = [
   { id: "statistics/request-source", title: "Источники сделок" },
@@ -102,20 +93,20 @@ export const DepartmentLinks = memo(
 
     const renderLinks = useMemo(
       () =>
-        getDealLinks.map((deal) => {
-          const isActive = dealType === deal.id && user.id === userId
+        getDealLinks.map((link) => {
+          const isActive = dealType === link.id && user.id === userId
           const href =
             departmentId === 1
-              ? `${user.url}/${deal.id}/${user.id}`
-              : `${user.url}/${departmentId}/${user.id}`
+              ? `${user.url}/${link.id}/${user.id}`
+              : `${user.url}/${departmentId}/${user.id}${link.resourcePath || ""}`
           return (
             <LinkItem
               href={href}
               icon={departmentId === 1 ? BookText : ChartColumnBig}
               isActive={isActive}
-              key={deal.id}
+              key={link.id}
               onClick={(e) => e.stopPropagation()}
-              title={deal.title}
+              title={link.title}
             />
           )
         }),
@@ -149,41 +140,13 @@ export const DepartmentLinks = memo(
         <>
           {renderLinks}
           <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
-            <Accordion className="w-full" collapsible type="single">
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="p-1 rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground">
-                  <p className="flex h-full w-full items-center gap-2 rounded p-2 text-primary dark:text-stone-400">
-                    <TableProperties size="12px" />
-                    <span>Сводные таблицы</span>
-                  </p>
-                </AccordionTrigger>
-                <AccordionContent className="grid w-full gap-1 pl-5 relative">
-                  {namePagesByDealType.map((type, index) => {
-                    const isActiveSummaryTable =
-                      pathName?.includes("summary-table") &&
-                      pathName?.includes(type.toLocaleLowerCase()) &&
-                      user.id === userId
-                    return (
-                      <Fragment key={type}>
-                        <div className="relative rounded overflow-hidden">
-                          {isActiveSummaryTable && <MarketActiveItemSidebar />}
-                          <SummaryTableLink
-                            className="flex border p-3 text-primary dark:text-stone-400 border-solid border-transparent rounded-md transition-all duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground"
-                            departmentId="1"
-                            protect={false}
-                            type={type}
-                          />
-                        </div>
-                        {index !== namePagesByDealType.length - 1 && (
-                          <Separator className="my-px h-px bg-stone-600" />
-                        )}
-                      </Fragment>
-                    )
-                  })}
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-            <Separator className="my-px h-px bg-stone-600" />
+            <LinkItem
+              href={`dashboard/statistics/request-source/2/${user.id}/tabs`}
+              icon={BookText}
+              isActive={pathName?.includes("tabs") || false}
+              onClick={(e) => e.stopPropagation()}
+              title={"Заявки"}
+            />
           </ProtectedByPermissions>
         </>
       )

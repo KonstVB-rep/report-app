@@ -1,17 +1,8 @@
 "use client"
 
-import { PermissionEnum } from "@prisma/client"
-import type { ColumnDef } from "@tanstack/react-table"
-import dynamic from "next/dynamic"
-import z from "zod"
-import { UnionParams } from "@/entities/deal/lib/constants"
+import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
-import type {
-  ContractResponse,
-  ProjectResponse,
-  RetailResponse,
-  TableType,
-} from "@/entities/deal/types"
+import type { ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types"
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton"
@@ -20,6 +11,10 @@ import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessa
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition"
 import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import { PermissionEnum } from "@prisma/client"
+import type { ColumnDef } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
+import z from "zod"
 import { columnsDataContract } from "../model/columns-data-contracts"
 import { columnsDataProject } from "../model/columns-data-project"
 import { columnsDataRetail } from "../model/columns-data-retail"
@@ -41,7 +36,7 @@ const Columns = (
 ):
   | ColumnDef<ProjectResponse, unknown>[]
   | ColumnDef<RetailResponse, unknown>[]
-  | ColumnDef<ContractResponse, unknown>[] => {
+  | ColumnDef<ProjectResponse, unknown>[] => {
   switch (type) {
     case "projects":
       return columnsDataProject
@@ -54,9 +49,23 @@ const Columns = (
   }
 }
 
+type HiddenColumns = Record<string, boolean>
+
+const hiddenDefCols: Record<TableType, HiddenColumns> = {
+  projects: {
+    resource: false,
+    id: false,
+  },
+  retails: {
+    resource: false,
+    id: false,
+  },
+  contracts: {},
+}
+
 const pageParamsSchema = z.object({
   userId: z.string(),
-  dealType: z.enum(UnionParams),
+  dealType: z.enum(UnionDealTypeParams),
 })
 
 const PersonDealsTable = () => {
@@ -86,7 +95,7 @@ const PersonDealsTable = () => {
         <DealsTable
           columns={Columns(dealType as TableType) as ColumnDef<TypeBaseDT>[]}
           data={data as TypeBaseDT[]}
-          hiddenCols={{ resource: false, user: false, id: false }}
+          hiddenCols={hiddenDefCols[dealType as TableType]}
         />
       </DealTableTemplate>
     </NotFoundByPosition>

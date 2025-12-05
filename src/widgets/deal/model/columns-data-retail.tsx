@@ -22,6 +22,9 @@ export type typeofStatus = keyof typeof StatusRetailLabels
 export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
   {
     ...RowNumber<RetailResponse>(),
+    meta: {
+      title: "№",
+    },
   },
   {
     id: "id",
@@ -29,6 +32,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     meta: {
       isNotSearchable: true,
       hidden: true,
+      // title не добавляем — нет header
     },
   },
   {
@@ -42,6 +46,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       isDateFilter: true,
+      title: "Дата заявки",
     },
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date
@@ -74,7 +79,6 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     header: "Плановая дата контакта",
     cell: (info: CellContext<RetailResponse, unknown>) => {
       const date = info.getValue() as Date | null
-
       if (date) {
         return date.toLocaleDateString("ru-RU")
       } else {
@@ -82,6 +86,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       }
     },
     enableHiding: true,
+    meta: {
+      title: "Плановая дата контакта",
+    },
     filterFn: (row, columnId, filterValue) => {
       if (row.original.dealStatus === StatusRetail.REJECT) return false
 
@@ -115,6 +122,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     header: "Название сделки",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
     enableHiding: true,
+    meta: {
+      title: "Название сделки",
+    },
     accessorFn: (row: RetailResponse) => row.nameDeal,
   },
   {
@@ -123,6 +133,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     header: "Название объекта/Город",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
     enableHiding: true,
+    meta: {
+      title: "Название объекта/Город",
+    },
     accessorFn: (row: RetailResponse) => row.nameObject,
   },
   {
@@ -142,6 +155,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       return rowValue === value
     },
     enableHiding: true,
+    meta: {
+      title: "Направление",
+    },
     accessorFn: (row: RetailResponse) => row.direction,
   },
   {
@@ -154,7 +170,6 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId)
-
       if (!rowValue) return false
       if (Array.isArray(value)) {
         return value.includes(rowValue)
@@ -162,6 +177,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       return rowValue === value
     },
     enableHiding: true,
+    meta: {
+      title: "Тип поставки",
+    },
     accessorFn: (row: RetailResponse) => row.deliveryType,
   },
   {
@@ -170,18 +188,22 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     header: "Контактное лицо",
     cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
     enableHiding: true,
+    meta: {
+      title: "Контактное лицо",
+    },
     accessorFn: (row: RetailResponse) => row.contact,
   },
   {
     id: "phone",
     accessorKey: "phone",
     header: "Телефон",
-    cell: (info: CellContext<RetailResponse, unknown>) => {
-      return (
-        <span className="whitespace-nowrap">{info.getValue() as string}</span> //тег
-      )
-    },
+    cell: (info: CellContext<RetailResponse, unknown>) => (
+      <span className="whitespace-nowrap">{info.getValue() as string}</span>
+    ),
     enableHiding: true,
+    meta: {
+      title: "Телефон",
+    },
     accessorFn: (row: RetailResponse) => row.phone,
   },
   {
@@ -192,6 +214,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       <span className="whitespace-nowrap">{info.getValue() as string}</span>
     ),
     enableHiding: true,
+    meta: {
+      title: "Email",
+    },
     accessorFn: (row: RetailResponse) => row.email,
   },
   {
@@ -201,6 +226,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     cell: (info: CellContext<RetailResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
+    meta: {
+      title: "Сумма",
+    },
     accessorFn: (row: RetailResponse) => row.amountCP,
   },
   {
@@ -210,6 +238,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     cell: (info: CellContext<RetailResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
+    meta: {
+      title: "Дельта",
+    },
     accessorFn: (row: RetailResponse) => row.delta,
   },
   {
@@ -228,6 +259,9 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       }
       return rowValue === value
     },
+    meta: {
+      title: "Статус",
+    },
     accessorFn: (row: RetailResponse) => row.dealStatus,
   },
   {
@@ -236,9 +270,12 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     header: "Комментарии",
     size: 300,
     minSize: 300,
-    cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(), //тег
+    cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
     enableSorting: false,
     enableHiding: true,
+    meta: {
+      title: "Комментарии",
+    },
     accessorFn: (row: RetailResponse) => row.comments,
   },
   {
@@ -249,6 +286,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: false,
     meta: {
       hidden: true,
+      title: "Источник/Сайт",
     },
     accessorFn: (row: RetailResponse) => row.resource,
   },

@@ -1,6 +1,6 @@
 "use client"
 
-import DealsSkeleton from "@/entities/deal/ui/DealsSkeleton"
+import DealsSkeleton from "@/entities/deal/ui/Skeletons/DealsSkeleton"
 
 const Loading = () => {
   return <DealsSkeleton />

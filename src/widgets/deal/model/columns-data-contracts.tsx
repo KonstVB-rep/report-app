@@ -1,16 +1,16 @@
 "use client"
 
-import type { ReactNode } from "react"
-import type { CellContext, ColumnDef } from "@tanstack/react-table"
-import { endOfDay, startOfDay } from "date-fns"
-import type { DateRange } from "react-day-picker"
-import type { ContractResponse } from "@/entities/deal/types"
+import type { ProjectResponse } from "@/entities/deal/types"
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
   StatusContractLabels,
 } from "@/feature/deals/lib/constants"
 import { formatterCurrency } from "@/shared/lib/utils"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { ReactNode } from "react"
+import type { DateRange } from "react-day-picker"
 import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
 export type typeofDirections = keyof typeof DirectionProjectLabels
@@ -19,23 +19,27 @@ export type typeofDelivery = keyof typeof DeliveryProjectLabels
 
 export type typeofStatus = keyof typeof StatusContractLabels
 
-export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
+export const columnsDataContract: ColumnDef<ProjectResponse, unknown>[] = [
   {
-    ...RowNumber<ContractResponse>(),
+    ...RowNumber<ProjectResponse>(),
+    meta: {
+      title: "№",
+    },
   },
   {
     id: "dateRequest",
     header: "Дата заявки",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
       const date = info.getValue() as Date
       return date.toLocaleDateString("ru-RU")
     },
     enableHiding: true,
     meta: {
       isDateFilter: true,
+      title: "Дата заявки",
     },
-    size: 100, // Фиксированная ширина
-    enableResizing: false, // Запрещаем изменение размера
+    size: 100,
+    enableResizing: false,
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date
       const dateAtStartOfDay = startOfDay(date)
@@ -59,32 +63,38 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
 
       return true
     },
-    accessorFn: (row: ContractResponse) => row.dateRequest,
+    accessorFn: (row: ProjectResponse) => row.dateRequest,
   },
   {
     id: "nameDeal",
     header: "Название сделки",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
     },
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.nameDeal,
+    meta: {
+      title: "Название сделки",
+    },
+    accessorFn: (row: ProjectResponse) => row.nameDeal,
   },
   {
     id: "nameObject",
     header: "Название объекта",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
     },
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.nameObject,
+    meta: {
+      title: "Название объекта",
+    },
+    accessorFn: (row: ProjectResponse) => row.nameObject,
   },
   {
     id: "direction",
     header: "Направление",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofDirections
       return <span>{DirectionProjectLabels[value]}</span>
     },
@@ -99,13 +109,14 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       isMultiSelect: true,
+      title: "Направление",
     },
-    accessorFn: (row: ContractResponse) => row.direction,
+    accessorFn: (row: ProjectResponse) => row.direction,
   },
   {
     id: "deliveryType",
     header: "Тип поставки",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofDelivery
       return <span>{DeliveryProjectLabels[value]}</span>
     },
@@ -113,83 +124,103 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
       if (!filterValue || !Array.isArray(filterValue)) return true
       const rowValue = row.getValue(columnId)
 
-      if (!rowValue) return false // Проверяем, есть ли значение в ячейке
+      if (!rowValue) return false
 
       if (Array.isArray(filterValue)) {
-        return filterValue.some(
-          (direction) => String(rowValue).includes(direction), // Приводим rowValue к строке, чтобы избежать ошибок
-        )
+        return filterValue.some((direction) => String(rowValue).includes(direction))
       }
 
       return rowValue === filterValue
     },
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.deliveryType,
+    meta: {
+      title: "Тип поставки",
+    },
+    accessorFn: (row: ProjectResponse) => row.deliveryType,
   },
   {
     id: "contact",
     header: "Контактное лицо",
-    cell: (info: CellContext<ContractResponse, unknown>) => info.getValue(),
+    cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.contact,
+    meta: {
+      title: "Контактное лицо",
+    },
+    accessorFn: (row: ProjectResponse) => row.contact,
   },
   {
     id: "phone",
     accessorKey: "phone",
     header: "Телефон",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
-      return (
-        <span className="whitespace-nowrap">{info.getValue() as string}</span> //тег
-      )
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      return <span className="whitespace-nowrap">{info.getValue() as string}</span>
     },
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.phone,
+    meta: {
+      title: "Телефон",
+    },
+    accessorFn: (row: ProjectResponse) => row.phone,
   },
   {
     id: "email",
     header: "Email",
-    cell: (info: CellContext<ContractResponse, unknown>) => (
+    cell: (info: CellContext<ProjectResponse, unknown>) => (
       <span className="whitespace-nowrap">{info.getValue() as string}</span>
     ),
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.email,
+    meta: {
+      title: "Email",
+    },
+    accessorFn: (row: ProjectResponse) => row.email,
   },
   {
     id: "amountCP",
     header: "Сумма КП",
-    cell: (info: CellContext<ContractResponse, unknown>) =>
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.amountCP,
+    meta: {
+      title: "Сумма КП",
+    },
+    accessorFn: (row: ProjectResponse) => row.amountCP,
   },
   {
     id: "amountWork",
     header: "Сумма работ",
-    cell: (info: CellContext<ContractResponse, unknown>) =>
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.amountWork,
+    meta: {
+      title: "Сумма работ",
+    },
+    accessorFn: (row: ProjectResponse) => row.amountWork,
   },
   {
     id: "amountPurchase",
     header: "Сумма закупки",
-    cell: (info: CellContext<ContractResponse, unknown>) =>
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.amountPurchase,
+    meta: {
+      title: "Сумма закупки",
+    },
+    accessorFn: (row: ProjectResponse) => row.amountPurchase,
   },
   {
     id: "delta",
     header: "Дельта",
-    cell: (info: CellContext<ContractResponse, unknown>) =>
+    cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.delta,
+    meta: {
+      title: "Дельта",
+    },
+    accessorFn: (row: ProjectResponse) => row.delta,
   },
   {
     id: "dealStatus",
     header: "Статус",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as typeofStatus
       return <span>{StatusContractLabels[value]}</span>
     },
@@ -201,18 +232,24 @@ export const columnsDataContract: ColumnDef<ContractResponse, unknown>[] = [
       }
       return rowValue === value
     },
-    accessorFn: (row: ContractResponse) => row.dealStatus,
+    meta: {
+      title: "Статус",
+    },
+    accessorFn: (row: ProjectResponse) => row.dealStatus,
   },
   {
     id: "comments",
     header: "Комментарии",
-    cell: (info: CellContext<ContractResponse, unknown>) => {
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
     },
     size: 300,
     minSize: 300,
     enableHiding: true,
-    accessorFn: (row: ContractResponse) => row.comments,
+    meta: {
+      title: "Комментарии",
+    },
+    accessorFn: (row: ProjectResponse) => row.comments,
   },
 ]

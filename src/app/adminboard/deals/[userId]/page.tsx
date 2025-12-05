@@ -22,11 +22,6 @@ const AllDealsPage = () => {
   const { table, filtersContextValue, openFilters, setGlobalFilter } = useTableState(
     data?.deals || [],
     columnsDataDeals,
-    {
-      resource: false,
-      dealStatusP: false,
-      dealStatusR: false,
-    },
   )
 
   const { rows } = table.getRowModel()

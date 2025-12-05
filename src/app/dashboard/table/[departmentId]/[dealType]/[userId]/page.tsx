@@ -1,40 +1,24 @@
-import { dehydrate, HydrationBoundary, type QueryClient } from "@tanstack/react-query"
-import dynamic from "next/dynamic"
 import { getQueryClient } from "@/app/provider/query-provider"
 import {
   getContractsUserQuery,
   getProjectsUserQuery,
   getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn"
-import Loading from "./loading"
+import { dehydrate, HydrationBoundary, type QueryClient } from "@tanstack/react-query"
 
-const DealsInWork = ["projects", "retails", "contracts"]
+import { ProjectResponse, RetailResponse } from "@/entities/deal/types"
+import PersonDealsTable from "@/widgets/deal/ui/PersonDealsTable"
 
-const PersonDealsTable = dynamic(() => import("@/widgets/deal/ui/PersonDealsTable"), {
-  loading: () => <Loading />,
-})
-
-const fetchData = async (queryClient: QueryClient, dealType: string, id: string) => {
-  switch (dealType) {
-    case "projects":
-      return queryClient.prefetchQuery({
-        queryKey: ["projects", id],
-        queryFn: () => getProjectsUserQuery(id),
-      })
-    case "retails":
-      return queryClient.prefetchQuery({
-        queryKey: ["retails", id],
-        queryFn: () => getRetailsUserQuery(id),
-      })
-    case "contracts":
-      return queryClient.prefetchQuery({
-        queryKey: ["contracts", id],
-        queryFn: () => getContractsUserQuery(id),
-      })
-    default:
-      return null
-  }
+const QUERY_CONFIG: Record<
+  string,
+  (id: string) => Promise<ProjectResponse[] | RetailResponse[] | null>
+> = {
+  projects: getProjectsUserQuery,
+  retails: getRetailsUserQuery,
+  contracts: getContractsUserQuery,
 }
+
+const USER_ID_TYPES = new Set(["projects", "retails", "contracts"])
 
 const PersonTablePage = async ({
   params,
@@ -44,13 +28,16 @@ const PersonTablePage = async ({
   const { dealType, userId, departmentId } = await params
   const queryClient = getQueryClient()
 
-  try {
-    const id = DealsInWork.includes(dealType) ? userId : departmentId
+  const id = USER_ID_TYPES.has(dealType) ? userId : departmentId
 
-    await fetchData(queryClient, dealType, id)
-  } catch (error) {
-    console.log(error, "ErrorPersonTablePage")
-    throw new Error((error as Error).message)
+  const queryFn = QUERY_CONFIG[dealType]
+
+  if (queryFn) {
+    await queryClient.prefetchQuery({
+      queryKey: [dealType, id],
+      queryFn: () => queryFn(id),
+      staleTime: 30 * 1000,
+    })
   }
 
   return (

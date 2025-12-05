@@ -1,5 +1,10 @@
 "use server"
 
+import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
+import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { prisma } from "@/prisma/prisma-client"
+import { checkRole } from "@/shared/api/checkByServer"
+import { handleError } from "@/shared/api/handleError"
 import {
   type DealFile,
   DealType,
@@ -11,14 +16,9 @@ import {
   StatusRetail,
 } from "@prisma/client"
 import cuid from "cuid"
-import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
-import { prisma } from "@/prisma/prisma-client"
-import { checkRole } from "@/shared/api/checkByServer"
-import { handleError } from "@/shared/api/handleError"
+import { unstable_cache } from "next/cache"
 import type {
   Contact,
-  ContractResponse,
   DateRange,
   DealBase,
   ManagerShortInfo,
@@ -36,6 +36,13 @@ import type {
 } from "../types"
 
 const requiredFields = ["nameObject", "direction", "comments", "contact", "dealStatus"]
+
+async function checkAccess(ownerId: string) {
+  const { user, userId } = await handleAuthorization()
+  if (userId !== ownerId) {
+    await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
+  }
+}
 
 const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
   const data = await handleAuthorization()
@@ -199,26 +206,13 @@ export const getRetailById = async (
   }
 }
 
-export const getProjectsUser = async (idDealOwner: string): Promise<ProjectResponse[] | null> => {
-  try {
-    const data = await handleAuthorization()
-
-    const { user, userId } = data
-
-    if (!idDealOwner) {
-      return handleError("Недостаточно данных")
-    }
-
-    const isOwner = userId === idDealOwner
-    if (!isOwner) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
-    }
-
+const getCachedPrismaProjects = unstable_cache(
+  async (userId: string) => {
     const deals = await prisma.project.findMany({
       where: {
         projectManagers: {
           some: {
-            userId: idDealOwner,
+            userId: userId,
           },
         },
       },
@@ -232,6 +226,32 @@ export const getProjectsUser = async (idDealOwner: string): Promise<ProjectRespo
         },
       },
     })
+    return deals
+  },
+  ["projects-user-data"], // Ключ кэша (общий префикс)
+  {
+    revalidate: 60, // Кэшировать на 60 секунд (ISR)
+    tags: ["projects"], // Тег для принудительного сброса кэша (revalidateTag)
+  },
+)
+
+export const getProjectsUser = async (idDealOwner: string): Promise<ProjectResponse[] | null> => {
+  try {
+    // const data = await handleAuthorization();
+
+    // const { user, userId } = data;
+
+    if (!idDealOwner) {
+      return handleError("Недостаточно данных")
+    }
+
+    // const isOwner = userId === idDealOwner;
+    // if (!isOwner) {
+    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    // }
+    await checkAccess(idDealOwner)
+
+    const deals = await getCachedPrismaProjects(idDealOwner)
 
     return deals.length
       ? deals.map((deal) => ({
@@ -249,21 +269,9 @@ export const getProjectsUser = async (idDealOwner: string): Promise<ProjectRespo
   }
 }
 
-export const getContractsUser = async (idDealOwner: string): Promise<ContractResponse[] | null> => {
-  try {
-    const data = await handleAuthorization()
-
-    const { user, userId } = data
-
-    if (!idDealOwner) {
-      return handleError("Недостаточно данных")
-    }
-
-    const isOwner = userId === idDealOwner
-    if (!isOwner) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
-    }
-
+const getCachedPrismaContracts = unstable_cache(
+  async (idDealOwner: string) => {
+    // Лучше вынести статусы за пределы функции или использовать Object.values, если это Enum значений
     const statuses = Object.keys(StatusContract) as Array<keyof typeof StatusContract>
 
     const deals = await prisma.project.findMany({
@@ -282,41 +290,141 @@ export const getContractsUser = async (idDealOwner: string): Promise<ContractRes
       },
     })
 
-    return deals.length
-      ? deals.map((deal) => {
-          const { amountCP, amountWork, amountPurchase, delta, ...restDeal } = deal
-          return {
-            ...restDeal,
-            amountCP: amountCP?.toString() || "",
-            amountWork: amountWork?.toString() || "",
-            amountPurchase: amountPurchase?.toString() || "",
-            delta: delta?.toString() || "",
-          }
-        })
-      : []
-  } catch (error) {
-    console.error(error)
-    return handleError((error as Error).message)
-  }
-}
+    // ВАЖНО: Преобразуем данные ДО возврата из этой функции.
+    // unstalbe_cache сохранит уже чистый массив объектов без Decimal.
+    return deals.map((deal) => {
+      const { amountCP, amountWork, amountPurchase, delta, ...restDeal } = deal
+      return {
+        ...restDeal,
+        // Сразу превращаем в строки
+        amountCP: amountCP?.toString() || "",
+        amountWork: amountWork?.toString() || "",
+        amountPurchase: amountPurchase?.toString() || "",
+        delta: delta?.toString() || "",
+        // Обратите внимание на Dates: unstalbe_cache превратит их в строки ISO автоматически.
+        // Если на фронте нужны объекты Date, их придется восстановить там new Date(date).
+      }
+    })
+  },
+  ["contracts-user-data"],
+  {
+    revalidate: 60,
+    tags: ["contracts"],
+  },
+)
 
-export const getRetailsUser = async (idDealOwner: string): Promise<RetailResponse[] | null> => {
+// 2. Ваша основная функция теперь просто вызывает кэшированную
+export const getContractsUser = async (idDealOwner: string): Promise<ProjectResponse[] | null> => {
   try {
-    const data = await handleAuthorization()
-
-    const { user, userId } = data
-
     if (!idDealOwner) {
       return handleError("Недостаточно данных")
     }
 
-    const isOwner = userId === idDealOwner
+    // Проверка прав (динамическая часть - НЕ кэшируем)
+    await checkAccess(idDealOwner)
 
-    if (!isOwner) {
-      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
-    }
+    // Получение данных (статическая часть - ИЗ кэша)
+    // Функция уже вернет преобразованные данные, второй раз map делать не нужно
+    const deals = await getCachedPrismaContracts(idDealOwner)
 
-    const deals = await prisma.retail.findMany({
+    return deals.length ? deals : []
+  } catch (error) {
+    console.error(error)
+    // return handleError((error as Error).message); // Если у вас есть эта функция
+    throw error
+  }
+}
+
+// const getCachedPrismaContracts = unstable_cache(
+//   async (idDealOwner: string) => {
+//     const statuses = Object.keys(StatusContract) as Array<
+//       keyof typeof StatusContract
+//     >;
+
+//     const deals = await prisma.project.findMany({
+//       where: {
+//         projectManagers: {
+//           some: {
+//             userId: idDealOwner,
+//           },
+//         },
+//         dealStatus: {
+//           in: statuses,
+//         },
+//       },
+//       orderBy: {
+//         dateRequest: "asc",
+//       },
+//     });
+//     return deals;
+//   },
+//  ["contracts-user-data"], // Ключ кэша (общий префикс)
+//   {
+//     revalidate: 60, // Кэшировать на 60 секунд (ISR)
+//     tags: ["contracts"], // Тег для принудительного сброса кэша (revalidateTag)
+//   }
+// );
+
+// export const getContractsUser = async (
+//   idDealOwner: string
+// ): Promise<ProjectResponse[] | null> => {
+//   try {
+//     // const data = await handleAuthorization();
+
+//     // const { user, userId } = data;
+
+//     if (!idDealOwner) {
+//       return handleError("Недостаточно данных");
+//     }
+
+//     // const isOwner = userId === idDealOwner;
+//     // if (!isOwner) {
+//     //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+//     // }
+//     await checkAccess(idDealOwner)
+//        const statuses = Object.keys(StatusContract) as Array<
+//       keyof typeof StatusContract
+//     >;
+
+//     // const deals = await getCachedPrismaContracts(idDealOwner);
+//     const deals = await prisma.project.findMany({
+//       where: {
+//         projectManagers: {
+//           some: {
+//             userId: idDealOwner,
+//           },
+//         },
+//         dealStatus: {
+//           in: statuses,
+//         },
+//       },
+//       orderBy: {
+//         dateRequest: "asc",
+//       },
+//     });
+
+//     return deals.length
+//       ? deals.map((deal) => {
+//           const { amountCP, amountWork, amountPurchase, delta, ...restDeal } =
+//             deal;
+//           return {
+//             ...restDeal,
+//             amountCP: amountCP?.toString() || "",
+//             amountWork: amountWork?.toString() || "",
+//             amountPurchase: amountPurchase?.toString() || "",
+//             delta: delta?.toString() || "",
+//           };
+//         })
+//       : [];
+//   } catch (error) {
+//     console.error(error);
+//     return handleError((error as Error).message);
+//   }
+// };
+
+const getCachedPrismaRetails = unstable_cache(
+  async (idDealOwner: string) => {
+    return await prisma.retail.findMany({
       where: {
         retailManagers: {
           some: {
@@ -334,6 +442,32 @@ export const getRetailsUser = async (idDealOwner: string): Promise<RetailRespons
         },
       },
     })
+  },
+  ["retails-user-data"],
+  {
+    revalidate: 60,
+    tags: ["retails"],
+  },
+)
+
+export const getRetailsUser = async (idDealOwner: string): Promise<RetailResponse[] | null> => {
+  try {
+    // const data = await handleAuthorization();
+
+    // const { user, userId } = data;
+
+    if (!idDealOwner) {
+      return handleError("Недостаточно данных")
+    }
+
+    // const isOwner = userId === idDealOwner;
+
+    // if (!isOwner) {
+    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
+    // }
+    await checkAccess(idDealOwner)
+
+    const deals = await getCachedPrismaRetails(idDealOwner)
 
     const dealsFormat = deals.length
       ? deals.map((deal) => ({

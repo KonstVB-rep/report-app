@@ -33,7 +33,7 @@ const RowInfoDialog = ({ text, isActive, closeFn, isTargetCell, children }: Prop
               </span>
               {isTargetCell && children}
               <Button
-                className="absolute -top-4 -right-4 text-sm text-gray-500 rounded-md bg-primary border border-primary p-[2px]"
+                className="absolute -top-4 -right-4 text-sm text-gray-500 rounded-md bg-primary border border-primary p-0.5"
                 onClick={closeFn}
                 size="icon"
                 type="button"

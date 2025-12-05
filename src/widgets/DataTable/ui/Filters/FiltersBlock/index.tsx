@@ -1,8 +1,7 @@
 import type { Table } from "@tanstack/react-table"
 import { usePathname } from "next/navigation"
 import type { DateRange } from "react-day-picker"
-import z from "zod"
-import { TableTypesWithContracts } from "@/entities/deal/lib/constants"
+
 import { getManagers } from "@/entities/department/lib/utils"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { FormatedParamsType, LABELS } from "@/feature/deals/lib/constants"
@@ -12,20 +11,16 @@ import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGro
 import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import SelectColumns from "@/shared/custom-components/ui/SelectColumns"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import { TableType } from "@/entities/deal/types"
 
 type FiltersBlockProps = {
   table: Table<Record<string, unknown>>
+  dealType: TableType
 }
 
-const pageParamsSchema = z.object({
-  dealType: z.enum(TableTypesWithContracts),
-})
-
-const FiltersBlock = ({ table }: FiltersBlockProps) => {
+const FiltersBlock = ({ table, dealType }: FiltersBlockProps) => {
   const pathname = usePathname()
   const { authUser } = useStoreUser()
-  const { dealType } = useTypedParams(pageParamsSchema)
 
   const { handleDateChange, handleClearDateFilter } = useDataTableFiltersContext()
 

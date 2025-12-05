@@ -28,13 +28,12 @@ export type AllStatusKeys = keyof typeof StatusProject | keyof typeof StatusReta
 
 export const DealTypesArray = ["project", "retail", "contract"] as const
 export const TableTypes = ["retails", "projects"] as const
-export const TableTypesWithContracts = ["retails", "projects", "contracts"] as const
 
-export const UnionParams = [
+export const UnionDealTypeParams = [
   "retails",
   "projects",
   "contracts",
-  "project",
-  "retail",
-  "contract",
+  // "project",
+  // "retail",
+  // "contract",
 ] as const

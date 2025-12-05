@@ -27,7 +27,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
             {headerGroup.headers.map((header, index) => (
               <TableHead
                 className={cn(
-                  "p-2! flex-1 border-zinc-600 border-1 border-solid",
+                  "p-2! flex-1 border-zinc-600 border border-solid",
                   index === headerGroup.headers.length - 1 && "rounded-se-sm",
                   index === 0 && "rounded-ss-sm",
                 )}

@@ -12,6 +12,7 @@ const RowNumber = <T,>() => {
     enableResizing: false,
     meta: {
       isNotSearchable: true,
+      title: "№",
     },
   }
 }

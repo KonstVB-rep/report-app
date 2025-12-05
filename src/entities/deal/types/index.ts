@@ -95,28 +95,28 @@ export type TableType = "projects" | "retails" | "contracts"
 
 export type DateRange = "week" | "month" | "threeMonths" | "halfYear" | "year"
 
-export interface ContractResponse {
-  [key: string]: unknown
-  id: string
-  userId: string
-  nameDeal: string
-  nameObject: string
-  dateRequest: Date
-  direction: DirectionProject
-  deliveryType: DeliveryProject | null
-  contact: string
-  phone: string | null
-  email: string | null
-  amountCP: string
-  amountWork: string
-  amountPurchase: string
-  delta: string
-  dealStatus: StatusProject
-  comments: string
-  createdAt: Date
-  updatedAt: Date
-  type: DealType
-}
+// export interface ProjectResponse {
+//   [key: string]: unknown
+//   id: string
+//   userId: string
+//   nameDeal: string
+//   nameObject: string
+//   dateRequest: Date
+//   direction: DirectionProject
+//   deliveryType: DeliveryProject | null
+//   contact: string
+//   phone: string | null
+//   email: string | null
+//   amountCP: string
+//   amountWork: string
+//   amountPurchase: string
+//   delta: string
+//   dealStatus: StatusProject
+//   comments: string
+//   createdAt: Date
+//   updatedAt: Date
+//   type: DealType
+// }
 
 export type ProjectWithoutDateCreateAndUpdate = Omit<ProjectResponse, "createdAt" | "updatedAt">
 

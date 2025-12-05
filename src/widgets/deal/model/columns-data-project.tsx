@@ -28,6 +28,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "id",
     enableHiding: false,
     meta: {
+      title: "id",
       isNotSearchable: true,
       hidden: true,
     },
@@ -41,6 +42,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     },
     enableHiding: true,
     meta: {
+      title: "Дата заявки",
       isDateFilter: true,
     },
     enableResizing: false,
@@ -81,6 +83,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       }
     },
     enableHiding: true,
+    meta: {
+      title: "Плановая дата контакта",
+    },
     filterFn: (row, columnId, filterValue) => {
       if (row.original.dealStatus === StatusProject.REJECT) return false
 
@@ -116,6 +121,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return value
     },
     enableHiding: true,
+    meta: {
+      title: "Название сделки",
+    },
     accessorFn: (row: ProjectResponse) => row.nameDeal,
   },
   {
@@ -126,6 +134,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return value
     },
     enableHiding: true,
+    meta: {
+      title: "Название объекта",
+    },
     accessorFn: (row: ProjectResponse) => row.nameObject,
   },
   {
@@ -145,6 +156,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     },
     enableHiding: true,
     meta: {
+      title: "Направление",
       isMultiSelect: true,
     },
     accessorFn: (row: ProjectResponse) => row.direction,
@@ -171,6 +183,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return rowValue === filterValue
     },
     enableHiding: true,
+    meta: {
+      title: "Тип поставки",
+    },
     accessorFn: (row: ProjectResponse) => row.deliveryType,
   },
   {
@@ -178,6 +193,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     header: "Контактное лицо",
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: true,
+    meta: {
+      title: "Контактное лицо",
+    },
     accessorFn: (row: ProjectResponse) => row.contact,
   },
   {
@@ -190,6 +208,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       )
     },
     enableHiding: true,
+    meta: {
+      title: "Телефон",
+    },
     accessorFn: (row: ProjectResponse) => row.phone,
   },
   {
@@ -198,6 +219,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) => (
       <span className="whitespace-nowrap">{info.getValue() as string}</span>
     ),
+    meta: {
+      title: "Email",
+    },
     enableHiding: true,
     accessorFn: (row: ProjectResponse) => row.email,
   },
@@ -207,6 +231,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
+    meta: {
+      title: "Сумма КП",
+    },
     accessorFn: (row: ProjectResponse) => row.amountCP,
   },
   {
@@ -216,6 +243,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return formatterCurrency.format(parseFloat(info.getValue() as string))
     },
     enableHiding: true,
+    meta: {
+      title: "Сумма работ",
+    },
     accessorFn: (row: ProjectResponse) => row.amountWork,
   },
   {
@@ -224,6 +254,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
+    meta: {
+      title: "Сумма закупки",
+    },
     accessorFn: (row: ProjectResponse) => row.amountPurchase,
   },
   {
@@ -232,6 +265,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) =>
       formatterCurrency.format(parseFloat(info.getValue() as string)),
     enableHiding: true,
+    meta: {
+      title: "Дельта",
+    },
     accessorFn: (row: ProjectResponse) => row.delta,
   },
   {
@@ -242,6 +278,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       return <span>{StatusProjectLabels[value]}</span>
     },
     enableHiding: true,
+    meta: {
+      title: "Статус",
+    },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId)
       if (Array.isArray(value)) {
@@ -260,6 +299,9 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     },
     minSize: 300,
     enableHiding: true,
+    meta: {
+      title: "Комментарии",
+    },
     accessorFn: (row: ProjectResponse) => row.comments,
   },
   {
