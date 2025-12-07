@@ -42,7 +42,7 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
       ref={tableContainerRef}
     >
       {table.getRowModel().rows.length > 0 && (
-        <p className="border rounded-md px-2 py-1 m-1 w-fit bg-stone-700 text-white dark:bg-black">
+        <p className="border rounded-md px-2 py-1 m-1 w-fit bg-[#3071fc] text-white dark:bg-black">
           Количество выбранных заявок: {table.getRowModel().rows.length}
         </p>
       )}

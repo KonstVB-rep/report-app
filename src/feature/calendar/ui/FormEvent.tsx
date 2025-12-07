@@ -1,6 +1,7 @@
 "use client"
 
 import type { Path } from "react-hook-form"
+import { useWatch } from "react-hook-form"
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context"
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider"
 import type { EventCalendarSchema } from "@/feature/calendar/model/schema"
@@ -82,7 +83,10 @@ export const handleSubmit = (
 const FormEvent = ({ events }: FormEventProps) => {
   const { editingId, form } = useCalendarContext()
   const { createEvent, updateEvent, isLoading } = useEventActionContext()
-  const allDay = form.watch("allDay") ?? false
+  const allDay = useWatch({
+    control: form.control,
+    name: "allDay",
+  })
 
   return (
     <Form {...form}>
@@ -111,21 +115,17 @@ const FormEvent = ({ events }: FormEventProps) => {
           <FormField
             control={form.control}
             name={"allDay" as Path<EventCalendarSchema>}
-            render={({ field }) => (
-              <FormItem className="flex gap-2 items-center justify-start my-2">
-                <FormControl>
-                  <Checkbox
-                    checked={Boolean(field.value)}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked)
-                      form.trigger("allDay")
-                    }}
-                  />
-                </FormControl>
-                <FormLabel className="m-0!">Весь день</FormLabel>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              return (
+                <FormItem className="flex gap-2 items-center justify-start my-2">
+                  <FormControl>
+                    <Checkbox checked={Boolean(field.value)} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel className="m-0!">Весь день</FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )
+            }}
           />
           <DatePickerFormField
             control={form.control}

@@ -163,7 +163,7 @@ const DrppdownSidebarItem = ({
     <>
       <CollapsibleTrigger
         asChild
-        className="top-[1.25px]! h-[38px]! w-[38px]! border! border-stone-400"
+        className="top-[1.25px]! h-[38px]! w-[38px]! border! border-stone-800 dark:border-stone-400"
       >
         <SidebarMenuAction className="h-6 w-6 border-2 data-[state=open]:rotate-90">
           <ChevronRight

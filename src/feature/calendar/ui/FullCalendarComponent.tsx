@@ -1,107 +1,132 @@
 "use client"
 
-import { useState } from "react"
-import type { DateSelectArg, EventClickArg } from "@fullcalendar/core"
+import { useCallback, useMemo, useState } from "react"
+import type { DateSelectArg, DatesSetArg, EventClickArg, FormatterInput } from "@fullcalendar/core"
 import ruLocale from "@fullcalendar/core/locales/ru"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import interactionPlugin from "@fullcalendar/interaction"
 import listPlugin from "@fullcalendar/list"
 import FullCalendar from "@fullcalendar/react"
 import timeGridPlugin from "@fullcalendar/timegrid"
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context"
 import { useEventActionContext } from "@/app/dashboard/calendar/context/events-action-provider"
 import { handleDateSelect, handleEventClick } from "@/feature/calendar/utils/eventHandlers"
 
-const defaultView = "dayGridMonth"
+const DEFAULT_VIEW = "dayGridMonth"
+
+const PLUGINS = [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]
+
+const HEADER_TOOLBAR = {
+  left: "prev,next",
+  center: "title",
+  right: "dayGridMonth,timeGridWeek,timeGridDay",
+}
+const LOCALES = [ruLocale]
+const TIME_FORMAT: FormatterInput | FormatterInput[] | undefined = {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+}
+
+const TITLE_TIME_FORMAT: FormatterInput | undefined = {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+}
 
 const FullCalendarComponent = () => {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const { events } = useEventActionContext()
   const { form, setEditingId, setOpenModal } = useCalendarContext()
 
-  const viewFromUrl = searchParams.get("view")
-  const [currentView, setCurrentView] = useState(viewFromUrl || defaultView)
+  const [currentView, setCurrentView] = useState(searchParams.get("view") || DEFAULT_VIEW)
 
-  const handleDatesSet = (arg: { view: { type: string } }) => {
-    const titleEl = document.querySelector(".fc-toolbar-title")
-    titleEl?.classList.add("title-calendar")
+  const todayStart = useMemo(() => {
+    const d = new Date()
+    d.setHours(0, 0, 0, 0)
+    return d
+  }, [])
 
-    const newView = arg.view.type
-    setCurrentView(newView)
+  const handleDatesSet = useCallback(
+    (arg: DatesSetArg) => {
+      const newView = arg.view.type
 
-    const params = new URLSearchParams(window.location.search)
-    params.set("view", newView)
-    const newUrl = `${window.location.pathname}?${params.toString()}`
+      if (newView !== currentView) {
+        setCurrentView(newView)
+      }
 
-    if (window.location.search !== `?${params.toString()}`) {
-      router.replace(newUrl, { scroll: false })
-    }
-  }
+      const currentParams = new URLSearchParams(searchParams.toString())
+      if (currentParams.get("view") !== newView) {
+        currentParams.set("view", newView)
+        router.replace(`${pathname}?${currentParams.toString()}`, {
+          scroll: false,
+        })
+      }
+    },
+    [currentView, pathname, router, searchParams],
+  )
 
-  const handleEventClickFn = (clickInfo: EventClickArg) =>
-    handleEventClick(clickInfo, form, setEditingId, setOpenModal)
+  const handleEventClickFn = useCallback(
+    (clickInfo: EventClickArg) => {
+      handleEventClick(clickInfo, form, setEditingId, setOpenModal)
+    },
+    [form, setEditingId, setOpenModal],
+  )
 
-  const handleDateSelectFn = (event: DateSelectArg) => {
-    setEditingId("")
-    handleDateSelect(event, form, setOpenModal)
-  }
+  const handleDateSelectFn = useCallback(
+    (event: DateSelectArg) => {
+      setEditingId("")
+      handleDateSelect(event, form, setOpenModal)
+    },
+    [form, setEditingId, setOpenModal],
+  )
+
+  const dayCellClassNames = useCallback(
+    (arg: { date: Date }) => {
+      return arg.date < todayStart ? ["fc-day-disabled"] : []
+    },
+    [todayStart],
+  )
+
+  const selectAllow = useCallback(
+    (selectInfo: { start: Date }) => {
+      return selectInfo.start >= todayStart
+    },
+    [todayStart],
+  )
 
   return (
     <div className="full-calendar">
       <FullCalendar
         contentHeight="auto"
         datesSet={handleDatesSet}
-        dayCellClassNames={(arg) => {
-          const today = new Date()
-          today.setHours(0, 0, 0, 0)
-          if (arg.date < today) return ["fc-day-disabled"]
-          return []
-        }}
+        dayCellClassNames={dayCellClassNames}
         dayMaxEvents={2}
         eventClick={handleEventClickFn}
         events={events ?? []}
-        eventTimeFormat={{
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }}
-        handleWindowResize={false}
-        headerToolbar={{
-          left: "prev,next",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
+        eventTimeFormat={TIME_FORMAT}
+        handleWindowResize={true}
+        headerToolbar={HEADER_TOOLBAR}
         height="auto"
         initialView={currentView}
         locale={ruLocale}
-        locales={[ruLocale]}
-        plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+        locales={LOCALES}
+        plugins={PLUGINS}
         select={handleDateSelectFn}
-        selectAllow={(selectInfo) => {
-          const now = new Date()
-          now.setHours(0, 0, 0, 0)
-          return selectInfo.start >= now
-        }}
+        selectAllow={selectAllow}
         selectable={true}
         selectMirror={false}
         slotDuration="00:30:00"
         slotEventOverlap={false}
-        slotLabelFormat={{
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }}
+        slotLabelFormat={TIME_FORMAT}
         slotLabelInterval="00:30:00"
         slotMaxTime="24:00:00"
         slotMinTime="00:00:00"
-        titleFormat={{
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }}
+        titleFormat={TITLE_TIME_FORMAT}
         unselectAuto={true}
       />
     </div>

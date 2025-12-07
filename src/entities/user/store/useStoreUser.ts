@@ -53,3 +53,5 @@ const useStoreUser = create<State>()(
 )
 
 export default useStoreUser
+
+export const userIdSelector = (state: State) => state.authUser?.id

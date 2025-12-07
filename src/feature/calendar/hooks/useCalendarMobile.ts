@@ -1,6 +1,8 @@
-import React, { useState } from "react"
+import React, { useCallback, useMemo, useState } from "react"
 import type { Matcher } from "react-day-picker"
 import { useGetEventsCalendarUserToday } from "./query"
+
+const getStartOfDay = (date: Date | string | number) => new Date(date).setHours(0, 0, 0, 0)
 
 const useCalendarMobile = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
@@ -8,48 +10,49 @@ const useCalendarMobile = () => {
 
   const { data: events, isPending } = useGetEventsCalendarUserToday()
 
-  const futureEvents = events?.filter(
-    (event) => new Date(event.start) >= new Date(new Date().toDateString()),
+  const todayTime = useMemo(() => getStartOfDay(new Date()), [])
+
+  const futureEvents = useMemo(() => {
+    if (!events) return []
+    return events.filter((event) => new Date(event.start).getTime() >= todayTime)
+  }, [events, todayTime])
+
+  const eventDates = useMemo<Matcher | Matcher[]>(() => {
+    return futureEvents.map((event) => new Date(event.start))
+  }, [futureEvents])
+
+  const eventsDate = useMemo(() => {
+    if (!selectedDate) return []
+    const selectedTime = getStartOfDay(selectedDate)
+
+    return futureEvents.filter((event) => getStartOfDay(event.start) === selectedTime)
+  }, [futureEvents, selectedDate])
+
+  const handleSelect = useCallback(
+    (date: Date | undefined) => {
+      if (!date) return false
+
+      setSelectedDate(date)
+
+      // Проверяем наличие событий эффективнее
+      const dateStart = getStartOfDay(date)
+      const hasEvents = futureEvents.some((event) => getStartOfDay(event.start) === dateStart)
+
+      if (hasEvents) {
+        setOpenList(true)
+        return true
+      }
+      return false
+    },
+    [futureEvents],
   )
 
-  const eventDates = futureEvents?.map((event) => new Date(event.start)) as Matcher | Matcher[]
-
-  const eventsDate =
-    futureEvents?.filter(
-      (event) => new Date(event.start).toDateString() === selectedDate?.toDateString(),
-    ) || []
-
-  const handleSelect = (date: Date | undefined) => {
-    if (!date) return
-
-    setSelectedDate(date)
-    return showEventsOnDate(date)
-  }
-
-  const showEventsOnDate = (date: Date) => {
-    const eventsOnDate =
-      futureEvents?.filter(
-        (event) => new Date(event.start).toDateString() === date.toDateString(),
-      ) || []
-
-    if (eventsOnDate.length > 0) {
-      setOpenList(true)
-      return true
-    }
-    return false
-  }
-
   React.useEffect(() => {
-    if (!selectedDate) return
-
-    const isExistEventInDate = futureEvents?.some(
-      (event) => new Date(event.start).toDateString() === selectedDate.toDateString(),
-    )
-
-    if (!isExistEventInDate && openList) {
+    if (!selectedDate || !openList) return
+    if (eventsDate.length === 0) {
       setOpenList(false)
     }
-  }, [futureEvents, openList, selectedDate])
+  }, [eventsDate.length, openList, selectedDate])
 
   return {
     events,

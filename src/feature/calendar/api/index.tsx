@@ -1,12 +1,12 @@
 "use server"
 
 import { Role } from "@prisma/client"
-import { endOfDay, startOfDay } from "date-fns"
 import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
 import { prisma } from "@/prisma/prisma-client"
 import { checkRole } from "@/shared/api/checkByServer"
+import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb"
 import { handleError } from "@/shared/api/handleError"
-import type { EventDataType, EventInputType } from "../types"
+import type { EventDataType, EventInputType, EventResponse } from "../types"
 
 export const createEventCalendar = async (eventData: Omit<EventDataType, "id">) => {
   try {
@@ -125,89 +125,68 @@ export const deleteArrayEventsCalendar = async (eventData: { ids: string[] }) =>
     return handleError((error as Error).message)
   }
 }
-
 export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
   try {
     const data = await handleAuthorization()
-
-    const { userId } = data
     const events = await prisma.eventCalendar.findMany({
-      where: { userId },
-      orderBy: {
-        start: "asc",
-      },
+      where: { userId: data.userId },
+      orderBy: { start: "asc" },
     })
-
-    return events.map((event) => ({
-      id: event.id,
-      title: event.title,
-      start: new Date(event.start),
-      end: new Date(event.end),
-      allDay: event.allDay,
-    }))
+    return events.map(mapEventDates)
   } catch (error) {
     console.error(error)
     return []
   }
 }
 
-export const getEventsCalendarUserToday = async (): Promise<EventInputType[]> => {
+// 2. Получить события ПО ДИАПАЗОНУ (Оптимизированный метод)
+export const getEventsCalendarUserRange = async (
+  start: Date,
+  end: Date,
+): Promise<EventInputType[]> => {
   try {
     const data = await handleAuthorization()
-
-    const { userId } = data
-
-    // Получаем начало и конец сегодняшнего дня
-    const todayStart = startOfDay(new Date())
-    const todayEnd = endOfDay(new Date())
-
-    // Запрашиваем события, которые происходят в пределах сегодняшнего дня
     const events = await prisma.eventCalendar.findMany({
       where: {
-        userId,
+        userId: data.userId,
         start: {
-          gte: todayStart,
-          lte: todayEnd,
+          gte: start,
+          lte: end,
         },
       },
-      orderBy: {
-        start: "asc",
-      },
+      orderBy: { start: "asc" },
     })
-
-    return events.map((event) => ({
-      id: event.id,
-      title: event.title,
-      start: new Date(event.start),
-      end: new Date(event.end),
-      allDay: event.allDay,
-    }))
+    return events.map(mapEventDates)
   } catch (error) {
     console.error(error)
     return []
   }
 }
 
+// 3. Получить ВСЕ (Админ)
 export const getAllEventsCalendar = async (): Promise<EventInputType[]> => {
   try {
     await handleAuthorization()
     await checkRole(Role.ADMIN)
-
     const events = await prisma.eventCalendar.findMany({
-      orderBy: {
-        start: "asc",
-      },
+      orderBy: { start: "asc" },
     })
-
-    return events.map((event) => ({
-      id: event.id,
-      title: event.title,
-      start: new Date(event.start),
-      end: new Date(event.end),
-      allDay: event.allDay,
-    }))
+    return events.map(mapEventDates)
   } catch (error) {
     console.error(error)
     return []
   }
 }
+
+export const getChatBotInfoAction = async (botName: string) => {
+  const data = await handleAuthorization()
+  return await getTelegramChatBotInDb(botName, data.userId)
+}
+
+const mapEventDates = (event: EventResponse): EventInputType => ({
+  id: event.id,
+  title: event.title,
+  start: new Date(event.start),
+  end: new Date(event.end),
+  allDay: event.allDay,
+})

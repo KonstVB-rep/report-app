@@ -7,6 +7,7 @@ import {
   type SetStateAction,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -78,22 +79,29 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [handleResetAndClose, openModal])
 
-  return (
-    <CalendarContext.Provider
-      value={{
-        handleResetAndClose,
-        handleCloseModalAfterDeleteEvent,
-        openModal,
-        setOpenModal,
-        confirmDelModal,
-        setConfirmDelModal,
-        editingId,
-        setEditingId,
-        form,
-        closeModalForm,
-      }}
-    >
-      {children}
-    </CalendarContext.Provider>
+  const value = useMemo(
+    () => ({
+      handleResetAndClose,
+      handleCloseModalAfterDeleteEvent,
+      openModal,
+      setOpenModal,
+      confirmDelModal,
+      setConfirmDelModal,
+      editingId,
+      setEditingId,
+      form,
+      closeModalForm,
+    }),
+    [
+      handleResetAndClose,
+      handleCloseModalAfterDeleteEvent,
+      openModal,
+      confirmDelModal,
+      editingId,
+      form,
+      closeModalForm,
+    ],
   )
+
+  return <CalendarContext.Provider value={value}>{children}</CalendarContext.Provider>
 }
