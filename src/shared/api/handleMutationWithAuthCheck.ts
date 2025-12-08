@@ -1,29 +1,32 @@
 import { checkTokens } from "../lib/helpers/checkTokens"
 import type { UserWithoutPassword } from "../types"
 
-// Общая логика для блокировки отправки и проверки авторизации
 const handleMutationWithAuthCheck = async <T, U>(
   mutateFn: (data: T) => Promise<U>,
   data: T,
   authUser: UserWithoutPassword | null,
-  isSubmittingRef: React.RefObject<boolean>,
-) => {
+  isSubmittingRef: { current: boolean },
+): Promise<U> => {
+  // 1. Проверка на "двойной клик"
   if (isSubmittingRef.current) {
     throw new Error("Операция уже выполняется")
   }
 
-  isSubmittingRef.current = true // Блокируем отправку
-
-  if (!authUser?.id) {
-    throw new Error("User ID is missing")
-  }
+  isSubmittingRef.current = true
 
   try {
+    if (!authUser?.id) {
+      const error = new Error("Сессия истекла") as Error & { status?: number }
+      error.status = 401
+      throw error
+    }
+
     await checkTokens()
 
-    return await mutateFn(data)
+    const result = await mutateFn(data)
+    return result
   } catch (error) {
-    console.error("Error in mutation:", error)
+    console.error("Error in mutation wrapper:", error)
     throw error
   } finally {
     isSubmittingRef.current = false
