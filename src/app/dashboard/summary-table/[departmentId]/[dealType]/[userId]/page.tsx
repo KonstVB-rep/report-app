@@ -1,12 +1,11 @@
 // app/.../page.tsx
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { getQueryClient } from "@/app/provider/query-provider"
-
-import SummaryDealsTable from "@/widgets/deal/ui/SummaryDealsTable"
 import {
   getAllProjectsByDepartmentQuery,
   getAllRetailsByDepartmentQuery,
 } from "@/entities/deal/api/queryFn"
+import SummaryDealsTable from "@/widgets/deal/ui/SummaryDealsTable"
 
 const SummaryTablePage = async ({
   params,

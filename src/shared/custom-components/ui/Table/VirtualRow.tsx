@@ -11,18 +11,20 @@ interface Props<T> {
 
 const VirtualRow = <T,>({ rows, virtualItems, renderRow }: Props<T>) => {
   const isHydrating = useHydrateDataTable()
+
+  if (isHydrating) {
+    return <SkeletonTable />
+  }
+
   return (
     <>
-      {isHydrating && <SkeletonTable />}
-      {rows.length > 0 &&
-        !isHydrating &&
-        virtualItems.map((virtualRow) => {
-          const row = rows[virtualRow.index]
-          return renderRow({
-            row,
-            virtualRow,
-          })
-        })}
+      {virtualItems.map((virtualRow) => {
+        const row = rows[virtualRow.index]
+        return renderRow({
+          row,
+          virtualRow,
+        })
+      })}
     </>
   )
 }

@@ -1,5 +1,9 @@
 "use client"
 
+import { StatusRetail } from "@prisma/client"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { DateRange } from "react-day-picker"
 import type { RetailResponse } from "@/entities/deal/types"
 import {
   DeliveryRetailLabels,
@@ -7,10 +11,6 @@ import {
   StatusRetailLabels,
 } from "@/feature/deals/lib/constants"
 import { formatterCurrency } from "@/shared/lib/utils"
-import { StatusRetail } from "@prisma/client"
-import type { CellContext, ColumnDef } from "@tanstack/react-table"
-import { endOfDay, startOfDay } from "date-fns"
-import type { DateRange } from "react-day-picker"
 import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
 export type typeofDirections = keyof typeof DirectionRetailLabels
@@ -37,8 +37,21 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
     accessorKey: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const date = info.getValue() as Date
-      return date.toLocaleDateString("ru-RU")
+      const value = info.getValue()
+
+      if (value instanceof Date) {
+        return value.toLocaleDateString("ru-RU")
+      }
+
+      if (typeof value === "string") {
+        const date = new Date(value)
+        if (!Number.isNaN(date.getTime())) {
+          return date.toLocaleDateString("ru-RU")
+        }
+        return "-"
+      }
+
+      return "-"
     },
     enableHiding: true,
     meta: {

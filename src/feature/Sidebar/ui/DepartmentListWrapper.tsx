@@ -1,5 +1,8 @@
+"use client"
+
 import { useEffect, useMemo } from "react"
 import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react"
+import { v4 as uuid } from "uuid"
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
 import type {
@@ -11,34 +14,36 @@ import type { UserResponse } from "@/entities/user/types"
 import { Skeleton } from "@/shared/components/ui/skeleton"
 import DepartmentPersonsList from "./DepartmentPersonsList"
 
+// Вынесли объекты наружу, чтобы они не пересоздавались
 const icons = {
   SALES: <BadgeRussianRuble />,
   TECHNICAL: <Wrench />,
   MARKETING: <ChartNoAxesCombined />,
 }
 
-const urlPath = (depsId: number): Record<UnionTypeDepartmentsName, string> => ({
+const getUrlPath = (depsId: number): Record<UnionTypeDepartmentsName, string> => ({
   SALES: `/dashboard/table/${depsId}`,
   TECHNICAL: "",
   MARKETING: `/dashboard/statistics/request-source`,
 })
 
 const DepartmentListWrapper = () => {
-  const { departments, setDepartments } = useStoreDepartment()
-
+  const { setDepartments } = useStoreDepartment()
   const { data: departmentData, isLoading, isError } = useGetDepartmentsWithUsers()
 
+  // Синхронизация со стором (оставляем, если это нужно другим компонентам)
   useEffect(() => {
     if (departmentData) {
       setDepartments(departmentData)
     }
   }, [departmentData, setDepartments])
 
+  // Мемоизация списка на основе departmentData напрямую
   const navMainItems = useMemo(() => {
-    if (!departments || !departments.length) {
+    if (!departmentData || !departmentData.length) {
       return []
     }
-    return (departments as DepartmentInfo[]).map((dept: DepartmentInfo) => ({
+    return (departmentData as DepartmentInfo[]).map((dept) => ({
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],
@@ -49,30 +54,24 @@ const DepartmentListWrapper = () => {
         departmentId: person.departmentId,
         username: person.username,
         position: person.position,
-        url: urlPath(person.departmentId)[dept.name],
+        url: getUrlPath(person.departmentId)[dept.name],
       })),
     })) as DepartmentListItemType[]
-  }, [departments])
-
-  const data: { navMain: DepartmentListItemType[] } = {
-    navMain: navMainItems,
-  }
+  }, [departmentData])
 
   if (isLoading) {
     return (
-      <div className="top-0 h-[calc(100svh-var(--header-height))]! min-w-60 shrink-0 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
-        <div className="space-y-2">
-          {Array.from({ length: 3 }, (_, i) => (
-            <Skeleton className="h-10 w-full" key={`${Date.now}-${i}`} />
-          ))}
-        </div>
+      <div className="top-0 h-[calc(100svh-var(--header-height))]! min-w-60 shrink-0 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-2">
+        {Array.from({ length: 3 }, () => (
+          <Skeleton className="h-10 w-full" key={uuid()} />
+        ))}
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="top-0 h-[calc(100svh-var(--header-height))]! min-w-60 shrink-0 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+      <div className="p-2">
         <p className="text-sm text-destructive p-2 border border-red-400 rounded-md">
           Ошибка загрузки отделов
         </p>
@@ -82,14 +81,15 @@ const DepartmentListWrapper = () => {
 
   if (!navMainItems.length) {
     return (
-      <div className="top-0 h-[calc(100svh-var(--header-height))]! min-w-60 shrink-0 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+      <div className="p-2">
         <p className="text-sm text-muted-foreground">Нет отделов</p>
       </div>
     )
   }
+
   return (
     <>
-      {(data.navMain.length ? data.navMain : []).map((item) => (
+      {navMainItems.map((item) => (
         <DepartmentPersonsList item={item} key={item.id} />
       ))}
     </>

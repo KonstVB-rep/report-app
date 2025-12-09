@@ -1,22 +1,25 @@
+import { Suspense } from "react"
 import { getAllBots } from "@/entities/tgBot/api"
+import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import ClientBotsPage from "./ui/ClientBotsPage"
 
 export const dynamic = "force-dynamic"
-export const revalidate = 0
+// revalidate = 0 не нужен, force-dynamic это уже гарантирует
 
 const BotsPage = async () => {
-  try {
-    const allBots = await getAllBots()
+  const allBots = await getAllBots()
 
-    return <ClientBotsPage initialBots={allBots} />
-  } catch (error) {
-    console.error("Ошибка загрузки данных:", error)
-    return (
-      <div className="p-5 min-h-screen grid place-items-center">
-        <h1 className="text-2xl">Ошибка загрузки данных</h1>
-      </div>
-    )
-  }
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-[80vh] w-full items-center justify-center">
+          <LoaderCircleInWater />
+        </div>
+      }
+    >
+      <ClientBotsPage initialBots={allBots} />
+    </Suspense>
+  )
 }
 
 export default BotsPage

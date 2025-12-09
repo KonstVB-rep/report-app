@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Report App",
     short_name: "Report",
     description: "Отчётная система с поддержкой PWA",
-    id: "/?source=pwa",
+
     start_url: "/",
     scope: "/",
     display: "standalone",
@@ -15,19 +15,16 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "ru",
     dir: "ltr",
 
-    // Иконки для Android / Desktop / maskable
     icons: [
       {
         src: "/icon-192x192.png",
         sizes: "192x192",
         type: "image/png",
-        purpose: "any",
       },
       {
         src: "/icon-512x512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "any",
       },
       {
         src: "/icon-512x512-maskable.png",
@@ -37,16 +34,20 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
 
-    // iOS PWA support
     shortcuts: [
       {
         name: "Открыть отчёты",
         url: "/reports",
-        icons: [{ src: "/icon-192x192.png", sizes: "192x192" }],
+        icons: [
+          {
+            src: "/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+        ],
       },
     ],
 
-    // Recommended
     categories: ["productivity", "business"],
     prefer_related_applications: false,
   }

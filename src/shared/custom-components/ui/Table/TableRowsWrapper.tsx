@@ -27,6 +27,7 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
 }: TableComponentDTProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const { rows } = table.getRowModel()
+  const rowsCount = rows.length
 
   const { virtualItems, totalSize } = useVirtualizedRowTable<T>({
     rows,
@@ -41,12 +42,12 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
       })}
       ref={tableContainerRef}
     >
-      {table.getRowModel().rows.length > 0 && (
+      {rowsCount > 0 && (
         <p className="border rounded-md px-2 py-1 m-1 w-fit bg-[#3071fc] text-white dark:bg-black">
-          Количество выбранных заявок: {table.getRowModel().rows.length}
+          Количество выбранных заявок: {rowsCount}
         </p>
       )}
-      {table.getRowModel().rows.length > 0 ? (
+      {rowsCount > 0 ? (
         <TableTemplate table={table} totalSize={totalSize}>
           <VirtualRow
             renderRow={({ row, virtualRow }) => renderVirtualRow({ row, virtualRow })}

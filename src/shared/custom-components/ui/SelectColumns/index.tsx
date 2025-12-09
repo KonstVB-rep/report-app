@@ -1,9 +1,9 @@
+import { useState } from "react"
+import type { Table } from "@tanstack/react-table"
+import { ListChecks } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
-import type { Table } from "@tanstack/react-table"
-import { ListChecks } from "lucide-react"
-import { useState } from "react"
 
 interface SelectColumnsProps<TData extends Record<string, unknown>> {
   data: Table<TData>

@@ -1,9 +1,9 @@
+import type React from "react"
+import { PermissionEnum } from "@prisma/client"
+import z from "zod"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useGetUser } from "@/feature/user/hooks/query"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
-import { PermissionEnum } from "@prisma/client"
-import type React from "react"
-import z from "zod"
 import ErrorMessageTable from "./ErrorMessageTable"
 import DealsSkeleton from "./Skeletons/DealsSkeleton"
 

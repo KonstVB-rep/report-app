@@ -1,6 +1,6 @@
-import { TableType, DealsUnionType } from "@/entities/deal/types"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { DealsUnionType, TableType } from "@/entities/deal/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -81,11 +81,16 @@ export function toMoscowISOString(date: Date): string {
 export async function subscribeUser() {
   if (!("serviceWorker" in navigator)) return null
 
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+  if (!vapidKey) {
+    throw new Error("VAPID public key is not defined")
+  }
+
   const reg = await navigator.serviceWorker.ready
 
   return await reg.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    applicationServerKey: vapidKey,
   })
 }
 

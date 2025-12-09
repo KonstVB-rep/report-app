@@ -37,8 +37,21 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date
-      return date.toLocaleDateString("ru-RU")
+      const value = info.getValue()
+
+      if (value instanceof Date) {
+        return value.toLocaleDateString("ru-RU")
+      }
+
+      if (typeof value === "string") {
+        const date = new Date(value)
+        if (!Number.isNaN(date.getTime())) {
+          return date.toLocaleDateString("ru-RU")
+        }
+        return "-"
+      }
+
+      return "-"
     },
     enableHiding: true,
     meta: {
@@ -75,12 +88,27 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "plannedDateConnection",
     header: "Плановая дата контакта",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date | null
-      if (date) {
-        return date.toLocaleDateString("ru-RU")
-      } else {
+      const value = info.getValue()
+
+      // Если null или undefined
+      if (!value) return "Дата не указана"
+
+      // Если уже Date
+      if (value instanceof Date) {
+        return value.toLocaleDateString("ru-RU")
+      }
+
+      // Если строка — пробуем преобразовать
+      if (typeof value === "string") {
+        const parsed = new Date(value)
+        if (!Number.isNaN(parsed.getTime())) {
+          return parsed.toLocaleDateString("ru-RU")
+        }
         return "Дата не указана"
       }
+
+      // Что-то неожиданное
+      return "Дата не указана"
     },
     enableHiding: true,
     meta: {
@@ -311,6 +339,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) => info.getValue(),
     enableHiding: false,
     meta: {
+      title: "Источник/Сайт",
       hidden: true,
     },
     accessorFn: (row: ProjectResponse) => row.resource,

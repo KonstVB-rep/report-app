@@ -1,12 +1,11 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { getQueryClient } from "@/app/provider/query-provider"
 import {
   getContractsUserQuery,
   getProjectsUserQuery,
   getRetailsUserQuery,
 } from "@/entities/deal/api/queryFn"
-import { dehydrate, HydrationBoundary, type QueryClient } from "@tanstack/react-query"
-
-import { ProjectResponse, RetailResponse } from "@/entities/deal/types"
+import type { ProjectResponse, RetailResponse } from "@/entities/deal/types"
 import PersonDealsTable from "@/widgets/deal/ui/PersonDealsTable"
 
 const QUERY_CONFIG: Record<

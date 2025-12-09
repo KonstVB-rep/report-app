@@ -1,3 +1,9 @@
+import type React from "react"
+import { useCallback } from "react"
+import type { DealType } from "@prisma/client"
+import type { ColumnDef, Row } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
+import z from "zod"
 import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
@@ -9,12 +15,6 @@ import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types
 import TableComponentDT from "@/shared/custom-components/ui/Table/TableComponentDT"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
-import type { DealType } from "@prisma/client"
-import type { ColumnDef, Row } from "@tanstack/react-table"
-import dynamic from "next/dynamic"
-import type React from "react"
-import { useCallback } from "react"
-import z from "zod"
 
 const EditDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/EditDealContextMenu"), {
   ssr: false,
@@ -77,9 +77,9 @@ const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
         hiddenColumns={props.hiddenCols}
         rowData={({ table, openFilters, hasEditDeleteActions }) => (
           <TableComponentDT
-            table={table}
-            openFilters={openFilters}
             hasEditDeleteActions={hasEditDeleteActions}
+            openFilters={openFilters}
+            table={table}
           />
         )}
       >

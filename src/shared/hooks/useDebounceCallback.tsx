@@ -7,7 +7,7 @@ import { useCallback, useRef } from "react"
  * @returns дебаунснутая версия callback
  */
 
-export const useDebounceCallback = <T extends (...args: any[]) => void>(
+export const useDebounceCallback = <T extends (...args: unknown[]) => void>(
   callback: T,
   delay: number,
 ): ((...args: Parameters<T>) => void) => {

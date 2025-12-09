@@ -1,5 +1,9 @@
 "use client"
 
+import type { ReactNode } from "react"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { DateRange } from "react-day-picker"
 import type { ProjectResponse } from "@/entities/deal/types"
 import {
   DeliveryProjectLabels,
@@ -7,10 +11,6 @@ import {
   StatusProjectLabels,
 } from "@/feature/deals/lib/constants"
 import { formatterCurrency } from "@/shared/lib/utils"
-import type { CellContext, ColumnDef } from "@tanstack/react-table"
-import { endOfDay, startOfDay } from "date-fns"
-import type { ReactNode } from "react"
-import type { DateRange } from "react-day-picker"
 import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
 export type typeofDirections = keyof typeof DirectionProjectLabels
@@ -36,8 +36,21 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     id: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const date = info.getValue() as Date
-      return date.toLocaleDateString("ru-RU")
+      const value = info.getValue()
+
+      if (value instanceof Date) {
+        return value.toLocaleDateString("ru-RU")
+      }
+
+      if (typeof value === "string") {
+        const date = new Date(value)
+        if (!Number.isNaN(date.getTime())) {
+          return date.toLocaleDateString("ru-RU")
+        }
+        return "-"
+      }
+
+      return "-"
     },
     enableHiding: true,
     meta: {

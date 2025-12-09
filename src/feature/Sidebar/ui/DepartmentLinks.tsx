@@ -1,27 +1,30 @@
+"use client"
+
+import { memo, useMemo } from "react"
+import { PermissionEnum } from "@prisma/client"
+import { BookText, ChartColumnBig, type LucideIcon } from "lucide-react"
+import Link from "next/link"
 import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants"
 import type { DepartmentUserItem } from "@/entities/department/types"
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
-import { PermissionEnum } from "@prisma/client"
-import { Separator } from "@radix-ui/react-separator"
-import { BookText, ChartColumnBig } from "lucide-react"
-import dynamic from "next/dynamic"
-import Link from "next/link"
-import { Fragment, memo, useMemo } from "react"
+import { Separator } from "@/shared/components/ui/separator"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 
-const ProtectedByPermissions = dynamic(
-  () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
-  {
-    ssr: false,
-    loading: () => <LoaderCircle className="h-10 bg-muted rounded-md w-full" classSpin="h-6 w-6" />,
-  },
-)
-
+// --- Типы ---
 type DealsType = {
   id: string
   title: string
   resourcePath?: string
 }
 
+type DepartmentLinksProps = {
+  departmentId: number
+  user: DepartmentUserItem
+  userId: string | undefined
+  dealType?: string
+  pathName?: string | null // pathName может быть null
+}
+
+// --- Константы ---
 const dealsSalesDepartment: DealsType[] = [
   { id: "projects", title: "Проекты" },
   { id: "retails", title: "Розница" },
@@ -32,14 +35,7 @@ const pagesMarkretingDepartment: DealsType[] = [
   { id: "statistics/request-source", title: "Источники сделок" },
 ]
 
-type DepartmentLinksProps = {
-  departmentId: number
-  user: DepartmentUserItem
-  userId: string | undefined
-  dealType?: string
-  pathName?: string
-}
-
+// --- Компонент одной ссылки (Типизированный) ---
 const LinkItem = memo(
   ({
     href,
@@ -50,11 +46,11 @@ const LinkItem = memo(
   }: {
     href: string
     title: string
-    icon: React.ComponentType<{ size: number; className?: string }>
+    icon: LucideIcon | React.ComponentType<{ size: number; className?: string }>
     isActive: boolean
     onClick: (e: React.MouseEvent) => void
   }) => (
-    <Fragment>
+    <>
       <Link
         className={`${
           !isActive && "text-primary dark:text-stone-400"
@@ -72,15 +68,15 @@ const LinkItem = memo(
         )}
       </Link>
       <Separator className="my-px h-px bg-stone-600" />
-    </Fragment>
+    </>
   ),
 )
-
 LinkItem.displayName = "LinkItem"
 
+// --- Основной компонент ---
 export const DepartmentLinks = memo(
   ({ departmentId, user, userId, dealType, pathName }: DepartmentLinksProps) => {
-    const getDealLinks = useMemo(() => {
+    const linksList = useMemo(() => {
       switch (departmentId) {
         case 1:
           return dealsSalesDepartment
@@ -90,69 +86,53 @@ export const DepartmentLinks = memo(
           return []
       }
     }, [departmentId])
+    // 1. Guard clauses (Проверки ролей)
+    if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) return null
+    // Если нужно раскомментировать ассистента - делай это здесь
+    if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) return null
 
-    const renderLinks = useMemo(
-      () =>
-        getDealLinks.map((link) => {
-          const isActive = dealType === link.id && user.id === userId
-          const href =
-            departmentId === 1
-              ? `${user.url}/${link.id}/${user.id}`
-              : `${user.url}/${departmentId}/${user.id}${link.resourcePath || ""}`
-          return (
-            <LinkItem
-              href={href}
-              icon={departmentId === 1 ? BookText : ChartColumnBig}
-              isActive={isActive}
-              key={link.id}
-              onClick={(e) => e.stopPropagation()}
-              title={link.title}
-            />
-          )
-        }),
-      [dealType, user.id, user.url, userId, getDealLinks, departmentId],
-    )
+    // 3. Рендер основных ссылок
+    const renderLinks = linksList.map((link) => {
+      const isActive = dealType === link.id && user.id === userId
 
-    if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) {
-      return null
-    }
+      // Твоя оригинальная логика формирования URL
+      const href =
+        departmentId === 1
+          ? `${user.url}/${link.id}/${user.id}`
+          : `${user.url}/${departmentId}/${user.id}${link.resourcePath || ""}`
 
-    if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) {
-      // return (
-      //   <LinkItem
-      //     key={user.id}
-      //     href={`${user.url}/orders`}
-      //     title={table.orders.title}
-      //     icon={departmentId === 1 ? BookText : ChartColumnBig}
-      //     isActive={
-      //       departmentId === user.departmentId &&
-      //       user.id === userId &&
-      //       dealType === table.orders.id
-      //     }
-      //     onClick={(e) => e.stopPropagation()}
-      //   />
-      // );
-      return null
-    }
-
-    if (departmentId === 2) {
       return (
-        <>
-          {renderLinks}
-          <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
-            <LinkItem
-              href={`dashboard/statistics/request-source/2/${user.id}/tabs`}
-              icon={BookText}
-              isActive={pathName?.includes("tabs") || false}
-              onClick={(e) => e.stopPropagation()}
-              title={"Заявки"}
-            />
-          </ProtectedByPermissions>
-        </>
+        <LinkItem
+          href={href}
+          icon={departmentId === 1 ? BookText : ChartColumnBig}
+          isActive={isActive}
+          key={link.id}
+          onClick={(e) => e.stopPropagation()}
+          title={link.title}
+        />
       )
-    }
+    })
 
-    return <>{renderLinks}</>
+    // 4. Доп. ссылка для маркетинга (ID 2)
+    const marketingExtraLink =
+      departmentId === 2 ? (
+        <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+          <LinkItem
+            href={`/dashboard/statistics/request-source/2/${user.id}/tabs`}
+            icon={BookText}
+            isActive={pathName?.includes("tabs") ?? false}
+            onClick={(e) => e.stopPropagation()}
+            title={"Заявки"}
+          />
+        </ProtectedByPermissions>
+      ) : null
+
+    return (
+      <>
+        {renderLinks}
+        {marketingExtraLink}
+      </>
+    )
   },
 )
 

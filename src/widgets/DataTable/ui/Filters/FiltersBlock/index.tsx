@@ -1,7 +1,7 @@
 import type { Table } from "@tanstack/react-table"
 import { usePathname } from "next/navigation"
 import type { DateRange } from "react-day-picker"
-
+import type { TableType } from "@/entities/deal/types"
 import { getManagers } from "@/entities/department/lib/utils"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { FormatedParamsType, LABELS } from "@/feature/deals/lib/constants"
@@ -11,7 +11,6 @@ import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGro
 import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import SelectColumns from "@/shared/custom-components/ui/SelectColumns"
-import { TableType } from "@/entities/deal/types"
 
 type FiltersBlockProps = {
   table: Table<Record<string, unknown>>

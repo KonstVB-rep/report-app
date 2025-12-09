@@ -1,5 +1,8 @@
 "use client"
 
+import { PermissionEnum } from "@prisma/client"
+import type { ColumnDef } from "@tanstack/react-table"
+import z from "zod"
 import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
 import type { ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types"
@@ -11,13 +14,10 @@ import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessa
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition"
 import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
-import { PermissionEnum } from "@prisma/client"
-import type { ColumnDef } from "@tanstack/react-table"
-import dynamic from "next/dynamic"
-import z from "zod"
 import { columnsDataContract } from "../model/columns-data-contracts"
 import { columnsDataProject } from "../model/columns-data-project"
 import { columnsDataRetail } from "../model/columns-data-retail"
+import DealsTable from "./DealsTable"
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
@@ -26,10 +26,10 @@ export const DealTypeLabels: Record<string, string> = {
   orders: "Заявки",
 }
 
-const DealsTable = dynamic(() => import("@/widgets/deal/ui/DealsTable"), {
-  ssr: false,
-  loading: () => <TableRowsSkeleton />,
-})
+// const DealsTable = dynamic(() => import("@/widgets/deal/ui/DealsTable"), {
+//   ssr: false,
+//   loading: () => <TableRowsSkeleton />,
+// })
 
 const Columns = (
   type: TableType,
@@ -73,7 +73,7 @@ const PersonDealsTable = () => {
 
   const hasAccess = hasAccessToData(userId as string, PermissionEnum.VIEW_USER_REPORT)
 
-  const { data = [] } = useDealsUser(
+  const { data = [], isLoading } = useDealsUser(
     dealType as TableType,
     hasAccess ? (userId as string) : undefined,
   )
@@ -92,11 +92,15 @@ const PersonDealsTable = () => {
         </div>
 
         <ButtonsGroupTable />
-        <DealsTable
-          columns={Columns(dealType as TableType) as ColumnDef<TypeBaseDT>[]}
-          data={data as TypeBaseDT[]}
-          hiddenCols={hiddenDefCols[dealType as TableType]}
-        />
+        {isLoading ? (
+          <TableRowsSkeleton />
+        ) : (
+          <DealsTable
+            columns={Columns(dealType as TableType) as ColumnDef<TypeBaseDT>[]}
+            data={data as TypeBaseDT[]}
+            hiddenCols={hiddenDefCols[dealType as TableType]}
+          />
+        )}
       </DealTableTemplate>
     </NotFoundByPosition>
   )

@@ -353,11 +353,17 @@ export const useGetAllDealsByType = (
   userId: string | null,
   departmentId: number,
 ) => {
-  // Просто пробрасываем аргументы дальше
-  if (type === "projects") return useGetAllProjects(userId, departmentId)
-  if (type === "retails") return useGetAllRetails(userId, departmentId)
+  const projectsQuery = useGetAllProjects(userId, departmentId)
+  const retailsQuery = useGetAllRetails(userId, departmentId)
 
-  throw new Error(`Invalid deal type: ${type}`)
+  switch (type) {
+    case "projects":
+      return projectsQuery
+    case "retails":
+      return retailsQuery
+    default:
+      throw new Error(`Invalid deal type: ${type}`)
+  }
 }
 
 export const useGetAdditionalContacts = (dealId: string) => {

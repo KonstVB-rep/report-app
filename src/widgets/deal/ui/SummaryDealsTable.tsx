@@ -106,6 +106,10 @@
 // export default withAuthGuard(SummaryDealsTable)
 "use client"
 
+import { useMemo } from "react"
+import { PermissionEnum } from "@prisma/client"
+import type { ColumnDef } from "@tanstack/react-table"
+import z from "zod"
 import Loading from "@/app/dashboard/summary-table/[departmentId]/[dealType]/[userId]/loading"
 import { TableTypes } from "@/entities/deal/lib/constants"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
@@ -113,19 +117,15 @@ import type { DealsUnionType, ProjectResponse, RetailResponse } from "@/entities
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable"
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable"
-// Убрали dynamic import, чтобы таблица рендерилась сразу (Hydration)
-// Если DealsTable ОЧЕНЬ тяжелый, можно вернуть dynamic, но убрать ssr: false
-import DealsTable from "@/widgets/deal/ui/DealsTable"
-import { DepartmentsUnionIds } from "@/entities/department/types"
+import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { useGetAllDealsByType } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
-import { PermissionEnum } from "@prisma/client"
-import type { ColumnDef } from "@tanstack/react-table"
-import { useMemo } from "react"
-import z from "zod"
+// Убрали dynamic import, чтобы таблица рендерилась сразу (Hydration)
+// Если DealsTable ОЧЕНЬ тяжелый, можно вернуть dynamic, но убрать ssr: false
+import DealsTable from "@/widgets/deal/ui/DealsTable"
 import { columnsDataProjectSummary } from "../model/summary-columns-data-project"
 import { columnsDataRetailSummary } from "../model/summary-columns-data-retail"
 

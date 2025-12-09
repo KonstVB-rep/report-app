@@ -67,7 +67,7 @@ const TasksPage = () => {
         <СreateTaskDialog />
       </div>
 
-      <MotionDivY>
+      <MotionDivY className="flex-1">
         {currentView === "table" && data && <TaskTable data={data} />}
 
         {currentView === "kanban" && data && <Kanban data={data} />}

@@ -1,22 +1,18 @@
 "use client"
 
-import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
-import type { TableType } from "@/entities/deal/types"
-
-import type { DepartmentsUnionIds } from "@/entities/department/types"
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs"
-import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
-
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
-
-import { columnsDataProjectForMarketing } from "@/widgets/deal/model/columns-data-project-for-marketing"
-import { columnsDataRetailForMarketing } from "@/widgets/deal/model/columns-data-retail-for-marketing"
+import { useMemo, useState } from "react"
 import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
-import { useMemo, useState } from "react"
 import z from "zod"
+import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
+import type { TableType } from "@/entities/deal/types"
+import type { DepartmentsUnionIds } from "@/entities/department/types"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs"
+import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
+import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
+import { columnsDataProjectForMarketing } from "@/widgets/deal/model/columns-data-project-for-marketing"
+import { columnsDataRetailForMarketing } from "@/widgets/deal/model/columns-data-retail-for-marketing"
 import DealsTabContent from "../ui/DealsTabContent"
 
 export interface SummaryTableProps<T extends { id: string }> {
@@ -73,7 +69,7 @@ const MarketingDealsTable = () => {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TableType)} className="pt-5">
+    <Tabs className="pt-5" onValueChange={(v) => setActiveTab(v as TableType)} value={activeTab}>
       <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2">
         <TabsTrigger value="retails">Розница</TabsTrigger>
         <TabsTrigger value="projects">Проекты</TabsTrigger>
@@ -81,23 +77,23 @@ const MarketingDealsTable = () => {
 
       <TabsContent value="retails">
         <DealsTabContent
-          dealType="retails"
           columns={columnsDataRetailForMarketing}
-          hiddenColumns={hiddenColsRetail}
-          userId={userId}
+          dealType="retails"
           departmentId={1}
           hasAccess={hasAccess}
+          hiddenColumns={hiddenColsRetail}
+          userId={userId}
         />
       </TabsContent>
 
       <TabsContent value="projects">
         <DealsTabContent
-          dealType="projects"
           columns={columnsDataProjectForMarketing}
-          hiddenColumns={hiddenColsProject}
-          userId={userId}
+          dealType="projects"
           departmentId={1}
           hasAccess={hasAccess}
+          hiddenColumns={hiddenColsProject}
+          userId={userId}
         />
       </TabsContent>
     </Tabs>

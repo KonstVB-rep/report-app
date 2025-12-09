@@ -41,8 +41,8 @@ const ProfilePage = () => {
   return (
     <section className="p-4 flex gap-2 flex-wrap">
       <div className="flex gap-4">
-        <div className="grid w-full md:max-w-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto_1fr]">
-          <div className="@container flex h-full min-w-[260px] flex-col justify-between">
+        <div className="grid auto-cols-max items-center gap-2 rounded-md border p-2 sm:grid-cols-[auto auto]">
+          <div className="flex flex-col justify-between gap-2">
             <UserCard
               departmentName={
                 DepartmentLabels[user?.departmentName as keyof typeof DepartmentLabels]
@@ -50,6 +50,7 @@ const ProfilePage = () => {
               position={user?.position}
               username={user?.username}
             />
+
             <div className="flex flex-col gap-2">
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Дата регистрации:</span>
@@ -60,27 +61,30 @@ const ProfilePage = () => {
                 <span className="first-letter:capitalize">Тел.:</span>
                 <span>{user?.phone}</span>
               </p>
+
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
                 <span className="first-letter:capitalize">Email:</span>
-
-                <span>{user?.email}</span>
+                <span className="break-all">{user?.email}</span>
               </p>
             </div>
 
-            <div className="flex gap-2 overflow-hidden rounded-md w-full items-center">
+            <div className="flex gap-2 rounded-md w-full items-center ">
               <Contacts className="rounded-full" email={user?.email} phone={user?.phone} />
             </div>
           </div>
 
-          {/* <div className="flex gap-2 overflow-hidden rounded-md w-full items-center">
+          {/* 
+          <div className="flex gap-2 overflow-hidden rounded-md w-full items-center">
             <Contacts
               className="rounded-full"
               email={user?.email}
               phone={user?.phone}
             />
-          </div> */}
+          </div> 
+          */}
 
-          {/* <div className="flex flex-col gap-2 h-full">
+          {/*
+           <div className="flex flex-col gap-2 h-full">
             <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
               <span className="first-letter:capitalize">Дата регистрации:</span>
               <span>{user?.createdAt?.toLocaleDateString()}</span>
@@ -95,7 +99,8 @@ const ProfilePage = () => {
 
               <span>{user?.email}</span>
             </p>
-          </div> */}
+          </div> 
+          */}
         </div>
       </div>
 

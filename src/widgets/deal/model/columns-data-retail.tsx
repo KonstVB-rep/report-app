@@ -40,8 +40,21 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const date = info.getValue() as Date
-      return date.toLocaleDateString("ru-RU")
+      const value = info.getValue()
+
+      if (value instanceof Date) {
+        return value.toLocaleDateString("ru-RU")
+      }
+
+      if (typeof value === "string") {
+        const date = new Date(value)
+        if (!Number.isNaN(date.getTime())) {
+          return date.toLocaleDateString("ru-RU")
+        }
+        return "-"
+      }
+
+      return "-"
     },
     enableHiding: true,
     meta: {
@@ -78,12 +91,21 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "plannedDateConnection",
     header: "Плановая дата контакта",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const date = info.getValue() as Date | null
-      if (date) {
-        return date.toLocaleDateString("ru-RU")
-      } else {
+      const value = info.getValue() as Date | null
+
+      if (!value) return "Дата не указана"
+
+      if (value instanceof Date) return value.toLocaleDateString("ru-RU")
+
+      if (typeof value === "string") {
+        const parsed = new Date(value)
+        if (!Number.isNaN(parsed.getTime())) {
+          return parsed.toLocaleDateString("ru-RU")
+        }
         return "Дата не указана"
       }
+
+      return "Дата не указана"
     },
     enableHiding: true,
     meta: {

@@ -1,16 +1,15 @@
 "use client"
 
-import { TableType } from "@/entities/deal/types"
+import type { ReactNode } from "react"
+import type { ColumnDef, Table } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
+import type { TableType } from "@/entities/deal/types"
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider"
 import FiltersManagement from "@/feature/filter-persistence/ui/FiltersManagement"
 import ButtonExportTableXls from "@/feature/table-export-excel/ui/ButtonExportTableXls"
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import { useTableState } from "@/shared/hooks/useTableState"
-import type { ColumnDef, Table } from "@tanstack/react-table"
-
-import dynamic from "next/dynamic"
-import { ReactNode } from "react"
 
 const FiltersBlock = dynamic(() => import("./Filters/FiltersBlock"), {
   ssr: false,
@@ -43,7 +42,7 @@ const DataTable = <T extends Record<string, unknown>>({
   const { table, filtersContextValue, openFilters, setGlobalFilter, globalFilter } = useTableState(
     data,
     columns,
-    hiddenColumns,
+    { hiddenColumns },
   )
 
   const currentData = table.getRowModel().rows.map((row) => row.original)
@@ -73,7 +72,7 @@ const DataTable = <T extends Record<string, unknown>>({
           className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
         >
           {openFilters && (
-            <FiltersBlock table={table as Table<Record<string, unknown>>} dealType={dealType} />
+            <FiltersBlock dealType={dealType} table={table as Table<Record<string, unknown>>} />
           )}
         </div>
 

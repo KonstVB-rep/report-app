@@ -1,26 +1,27 @@
 // src/shared/hooks/useTableState.ts
-
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
+import { useMemo, useState } from "react"
 import {
   type ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   type SortingState,
+  type TableOptions, // Импортируем типы
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { useState } from "react"
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 
-export interface TableMeta<TData> {
-  columnVisibility: Partial<Record<Extract<NonNullable<ColumnDef<TData>["id"]>, string>, boolean>>
+interface UseTableStateOptions<T> extends Partial<TableOptions<T>> {
+  hiddenColumns?: Partial<Record<string, boolean>>
 }
 
 export const useTableState = <T extends Record<string, unknown>>(
   data: T[],
   columns: ColumnDef<T>[],
-  hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>,
+  options: UseTableStateOptions<T> = {},
 ) => {
+  const { hiddenColumns, ...tableOptions } = options
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
 
@@ -40,62 +41,79 @@ export const useTableState = <T extends Record<string, unknown>>(
     searchableColumns,
   } = useDataTableFilters()
 
-  // const columnVisibility = useMemo(() => {
-  //   const visibility: VisibilityState = { ...visibilityFromHook };
+  const mergedColumnVisibility = useMemo<VisibilityState>(() => {
+    const hiddenColsObj = hiddenColumns
+      ? Object.fromEntries(Object.entries(hiddenColumns).map(([key, value]) => [key, !!value]))
+      : {}
 
-  //   // (["id", "user", "resource"] as const).forEach((col) => {
-  //   //   if (!(col in visibility)) {
-  //   //     visibility[col] = false;
-  //   //   }
-  //   // });
+    return {
+      ...visibilityFromHook,
+      ...hiddenColsObj,
+    }
+  }, [visibilityFromHook, hiddenColumns])
 
-  //   return visibility;
-  // }, [visibilityFromHook]);
-
-  const mergedColumnVisibility: VisibilityState = {
-    ...visibilityFromHook,
-    ...Object.fromEntries(
-      Object.entries(hiddenColumns || {}).map(([key, value]) => [key, !!value]),
-    ),
-  }
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
+  const tableState = useMemo(
+    () => ({
       sorting,
       rowSelection,
       columnFilters,
       globalFilter,
       columnVisibility: mergedColumnVisibility,
-    },
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onGlobalFilterChange: setGlobalFilter,
+    }),
+    [sorting, rowSelection, columnFilters, globalFilter, mergedColumnVisibility],
+  )
+
+  const table = useReactTable({
+    data,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     enableRowSelection: true,
     enableColumnResizing: true,
     columnResizeMode: "onChange",
+
+    state: tableState,
+
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onGlobalFilterChange: setGlobalFilter,
+
+    ...tableOptions,
   })
 
-  const filtersContextValue = {
-    selectedColumns: selectedSearchColumns,
-    setSelectedColumns: setSelectedSearchColumns,
-    openFilters,
-    setOpenFilters,
-    handleDateChange,
-    handleClearDateFilter,
-    columnFilters,
-    columnVisibility: visibilityFromHook,
-    setColumnFilters,
-    setColumnVisibility,
-    includedColumns: searchableColumns,
-    columns,
-  }
+  const filtersContextValue = useMemo(
+    () => ({
+      selectedColumns: selectedSearchColumns,
+      setSelectedColumns: setSelectedSearchColumns,
+      openFilters,
+      setOpenFilters,
+      handleDateChange,
+      handleClearDateFilter,
+      columnFilters,
+      columnVisibility: visibilityFromHook,
+      setColumnFilters,
+      setColumnVisibility,
+      includedColumns: searchableColumns,
+      columns,
+    }),
+    [
+      selectedSearchColumns,
+      openFilters,
+      columnFilters,
+      visibilityFromHook,
+      searchableColumns,
+      columns,
+      handleClearDateFilter,
+      handleDateChange,
+      setColumnFilters,
+      setColumnVisibility,
+      setOpenFilters,
+      setSelectedSearchColumns,
+    ],
+  )
 
   return {
     table,

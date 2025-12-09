@@ -1,6 +1,5 @@
 "use client"
 
-import { Separator } from "@radix-ui/react-separator"
 import { Building, Info } from "lucide-react"
 import dynamic from "next/dynamic"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
@@ -70,11 +69,7 @@ const RetailItemInfo = ({ dealId }: { dealId: string }) => {
         </div>
       </div>
 
-      <Separator />
-
       <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
-
-      <Separator />
 
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[1fr_2fr]">
         <div className="grid-rows-auto grid gap-2">
@@ -131,7 +126,7 @@ const RetailItemInfo = ({ dealId }: { dealId: string }) => {
                 value={dealInfo.deliveryType}
               />
 
-              <hr className="w-full h-[1px] rounded-lg bg-gray-500" />
+              <hr className="w-full h-[] rounded-lg bg-gray-500" />
 
               <FinanceInfo data={dataFinance} />
             </IntoDealItem>

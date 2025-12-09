@@ -1,5 +1,16 @@
 "use client"
 
+import { useEffect } from "react"
+import { StatusProject } from "@prisma/client"
+import { ArrowLeft } from "lucide-react"
+import {
+  type FieldValues,
+  type Path,
+  type PathValue,
+  type UseFormReturn,
+  useWatch,
+} from "react-hook-form"
+import z from "zod"
 import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { formatNumber, parseFormattedNumber } from "@/entities/deal/lib/helpers"
 import type { Contact } from "@/entities/deal/types"
@@ -24,17 +35,6 @@ import Overlay from "@/shared/custom-components/ui/Overlay"
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
-import { StatusProject } from "@prisma/client"
-import { ArrowLeft } from "lucide-react"
-import { useEffect } from "react"
-import {
-  type FieldValues,
-  type Path,
-  type PathValue,
-  type UseFormReturn,
-  useWatch,
-} from "react-hook-form"
-import z from "zod"
 import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryProjectLabels,

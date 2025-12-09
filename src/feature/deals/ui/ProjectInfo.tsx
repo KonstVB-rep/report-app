@@ -5,7 +5,6 @@ import dynamic from "next/dynamic"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
-import { Separator } from "@/shared/components/ui/separator"
 import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation"
@@ -67,11 +66,7 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
         </ProtectedByDepartmentAffiliation>
       </div>
 
-      <Separator />
-
       <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
-
-      <Separator />
 
       <div className="grid gap-2">
         {deal?.plannedDateConnection && (

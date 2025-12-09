@@ -5,7 +5,7 @@ type ManagersListByDealProps = {
   managers?: ManagerShortInfo[]
   userId: string
 }
-const spanClass = "text-xs text-stone-600 dark:text-stone-400"
+const spanClass = "text-xs text-stone-600 dark:text-stone-400 flex items-center"
 
 const ManagersListByDeal = ({ managers, userId }: ManagersListByDealProps) => {
   if (!managers || managers.length === 0) return null
@@ -14,11 +14,11 @@ const ManagersListByDeal = ({ managers, userId }: ManagersListByDealProps) => {
   const assistants = managers.filter((m) => m.id !== userId)
 
   return (
-    <div className="flex flex-wrap gap-2 divide-x divide-solid">
+    <div className="flex flex-wrap gap-2 divide-x divide-solid border-t border-b">
       {responsible && (
         <div className="grid px-2">
           <span className={spanClass}>Ответственный менеджер</span>
-          <span className="text-sm capitalize">{responsible.managerName}</span>
+          <span className="text-sm capitalize flex items-center">{responsible.managerName}</span>
           <span className={cn(spanClass, "first-letter:uppercase")}>{responsible.position}</span>
         </div>
       )}

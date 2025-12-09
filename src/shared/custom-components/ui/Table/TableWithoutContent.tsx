@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type Header, type Row } from "@tanstack/react-table"
+import type { Header, Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
 import TableCellComponent from "./TableCellCompoment"
 
