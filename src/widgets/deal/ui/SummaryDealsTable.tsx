@@ -1,5 +1,9 @@
 "use client"
 
+import { useMemo } from "react"
+import { PermissionEnum } from "@prisma/client"
+import type { ColumnDef } from "@tanstack/react-table"
+import z from "zod"
 import Loading from "@/app/dashboard/summary-table/[departmentId]/[dealType]/[userId]/loading"
 import { TableTypes } from "@/entities/deal/lib/constants"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
@@ -13,10 +17,6 @@ import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessa
 import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DealsTable from "@/widgets/deal/ui/DealsTable"
-import { PermissionEnum } from "@prisma/client"
-import type { ColumnDef } from "@tanstack/react-table"
-import { useMemo } from "react"
-import z from "zod"
 import { columnsDataProjectSummary } from "../model/summary-columns-data-project"
 import { columnsDataRetailSummary } from "../model/summary-columns-data-retail"
 

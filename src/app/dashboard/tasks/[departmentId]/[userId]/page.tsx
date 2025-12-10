@@ -1,11 +1,15 @@
 "use client"
 
+import { Activity, Suspense } from "react"
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink"
 import { useGetUserTasks } from "@/feature/task/hooks/query"
 import { viewType } from "@/feature/task/model/constants"
+import type { ViewType } from "@/feature/task/types"
 import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
 import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
@@ -13,8 +17,6 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
 import { pageParamsSchemaDepsIsUserId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import useViewType from "@/shared/hooks/useViewType"
-import { PermissionEnum } from "@prisma/client"
-import dynamic from "next/dynamic"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
@@ -35,7 +37,7 @@ const UserTasksPage = () => {
 
   const { data } = useGetUserTasks()
 
-  const { handleViewChange, currentView } = useViewType()
+  const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
 
   if (!authUser) return
 
@@ -64,10 +66,13 @@ const UserTasksPage = () => {
         <СreateTaskDialog />
       </div>
 
-      <MotionDivY>
-        {currentView === "table" && data && <TaskTable data={data} />}
-
-        {currentView === "kanban" && data && <Kanban data={data} />}
+      <MotionDivY className="flex-1">
+        <Activity mode={currentView === "table" ? "visible" : "hidden"}>
+          <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
+        </Activity>
+        <Activity mode={currentView === "kanban" ? "visible" : "hidden"}>
+          <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
+        </Activity>
       </MotionDivY>
     </section>
   )

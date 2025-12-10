@@ -1,14 +1,14 @@
 "use client"
 
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
+import z from "zod"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { useGetUser } from "@/feature/user/hooks/query"
 import Contacts from "@/shared/custom-components/ui/Contacts"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import UserCard from "@/shared/custom-components/ui/UserCard"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
-import { PermissionEnum } from "@prisma/client"
-import dynamic from "next/dynamic"
-import z from "zod"
 import ProfileDealsData from "./ui/ProfileDealsData"
 
 const AccessDeniedMessage = dynamic(

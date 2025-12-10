@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { endOfDay, startOfDay } from "date-fns"
-import useStoreUser, { userIdSelector } from "@/entities/user/store/useStoreUser"
+import useStoreUser, { selectUserId } from "@/entities/user/store/useStoreUser"
 import {
   getAllEventsCalendar,
   getChatBotInfoAction,
@@ -14,7 +14,7 @@ const STALE_TIME_SHORT = 1 * 60 * 1000
 // --- ХУКИ ---
 
 export const useGetEventsCalendarUser = () => {
-  const userId = useStoreUser(userIdSelector)
+  const userId = useStoreUser(selectUserId)
 
   return useQuery({
     queryKey: ["calendar", "all", userId],
@@ -28,7 +28,7 @@ export const useGetEventsCalendarUser = () => {
 }
 
 export const useGetEventsCalendarUserToday = () => {
-  const userId = useStoreUser(userIdSelector)
+  const userId = useStoreUser(selectUserId)
 
   const todayStart = startOfDay(new Date())
   const todayEnd = endOfDay(new Date())
@@ -46,7 +46,7 @@ export const useGetEventsCalendarUserToday = () => {
 }
 
 export const useGetAllEvents = () => {
-  const userId = useStoreUser(userIdSelector)
+  const userId = useStoreUser(selectUserId)
 
   return useQuery({
     queryKey: ["calendar", "admin-all", userId],
@@ -62,7 +62,7 @@ export const useGetAllEvents = () => {
 // --- ХУК БОТА (SOFT FAIL PATTERN) ---
 
 export const useGetInfoChat = (botName: string) => {
-  const userId = useStoreUser(userIdSelector)
+  const userId = useStoreUser(selectUserId)
 
   const fallbackBotInfo = {
     id: null,

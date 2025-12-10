@@ -1,11 +1,14 @@
 "use client"
 
+import { Activity, Suspense } from "react"
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useGetTasksDepartment } from "@/feature/task/hooks/query"
 import { viewType } from "@/feature/task/model/constants"
-import { ViewType } from "@/feature/task/types"
+import type { ViewType } from "@/feature/task/types"
 import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
 import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
@@ -14,9 +17,6 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
 import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import useViewType from "@/shared/hooks/useViewType"
-import { PermissionEnum } from "@prisma/client"
-import dynamic from "next/dynamic"
-import { Activity, Suspense } from "react"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
@@ -35,7 +35,7 @@ const TasksPage = () => {
 
   const { data, isPending } = useGetTasksDepartment()
 
-  const { handleViewChange, currentView } = useViewType<ViewType>("table")
+  const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
 
   if (!authUser) return null
 

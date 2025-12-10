@@ -54,4 +54,8 @@ const useStoreUser = create<State>()(
 
 export default useStoreUser
 
-export const userIdSelector = (state: State) => state.authUser?.id
+export const selectUserId = (state: State) => state.authUser?.id
+export const selectSetAuthUser = (state: State) => state.setAuthUser
+export const selectSetIsAuth = (state: State) => state.setIsAuth
+export const selectIsAuth = (state: State) => state.isAuth
+export const selectAuthUser = (state: State) => state.authUser

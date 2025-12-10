@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { verifyToken } from "./shared/lib/helpers/checkTokens"
-import { AuthError } from "./shared/lib/helpers/customErrors"
+import { fetchWithTimeout } from "./shared/lib/helpers/fetchWithTimeout"
 
 async function redirectToLogin(request: NextRequest) {
   if (request.nextUrl.pathname === "/login") {
@@ -17,21 +17,13 @@ async function redirectToLogin(request: NextRequest) {
 }
 
 const refreshTokenRequest = async (refreshToken: string) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`, {
+  const res = await fetchWithTimeout("/auth/refresh", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refreshToken }),
   })
 
-  if (!res.ok) {
-    if (res.status === 401) {
-      throw new AuthError("Refresh token expired")
-    } else {
-      throw new AuthError("Error refreshing tokens")
-    }
-  }
-
-  return await res.json()
+  return res.json()
 }
 
 async function refreshTokens(request: NextRequest, refreshToken: string) {
@@ -42,7 +34,7 @@ async function refreshTokens(request: NextRequest, refreshToken: string) {
     const tokens = await refreshTokenRequest(refreshToken)
 
     if (!tokens.accessToken) {
-      throw new Error("Новый accessToken не получен")
+      throw new Error("Новый токен доступа не получен")
     }
 
     const response = NextResponse.next()
@@ -106,7 +98,7 @@ export default async function proxy(request: NextRequest) {
       await verifyToken(accessToken)
       return NextResponse.next()
     } catch (error) {
-      console.log("Access token недействителен", error)
+      console.log("Токен доступа недействителен", error)
     }
   }
 

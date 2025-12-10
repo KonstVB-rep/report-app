@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { PermissionEnum, type User } from "@prisma/client"
+import type { User } from "@prisma/client"
 import { useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "@/entities/deal/types"
 import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants"
@@ -78,10 +78,10 @@ const ProfileDealsData = ({ user }: { user: User }) => {
             </span>
           </div>
           <div className="p-2 rounded-md bg-muted">
-            Общая сумма КП: {formatterCurrency.format(Number(data?.projects.money.sumCp))}
+            Общая сумма КП: {formatterCurrency.format(Number(data?.projects?.money?.sumCp))}
           </div>
           <div className="p-2 rounded-md bg-muted">
-            Общая дельта: {formatterCurrency.format(Number(data?.projects.money.sumDelta))}
+            Общая дельта: {formatterCurrency.format(Number(data?.projects?.money?.sumDelta))}
           </div>
         </div>
         <div className="p-2 border flex flex-col gap-2 justify-around rounded-md">
@@ -98,7 +98,7 @@ const ProfileDealsData = ({ user }: { user: User }) => {
             </span>
           </div>
           <div className="p-2 rounded-md bg-muted">
-            Общая сумма КП: {formatterCurrency.format(Number(data?.retails.money.sumCp))}
+            Общая сумма КП: {formatterCurrency.format(Number(data?.retails?.money?.sumCp)) || 0}
           </div>
           <div className="p-2 rounded-md bg-muted">
             Общая дельта: {formatterCurrency.format(Number(data?.retails.money.sumDelta))}

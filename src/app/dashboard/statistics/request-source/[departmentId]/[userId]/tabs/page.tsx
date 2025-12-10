@@ -1,5 +1,10 @@
 "use client"
 
+import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
+import { PermissionEnum } from "@prisma/client"
+import type { ColumnDef } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
+import z from "zod"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import type { TableType } from "@/entities/deal/types"
 import type { DepartmentsUnionIds } from "@/entities/department/types"
@@ -9,11 +14,6 @@ import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { columnsDataProjectForMarketing } from "@/widgets/deal/model/columns-data-project-for-marketing"
 import { columnsDataRetailForMarketing } from "@/widgets/deal/model/columns-data-retail-for-marketing"
-import { PermissionEnum } from "@prisma/client"
-import type { ColumnDef } from "@tanstack/react-table"
-import dynamic from "next/dynamic"
-import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
-import z from "zod"
 
 const DealsTabContent = dynamic(() => import("../ui/DealsTabContent"), {
   ssr: false,
@@ -70,10 +70,6 @@ const MarketingDealsTable = () => {
     setActiveTab(v as TableType)
   }
 
-  if (!hasAccess) {
-    return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
-  }
-
   useEffect(() => {
     const savedTab = localStorage.getItem("activeTabMarketing")
     if (savedTab) {
@@ -81,8 +77,12 @@ const MarketingDealsTable = () => {
     }
   }, [])
 
+  if (!hasAccess) {
+    return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
+  }
+
   return (
-    <Tabs className="pt-5" value={activeTab} onValueChange={(v) => handleToggleTab(v as TableType)}>
+    <Tabs className="pt-5" onValueChange={(v) => handleToggleTab(v as TableType)} value={activeTab}>
       <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2">
         <TabsTrigger value="retails">Розница</TabsTrigger>
         <TabsTrigger value="projects">Проекты</TabsTrigger>

@@ -1,14 +1,24 @@
 "use client"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-const useViewType = <T extends string>(defaultValue: T) => {
+// Вспомогательная функция для проверки значения на принадлежность к union-типу
+function isValidEnumValue<T extends string>(
+  value: string | null,
+  allowedValues: readonly T[],
+): value is T {
+  return value !== null && (allowedValues as readonly string[]).includes(value)
+}
+
+const useViewType = <T extends string>(defaultValue: T, allowedValues: readonly T[]) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const currentView = (searchParams.get("viewType") as T) || defaultValue
+  // 🔒 Безопасное извлечение viewType с валидацией
+  const urlViewType = searchParams.get("viewType")
+  const currentView = isValidEnumValue(urlViewType, allowedValues) ? urlViewType : defaultValue
 
   const handleViewChange = useCallback(
     (value: T) => {

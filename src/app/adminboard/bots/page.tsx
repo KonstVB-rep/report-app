@@ -1,13 +1,8 @@
 import { Suspense } from "react"
-import { getAllBots } from "@/entities/tgBot/api"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import ClientBotsPage from "./ui/ClientBotsPage"
 
-export const dynamic = "force-dynamic"
-
 const BotsPage = async () => {
-  const allBots = await getAllBots()
-
   return (
     <Suspense
       fallback={
@@ -16,7 +11,7 @@ const BotsPage = async () => {
         </div>
       }
     >
-      <ClientBotsPage initialBots={allBots} />
+      <ClientBotsPage />
     </Suspense>
   )
 }
