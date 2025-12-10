@@ -3,8 +3,6 @@ import { type NextRequest, NextResponse } from "next/server"
 import { deleteFileOrFolderFromYandexDiskAnDB } from "../yandexDisk"
 import { getErrorMessageDeleteByCode } from "./getErrorMessageDeleteByCode"
 
-export const runtime = "nodejs"
-
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json() // Парсим JSON из тела запроса

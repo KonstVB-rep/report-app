@@ -1,7 +1,7 @@
 "use client"
 
-import { usePathname } from "next/navigation"
 import { createContext, useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 
 interface LastPathContextProps {
   lastPath: string | null

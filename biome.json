@@ -8,7 +8,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!src/shared/components/ui"]
+    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!src/shared/components/ui", "!src/app/globals.css"]
   },
   "formatter": {
     "enabled": true,

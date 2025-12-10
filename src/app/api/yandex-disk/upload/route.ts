@@ -3,8 +3,6 @@ import { type NextRequest, NextResponse } from "next/server"
 import { uploadFilesToYandexDiskAndDB } from "../yandexDisk"
 import { getErrorMessageUploadByCode } from "./getErrorMessageUploadByCode"
 
-export const runtime = "nodejs"
-
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()

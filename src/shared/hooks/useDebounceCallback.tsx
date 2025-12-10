@@ -1,12 +1,5 @@
 import { useCallback, useRef } from "react"
 
-/**
- * Дебонсит вызов функции с точной типизацией
- * @param callback — функция, которую нужно дебаунсить
- * @param delay — задержка в мс
- * @returns дебаунснутая версия callback
- */
-
 export const useDebounceCallback = <T extends (...args: unknown[]) => void>(
   callback: T,
   delay: number,

@@ -4,8 +4,6 @@ import { NextResponse } from "next/server"
 import { downloadFileFromYandexDisk } from "../yandexDisk"
 import { getErrorMessageDownloadByCode } from "./getErrorMessageDownloadByCode"
 
-export const runtime = "nodejs"
-
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url)

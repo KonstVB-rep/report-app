@@ -1,10 +1,10 @@
 // src/feature/deals/api/hooks/useDataTableFilters.ts
 
-import { useDebounceCallback } from "@/shared/hooks/useDebounceCallback"
+import { useCallback, useEffect, useRef, useState } from "react"
 import type { ColumnFiltersState, VisibilityState } from "@tanstack/react-table"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
+import { useDebounceCallback } from "@/shared/hooks/useDebounceCallback"
 
 export const SEARCHABLE_COLUMNS = [
   "nameObject",
