@@ -1,12 +1,14 @@
+import type { NextConfig } from "next" // 1. Импортируем тип
 import withBundleAnalyzer from "@next/bundle-analyzer"
-import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD } from "next/constants"
+import { PHASE_PRODUCTION_BUILD } from "next/constants"
 
 const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
   openAnalyzer: true,
 })
 
-const baseConfig = {
+// 2. Явно указываем тип NextConfig
+const baseConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "downloader.disk.yandex.ru", pathname: "/**" },
@@ -55,7 +57,8 @@ const baseConfig = {
     maxInactiveAge: 5 * 60 * 1000,
     pagesBufferLength: 5,
   },
-  webpack: (config, { dev, isServer }) => {
+  // 3. Типизируем аргументы webpack
+  webpack: (config: any, { dev, isServer }: { dev: boolean; isServer: boolean }) => {
     if (!dev && !isServer) {
       config.resolve.alias["react-devtools"] = false
     }
@@ -63,16 +66,19 @@ const baseConfig = {
   },
 }
 
-const nextConfig = async (phase) => {
-  let config = baseConfig
+// 4. Типизируем phase
+const nextConfig = async (phase: string) => {
+  // 5. Указываем, что config — это NextConfig, чтобы можно было перезаписывать его
+  let config: NextConfig = baseConfig
 
   // Serwist PWA
   if (phase === PHASE_PRODUCTION_BUILD) {
     const withSerwist = (await import("@serwist/next")).default({
-      swSrc: "src/service-worker/app-worker.ts", // В продакшене Serwist транспилирует TS
+      swSrc: "src/service-worker/app-worker.ts",
       swDest: "public/sw.js",
       reloadOnOnline: true,
     })
+    // Теперь ошибок нет, так как config имеет правильный тип
     config = withSerwist(config)
   } else {
     console.warn("Service Worker disabled in development mode")
