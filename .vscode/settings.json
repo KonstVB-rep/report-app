@@ -5,7 +5,10 @@
   "editor.formatOnSave": true,
   "[javascript]": { "editor.formatOnSave": true },
   "[typescript]": { "editor.formatOnSave": true },
-  "[typescriptreact]": { "editor.formatOnSave": true },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit",
     "source.fixAll.biome": "explicit"

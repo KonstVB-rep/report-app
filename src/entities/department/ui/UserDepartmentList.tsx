@@ -2,7 +2,7 @@
 
 import type { UserResponse } from "@/entities/user/types"
 import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
+
 import useStoreDepartment from "../store/useStoreDepartment"
 import UserItem from "./UserItem"
 
@@ -38,4 +38,4 @@ const UserDepartmentList = () => {
   )
 }
 
-export default withAuthGuard(UserDepartmentList)
+export default UserDepartmentList

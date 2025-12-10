@@ -1,8 +1,5 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
-import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react"
-import { v4 as uuid } from "uuid"
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
 import type {
@@ -12,6 +9,9 @@ import type {
 } from "@/entities/department/types"
 import type { UserResponse } from "@/entities/user/types"
 import { Skeleton } from "@/shared/components/ui/skeleton"
+import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react"
+import { useEffect, useMemo } from "react"
+import { v4 as uuid } from "uuid"
 import DepartmentPersonsList from "./DepartmentPersonsList"
 
 // Вынесли объекты наружу, чтобы они не пересоздавались
@@ -31,14 +31,12 @@ const DepartmentListWrapper = () => {
   const { setDepartments } = useStoreDepartment()
   const { data: departmentData, isLoading, isError } = useGetDepartmentsWithUsers()
 
-  // Синхронизация со стором (оставляем, если это нужно другим компонентам)
   useEffect(() => {
     if (departmentData) {
       setDepartments(departmentData)
     }
   }, [departmentData, setDepartments])
 
-  // Мемоизация списка на основе departmentData напрямую
   const navMainItems = useMemo(() => {
     if (!departmentData || !departmentData.length) {
       return []

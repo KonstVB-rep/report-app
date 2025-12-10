@@ -1,13 +1,10 @@
 "use client"
 
-import { PermissionEnum } from "@prisma/client"
-import dynamic from "next/dynamic"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink"
 import { useGetUserTasks } from "@/feature/task/hooks/query"
-import useViewType from "@/feature/task/hooks/useViewType"
 import { viewType } from "@/feature/task/model/constants"
 import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
 import { Button } from "@/shared/components/ui/button"
@@ -15,6 +12,9 @@ import { Separator } from "@/shared/components/ui/separator"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
 import { pageParamsSchemaDepsIsUserId, useTypedParams } from "@/shared/hooks/useTypedParams"
+import useViewType from "@/shared/hooks/useViewType"
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,

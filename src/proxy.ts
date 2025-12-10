@@ -3,6 +3,10 @@ import { verifyToken } from "./shared/lib/helpers/checkTokens"
 import { AuthError } from "./shared/lib/helpers/customErrors"
 
 async function redirectToLogin(request: NextRequest) {
+  if (request.nextUrl.pathname === "/login") {
+    return NextResponse.next()
+  }
+
   const loginUrl = new URL("/login", request.url)
   const response = NextResponse.redirect(loginUrl)
 
@@ -30,8 +34,11 @@ const refreshTokenRequest = async (refreshToken: string) => {
   return await res.json()
 }
 
-async function refreshTokens(_request: NextRequest, refreshToken: string) {
+async function refreshTokens(request: NextRequest, refreshToken: string) {
   try {
+    if (request.headers.has("next-action")) {
+      return NextResponse.next()
+    }
     const tokens = await refreshTokenRequest(refreshToken)
 
     if (!tokens.accessToken) {
@@ -70,6 +77,14 @@ export default async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value
   const refreshToken = request.cookies.get("refreshToken")?.value
 
+  if (pathname.startsWith("/api") || pathname.startsWith("/_next")) {
+    return NextResponse.next()
+  }
+
+  if (request.method === "POST" && pathname === "/login") {
+    return NextResponse.next()
+  }
+
   if (pathname === "/login" || pathname === "/") {
     if (accessToken) {
       try {
@@ -107,7 +122,7 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     "/login",
     "/dashboard/:path*",
     "/table/:path*",

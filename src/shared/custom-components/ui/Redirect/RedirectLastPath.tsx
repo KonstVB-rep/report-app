@@ -10,6 +10,9 @@ const RedirectLastPath = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   const hasRedirectedRef = useRef(false)
 
+  console.log("isAuth", isAuth)
+  console.log("authUser", authUser)
+
   useEffect(() => {
     if (!isAuth || !authUser) return
     // Если пользователь авторизован, редиректим

@@ -36,11 +36,10 @@ export const generateTokens = async (userId: string, departmentId: string | numb
     return { accessToken, refreshToken }
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error("generateTokens error:", {
-        message: error.message,
-      })
+      console.error("generateTokens error:", { message: error.message })
     } else {
       console.error("generateTokens unknown error:", error)
     }
+    return { error: true, message: "Ошибка генерации токенов" }
   }
 }

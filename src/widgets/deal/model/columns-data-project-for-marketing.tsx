@@ -342,27 +342,6 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
     accessorFn: (row: ProjectResponse) => row.comments,
   },
   {
-    id: "user",
-    header: "Менеджер",
-    cell: (info) => info.getValue(),
-    enableHiding: true,
-    // meta: {
-    //   hidden: false,
-    // },
-    meta: {
-      title: "Менеджер",
-    },
-    filterFn: (row, _, filterValues) => {
-      if (!filterValues || filterValues.length === 0) {
-        return true
-      }
-
-      const userIdOfProject = row.original.userId
-      return filterValues.includes(userIdOfProject)
-    },
-    accessorFn: (row: ProjectResponse) => row.userId,
-  },
-  {
     id: "resource",
     header: "Ресурс",
     cell: (info) => info.getValue(),

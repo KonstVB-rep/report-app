@@ -9,7 +9,6 @@ import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
 import FileUploadForm from "@/widgets/Files/ui/UploadFile"
 import { useGetProjectById } from "../api/hooks/query"
 import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData"
@@ -175,6 +174,6 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
   )
 }
 
-export default withAuthGuard(ProjectItemInfo)
+export default ProjectItemInfo
 
 ProjectItemInfo.displayName = "ProjectItemInfo"

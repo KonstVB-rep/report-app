@@ -86,16 +86,14 @@ export const DepartmentLinks = memo(
           return []
       }
     }, [departmentId])
-    // 1. Guard clauses (Проверки ролей)
+
     if (user.position === NOT_MANAGERS_POSITIONS.DEVELOPER) return null
-    // Если нужно раскомментировать ассистента - делай это здесь
+
     if (user.position === NOT_MANAGERS_POSITIONS.ASSISTANT_MANAGER) return null
 
-    // 3. Рендер основных ссылок
     const renderLinks = linksList.map((link) => {
       const isActive = dealType === link.id && user.id === userId
 
-      // Твоя оригинальная логика формирования URL
       const href =
         departmentId === 1
           ? `${user.url}/${link.id}/${user.id}`
@@ -113,7 +111,6 @@ export const DepartmentLinks = memo(
       )
     })
 
-    // 4. Доп. ссылка для маркетинга (ID 2)
     const marketingExtraLink =
       departmentId === 2 ? (
         <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>

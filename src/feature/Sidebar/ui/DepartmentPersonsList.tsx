@@ -85,7 +85,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
               "h-max border-2 border-border",
               isActiveDepartment && "border-blue-600 text-primary dark:text-stone-400",
             )}
-            onClick={handleDepartmentClick} // Используем мемоизированную функцию
+            onClick={handleDepartmentClick}
             tooltip={item.title}
           >
             <div

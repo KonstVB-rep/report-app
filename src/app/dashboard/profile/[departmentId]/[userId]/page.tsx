@@ -1,13 +1,14 @@
 "use client"
 
-import dynamic from "next/dynamic"
-import z from "zod"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { useGetUser } from "@/feature/user/hooks/query"
 import Contacts from "@/shared/custom-components/ui/Contacts"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import UserCard from "@/shared/custom-components/ui/UserCard"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
+import z from "zod"
 import ProfileDealsData from "./ui/ProfileDealsData"
 
 const AccessDeniedMessage = dynamic(
@@ -72,41 +73,18 @@ const ProfilePage = () => {
               <Contacts className="rounded-full" email={user?.email} phone={user?.phone} />
             </div>
           </div>
-
-          {/* 
-          <div className="flex gap-2 overflow-hidden rounded-md w-full items-center">
-            <Contacts
-              className="rounded-full"
-              email={user?.email}
-              phone={user?.phone}
-            />
-          </div> 
-          */}
-
-          {/*
-           <div className="flex flex-col gap-2 h-full">
-            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-              <span className="first-letter:capitalize">Дата регистрации:</span>
-              <span>{user?.createdAt?.toLocaleDateString()}</span>
-            </p>
-
-            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-              <span className="first-letter:capitalize">Тел.:</span>
-              <span>{user?.phone}</span>
-            </p>
-            <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-              <span className="first-letter:capitalize">Email:</span>
-
-              <span>{user?.email}</span>
-            </p>
-          </div> 
-          */}
         </div>
       </div>
 
-      <ProfileDealsData user={user} />
+      {userId === user.id ? (
+        <ProfileDealsData user={user} />
+      ) : (
+        <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+          <ProfileDealsData user={user} />
+        </ProtectedByPermissions>
+      )}
     </section>
   )
 }
 
-export default withAuthGuard(ProfilePage)
+export default ProfilePage

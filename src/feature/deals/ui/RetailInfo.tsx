@@ -7,7 +7,6 @@ import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
 import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import withAuthGuard from "@/shared/lib/hoc/withAuthGuard"
 import FileUploadForm from "@/widgets/Files/ui/UploadFile"
 import { useGetRetailById } from "../api/hooks/query"
 import useNormalizeRetailData from "../lib/hooks/useNormalizeRetailData"
@@ -168,4 +167,4 @@ const RetailItemInfo = ({ dealId }: { dealId: string }) => {
   )
 }
 
-export default withAuthGuard(RetailItemInfo)
+export default RetailItemInfo

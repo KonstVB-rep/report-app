@@ -1,9 +1,10 @@
 "use client"
 
-import { memo, useEffect, useState } from "react"
-import type { PermissionEnum } from "@prisma/client"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { checkPermission } from "@/shared/api/checkByServer"
+import type { PermissionEnum } from "@prisma/client"
+import { memo, useEffect, useState } from "react"
+import { LoaderCircle } from "../../Loaders"
 
 type ProtectedProps = {
   permission: PermissionEnum
@@ -35,7 +36,10 @@ const ProtectedByPermissions = memo(({ children, permission, defaultNode }: Prot
     }
   }, [permission])
 
-  if (hasAccess === null || loading) return null
+  if (loading)
+    return <LoaderCircle className="h-auto p-4 bg-muted rounded-md" classSpin="h-5 w-5" />
+
+  if (hasAccess === null) return null
 
   if (!authUser) return defaultNode ?? null
 
