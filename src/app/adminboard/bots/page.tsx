@@ -2,7 +2,6 @@ import { getAllBots } from "@/entities/tgBot/api"
 import ClientBotsPage from "./ui/ClientBotsPage"
 
 export const dynamic = "force-dynamic"
-export const revalidate = 0
 
 const BotsPage = async () => {
   try {

@@ -3,7 +3,6 @@ import NotFound from "../not-found"
 import AdminPanel from "./ui/AdminPanel"
 
 export const dynamic = "force-dynamic"
-export const revalidate = 0
 
 const AdminPage = async () => {
   const isSuccess = await checkRole()
