@@ -1,10 +1,9 @@
-import { Suspense } from "react"
 import { getAllBots } from "@/entities/tgBot/api"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
+import { Suspense } from "react"
 import ClientBotsPage from "./ui/ClientBotsPage"
 
 export const dynamic = "force-dynamic"
-// revalidate = 0 не нужен, force-dynamic это уже гарантирует
 
 const BotsPage = async () => {
   const allBots = await getAllBots()

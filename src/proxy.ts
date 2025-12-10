@@ -65,7 +65,7 @@ async function refreshTokens(_request: NextRequest, refreshToken: string) {
   }
 }
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const accessToken = request.cookies.get("accessToken")?.value
   const refreshToken = request.cookies.get("refreshToken")?.value

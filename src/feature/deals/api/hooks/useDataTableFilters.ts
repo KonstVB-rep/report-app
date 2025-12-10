@@ -1,10 +1,10 @@
 // src/feature/deals/api/hooks/useDataTableFilters.ts
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useDebounceCallback } from "@/shared/hooks/useDebounceCallback"
 import type { ColumnFiltersState, VisibilityState } from "@tanstack/react-table"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useRef, useState } from "react"
 import type { DateRange } from "react-day-picker"
-import { useDebounceCallback } from "@/shared/hooks/useDebounceCallback"
 
 export const SEARCHABLE_COLUMNS = [
   "nameObject",
@@ -96,35 +96,40 @@ export const useDataTableFilters = () => {
   }
 
   // === ОБНОВЛЕНИЕ URL ===
-  const updateUrl = useDebounceCallback(
-    (filters: ColumnFiltersState, visibility: VisibilityState, search: string) => {
-      const currentQuery = searchParams.toString()
-      const params = new URLSearchParams()
+  const updateUrl = useDebounceCallback((...args: unknown[]) => {
+    const [filtersRaw, visibilityRaw, searchRaw] = args
 
-      if (search.trim()) {
-        params.set("search", search.trim())
+    const filters = filtersRaw as ColumnFiltersState
+    const visibility = visibilityRaw as VisibilityState
+    const search = (searchRaw ?? "") as string
+
+    const currentQuery = searchParams.toString()
+    const params = new URLSearchParams()
+
+    if (search.trim()) {
+      params.set("search", search.trim())
+    }
+
+    filters.forEach((filter) => {
+      if (filter.value == null) return
+      const str = serializeFilterValue(filter.value as FilterValue)
+      if (str) {
+        params.set(filter.id, str)
       }
+    })
 
-      filters.forEach((filter) => {
-        if (filter.value == null) return
-        const str = serializeFilterValue(filter.value as FilterValue)
-        if (str) {
-          params.set(filter.id, str)
-        }
-      })
+    const hiddenCols = Object.keys(visibility).filter((col) => !visibility[col])
+    if (hiddenCols.length > 0) {
+      params.set("hidden", hiddenCols.join(","))
+    }
 
-      const hiddenCols = Object.keys(visibility).filter((col) => !visibility[col])
-      if (hiddenCols.length > 0) {
-        params.set("hidden", hiddenCols.join(","))
-      }
+    const newQuery = params.toString()
+    if (newQuery === currentQuery) return
 
-      const newQuery = params.toString()
-      if (newQuery === currentQuery) return
-
-      router.replace(newQuery ? `${pathname}?${newQuery}` : pathname, { scroll: false })
-    },
-    400,
-  )
+    router.replace(newQuery ? `${pathname}?${newQuery}` : pathname, {
+      scroll: false,
+    })
+  }, 400)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: in time first render
   useEffect(() => {
