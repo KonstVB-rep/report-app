@@ -7,12 +7,11 @@ import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
 import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
-import ProtectedByDepartmentAffiliation from "@/shared/custom-components/ui/Protect/ProtectedByDepartmentAffiliation"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import FileUploadForm from "@/widgets/Files/ui/UploadFile"
 import { useGetProjectById } from "../api/hooks/query"
 import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData"
 import FinanceInfo from "./FinanceInfo"
+import SettingDeal from "./SettingDeal"
 import ValueSpan from "./ValueSpan"
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
@@ -33,12 +32,6 @@ const CardMainContact = dynamic(() => import("@/entities/contact/ui/CardMainCont
 const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/ContactCardInDealInfo"), {
   ssr: false,
 })
-const DelButtonDeal = dynamic(() => import("@/feature/deals/ui/Modals/DelButtonDeal"), {
-  ssr: false,
-})
-const EditDealButtonIcon = dynamic(() => import("@/feature/deals/ui/Modals/EditDealButtonIcon"), {
-  ssr: false,
-})
 
 const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
   const { data: deal, isLoading } = useGetProjectById(dealId, false)
@@ -56,13 +49,7 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
           <p className="text-xs">Дата: {formattedDate}</p>
         </div>
-        <ProtectedByDepartmentAffiliation>
-          <div className="flex justify-end gap-2">
-            <FileUploadForm dealId={dealId} dealType="PROJECT" userId={deal.userId} />
-            <EditDealButtonIcon id={deal.id} type={deal.type} />
-            <DelButtonDeal id={deal.id} type={deal.type} />
-          </div>
-        </ProtectedByDepartmentAffiliation>
+        <SettingDeal id={deal.id} type={deal.type} userId={deal.userId} />
       </div>
 
       <ManagersListByDeal managers={deal.managers} userId={deal.userId} />

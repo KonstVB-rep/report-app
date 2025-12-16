@@ -47,6 +47,12 @@ export const login = async (_: unknown, formData: FormData) => {
           loginAt: new Date(),
         },
       }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          lastlogin: new Date(),
+        },
+      }),
       generateTokens(user.id, user.departmentId),
     ])
 
@@ -56,7 +62,6 @@ export const login = async (_: unknown, formData: FormData) => {
       data: {
         ...userWithoutPassword,
         permissions: user.permissions.map((p) => p.permission.name),
-        lastlogin: new Date(),
       },
       message: "Авторизация успешна",
       error: false,

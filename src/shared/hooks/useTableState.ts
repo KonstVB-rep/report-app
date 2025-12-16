@@ -1,4 +1,5 @@
 // src/shared/hooks/useTableState.ts
+
 import { useMemo, useState } from "react"
 import {
   type ColumnDef,
@@ -16,7 +17,7 @@ interface UseTableStateOptions<T> extends Partial<TableOptions<T>> {
   hiddenColumns?: Partial<Record<string, boolean>>
 }
 
-export const useTableState = <T extends Record<string, unknown>>(
+export const useTableState = <T extends { id: string }>(
   data: T[],
   columns: ColumnDef<T>[],
   options: UseTableStateOptions<T> = {},
@@ -66,6 +67,7 @@ export const useTableState = <T extends Record<string, unknown>>(
   const table = useReactTable({
     data,
     columns,
+    getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

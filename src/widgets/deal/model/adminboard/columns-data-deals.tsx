@@ -23,7 +23,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
   { ...SelectColDataColumn<DealBase>() },
   {
     id: "id",
-    header: "",
+    header: "ID",
     cell: (info) => info.getValue(),
     enableHiding: true,
     meta: {
@@ -41,6 +41,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     enableHiding: false,
     meta: {
       isDateFilter: true,
+      title: "Дата заявки",
     },
     size: 100,
     minSize: 100,
@@ -80,25 +81,34 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     },
     minSize: 100,
     maxSize: 100,
+    meta: {
+      title: "Тип",
+    },
     enableHiding: true,
     accessorFn: (row: DealBase) => row.type,
   },
-  // {
-  //   id: "nameDeal",
-  //   header: "Название сделки",
-  //   cell: (info: CellContext<DealBase, unknown>) => {
-  //     const value = info.getValue() as ReactNode;
-  //     return value;
-  //   },
-  //   enableHiding: true,
-  //   accessorFn: (row: DealBase) => row.nameDeal,
-  // },
+  {
+    id: "nameDeal",
+    header: "Название сделки",
+    cell: (info: CellContext<DealBase, unknown>) => {
+      const value = info.getValue() as ReactNode
+      return value
+    },
+    meta: {
+      title: "Название сделки",
+    },
+    enableHiding: true,
+    accessorFn: (row: DealBase) => row.nameDeal,
+  },
   {
     id: "nameObject",
     header: "Название объекта",
     cell: (info: CellContext<DealBase, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
+    },
+    meta: {
+      title: "Название объекта",
     },
     enableHiding: true,
     accessorFn: (row: DealBase) => row.nameObject,
@@ -109,6 +119,9 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     cell: (info: CellContext<DealBase, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
+    },
+    meta: {
+      title: "Комментарии",
     },
     minSize: 300,
     enableHiding: true,
@@ -122,7 +135,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       const value = info.getValue()
 
       if (type !== DealType.RETAIL) {
-        return null
+        return "---------"
       }
 
       const statusKey = String(value)
@@ -131,7 +144,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     enableHiding: true,
     accessorFn: (row: DealBase) => (row.type === DealType.RETAIL ? row.dealStatus : null),
     meta: {
-      hidden: true,
+      title: "Статус Розницы",
     },
   },
 
@@ -141,8 +154,9 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     cell: (info: CellContext<DealBase, unknown>) => {
       const type = info.row.original.type
       const value = info.getValue()
+
       if (type !== DealType.PROJECT) {
-        return null
+        return "---------"
       }
       const statusKey = String(value)
       return StatusProjectLabels[statusKey as keyof typeof StatusProjectLabels]
@@ -150,7 +164,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     enableHiding: true,
     accessorFn: (row: DealBase) => (row.type === DealType.PROJECT ? row.dealStatus : null),
     meta: {
-      hidden: true,
+      title: "Статус Проекта",
     },
   },
   {
@@ -169,6 +183,10 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
 
       const userIdOfProject = row.original.userId
       return filterValues.includes(userIdOfProject)
+    },
+    meta: {
+      hidden: true,
+      title: "Менеджер",
     },
     accessorFn: (row: DealBase) => row.userId,
   },

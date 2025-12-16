@@ -1,6 +1,8 @@
+/// <reference lib="webworker" />
+
 import { defaultCache } from "@serwist/next/worker"
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist"
-import { Serwist } from "serwist"
+import { CacheFirst, ExpirationPlugin, NetworkFirst, Serwist } from "serwist"
 import { SW_VERSION } from "@/app/sw-version"
 
 declare global {
@@ -12,10 +14,9 @@ declare global {
 declare const self: ServiceWorkerGlobalScope
 
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST?.map((e) => ({
-    ...e,
-    revision: SW_VERSION,
-  })),
+  precacheEntries: self.__SW_MANIFEST?.map((e) =>
+    typeof e === "string" ? { url: e, revision: SW_VERSION } : { ...e, revision: SW_VERSION },
+  ),
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
@@ -23,31 +24,35 @@ const serwist = new Serwist({
   runtimeCaching: [
     ...defaultCache,
 
-    // ⭐ Кэш API запросов
+    // Кэш API запросов
     {
       matcher: ({ request }) => request.destination === "" && request.url.includes("/api/"),
-      handler: "NetworkFirst",
-      options: {
+      handler: new NetworkFirst({
         cacheName: "api-cache",
         networkTimeoutSeconds: 3,
-        expiration: {
-          maxAgeSeconds: 60 * 5, // 5 минут
-        },
-      },
+        plugins: [
+          new ExpirationPlugin({
+            maxAgeSeconds: 60 * 5,
+          }),
+        ],
+      }),
     },
 
-    // ⭐ Кэш изображений
+    // Кэш изображений
     {
       matcher: ({ request }) => request.destination === "image",
-      handler: "CacheFirst",
-      options: {
+      handler: new CacheFirst({
         cacheName: "image-cache",
-        expiration: { maxEntries: 200 },
-      },
+        plugins: [
+          new ExpirationPlugin({
+            maxEntries: 200,
+          }),
+        ],
+      }),
     },
   ],
 
-  // ⭐ Оффлайн fallback
+  // Оффлайн fallback
   fallbacks: {
     entries: [
       {
@@ -62,7 +67,7 @@ const serwist = new Serwist({
 
 serwist.addEventListeners()
 
-// ⭐ Push notifications
+// Push notifications
 self.addEventListener("push", (event) => {
   const data = event.data?.json() ?? {}
 

@@ -1,10 +1,10 @@
 "use client"
 
 import type { ReactNode } from "react"
-import ProtectedTemplate from "@/shared/custom-components/ui/Protect/ProtectedTemplate"
+import ProtectedAuth from "@/shared/custom-components/ui/Protect/ProtectedAuth"
 
 const TemplateDashboard = ({ children }: { children: ReactNode }) => {
-  return <ProtectedTemplate>{children}</ProtectedTemplate>
+  return <ProtectedAuth>{children}</ProtectedAuth>
 }
 
 export default TemplateDashboard

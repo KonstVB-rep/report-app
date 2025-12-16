@@ -15,8 +15,14 @@ export const SEARCHABLE_COLUMNS = [
   "comments",
 ] as const
 
-// Тип для значения фильтра — поддерживаем строки, массивы и даты
 type FilterValue = string | string[] | { from: Date; to: Date }
+
+const formatDateToString = (date: Date) => {
+  const day = date.getDate().toString().padStart(2, "0")
+  const month = (date.getMonth() + 1).toString().padStart(2, "0")
+  const year = date.getFullYear()
+  return `${day}.${month}.${year}`
+}
 
 export const useDataTableFilters = () => {
   const router = useRouter()
@@ -41,9 +47,11 @@ export const useDataTableFilters = () => {
     const params = new URLSearchParams(searchParams)
 
     const q = params.get("search")
+
     if (q) setGlobalFilter(decodeURIComponent(q))
 
     const filters: ColumnFiltersState = []
+
     params.forEach((value, key) => {
       if (["search", "hidden"].includes(key)) return
 
@@ -51,19 +59,27 @@ export const useDataTableFilters = () => {
         .split(",")
         .map((v) => decodeURIComponent(v.trim()))
         .filter(Boolean)
+
       if (values.length === 0) return
 
       if (values.length === 1 && values[0].includes("..")) {
         const [fromStr, toStr] = values[0].split("..")
-        const from = new Date(fromStr)
-        const to = new Date(toStr)
+        const parseDate = (str: string) => {
+          const parts = str.split(".")
+          if (parts.length !== 3) return new Date(NaN)
+          const [day, month, year] = parts.map(Number)
+          return new Date(year, month - 1, day)
+        }
+        const from = parseDate(fromStr)
+        console.log(from, "from")
+        const to = parseDate(toStr)
+        console.log(to, "toStr")
         if (!Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime())) {
           filters.push({ id: key, value: { from, to } })
           return
         }
       }
-
-      const filterValue: FilterValue = values.length === 1 ? values[0] : values
+      const filterValue: FilterValue = values
       filters.push({ id: key, value: filterValue })
     })
 
@@ -88,8 +104,8 @@ export const useDataTableFilters = () => {
       return value.join(",")
     }
     if (value && typeof value === "object" && "from" in value && "to" in value) {
-      const from = value.from instanceof Date ? value.from.toISOString().split("T")[0] : ""
-      const to = value.to instanceof Date ? value.to.toISOString().split("T")[0] : ""
+      const from = value.from instanceof Date ? formatDateToString(value.from) : ""
+      const to = value.to instanceof Date ? formatDateToString(value.to) : ""
       return `${from}..${to}`
     }
     return ""

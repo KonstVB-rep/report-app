@@ -210,8 +210,7 @@ textarea {
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  cursor: pointer;
-  background-color:#3071fc;
+  background-color: var(--thumb-color-hover);
   filter: brightness(0.2);
 }
 
@@ -323,7 +322,7 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
     0 0 0 4px var(--ring);
 }
 
-.tr:nth-child(even):not([data-reject="true"]):not([data-success="true"]):not([data-closed="true"]) {
+.tr:nth-child(even):not([data-reject="true"]):not([data-success="true"]):not([data-closed="true"]):not([data-progress="true"]) {
   @apply bg-[hsl(var(--table-even-row))] hover:bg-zinc-600 hover:text-white;
 }
 
@@ -545,21 +544,7 @@ td:has(.abs-element) {
   @apply flex flex-wrap justify-center gap-2;
 }
 
-.fc .fc-toolbar.fc-header-toolbar button:not(.fc-button-active) {
- @apply bg-transparent text-current flex items-center justify-center border-current
-       hover:bg-black/80 hover:text-white
-       dark:hover:bg-white dark:hover:text-black
-       focus-visible:outline-none
-       focus-visible:ring-2 focus-visible:ring-black/60
-       dark:focus-visible:ring-white/70;
-
-}
-
-.fc .fc-toolbar.fc-header-toolbar button:not(.fc-button-active):hover span {
-  @apply dark:text-black;
-}
-
-.fc-toolbar-title::first-letter {
+.title-calendar::first-letter {
   text-transform: capitalize;
 }
 
@@ -573,7 +558,7 @@ td:has(.abs-element) {
 }
 
 .fc .fc-daygrid-day.fc-day-today {
-  @apply bg-green-900/50 font-bold dark:bg-green-500/50;
+  @apply bg-black/70 font-bold dark:bg-white/70;
 }
 
 .fc-day-today .fc-daygrid-day-number {
@@ -595,7 +580,7 @@ td:has(.abs-element) {
 
 .fc .fc-button-primary:not(:disabled).fc-button-active,
 .fc .fc-button-primary:not(:disabled):active {
-  @apply dark:bg-blue-700/50 bg-blue-700 border-black dark:border-current;
+  @apply border border-solid border-blue-500;
 }
 
 .fc .fc-button-primary:focus,
@@ -735,10 +720,6 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 
 /*Мобильный календарь*/
 
-.calendar-mobile {
- position: relative;
-}
-
 .calendar-mobile .rdp-caption_start.rdp-caption_end {
   width: 100%;
   max-width: 1020px;
@@ -755,11 +736,7 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
   @apply gap-1.5;
 }
 .calendar-mobile :is(td, th) {
-  @apply flex aspect-square flex-1 items-center justify-center rounded-md h-auto;
-}
-
-.calendar-mobile .rdp-month_grid{
-  width: 100%;
+  @apply flex aspect-square flex-1 items-center justify-center rounded-md;
 }
 
 .calendar-mobile .rdp-head {
@@ -783,7 +760,7 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 }
 
 .calendar-mobile :is(td) > button:disabled {
-  @apply bg-stone-800 rounded-md;
+  @apply bg-stone-800;
 }
 
 .calendar-day-today {
@@ -853,8 +830,9 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
   .rdp-root > div {
     display: grid;
     grid-template-areas:
+      "n n"
       "p ."
-      "f f";
+      "f .";
     gap: 0rem;
   }
 }
@@ -863,20 +841,17 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
   .rdp-root > div {
     display: grid;
     grid-template-areas:
-      "f f";
+      "n n"
+      "p f";
     gap: 0.5rem;
   }
 }
 
-.calendar-mobile .rdp-root > div nav {
-  position: absolute;
-  top: 0;
-  left: 50%;
+.rdp-root > div nav {
+  grid-area: n;
   justify-content: space-around;
   width: 100%;
-  padding-top: 5px;
   border-radius: var(--radius-sm);
-  transform: translateX(-50%);
 }
 
 .rdp-root > div nav button {
@@ -899,9 +874,7 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 }
 
 .rdp-root > div > div:last-child {
-  display: grid;
   grid-area: f;
-  gap:10px;
 }
 
 .rdp-weeks {
@@ -929,17 +902,10 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 .rdp-weekdays div {
   width: 100%;
 }
-.rdp-weekdays .rdp-weekday{
-  max-height: 50px;
-  background-color: #414196;
-}
 
 .rdp-month_caption {
   text-align: center;
   text-transform: capitalize;
-}
-.rdp-month_caption span {
-  font-size: clamp(1rem, 3vw, 2.5rem);
 }
 
 .rdp-week td {

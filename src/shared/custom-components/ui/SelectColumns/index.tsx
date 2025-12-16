@@ -26,12 +26,6 @@ const SelectColumns = <TData extends Record<string, unknown>>({
     .getAllColumns()
     .filter((col) => col.columnDef.meta?.hidden).length
 
-  console.log(
-    hiddenColumns,
-    data.getAllColumns().filter((col) => col.columnDef.meta?.hidden),
-    "hiddenColumns.length",
-  )
-
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger

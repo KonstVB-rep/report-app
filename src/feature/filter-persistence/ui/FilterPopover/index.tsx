@@ -19,8 +19,10 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
   const [open, setOpen] = useState(false)
   const { columnFilters, setColumnFilters } = useDataTableFiltersContext()
 
-  const existingFilter: ColumnFilter | undefined = columnFilters?.find((f) => f.id === columnId)
-  const filterValues = (existingFilter?.value as string[]) || []
+  const existingFilter: ColumnFilter[] | undefined = columnFilters?.filter((f) => f.id === columnId)
+  // console.log(existingFilter, "existingFilter");
+  // console.log(existingFilter, "existingFilter");
+  // const filterValues = (existingFilter?.value as string[]) || [];
 
   const normalizedOptions = Array.isArray(options)
     ? options
@@ -60,20 +62,22 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
     }
   }
 
+  // console.log(filterValues, "filterValues");
+
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger
         asChild
         className={`${
-          filterValues.length > 0 ? "border-solid" : "border-dashed"
+          existingFilter.length > 0 ? "border-solid" : "border-dashed"
         } border-muted-foreground`}
       >
         <Button className="relative h-auto" variant="outline">
           <Filter className="h-4 w-4" />
           {label}
-          {filterValues.length > 0 && (
+          {existingFilter.length > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {filterValues.length}
+              {existingFilter.length}
             </span>
           )}
         </Button>
@@ -84,7 +88,11 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
             {normalizedOptions.map(({ id, label }) => (
               <div className="flex w-fit items-center gap-2 px-1 text-sm p-1" key={id}>
                 <Checkbox
-                  checked={filterValues.includes(id)}
+                  checked={existingFilter.some((f) => {
+                    // Проверяем, что value — массив строк
+                    // console.log(f, "f");
+                    return Array.isArray(f.value) && f.value.includes(id)
+                  })}
                   id={id}
                   onCheckedChange={() => handleChange(id)}
                 />
@@ -94,7 +102,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
               </div>
             ))}
           </div>
-          {filterValues.length > 0 && (
+          {existingFilter.length > 0 && (
             <Button className="btn_hover w-full text-xs" onClick={handleClear} variant="outline">
               Очистить
             </Button>

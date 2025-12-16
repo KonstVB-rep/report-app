@@ -57,9 +57,6 @@ const DialogComponent = ({
       {renderTrigger()}
       <DialogContent
         className={`max-w-[90vw] sm:max-w-[825px] ${classNameContent}`}
-        onEscapeKeyDown={(e) => {
-          if (disableClose) e.preventDefault()
-        }}
         onInteractOutside={(e) => {
           if (disableClose) e.preventDefault()
         }}

@@ -1,5 +1,3 @@
-"use client"
-
 import { getAllBots } from "@/entities/tgBot/api"
 import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage"
 import BotsTable from "./BotsTable"

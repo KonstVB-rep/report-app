@@ -14,6 +14,8 @@ import DealsFilters from "../ui/DealsFilters"
 import DealsToolbar from "../ui/DealsToolbar"
 import Loading from "./loading"
 
+const HIDDEN_COLS = { id: false, user: false }
+
 const AllDealsPage = () => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
@@ -22,6 +24,9 @@ const AllDealsPage = () => {
   const { table, filtersContextValue, openFilters, setGlobalFilter } = useTableState(
     data?.deals || [],
     columnsDataDeals,
+    {
+      hiddenColumns: HIDDEN_COLS,
+    },
   )
 
   const { rows } = table.getRowModel()
@@ -34,39 +39,41 @@ const AllDealsPage = () => {
   if (isPending) return <Loading />
 
   return (
-    <section className="px-4 py-2 grid gap-2 content-start relative flex-1">
-      {isError && <ErrorMessageTable message={error?.message} />}
+    <>
+      <section className="px-4 py-2 grid gap-2 content-start relative flex-1">
+        {isError && <ErrorMessageTable message={error?.message} />}
 
-      <TitlePageBlock
-        infoText="Здесь вы можете удалять или переназначать клиентов между менеджерами."
-        subTitle={`Количество сделок: ${data?.totalDealsCount}`}
-        title="Список всех заявок"
-      />
-
-      <DataTableFiltersProvider value={filtersContextValue}>
-        <DealsToolbar
-          columns={columnsDataDeals}
-          globalFilter={table.getState().globalFilter ?? ""}
-          openFilters={openFilters}
-          setGlobalFilter={setGlobalFilter}
-          table={table}
-          totalCount={data?.totalDealsCount ?? 0}
+        <TitlePageBlock
+          infoText="Здесь вы можете удалять или переназначать клиентов между менеджерами."
+          subTitle={`Количество сделок: ${data?.totalDealsCount}`}
+          title="Список всех заявок"
         />
 
-        <DealsFilters open={openFilters} table={table} />
-        <DealsAllTable
-          openFilters={openFilters}
-          openFullInfoCell={openFullInfoCell}
-          rows={rows}
-          setOpenFullInfoCell={setOpenFullInfoCell}
-          table={table}
-          tableContainerRef={tableContainerRef}
-          totalSize={totalSize}
-          virtualItems={virtualItems}
-        />
-      </DataTableFiltersProvider>
-      {<DealsDrawer table={table} />}
-    </section>
+        <DataTableFiltersProvider value={filtersContextValue}>
+          <DealsToolbar
+            columns={columnsDataDeals}
+            globalFilter={table.getState().globalFilter ?? ""}
+            openFilters={openFilters}
+            setGlobalFilter={setGlobalFilter}
+            table={table}
+            totalCount={data?.totalDealsCount ?? 0}
+          />
+
+          <DealsFilters open={openFilters} table={table} />
+          <DealsAllTable
+            openFilters={openFilters}
+            openFullInfoCell={openFullInfoCell}
+            rows={rows}
+            setOpenFullInfoCell={setOpenFullInfoCell}
+            table={table}
+            tableContainerRef={tableContainerRef}
+            totalSize={totalSize}
+            virtualItems={virtualItems}
+          />
+        </DataTableFiltersProvider>
+      </section>
+      <DealsDrawer table={table} />
+    </>
   )
 }
 

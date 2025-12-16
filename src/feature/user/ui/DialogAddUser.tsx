@@ -1,7 +1,7 @@
 "use client"
 
 import { PermissionEnum } from "@prisma/client"
-import { SquarePlus } from "lucide-react"
+import { UserRoundPlus } from "lucide-react"
 import dynamic from "next/dynamic"
 import UserFormSkeleton from "@/entities/user/ui/UserFormSkeleton"
 import { Button } from "@/shared/components/ui/button"
@@ -24,10 +24,10 @@ const DialogAddUser = ({ className }: { className?: string }) => {
           <Button
             aria-label="Новый пользователь"
             className={cn("btn_hover", className)}
+            title={"Добавить пользователя"}
             variant="outline"
           >
-            <SquarePlus size={16} />
-            <span className="whitespace-nowrap text-sm text-start">Добавить пользователя</span>
+            <UserRoundPlus size={16} />
           </Button>
         }
       >

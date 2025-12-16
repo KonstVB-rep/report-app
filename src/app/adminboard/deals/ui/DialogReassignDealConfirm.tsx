@@ -2,7 +2,7 @@
 
 import type React from "react"
 import type { DeletingDealsListItem } from "@/entities/deal/types"
-import { getManagers } from "@/entities/department/lib/utils"
+import { getUsers } from "@/entities/department/lib/utils"
 import { useReassignDeal } from "@/feature/deals/api/hooks/mutate"
 import { Button } from "@/shared/components/ui/button"
 import { DialogClose } from "@/shared/components/ui/dialog"
@@ -10,7 +10,7 @@ import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormBu
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
 import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent"
 
-const managers = getManagers(true)
+const managers = getUsers({ onlyManagers: true })
 
 const DialogReassignDealConfirm = ({ deals }: { deals: DeletingDealsListItem[] }) => {
   const { mutate, isPending } = useReassignDeal()

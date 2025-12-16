@@ -114,7 +114,7 @@ export const useDeleteUser = (userId: string) => {
     mutationFn: async () => {
       const mutateFn = async (data: { userId: string }) => {
         await Promise.all([checkTokens(), checkRole(), checkRole(Role.DIRECTOR)])
-        const result = await deleteUser(data)
+        const result = await deleteUser(data.userId)
         return result
       }
       return handleMutationWithAuthCheck<{ userId: string }, ResponseDelUser<null>>(
@@ -128,6 +128,7 @@ export const useDeleteUser = (userId: string) => {
       const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"])
 
       queryClient.setQueryData(["depsWithUsers"], (oldData: DepartmentInfo[]) => {
+        if (!Array.isArray(oldData)) return oldData
         return oldData.map((department: DepartmentInfo) => {
           return {
             ...department,
@@ -181,6 +182,7 @@ export const useDeleteUsersList = (userIds: string[]) => {
       const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"])
 
       queryClient.setQueryData(["depsWithUsers"], (oldData: DepartmentInfo[]) => {
+        if (!Array.isArray(oldData)) return oldData
         return oldData.map((department: DepartmentInfo) => {
           return {
             ...department,

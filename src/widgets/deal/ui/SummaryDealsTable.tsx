@@ -34,7 +34,7 @@ const getColumns = (
   }
 }
 
-const HIDDEN_COLS = { id: false, user: false, resource: false }
+const HIDDEN_COLS = { id: false, resource: false }
 
 const pageParamsSchema = z.object({
   dealType: z.enum(TableTypes),

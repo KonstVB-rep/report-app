@@ -1,5 +1,7 @@
+
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -33,6 +35,7 @@ model User {
   tasksAssigned   Task[]             @relation("TaskAssigner")
   tasksExecuted   Task[]             @relation("TaskExecutor")
   telegramInfo    TelegramUserInfo[]
+  deletedAt       DateTime?
 
   @@index([departmentId])
 }
@@ -67,7 +70,7 @@ model Department {
 
 model Project {
   id                    String              @id @default(cuid())
-  userId                String
+  userId                String?
   type                  DealType            @default(PROJECT) // <-- Тип сделки
   dateRequest           DateTime
   nameDeal              String
@@ -87,7 +90,7 @@ model Project {
   resource              String?
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
-  user                  User                @relation(fields: [userId], references: [id])
+  user                  User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   projectManagers       ProjectManager[]
   additionalContacts    AdditionalContact[] @relation("ProjectContacts")
 
@@ -98,7 +101,7 @@ model Project {
 
 model Retail {
   id                    String              @id @default(cuid())
-  userId                String
+  userId                String?
   type                  DealType            @default(RETAIL) // <-- Тип сделки
   dateRequest           DateTime
   nameDeal              String
@@ -116,7 +119,7 @@ model Retail {
   resource              String?
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
-  user                  User                @relation(fields: [userId], references: [id])
+  user                  User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   retailManagers        RetailManager[]
   additionalContacts    AdditionalContact[] @relation("RetailContacts")
 
@@ -190,13 +193,13 @@ model DealFile {
   name        String
   localPath   String
   storageType StorageType @default(YANDEX_DISK)
-  userId      String
+  userId      String?
   dealId      String // Универсальный ID сделки (может быть как Project, так и Retail)
   dealType    DealType // PROJECT или RETAIL
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([dealId])
   @@index([userId], map: "File_userId_fkey")
@@ -219,13 +222,13 @@ model EventCalendar {
   title     String
   start     DateTime
   end       DateTime
-  userId    String
+  userId    String?
   allDay    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   notified  Boolean  @default(false)
 
-  user User @relation(fields: [userId], references: [id])
+  user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model TelegramBot {
@@ -287,8 +290,8 @@ model Task {
   departmentId Int
   taskStatus   TaskStatus
   taskPriority TaskPriority
-  assignerId   String
-  executorId   String
+  assignerId   String?       // теперь nullable
+  executorId   String?       // теперь nullable
   orderTask    Int
   dueDate      DateTime
   startDate    DateTime
@@ -298,13 +301,14 @@ model Task {
   department Department @relation("DepartmentTask", fields: [departmentId], references: [id])
 
   // Автор задачи (assigner)
-  assigner User @relation("TaskAssigner", fields: [assignerId], references: [id])
+  assigner User? @relation("TaskAssigner", fields: [assignerId], references: [id], onDelete: SetNull)
 
   // Исполнитель задачи (executor)
-  executor User @relation("TaskExecutor", fields: [executorId], references: [id])
+  executor User? @relation("TaskExecutor", fields: [executorId], references: [id], onDelete: SetNull)
 
   @@index([orderTask, taskStatus])
 }
+
 
 model NotificationCache {
   id        String   @id @default(cuid())

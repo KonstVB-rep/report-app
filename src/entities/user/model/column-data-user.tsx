@@ -13,6 +13,7 @@ import { PermissionUser, RolesUser } from "./objectTypes"
 export type UserTypeTable = User & {
   permissions: PermissionEnum[]
   telegramInfo: string
+  tgUserId: string
   lastlogin: Date
 }
 
@@ -29,10 +30,11 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
   },
   {
     id: "id",
-    header: "",
+    header: "id",
     cell: (info) => info.getValue(),
     enableHiding: true,
     meta: {
+      title: "ID",
       hidden: true,
     },
     filterFn: (row, _, filterValues) => {
@@ -132,6 +134,20 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
       return value
     },
     accessorFn: (row: UserTypeTable) => row.telegramInfo,
+  },
+  {
+    id: "tgUserId",
+    header: "ID чата",
+    cell: (info: CellContext<UserTypeTable, unknown>) => {
+      console.log(info.getValue(), "info")
+      return info.getValue() ?? ""
+    },
+    enableHiding: true,
+    meta: {
+      title: "ID чата",
+      hidden: true,
+    },
+    accessorFn: (row: UserTypeTable) => row.tgUserId,
   },
   {
     id: "departmentId",

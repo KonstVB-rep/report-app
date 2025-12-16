@@ -39,6 +39,7 @@ const AddNewDeal = ({ type }: AddNewDealProps) => {
     <ProtectedByDepartmentAffiliation>
       <DialogComponent
         contentTooltip={contentType[type].title}
+        disableClose
         trigger={
           <Button aria-label="Добавить новую сделку" className="ml-auto" variant="outline">
             <Plus />

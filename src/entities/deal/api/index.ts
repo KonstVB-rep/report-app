@@ -237,18 +237,10 @@ const getCachedPrismaProjects = unstable_cache(
 
 export const getProjectsUser = async (idDealOwner: string): Promise<ProjectResponse[] | null> => {
   try {
-    // const data = await handleAuthorization();
-
-    // const { user, userId } = data;
-
     if (!idDealOwner) {
       return handleError("Недостаточно данных")
     }
 
-    // const isOwner = userId === idDealOwner;
-    // if (!isOwner) {
-    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    // }
     await checkAccess(idDealOwner)
 
     const deals = await getCachedPrismaProjects(idDealOwner)
@@ -271,7 +263,6 @@ export const getProjectsUser = async (idDealOwner: string): Promise<ProjectRespo
 
 const getCachedPrismaContracts = unstable_cache(
   async (idDealOwner: string) => {
-    // Лучше вынести статусы за пределы функции или использовать Object.values, если это Enum значений
     const statuses = Object.keys(StatusContract) as Array<keyof typeof StatusContract>
 
     const deals = await prisma.project.findMany({
@@ -313,7 +304,6 @@ const getCachedPrismaContracts = unstable_cache(
   },
 )
 
-// 2. Ваша основная функция теперь просто вызывает кэшированную
 export const getContractsUser = async (idDealOwner: string): Promise<ProjectResponse[] | null> => {
   try {
     if (!idDealOwner) {
@@ -330,97 +320,9 @@ export const getContractsUser = async (idDealOwner: string): Promise<ProjectResp
     return deals.length ? deals : []
   } catch (error) {
     console.error(error)
-    // return handleError((error as Error).message); // Если у вас есть эта функция
-    throw error
+    return handleError((error as Error).message)
   }
 }
-
-// const getCachedPrismaContracts = unstable_cache(
-//   async (idDealOwner: string) => {
-//     const statuses = Object.keys(StatusContract) as Array<
-//       keyof typeof StatusContract
-//     >;
-
-//     const deals = await prisma.project.findMany({
-//       where: {
-//         projectManagers: {
-//           some: {
-//             userId: idDealOwner,
-//           },
-//         },
-//         dealStatus: {
-//           in: statuses,
-//         },
-//       },
-//       orderBy: {
-//         dateRequest: "asc",
-//       },
-//     });
-//     return deals;
-//   },
-//  ["contracts-user-data"], // Ключ кэша (общий префикс)
-//   {
-//     revalidate: 60, // Кэшировать на 60 секунд (ISR)
-//     tags: ["contracts"], // Тег для принудительного сброса кэша (revalidateTag)
-//   }
-// );
-
-// export const getContractsUser = async (
-//   idDealOwner: string
-// ): Promise<ProjectResponse[] | null> => {
-//   try {
-//     // const data = await handleAuthorization();
-
-//     // const { user, userId } = data;
-
-//     if (!idDealOwner) {
-//       return handleError("Недостаточно данных");
-//     }
-
-//     // const isOwner = userId === idDealOwner;
-//     // if (!isOwner) {
-//     //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-//     // }
-//     await checkAccess(idDealOwner)
-//        const statuses = Object.keys(StatusContract) as Array<
-//       keyof typeof StatusContract
-//     >;
-
-//     // const deals = await getCachedPrismaContracts(idDealOwner);
-//     const deals = await prisma.project.findMany({
-//       where: {
-//         projectManagers: {
-//           some: {
-//             userId: idDealOwner,
-//           },
-//         },
-//         dealStatus: {
-//           in: statuses,
-//         },
-//       },
-//       orderBy: {
-//         dateRequest: "asc",
-//       },
-//     });
-
-//     return deals.length
-//       ? deals.map((deal) => {
-//           const { amountCP, amountWork, amountPurchase, delta, ...restDeal } =
-//             deal;
-//           return {
-//             ...restDeal,
-//             amountCP: amountCP?.toString() || "",
-//             amountWork: amountWork?.toString() || "",
-//             amountPurchase: amountPurchase?.toString() || "",
-//             delta: delta?.toString() || "",
-//           };
-//         })
-//       : [];
-//   } catch (error) {
-//     console.error(error);
-//     return handleError((error as Error).message);
-//   }
-// };
 
 const getCachedPrismaRetails = unstable_cache(
   async (idDealOwner: string) => {
@@ -452,19 +354,10 @@ const getCachedPrismaRetails = unstable_cache(
 
 export const getRetailsUser = async (idDealOwner: string): Promise<RetailResponse[] | null> => {
   try {
-    // const data = await handleAuthorization();
-
-    // const { user, userId } = data;
-
     if (!idDealOwner) {
       return handleError("Недостаточно данных")
     }
 
-    // const isOwner = userId === idDealOwner;
-
-    // if (!isOwner) {
-    //   await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT]);
-    // }
     await checkAccess(idDealOwner)
 
     const deals = await getCachedPrismaRetails(idDealOwner)
@@ -866,7 +759,7 @@ export const createProject = async (
       return handleError("Ошибка: данные не переданы")
     }
 
-    const { user } = await checkAuthAndDataFill(data)
+    const { user, userId } = await checkAuthAndDataFill(data)
 
     const { amountCP, amountPurchase, amountWork, delta, contacts, managersIds, ...dealData } = data
 
@@ -951,6 +844,20 @@ export const createProject = async (
             user: { connect: { id: manager.userId } },
           })),
         },
+      },
+    })
+
+    const plannedDate =
+      data.plannedDateConnection instanceof Date ? new Date(data.plannedDateConnection) : new Date()
+    plannedDate.setHours(0, 0, 0, 0)
+    /* создание события */
+    await prisma.eventCalendar.create({
+      data: {
+        title: data.nameDeal as string,
+        start: plannedDate,
+        end: plannedDate,
+        allDay: true,
+        userId,
       },
     })
 
@@ -1251,6 +1158,20 @@ export const updateProject = async (
         },
       })
     }
+
+    const plannedDate =
+      data.plannedDateConnection instanceof Date ? new Date(data.plannedDateConnection) : new Date()
+    plannedDate.setHours(0, 0, 0, 0)
+    /* создание события */
+    await prisma.eventCalendar.create({
+      data: {
+        title: data.nameDeal as string,
+        start: plannedDate,
+        end: plannedDate,
+        allDay: true,
+        userId,
+      },
+    })
 
     const finalDeal = await prisma.project.findUnique({
       where: { id: updatedDeal.id },

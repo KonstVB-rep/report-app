@@ -1,5 +1,5 @@
 export type EventInputType = {
-  id?: string
+  id: string
   title: string
   start: Date
   end?: Date

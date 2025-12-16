@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import { getManagers } from "@/entities/department/lib/utils"
+import { getUsers } from "@/entities/department/lib/utils"
 import type { BotFormData, ChatFormData } from "@/entities/tgBot/types"
 import type { ActionResponse } from "@/shared/types"
 
-const managers = getManagers(false)
+const managers = getUsers({ onlyManagers: false })
 
 const useChatForm = (
   bot: BotFormData,

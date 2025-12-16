@@ -2,14 +2,14 @@
 
 import type { UserTelegramChat } from "@prisma/client"
 import { BotMessageSquareIcon } from "lucide-react"
-import { getManagers } from "@/entities/department/lib/utils"
+import { getUsers } from "@/entities/department/lib/utils"
 import type { BotData } from "@/entities/tgBot/types"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import DeleteChat from "./DeleteChat"
 import DialogCreateChatForm from "./DialogCreateChatForm"
 import DialogEditChatForm from "./DialogEditChatForm"
 
-const managers = getManagers(false)
+const managers = getUsers(false)
 
 const ChatList = ({
   bot,

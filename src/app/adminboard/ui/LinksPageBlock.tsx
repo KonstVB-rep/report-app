@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import useStoreUser from "@/entities/user/store/useStoreUser"
+import useStoreUser, { selectAuthUser } from "@/entities/user/store/useStoreUser"
 import { cn } from "@/shared/lib/utils"
 
 const LinkPage = ({ path, title }: { path: string; title: string }) => {
@@ -22,7 +22,7 @@ const LinkPage = ({ path, title }: { path: string; title: string }) => {
 }
 
 const LinksPageBlock = () => {
-  const { authUser } = useStoreUser()
+  const authUser = useStoreUser(selectAuthUser)
 
   return (
     <div className="grid gap-3 self-end px-2 pb-2 w-full">

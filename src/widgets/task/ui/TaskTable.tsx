@@ -6,7 +6,7 @@ import type { VirtualItem } from "@tanstack/react-virtual"
 import dynamic from "next/dynamic"
 import type { DateRange } from "react-day-picker"
 import z from "zod"
-import { getManagers } from "@/entities/department/lib/utils"
+import { getUsers } from "@/entities/department/lib/utils"
 import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { columnsDataTask } from "@/entities/task/model/column-data-tasks"
 import type { TaskWithUserInfo } from "@/entities/task/types"
@@ -109,7 +109,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
       <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
         <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
           <div className="flex items-center">
-            <FilterByUsers columnId="executorId" label="Исполнитель" managers={getManagers()} />
+            <FilterByUsers columnId="executorId" label="Исполнитель" managers={getUsers()} />
           </div>
           <FilterTasks columnFilters={columnFilters} />
         </div>

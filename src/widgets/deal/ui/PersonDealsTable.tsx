@@ -26,11 +26,6 @@ export const DealTypeLabels: Record<string, string> = {
   orders: "Заявки",
 }
 
-// const DealsTable = dynamic(() => import("@/widgets/deal/ui/DealsTable"), {
-//   ssr: false,
-//   loading: () => <TableRowsSkeleton />,
-// })
-
 const Columns = (
   type: TableType,
 ):
@@ -73,11 +68,9 @@ const PersonDealsTable = () => {
 
   const hasAccess = hasAccessToData(userId as string, PermissionEnum.VIEW_USER_REPORT)
 
-  const { data = [], isLoading } = useDealsUser(
-    dealType as TableType,
-    hasAccess ? (userId as string) : undefined,
-  )
-
+  const { data = [], isLoading } = useDealsUser(dealType as TableType, userId as string, {
+    enabled: hasAccess,
+  })
   if (!hasAccess)
     return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
 

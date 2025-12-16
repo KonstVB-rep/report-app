@@ -1,14 +1,8 @@
 "use client"
 
 import type { Dispatch, SetStateAction } from "react"
-import dynamic from "next/dynamic"
-import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton"
 import ModalContent from "@/shared/custom-components/ui/ModalContent"
-
-const EditProjectForm = dynamic(() => import("../Forms/EditProjectForm"), {
-  ssr: false,
-  loading: () => <FormDealSkeleton />,
-})
+import EditProjectForm from "../Forms/EditProjectForm"
 
 const EditProject = ({
   close,
@@ -24,6 +18,7 @@ const EditProject = ({
   return (
     <ModalContent
       className="max-h-[94vh] overflow-y-auto sm:max-w-[825px]"
+      disableClose
       title="Редактировать проект"
     >
       <EditProjectForm

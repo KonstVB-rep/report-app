@@ -7,14 +7,14 @@ import DialogEditUser from "../DialogEditUser"
 const UserActionsBlock = ({ rowSelection }: { rowSelection: UserTypeTable[] }) => {
   return (
     <div className="flex items-center gap-1 flex-wrap">
-      <div className="flex gap-1">
+      <div className="flex gap-2">
         {rowSelection.length === 1 && (
-          <DialogEditUser className="w-fit" textButtonShow={true} user={rowSelection[0]} />
+          <DialogEditUser className="w-fit p-2" textButtonShow={false} user={rowSelection[0]} />
         )}
         {rowSelection.length === 1 && (
           <DialogDeleteUser
-            className="w-fit text-white"
-            textButtonShow={true}
+            className="w-fit text-white p-2"
+            textButtonShow={false}
             user={rowSelection[0]}
           />
         )}

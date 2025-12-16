@@ -1,9 +1,9 @@
 "use client"
 
-import ProtectedTemplate from "@/shared/custom-components/ui/Protect/ProtectedTemplate"
+import ProtectedByRole from "@/shared/custom-components/ui/Protect/ProtectByRole"
 
 const TemplateDashboard = ({ children }: { children: React.ReactNode }) => {
-  return <ProtectedTemplate>{children}</ProtectedTemplate>
+  return <ProtectedByRole>{children}</ProtectedByRole>
 }
 
 export default TemplateDashboard

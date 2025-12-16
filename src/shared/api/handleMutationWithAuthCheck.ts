@@ -27,7 +27,7 @@ const handleMutationWithAuthCheck = async <T, U>(
     return result
   } catch (error) {
     console.error("Error in mutation wrapper:", error)
-    throw error
+    throw new Error("Не удалось выполнить операцию")
   } finally {
     isSubmittingRef.current = false
   }

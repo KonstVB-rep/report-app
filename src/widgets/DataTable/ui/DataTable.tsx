@@ -30,7 +30,7 @@ interface DataTableProps<T> {
   hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>
 }
 
-const DataTable = <T extends Record<string, unknown>>({
+const DataTable = <T extends { id: string }>({
   columns,
   data,
   hasEditDeleteActions = true,

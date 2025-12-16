@@ -389,24 +389,32 @@ export const getUser = async (
   }
 }
 
-export const deleteUser = async (deletedUserData: {
-  userId: string
-}): Promise<ResponseDelUser<null>> => {
+export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser<null>> => {
   try {
     const { user } = await handleAuthorization()
 
-    if (user) await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT])
-
-    const deletedUserId = deletedUserData.userId
+    if (user) {
+      await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT])
+    }
 
     const person = await prisma.user.findUnique({
       where: { id: deletedUserId },
     })
 
-    if (!person) return { error: true, message: "Пользователь не найден", data: null }
+    if (!person) {
+      return { error: true, message: "Пользователь не найден", data: null }
+    }
 
+    // Простое удаление — Prisma автоматически:
+    // - удалит все Cascade-сущности
+    // - установит null для всех SetNull полей
     await prisma.user.delete({ where: { id: deletedUserId } })
-    return { error: false, message: "Пользователь успешно удален", data: null }
+
+    return {
+      error: false,
+      message: "Пользователь успешно удален",
+      data: null,
+    }
   } catch (error) {
     console.error(error)
     return {
@@ -511,6 +519,7 @@ export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
         telegramInfo: {
           select: {
             tgUserName: true,
+            tgUserId: true,
           },
         },
       },
@@ -522,6 +531,7 @@ export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
         ...user,
         login: user.username,
         telegramInfo: user.telegramInfo[0]?.tgUserName || "",
+        tgUserId: user.telegramInfo[0]?.tgUserId || "",
         lastlogin: lastLoginRecord?._max.loginAt || new Date(0),
         permissions: user.permissions.map((p) => p.permission.name),
       }

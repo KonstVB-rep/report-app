@@ -19,7 +19,7 @@ const BotActionsMenu = memo(({ bot }: { bot: BotWithChats }) => {
           <span className="sr-only">Меню действий</span>
         </Button>
       </PopoverTrigger>
-      {/* PopoverContent ленивый, диалоги не маунтятся пока не открыт поповер */}
+
       <PopoverContent align="end" className="w-fit p-2">
         <div className="grid gap-2">
           <DialogEditBot bot={bot} />

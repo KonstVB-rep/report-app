@@ -115,6 +115,17 @@ const ChatForm = ({ title, description, bot, mutateAsync, state, isPending }: Ch
             required
           />
 
+          <SelectComponent
+            disabled={isPending}
+            name={"chatName"}
+            options={[
+              ["taskChat", "taskChat"],
+              ["calendarChat", "calendarChat"],
+            ]}
+            placeholder="Выберите чат"
+            required
+          />
+
           {getFieldError("chatName") && (
             <p className="text-sm text-red-500" id="chatName">
               {getFieldError("chatName")}

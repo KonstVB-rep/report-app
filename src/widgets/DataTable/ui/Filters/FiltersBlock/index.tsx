@@ -2,7 +2,7 @@ import type { Table } from "@tanstack/react-table"
 import { usePathname } from "next/navigation"
 import type { DateRange } from "react-day-picker"
 import type { TableType } from "@/entities/deal/types"
-import { getManagers } from "@/entities/department/lib/utils"
+import { getUsers } from "@/entities/department/lib/utils"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { FormatedParamsType, LABELS } from "@/feature/deals/lib/constants"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
@@ -46,7 +46,7 @@ const FiltersBlock = ({ table, dealType }: FiltersBlockProps) => {
   return (
     <MotionDivY className="min-h-0">
       <div className="py-2 flex flex-wrap justify-start gap-2">
-        {hasTable && <FilterByUser label="Менеджер" managers={getManagers()} />}
+        {hasTable && <FilterByUser label="Менеджер" managers={getUsers()} />}
 
         <div className="flex gap-2 justify-start flex-wrap">
           <DateRangeFilter

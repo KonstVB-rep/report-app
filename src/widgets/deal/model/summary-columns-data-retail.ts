@@ -2,17 +2,23 @@
 
 import type { ColumnDef } from "@tanstack/react-table"
 import type { RetailResponse } from "@/entities/deal/types"
+import { getUsers } from "@/entities/department/lib/utils"
 import { columnsDataRetail } from "@/widgets/deal/model/columns-data-retail"
+
+const users = getUsers({ onlyManagers: true })
 
 export const columnsDataRetailSummary: ColumnDef<RetailResponse, unknown>[] = [
   ...columnsDataRetail,
   {
     id: "user",
     header: "Менеджер",
-    cell: (info) => info.getValue(),
+    cell: (info) => {
+      const userId: string = info.getValue() as string
+      return users[userId]
+    },
     enableHiding: false,
     meta: {
-      hidden: true,
+      title: "Менеджер",
     },
     filterFn: (row, _, filterValues) => {
       if (!filterValues || filterValues.length === 0) {

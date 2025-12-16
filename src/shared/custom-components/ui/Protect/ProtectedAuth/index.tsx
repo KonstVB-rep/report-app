@@ -16,9 +16,9 @@ const RedirectToPath = dynamic(
   },
 )
 
-export default function ProtectedTemplate({ children }: { children: React.ReactNode }) {
+export default function ProtectedAuth({ children }: { children: React.ReactNode }) {
   const { authUser } = useStoreUser()
-  console.log("authUser", authUser)
+
   const router = useRouter()
 
   useEffect(() => {

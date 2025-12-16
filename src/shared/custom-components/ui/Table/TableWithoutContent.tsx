@@ -2,6 +2,7 @@ import { useState } from "react"
 import type { Header, Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
 import TableCellComponent from "./TableCellCompoment"
+import { getRowClassName } from "./TableRowDealOrTask"
 
 type Props<T extends Record<string, unknown>> = {
   row: Row<T>
@@ -9,21 +10,6 @@ type Props<T extends Record<string, unknown>> = {
   hasEditDeleteActions?: boolean
   entityType: string
   headers?: Header<T, unknown>[]
-}
-
-export const getRowClassName = (dealStatus?: string) => {
-  const baseClass = "tr hover:bg-zinc-600 hover:text-white relative"
-  if (!dealStatus) return baseClass
-
-  return `${baseClass} ${
-    dealStatus === "CLOSED"
-      ? "bg-green-950/50 darK:bg-green-950/30 dark:opacity-60"
-      : dealStatus === "REJECT"
-        ? "bg-red-900/40 dark:bg-red-900/40 opacity-80 dark:opacity-60"
-        : dealStatus === "PAID"
-          ? "bg-green-100 dark:bg-lime-200/20"
-          : ""
-  }`
 }
 
 const TableWithoutContent = <T extends Record<string, unknown>>({
@@ -41,6 +27,7 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
     <TableRow
       className={getRowClassName(row.original.dealStatus as string)}
       data-closed={row.original.dealStatus === "CLOSED"}
+      data-progress={row.original.dealStatus === "PROGRESS"}
       data-reject={row.original.dealStatus === "REJECT"}
       data-success={row.original.dealStatus === "PAID"}
       style={{

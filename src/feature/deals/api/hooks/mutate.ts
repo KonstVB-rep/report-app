@@ -56,6 +56,8 @@ export const useDelDeal = (
       return await deleteDeal(nealId, ownerId, type)
     },
     onSuccess: (data, dealId) => {
+      closeModalFn()
+
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
           queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
@@ -79,8 +81,6 @@ export const useDelDeal = (
       queryClient.invalidateQueries({
         queryKey: ["orders", Number(authUser?.departmentId)],
       })
-
-      closeModalFn()
     },
     onError: (error) => {
       handleErrorSession(error)
@@ -254,7 +254,7 @@ export const useMutationUpdateRetail = (
   })
 }
 
-export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) => void) => {
+export const useCreateProject = (reset?: (values?: DeepPartial<ProjectSchema>) => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
   return useMutation({
     mutationFn: async (data: ProjectSchema) => {
@@ -295,7 +295,7 @@ export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) =>
     onSuccess: (data) => {
       if (!data) return
 
-      reset(defaultProjectValues)
+      reset?.(defaultProjectValues)
 
       queryClient.invalidateQueries({
         queryKey: ["projects", data?.userId],
@@ -314,7 +314,7 @@ export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) =>
   })
 }
 
-export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => void) => {
+export const useCreateRetail = (reset?: (values?: DeepPartial<RetailSchema>) => void) => {
   const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
@@ -355,7 +355,7 @@ export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => v
     },
     onSuccess: (data) => {
       if (data) {
-        reset(defaultRetailValues)
+        reset?.(defaultRetailValues)
 
         queryClient.invalidateQueries({
           queryKey: ["retails", data.userId],

@@ -37,7 +37,6 @@ export const useGetAllUsers = () => {
     queryKey: ["all-users", userId],
     queryFn: async () => {
       try {
-        if (!userId) throw new Error("Пользователь не авторизован")
         return await getAllUsers()
       } catch (error) {
         TOAST.ERROR((error as Error).message || "Не удалось получить данные")

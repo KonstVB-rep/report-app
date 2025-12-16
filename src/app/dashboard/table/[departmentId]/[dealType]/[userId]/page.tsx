@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { getQueryClient } from "@/app/provider/query-provider"
 import {
@@ -41,7 +42,9 @@ const PersonTablePage = async ({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PersonDealsTable />
+      <Suspense fallback={<div>Загрузка данных...</div>}>
+        <PersonDealsTable />
+      </Suspense>
     </HydrationBoundary>
   )
 }

@@ -12,10 +12,6 @@ import { useTableState } from "@/shared/hooks/useTableState"
 import RowNumber from "@/widgets/deal/model/columnsDataColsTemplate/RowNumber"
 import BotActionsMenu from "./BotActionsMenu"
 
-// 1. ВЫНОС ЗА КОМПОНЕНТ
-// Columns - это статическая конфигурация. Она никогда не должна пересоздаваться.
-// Если нужны зависимости из пропсов, используйте useMemo внутри компонента,
-// но здесь это не требуется.
 const columnsDataBots: ColumnDef<BotWithChats>[] = [
   { ...RowNumber<BotWithChats>() },
   {
@@ -33,8 +29,6 @@ const columnsDataBots: ColumnDef<BotWithChats>[] = [
   {
     id: "actions",
     header: "",
-    // BotActionsMenu лучше обернуть в React.memo внутри его собственного файла,
-    // чтобы он не ререндерился, если row.original не изменился.
     cell: ({ row }) => <BotActionsMenu bot={row.original} />,
     size: 50,
     minSize: 50,

@@ -12,6 +12,7 @@ interface ModalContentProps {
   title?: string
   showX?: boolean
   closeStyle?: string
+  disableClose?: boolean
 }
 
 const ModalContent = ({
@@ -20,9 +21,17 @@ const ModalContent = ({
   title,
   showX = true,
   closeStyle,
+  disableClose = false,
 }: ModalContentProps) => {
   return (
-    <DialogContent className={className} closeStyle={closeStyle} showX={showX}>
+    <DialogContent
+      className={className}
+      closeStyle={closeStyle}
+      onInteractOutside={(e) => {
+        if (disableClose) e.preventDefault()
+      }}
+      showX={showX}
+    >
       <DialogHeader className="sr-only">
         <DialogTitle className="sr-only">{title}</DialogTitle>
         <DialogDescription></DialogDescription>

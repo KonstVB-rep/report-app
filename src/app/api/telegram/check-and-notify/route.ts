@@ -389,7 +389,10 @@ async function sendDailyNotifications(
       ]
         .filter(Boolean)
         .join("\n"),
+      id: item.id,
       start: item.plannedDateConnection,
+      end: item.plannedDateConnection,
+      allDay: true,
     }
 
     try {

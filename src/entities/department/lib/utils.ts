@@ -28,12 +28,12 @@ export const formattedArr = <T extends Dept>(arr: T[] | null): DeptFormatted[] |
   }))
 }
 
-export const getManagers = (onlyManagers = true) => {
+export const getUsers = (data: { onlyManagers: boolean }) => {
   const { authUser } = useStoreUser.getState()
   const { departments } = useStoreDepartment.getState()
 
   const currentDepartment = departments?.find((dept) => dept.id === authUser?.departmentId)
-  if (onlyManagers) {
+  if (data?.onlyManagers) {
     return (
       currentDepartment?.users.reduce(
         (acc, item) => {

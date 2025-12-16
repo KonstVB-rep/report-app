@@ -12,15 +12,17 @@ const DelDealListForm = dynamic(() => import("../Forms/DelDealListForm"), {
 const DelButtonMultiDeals = ({
   deals,
   isTextButton = true,
+  clearSelection,
 }: {
   deals: DeletingDealsListItem[]
   isTextButton?: boolean
+  clearSelection: () => void
 }) => {
   const [open, setOpen] = React.useState(false)
 
   return (
     <WrapperFormDeleteDialog isTextButton={isTextButton} open={open} setOpen={setOpen}>
-      <DelDealListForm close={() => setOpen(false)} deals={deals} />
+      <DelDealListForm clearSelection={clearSelection} close={() => setOpen(false)} deals={deals} />
     </WrapperFormDeleteDialog>
   )
 }

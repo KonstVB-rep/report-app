@@ -1,19 +1,8 @@
 "use client"
 
 import type { Dispatch, SetStateAction } from "react"
-import dynamic from "next/dynamic"
-import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton"
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog"
-
-const EditRetailForm = dynamic(() => import("../Forms/EditRetailForm"), {
-  ssr: false,
-  loading: () => <FormDealSkeleton />,
-})
+import ModalContent from "@/shared/custom-components/ui/ModalContent"
+import EditRetailForm from "../Forms/EditRetailForm"
 
 const EditRetail = ({
   close,
@@ -27,13 +16,13 @@ const EditRetail = ({
   titleForm: string
 }) => {
   return (
-    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[825px]" showX={true}>
-      <DialogHeader>
-        <DialogTitle className="sr-only">Редактировать розничную сделку</DialogTitle>
-        <DialogDescription></DialogDescription>
-      </DialogHeader>
+    <ModalContent
+      className="max-h-[94vh] overflow-y-auto sm:max-w-[825px]"
+      disableClose
+      title="Редактировать проект"
+    >
       <EditRetailForm close={close} dealId={id} isInvalidate={isInvalidate} titleForm={titleForm} />
-    </DialogContent>
+    </ModalContent>
   )
 }
 
