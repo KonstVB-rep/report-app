@@ -1,8 +1,11 @@
+import { connection } from "next/server"
 import { getAllBots } from "@/entities/tgBot/api"
 import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage"
 import BotsTable from "./BotsTable"
 
 const ClientBotsPage = async () => {
+  await connection()
+
   const allBots = await getAllBots()
   return (
     <div className="p-5 grid gap-4 overflow-auto max-h-[94vh]">

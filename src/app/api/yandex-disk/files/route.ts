@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server"
+import { connection, NextResponse } from "next/server"
 import { getFiles } from "../yandexDisk"
 
 export async function GET(request: Request) {
+  await connection()
+
   try {
     const { searchParams } = new URL(request.url)
     const folderPath = searchParams.get("folderPath") || "/"

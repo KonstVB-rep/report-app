@@ -46,7 +46,7 @@ const FiltersBlock = ({ table, dealType }: FiltersBlockProps) => {
   return (
     <MotionDivY className="min-h-0">
       <div className="py-2 flex flex-wrap justify-start gap-2">
-        {hasTable && <FilterByUser label="Менеджер" managers={getUsers()} />}
+        {hasTable && <FilterByUser label="Менеджер" managers={getUsers({ onlyManagers: true })} />}
 
         <div className="flex gap-2 justify-start flex-wrap">
           <DateRangeFilter

@@ -81,6 +81,7 @@ const RetailFormBody = <T extends FieldValues>({
   )
 
   const getError = (name: keyof T) => form.formState.errors[name]?.message as string
+  const currentStatus = form.watch("dealStatus" as Path<T>)
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -201,7 +202,7 @@ const RetailFormBody = <T extends FieldValues>({
                 placeholder="Выберите статус КП"
               />
 
-              {form.formState.defaultValues?.dealStatus !== StatusRetail.REJECT && (
+              {currentStatus !== StatusRetail.REJECT && (
                 <DatePickerFormField
                   className="mb-2"
                   control={form.control}

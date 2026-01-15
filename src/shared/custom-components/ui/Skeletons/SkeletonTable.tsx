@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid"
 import { cn } from "@/shared/lib/utils"
 
 export const SkeletonTable = ({
@@ -13,8 +12,11 @@ export const SkeletonTable = ({
   <>
     {innerTable ? (
       <tr className={cn("flex flex-col space-y-2", className)}>
-        {[...Array(number)].map(() => (
-          <td className={cn("w-full bg-muted rounded-md animate-pulse h-[57px]")} key={uuid()} />
+        {[...Array(number)].map((_, i) => (
+          <td
+            className={cn("w-full bg-muted rounded-md animate-pulse h-[57px]")}
+            key={`placeholder-${i}`}
+          />
         ))}
       </tr>
     ) : (
@@ -25,7 +27,7 @@ export const SkeletonTable = ({
               "w-full bg-muted rounded-md animate-pulse",
               i === 0 ? "h-20" : "h-[57px]",
             )}
-            key={uuid()}
+            key={`placeholder-${i}`}
           />
         ))}
       </div>

@@ -9,7 +9,7 @@ import DeleteChat from "./DeleteChat"
 import DialogCreateChatForm from "./DialogCreateChatForm"
 import DialogEditChatForm from "./DialogEditChatForm"
 
-const managers = getUsers(false)
+const users = getUsers({ onlyManagers: false })
 
 const ChatList = ({
   bot,
@@ -53,7 +53,7 @@ const ChatList = ({
                   Чат: <span className="break-all">{chat.chatName}</span>
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  <span className="capitalize">{managers[chat.userId]}</span> /{" "}
+                  <span className="capitalize">{users[chat.userId]}</span> /{" "}
                   {chat.isActive ? "Активен" : "Не активен"}
                 </span>
               </p>

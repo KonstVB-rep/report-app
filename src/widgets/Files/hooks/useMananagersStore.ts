@@ -5,7 +5,7 @@ const useMananagersStore = () => {
   const [managersList, setManagersList] = useState<Record<string, string>>({})
 
   useEffect(() => {
-    const managers = getUsers()
+    const managers = getUsers({ onlyManagers: true })
 
     setManagersList(managers)
   }, [])

@@ -1,5 +1,3 @@
-"use client"
-
 import UserTable from "@/feature/user/ui/admindashboard/UserTable"
 
 const AdminPanel = () => {

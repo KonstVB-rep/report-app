@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo } from "react"
 import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react"
-import { v4 as uuid } from "uuid"
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
 import type {
@@ -60,8 +59,8 @@ const DepartmentListWrapper = () => {
   if (isLoading) {
     return (
       <div className="top-0 h-[calc(100svh-var(--header-height))]! min-w-60 shrink-0 flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-2">
-        {Array.from({ length: 3 }, () => (
-          <Skeleton className="h-10 w-full" key={uuid()} />
+        {Array.from({ length: 3 }, (_, i) => (
+          <Skeleton className="h-10 w-full" key={`placeholder-${i}`} />
         ))}
       </div>
     )

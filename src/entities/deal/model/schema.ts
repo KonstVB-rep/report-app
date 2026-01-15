@@ -155,7 +155,7 @@ export const RetailFormSchema = z
   .check((ctx) => {
     const data = ctx.value
 
-    if (data.dealStatus !== StatusProject.REJECT && !data.plannedDateConnection?.trim()) {
+    if (data.dealStatus !== StatusRetail.REJECT && !data.plannedDateConnection?.trim()) {
       ctx.issues.push({
         code: "custom",
         message: "Укажите планируемую дату подключения",

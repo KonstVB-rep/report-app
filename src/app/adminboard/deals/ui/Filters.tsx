@@ -28,11 +28,14 @@ const Filters = ({ table }: { table: Table<DealBase> }) => {
     | undefined
   const type = columnFilters.find((f) => f.id === "type")?.value as DealType | undefined
 
-  console.log(dateRequestValue, "dateRequestValue")
   return (
     <MotionDivY className="min-h-0">
       <div className="flex flex-wrap justify-start items-center gap-2 py-2">
-        <FilterByUser columnId="employee" label="Менеджер" managers={getUsers()} />
+        <FilterByUser
+          columnId="employee"
+          label="Менеджер"
+          managers={getUsers({ onlyManagers: true })}
+        />
 
         <DateRangeFilter
           label="Дата заявки"

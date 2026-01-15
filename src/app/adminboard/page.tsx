@@ -1,14 +1,6 @@
-import { checkRole } from "@/shared/api/checkByServer"
-import NotFound from "../not-found"
-import AdminPanel from "./ui/AdminPanel"
+import AdminPanel from "./ui/AdminPanel" // Или правильный путь
 
-const AdminPage = async () => {
-  const isSuccess = await checkRole()
-
-  if (!isSuccess) {
-    return <NotFound />
-  }
-
+const AdminPage = () => {
   return <AdminPanel />
 }
 

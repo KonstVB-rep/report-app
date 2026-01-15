@@ -32,7 +32,8 @@
       },
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noRedeclare": "off"
+        "noRedeclare": "off",
+        "noArrayIndexKey": "off"
       }
     },
     "domains": {

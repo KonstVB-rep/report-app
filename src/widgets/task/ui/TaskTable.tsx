@@ -109,7 +109,11 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
       <div className="relative grid w-full overflow-hidden rounded-md border bg-background">
         <div className="flex items-center flex-wrap gap-2 p-2 border-b mb-2">
           <div className="flex items-center">
-            <FilterByUsers columnId="executorId" label="Исполнитель" managers={getUsers()} />
+            <FilterByUsers
+              columnId="executorId"
+              label="Исполнитель"
+              managers={getUsers({ onlyManagers: false })}
+            />
           </div>
           <FilterTasks columnFilters={columnFilters} />
         </div>

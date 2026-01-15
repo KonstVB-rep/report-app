@@ -21,21 +21,26 @@ export const getRole = async (userId: string): Promise<Role> => {
 }
 
 const recoderTokens = async () => {
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get("accessToken")?.value
+  try {
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get("accessToken")?.value
 
-  if (!accessToken) {
-    console.log("Токен отсутствует")
+    if (!accessToken) {
+      console.log("Токен отсутствует")
+      return false
+    }
+
+    const { payload } = await jwtVerify(accessToken, accessTokenSecretKey)
+
+    if (!payload.userId) {
+      return false
+    }
+
+    return payload
+  } catch (e) {
+    console.error("Ошибка с cookies в prerender:", e)
     return false
   }
-
-  const { payload } = await jwtVerify(accessToken, accessTokenSecretKey)
-
-  if (!payload.userId) {
-    return false
-  }
-
-  return payload
 }
 
 export const checkRole = async (role: Role = Role.ADMIN): Promise<boolean> => {
