@@ -1,26 +1,26 @@
-import { Suspense } from "react"
-import type { Metadata } from "next"
-import dynamicImport from "next/dynamic"
-import { connection } from "next/server"
-import { getAllDealsRequestSourceByDepartment } from "@/entities/deal/api"
-import Loading from "./loading"
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import dynamicImport from "next/dynamic";
+import { connection } from "next/server";
+import { getAllDealsRequestSourceByDepartment } from "@/entities/deal/api";
+import Loading from "./loading";
 
 const Charts = dynamicImport(() => import("./ui/Charts"), {
   loading: () => <Loading />,
-})
+});
 
 export const metadata: Metadata = {
   title: "Источники заявок",
-}
+};
 
 async function ChartsDataLoader({ depId }: { depId: number }) {
-  await connection()
+  await connection();
 
-  const data = await getAllDealsRequestSourceByDepartment(depId)
+  const data = await getAllDealsRequestSourceByDepartment(depId);
 
-  if (!data?.deals.length) return <p>Нет данных</p>
+  if (!data?.deals.length) return <p>Нет данных</p>;
 
-  return <Charts data={data} />
+  return <Charts data={data} />;
 }
 
 export default function RequestSourcePage() {
@@ -30,5 +30,5 @@ export default function RequestSourcePage() {
         <ChartsDataLoader depId={1} />
       </Suspense>
     </div>
-  )
+  );
 }

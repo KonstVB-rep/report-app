@@ -1,41 +1,44 @@
-"use client"
+"use client";
 
-import { useCallback } from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-// Вспомогательная функция для проверки значения на принадлежность к union-типу
 function isValidEnumValue<T extends string>(
   value: string | null,
   allowedValues: readonly T[],
 ): value is T {
-  return value !== null && (allowedValues as readonly string[]).includes(value)
+  return value !== null && (allowedValues as readonly string[]).includes(value);
 }
 
-const useViewType = <T extends string>(defaultValue: T, allowedValues: readonly T[]) => {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+const useViewType = <T extends string>(
+  defaultValue: T,
+  allowedValues: readonly T[],
+) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  // 🔒 Безопасное извлечение viewType с валидацией
-  const urlViewType = searchParams.get("viewType")
-  const currentView = isValidEnumValue(urlViewType, allowedValues) ? urlViewType : defaultValue
+  const urlViewType = searchParams.get("viewType");
+  const currentView = isValidEnumValue(urlViewType, allowedValues)
+    ? urlViewType
+    : defaultValue;
 
   const handleViewChange = useCallback(
     (value: T) => {
-      if (value === currentView) return
+      if (value === currentView) return;
 
-      const params = new URLSearchParams(searchParams.toString())
-      params.set("viewType", value)
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("viewType", value);
 
-      router.push(`${pathname}?${params.toString()}`, { scroll: false })
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
     [currentView, pathname, router, searchParams],
-  )
+  );
 
   return {
     handleViewChange,
     currentView,
-  }
-}
+  };
+};
 
-export default useViewType
+export default useViewType;

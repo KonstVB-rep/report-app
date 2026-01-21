@@ -1,44 +1,50 @@
-import { format } from "date-fns"
-import { ru } from "date-fns/locale"
-import dynamic from "next/dynamic"
-import useStoreUser from "@/entities/user/store/useStoreUser"
-import { Badge } from "@/shared/components/ui/badge"
-import { Card, CardDescription, CardFooter, CardHeader } from "@/shared/components/ui/card"
+import useStoreUser from "@/entities/user/store/useStoreUser";
+import { Badge } from "@/shared/components/ui/badge";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+} from "@/shared/components/ui/card";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import dynamic from "next/dynamic";
 import {
   LABEL_TASK_PRIORITY,
   LABEL_TASK_STATUS,
   TASK_PRIORITY_COLOR_BORDER,
-} from "../../../feature/task/model/constants"
-import { cleanDistance } from "../lib/helpers"
-import type { TaskWithUserInfo } from "../types"
+} from "@/feature/task/model/constants";
+import { cleanDistance } from "../lib/helpers";
+import type { TaskWithUserInfo } from "../types";
 
 const EditTaskDialogButton = dynamic(
-  () => import("../../../feature/task/ui/Modals/EditTaskDialogButton"),
-)
+  () => import("@/feature/task/ui/Modals/EditTaskDialogButton"),
+);
 
 const DelTaskDialogButton = dynamic(
-  () => import("../../../feature/task/ui/Modals/DelTaskDialogButton"),
-)
+  () => import("@/feature/task/ui/Modals/DelTaskDialogButton"),
+);
 
 type TaskCardProps = {
-  task: TaskWithUserInfo
-}
+  task: TaskWithUserInfo;
+};
 
 const TaskCard = ({ task }: TaskCardProps) => {
-  const { authUser } = useStoreUser()
+  const { authUser } = useStoreUser();
 
-  if (!authUser || !task) return null
+  if (!authUser || !task) return null;
 
-  const duedate = cleanDistance(new Date(task.dueDate))
+  const duedate = cleanDistance(new Date(task.dueDate));
 
   const formattedDueDate = format(task.dueDate, "d MMMM yyyy HH:mm", {
     locale: ru,
-  })
+  });
   const formattedCreated = format(task.createdAt, "d MMMM yyyy HH:mm", {
     locale: ru,
-  })
+  });
 
-  const isCanActionTask = task.assignerId === authUser.id || task.executorId === authUser.id
+  const isCanActionTask =
+    task.assignerId === authUser.id || task.executorId === authUser.id;
 
   return (
     <div className="grid gap-2">
@@ -73,26 +79,30 @@ const TaskCard = ({ task }: TaskCardProps) => {
           </Badge>
         </CardContent> */}
         <CardFooter className="grid gap-3 px-3 py-0">
-          <div className="flex flex-wrap gap-2">
-            <div className="grid gap-1 flex-1">
-              <span className="capitalize text-md">автор:</span>
-              <Badge className="text-lg capitalize">{task.assigner.username}</Badge>
-            </div>
-            <div className="grid gap-1 flex-1">
-              <span className="capitalize text-md">исполнитель:</span>
-              <Badge className="text-lg capitalize">{task.executor.username}</Badge>
-            </div>
+          <div className="grid gap-1 flex-1">
+            <span className="capitalize text-md">автор:</span>
+            <Badge className="text-lg capitalize">
+              {task.assigner?.username ?? "Удален"}
+            </Badge>
+          </div>
+
+          <div className="grid gap-1 flex-1">
+            <span className="capitalize text-md">исполнитель:</span>
+            <Badge className="text-lg capitalize">
+              {task.executor?.username ?? "Не назначен"}
+            </Badge>
           </div>
           <div className="text-md text-gray-500 w-full">
             <span className="capitalize">Создана:</span> {formattedCreated}
           </div>
           <div className="text-md text-primary w-full">
-            <span className="capitalize">Срок:</span> {duedate} - {formattedDueDate}
+            <span className="capitalize">Срок:</span> {duedate} -{" "}
+            {formattedDueDate}
           </div>
         </CardFooter>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default TaskCard
+export default TaskCard;

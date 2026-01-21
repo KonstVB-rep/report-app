@@ -1,81 +1,78 @@
-import { jwtVerify } from "jose"
-import { NextResponse } from "next/server"
-import { generateTokens } from "@/feature/auth/lib/generateTokens"
+import { jwtVerify } from "jose";
+import { NextRequest, NextResponse } from "next/server";
+import { generateTokens } from "@/feature/auth/lib/generateTokens";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const headers = {
-      "Content-Type": "application/json",
-    }
+    const contentType = req.headers.get("content-type");
 
-    const contentType = req.headers.get("content-type")
     if (contentType !== "application/json") {
       return NextResponse.json(
-        { error: "Неверный Content-Type, ожидается application/json" },
-        { status: 400, headers },
-      )
+        { error: "Неверный Content-Type" },
+        { status: 400 },
+      );
     }
 
-    const { refreshToken } = await req.json()
+    const body = await req.json().catch(() => null);
 
-    if (!refreshToken) {
-      return NextResponse.json({ error: "Нет refresh token" }, { status: 401, headers })
-    }
-
-    const secretKey = new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)
-
-    try {
-      const { payload } = await jwtVerify(refreshToken, secretKey)
-
-      if (!payload?.userId || !payload?.departmentId) {
-        return NextResponse.json(
-          { error: "Неверный refresh token: отсутствуют необходимые данные" },
-          { status: 401, headers },
-        )
-      }
-
-      const tokens = await generateTokens(
-        payload.userId as string,
-        payload.departmentId as string | number,
-      )
-
-      if (!tokens) {
-        throw new Error("Failed to generate tokens")
-      }
-
-      const { accessToken, refreshToken: newRefreshToken } = tokens
-
+    if (!body || !body.refreshToken) {
       return NextResponse.json(
-        {
-          accessToken,
-          refreshToken: newRefreshToken,
-          userId: payload.userId,
-          departmentId: payload.departmentId,
-        },
-        { status: 200, headers },
-      )
-    } catch (error) {
-      console.error("Ошибка верификации refresh token:", error)
-
-      if ((error as Error).name === "JWTExpired") {
-        return NextResponse.json({ error: "Refresh token истек" }, { status: 401, headers })
-      }
-
-      return NextResponse.json({ error: "Ошибка обновления токена" }, { status: 500, headers })
+        { error: "Refresh token отсутствует" },
+        { status: 400 },
+      );
     }
-  } catch (error) {
-    console.error("Ошибка обновления токена:", error)
+    const { refreshToken } = body;
+
+    const secretKey = new TextEncoder().encode(process.env.REFRESH_SECRET_KEY);
+    const { payload } = await jwtVerify(refreshToken, secretKey);
+
+    if (!payload?.userId || !payload?.departmentId) {
+      return NextResponse.json(
+        { error: "Некорректные данные в токене" },
+        { status: 401 },
+      );
+    }
+
+    const tokens = await generateTokens(
+      payload.userId as string,
+      payload.departmentId as string | number,
+    );
+
+    if (!tokens) throw new Error("Token generation failed");
+
     return NextResponse.json(
       {
-        error: "Внутренняя ошибка сервера",
-        details: (error as Error).message,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        userId: payload.userId,
+        departmentId: payload.departmentId,
       },
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Auth Refresh Error:", error);
+
+    const err = error as Error;
+
+    const isAuthError = [
+      "JWTExpired",
+      "JWSSignatureVerificationFailed",
+      "JWTInvalid",
+    ].includes(err.name);
+
+    if (isAuthError) {
+      return NextResponse.json(
+        {
+          error:
+            err.name === "JWTExpired" ? "Сессия истекла" : "Невалидный токен",
         },
-      },
-    )
+        { status: 401 },
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Внутренняя ошибка сервера" },
+      { status: 500 },
+    );
   }
 }

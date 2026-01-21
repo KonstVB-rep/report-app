@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { StatusRetail } from "@prisma/client"
-import { ArrowLeft } from "lucide-react"
-import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
-import type { Contact } from "@/entities/deal/types"
-import ContactDeal from "@/feature/contact/ui/ContactDeal"
-import { Button } from "@/shared/components/ui/button"
+import { StatusRetail } from "@prisma/client";
+import { ArrowLeft } from "lucide-react";
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import type { Contact } from "@/entities/deal/types";
+import ContactDeal from "@/feature/contact/ui/ContactDeal";
+import { Button } from "@/shared/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,37 +13,37 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form"
-import { Textarea } from "@/shared/components/ui/textarea"
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
-import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField"
-import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm"
-import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm"
-import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
-import Overlay from "@/shared/custom-components/ui/Overlay"
-import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
-import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
-import useSendDealInfo from "../../api/hooks/useSendDealInfo"
+} from "@/shared/components/ui/form";
+import { Textarea } from "@/shared/components/ui/textarea";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
+import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm";
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import Overlay from "@/shared/custom-components/ui/Overlay";
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
+import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
+import useSendDealInfo from "../../api/hooks/useSendDealInfo";
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
   StatusRetailLabels,
-} from "../../lib/constants"
-import AddManagerToDeal from "../Modals/AddManagerToDeal"
+} from "../../lib/constants";
+import AddManagerToDeal from "../Modals/AddManagerToDeal";
 
 type RetailFormBodyProps<T extends FieldValues> = {
-  form: UseFormReturn<T>
-  onSubmit: (data: T) => void
-  isPending: boolean
-  contactsKey?: keyof T
-  managerId: string | undefined
-  titleForm: string
-}
+  form: UseFormReturn<T>;
+  onSubmit: (data: T) => void;
+  isPending: boolean;
+  contactsKey?: keyof T;
+  managerId: string | undefined;
+  titleForm: string;
+};
 
-const directionOptions = transformObjValueToArr(DirectionRetailLabels)
-const deliveryOptions = transformObjValueToArr(DeliveryRetailLabels)
-const statusOptions = transformObjValueToArr(StatusRetailLabels)
+const directionOptions = transformObjValueToArr(DirectionRetailLabels);
+const deliveryOptions = transformObjValueToArr(DeliveryRetailLabels);
+const statusOptions = transformObjValueToArr(StatusRetailLabels);
 
 const RetailFormBody = <T extends FieldValues>({
   form,
@@ -53,12 +53,12 @@ const RetailFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: RetailFormBodyProps<T>) => {
-  const initialManagersIds = form.getValues("managersIds" as Path<T>)
+  const initialManagersIds = form.getValues("managersIds" as Path<T>);
   const initialManagers = initialManagersIds?.length
     ? initialManagersIds
     : managerId
       ? [{ userId: managerId }]
-      : []
+      : [];
 
   const {
     contacts,
@@ -76,12 +76,13 @@ const RetailFormBody = <T extends FieldValues>({
   } = useSendDealInfo<T>(
     onSubmit,
     managerId,
-    form.getValues("contacts" as Path<T>),
+    form.getValues("additionalContacts" as Path<T>),
     initialManagers,
-  )
+  );
 
-  const getError = (name: keyof T) => form.formState.errors[name]?.message as string
-  const currentStatus = form.watch("dealStatus" as Path<T>)
+  const getError = (name: keyof T) =>
+    form.formState.errors[name]?.message as string;
+  const currentStatus = form.watch("dealStatus" as Path<T>);
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -239,7 +240,9 @@ const RetailFormBody = <T extends FieldValues>({
                       />
                     </FormControl>
                     {getError("comments") && (
-                      <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
+                      <FormMessage className="text-red-500">
+                        {getError("comments")}
+                      </FormMessage>
                     )}
                   </FormItem>
                 )}
@@ -277,7 +280,12 @@ const RetailFormBody = <T extends FieldValues>({
         <div
           className={`min-w-full flex flex-col gap-2 transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
         >
-          <Button onClick={toggleAddContact} size="icon" type="button" variant="outline">
+          <Button
+            onClick={toggleAddContact}
+            size="icon"
+            type="button"
+            variant="outline"
+          >
             <ArrowLeft />
           </Button>
           <ContactDeal
@@ -291,7 +299,7 @@ const RetailFormBody = <T extends FieldValues>({
         </div>
       </Form>
     </MotionDivY>
-  )
-}
+  );
+};
 
-export default RetailFormBody
+export default RetailFormBody;

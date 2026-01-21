@@ -1,41 +1,51 @@
-import type React from "react"
-import { useState } from "react"
-import type { DealType } from "@prisma/client"
-import { animated, useTransition } from "@react-spring/web"
-import { FileWarning } from "lucide-react"
-import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
-import { useDownLoadFile } from "../../hooks/mutate"
-import { useGetHrefFilesDealFromDB } from "../../hooks/query"
-import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid"
-import { getFormatFile } from "../../libs/helpers/getFormatFile"
-import ICONS_TYPE_FILE from "../../libs/iconsTypeFile"
-import type { FileInfo } from "../../types"
-import DeleteFile from "../DeleteFile"
-import DownLoadOrCheckFile from "../DownLoadOrCheckFile"
-import SkeletonFiles from "../SkeletonFiles"
+import type React from "react";
+import { useState } from "react";
+import type { DealType } from "@prisma/client";
+import { animated, useTransition } from "@react-spring/web";
+import { FileWarning } from "lucide-react";
+import IntoDealItem from "@/entities/deal/ui/IntoDealItem";
+import { useDownLoadFile } from "../../hooks/mutate";
+import { useGetHrefFilesDealFromDB } from "../../hooks/query";
+import getFileNameWithoutUuid from "../../libs/helpers/getFileNameWithoutUuid";
+import { getFormatFile } from "../../libs/helpers/getFormatFile";
+import ICONS_TYPE_FILE from "../../libs/iconsTypeFile";
+import type { FileInfo } from "../../types";
+import DeleteFile from "../DeleteFile";
+import DownLoadOrCheckFile from "../DownLoadOrCheckFile";
+import SkeletonFiles from "../SkeletonFiles";
 
 type FileListProps = {
   data: {
-    userId: string
-    dealId: string
-    dealType: DealType
-  } | null
-}
+    userId: string | null;
+    dealId: string;
+    dealType: DealType;
+  } | null;
+};
 
 const FILE_FORMATS = {
-  IMAGE: [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg", ".ico"],
+  IMAGE: [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".tiff",
+    ".webp",
+    ".svg",
+    ".ico",
+  ],
   EXCEL: [".xls", ".xlsx", ".csv"],
   PDF: [".pdf"],
   TEXT: [".txt"],
-}
+};
 
 const getFileType = (format: string) => {
-  if (FILE_FORMATS.IMAGE.includes(format)) return "image"
-  if (FILE_FORMATS.EXCEL.includes(format)) return "excel"
-  if (FILE_FORMATS.PDF.includes(format)) return "pdf"
-  if (FILE_FORMATS.TEXT.includes(format)) return "text"
-  return "other"
-}
+  if (FILE_FORMATS.IMAGE.includes(format)) return "image";
+  if (FILE_FORMATS.EXCEL.includes(format)) return "excel";
+  if (FILE_FORMATS.PDF.includes(format)) return "pdf";
+  if (FILE_FORMATS.TEXT.includes(format)) return "text";
+  return "other";
+};
 
 const fileTypeIcons = {
   image: ICONS_TYPE_FILE[".img"](),
@@ -43,26 +53,26 @@ const fileTypeIcons = {
   pdf: ICONS_TYPE_FILE[".pdf"](),
   text: ICONS_TYPE_FILE[".txt"](),
   other: ICONS_TYPE_FILE.default(),
-}
+};
 
 const FileItem = ({
   file,
   selected,
   onSelect,
 }: {
-  file: FileInfo
-  selected: boolean
-  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+  file: FileInfo;
+  selected: boolean;
+  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
-  const formatFile = getFormatFile(file.name)
-  const fileType = getFileType(formatFile)
-  const fileName = getFileNameWithoutUuid(file.name)
+  const formatFile = getFormatFile(file.name);
+  const fileType = getFileType(formatFile);
+  const fileName = getFileNameWithoutUuid(file.name);
 
-  const { mutate: handleDownload, isPending } = useDownLoadFile()
+  const { mutate: handleDownload, isPending } = useDownLoadFile();
 
   const handleDownloadFile = () => {
-    handleDownload({ localPath: file.localPath, name: file.name })
-  }
+    handleDownload({ localPath: file.localPath, name: file.name });
+  };
 
   const transitions = useTransition(file, {
     keys: (file) => file.name,
@@ -70,7 +80,7 @@ const FileItem = ({
     enter: { opacity: 1, transform: "translateY(0)" },
     leave: { opacity: 0, transform: "translateY(-20px)" },
     config: { duration: 200, easing: (t) => 1 - (1 - t) ** 3 },
-  })
+  });
 
   return transitions((styles, item) => (
     <animated.div
@@ -103,43 +113,49 @@ const FileItem = ({
         />
       )}
     </animated.div>
-  ))
-}
+  ));
+};
 
 const FileList = ({ data }: FileListProps) => {
-  const { data: files, isPending, isError } = useGetHrefFilesDealFromDB(data ? data : undefined)
+  const {
+    data: files,
+    isPending,
+    isError,
+  } = useGetHrefFilesDealFromDB(data ? data : undefined);
 
-  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
 
-  const selectedFilesForDelete = (files ?? []).filter((file) => selectedFiles.has(file.name))
+  const selectedFilesForDelete = (files ?? []).filter((file) =>
+    selectedFiles.has(file.name),
+  );
 
   const handleSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileName = e.target.id
+    const fileName = e.target.id;
 
     setSelectedFiles((prev) => {
-      const updated = new Set(prev)
+      const updated = new Set(prev);
       if (updated.has(fileName)) {
-        updated.delete(fileName)
+        updated.delete(fileName);
       } else {
-        updated.add(fileName)
+        updated.add(fileName);
       }
-      return updated
-    })
-  }
+      return updated;
+    });
+  };
 
   const pendingTransition = useTransition(isPending, {
     from: { opacity: 0, transform: "translateY(20px)" },
     enter: { opacity: 1, transform: "translateY(0)" },
     leave: { opacity: 0, transform: "translateY(-20px)" },
     config: { duration: 200 },
-  })
+  });
 
   const errorTransition = useTransition(isError, {
     from: { opacity: 0, transform: "translateY(20px)" },
     enter: { opacity: 1, transform: "translateY(0)" },
     leave: { opacity: 0, transform: "translateY(-20px)" },
     config: { duration: 200 },
-  })
+  });
 
   const filesTransition = useTransition(files || [], {
     keys: (file) => file?.id ?? file?.name ?? "",
@@ -147,9 +163,9 @@ const FileList = ({ data }: FileListProps) => {
     enter: { opacity: 1, transform: "translateY(0)" },
     leave: { opacity: 0, transform: "translateY(-20px)" },
     config: { duration: 200 },
-  })
+  });
 
-  if (!files || !files?.length) return null
+  if (!files || !files?.length) return null;
 
   return (
     <IntoDealItem className="relative" title="Файлы">
@@ -200,7 +216,7 @@ const FileList = ({ data }: FileListProps) => {
         </animated.div>
       )}
     </IntoDealItem>
-  )
-}
+  );
+};
 
-export default FileList
+export default FileList;

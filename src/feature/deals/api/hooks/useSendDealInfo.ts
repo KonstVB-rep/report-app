@@ -1,42 +1,44 @@
-import { useCallback, useEffect, useState } from "react"
-import { StatusProject, StatusRetail } from "@prisma/client"
-import type { FieldValues } from "react-hook-form"
-import z from "zod"
-import type { Contact } from "@/entities/deal/types"
-import { TOAST } from "@/shared/custom-components/ui/Toast"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import { useCallback, useEffect, useState } from "react";
+import { StatusProject, StatusRetail } from "@prisma/client";
+import type { FieldValues } from "react-hook-form";
+import z from "zod";
+import type { Contact } from "@/entities/deal/types";
+import { TOAST } from "@/shared/custom-components/ui/Toast";
+import { useTypedParams } from "@/shared/hooks/useTypedParams";
 
 const pageParamsSchema = z.object({
   userId: z.string().optional(),
-})
+});
 
 const useSendDealInfo = <T extends FieldValues>(
   onSubmit: (data: T) => void,
   managerId: string,
   additionalContacts: Contact[] = [],
   managersIds: {
-    userId: string
+    userId: string;
   }[] = [],
 ) => {
-  const { userId } = useTypedParams(pageParamsSchema)
+  const { userId } = useTypedParams(pageParamsSchema);
 
-  const firstManagerId = managerId || userId
+  const firstManagerId = managerId || userId;
 
-  const [contacts, setContacts] = useState<Contact[]>([])
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [managers, setManagers] = useState<{ userId: string | undefined }[]>(
     managersIds.length === 0 ? [{ userId: firstManagerId }] : managersIds,
-  )
-  const [firstManager, setFirstManager] = useState<string>("")
-  const [selectedContacts, setSelectedContacts] = useState<Contact[]>([])
-  const [isAddContact, setIsAddContact] = useState(false)
+  );
+  const [firstManager, setFirstManager] = useState<string>("");
+  const [selectedContacts, setSelectedContacts] = useState<Contact[]>([]);
+  const [isAddContact, setIsAddContact] = useState(false);
 
   const handleDeleteContact = useCallback((id: string) => {
-    setSelectedContacts((prevContacts) => prevContacts.filter((contact) => contact.id !== id))
-  }, [])
+    setSelectedContacts((prevContacts) =>
+      prevContacts.filter((contact) => contact.id !== id),
+    );
+  }, []);
 
   const toggleAddContact = () => {
-    setIsAddContact((prev) => !prev)
-  }
+    setIsAddContact((prev) => !prev);
+  };
 
   const handleSubmit = (data: T) => {
     const fullData = {
@@ -48,27 +50,27 @@ const useSendDealInfo = <T extends FieldValues>(
         data.dealStatus !== (StatusProject.REJECT || StatusRetail.REJECT)
           ? data.plannedDateConnection
           : null,
-    }
+    };
 
-    onSubmit(fullData)
-  }
+    onSubmit(fullData);
+  };
 
   useEffect(() => {
     if (!firstManagerId) {
-      TOAST.ERROR("Не назначен ответвенный менеджер")
-      return
+      TOAST.ERROR("Не назначен ответвенный менеджер");
+      return;
     }
-    setFirstManager(firstManagerId)
+    setFirstManager(firstManagerId);
     if (additionalContacts) {
-      setSelectedContacts(additionalContacts)
+      setSelectedContacts(additionalContacts);
     }
-  }, [additionalContacts, firstManagerId])
+  }, [additionalContacts, firstManagerId]);
 
   useEffect(() => {
     if (managersIds?.length > 0) {
-      setManagers(managersIds)
+      setManagers(managersIds);
     }
-  }, [managersIds])
+  }, [managersIds]);
 
   return {
     contacts,
@@ -83,7 +85,7 @@ const useSendDealInfo = <T extends FieldValues>(
     managers,
     firstManager,
     setFirstManager,
-  }
-}
+  };
+};
 
-export default useSendDealInfo
+export default useSendDealInfo;

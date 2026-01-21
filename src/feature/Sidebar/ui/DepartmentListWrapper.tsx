@@ -1,44 +1,47 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo } from "react"
-import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react"
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
-import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
+import { useEffect, useMemo } from "react";
+import { DepartmentEnum } from "@prisma/client";
+import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react";
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks";
+import useStoreDepartment from "@/entities/department/store/useStoreDepartment";
 import type {
   DepartmentInfo,
   DepartmentListItemType,
-  UnionTypeDepartmentsName,
-} from "@/entities/department/types"
-import type { UserResponse } from "@/entities/user/types"
-import { Skeleton } from "@/shared/components/ui/skeleton"
-import DepartmentPersonsList from "./DepartmentPersonsList"
+} from "@/entities/department/types";
+import type { UserResponse } from "@/entities/user/types";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import DepartmentPersonsList from "./DepartmentPersonsList";
 
-// Вынесли объекты наружу, чтобы они не пересоздавались
-const icons = {
-  SALES: <BadgeRussianRuble />,
-  TECHNICAL: <Wrench />,
-  MARKETING: <ChartNoAxesCombined />,
-}
+const icons: Record<DepartmentEnum, React.ReactNode> = {
+  [DepartmentEnum.SALES]: <BadgeRussianRuble />,
+  [DepartmentEnum.TECHNICAL]: <Wrench />,
+  [DepartmentEnum.MARKETING]: <ChartNoAxesCombined />,
+};
 
-const getUrlPath = (depsId: number): Record<UnionTypeDepartmentsName, string> => ({
-  SALES: `/dashboard/table/${depsId}`,
-  TECHNICAL: "",
-  MARKETING: `/dashboard/statistics/request-source`,
-})
+const getUrlPath = (depsId: number): Record<DepartmentEnum, string> => ({
+  [DepartmentEnum.SALES]: `/dashboard/table/${depsId}`,
+  [DepartmentEnum.TECHNICAL]: "",
+  [DepartmentEnum.MARKETING]: `/dashboard/statistics/request-source`,
+});
 
 const DepartmentListWrapper = () => {
-  const { setDepartments } = useStoreDepartment()
-  const { data: departmentData, isLoading, isError } = useGetDepartmentsWithUsers()
+  const { setDepartments } = useStoreDepartment();
+  const {
+    data: departmentData,
+    isLoading,
+    isError,
+  } = useGetDepartmentsWithUsers();
 
   useEffect(() => {
     if (departmentData) {
-      setDepartments(departmentData)
+      setDepartments(departmentData);
     }
-  }, [departmentData, setDepartments])
+  }, [departmentData, setDepartments]);
 
   const navMainItems = useMemo(() => {
     if (!departmentData || !departmentData.length) {
-      return []
+      return [];
     }
     return (departmentData as DepartmentInfo[]).map((dept) => ({
       id: dept.id,
@@ -53,8 +56,8 @@ const DepartmentListWrapper = () => {
         position: person.position,
         url: getUrlPath(person.departmentId)[dept.name],
       })),
-    })) as DepartmentListItemType[]
-  }, [departmentData])
+    })) as DepartmentListItemType[];
+  }, [departmentData]);
 
   if (isLoading) {
     return (
@@ -63,7 +66,7 @@ const DepartmentListWrapper = () => {
           <Skeleton className="h-10 w-full" key={`placeholder-${i}`} />
         ))}
       </div>
-    )
+    );
   }
 
   if (isError) {
@@ -73,7 +76,7 @@ const DepartmentListWrapper = () => {
           Ошибка загрузки отделов
         </p>
       </div>
-    )
+    );
   }
 
   if (!navMainItems.length) {
@@ -81,7 +84,7 @@ const DepartmentListWrapper = () => {
       <div className="p-2">
         <p className="text-sm text-muted-foreground">Нет отделов</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -90,7 +93,7 @@ const DepartmentListWrapper = () => {
         <DepartmentPersonsList item={item} key={item.id} />
       ))}
     </>
-  )
-}
+  );
+};
 
-export default DepartmentListWrapper
+export default DepartmentListWrapper;

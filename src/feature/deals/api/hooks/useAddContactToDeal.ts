@@ -1,19 +1,22 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import { v4 as uuidv4 } from "uuid"
-import { ContactFormSchema, type ContactSchema } from "@/entities/contact/model/schema"
+import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
+import {
+  ContactFormSchema,
+  type ContactSchema,
+} from "@/entities/contact/model/schema";
 
 const useAddContactToDeal = (
-  contacts: ContactSchema["contacts"],
-  onContactsChange: (contacts: ContactSchema["contacts"]) => void,
+  contacts: ContactSchema["additionalContacts"],
+  onContactsChange: (contacts: ContactSchema["additionalContacts"]) => void,
 ) => {
   const form = useForm<ContactSchema>({
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
-      contacts:
+      additionalContacts:
         contacts.length > 0
           ? [...contacts]
           : [
@@ -26,18 +29,18 @@ const useAddContactToDeal = (
               },
             ],
     },
-  })
+  });
 
   const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
-    name: "contacts",
-  })
+    name: "additionalContacts",
+  });
 
-  const { reset } = form
+  const { reset } = form;
 
   useEffect(() => {
     reset({
-      contacts:
+      additionalContacts:
         contacts.length > 0
           ? [...contacts]
           : [
@@ -49,8 +52,8 @@ const useAddContactToDeal = (
                 id: uuidv4(),
               },
             ],
-    })
-  }, [contacts, reset])
+    });
+  }, [contacts, reset]);
 
   const handleAddNewContactForm = () => {
     return append({
@@ -59,11 +62,11 @@ const useAddContactToDeal = (
       phone: "",
       email: "",
       position: "",
-    })
-  }
+    });
+  };
 
   const handleRemove = (index: number) => {
-    remove(index)
+    remove(index);
 
     if (fields.length === 1) {
       append({
@@ -72,10 +75,10 @@ const useAddContactToDeal = (
         phone: "",
         email: "",
         position: "",
-      })
-      onContactsChange([])
+      });
+      onContactsChange([]);
     }
-  }
+  };
 
   const handleRemoveAll = () => {
     replace([
@@ -86,9 +89,9 @@ const useAddContactToDeal = (
         email: "",
         position: "",
       },
-    ])
-    onContactsChange([])
-  }
+    ]);
+    onContactsChange([]);
+  };
 
   return {
     form,
@@ -96,7 +99,7 @@ const useAddContactToDeal = (
     handleAddNewContactForm,
     handleRemoveAll,
     fields,
-  }
-}
+  };
+};
 
-export default useAddContactToDeal
+export default useAddContactToDeal;

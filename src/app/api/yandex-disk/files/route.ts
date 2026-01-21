@@ -1,17 +1,19 @@
-import { connection, NextResponse } from "next/server"
-import { getFiles } from "../yandexDisk"
+import { connection, NextRequest, NextResponse } from "next/server";
+import { getFiles } from "../yandexDisk";
 
-export async function GET(request: Request) {
-  await connection()
+export async function GET(request: NextRequest) {
+  await connection();
 
   try {
-    const { searchParams } = new URL(request.url)
-    const folderPath = searchParams.get("folderPath") || "/"
+    const folderPath = request.nextUrl.searchParams.get("folderPath") || "/";
 
-    const files = await getFiles(folderPath)
-    return NextResponse.json({ files })
+    const files = await getFiles(folderPath);
+    return NextResponse.json({ files });
   } catch (error) {
-    console.error("Ошибка получения файлов:", error)
-    return NextResponse.json({ error: "Ошибка получения файлов" }, { status: 500 })
+    console.error("Ошибка получения файлов:", error);
+    return NextResponse.json(
+      { error: "Ошибка получения файлов" },
+      { status: 500 },
+    );
   }
 }

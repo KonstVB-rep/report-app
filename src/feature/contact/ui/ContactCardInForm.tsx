@@ -1,27 +1,34 @@
-import React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Pen, Trash } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { SingleContactFormSchema, type SingleContactSchema } from "@/entities/contact/model/schema"
-import type { Contact } from "@/entities/deal/types"
-import { Button } from "@/shared/components/ui/button"
-import ContactsDealFormBody from "./ContactsDealFormBody"
+import React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Pen, Trash } from "lucide-react";
+import { useForm } from "react-hook-form";
+import {
+  SingleContactFormSchema,
+  type SingleContactSchema,
+} from "@/entities/contact/model/schema";
+import type { Contact } from "@/entities/deal/types";
+import { Button } from "@/shared/components/ui/button";
+import ContactsDealFormBody from "./ContactsDealFormBody";
 
 interface ContactCardProps {
-  contact: Contact
-  onDelete: (id: string) => void
-  updateContacts: (data: SingleContactSchema) => void
+  contact: Contact;
+  onDelete: (id: string) => void;
+  updateContacts: (data: SingleContactSchema) => void;
 }
 
-const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, updateContacts }) => {
+const ContactCardInForm: React.FC<ContactCardProps> = ({
+  contact,
+  onDelete,
+  updateContacts,
+}) => {
   const fieldsList: { label: string; value?: string | null }[] = [
     { label: "Имя", value: contact.name },
     { label: "Должность", value: contact.position },
     { label: "Телефон", value: contact.phone },
     { label: "Email", value: contact.email },
-  ]
+  ];
 
-  const [editContact, setEditContact] = React.useState(false)
+  const [editContact, setEditContact] = React.useState(false);
 
   const form = useForm<SingleContactSchema>({
     resolver: zodResolver(SingleContactFormSchema),
@@ -32,16 +39,16 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
       position: contact.position,
       id: contact.id,
     },
-  })
+  });
 
   const handleEdit = () => {
-    setEditContact((prev) => !prev)
-  }
+    setEditContact((prev) => !prev);
+  };
 
   const onSubmit = (data: SingleContactSchema) => {
-    updateContacts(data)
-    handleEdit()
-  }
+    updateContacts(data);
+    handleEdit();
+  };
 
   return (
     <div className="flex items-start justify-between gap-2">
@@ -63,7 +70,10 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
                 <Pen />
               </Button>
 
-              <Button className="active:scale-95 transition-transform duration-150" type="submit">
+              <Button
+                className="active:scale-95 transition-transform duration-150"
+                type="submit"
+              >
                 Сохранить
               </Button>
             </div>
@@ -108,7 +118,7 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ContactCardInForm
+export default ContactCardInForm;

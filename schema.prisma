@@ -1,7 +1,6 @@
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -201,8 +200,9 @@ model DealFile {
 
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  @@index([dealId])
-  @@index([userId], map: "File_userId_fkey")
+  @@index([dealId, dealType])
+  
+  @@index([userId])
 }
 
 model UserFilter {
@@ -214,7 +214,10 @@ model UserFilter {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], map: "NO_FK")
+
+  @@unique([userId, filterName]) 
+  @@index([userId])
 }
 
 model EventCalendar {
@@ -290,8 +293,8 @@ model Task {
   departmentId Int
   taskStatus   TaskStatus
   taskPriority TaskPriority
-  assignerId   String?       // теперь nullable
-  executorId   String?       // теперь nullable
+  assignerId   String?       
+  executorId   String?       
   orderTask    Int
   dueDate      DateTime
   startDate    DateTime
