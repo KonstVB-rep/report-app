@@ -1,63 +1,51 @@
-"use client";
+"use client"
 
-import { type Dispatch, type SetStateAction, useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  DeliveryRetail,
-  DirectionRetail,
-  StatusRetail,
-} from "@prisma/client";
-import { type Resolver, useForm } from "react-hook-form";
-import {
-  RetailFormSchema,
-  type RetailSchema,
-} from "@/entities/deal/model/schema";
-import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { formatterCurrency } from "@/shared/lib/utils";
-import { useMutationUpdateRetail } from "../../api/hooks/mutate";
-import { useGetRetailById } from "../../api/hooks/query";
-import { defaultRetailValues } from "../../model/defaultvaluesForm";
-import RetailFormBody from "./RetailFormBody";
+import { type Dispatch, type SetStateAction, useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client"
+import { type Resolver, useForm } from "react-hook-form"
+import { RetailFormSchema, type RetailSchema } from "@/entities/deal/model/schema"
+import FormDealSkeleton from "@/entities/deal/ui/Skeletons/FormDealSkeleton"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { formatterCurrency } from "@/shared/lib/utils"
+import { useMutationUpdateRetail } from "../../api/hooks/mutate"
+import { useGetRetailById } from "../../api/hooks/query"
+import { defaultRetailValues } from "../../model/defaultvaluesForm"
+import RetailFormBody from "./RetailFormBody"
 
 const formatCurrency = (value: string | null | undefined): string => {
-  return formatterCurrency.format(parseFloat(value || "0"));
-};
+  return formatterCurrency.format(parseFloat(value || "0"))
+}
 
 type Props = {
-  close: Dispatch<SetStateAction<void>>;
-  dealId: string;
-  isInvalidate: boolean;
-  titleForm: string;
-};
+  close: Dispatch<SetStateAction<void>>
+  dealId: string
+  isInvalidate: boolean
+  titleForm: string
+}
 
-const EditRetailForm = ({
-  close,
-  dealId,
-  isInvalidate = false,
-  titleForm,
-}: Props) => {
-  const { data, isPending: isLoading } = useGetRetailById(dealId, false);
-  const { authUser } = useStoreUser();
+const EditRetailForm = ({ close, dealId, isInvalidate = false, titleForm }: Props) => {
+  const { data, isPending: isLoading } = useGetRetailById(dealId, false)
+  const { authUser } = useStoreUser()
 
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema) as Resolver<RetailSchema>,
     defaultValues: defaultRetailValues,
-  });
+  })
 
   const { mutateAsync, isPending } = useMutationUpdateRetail(
     dealId,
     data?.userId ?? "",
     close,
     isInvalidate,
-  );
+  )
 
   const onSubmit = (data: RetailSchema) => {
-    TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-  };
+    TOAST.PROMISE(mutateAsync(data), "Данные обновлены")
+  }
 
-  const { reset } = form;
+  const { reset } = form
 
   useEffect(() => {
     if (data && !isLoading) {
@@ -73,21 +61,21 @@ const EditRetailForm = ({
         amountCP: formatCurrency(data.amountCP),
         delta: formatCurrency(data.delta),
         resource: data.resource ?? "",
-        additionalContacts: data?.additionalContacts,
+        contacts: data?.additionalContacts ?? [],
         managersIds: Array.isArray(data.managers)
           ? data.managers.map((manager) => ({ userId: manager.id }))
           : [],
-      };
-      reset(formattedData);
+      }
+      reset(formattedData)
     }
-  }, [reset, data, isLoading]);
+  }, [reset, data, isLoading])
 
-  if (isLoading) return <FormDealSkeleton />;
-  if (!data) return null;
+  if (isLoading) return <FormDealSkeleton />
+  if (!data) return null
 
   return (
     <RetailFormBody
-      contactsKey="additionalContacts"
+      contactsKey="contacts"
       form={form}
       isPending={isPending}
       key={dealId}
@@ -95,7 +83,7 @@ const EditRetailForm = ({
       onSubmit={onSubmit}
       titleForm={titleForm}
     />
-  );
-};
+  )
+}
 
-export default EditRetailForm;
+export default EditRetailForm

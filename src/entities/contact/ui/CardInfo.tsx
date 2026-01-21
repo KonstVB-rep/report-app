@@ -1,27 +1,23 @@
-import { BookUser, ContactRound, Mail, PhoneOutgoing } from "lucide-react";
-import ValueSpan from "@/feature/deals/ui/ValueSpan";
-import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent";
-import { cn } from "@/shared/lib/utils";
-import type { CardInfoType } from "../types";
+import { BookUser, ContactRound, Mail, PhoneOutgoing } from "lucide-react"
+import ValueSpan from "@/feature/deals/ui/ValueSpan"
+import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
+import { cn } from "@/shared/lib/utils"
+import type { CardInfoType } from "../types"
 
 const ICONS = {
   phone: <PhoneOutgoing className="icon-deal_info" strokeWidth={1} />,
   position: <BookUser className="icon-deal_info" strokeWidth={1} />,
   email: <Mail className="icon-deal_info" strokeWidth={1} />,
   name: <ContactRound className="icon-deal_info" strokeWidth={1} />,
-};
+}
 
-const renderValue = (
-  type: CardInfoType,
-  classNameData: string | undefined,
-  data: string,
-) => {
+const renderValue = (type: CardInfoType, classNameData: string | undefined, data: string) => {
   const content = (
     <>
       {ICONS[type]}
       <ValueSpan>{data}</ValueSpan>
     </>
-  );
+  )
 
   if (type === "phone") {
     return (
@@ -31,7 +27,7 @@ const renderValue = (
       >
         {content}
       </a>
-    );
+    )
   }
 
   if (type === "email") {
@@ -42,34 +38,27 @@ const renderValue = (
       >
         {content}
       </a>
-    );
+    )
   }
 
-  return <span className={classNameData}>{content}</span>;
-};
+  return <span className={classNameData}>{content}</span>
+}
 
 type CardInfoProps = {
-  data?: string | null;
-  title: string;
-  classNameData?: string;
-  type?: CardInfoType;
-};
+  data?: string | null
+  title: string
+  classNameData?: string
+  type?: CardInfoType
+}
 
-const CardInfo: React.FC<CardInfoProps> = ({
-  data,
-  title,
-  classNameData,
-  type = "name",
-}) => {
-  if (!data) return null;
+const CardInfo: React.FC<CardInfoProps> = ({ data, title, classNameData, type = "name" }) => {
+  if (!data) return null
 
   return (
     <TooltipComponent content={title}>
-      <p className="flex flex-col gap-2 w-full">
-        {renderValue(type, classNameData, data)}
-      </p>
+      <p className="flex flex-col gap-2 w-full">{renderValue(type, classNameData, data)}</p>
     </TooltipComponent>
-  );
-};
+  )
+}
 
-export default CardInfo;
+export default CardInfo

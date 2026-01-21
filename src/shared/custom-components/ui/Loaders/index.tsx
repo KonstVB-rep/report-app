@@ -9,9 +9,9 @@ export const LoaderCircle = ({
   classSpin?: string
 }) => {
   return (
-    <span className={cn("flex justify-center items-center", className)}>
+    <div className={cn("flex justify-center items-center", className)}>
       <Loader className={cn("animate-spin", classSpin)} />
-    </span>
+    </div>
   )
 }
 

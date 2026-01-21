@@ -1,6 +1,6 @@
 // src/shared/hooks/useTableState.ts
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from "react"
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -10,11 +10,11 @@ import {
   type TableOptions,
   useReactTable,
   type VisibilityState,
-} from "@tanstack/react-table";
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters";
+} from "@tanstack/react-table"
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 
 interface UseTableStateOptions<T> extends Partial<TableOptions<T>> {
-  hiddenColumns?: Partial<Record<string, boolean>>;
+  hiddenColumns?: Partial<Record<string, boolean>>
 }
 
 export const useTableState = <T extends { id: string }>(
@@ -22,9 +22,9 @@ export const useTableState = <T extends { id: string }>(
   columns: ColumnDef<T>[],
   options: UseTableStateOptions<T> = {},
 ) => {
-  const { hiddenColumns, ...tableOptions } = options;
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
+  const { hiddenColumns, ...tableOptions } = options
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({})
 
   const {
     columnFilters,
@@ -40,20 +40,18 @@ export const useTableState = <T extends { id: string }>(
     selectedSearchColumns,
     setSelectedSearchColumns,
     searchableColumns,
-  } = useDataTableFilters();
+  } = useDataTableFilters()
 
   const mergedColumnVisibility = useMemo<VisibilityState>(() => {
     const hiddenColsObj = hiddenColumns
-      ? Object.fromEntries(
-          Object.entries(hiddenColumns).map(([key, value]) => [key, !!value]),
-        )
-      : {};
+      ? Object.fromEntries(Object.entries(hiddenColumns).map(([key, value]) => [key, !!value]))
+      : {}
 
     return {
       ...visibilityFromHook,
       ...hiddenColsObj,
-    };
-  }, [visibilityFromHook, hiddenColumns]);
+    }
+  }, [visibilityFromHook, hiddenColumns])
 
   const tableState = useMemo(
     () => ({
@@ -63,14 +61,8 @@ export const useTableState = <T extends { id: string }>(
       globalFilter,
       columnVisibility: mergedColumnVisibility,
     }),
-    [
-      sorting,
-      rowSelection,
-      columnFilters,
-      globalFilter,
-      mergedColumnVisibility,
-    ],
-  );
+    [sorting, rowSelection, columnFilters, globalFilter, mergedColumnVisibility],
+  )
 
   const table = useReactTable({
     data,
@@ -92,7 +84,7 @@ export const useTableState = <T extends { id: string }>(
     onGlobalFilterChange: setGlobalFilter,
 
     ...tableOptions,
-  });
+  })
 
   const filtersContextValue = useMemo(
     () => ({
@@ -123,7 +115,7 @@ export const useTableState = <T extends { id: string }>(
       setOpenFilters,
       setSelectedSearchColumns,
     ],
-  );
+  )
 
   return {
     table,
@@ -131,5 +123,5 @@ export const useTableState = <T extends { id: string }>(
     openFilters,
     setGlobalFilter,
     globalFilter: table.getState().globalFilter ?? "",
-  };
-};
+  }
+}

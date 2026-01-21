@@ -1,30 +1,30 @@
-"use client";
+"use client"
 
-import { Plus, X } from "lucide-react";
-import dynamic from "next/dynamic";
-import type { ContactSchema } from "@/entities/contact/model/schema";
-import type { Contact, ContactFieldError } from "@/entities/deal/types";
-import { Button } from "@/shared/components/ui/button";
-import { Form } from "@/shared/components/ui/form";
-import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
-import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
-import useAddContactToDeal from "../../deals/api/hooks/useAddContactToDeal";
+import { Plus, X } from "lucide-react"
+import dynamic from "next/dynamic"
+import type { ContactSchema } from "@/entities/contact/model/schema"
+import type { Contact, ContactFieldError } from "@/entities/deal/types"
+import { Button } from "@/shared/components/ui/button"
+import { Form } from "@/shared/components/ui/form"
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm"
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import useAddContactToDeal from "../../deals/api/hooks/useAddContactToDeal"
 
 const ContactsList = dynamic(() => import("./ContactsList"), {
   ssr: false,
   loading: () => <LoaderCircle />,
-});
+})
 
 type ContactDealProps = {
-  contacts: Contact[];
-  onContactsChange: (contacts: Contact[]) => void;
-  contactsKey: string | null | undefined;
-  handleDeleteContact: (id: string) => void;
-  selectedContacts: Contact[];
-  setSelectedContacts: (contacts: Contact[]) => void;
-};
+  contacts: Contact[]
+  onContactsChange: (contacts: Contact[]) => void
+  contactsKey: string | null | undefined
+  handleDeleteContact: (id: string) => void
+  selectedContacts: Contact[]
+  setSelectedContacts: (contacts: Contact[]) => void
+}
 
 const ContactDeal = ({
   contacts = [],
@@ -34,23 +34,17 @@ const ContactDeal = ({
   selectedContacts,
   setSelectedContacts,
 }: ContactDealProps) => {
-  const {
-    form,
-    handleRemove,
-    handleAddNewContactForm,
-    handleRemoveAll,
-    fields,
-  } = useAddContactToDeal(contacts, onContactsChange);
+  const { form, handleRemove, handleAddNewContactForm, handleRemoveAll, fields } =
+    useAddContactToDeal(contacts, onContactsChange)
 
   const onSubmit = (data: ContactSchema) => {
-    const newContacts = data.additionalContacts.filter(
-      (newContact) =>
-        !selectedContacts.some((contact) => contact.id === newContact.id),
-    );
+    const newContacts = data.contacts.filter(
+      (newContact) => !selectedContacts.some((contact) => contact.id === newContact.id),
+    )
 
-    setSelectedContacts([...selectedContacts, ...newContacts]);
-    handleRemoveAll();
-  };
+    setSelectedContacts([...selectedContacts, ...newContacts])
+    handleRemoveAll()
+  }
 
   return (
     <>
@@ -58,44 +52,32 @@ const ContactDeal = ({
         <form className="p-2" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-2 overflow-y-auto max-h-[60vh] pr-2 box-border">
             {fields.map((field, index: number) => (
-              <div
-                className="grid gap-2 rounded border p-4"
-                key={form.watch(`additionalContacts.${index}.id`)}
-              >
+              <div className="grid gap-2 rounded border p-4" key={field.id}>
                 <div className="max-h-full overflow-hidden p-[2px]">
                   <InputTextForm
                     control={form.control}
-                    errorMessage={
-                      form.formState.errors.additionalContacts?.[index]?.name
-                        ?.message
-                    }
+                    errorMessage={form.formState.errors.contacts?.[index]?.name?.message}
                     label=""
-                    name={`additionalContacts.${index}.name`}
+                    name={`contacts.${index}.name`}
                     placeholder="Имя"
                   />
 
                   <InputTextForm
                     control={form.control}
-                    errorMessage={
-                      form.formState.errors.additionalContacts?.[index]
-                        ?.position?.message
-                    }
+                    errorMessage={form.formState.errors.contacts?.[index]?.position?.message}
                     label=""
-                    name={`additionalContacts.${index}.position`}
+                    name={`contacts.${index}.position`}
                     placeholder="Должность"
                   />
 
                   <InputPhoneForm
                     control={form.control}
                     errorMessage={
-                      (
-                        form.formState.errors.additionalContacts?.[
-                          index
-                        ] as ContactFieldError
-                      )?._common?.message
+                      (form.formState.errors.contacts?.[index] as ContactFieldError)?._common
+                        ?.message
                     }
                     label=""
-                    name={`additionalContacts.${index}.phone`}
+                    name={`contacts.${index}.phone`}
                     placeholder="Телефон"
                   />
 
@@ -103,14 +85,11 @@ const ContactDeal = ({
                     className="w-full valid:not-placeholder-shown:border-green-500 invalid:not-placeholder-shown:border-red-500"
                     control={form.control}
                     errorMessage={
-                      (
-                        form.formState.errors.additionalContacts?.[
-                          index
-                        ] as ContactFieldError
-                      )?._common?.message
+                      (form.formState.errors.contacts?.[index] as ContactFieldError)?._common
+                        ?.message
                     }
                     label=""
-                    name={`additionalContacts.${index}.email`}
+                    name={`contacts.${index}.email`}
                     placeholder="Email"
                     type="email"
                   />
@@ -157,10 +136,7 @@ const ContactDeal = ({
           classNameContent="sm:max-w-[600px] max-h-[82vh] overflow-y-auto"
           dialogTitle="Контакты"
           trigger={
-            <Button
-              className="!relative flex w-fit gap-2 p-2"
-              variant="outline"
-            >
+            <Button className="!relative flex w-fit gap-2 p-2" variant="outline">
               Дополнительные контакты
               <span className="absolute -top-2 -right-2 p-[2px] dark:bg-black border border-solid border-primary rounded-full w-5 h-5 flex items-center justify-center">
                 {selectedContacts.length}
@@ -178,7 +154,7 @@ const ContactDeal = ({
         </DialogComponent>
       )}
     </>
-  );
-};
+  )
+}
 
-export default ContactDeal;
+export default ContactDeal

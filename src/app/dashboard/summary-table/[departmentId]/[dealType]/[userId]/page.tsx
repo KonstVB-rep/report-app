@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { notFound } from "next/navigation"
 import { getQueryClient } from "@/app/provider/query-provider"
@@ -7,57 +6,52 @@ import {
   getAllRetailsByDepartmentQuery,
 } from "@/entities/deal/api/queryFn"
 import type { ProjectResponse, RetailResponse } from "@/entities/deal/types"
-import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import SummaryDealsTable from "@/widgets/deal/ui/SummaryDealsTable"
 
-const QUERY_CONFIG: Record<
-  string,
-  {
-    fn: (id: number) => Promise<ProjectResponse[] | RetailResponse[]>
-    key: string
-  }
-> = {
+type DealResponse = ProjectResponse[] | RetailResponse[]
+
+const DEAL_RESOLVER = {
   projects: {
-    fn: getAllProjectsByDepartmentQuery,
+    fetcher: getAllProjectsByDepartmentQuery,
     key: "all-projects",
   },
   retails: {
-    fn: getAllRetailsByDepartmentQuery,
+    fetcher: getAllRetailsByDepartmentQuery,
     key: "all-retails",
   },
-}
+} as const
+
+type DealTypeTable = keyof typeof DEAL_RESOLVER
 
 const SummaryTablePage = async ({
   params,
 }: {
   params: Promise<{ dealType: string; userId: string; departmentId: string }>
 }) => {
-  const { dealType, departmentId: depIdStr } = await params
-  const departmentId = Number(depIdStr)
+  const { dealType, departmentId } = await params
+  const depNumId = Number(departmentId)
 
-  if (Number.isNaN(departmentId)) {
+  if (Number.isNaN(depNumId)) {
     return notFound()
   }
 
-  const queryConfig = QUERY_CONFIG[dealType]
-
-  if (!queryConfig) {
-    notFound()
+  if (!(dealType in DEAL_RESOLVER)) {
+    return notFound()
   }
 
+  const currentType = dealType as DealTypeTable
+  const strategy = DEAL_RESOLVER[currentType]
   const queryClient = getQueryClient()
 
-  await queryClient.prefetchQuery({
-    queryKey: [queryConfig.key, departmentId],
-    queryFn: () => queryConfig.fn(departmentId),
-    staleTime: 60 * 1000,
+  await queryClient.prefetchQuery<DealResponse>({
+    queryKey: [strategy.key, depNumId],
+    queryFn: () => strategy.fetcher(depNumId) as Promise<DealResponse>,
+    staleTime: 1000 * 60 * 5,
   })
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<LoaderCircleInWater />}>
-        <SummaryDealsTable />
-      </Suspense>
+      <SummaryDealsTable />
     </HydrationBoundary>
   )
 }

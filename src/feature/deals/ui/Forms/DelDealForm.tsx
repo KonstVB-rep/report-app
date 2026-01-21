@@ -15,10 +15,9 @@ type Props = {
   id: string
   type: DealType
   close: Dispatch<SetStateAction<void>>
-  clearData?: () => void
 }
 
-const DelDealForm = ({ id, type, close, clearData }: Props) => {
+const DelDealForm = ({ id, type, close }: Props) => {
   const { data: deal, isPending: isLoadInfoAboutDeal } = useGetDealById(id, type)
 
   const userId = deal?.userId ?? ""
@@ -27,22 +26,18 @@ const DelDealForm = ({ id, type, close, clearData }: Props) => {
 
   const { mutate: delDeal, isPending } = useDelDeal(
     () => {
-      if (hasFiles) {
-        delFiles(dealFiles)
+      if (!hasFiles) {
         close()
         return
-      } else {
-        if (clearData) {
-          clearData()
-        }
-        close()
       }
+
+      mutate(dealFiles)
     },
     type,
     userId,
   )
 
-  const { mutate: delFiles, isPending: isPendingDelete } = useDeleteFiles()
+  const { mutate, isPending: isPendingDelete } = useDeleteFiles(() => close)
 
   const isLoading = isPending || isPendingDelete
 

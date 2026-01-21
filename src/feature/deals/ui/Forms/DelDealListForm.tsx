@@ -13,24 +13,21 @@ import { useDelListDeal } from "../../api/hooks/mutate"
 type Props = {
   deals: DeletingDealsListItem[]
   close: Dispatch<SetStateAction<void>>
-  clearSelection: () => void
 }
 
-const DelDealListForm = ({ deals, close, clearSelection }: Props) => {
+const DelDealListForm = ({ deals, close }: Props) => {
   const { mutate: delDeals, isPending } = useDelListDeal((dataFiles: DealFile[]) => {
-    if (dataFiles?.length > 0) {
-      delFiles(dataFiles)
+    if (!dataFiles) {
       close()
       return
-    } else {
-      clearSelection()
-      close()
     }
+
+    mutate(dataFiles)
   })
 
-  const { mutate: delFiles, isPending: isPendingFiles } = useDeleteFiles()
+  const { mutate, isPending: isPendingDelete } = useDeleteFiles(() => close)
 
-  const isLoading = isPending || isPendingFiles
+  const isLoading = isPending || isPendingDelete
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -44,7 +41,7 @@ const DelDealListForm = ({ deals, close, clearSelection }: Props) => {
         <p className="text-center">Вы точно уверены что хотите удалить данные</p>
         <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold break-all max-h-60 overflow-y-auto">
           {deals.map((deal) => (
-            <span key={deal.id}> &quot;{deal?.title}&quot;?</span>
+            <> &quot;{deal?.title}&quot;?</>
           ))}
         </p>
         <p className="text-center">Их нельзя будет восстановить!</p>

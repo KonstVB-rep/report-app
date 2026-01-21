@@ -1,27 +1,24 @@
 /*/src\app\api\yandex-disk\download\route.ts*/
-import axios from "axios";
-import mime from "mime-types";
-import { connection, NextRequest, NextResponse } from "next/server";
-import { downloadFileFromYandexDisk } from "../yandexDisk";
-import { getErrorMessageDownloadByCode } from "./getErrorMessageDownloadByCode";
+import axios from "axios"
+import mime from "mime-types"
+import { connection, type NextRequest, NextResponse } from "next/server"
+import { downloadFileFromYandexDisk } from "../yandexDisk"
+import { getErrorMessageDownloadByCode } from "./getErrorMessageDownloadByCode"
 
 export async function GET(request: NextRequest) {
-  await connection();
+  await connection()
 
   try {
-    const filePath = request.nextUrl.searchParams.get("filePath");
+    const filePath = request.nextUrl.searchParams.get("filePath")
 
     if (!filePath || typeof filePath !== "string") {
-      return NextResponse.json(
-        { error: "Не указан путь к файлу." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Не указан путь к файлу." }, { status: 400 })
     }
 
-    const fileBuffer = await downloadFileFromYandexDisk(filePath); // Uint8Array
-    const buffer = Buffer.from(fileBuffer);
-    const fileName = filePath.split("/").pop() || "file";
-    const contentType = mime.lookup(fileName) || "application/octet-stream";
+    const fileBuffer = await downloadFileFromYandexDisk(filePath) // Uint8Array
+    const buffer = Buffer.from(fileBuffer)
+    const fileName = filePath.split("/").pop() || "file"
+    const contentType = mime.lookup(fileName) || "application/octet-stream"
 
     return new NextResponse(buffer, {
       status: 200,
@@ -30,23 +27,21 @@ export async function GET(request: NextRequest) {
         "Content-Disposition": `attachment; filename="${encodeURIComponent(fileName)}"`,
         "Content-Length": fileBuffer.byteLength.toString(),
       },
-    });
+    })
   } catch (error) {
-    console.error("Ошибка скачивания файла:", error);
+    console.error("Ошибка скачивания файла:", error)
 
     if (axios.isAxiosError(error)) {
-      const statusCode = error.response?.status ?? 500;
+      const statusCode = error.response?.status ?? 500
       return NextResponse.json(
         { error: getErrorMessageDownloadByCode(statusCode) },
         { status: statusCode },
-      );
+      )
     }
 
     const message =
-      error instanceof Error
-        ? error.message
-        : "Неизвестная ошибка при скачивании файла";
+      error instanceof Error ? error.message : "Неизвестная ошибка при скачивании файла"
 
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

@@ -1,20 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react"
 
 const useScrollIntoViewBottom = <E extends HTMLElement = HTMLDivElement>() => {
-  const ref = useRef<E>(null);
+  const ref = useRef<E>(null)
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       ref.current?.scrollTo?.({
         top: ref.current.scrollHeight,
         behavior: "smooth",
-      });
-    }, 100);
+      })
+    }, 100)
 
-    return () => clearTimeout(timeoutId);
-  }, []);
+    return () => clearTimeout(timeoutId)
+  }, [])
 
-  return ref;
-};
+  return ref
+}
 
-export default useScrollIntoViewBottom;
+export default useScrollIntoViewBottom

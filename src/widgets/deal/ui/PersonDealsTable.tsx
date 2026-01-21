@@ -68,9 +68,8 @@ const PersonDealsTable = () => {
 
   const hasAccess = hasAccessToData(userId as string, PermissionEnum.VIEW_USER_REPORT)
 
-  const { data = [], isLoading } = useDealsUser(dealType as TableType, userId as string, {
-    enabled: hasAccess,
-  })
+  const { data = [], isLoading } = useDealsUser(dealType as TableType, userId as string)
+
   if (!hasAccess)
     return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
 

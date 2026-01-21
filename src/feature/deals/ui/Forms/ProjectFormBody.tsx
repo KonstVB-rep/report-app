@@ -1,24 +1,21 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
-import { StatusProject } from "@prisma/client";
-import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react"
+import { StatusProject } from "@prisma/client"
+import { ArrowLeft } from "lucide-react"
 import {
   type FieldValues,
   type Path,
   type PathValue,
   type UseFormReturn,
   useWatch,
-} from "react-hook-form";
-import z from "zod";
-import { UnionDealTypeParams } from "@/entities/deal/lib/constants";
-import {
-  formatNumber,
-  parseFormattedNumber,
-} from "@/entities/deal/lib/helpers";
-import type { Contact } from "@/entities/deal/types";
-import ContactDeal from "@/feature/contact/ui/ContactDeal";
-import { Button } from "@/shared/components/ui/button";
+} from "react-hook-form"
+import z from "zod"
+import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
+import { formatNumber, parseFormattedNumber } from "@/entities/deal/lib/helpers"
+import type { Contact } from "@/entities/deal/types"
+import ContactDeal from "@/feature/contact/ui/ContactDeal"
+import { Button } from "@/shared/components/ui/button"
 import {
   Form,
   FormControl,
@@ -26,51 +23,51 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-import { Textarea } from "@/shared/components/ui/textarea";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
-import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField";
-import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm";
-import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm";
-import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
-import Overlay from "@/shared/custom-components/ui/Overlay";
-import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField";
-import { useTypedParams } from "@/shared/hooks/useTypedParams";
-import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr";
-import useSendDealInfo from "../../api/hooks/useSendDealInfo";
+} from "@/shared/components/ui/form"
+import { Textarea } from "@/shared/components/ui/textarea"
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
+import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField"
+import InputNumberForm from "@/shared/custom-components/ui/Inputs/InputNumberForm"
+import InputPhoneForm from "@/shared/custom-components/ui/Inputs/InputPhoneForm"
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
+import Overlay from "@/shared/custom-components/ui/Overlay"
+import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
+import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
+import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
   StatusContractLabels,
   StatusProjectLabels,
-} from "../../lib/constants";
-import AddManagerToDeal from "../Modals/AddManagerToDeal";
+} from "../../lib/constants"
+import AddManagerToDeal from "../Modals/AddManagerToDeal"
 
 type ProjectFormBodyProps<T extends FieldValues> = {
-  form: UseFormReturn<T>;
-  onSubmit: (data: T) => void;
-  isPending: boolean;
-  contactsKey?: keyof T;
-  managerId: string | undefined;
-  titleForm: string;
-};
+  form: UseFormReturn<T>
+  onSubmit: (data: T) => void
+  isPending: boolean
+  contactsKey?: keyof T
+  managerId: string | undefined
+  titleForm: string
+}
 
-const directionOptions = transformObjValueToArr(DirectionProjectLabels);
-const deliveryOptions = transformObjValueToArr(DeliveryProjectLabels);
-const statusOptionsProject = transformObjValueToArr(StatusProjectLabels);
-const statusOptionsContracts = transformObjValueToArr(StatusContractLabels);
+const directionOptions = transformObjValueToArr(DirectionProjectLabels)
+const deliveryOptions = transformObjValueToArr(DeliveryProjectLabels)
+const statusOptionsProject = transformObjValueToArr(StatusProjectLabels)
+const statusOptionsContracts = transformObjValueToArr(StatusContractLabels)
 
 const statusOptions = {
   projects: statusOptionsProject,
   project: statusOptionsProject,
   contracts: statusOptionsContracts,
   contract: statusOptionsContracts,
-};
+}
 
 const pageParamsSchema = z.object({
   dealType: z.enum(UnionDealTypeParams),
-});
+})
 
 const ProjectFormBody = <T extends FieldValues>({
   form,
@@ -80,14 +77,14 @@ const ProjectFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: ProjectFormBodyProps<T>) => {
-  const { dealType } = useTypedParams(pageParamsSchema);
+  const { dealType } = useTypedParams(pageParamsSchema)
 
-  const initialManagersIds = form.getValues("managersIds" as Path<T>);
+  const initialManagersIds = form.getValues("managersIds" as Path<T>)
   const initialManagers = initialManagersIds?.length
     ? initialManagersIds
     : managerId
       ? [{ userId: managerId }]
-      : [];
+      : []
 
   const {
     contacts,
@@ -105,52 +102,45 @@ const ProjectFormBody = <T extends FieldValues>({
   } = useSendDealInfo<T>(
     onSubmit,
     managerId,
-    form.getValues("additionalContacts" as Path<T>),
+    form.getValues("contacts" as Path<T>),
     initialManagers,
-  );
+  )
 
   const watchedValues = useWatch({
     control: form.control,
     name: ["amountCP", "amountWork", "amountPurchase"] as Path<T>[],
-  });
+  })
 
   useEffect(() => {
-    if (!watchedValues) return;
+    if (!watchedValues) return
 
-    const [amountCP = "0", amountWork = "0", amountPurchase = "0"] =
-      watchedValues || [];
-    const parsedAmountCP = parseFormattedNumber(amountCP);
-    const parsedAmountWork = parseFormattedNumber(amountWork);
-    const parsedAmountPurchase = parseFormattedNumber(amountPurchase);
+    const [amountCP = "0", amountWork = "0", amountPurchase = "0"] = watchedValues || []
+    const parsedAmountCP = parseFormattedNumber(amountCP)
+    const parsedAmountWork = parseFormattedNumber(amountWork)
+    const parsedAmountPurchase = parseFormattedNumber(amountPurchase)
 
     if (
       Number.isNaN(parsedAmountCP) ||
       Number.isNaN(parsedAmountWork) ||
       Number.isNaN(parsedAmountPurchase)
     )
-      return;
+      return
 
-    if (parsedAmountCP === 0) return;
+    if (parsedAmountCP === 0) return
 
-    const calculatedDelta =
-      parsedAmountCP - parsedAmountWork - parsedAmountPurchase;
+    const calculatedDelta = parsedAmountCP - parsedAmountWork - parsedAmountPurchase
 
-    const calculateDeltaFixed = Number(calculatedDelta.toFixed(2));
+    const calculateDeltaFixed = Number(calculatedDelta.toFixed(2))
 
-    form.setValue(
-      "delta" as Path<T>,
-      formatNumber(calculateDeltaFixed) as PathValue<T, Path<T>>,
-      {
-        shouldValidate: true,
-        shouldDirty: true,
-      },
-    );
-  }, [form, watchedValues]);
+    form.setValue("delta" as Path<T>, formatNumber(calculateDeltaFixed) as PathValue<T, Path<T>>, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+  }, [form, watchedValues])
 
-  const getError = (name: keyof T) =>
-    form.formState.errors[name]?.message as string;
+  const getError = (name: keyof T) => form.formState.errors[name]?.message as string
 
-  const currentStatus = form.watch("dealStatus" as Path<T>);
+  const currentStatus = form.watch("dealStatus" as Path<T>)
 
   return (
     <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
@@ -286,9 +276,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("dealStatus")}
                   label="Статус КП"
                   name={"dealStatus" as Path<T>}
-                  options={
-                    statusOptions[dealType as keyof typeof statusOptions]
-                  }
+                  options={statusOptions[dealType as keyof typeof statusOptions]}
                   placeholder="Выберите статус КП"
                 />
 
@@ -330,9 +318,7 @@ const ProjectFormBody = <T extends FieldValues>({
                       </FormControl>
 
                       {getError("comments") && (
-                        <FormMessage className="text-red-500">
-                          {getError("comments")}
-                        </FormMessage>
+                        <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
                       )}
                     </FormItem>
                   )}
@@ -369,12 +355,7 @@ const ProjectFormBody = <T extends FieldValues>({
         <div
           className={`min-w-full flex flex-col gap-2 trаnsform ${isAddContact ? "-translate-x-full" : "translate-x-0"} duration-150`}
         >
-          <Button
-            onClick={toggleAddContact}
-            size="icon"
-            type="button"
-            variant="outline"
-          >
+          <Button onClick={toggleAddContact} size="icon" type="button" variant="outline">
             <ArrowLeft />
           </Button>
 
@@ -389,7 +370,7 @@ const ProjectFormBody = <T extends FieldValues>({
         </div>
       </Form>
     </MotionDivY>
-  );
-};
+  )
+}
 
-export default ProjectFormBody;
+export default ProjectFormBody

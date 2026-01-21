@@ -20,11 +20,15 @@ const DelDealContextMenu = ({
   type: DealType
 }) => {
   return (
-    <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
-      <ModalContent className="sm:max-w-[400px]" title="Удалить проект">
-        <DelDealForm close={close} id={id} type={type} />
-      </ModalContent>
-    </ProtectedByPermissions>
+    <tr className="hidden">
+      <td>
+        <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
+          <ModalContent className="sm:max-w-[400px]" title="Удалить проект">
+            <DelDealForm close={close} id={id} type={type} />
+          </ModalContent>
+        </ProtectedByPermissions>
+      </td>
+    </tr>
   )
 }
 

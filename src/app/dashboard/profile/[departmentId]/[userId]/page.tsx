@@ -1,42 +1,42 @@
-"use client";
+"use client"
 
-import { PermissionEnum } from "@prisma/client";
-import dynamic from "next/dynamic";
-import z from "zod";
-import { DepartmentLabels } from "@/entities/department/lib/constants";
-import { useGetUser } from "@/feature/user/hooks/query";
-import Contacts from "@/shared/custom-components/ui/Contacts";
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions";
-import UserCard from "@/shared/custom-components/ui/UserCard";
-import { useTypedParams } from "@/shared/hooks/useTypedParams";
-import ProfileDealsData from "./ui/ProfileDealsData";
+import { PermissionEnum } from "@prisma/client"
+import dynamic from "next/dynamic"
+import z from "zod"
+import { DepartmentLabels } from "@/entities/department/lib/constants"
+import { useGetUser } from "@/feature/user/hooks/query"
+import Contacts from "@/shared/custom-components/ui/Contacts"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import UserCard from "@/shared/custom-components/ui/UserCard"
+import { useTypedParams } from "@/shared/hooks/useTypedParams"
+import ProfileDealsData from "./ui/ProfileDealsData"
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/custom-components/ui/AccessDeniedMessage"),
   { ssr: false },
-);
+)
 
-const Loading = dynamic(() => import("./loading"), { ssr: false });
+const Loading = dynamic(() => import("./loading"), { ssr: false })
 
-const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false });
+const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false })
 
 const pageParamsSchema = z.object({
   userId: z.string(),
-});
+})
 
 const ProfilePage = () => {
-  const { userId } = useTypedParams(pageParamsSchema);
+  const { userId } = useTypedParams(pageParamsSchema)
 
-  const { data: user, error, isPending } = useGetUser(userId);
+  const { data: user, error, isPending } = useGetUser(userId)
 
-  if (isPending) return <Loading />;
+  if (isPending) return <Loading />
 
   if (error) {
-    return <AccessDeniedMessage error={error} />;
+    return <AccessDeniedMessage error={error} />
   }
 
   if (!user) {
-    return <NotFoundUser />;
+    return <NotFoundUser />
   }
 
   return (
@@ -46,9 +46,7 @@ const ProfilePage = () => {
           <div className="flex flex-col justify-between gap-2">
             <UserCard
               departmentName={
-                DepartmentLabels[
-                  user?.departmentName as keyof typeof DepartmentLabels
-                ]
+                DepartmentLabels[user?.departmentName as keyof typeof DepartmentLabels]
               }
               position={user?.position}
               username={user?.username}
@@ -56,9 +54,7 @@ const ProfilePage = () => {
 
             <div className="flex flex-col gap-2">
               <p className="flex items-center justify-start gap-4 rounded-md border border-solid p-2">
-                <span className="first-letter:capitalize">
-                  Дата регистрации:
-                </span>
+                <span className="first-letter:capitalize">Дата регистрации:</span>
                 <span>{user?.createdAt?.toLocaleDateString()}</span>
               </p>
 
@@ -74,11 +70,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="flex gap-2 rounded-md w-full items-center ">
-              <Contacts
-                className="rounded-full"
-                email={user?.email}
-                phone={user?.phone}
-              />
+              <Contacts className="rounded-full" email={user?.email} phone={user?.phone} />
             </div>
           </div>
         </div>
@@ -92,7 +84,7 @@ const ProfilePage = () => {
         </ProtectedByPermissions>
       )}
     </section>
-  );
-};
+  )
+}
 
-export default ProfilePage;
+export default ProfilePage

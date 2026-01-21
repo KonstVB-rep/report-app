@@ -1,26 +1,26 @@
-import type { TaskPriority, TaskStatus } from "@prisma/client";
+import type { TaskPriority, TaskStatus } from "@prisma/client"
 
 type UserInTask = {
-  username: string;
-  position: string;
-  email: string;
-};
+  username: string
+  position: string
+  email: string
+}
 
 export type TaskWithUserInfo = {
-  id: string;
-  title: string;
-  description: string;
-  taskStatus: TaskStatus;
-  taskPriority: TaskPriority;
-  assignerId: string | null;
-  executorId: string | null;
-  orderTask: number;
-  departmentId: number;
-  dueDate: Date;
-  startDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  title: string
+  description: string
+  taskStatus: TaskStatus
+  taskPriority: TaskPriority
+  assignerId: string | null
+  executorId: string | null
+  orderTask: number
+  departmentId: number
+  dueDate: Date
+  startDate: Date
+  createdAt: Date
+  updatedAt: Date
 
-  assigner: UserInTask | null;
-  executor: UserInTask | null;
-};
+  assigner: UserInTask | null
+  executor: UserInTask | null
+}

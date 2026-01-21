@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import useStoreUser from "@/entities/user/store/useStoreUser";
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import useStoreUser from "@/entities/user/store/useStoreUser"
 
 export const useRequireAuth = () => {
-  const { authUser } = useStoreUser();
-  const router = useRouter();
+  const { authUser } = useStoreUser()
+  const router = useRouter()
 
   useEffect(() => {
     if (!authUser) {
-      router.replace("/login");
+      router.replace("/login")
     }
-  }, [authUser, router]);
+  }, [authUser, router])
 
-  return authUser;
-};
+  return authUser
+}

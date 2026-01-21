@@ -49,10 +49,10 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
           <p className="text-xs">Дата: {formattedDate}</p>
         </div>
-        <SettingDeal id={deal.id} type={deal.type} userId={deal.userId} />
+        <SettingDeal id={deal.id} type={deal.type} userId={deal?.userId || "Не назначен"} />
       </div>
 
-      <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
+      <ManagersListByDeal managers={deal.managers} userId={deal?.userId || "Не назначен"} />
 
       <div className="grid gap-2">
         {deal?.plannedDateConnection && (

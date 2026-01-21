@@ -62,13 +62,17 @@ const RetailItemInfo = ({ dealId }: { dealId: string }) => {
         </div>
 
         <div className="flex justify-end gap-2">
-          <FileUploadForm dealId={dealId as string} dealType="RETAIL" userId={deal.userId} />
+          <FileUploadForm
+            dealId={dealId as string}
+            dealType="RETAIL"
+            userId={deal?.userId || "Не назначен"}
+          />
           <EditDealButtonIcon id={deal.id} type={deal.type} />
           <DelButtonDeal id={deal.id} type={deal.type} />
         </div>
       </div>
 
-      <ManagersListByDeal managers={deal.managers} userId={deal.userId} />
+      <ManagersListByDeal managers={deal.managers} userId={deal?.userId || "Не назначен"} />
 
       <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[1fr_2fr]">
         <div className="grid-rows-auto grid gap-2">

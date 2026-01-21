@@ -1,13 +1,13 @@
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react"
 
 type Props = {
-  email: string;
-  phone: string;
-  className: string;
-};
+  email: string
+  phone: string
+  className: string
+}
 
 const Contacts = ({ email, phone, className }: Props) => {
-  const baseClass = `flex h-14 flex-1 shrink-0 sm:aspect-square items-center justify-center border border-solid border-transparent bg-muted p-2.5 ${className}`;
+  const baseClass = `flex h-14 flex-1 shrink-0 sm:aspect-square items-center justify-center border border-solid border-transparent bg-muted p-2.5 ${className}`
 
   return (
     <>
@@ -49,7 +49,7 @@ const Contacts = ({ email, phone, className }: Props) => {
         </>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Contacts;
+export default Contacts

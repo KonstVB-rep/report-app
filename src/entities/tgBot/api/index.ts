@@ -497,105 +497,96 @@
 //     throw error
 //   }
 // }
-"use server";
+"use server"
 
-import { Prisma, type UserTelegramChat } from "@prisma/client";
-import { revalidatePath } from "next/cache";
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization";
-import { prisma } from "@/prisma/prisma-client";
-import { checkRole } from "@/shared/api/checkByServer";
-import { handleError } from "@/shared/api/handleError";
-import type { SuccessResponse } from "@/shared/types";
-import type { BotWithChats } from "../types";
+import { Prisma, type UserTelegramChat } from "@prisma/client"
+import { revalidatePath } from "next/cache"
+import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { prisma } from "@/prisma/prisma-client"
+import { checkRole } from "@/shared/api/checkByServer"
+import { handleError } from "@/shared/api/handleError"
+import type { SuccessResponse } from "@/shared/types"
+import type { BotWithChats } from "../types"
 
 const ensureAuthorized = async () => {
-  await handleAuthorization();
-  await checkRole();
-};
+  await handleAuthorization()
+  await checkRole()
+}
 
 // --- Actions ---
 
-export const createTelegramBot = async (
-  botName: string,
-  token: string,
-  description: string,
-) => {
+export const createTelegramBot = async (botName: string, token: string, description: string) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     const existingBot = await prisma.telegramBot.findFirst({
       where: {
         OR: [{ botName }, { token }],
       },
       select: { id: true },
-    });
+    })
 
     if (existingBot) {
-      throw new Error("Бот с таким именем или токеном уже существует");
+      throw new Error("Бот с таким именем или токеном уже существует")
     }
 
     return await prisma.telegramBot.create({
       data: { botName, token, description },
       include: { chats: true },
-    });
+    })
   } catch (error) {
-    console.error("createTelegramBot error:", error);
-    throw handleError(
-      error instanceof Error ? error.message : "Ошибка создания Telegram бота",
-    );
+    console.error("createTelegramBot error:", error)
+    throw handleError(error instanceof Error ? error.message : "Ошибка создания Telegram бота")
   }
-};
+}
 
 export const deleteTelegramBot = async (botName: string, token: string) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     const result = await prisma.$transaction(async (tx) => {
       const bot = await tx.telegramBot.findUnique({
         where: { botName },
-      });
+      })
 
-      if (!bot) throw new Error("Телеграм бот не найден");
-      if (bot.token !== token)
-        throw new Error("Неверный токен для данного бота");
+      if (!bot) throw new Error("Телеграм бот не найден")
+      if (bot.token !== token) throw new Error("Неверный токен для данного бота")
 
       await tx.userTelegramChat.deleteMany({
         where: { botId: bot.id },
-      });
+      })
 
       return await tx.telegramBot.delete({
         where: { id: bot.id },
-      });
-    });
+      })
+    })
 
-    return result;
+    return result
   } catch (error) {
-    console.error("deleteTelegramBot error:", error);
-    throw handleError(
-      error instanceof Error ? error.message : "Ошибка удаления Telegram бота",
-    );
+    console.error("deleteTelegramBot error:", error)
+    throw handleError(error instanceof Error ? error.message : "Ошибка удаления Telegram бота")
   }
-};
+}
 
 export const getAllChats = async () => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
     return await prisma.userTelegramChat.findMany({
       select: {
         chatName: true,
         id: true,
       },
-    });
+    })
   } catch (error) {
-    console.error("getAllChats error:", error);
+    console.error("getAllChats error:", error)
 
-    throw handleError("Произошла ошибка при получении чатов");
+    throw handleError("Произошла ошибка при получении чатов")
   }
-};
+}
 
 export const getAllBots = async (): Promise<BotWithChats[]> => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     const bots = await prisma.telegramBot.findMany({
       include: {
@@ -611,22 +602,18 @@ export const getAllBots = async (): Promise<BotWithChats[]> => {
           },
         },
       },
-    });
+    })
 
-    return bots;
+    return bots
   } catch (error) {
-    console.error("getAllBots error:", error);
-    throw handleError(
-      error instanceof Error
-        ? error.message
-        : "Ошибка получения Telegram ботов",
-    );
+    console.error("getAllBots error:", error)
+    throw handleError(error instanceof Error ? error.message : "Ошибка получения Telegram ботов")
   }
-};
+}
 
 export const getChatsByBotId = async (botId: string) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
     return await prisma.userTelegramChat.findMany({
       where: { botId },
       include: {
@@ -634,40 +621,38 @@ export const getChatsByBotId = async (botId: string) => {
         user: true,
         bot: true,
       },
-    });
+    })
   } catch (error) {
-    console.error("getChatsByBotId error:", error);
-    throw handleError(
-      error instanceof Error ? error.message : "Ошибка при получении чатов",
-    );
+    console.error("getChatsByBotId error:", error)
+    throw handleError(error instanceof Error ? error.message : "Ошибка при получении чатов")
   }
-};
+}
 
 export const createUserTelegramChat = async (
   userId: string,
   botName: string,
   chatId: string,
   telegramUserInfoData: {
-    tgUserId: string;
-    tgUserName?: string;
-    firstName?: string;
-    lastName?: string;
-    languageCode?: string;
-    isBot?: boolean;
+    tgUserId: string
+    tgUserName?: string
+    firstName?: string
+    lastName?: string
+    languageCode?: string
+    isBot?: boolean
   },
   chatName: string,
   isActive = true,
 ): Promise<SuccessResponse> => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     const bot = await prisma.telegramBot.findUnique({
       where: { botName },
       select: { id: true },
-    });
+    })
 
     if (!bot) {
-      return { success: false, message: "Бот не найден в системе" };
+      return { success: false, message: "Бот не найден в системе" }
     }
 
     const telegramUserInfo = await prisma.telegramUserInfo.upsert({
@@ -677,7 +662,7 @@ export const createUserTelegramChat = async (
         ...telegramUserInfoData,
         userId: userId,
       },
-    });
+    })
 
     await prisma.userTelegramChat.create({
       data: {
@@ -688,35 +673,32 @@ export const createUserTelegramChat = async (
         chatName,
         isActive,
       },
-    });
+    })
 
-    return { success: true, message: "Чат успешно создан" };
+    return { success: true, message: "Чат успешно создан" }
   } catch (error) {
-    console.error("createUserTelegramChat error:", error);
+    console.error("createUserTelegramChat error:", error)
 
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      return { success: false, message: "Чат уже существует" };
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return { success: false, message: "Чат уже существует" }
     }
 
-    return { success: false, message: "Ошибка создания Telegram чата" };
+    return { success: false, message: "Ошибка создания Telegram чата" }
   }
-};
+}
 
 export const updateUserTelegramChat = async (data: {
-  botId: string;
-  chatId: string;
-  chatName: string;
-  isActive: boolean;
+  botId: string
+  chatId: string
+  chatName: string
+  isActive: boolean
 }): Promise<{
-  success: boolean;
-  message: string;
-  result?: UserTelegramChat;
+  success: boolean
+  message: string
+  result?: UserTelegramChat
 }> => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     const result = await prisma.userTelegramChat.update({
       where: {
@@ -729,28 +711,25 @@ export const updateUserTelegramChat = async (data: {
         chatName: data.chatName,
         isActive: data.isActive,
       },
-    });
+    })
 
-    return { success: true, message: "Чат успешно обновлен", result };
+    return { success: true, message: "Чат успешно обновлен", result }
   } catch (error) {
-    console.error("updateUserTelegramChat error:", error);
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      return { success: false, message: "Чат или бот не найден" };
+    console.error("updateUserTelegramChat error:", error)
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return { success: false, message: "Чат или бот не найден" }
     }
-    return { success: false, message: "Ошибка обновления Telegram чата" };
+    return { success: false, message: "Ошибка обновления Telegram чата" }
   }
-};
+}
 
 export const toggleSubscribeChatBot = async (data: {
-  botId: string;
-  chatId: string;
-  isActive: boolean;
+  botId: string
+  chatId: string
+  isActive: boolean
 }) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     return await prisma.userTelegramChat.update({
       where: {
@@ -760,29 +739,26 @@ export const toggleSubscribeChatBot = async (data: {
         },
       },
       data: { isActive: data.isActive },
-    });
+    })
   } catch (error) {
-    console.error("toggleSubscribeChatBot error:", error);
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      throw new Error("Чат не найден");
+    console.error("toggleSubscribeChatBot error:", error)
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      throw new Error("Чат не найден")
     }
-    throw error;
+    throw error
   }
-};
+}
 
 export const deleteChat = async (data: { botName: string; chatId: string }) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     const bot = await prisma.telegramBot.findUnique({
       where: { botName: data.botName },
       select: { id: true },
-    });
+    })
 
-    if (!bot) throw new Error("Бот не найден");
+    if (!bot) throw new Error("Бот не найден")
 
     return await prisma.userTelegramChat.delete({
       where: {
@@ -791,52 +767,49 @@ export const deleteChat = async (data: { botName: string; chatId: string }) => {
           chatId: data.chatId,
         },
       },
-    });
+    })
   } catch (error) {
-    console.error("deleteChat error:", error);
-    throw error;
+    console.error("deleteChat error:", error)
+    throw error
   }
-};
+}
 
-export const deleteBot = async (data: {
-  botName: string;
-  pathName: string;
-}) => {
+export const deleteBot = async (data: { botName: string; pathName: string }) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     const result = await prisma.$transaction(async (tx) => {
       const bot = await tx.telegramBot.findUnique({
         where: { botName: data.botName },
         select: { id: true },
-      });
+      })
 
-      if (!bot) throw new Error("Бот не найден");
+      if (!bot) throw new Error("Бот не найден")
 
       await tx.userTelegramChat.deleteMany({
         where: { botId: bot.id },
-      });
+      })
 
       return await tx.telegramBot.delete({
         where: { id: bot.id },
-      });
-    });
+      })
+    })
 
-    revalidatePath(data.pathName);
-    return result;
+    revalidatePath(data.pathName)
+    return result
   } catch (error) {
-    console.error("deleteBot error:", error);
-    throw error;
+    console.error("deleteBot error:", error)
+    throw error
   }
-};
+}
 
 export const updateBotDb = async (data: {
-  botName: string;
-  description: string;
-  token: string;
+  botName: string
+  description: string
+  token: string
 }) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
 
     if (data.token) {
       const tokenExists = await prisma.telegramBot.findFirst({
@@ -845,10 +818,10 @@ export const updateBotDb = async (data: {
           NOT: { botName: data.botName },
         },
         select: { id: true },
-      });
+      })
 
       if (tokenExists) {
-        throw new Error("Токен уже используется другим ботом");
+        throw new Error("Токен уже используется другим ботом")
       }
     }
 
@@ -858,29 +831,29 @@ export const updateBotDb = async (data: {
         description: data.description,
         token: data.token,
       },
-    });
+    })
   } catch (error) {
-    console.error("updateBotDb error:", error);
-    throw error;
+    console.error("updateBotDb error:", error)
+    throw error
   }
-};
+}
 
 export const getBotByToken = async (token: string) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
     return await prisma.telegramBot.findUnique({
       where: { token },
       include: { chats: true },
-    });
+    })
   } catch (error) {
-    console.error("getBotByToken error:", error);
-    throw error;
+    console.error("getBotByToken error:", error)
+    throw error
   }
-};
+}
 
 export const getUserTelegramInfo = async (tgUserId: string) => {
   try {
-    await ensureAuthorized();
+    await ensureAuthorized()
     return await prisma.telegramUserInfo.findUnique({
       where: { tgUserId },
       include: {
@@ -889,9 +862,9 @@ export const getUserTelegramInfo = async (tgUserId: string) => {
         },
         user: true,
       },
-    });
+    })
   } catch (error) {
-    console.error("getUserTelegramInfo error:", error);
-    throw error;
+    console.error("getUserTelegramInfo error:", error)
+    throw error
   }
-};
+}

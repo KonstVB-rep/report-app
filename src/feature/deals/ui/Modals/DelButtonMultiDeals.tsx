@@ -22,7 +22,11 @@ const DelButtonMultiDeals = ({
 
   return (
     <WrapperFormDeleteDialog isTextButton={isTextButton} open={open} setOpen={setOpen}>
-      <DelDealListForm clearSelection={clearSelection} close={() => setOpen(false)} deals={deals} />
+      <DelDealListForm
+        // clearSelection={clearSelection}
+        close={() => setOpen(false)}
+        deals={deals}
+      />
     </WrapperFormDeleteDialog>
   )
 }

@@ -80,20 +80,20 @@
 // }
 
 // export default useDragEnd
-import { useCallback, useMemo, useState, useEffect } from "react";
-import type { DropResult } from "@hello-pangea/dnd";
-import type { TaskStatus } from "@prisma/client";
-import type { TaskWithUserInfo } from "@/entities/task/types";
-import { useUpdateTasksOrder } from "./mutate";
+import { useCallback, useEffect, useMemo, useState } from "react"
+import type { DropResult } from "@hello-pangea/dnd"
+import type { TaskStatus } from "@prisma/client"
+import type { TaskWithUserInfo } from "@/entities/task/types"
+import { useUpdateTasksOrder } from "./mutate"
 
 const useDragEnd = (initialData: TaskWithUserInfo[]) => {
-  const [tasks, setTasks] = useState<TaskWithUserInfo[]>(initialData);
-  const { mutate, isPending } = useUpdateTasksOrder();
+  const [tasks, setTasks] = useState<TaskWithUserInfo[]>(initialData)
+  const { mutate, isPending } = useUpdateTasksOrder()
 
   // Синхронизация с пропсами (важно при обновлении извне)
   useEffect(() => {
-    setTasks(initialData);
-  }, [initialData]);
+    setTasks(initialData)
+  }, [initialData])
 
   // Группируем задачи по колонкам заранее (O(n))
   const columns = useMemo(() => {
@@ -102,75 +102,72 @@ const useDragEnd = (initialData: TaskWithUserInfo[]) => {
       IN_PROGRESS: [],
       DONE: [],
       CANCELED: [],
-    };
+    }
     tasks.forEach((task) => {
-      groups[task.taskStatus]?.push(task);
-    });
+      groups[task.taskStatus]?.push(task)
+    })
     // Сортируем каждую группу
     Object.keys(groups).forEach((key) => {
-      groups[key as TaskStatus].sort((a, b) => a.orderTask - b.orderTask);
-    });
-    return groups;
-  }, [tasks]);
+      groups[key as TaskStatus].sort((a, b) => a.orderTask - b.orderTask)
+    })
+    return groups
+  }, [tasks])
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
-      const { destination, source, draggableId } = result;
-      if (!destination) return;
+      const { destination, source, draggableId } = result
+      if (!destination) return
 
-      if (
-        destination.droppableId === source.droppableId &&
-        destination.index === source.index
-      )
-        return;
+      if (destination.droppableId === source.droppableId && destination.index === source.index)
+        return
 
-      const newTasks = [...tasks];
-      const movedTaskIndex = newTasks.findIndex((t) => t.id === draggableId);
-      if (movedTaskIndex === -1) return;
+      const newTasks = [...tasks]
+      const movedTaskIndex = newTasks.findIndex((t) => t.id === draggableId)
+      if (movedTaskIndex === -1) return
 
-      const movedTask = { ...newTasks[movedTaskIndex] };
-      const sId = source.droppableId as TaskStatus;
-      const dId = destination.droppableId as TaskStatus;
+      const movedTask = { ...newTasks[movedTaskIndex] }
+      const sId = source.droppableId as TaskStatus
+      const dId = destination.droppableId as TaskStatus
 
-      // 1. Локальное обновление для мгновенного UI
-      movedTask.taskStatus = dId;
+      movedTask.taskStatus = dId
 
       // Удаляем из старого места, вставляем в новое
       // Это упрощенная логика обновления порядка:
-      const sourceCol = columns[sId].filter((t) => t.id !== draggableId);
-      const destCol = sId === dId ? sourceCol : [...columns[dId]];
-      destCol.splice(destination.index, 0, movedTask);
+      const sourceCol = columns[sId].filter((t) => t.id !== draggableId)
+      const destCol = sId === dId ? sourceCol : [...columns[dId]]
+      destCol.splice(destination.index, 0, movedTask)
 
       // Пересчитываем orderTask только для затронутых колонок
-      destCol.forEach((t, i) => (t.orderTask = i));
+      destCol.forEach((t, i) => {
+        t.orderTask = i
+      })
       if (sId !== dId) {
-        sourceCol.forEach((t, i) => (t.orderTask = i));
+        sourceCol.forEach((t, i) => {
+          t.orderTask = i
+        })
       }
 
       // Формируем итоговый массив
       const updatedArray = newTasks.map((t) => {
-        const foundInDest = destCol.find((d) => d.id === t.id);
-        const foundInSource = sourceCol.find((s) => s.id === t.id);
-        return foundInDest ?? foundInSource ?? t;
-      });
+        const foundInDest = destCol.find((d) => d.id === t.id)
+        const foundInSource = sourceCol.find((s) => s.id === t.id)
+        return foundInDest ?? foundInSource ?? t
+      })
 
-      setTasks(updatedArray);
+      setTasks(updatedArray)
 
-      // 2. Оптимизация запроса к серверу:
       // Отправляем только те задачи, чьи orderTask или status реально изменились
       const changedTasks = updatedArray.filter((t) => {
-        const old = tasks.find((ot) => ot.id === t.id);
-        return (
-          old?.orderTask !== t.orderTask || old?.taskStatus !== t.taskStatus
-        );
-      });
+        const old = tasks.find((ot) => ot.id === t.id)
+        return old?.orderTask !== t.orderTask || old?.taskStatus !== t.taskStatus
+      })
 
-      mutate({ updatedTasks: changedTasks });
+      mutate({ updatedTasks: changedTasks })
     },
     [tasks, columns, mutate],
-  );
+  )
 
-  return { onDragEnd, columns, isPending };
-};
+  return { onDragEnd, columns, isPending }
+}
 
-export default useDragEnd;
+export default useDragEnd

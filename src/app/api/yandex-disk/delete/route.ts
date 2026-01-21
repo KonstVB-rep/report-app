@@ -1,11 +1,11 @@
-import axios from "axios";
-import { type NextRequest, NextResponse } from "next/server";
+import axios from "axios"
+import { type NextRequest, NextResponse } from "next/server"
+import { deleteFileFromDB } from "@/widgets/Files/api/actions_db"
 import {
   axiosInstanceYandexDisk,
-  deleteFileOrFolderFromYandexDiskAnDB,
-} from "../yandexDisk";
-import { getErrorMessageDeleteByCode } from "./getErrorMessageDeleteByCode";
-import { deleteFileFromDB } from "@/widgets/Files/api/actions_db";
+  // deleteFileOrFolderFromYandexDiskAnDB,
+} from "../yandexDisk"
+import { getErrorMessageDeleteByCode } from "./getErrorMessageDeleteByCode"
 
 // export async function DELETE(request: NextRequest) {
 //   try {
@@ -41,40 +41,42 @@ import { deleteFileFromDB } from "@/widgets/Files/api/actions_db";
 
 export async function DELETE(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
-    const files = Array.isArray(body) ? body : [body];
+    const files = Array.isArray(body) ? body : [body]
 
-    if (!files.length)
-      return NextResponse.json({ error: "Нет данных" }, { status: 400 });
+    if (!files.length) return NextResponse.json({ error: "Нет данных" }, { status: 400 })
 
-    const results = [];
+    const results = []
 
     for (const file of files) {
       try {
-        const response = await axiosInstanceYandexDisk.delete(
-          `/resources?path=${file.filePath}`,
-        );
+        const response = await axiosInstanceYandexDisk.delete(`/resources?path=${file.filePath}`)
 
-        if (
-          response.status === 204 ||
-          response.status === 200 ||
-          response.status === 404
-        ) {
-          await deleteFileFromDB(file);
-          results.push({ id: file.id, status: "deleted" });
+        if (response.status === 204 || response.status === 200 || response.status === 404) {
+          await deleteFileFromDB(file)
+          results.push({ id: file.id, status: "deleted" })
         }
       } catch (err) {
-        results.push({
-          id: file.id,
-          status: "error",
-          error: (err as Error).message,
-        });
+        if (axios.isAxiosError(err)) {
+          const statusCode = err.response?.status ?? 500
+          results.push({
+            id: file.id,
+            status: statusCode,
+            error: getErrorMessageDeleteByCode(statusCode),
+          })
+        } else {
+          results.push({
+            id: file.id,
+            status: "error",
+            error: (err as Error).message,
+          })
+        }
       }
     }
 
-    return NextResponse.json({ data: results, success: true });
-  } catch (error) {
-    return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 });
+    return NextResponse.json({ data: results, success: true })
+  } catch (_error) {
+    return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 })
   }
 }

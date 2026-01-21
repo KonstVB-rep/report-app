@@ -1,77 +1,81 @@
-import type { DealFile } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
-import type { AxiosResponse } from "axios";
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck";
-import handleErrorSession from "@/shared/auth/handleErrorSession";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { useFormSubmission } from "@/shared/hooks/useFormSubmission";
-import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization";
-import { deleteFile, downloadFile, uploadFile } from "../api/action_route";
-import { saveBlobToFile } from "../libs/helpers/saveBlobToFile";
-import axiosInstance from "@/shared/api/axiosInstance";
+import type { DealFile } from "@prisma/client"
+import { useMutation } from "@tanstack/react-query"
+import type { AxiosResponse } from "axios"
+import axiosInstance from "@/shared/api/axiosInstance"
+import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
+import handleErrorSession from "@/shared/auth/handleErrorSession"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
+import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization"
+import { downloadFile, uploadFile } from "../api/action_route"
+import { saveBlobToFile } from "../libs/helpers/saveBlobToFile"
 
 export const useUploadFileYdxDisk = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission();
+  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
 
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      if (!authUser?.id) throw new Error("Пользователь не авторизован");
+      if (!authUser?.id) throw new Error("Пользователь не авторизован")
 
-      const response = await handleMutationWithAuthCheck<
-        FormData,
-        AxiosResponse
-      >(uploadFile, formData, authUser, isSubmittingRef);
+      const response = await handleMutationWithAuthCheck<FormData, AxiosResponse>(
+        uploadFile,
+        formData,
+        authUser,
+        isSubmittingRef,
+      )
 
       if (!response?.data.success) {
-        throw new Error("Ошибка при загрузке файла");
+        throw new Error("Ошибка при загрузке файла")
       }
 
-      const { data: fileData } = response.data;
-      return fileData;
+      const { data: fileData } = response.data
+      return fileData
     },
     onSuccess: (data) => {
-      const { dealId, dealType, userId } = data[0];
+      const { dealId, dealType, userId } = data[0]
 
-      TOAST.SUCCESS("Файл успешно загружен");
+      TOAST.SUCCESS("Файл успешно загружен")
 
       queryClient.invalidateQueries({
         queryKey: ["get-deal-files", userId, dealId, dealType],
-      });
-      queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] });
+      })
+      queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] })
 
       queryClient.invalidateQueries({
         queryKey: [dealType.toLowerCase(), dealId],
-      });
+      })
     },
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
-  });
-};
+  })
+}
 
 export const useDownLoadFile = () => {
-  const { authUser, isSubmittingRef } = useFormSubmission();
+  const { authUser, isSubmittingRef } = useFormSubmission()
   return useMutation({
     mutationFn: async (data: { localPath: string; name: string }) => {
-      const { localPath, name } = data;
+      const { localPath, name } = data
 
-      const response = await handleMutationWithAuthCheck<
-        { filePath: string },
-        AxiosResponse
-      >(downloadFile, { filePath: localPath }, authUser, isSubmittingRef);
+      const response = await handleMutationWithAuthCheck<{ filePath: string }, AxiosResponse>(
+        downloadFile,
+        { filePath: localPath },
+        authUser,
+        isSubmittingRef,
+      )
 
       if (!response?.data) {
-        throw new Error("Файл не найден");
+        throw new Error("Файл не найден")
       }
 
-      const fileData = response.data;
-      return saveBlobToFile(fileData, name);
+      const fileData = response.data
+      return saveBlobToFile(fileData, name)
     },
     onError: (error) => {
-      handleErrorSession(error);
+      handleErrorSession(error)
     },
-  });
-};
+  })
+}
 
 // export const useDeleteFiles = (handleCloseDialog?: React.Dispatch<React.SetStateAction<void>>) => {
 //   const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
@@ -125,11 +129,11 @@ export const useDownLoadFile = () => {
 // }
 
 export const useDeleteFiles = (handleCloseDialog?: () => void) => {
-  const { queryClient, authUser } = useFormSubmission();
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
     mutationFn: async (files: DealFile[]) => {
-      await checkAuthorization(authUser?.id);
+      await checkAuthorization(authUser?.id)
 
       // Отправляем весь массив одним запросом
       const response = await axiosInstance.delete(`/yandex-disk/delete`, {
@@ -140,24 +144,24 @@ export const useDeleteFiles = (handleCloseDialog?: () => void) => {
           userId: f.userId,
           dealId: f.dealId,
         })),
-      });
-      return { results: response.data, originalFiles: files };
+      })
+      return { results: response.data, originalFiles: files }
     },
     onSuccess: ({ originalFiles }) => {
-      TOAST.SUCCESS("Операция завершена");
+      TOAST.SUCCESS("Операция завершена")
 
       if (originalFiles.length > 0) {
-        const { userId, dealId, dealType } = originalFiles[0];
+        const { userId, dealId, dealType } = originalFiles[0]
 
         // Инвалидация только нужных данных
         queryClient.invalidateQueries({
           queryKey: ["get-deal-files", userId, dealId, dealType],
-        });
-        queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] });
+        })
+        queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] })
       }
 
-      handleCloseDialog?.();
+      handleCloseDialog?.()
     },
     onError: (error) => handleErrorSession(error),
-  });
-};
+  })
+}

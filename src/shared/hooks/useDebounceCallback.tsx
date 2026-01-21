@@ -1,16 +1,22 @@
 import { useCallback, useRef } from "react"
 
-export const useDebounceCallback = <T extends (...args: unknown[]) => void>(
-  callback: T,
+// A — это массив аргументов. Он расширяет unknown[], что безопасно.
+export const useDebounceCallback = <A extends unknown[]>(
+  callback: (...args: A) => void,
   delay: number,
 ) => {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  // Используем ReturnType для кросс-платформенности (браузер/node)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   return useCallback(
-    (...args: Parameters<T>) => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    (...args: A) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
 
-      timeoutRef.current = setTimeout(() => callback(...args), delay)
+      timeoutRef.current = setTimeout(() => {
+        callback(...args)
+      }, delay)
     },
     [callback, delay],
   )

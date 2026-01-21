@@ -54,7 +54,6 @@ const DelButton = ({
   return (
     <WrapperFormDeleteDialog isTextButton={isTextButton} open={open} setOpen={setOpen}>
       <DelDealForm
-        clearData={clearData}
         close={() => {
           clearData?.()
           setOpen(false)
