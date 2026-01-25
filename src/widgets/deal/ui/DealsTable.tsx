@@ -15,6 +15,7 @@ import {
 import TableComponent from "@/shared/custom-components/ui/Table/TableComponent"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
+import { useParams } from "next/navigation"
 
 const EditDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/EditDealContextMenu"), {
   ssr: false,
@@ -40,7 +41,10 @@ const pageParamsSchema = z.object({
 })
 
 const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
-  const { dealType } = useTypedParams(pageParamsSchema)
+  // const { dealType } = useTypedParams(pageParamsSchema)
+  const { dealType } = useParams<{
+    dealType: "retails" | "projects" | "contracts"
+  }>()
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
     (

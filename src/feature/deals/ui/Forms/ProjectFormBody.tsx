@@ -43,6 +43,7 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants"
 import AddManagerToDeal from "../Modals/AddManagerToDeal"
+import { useParams } from "next/navigation"
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -65,9 +66,9 @@ const statusOptions = {
   contract: statusOptionsContracts,
 }
 
-const pageParamsSchema = z.object({
-  dealType: z.enum(UnionDealTypeParams),
-})
+// const pageParamsSchema = z.object({
+//   dealType: z.enum(UnionDealTypeParams),
+// })
 
 const ProjectFormBody = <T extends FieldValues>({
   form,
@@ -77,7 +78,8 @@ const ProjectFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: ProjectFormBodyProps<T>) => {
-  const { dealType } = useTypedParams(pageParamsSchema)
+  // const { dealType } = useTypedParams(pageParamsSchema)
+  const { dealType } = useParams<{ dealType: "retails" | "projects" | "contracts" }>()
 
   const initialManagersIds = form.getValues("managersIds" as Path<T>)
   const initialManagers = initialManagersIds?.length

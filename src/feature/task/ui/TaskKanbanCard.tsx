@@ -39,12 +39,12 @@ const pageParamsSchema = z.object({
 const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
   // const { departmentId, userId: userIdFromUrl } = useTypedParams(pageParamsSchema)
 
-  const { departmentId: depNum, userId: userIdFromUrl } = useParams<{
+  const { departmentId, userId: userIdFromUrl } = useParams<{
     departmentId: string
     userId: string
   }>()
 
-  const departmentId = Number(depNum)
+  // const departmentId = Number(depNum)
 
   const { authUser } = useStoreUser()
 

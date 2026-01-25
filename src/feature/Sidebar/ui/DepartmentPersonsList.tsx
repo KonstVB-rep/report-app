@@ -117,7 +117,12 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
 export default memo(DepartmentPersonsList)
 
 const SideBarMenuItemWrapper = ({ user }: { user: DepartmentUserItem }) => {
-  const { dealType, userId } = useTypedParams(pageParamsSchema)
+  // const { dealType, userId } = useTypedParams(pageParamsSchema)
+  const { userId, dealType } = useParams<{
+    userId: string
+    dealType: "retails" | "projects" | "contracts"
+  }>()
+
   const pathname = usePathname()
 
   const isActiveUser = user.id === userId

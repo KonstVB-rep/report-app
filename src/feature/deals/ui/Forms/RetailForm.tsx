@@ -9,13 +9,15 @@ import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { useCreateRetail } from "../../api/hooks/mutate"
 import { defaultRetailValues } from "../../model/defaultvaluesForm"
 import RetailFormBody from "./RetailFormBody"
+import { useParams } from "next/navigation"
 
 const pageParamsSchema = z.object({
   userId: z.string(),
 })
 
 const RetailForm = ({ orderId, managerId }: { orderId?: string; managerId?: string }) => {
-  const { userId } = useTypedParams(pageParamsSchema)
+  // const { userId } = useTypedParams(pageParamsSchema)
+  const { userId } = useParams<{ userId: string }>()
 
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema) as Resolver<RetailSchema>,

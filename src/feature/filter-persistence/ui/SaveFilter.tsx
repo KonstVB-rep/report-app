@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react"
 import { Save } from "lucide-react"
-import { useSearchParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import z from "zod"
 import { Button } from "@/shared/components/ui/button"
 import { DialogClose } from "@/shared/components/ui/dialog"
@@ -19,7 +19,8 @@ const pageParamsSchema = z.object({
 
 const SaveFilter = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const { userId } = useTypedParams(pageParamsSchema)
+  // const { userId } = useTypedParams(pageParamsSchema)
+  const { userId } = useParams<{ userId: string }>()
 
   const searchParams = useSearchParams()
   const [open, setOpen] = React.useState(false)

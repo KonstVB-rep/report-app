@@ -1,6 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useParams } from "next/navigation"
 import { type Resolver, useForm } from "react-hook-form"
 import z from "zod"
 import { ProjectFormSchema, type ProjectSchema } from "@/entities/deal/model/schema"
@@ -15,7 +16,8 @@ const pageParamsSchema = z.object({
 })
 
 const ProjectForm = ({ orderId, managerId }: { orderId?: string; managerId?: string }) => {
-  const { userId } = useTypedParams(pageParamsSchema)
+  // const { userId } = useTypedParams(pageParamsSchema)
+  const { userId } = useParams<{ userId: string }>()
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,

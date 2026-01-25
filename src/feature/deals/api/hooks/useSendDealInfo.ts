@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { StatusProject, StatusRetail } from "@prisma/client"
+import { useParams } from "next/navigation"
 import type { FieldValues } from "react-hook-form"
 import z from "zod"
 import type { Contact } from "@/entities/deal/types"
@@ -18,7 +19,9 @@ const useSendDealInfo = <T extends FieldValues>(
     userId: string
   }[] = [],
 ) => {
-  const { userId } = useTypedParams(pageParamsSchema)
+  // const { userId } = useTypedParams(pageParamsSchema)
+
+  const { userId } = useParams<{ userId: string }>()
 
   const firstManagerId = managerId || userId
 

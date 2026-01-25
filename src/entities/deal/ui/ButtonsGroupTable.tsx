@@ -5,9 +5,9 @@ import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import LinkToUserTable from "./LinkToUserTable"
 import { useParams } from "next/navigation"
 
-const pageParamsSchema = z.object({
-  userId: z.string(),
-})
+// const pageParamsSchema = z.object({
+//   userId: z.string(),
+// })
 
 const ButtonsGroupTable = () => {
   const { userId } = useParams<{

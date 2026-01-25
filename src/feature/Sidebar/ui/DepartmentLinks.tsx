@@ -9,7 +9,6 @@ import type { DepartmentUserItem } from "@/entities/department/types"
 import { Separator } from "@/shared/components/ui/separator"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 
-// --- Типы ---
 type DealsType = {
   id: string
   title: string
@@ -20,11 +19,10 @@ type DepartmentLinksProps = {
   departmentId: number
   user: DepartmentUserItem
   userId: string | undefined
-  dealType?: string
-  pathName?: string | null // pathName может быть null
+  dealType?: string | undefined
+  pathName?: string | null
 }
 
-// --- Константы ---
 const dealsSalesDepartment: DealsType[] = [
   { id: "projects", title: "Проекты" },
   { id: "retails", title: "Розница" },
@@ -35,7 +33,6 @@ const pagesMarkretingDepartment: DealsType[] = [
   { id: "statistics/request-source", title: "Источники сделок" },
 ]
 
-// --- Компонент одной ссылки (Типизированный) ---
 const LinkItem = memo(
   ({
     href,
@@ -73,7 +70,6 @@ const LinkItem = memo(
 )
 LinkItem.displayName = "LinkItem"
 
-// --- Основной компонент ---
 export const DepartmentLinks = memo(
   ({ departmentId, user, userId, dealType, pathName }: DepartmentLinksProps) => {
     const linksList = useMemo(() => {

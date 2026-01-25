@@ -17,6 +17,7 @@ import { columnsDataContract } from "../model/columns-data-contracts"
 import { columnsDataProject } from "../model/columns-data-project"
 import { columnsDataRetail } from "../model/columns-data-retail"
 import DealsTable from "./DealsTable"
+import { useParams } from "next/navigation"
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
@@ -63,7 +64,11 @@ const pageParamsSchema = z.object({
 })
 
 const PersonDealsTable = () => {
-  const { userId, dealType } = useTypedParams(pageParamsSchema)
+  // const { userId, dealType } = useTypedParams(pageParamsSchema)
+  const { dealType, userId } = useParams<{
+    dealType: "retails" | "projects" | "contracts"
+    userId: string
+  }>()
 
   const hasAccess = hasAccessToData(userId as string, PermissionEnum.VIEW_USER_REPORT)
 

@@ -11,11 +11,11 @@ const TaskTableRow = <T extends TaskWithUserInfo>({
   headers,
 }: TaskTableRowProps<T>) => {
   // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
-  const { departmentId: depNum } = useParams<{
+  const { departmentId } = useParams<{
     departmentId: string
   }>()
 
-  const departmentId = Number(depNum)
+  // const departmentId = Number(depNum)
 
   const { getContextMenuActions } = useTableContext<T>()
 
