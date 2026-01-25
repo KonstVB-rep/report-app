@@ -1,11 +1,12 @@
 import TasksPageMain from "./TasksPageMain"
 
 interface PageProps {
-  params: {
+  params: Promise<{
     departmentId: string
-  }
+  }>
 }
 
-export default function Page({ params }: PageProps) {
-  return <TasksPageMain departmentId={params.departmentId} />
+export default async function Page({ params }: PageProps) {
+  const { departmentId } = await params
+  return <TasksPageMain departmentId={departmentId} />
 }
