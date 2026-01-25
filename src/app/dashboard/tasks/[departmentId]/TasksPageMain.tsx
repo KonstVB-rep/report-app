@@ -3,62 +3,56 @@
 import { Activity, Suspense, use } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
-import { useParams } from "next/navigation"
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
+import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
 import useStoreUser from "@/entities/user/store/useStoreUser"
-import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink"
-import { useGetUserTasks } from "@/feature/task/hooks/query"
+import { useGetTasksDepartment } from "@/feature/task/hooks/query"
 import { viewType } from "@/feature/task/model/constants"
 import type { ViewType } from "@/feature/task/types"
 import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
 import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
+import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
-import { pageParamsSchemaDepsIsUserId, useTypedParams } from "@/shared/hooks/useTypedParams"
+import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import useViewType from "@/shared/hooks/useViewType"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
-  loading: () => <LoadingView />,
 })
 
 const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   ssr: false,
-  loading: () => <LoadingView />,
 })
 
-const UserTasksPage = () => {
+const TasksPageMain = (params: { departmentId: string }) => {
+  const departmentId = Number(params.departmentId)
+
+  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
   const { authUser } = useStoreUser()
 
-  const { userId, departmentId } = useParams<{
-    userId: string
-    departmentId: string
-  }>()
+  const hasAccess = hasAccessToDataSummary(authUser?.id as string, PermissionEnum.TASK_MANAGEMENT)
 
-  const departmentIdNumber = Number(departmentId)
-
-  // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
-
-  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
-
-  const { data } = useGetUserTasks()
+  const { data, isPending } = useGetTasksDepartment()
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
 
-  console.log(departmentIdNumber, departmentId, "departmentId", userId, "UserTasksPage")
+  if (!authUser) return null
 
-  if (!authUser) return
+  if (!hasAccess) {
+    return <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />
+  }
 
-  if (!hasAccess) return <RedirectToPath to={`/tasks/${departmentIdNumber}/${authUser.id}`} />
+  if (isPending) {
+    return <LoaderCircleInWater />
+  }
+
+  console.log(departmentId, "departmentId TasksPage")
 
   return (
     <section className="p-5">
-      <div className="flex items-center justify-between py-2">
-        <h1 className="text-xl py-2 uppercase">Мои задачи</h1>
-        <CalendarBotLink botName="ertel_report_app_task_bot" />
-      </div>
+      <h1 className="text-xl py-2">Все задачи</h1>
 
       <Separator />
 
@@ -77,15 +71,25 @@ const UserTasksPage = () => {
       </div>
 
       <MotionDivY className="flex-1">
+        {currentView === "table" && (
+          <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
+        )}
+
+        {currentView === "kanban" && (
+          <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
+        )}
+      </MotionDivY>
+
+      {/* <MotionDivY className="flex-1">
         <Activity mode={currentView === "table" ? "visible" : "hidden"}>
           <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
         </Activity>
         <Activity mode={currentView === "kanban" ? "visible" : "hidden"}>
           <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
         </Activity>
-      </MotionDivY>
+      </MotionDivY> */}
     </section>
   )
 }
 
-export default UserTasksPage
+export default TasksPageMain
