@@ -29,6 +29,8 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
 const TasksPage = ({ params }: { params: Promise<{ departmentId: number }> }) => {
   const { departmentId } = use(params)
 
+  console.log(departmentId)
+
   // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
   const { authUser } = useStoreUser()
 
@@ -69,13 +71,23 @@ const TasksPage = ({ params }: { params: Promise<{ departmentId: number }> }) =>
       </div>
 
       <MotionDivY className="flex-1">
+        {currentView === "table" && (
+          <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
+        )}
+
+        {currentView === "kanban" && (
+          <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
+        )}
+      </MotionDivY>
+
+      {/* <MotionDivY className="flex-1">
         <Activity mode={currentView === "table" ? "visible" : "hidden"}>
           <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
         </Activity>
         <Activity mode={currentView === "kanban" ? "visible" : "hidden"}>
           <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
         </Activity>
-      </MotionDivY>
+      </MotionDivY> */}
     </section>
   )
 }
