@@ -39,6 +39,10 @@ const TasksPage = () => {
 
   if (!authUser) return null
 
+  if (!departmentId) {
+    return <LoaderCircleInWater />
+  }
+
   if (!hasAccess) {
     return <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />
   }

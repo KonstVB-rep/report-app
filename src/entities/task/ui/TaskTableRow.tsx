@@ -3,8 +3,9 @@ import type { TaskTableRowProps } from "@/entities/tgBot/types"
 import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
 import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
 import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
+import { memo } from "react"
 
-export const TaskTableRow = <T extends TaskWithUserInfo>({
+const TaskTableRow = <T extends TaskWithUserInfo>({
   row,
   virtualRow,
   headers,
@@ -26,3 +27,5 @@ export const TaskTableRow = <T extends TaskWithUserInfo>({
     />
   )
 }
+
+export default memo(TaskTableRow)

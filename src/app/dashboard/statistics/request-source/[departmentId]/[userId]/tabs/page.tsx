@@ -50,10 +50,6 @@ const hiddenColsRetail = {
 
 const pageParamsSchema = z.object({
   userId: z.string(),
-  departmentId: z.coerce
-    .number()
-    .positive()
-    .transform((value) => value as DepartmentsUnionIds),
 })
 
 const MarketingDealsTable = () => {
