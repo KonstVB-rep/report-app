@@ -1,5 +1,5 @@
-import withBundleAnalyzer from "@next/bundle-analyzer"
 import type { NextConfig } from "next" // 1. Импортируем тип
+import withBundleAnalyzer from "@next/bundle-analyzer"
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
 
   compiler: {
-    reactRemoveProperties: process.env.NODE_ENV === "production",
+    reactRemoveProperties: false,
   },
 
   experimental: {

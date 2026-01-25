@@ -28,7 +28,7 @@ const pageParamsSchema = z.object({
     }),
 })
 
-const TaskPage = ({
+const TaskPage = async ({
   params,
 }: {
   params: Promise<{ departmentId: number; userId: string; taskId: string }>
@@ -37,7 +37,9 @@ const TaskPage = ({
 
   // const { taskId, userId, departmentId } = useTypedParams(pageParamsSchema)
 
-  const { departmentId, userId, taskId } = use(params)
+  const { departmentId, userId, taskId } = await params
+
+  console.log(departmentId, userId, taskId, "TaskPage")
 
   const { data, isPending } = useGetTask(taskId)
 

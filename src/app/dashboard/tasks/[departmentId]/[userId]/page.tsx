@@ -28,14 +28,16 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   loading: () => <LoadingView />,
 })
 
-const UserTasksPage = ({
+const UserTasksPage = async ({
   params,
 }: {
   params: Promise<{ departmentId: number; userId: string }>
 }) => {
   const { authUser } = useStoreUser()
 
-  const { departmentId, userId } = use(params)
+  const { departmentId, userId } = await params
+
+  console.log(departmentId, userId, "UserTasksPage")
 
   // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
 
