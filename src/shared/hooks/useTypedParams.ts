@@ -9,8 +9,6 @@ export const useTypedParams = <T>(schema: z.ZodType<T>): T => {
   const result = schema.safeParse(params)
 
   if (!result.success) {
-    // На продакшене вернем пустой объект, приведенный к типу T,
-    // чтобы компонент мог проверить наличие данных сам
     return {} as T
   }
 
@@ -27,6 +25,11 @@ export const pageParamsSchemaDepsId = z.object({
 })
 
 export const pageParamsSchemaDepsIsUserId = z.object({
-  userId: z.string().optional(),
-  departmentId: coerceNumber.transform((val) => val as DepartmentsUnionIds),
+  userId: z.string(),
+  departmentId: z.coerce
+    .number()
+    .positive()
+    .transform((value) => {
+      return value as DepartmentsUnionIds
+    }),
 })
