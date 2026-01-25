@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation"
 import type { TaskWithUserInfo } from "@/entities/task/types"
 import type { TaskTableRowProps } from "@/entities/tgBot/types"
 import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
@@ -9,7 +10,12 @@ const TaskTableRow = <T extends TaskWithUserInfo>({
   virtualRow,
   headers,
 }: TaskTableRowProps<T>) => {
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  const { departmentId: depNum } = useParams<{
+    departmentId: string
+  }>()
+
+  const departmentId = Number(depNum)
 
   const { getContextMenuActions } = useTableContext<T>()
 

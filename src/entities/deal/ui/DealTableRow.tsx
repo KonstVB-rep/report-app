@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation"
 import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
 import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
 // import { getRowClassName } from "@/shared/custom-components/ui/Table/TableRowDealOrTask";
@@ -11,11 +12,17 @@ export const DealTableRow = <T extends DealBase>({
   headers,
   ...rest
 }: DealTableRowProps<T>) => {
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+
+  const { departmentId } = useParams<{
+    departmentId: string
+  }>()
+
+  const departmentIdNumber = Number(departmentId)
   const { getContextMenuActions, renderAdditionalInfo } = useTableContext<T>()
 
   const dealType = row.original.type?.toLowerCase()
-  const path = `/dashboard/deal/${departmentId}/${dealType}/${row.original.id}`
+  const path = `/dashboard/deal/${departmentIdNumber}/${dealType}/${row.original.id}`
 
   return (
     <BaseTableRow<T>

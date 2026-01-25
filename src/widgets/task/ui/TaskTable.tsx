@@ -50,14 +50,14 @@ interface TaskTableProps<TData extends TaskWithUserInfo> {
   data: TData[]
 }
 
-const pageParamsSchema = z.object({
-  departmentId: z.coerce
-    .number()
-    .positive()
-    .transform((value) => {
-      return value as DepartmentsUnionIds
-    }),
-})
+// const pageParamsSchema = z.object({
+//   departmentId: z.coerce
+//     .number()
+//     .positive()
+//     .transform((value) => {
+//       return value as DepartmentsUnionIds
+//     }),
+// })
 
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)

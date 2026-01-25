@@ -4,6 +4,7 @@ import { ru } from "date-fns/locale"
 import { ExternalLink } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { useParams } from "next/navigation"
 import z from "zod"
 import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
 import { cleanDistance } from "@/entities/task/lib/helpers"
@@ -36,7 +37,14 @@ const pageParamsSchema = z.object({
 })
 
 const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
-  const { departmentId, userId: userIdFromUrl } = useTypedParams(pageParamsSchema)
+  // const { departmentId, userId: userIdFromUrl } = useTypedParams(pageParamsSchema)
+
+  const { departmentId: depNum, userId: userIdFromUrl } = useParams<{
+    departmentId: string
+    userId: string
+  }>()
+
+  const departmentId = Number(depNum)
 
   const { authUser } = useStoreUser()
 

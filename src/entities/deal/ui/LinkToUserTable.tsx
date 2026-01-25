@@ -1,10 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { PermissionEnum } from "@prisma/client"
+import { DealType, PermissionEnum } from "@prisma/client"
 import { Redo2 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import z from "zod"
 import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -45,7 +45,19 @@ const pageParamsSchema = z.object({
 })
 
 const LinkToUserTable = () => {
-  const { dealType, userId, departmentId } = useTypedParams(pageParamsSchema)
+  // const { dealType, userId, departmentId } = useTypedParams(pageParamsSchema)
+
+  const {
+    departmentId: depNum,
+    dealType,
+    userId,
+  } = useParams<{
+    departmentId: string
+    userId: string
+    dealType: DealType
+  }>()
+
+  const departmentId = Number(depNum)
   const { authUser } = useStoreUser()
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)

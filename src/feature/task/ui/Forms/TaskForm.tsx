@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
 import type { DepartmentInfo } from "@/entities/department/types"
@@ -22,7 +23,12 @@ const taskStatusOptions = transformObjValueToArr(LABEL_TASK_STATUS)
 const taskPriorityOptions = transformObjValueToArr(LABEL_TASK_PRIORITY)
 
 const TaskForm = <T extends FieldValues>({ form, onSubmit, isPending }: TaskFormProps<T>) => {
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  const { departmentId: depNum } = useParams<{
+    departmentId: string
+  }>()
+
+  const departmentId = Number(depNum)
   const getError = (name: keyof T) => form.formState.errors[name]?.message as string | undefined
 
   const { departments } = useStoreDepartment()

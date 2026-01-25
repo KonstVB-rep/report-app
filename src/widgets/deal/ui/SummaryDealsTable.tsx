@@ -1,8 +1,9 @@
 "use client"
 
 import { useMemo } from "react"
-import { PermissionEnum } from "@prisma/client"
+import { type DealType, PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
+import { useParams } from "next/navigation"
 import z from "zod"
 import Loading from "@/app/dashboard/summary-table/[departmentId]/[dealType]/[userId]/loading"
 import { TableTypes } from "@/entities/deal/lib/constants"
@@ -50,14 +51,25 @@ const pageParamsSchema = z.object({
 })
 
 const SummaryDealsTable = () => {
-  const { userId, departmentId, dealType } = useTypedParams(pageParamsSchema)
+  // const { userId, departmentId, dealType } = useTypedParams(pageParamsSchema)
+  const {
+    departmentId: depNum,
+    userId,
+    dealType,
+  } = useParams<{
+    departmentId: string
+    userId: string
+    dealType: DealsUnionType
+  }>()
+
+  const departmentId = Number(depNum)
 
   const hasAccess = useMemo(
     () => (userId ? hasAccessToDataSummary(userId, PermissionEnum.VIEW_UNION_REPORT) : false),
     [userId],
   )
 
-  const columns = useMemo(() => getColumns(dealType as DealsUnionType), [dealType])
+  const columns = useMemo(() => getColumns(dealType), [dealType])
 
   const {
     data: deals,

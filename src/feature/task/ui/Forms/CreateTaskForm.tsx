@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type TaskPriority, TaskStatus } from "@prisma/client"
+import { useParams } from "next/navigation"
 import { type Resolver, useForm } from "react-hook-form"
 import { addCorrectTimeInDates, formatDate } from "@/entities/task/lib/helpers"
 import { defaultTaskValues } from "@/feature/task/model/defaultvaluesForm"
@@ -10,7 +11,13 @@ import { useCreateTask } from "../../hooks/mutate"
 import TaskForm from "./TaskForm"
 
 const CreateTaskForm = () => {
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+
+  const { departmentId: depNum } = useParams<{
+    departmentId: string
+  }>()
+
+  const departmentId = Number(depNum)
 
   const form = useForm<TaskSchema>({
     resolver: zodResolver(TaskFormSchema) as Resolver<TaskSchema>,
