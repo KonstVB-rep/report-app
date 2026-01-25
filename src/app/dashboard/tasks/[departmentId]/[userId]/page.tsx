@@ -3,6 +3,7 @@
 import { Activity, Suspense, use } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
+import { useParams } from "next/navigation"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -28,16 +29,15 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   loading: () => <LoadingView />,
 })
 
-const UserTasksPage = async ({
-  params,
-}: {
-  params: Promise<{ departmentId: number; userId: string }>
-}) => {
+const UserTasksPage = () => {
   const { authUser } = useStoreUser()
 
-  const { departmentId, userId } = await params
+  const { userId, departmentId } = useParams<{
+    userId: string
+    departmentId: string
+  }>()
 
-  console.log(departmentId, userId, "UserTasksPage")
+  const departmentIdNumber = Number(departmentId)
 
   // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
 
@@ -47,9 +47,11 @@ const UserTasksPage = async ({
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
 
+  console.log(departmentIdNumber, userId, "UserTasksPage")
+
   if (!authUser) return
 
-  if (!hasAccess) return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />
+  if (!hasAccess) return <RedirectToPath to={`/tasks/${departmentIdNumber}/${authUser.id}`} />
 
   return (
     <section className="p-5">

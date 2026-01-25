@@ -10,6 +10,7 @@ import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/Protec
 import UserCard from "@/shared/custom-components/ui/UserCard"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import ProfileDealsData from "./ui/ProfileDealsData"
+import { useParams } from "next/navigation"
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/custom-components/ui/AccessDeniedMessage"),
@@ -20,12 +21,14 @@ const Loading = dynamic(() => import("./loading"), { ssr: false })
 
 const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false })
 
-const pageParamsSchema = z.object({
-  userId: z.string(),
-})
+// const pageParamsSchema = z.object({
+//   userId: z.string(),
+// })
 
 const ProfilePage = () => {
-  const { userId } = useTypedParams(pageParamsSchema)
+  // const { userId } = useTypedParams(pageParamsSchema)
+
+  const { userId } = useParams<{ userId: string }>()
 
   const { data: user, error, isPending } = useGetUser(userId)
 

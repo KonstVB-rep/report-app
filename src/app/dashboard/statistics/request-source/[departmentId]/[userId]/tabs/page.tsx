@@ -4,6 +4,7 @@ import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. Ð
 import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
+import { useParams } from "next/navigation"
 import z from "zod"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import type { TableType } from "@/entities/deal/types"
@@ -52,7 +53,11 @@ const pageParamsSchema = z.object({
 })
 
 const MarketingDealsTable = () => {
-  const { userId } = useTypedParams(pageParamsSchema)
+  // const { userId } = useTypedParams(pageParamsSchema)
+
+  const { userId } = useParams<{
+    userId: string
+  }>()
   const [activeTab, setActiveTab] = useState<TableType>("retails")
 
   const hasAccess = useMemo(

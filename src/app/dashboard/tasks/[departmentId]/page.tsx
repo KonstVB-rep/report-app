@@ -26,10 +26,9 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   ssr: false,
 })
 
-const TasksPage = async ({ params }: { params: Promise<{ departmentId: number }> }) => {
-  const { departmentId } = await params
-
-  console.log(departmentId, "departmentId TasksPage")
+const TasksPage = ({ params }: { params: Promise<{ departmentId: number }> }) => {
+  const resolvedParams = use(params)
+  const departmentId = Number(resolvedParams.departmentId)
 
   // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
   const { authUser } = useStoreUser()
@@ -49,6 +48,8 @@ const TasksPage = async ({ params }: { params: Promise<{ departmentId: number }>
   if (isPending) {
     return <LoaderCircleInWater />
   }
+
+  console.log(departmentId, "departmentId TasksPage")
 
   return (
     <section className="p-5">

@@ -4,6 +4,7 @@ import { useCallback, useRef } from "react"
 import type { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
 import dynamic from "next/dynamic"
+import { useParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
 import z from "zod"
 import { getUsers } from "@/entities/department/lib/utils"
@@ -62,7 +63,13 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   console.log(data, "data")
 
-  const { departmentId } = useTypedParams(pageParamsSchema)
+  // const { departmentId } = useTypedParams(pageParamsSchema)
+
+  const { departmentId } = useParams<{
+    departmentId: string
+  }>()
+
+  const departmentIdNumber = Number(departmentId)
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
     (
@@ -78,9 +85,11 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
       delete: (
         <DelTaskDialogContextMenu close={() => setOpenModal(null)} id={row.original.id as string} />
       ),
-      more: <ModalTaskDetails departmentId={departmentId} taskId={row.original.id as string} />,
+      more: (
+        <ModalTaskDetails departmentId={departmentIdNumber} taskId={row.original.id as string} />
+      ),
     }),
-    [departmentId],
+    [departmentIdNumber],
   )
 
   const { table, filtersContextValue } = useTableState(data, columnsDataTask as ColumnDef<T>[])

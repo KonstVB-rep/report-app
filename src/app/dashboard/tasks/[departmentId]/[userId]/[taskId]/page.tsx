@@ -11,6 +11,7 @@ import { useGetTask } from "@/feature/task/hooks/query"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import Loading from "./loading"
+import { useParams } from "next/navigation"
 
 const TaskCard = dynamic(() => import("@/entities/task/ui/TaskCard"), {
   loading: () => <Loading />,
@@ -28,25 +29,27 @@ const pageParamsSchema = z.object({
     }),
 })
 
-const TaskPage = async ({
-  params,
-}: {
-  params: Promise<{ departmentId: number; userId: string; taskId: string }>
-}) => {
+const TaskPage = async () => {
   const { authUser } = useStoreUser()
 
   // const { taskId, userId, departmentId } = useTypedParams(pageParamsSchema)
 
-  const { departmentId, userId, taskId } = await params
+  const { userId, departmentId, taskId } = useParams<{
+    userId: string
+    departmentId: string
+    taskId: string
+  }>()
 
-  console.log(departmentId, userId, taskId, "TaskPage")
+  const departmentIdNumber = Number(departmentId)
 
   const { data, isPending } = useGetTask(taskId)
 
   const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 
+  console.log(departmentIdNumber, userId, taskId, "TaskPage")
+
   if (!hasAccess) {
-    return <RedirectToPath to={`/tasks/${departmentId}/${authUser?.id}`} />
+    return <RedirectToPath to={`/tasks/${departmentIdNumber}/${authUser?.id}`} />
   }
 
   if (isPending) return <Loading />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import type { User } from "@prisma/client"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "@/entities/deal/types"
 import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants"
 import { useGetDealsByDateRange } from "@/feature/deals/api/hooks/query"
@@ -18,7 +18,15 @@ const dateRanges = [
 ]
 
 const ProfileDealsData = ({ user }: { user: User }) => {
-  const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
+  // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
+
+  const { userId, departmentId } = useParams<{
+    userId: string
+    departmentId: string
+  }>()
+
+  const departmentIdNumber = Number(departmentId)
+
   const searchParams = useSearchParams()
   const router = useRouter()
   const [dateRangeState, setDateRangeState] = useState<DateRange>("week")
@@ -32,7 +40,7 @@ const ProfileDealsData = ({ user }: { user: User }) => {
     router.push(`?${params.toString()}`)
   }
 
-  const { data, isPending } = useGetDealsByDateRange(userId, dateRangeState, departmentId)
+  const { data, isPending } = useGetDealsByDateRange(userId, dateRangeState, departmentIdNumber)
 
   const isPendingData = isPending
 

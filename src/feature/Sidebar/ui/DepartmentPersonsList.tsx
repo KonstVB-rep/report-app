@@ -4,7 +4,7 @@ import { memo, type PropsWithChildren, useCallback, useState } from "react"
 import { PermissionEnum } from "@prisma/client"
 import clsx from "clsx"
 import { ChevronRight } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import z from "zod"
 import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
@@ -49,7 +49,13 @@ const pageParamsSchema = z.object({
 })
 
 const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
-  const { departmentId } = useTypedParams(pageParamsSchema)
+  // const { departmentId } = useTypedParams(pageParamsSchema)
+
+  const { departmentId } = useParams<{
+    departmentId: string
+  }>()
+
+  const departmentIdNumber = Number(departmentId)
 
   const { authUser } = useStoreUser()
 
@@ -57,7 +63,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
 
   const [open, setOpen] = useState(false)
 
-  const isActiveDepartment = item.id === Number(departmentId)
+  const isActiveDepartment = item.id === Number(departmentIdNumber)
 
   const handleDepartmentClick = useCallback(
     (e: React.MouseEvent) => {

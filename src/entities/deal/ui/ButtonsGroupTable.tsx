@@ -3,13 +3,16 @@ import ProfileSettings from "@/entities/user/ui/ProfileSettings"
 import { useGetUser } from "@/feature/user/hooks/query"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import LinkToUserTable from "./LinkToUserTable"
+import { useParams } from "next/navigation"
 
 const pageParamsSchema = z.object({
   userId: z.string(),
 })
 
 const ButtonsGroupTable = () => {
-  const { userId } = useTypedParams(pageParamsSchema)
+  const { userId } = useParams<{
+    userId: string
+  }>()
 
   const { data: user } = useGetUser(userId)
 
