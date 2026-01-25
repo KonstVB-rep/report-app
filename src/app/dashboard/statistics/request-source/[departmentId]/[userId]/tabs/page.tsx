@@ -48,9 +48,9 @@ const hiddenColsRetail = {
   user: false,
 }
 
-const pageParamsSchema = z.object({
-  userId: z.string(),
-})
+// const pageParamsSchema = z.object({
+//   userId: z.string(),
+// })
 
 const MarketingDealsTable = () => {
   // const { userId } = useTypedParams(pageParamsSchema)
@@ -58,6 +58,7 @@ const MarketingDealsTable = () => {
   const { userId } = useParams<{
     userId: string
   }>()
+
   const [activeTab, setActiveTab] = useState<TableType>("retails")
 
   const hasAccess = useMemo(

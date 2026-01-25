@@ -4,16 +4,22 @@ import type { UserResponse } from "@/entities/user/types"
 import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import useStoreDepartment from "../store/useStoreDepartment"
 import UserItem from "./UserItem"
+import { useParams } from "next/navigation"
 
 const UserDepartmentList = () => {
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
+  const { departmentId } = useParams<{
+    departmentId: string
+  }>()
+
+  const departmentIdNumber = Number(departmentId)
   const { departments } = useStoreDepartment()
 
   if (!departmentId || !departments) {
     return <p>Отдел не найден</p>
   }
 
-  const currentDepartment = departments.find((dept) => dept.id === departmentId)
+  const currentDepartment = departments.find((dept) => dept.id === departmentIdNumber)
 
   if (!currentDepartment) {
     return <p>Отдел не найден</p>
