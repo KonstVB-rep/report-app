@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CRM web app",
   description: "Приложеник для учето поступающих заявок",
-  manifest: "/manifest.webmanifest",
+  // manifest: "/manifest.webmanifest",
 
   icons: [
     { rel: "icon", url: "/icon-192x192.png", sizes: "192x192" },

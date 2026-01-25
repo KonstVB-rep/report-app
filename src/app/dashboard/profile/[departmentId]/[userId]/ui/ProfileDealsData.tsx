@@ -29,10 +29,12 @@ const ProfileDealsData = ({ user }: { user: User }) => {
 
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [dateRangeState, setDateRangeState] = useState<DateRange>("week")
+  // const [dateRangeState, setDateRangeState] = useState<DateRange>("week");
+
+  const dateRangeState = (searchParams.get("dateRange") as DateRange) || "week"
 
   const handleClick = (value: DateRange) => {
-    setDateRangeState(value as DateRange)
+    // setDateRangeState(value as DateRange);
     const params = new URLSearchParams(searchParams.toString())
 
     params.set("dateRange", value)
@@ -45,14 +47,15 @@ const ProfileDealsData = ({ user }: { user: User }) => {
   const isPendingData = isPending
 
   useEffect(() => {
-    const param = searchParams.get("dateRange") || "week"
-    setDateRangeState(param as DateRange)
-    router.push(`?dateRange=${param.toString()}`)
-  }, [router, searchParams])
+    if (!searchParams.has("dateRange")) {
+      router.replace(`?dateRange=week`, { scroll: false })
+    }
+  }, [searchParams, router])
 
   if (NOT_MANAGERS_POSITIONS_VALUES.includes(user.position)) {
     return null
   }
+  console.log(isPending, "isPending")
 
   return (
     <div className="flex flex-col gap-2">
@@ -75,41 +78,45 @@ const ProfileDealsData = ({ user }: { user: User }) => {
         <div className="p-2 border flex flex-col gap-2 justify-around rounded-md">
           <div className="grid grid-cols-4 gap-2">
             <span className="p-2 rounded-md bg-muted">Проекты: {data?.projects?.length || 0}</span>
-            <span className="p-2 rounded-md bg-muted border-red-600 border">
+            <span className="p-2 rounded-md bg-muted shadow-[0_0_0_2px] shadow-red-600">
               Отказы: {data?.projects?.reject || 0}
             </span>
-            <span className="p-2 rounded-md bg-muted border-lime-600 border">
+            <span className="p-2 rounded-md bg-muted shadow-[0_0_0_2px] shadow-lime-600">
               Оплачены: {data?.projects?.paid || 0}
             </span>
-            <span className="p-2 rounded-md bg-muted border-green-800 border">
+            <span className="p-2 rounded-md bg-muted shadow-[0_0_0_2px] shadow-green-800">
               Закрыты: {data?.projects?.closed || 0}
             </span>
           </div>
           <div className="p-2 rounded-md bg-muted">
-            Общая сумма КП: {formatterCurrency.format(Number(data?.projects?.money?.sumCp))}
+            Общая сумма КП:{" "}
+            {isPending ? "" : formatterCurrency.format(Number(data?.projects?.money?.sumCp))}
           </div>
           <div className="p-2 rounded-md bg-muted">
-            Общая дельта: {formatterCurrency.format(Number(data?.projects?.money?.sumDelta))}
+            Общая дельта:{" "}
+            {isPending ? "" : formatterCurrency.format(Number(data?.projects?.money?.sumDelta))}
           </div>
         </div>
         <div className="p-2 border flex flex-col gap-2 justify-around rounded-md">
           <div className="grid grid-cols-4 gap-2">
             <span className="p-2 rounded-md bg-muted">Розница: {data?.retails?.length || 0}</span>
-            <span className="p-2 rounded-md bg-muted border-red-600 border">
+            <span className="p-2 rounded-md bg-muted shadow-[0_0_0_2px] shadow-red-600">
               Отказы: {data?.retails?.reject || 0}
             </span>
-            <span className="p-2 rounded-md bg-muted border-lime-600 border">
+            <span className="p-2 rounded-md bg-muted shadow-[0_0_0_2px] shadow-lime-600">
               Оплачены: {data?.retails?.paid || 0}
             </span>
-            <span className="p-2 rounded-md bg-muted border-green-800 border">
+            <span className="p-2 rounded-md bg-muted shadow-[0_0_0_2px] shadow-green-800">
               Закрыты: {data?.retails?.closed || 0}
             </span>
           </div>
           <div className="p-2 rounded-md bg-muted">
-            Общая сумма КП: {formatterCurrency.format(Number(data?.retails?.money?.sumCp)) || 0}
+            Общая сумма КП:{" "}
+            {isPending ? "" : formatterCurrency.format(Number(data?.retails?.money?.sumCp)) || 0}
           </div>
           <div className="p-2 rounded-md bg-muted">
-            Общая дельта: {formatterCurrency.format(Number(data?.retails.money.sumDelta))}
+            Общая дельта:{" "}
+            {isPending ? "" : formatterCurrency.format(Number(data?.retails.money.sumDelta))}
           </div>
         </div>
       </div>

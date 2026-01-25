@@ -668,6 +668,7 @@ export const getDealsByDateRange = async (
   const dealRwithMoney = dealsR.filter(
     (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID",
   )
+
   const commercialOfferAmountsP = dealPwithMoney.reduce(
     (acc, item) => {
       acc.sumCp += Number(item.amountCP)
