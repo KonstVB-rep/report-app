@@ -1,6 +1,6 @@
 "use client"
 
-import { Activity, Suspense } from "react"
+import { Activity, Suspense, use } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
@@ -26,22 +26,19 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   ssr: false,
 })
 
-const TasksPage = () => {
+const TasksPage = ({ params }: { params: Promise<{ departmentId: number }> }) => {
+  const { departmentId } = use(params)
+
+  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
   const { authUser } = useStoreUser()
 
   const hasAccess = hasAccessToDataSummary(authUser?.id as string, PermissionEnum.TASK_MANAGEMENT)
-
-  const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
 
   const { data, isPending } = useGetTasksDepartment()
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
 
   if (!authUser) return null
-
-  if (!departmentId) {
-    return <LoaderCircleInWater />
-  }
 
   if (!hasAccess) {
     return <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />

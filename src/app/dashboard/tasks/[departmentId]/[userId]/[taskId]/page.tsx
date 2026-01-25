@@ -1,5 +1,6 @@
 "use client"
 
+import { use } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import z from "zod"
@@ -27,10 +28,16 @@ const pageParamsSchema = z.object({
     }),
 })
 
-const TaskPage = () => {
+const TaskPage = ({
+  params,
+}: {
+  params: Promise<{ departmentId: number; userId: string; taskId: string }>
+}) => {
   const { authUser } = useStoreUser()
 
-  const { taskId, userId, departmentId } = useTypedParams(pageParamsSchema)
+  // const { taskId, userId, departmentId } = useTypedParams(pageParamsSchema)
+
+  const { departmentId, userId, taskId } = use(params)
 
   const { data, isPending } = useGetTask(taskId)
 

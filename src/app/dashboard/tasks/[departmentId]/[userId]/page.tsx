@@ -1,6 +1,6 @@
 "use client"
 
-import { Activity, Suspense } from "react"
+import { Activity, Suspense, use } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
@@ -28,10 +28,16 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   loading: () => <LoadingView />,
 })
 
-const UserTasksPage = () => {
+const UserTasksPage = ({
+  params,
+}: {
+  params: Promise<{ departmentId: number; userId: string }>
+}) => {
   const { authUser } = useStoreUser()
 
-  const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
+  const { departmentId, userId } = use(params)
+
+  // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
 
   const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 

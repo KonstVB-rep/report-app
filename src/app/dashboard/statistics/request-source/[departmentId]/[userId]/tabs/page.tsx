@@ -7,7 +7,6 @@ import dynamic from "next/dynamic"
 import z from "zod"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import type { TableType } from "@/entities/deal/types"
-import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs" // TabsContent НЕ импортируем
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
