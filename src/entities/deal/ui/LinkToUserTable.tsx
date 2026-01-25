@@ -47,17 +47,13 @@ const pageParamsSchema = z.object({
 const LinkToUserTable = () => {
   // const { dealType, userId, departmentId } = useTypedParams(pageParamsSchema)
 
-  const {
-    departmentId: depNum,
-    dealType,
-    userId,
-  } = useParams<{
-    departmentId: string
+  const { departmentId, dealType, userId } = useParams<{
+    departmentId: keyof typeof DepartmentLabelsById
     userId: string
     dealType: DealType
   }>()
 
-  const departmentId = Number(depNum)
+  // const departmentId = Number(depNum)
   const { authUser } = useStoreUser()
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)
