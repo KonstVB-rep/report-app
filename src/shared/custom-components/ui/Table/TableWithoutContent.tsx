@@ -1,8 +1,8 @@
 import { useState } from "react"
 import type { Header, Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
+import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
 import TableCellComponent from "./TableCellCompoment"
-import { getRowClassName } from "./TableRowDealOrTask"
 
 type Props<T extends Record<string, unknown>> = {
   row: Row<T>

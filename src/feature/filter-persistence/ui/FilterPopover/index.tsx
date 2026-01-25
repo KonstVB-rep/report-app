@@ -20,9 +20,6 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
   const { columnFilters, setColumnFilters } = useDataTableFiltersContext()
 
   const existingFilter: ColumnFilter[] | undefined = columnFilters?.filter((f) => f.id === columnId)
-  // console.log(existingFilter, "existingFilter");
-  // console.log(existingFilter, "existingFilter");
-  // const filterValues = (existingFilter?.value as string[]) || [];
 
   const normalizedOptions = Array.isArray(options)
     ? options
@@ -62,8 +59,6 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
     }
   }
 
-  // console.log(filterValues, "filterValues");
-
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger
@@ -89,9 +84,10 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
               <div className="flex w-fit items-center gap-2 px-1 text-sm p-1" key={id}>
                 <Checkbox
                   checked={existingFilter.some((f) => {
-                    // Проверяем, что value — массив строк
-                    // console.log(f, "f");
-                    return Array.isArray(f.value) && f.value.includes(id)
+                    if (Array.isArray(f.value)) {
+                      return Array.isArray(f.value) && f.value.includes(id)
+                    }
+                    return f.value === id
                   })}
                   id={id}
                   onCheckedChange={() => handleChange(id)}

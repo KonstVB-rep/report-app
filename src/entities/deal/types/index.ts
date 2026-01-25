@@ -8,6 +8,7 @@ import type {
   StatusProject,
   StatusRetail,
 } from "@prisma/client"
+import type { SharedTableRowProps } from "@/shared/custom-components/ui/Table/model/types"
 
 export type DirectionType = DirectionProject
 
@@ -153,3 +154,5 @@ export type ProjectWithManagersIdsContacts = ProjectWithManagersIds & {
 export type RetailWithManagersIdsContacts = RetailWithManagersIds & {
   additionalContacts: Contact[]
 }
+
+export type DealTableRowProps<T extends DealBase> = SharedTableRowProps<T>

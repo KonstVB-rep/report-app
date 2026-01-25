@@ -1,4 +1,4 @@
-import type { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table"
+import type { ColumnDef, ColumnFiltersState, Header, Row } from "@tanstack/react-table"
 import type { VirtualItem, Virtualizer } from "@tanstack/react-virtual"
 
 export type DataTableType<TData, TValue> = {
@@ -28,8 +28,15 @@ export type TableBodyRowProps<T> = {
 
 //  export type AllCommonKeys = CommonProperties<[ProjectResponse, RetailResponse, ProjectResponse]>;
 
-export type TypeBaseDT = {
-  id: string
-  dealStatus?: string
-  type?: string
+// export type TypeBaseDT = {
+//   id: string
+//   dealStatus?: string
+//   type?: string
+// }
+
+export type SharedTableRowProps<T> = {
+  row: Row<T>
+  virtualRow: { index: number; start: number }
+  headers?: Header<T, unknown>[]
+  hasEditDeleteActions?: boolean
 }

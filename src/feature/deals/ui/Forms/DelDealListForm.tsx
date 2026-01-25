@@ -19,6 +19,7 @@ const DelDealListForm = ({ deals, close }: Props) => {
   const { mutate: delDeals, isPending } = useDelListDeal((dataFiles: DealFile[]) => {
     if (!dataFiles) {
       close()
+
       return
     }
 

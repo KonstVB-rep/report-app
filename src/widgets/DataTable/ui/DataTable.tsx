@@ -1,5 +1,4 @@
 "use client"
-
 import type { ReactNode } from "react"
 import type { ColumnDef, Table } from "@tanstack/react-table"
 import dynamic from "next/dynamic"

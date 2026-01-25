@@ -3,8 +3,8 @@
 import { useState } from "react"
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
 import { useDisableSavedFilters } from "../hooks/mutate"
+import DropFilters from "./DropFilters"
 import SavedFiltersList from "./SavedFiltersList"
-import SaveOrDropFilters from "./SaveOrDropFilters"
 
 const FiltersManagementContent = () => {
   const { setColumnFilters, setColumnVisibility } = useDataTableFiltersContext()
@@ -21,7 +21,7 @@ const FiltersManagementContent = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <SaveOrDropFilters handleClearFilters={handleClearFilters} />
+      <DropFilters handleClearFilters={handleClearFilters} />
       <SavedFiltersList
         handleClearFilters={handleClearFilters}
         selectedFilterName={selectedFilterName}

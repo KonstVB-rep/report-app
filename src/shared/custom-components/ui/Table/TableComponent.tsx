@@ -1,36 +1,34 @@
 import { useCallback } from "react"
 import type { Row, Table } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-import TableRowDealOrTask from "./TableRowDealOrTask"
+import type { DealBase } from "@/entities/deal/types"
+import { DealTableRow } from "@/entities/deal/ui/DealTableRow"
 import TableRowsWrapper from "./TableRowsWrapper"
 
-interface TableComponentDTProps<T extends Record<string, unknown>> {
+interface TableComponentProps<T extends DealBase> {
   table: Table<T>
   hasEditDeleteActions?: boolean
   openFilters: boolean
-  entityType?: "deal" | "task"
 }
 
-const TableComponentDT = <T extends Record<string, unknown>>({
+const TableComponent = <T extends DealBase>({
   table,
   hasEditDeleteActions = true,
   openFilters,
-  entityType = "deal",
-}: TableComponentDTProps<T>) => {
+}: TableComponentProps<T>) => {
   const headers = table.getHeaderGroups()[0].headers
 
   const renderVirtualRow = useCallback(
     ({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
-      <TableRowDealOrTask<T>
-        entityType={entityType}
+      <DealTableRow<T>
         hasEditDeleteActions={hasEditDeleteActions}
         headers={headers}
         key={row.id}
         row={row}
-        virtualRow={virtualRow} // "deal" или "task"
+        virtualRow={virtualRow}
       />
     ),
-    [headers, hasEditDeleteActions, entityType],
+    [headers, hasEditDeleteActions],
   )
 
   return (
@@ -38,4 +36,4 @@ const TableComponentDT = <T extends Record<string, unknown>>({
   )
 }
 
-export default TableComponentDT
+export default TableComponent

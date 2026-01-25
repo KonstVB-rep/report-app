@@ -5,14 +5,14 @@ import type { ColumnDef, Row } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
 import z from "zod"
 import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
+import type { DealBase } from "@/entities/deal/types"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
 import {
   type TableContextType,
   TableProvider,
 } from "@/shared/custom-components/ui/Table/context/TableContext"
-import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
-import TableComponentDT from "@/shared/custom-components/ui/Table/TableComponentDT"
+import TableComponent from "@/shared/custom-components/ui/Table/TableComponent"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
 
@@ -28,7 +28,7 @@ const ModalDealInfo = dynamic(() => import("@/feature/deals/ui/Modals/ModalDealI
   ssr: false,
 })
 
-interface DealsTableProps<T extends TypeBaseDT> {
+interface DealsTableProps<T extends DealBase> {
   columns: ColumnDef<T, unknown>[]
   data: T[]
   hasEditDeleteActions?: boolean
@@ -39,7 +39,7 @@ const pageParamsSchema = z.object({
   dealType: z.enum(UnionDealTypeParams),
 })
 
-const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
+const DealsTable = <T extends DealBase>(props: DealsTableProps<T>) => {
   const { dealType } = useTypedParams(pageParamsSchema)
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
@@ -76,7 +76,7 @@ const DealsTable = <T extends TypeBaseDT>(props: DealsTableProps<T>) => {
         dealType={dealType}
         hiddenColumns={props.hiddenCols}
         rowData={({ table, openFilters, hasEditDeleteActions }) => (
-          <TableComponentDT
+          <TableComponent
             hasEditDeleteActions={hasEditDeleteActions}
             openFilters={openFilters}
             table={table}

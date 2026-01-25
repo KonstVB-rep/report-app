@@ -139,7 +139,6 @@ const ProjectFormBody = <T extends FieldValues>({
   }, [form, watchedValues])
 
   const getError = (name: keyof T) => form.formState.errors[name]?.message as string
-
   const currentStatus = form.watch("dealStatus" as Path<T>)
 
   return (

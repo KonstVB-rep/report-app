@@ -5,11 +5,11 @@ import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
 import SaveFilter from "./SaveFilter"
 
-type SaveOrDropFiltersType = {
+type DropFiltersType = {
   handleClearFilters: () => void
 }
 
-const SaveOrDropFilters = ({ handleClearFilters }: SaveOrDropFiltersType) => {
+const DropFilters = ({ handleClearFilters }: DropFiltersType) => {
   const searchParams = useSearchParams()
   const { columnFilters, columnVisibility, setSelectedColumns } = useDataTableFiltersContext()
   return (
@@ -36,4 +36,4 @@ const SaveOrDropFilters = ({ handleClearFilters }: SaveOrDropFiltersType) => {
   )
 }
 
-export default SaveOrDropFilters
+export default DropFilters

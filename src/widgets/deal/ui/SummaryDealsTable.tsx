@@ -7,14 +7,18 @@ import z from "zod"
 import Loading from "@/app/dashboard/summary-table/[departmentId]/[dealType]/[userId]/loading"
 import { TableTypes } from "@/entities/deal/lib/constants"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
-import type { DealsUnionType, ProjectResponse, RetailResponse } from "@/entities/deal/types"
+import type {
+  DealBase,
+  DealsUnionType,
+  ProjectResponse,
+  RetailResponse,
+} from "@/entities/deal/types"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable"
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable"
 import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { useGetAllDealsByType } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
-import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DealsTable from "@/widgets/deal/ui/DealsTable"
 import { columnsDataProjectSummary } from "../model/summary-columns-data-project"
@@ -78,8 +82,8 @@ const SummaryDealsTable = () => {
       </div>
 
       <DealsTable
-        columns={columns as ColumnDef<TypeBaseDT>[]}
-        data={(deals as TypeBaseDT[]) || []} // Защита от undefined
+        columns={columns as ColumnDef<DealBase>[]}
+        data={(deals as DealBase[]) || []} // Защита от undefined
         hasEditDeleteActions={false}
         hiddenCols={HIDDEN_COLS}
       />

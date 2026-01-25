@@ -1,11 +1,10 @@
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-import type { ProjectResponse, RetailResponse } from "@/entities/deal/types"
+import type { DealBase, ProjectResponse, RetailResponse } from "@/entities/deal/types"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable"
 import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { useGetAllDealsByType } from "@/feature/deals/api/hooks/query"
-import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import TableRowsWrapper from "@/shared/custom-components/ui/Table/TableRowsWrapper"
 import TableWithoutContent from "@/shared/custom-components/ui/Table/TableWithoutContent"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
@@ -46,8 +45,8 @@ const DealsTabContent = (props: DealsTabContentProps) => {
   return (
     <DealTableTemplate>
       <DataTable
-        columns={columns as ColumnDef<TypeBaseDT>[]}
-        data={deals as TypeBaseDT[]}
+        columns={columns as ColumnDef<DealBase>[]}
+        data={deals as DealBase[]}
         dealType={dealType}
         hasEditDeleteActions={false}
         hiddenColumns={hiddenColumns}
@@ -58,10 +57,10 @@ const DealsTabContent = (props: DealsTabContentProps) => {
               row,
               virtualRow,
             }: {
-              row: Row<TypeBaseDT>
+              row: Row<DealBase>
               virtualRow: VirtualItem
             }) => (
-              <TableWithoutContent<TypeBaseDT>
+              <TableWithoutContent<DealBase>
                 entityType={"deal"}
                 hasEditDeleteActions={hasEditDeleteActions}
                 headers={table.getHeaderGroups()[0].headers}

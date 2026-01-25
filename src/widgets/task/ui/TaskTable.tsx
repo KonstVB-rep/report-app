@@ -10,6 +10,7 @@ import { getUsers } from "@/entities/department/lib/utils"
 import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { columnsDataTask } from "@/entities/task/model/column-data-tasks"
 import type { TaskWithUserInfo } from "@/entities/task/types"
+import { TaskTableRow } from "@/entities/task/ui/TaskTableRow"
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
 import FilterByUsers from "@/feature/filter-persistence/ui/FilterByUsers"
@@ -20,7 +21,6 @@ import {
   type TableContextType,
   TableProvider,
 } from "@/shared/custom-components/ui/Table/context/TableContext"
-import TableRowDealOrTask from "@/shared/custom-components/ui/Table/TableRowDealOrTask"
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow"
 import { useTableState } from "@/shared/hooks/useTableState"
@@ -60,6 +60,7 @@ const pageParamsSchema = z.object({
 
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
+  console.log(data, "data")
 
   const { departmentId } = useTypedParams(pageParamsSchema)
 
@@ -93,7 +94,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
     tableContainerRef,
   })
 
-  if (rows.length === 0) {
+  if (data.length === 0) {
     return (
       <div className="py-4">
         <div className="flex items-center justify-center flex-wrap gap-2 p-2 border-b border-t border-border mb-2">
@@ -117,28 +118,37 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
           </div>
           <FilterTasks columnFilters={columnFilters} />
         </div>
-        <div
-          className="rounded-lg relative h-full overflow-auto max-h-[78vh] border transition-all duration-200"
-          ref={tableContainerRef}
-        >
-          <TableProvider<T> getContextMenuActions={getContextMenuActions}>
-            <TableTemplate className="rounded-md" table={table} totalSize={totalSize}>
-              <VirtualRow<T>
-                renderRow={({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
-                  <TableRowDealOrTask<T>
-                    entityType={"task"}
-                    headers={table.getHeaderGroups()[0].headers}
-                    key={row.id}
-                    row={row}
-                    virtualRow={virtualRow}
-                  />
-                )}
-                rows={rows}
-                virtualItems={virtualItems}
-              />
-            </TableTemplate>
-          </TableProvider>
-        </div>
+        {rows.length === 0 ? (
+          <div className="py-4">
+            <div className="flex items-center justify-center flex-wrap gap-2 p-2 border-b border-t border-border mb-2">
+              <h1 className="text-xl text-center w-full uppercase text-muted-foreground">
+                Список пуст
+              </h1>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="rounded-lg relative h-full overflow-auto max-h-[78vh] border transition-all duration-200"
+            ref={tableContainerRef}
+          >
+            <TableProvider<T> getContextMenuActions={getContextMenuActions}>
+              <TableTemplate className="rounded-md" table={table} totalSize={totalSize}>
+                <VirtualRow<T>
+                  renderRow={({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
+                    <TaskTableRow
+                      headers={table.getHeaderGroups()[0].headers}
+                      key={row.id}
+                      row={row}
+                      virtualRow={virtualRow}
+                    />
+                  )}
+                  rows={rows}
+                  virtualItems={virtualItems}
+                />
+              </TableTemplate>
+            </TableProvider>
+          </div>
+        )}
       </div>
     </DataTableFiltersProvider>
   )

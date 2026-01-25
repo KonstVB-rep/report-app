@@ -5,14 +5,13 @@ import type { ColumnDef } from "@tanstack/react-table"
 import z from "zod"
 import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
-import type { ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types"
+import type { DealBase, ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types"
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton"
 import { useDealsUser } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition"
-import type { TypeBaseDT } from "@/shared/custom-components/ui/Table/model/types"
 import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { columnsDataContract } from "../model/columns-data-contracts"
 import { columnsDataProject } from "../model/columns-data-project"
@@ -88,8 +87,8 @@ const PersonDealsTable = () => {
           <TableRowsSkeleton />
         ) : (
           <DealsTable
-            columns={Columns(dealType as TableType) as ColumnDef<TypeBaseDT>[]}
-            data={data as TypeBaseDT[]}
+            columns={Columns(dealType as TableType) as ColumnDef<DealBase>[]}
+            data={data as DealBase[]}
             hiddenCols={hiddenDefCols[dealType as TableType]}
           />
         )}
