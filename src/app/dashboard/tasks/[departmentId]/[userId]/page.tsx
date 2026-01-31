@@ -1,6 +1,6 @@
 "use client"
 
-import { Activity, Suspense, use } from "react"
+import { Activity, Suspense } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { useParams } from "next/navigation"
@@ -16,7 +16,6 @@ import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
-import { pageParamsSchemaDepsIsUserId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import useViewType from "@/shared/hooks/useViewType"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
@@ -38,8 +37,6 @@ const UserTasksPage = () => {
   }>()
 
   const departmentIdNumber = Number(departmentId)
-
-  // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
 
   const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 

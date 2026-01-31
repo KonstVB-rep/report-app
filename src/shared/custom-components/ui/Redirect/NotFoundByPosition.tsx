@@ -1,15 +1,12 @@
 "use client"
 
 import { type ReactNode, useEffect, useState } from "react"
+import { useParams } from "next/navigation"
 import NotFound from "@/app/not-found"
 import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
-import { pageParamsSchemaDepsIsUserId, useTypedParams } from "@/shared/hooks/useTypedParams"
-import { useParams } from "next/navigation"
 
 const NotFoundByPosition = ({ children }: { children: ReactNode }) => {
-  // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
-
   const { userId, departmentId } = useParams<{
     userId: string
     departmentId: string

@@ -5,14 +5,8 @@ import { PermissionEnum } from "@prisma/client"
 import clsx from "clsx"
 import { ChevronRight } from "lucide-react"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import z from "zod"
-import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
-import type {
-  DepartmentListItemType,
-  DepartmentsUnionIds,
-  DepartmentUserItem,
-} from "@/entities/department/types"
+import type { DepartmentListItemType, DepartmentUserItem } from "@/entities/department/types"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import {
   Accordion,
@@ -32,25 +26,10 @@ import {
   SidebarMenuSub,
 } from "@/shared/components/ui/sidebar"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { DepartmentLinks } from "./DepartmentLinks"
 import LinkProfile from "./LinkProfile"
 
-const pageParamsSchema = z.object({
-  dealType: z.enum(UnionDealTypeParams).optional(),
-  userId: z.string().optional(),
-  departmentId: z.coerce
-    .number()
-    .positive()
-    .transform((value) => {
-      return value as DepartmentsUnionIds
-    })
-    .optional(),
-})
-
 const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
-  // const { departmentId } = useTypedParams(pageParamsSchema)
-
   const { departmentId } = useParams<{
     departmentId: string
   }>()
@@ -117,7 +96,6 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
 export default memo(DepartmentPersonsList)
 
 const SideBarMenuItemWrapper = ({ user }: { user: DepartmentUserItem }) => {
-  // const { dealType, userId } = useTypedParams(pageParamsSchema)
   const { userId, dealType } = useParams<{
     userId: string
     dealType: "retails" | "projects" | "contracts"

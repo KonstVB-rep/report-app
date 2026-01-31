@@ -21,10 +21,6 @@ type ButtonExportXlsType<T extends Record<string, unknown>> = {
   isShow: boolean
 }
 
-// const pageParamsSchema = z.object({
-//   dealType: z.enum(TableTypes).optional(),
-// });
-
 const ButtonExportTableXls = <T extends Record<string, unknown>>({
   columns,
   table,

@@ -40,49 +40,46 @@ const ContextRowTable = ({
   const renderedModals = modals(setOpenModal)
 
   return (
-    <>
-      {/* {active && <DealPageInfo />} */}
-      <Dialog onOpenChange={() => setOpenModal(null)} open={!!openModal}>
-        <ContextMenu>
-          <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+    <Dialog onOpenChange={() => setOpenModal(null)} open={!!openModal}>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
-          <ContextMenuContent className="grid gap-1 bg-background">
-            {path && (
+        <ContextMenuContent className="grid gap-1 bg-background">
+          {path && (
+            <ContextMenuItem
+              className="flex w-full items-center justify-start gap-2 p-2 cursor-pointer"
+              onClick={() => setOpenModal("more")}
+            >
+              <FileText size="14" /> Подробнее
+            </ContextMenuItem>
+          )}
+
+          {hasEditDeleteActions && (
+            <>
               <ContextMenuItem
-                className="flex w-full items-center justify-start gap-2 p-2 cursor-pointer"
-                onClick={() => setOpenModal("more")}
+                className="flex cursor-pointer gap-2"
+                onClick={() => setOpenModal("edit")}
               >
-                <FileText size="14" /> Подробнее
+                <FilePenLine size="14" /> Редактировать
               </ContextMenuItem>
-            )}
 
-            {hasEditDeleteActions && (
-              <>
+              <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
                 <ContextMenuItem
                   className="flex cursor-pointer gap-2"
-                  onClick={() => setOpenModal("edit")}
+                  onClick={() => setOpenModal("delete")}
                 >
-                  <FilePenLine size="14" /> Редактировать
+                  <Trash2 size="14" /> Удалить
                 </ContextMenuItem>
+              </ProtectedByPermissions>
+            </>
+          )}
+        </ContextMenuContent>
+      </ContextMenu>
 
-                <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
-                  <ContextMenuItem
-                    className="flex cursor-pointer gap-2"
-                    onClick={() => setOpenModal("delete")}
-                  >
-                    <Trash2 size="14" /> Удалить
-                  </ContextMenuItem>
-                </ProtectedByPermissions>
-              </>
-            )}
-          </ContextMenuContent>
-        </ContextMenu>
-
-        {Object.entries(renderedModals).map(
-          ([key, modal]) => key === openModal && <Fragment key={key}>{modal}</Fragment>,
-        )}
-      </Dialog>
-    </>
+      {Object.entries(renderedModals).map(
+        ([key, modal]) => key === openModal && <Fragment key={key}>{modal}</Fragment>,
+      )}
+    </Dialog>
   )
 }
 

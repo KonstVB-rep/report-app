@@ -1,19 +1,15 @@
 import { useParams } from "next/navigation"
 import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
 import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
-// import { getRowClassName } from "@/shared/custom-components/ui/Table/TableRowDealOrTask";
-import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
-import type { DealBase, DealTableRowProps } from "../types"
+import type { DealTableRowProps, DealUnion } from "../types"
 
-export const DealTableRow = <T extends DealBase>({
+export const DealTableRow = <T extends DealUnion>({
   row,
   virtualRow,
   headers,
   ...rest
 }: DealTableRowProps<T>) => {
-  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
-
   const { departmentId } = useParams<{
     departmentId: string
   }>()

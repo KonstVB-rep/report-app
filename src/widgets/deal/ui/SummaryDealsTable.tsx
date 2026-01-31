@@ -1,12 +1,10 @@
 "use client"
 
 import { useMemo } from "react"
-import { type DealType, PermissionEnum } from "@prisma/client"
+import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import { useParams } from "next/navigation"
-import z from "zod"
 import Loading from "@/app/dashboard/summary-table/[departmentId]/[dealType]/[userId]/loading"
-import { TableTypes } from "@/entities/deal/lib/constants"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import type {
   DealBase,
@@ -17,10 +15,8 @@ import type {
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable"
 import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable"
-import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { useGetAllDealsByType } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import DealsTable from "@/widgets/deal/ui/DealsTable"
 import { columnsDataProjectSummary } from "../model/summary-columns-data-project"
 import { columnsDataRetailSummary } from "../model/summary-columns-data-retail"
@@ -41,17 +37,7 @@ const getColumns = (
 
 const HIDDEN_COLS = { id: false, resource: false }
 
-const pageParamsSchema = z.object({
-  dealType: z.enum(TableTypes),
-  userId: z.string(),
-  departmentId: z.coerce
-    .number()
-    .positive()
-    .transform((value) => value as DepartmentsUnionIds),
-})
-
 const SummaryDealsTable = () => {
-  // const { userId, departmentId, dealType } = useTypedParams(pageParamsSchema)
   const {
     departmentId: depNum,
     userId,

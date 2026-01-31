@@ -6,13 +6,10 @@ import { addCorrectTimeInDates, formatDate } from "@/entities/task/lib/helpers"
 import { defaultTaskValues } from "@/feature/task/model/defaultvaluesForm"
 import { TaskFormSchema, type TaskSchema } from "@/feature/task/model/schema"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
-import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import { useCreateTask } from "../../hooks/mutate"
 import TaskForm from "./TaskForm"
 
 const CreateTaskForm = () => {
-  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
-
   const { departmentId: depNum } = useParams<{
     departmentId: string
   }>()

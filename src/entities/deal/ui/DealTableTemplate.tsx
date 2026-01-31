@@ -4,7 +4,6 @@ import { useParams } from "next/navigation"
 import z from "zod"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useGetUser } from "@/feature/user/hooks/query"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import ErrorMessageTable from "./ErrorMessageTable"
 import DealsSkeleton from "./Skeletons/DealsSkeleton"
 
@@ -12,13 +11,7 @@ type DealTableTemplateProps = {
   children: React.ReactNode
 }
 
-const pageParamsSchema = z.object({
-  userId: z.string(),
-})
-
 const DealTableTemplate = ({ children }: DealTableTemplateProps) => {
-  // const { userId } = useTypedParams(pageParamsSchema)
-
   const { userId } = useParams<{ userId: string }>()
   const { authUser } = useStoreUser()
 

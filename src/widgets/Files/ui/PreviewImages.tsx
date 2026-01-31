@@ -41,7 +41,6 @@ const LoaderFileX = () => (
 
 const CarouselItemImage = ({ filePath }: { filePath: string }) => {
   const { data: fileData, isPending } = useGetResourceInfo(filePath)
-  console.log(isPending, "isPending")
 
   if (isPending)
     return (

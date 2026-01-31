@@ -1,17 +1,22 @@
 import { useCallback } from "react"
 import type { Row, Table } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-import type { DealBase } from "@/entities/deal/types"
+import type {
+  DealBase,
+  DealUnion,
+  ProjectResponseWithContactsAndFiles,
+  RetailResponseWithContactsAndFiles,
+} from "@/entities/deal/types"
 import { DealTableRow } from "@/entities/deal/ui/DealTableRow"
 import TableRowsWrapper from "./TableRowsWrapper"
 
-interface TableComponentProps<T extends DealBase> {
+interface TableComponentProps<T extends DealUnion> {
   table: Table<T>
   hasEditDeleteActions?: boolean
   openFilters: boolean
 }
 
-const TableComponent = <T extends DealBase>({
+const TableComponent = <T extends DealUnion>({
   table,
   hasEditDeleteActions = true,
   openFilters,

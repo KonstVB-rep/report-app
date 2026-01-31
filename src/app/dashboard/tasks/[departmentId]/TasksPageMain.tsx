@@ -1,6 +1,6 @@
 "use client"
 
-import { Activity, Suspense, use } from "react"
+import { Suspense } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
@@ -15,7 +15,6 @@ import { Separator } from "@/shared/components/ui/separator"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
-import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import useViewType from "@/shared/hooks/useViewType"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
@@ -29,7 +28,6 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
 const TasksPageMain = (params: { departmentId: string }) => {
   const departmentId = Number(params.departmentId)
 
-  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
   const { authUser } = useStoreUser()
 
   const hasAccess = hasAccessToDataSummary(authUser?.id as string, PermissionEnum.TASK_MANAGEMENT)

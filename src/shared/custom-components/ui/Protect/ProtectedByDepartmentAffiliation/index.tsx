@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { checkDepartment } from "@/shared/api/checkByServer"
-import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 
 const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren) => {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null)
   const [loading, setloading] = useState(false)
-  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
 
   const { departmentId } = useParams<{
     departmentId: string

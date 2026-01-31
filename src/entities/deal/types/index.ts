@@ -1,6 +1,5 @@
 import type {
   DealFile,
-  DealType,
   DeliveryProject,
   DeliveryRetail,
   DirectionProject,
@@ -9,6 +8,14 @@ import type {
   StatusRetail,
 } from "@prisma/client"
 import type { SharedTableRowProps } from "@/shared/custom-components/ui/Table/model/types"
+
+export const DEAL_TYPE = {
+  PROJECT: "PROJECT",
+  RETAIL: "RETAIL",
+  ORDER: "ORDER",
+} as const
+
+export type DealType = (typeof DEAL_TYPE)[keyof typeof DEAL_TYPE]
 
 export type DirectionType = DirectionProject
 
@@ -155,4 +162,14 @@ export type RetailWithManagersIdsContacts = RetailWithManagersIds & {
   additionalContacts: Contact[]
 }
 
-export type DealTableRowProps<T extends DealBase> = SharedTableRowProps<T>
+export type DealProject = ProjectResponseWithContactsAndFiles & {
+  type: typeof DEAL_TYPE.PROJECT
+}
+
+export type DealRetail = RetailResponseWithContactsAndFiles & {
+  type: typeof DEAL_TYPE.RETAIL
+}
+
+export type DealUnion = DealProject | DealRetail
+
+export type DealTableRowProps<T extends DealUnion> = SharedTableRowProps<T>

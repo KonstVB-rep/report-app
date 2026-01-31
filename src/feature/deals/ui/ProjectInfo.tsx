@@ -2,13 +2,13 @@
 
 import { Building, Info, PhoneOutgoing } from "lucide-react"
 import dynamic from "next/dynamic"
+import type { ProjectResponseWithContactsAndFiles } from "@/entities/deal/types"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
-import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import { useGetProjectById } from "../api/hooks/query"
 import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData"
 import FinanceInfo from "./FinanceInfo"
 import SettingDeal from "./SettingDeal"
@@ -23,9 +23,7 @@ const PreviewImagesList = dynamic(() => import("@/widgets/Files/ui/PreviewImages
   ssr: false,
   loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
 })
-const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
-  ssr: false,
-})
+
 const CardMainContact = dynamic(() => import("@/entities/contact/ui/CardMainContact"), {
   ssr: false,
 })
@@ -33,34 +31,34 @@ const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/Contac
   ssr: false,
 })
 
-const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
-  const { data: deal, isLoading } = useGetProjectById(dealId, false)
-
+const ProjectItemInfo = ({ dealData }: { dealData: ProjectResponseWithContactsAndFiles }) => {
+  console.log(dealData, "dealInfo")
   const { dataFinance, formattedDate, statusLabel, directionLabel, deliveryLabel, typeLabel } =
-    useNormalizeProjectData(deal)
-
-  if (isLoading) return <LoaderCircleInWater />
-  if (!deal) return <NotFoundDeal />
+    useNormalizeProjectData(dealData)
 
   return (
-    <MotionDivY className="grid gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto w-full">
+    <MotionDivY className="grid grid-rows-[auto_auto_1fr_auto] gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto w-full">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
           <p className="text-xs">Дата: {formattedDate}</p>
         </div>
-        <SettingDeal id={deal.id} type={deal.type} userId={deal?.userId || "Не назначен"} />
+        <SettingDeal
+          id={dealData.id}
+          type={dealData.type}
+          userId={dealData?.userId || "Не назначен"}
+        />
       </div>
 
-      <ManagersListByDeal managers={deal.managers} userId={deal?.userId || "Не назначен"} />
+      <ManagersListByDeal managers={dealData.managers} userId={dealData?.userId || "Не назначен"} />
 
       <div className="grid gap-2">
-        {deal?.plannedDateConnection && (
+        {dealData?.plannedDateConnection && (
           <div className="flex gap-2 items-center p-2 mt-2 border-blue-500 rounded border-2">
             <PhoneOutgoing className="text-orange-600" />
             <span>
               {" "}
-              Плановая дата контакта: {deal?.plannedDateConnection?.toLocaleDateString()}
+              Плановая дата контакта: {dealData?.plannedDateConnection?.toLocaleDateString()}
             </span>
           </div>
         )}
@@ -71,7 +69,7 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
                 <div className="grid w-full gap-2">
                   <div className="flex w-full items-start justify-start gap-4 text-lg">
                     <Building className="icon-deal_info" size="40" strokeWidth={1} />
-                    <ValueSpan>{deal.nameObject}</ValueSpan>
+                    <ValueSpan>{dealData.nameObject}</ValueSpan>
                   </div>
 
                   <div className="first-letter:capitalize">
@@ -90,7 +88,11 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
 
             <div className="grid gap-2">
               <IntoDealItem title="Основной контакт">
-                <CardMainContact contact={deal.contact} email={deal.email} phone={deal.phone} />
+                <CardMainContact
+                  contact={dealData.contact}
+                  email={dealData.email}
+                  phone={dealData.phone}
+                />
               </IntoDealItem>
             </div>
           </div>
@@ -101,7 +103,7 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
                 <RowInfoDealProp
                   direction="column"
                   label="Название сделки:"
-                  value={deal.nameDeal}
+                  value={dealData.nameDeal}
                 />
 
                 <RowInfoDealProp direction="column" label="Тип сделки:" value={typeLabel} />
@@ -109,7 +111,7 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
                 <RowInfoDealProp
                   direction="column"
                   label="Дата запроса:"
-                  value={deal.dateRequest?.toLocaleDateString()}
+                  value={dealData.dateRequest?.toLocaleDateString()}
                 />
               </IntoDealItem>
 
@@ -124,10 +126,10 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
               </IntoDealItem>
             </div>
 
-            {deal.additionalContacts?.length > 0 && (
+            {dealData.additionalContacts?.length > 0 && (
               <IntoDealItem title="Дополнительные контакты">
                 <div className="flex h-full flex-wrap gap-2">
-                  {deal.additionalContacts.map((contact) => (
+                  {dealData.additionalContacts.map((contact) => (
                     <ContactCardInDealInfo contact={contact} key={contact.id} />
                   ))}
                 </div>
@@ -137,23 +139,25 @@ const ProjectItemInfo = ({ dealId }: { dealId: string }) => {
         </div>
 
         <IntoDealItem title="Комментарии">
-          <ValueSpan className="first-letter:capitalize">{deal.comments || "Нет данных"}</ValueSpan>
+          <ValueSpan className="first-letter:capitalize">
+            {dealData.comments || "Нет данных"}
+          </ValueSpan>
         </IntoDealItem>
       </div>
 
       <div className="flex flex-wrap gap-2">
         <FileList
           data={{
-            userId: deal.userId,
-            dealId: deal.id,
-            dealType: deal.type,
+            userId: dealData.userId,
+            dealId: dealData.id,
+            dealType: dealData.type,
           }}
         />
         <PreviewImagesList
           data={{
-            userId: deal.userId,
-            dealId: deal.id,
-            dealType: deal.type,
+            userId: dealData.userId,
+            dealId: dealData.id,
+            dealType: dealData.type,
           }}
         />
       </div>

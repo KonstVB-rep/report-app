@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { StatusProject } from "@prisma/client"
 import { ArrowLeft } from "lucide-react"
+import { useParams } from "next/navigation"
 import {
   type FieldValues,
   type Path,
@@ -10,8 +11,6 @@ import {
   type UseFormReturn,
   useWatch,
 } from "react-hook-form"
-import z from "zod"
-import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
 import { formatNumber, parseFormattedNumber } from "@/entities/deal/lib/helpers"
 import type { Contact } from "@/entities/deal/types"
 import ContactDeal from "@/feature/contact/ui/ContactDeal"
@@ -33,7 +32,6 @@ import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
 import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
@@ -43,7 +41,6 @@ import {
   StatusProjectLabels,
 } from "../../lib/constants"
 import AddManagerToDeal from "../Modals/AddManagerToDeal"
-import { useParams } from "next/navigation"
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -66,10 +63,6 @@ const statusOptions = {
   contract: statusOptionsContracts,
 }
 
-// const pageParamsSchema = z.object({
-//   dealType: z.enum(UnionDealTypeParams),
-// })
-
 const ProjectFormBody = <T extends FieldValues>({
   form,
   onSubmit,
@@ -78,8 +71,9 @@ const ProjectFormBody = <T extends FieldValues>({
   managerId = "",
   titleForm,
 }: ProjectFormBodyProps<T>) => {
-  // const { dealType } = useTypedParams(pageParamsSchema)
-  const { dealType } = useParams<{ dealType: "retails" | "projects" | "contracts" }>()
+  const { dealType } = useParams<{
+    dealType: "retails" | "projects" | "contracts"
+  }>()
 
   const initialManagersIds = form.getValues("managersIds" as Path<T>)
   const initialManagers = initialManagersIds?.length
@@ -301,30 +295,29 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"resource" as Path<T>}
                   placeholder="Откуда пришёл клиент"
                 />
-
-                <FormField
-                  control={form.control}
-                  name={"comments" as Path<T>}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Примечание / Комментарии</FormLabel>
-
-                      <FormControl>
-                        <Textarea
-                          disabled={isPending}
-                          placeholder="Введите комментарии"
-                          required
-                          {...field}
-                        />
-                      </FormControl>
-
-                      {getError("comments") && (
-                        <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
-                      )}
-                    </FormItem>
-                  )}
-                />
               </div>
+              <FormField
+                control={form.control}
+                name={"comments" as Path<T>}
+                render={({ field }) => (
+                  <FormItem className="col-span-full">
+                    <FormLabel>Примечание / Комментарии</FormLabel>
+
+                    <FormControl>
+                      <Textarea
+                        disabled={isPending}
+                        placeholder="Введите комментарии"
+                        required
+                        {...field}
+                      />
+                    </FormControl>
+
+                    {getError("comments") && (
+                      <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
+                    )}
+                  </FormItem>
+                )}
+              />
             </div>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex gap-2">

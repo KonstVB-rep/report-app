@@ -12,7 +12,6 @@ import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton"
 import { useDealsUser } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { columnsDataContract } from "../model/columns-data-contracts"
 import { columnsDataProject } from "../model/columns-data-project"
 import { columnsDataRetail } from "../model/columns-data-retail"
@@ -58,13 +57,7 @@ const hiddenDefCols: Record<TableType, HiddenColumns> = {
   contracts: {},
 }
 
-const pageParamsSchema = z.object({
-  userId: z.string(),
-  dealType: z.enum(UnionDealTypeParams),
-})
-
 const PersonDealsTable = () => {
-  // const { userId, dealType } = useTypedParams(pageParamsSchema)
   const { dealType, userId } = useParams<{
     dealType: "retails" | "projects" | "contracts"
     userId: string

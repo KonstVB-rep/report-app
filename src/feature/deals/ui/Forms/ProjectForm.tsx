@@ -3,20 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams } from "next/navigation"
 import { type Resolver, useForm } from "react-hook-form"
-import z from "zod"
 import { ProjectFormSchema, type ProjectSchema } from "@/entities/deal/model/schema"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { useCreateProject } from "../../api/hooks/mutate"
 import { defaultProjectValues } from "../../model/defaultvaluesForm"
 import ProjectFormBody from "./ProjectFormBody"
 
-const pageParamsSchema = z.object({
-  userId: z.string(),
-})
-
 const ProjectForm = ({ orderId, managerId }: { orderId?: string; managerId?: string }) => {
-  // const { userId } = useTypedParams(pageParamsSchema)
   const { userId } = useParams<{ userId: string }>()
 
   const form = useForm<ProjectSchema>({

@@ -10,16 +10,10 @@ import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label"
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { useSaveFilter } from "../hooks/mutate"
-
-const pageParamsSchema = z.object({
-  userId: z.string(),
-})
 
 const SaveFilter = () => {
   const inputRef = useRef<HTMLInputElement | null>(null)
-  // const { userId } = useTypedParams(pageParamsSchema)
   const { userId } = useParams<{ userId: string }>()
 
   const searchParams = useSearchParams()

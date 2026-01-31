@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react"
-import type { User } from "@prisma/client"
+import { useEffect } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "@/entities/deal/types"
 import { NOT_MANAGERS_POSITIONS_VALUES } from "@/entities/department/lib/constants"
 import { useGetDealsByDateRange } from "@/feature/deals/api/hooks/query"
 import { Button } from "@/shared/components/ui/button"
 import { OverlayLocal } from "@/shared/custom-components/ui/Overlay"
-import { pageParamsSchemaDepsIsUserId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import { formatterCurrency } from "@/shared/lib/utils"
 
 const dateRanges = [
@@ -17,9 +15,7 @@ const dateRanges = [
   { name: "year", title: "год" },
 ]
 
-const ProfileDealsData = ({ user }: { user: User }) => {
-  // const { userId, departmentId } = useTypedParams(pageParamsSchemaDepsIsUserId)
-
+const ProfileDealsData = ({ position }: { position: string }) => {
   const { userId, departmentId } = useParams<{
     userId: string
     departmentId: string
@@ -29,12 +25,10 @@ const ProfileDealsData = ({ user }: { user: User }) => {
 
   const searchParams = useSearchParams()
   const router = useRouter()
-  // const [dateRangeState, setDateRangeState] = useState<DateRange>("week");
 
   const dateRangeState = (searchParams.get("dateRange") as DateRange) || "week"
 
   const handleClick = (value: DateRange) => {
-    // setDateRangeState(value as DateRange);
     const params = new URLSearchParams(searchParams.toString())
 
     params.set("dateRange", value)
@@ -52,10 +46,9 @@ const ProfileDealsData = ({ user }: { user: User }) => {
     }
   }, [searchParams, router])
 
-  if (NOT_MANAGERS_POSITIONS_VALUES.includes(user.position)) {
+  if (NOT_MANAGERS_POSITIONS_VALUES.includes(position)) {
     return null
   }
-  console.log(isPending, "isPending")
 
   return (
     <div className="flex flex-col gap-2">

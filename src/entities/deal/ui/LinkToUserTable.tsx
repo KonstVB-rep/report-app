@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { DealType, PermissionEnum } from "@prisma/client"
+import { type DealType, PermissionEnum } from "@prisma/client"
 import { Redo2 } from "lucide-react"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
@@ -10,7 +10,6 @@ import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { UnionDealTypeParams } from "../lib/constants"
 import type { DealsUnionType } from "../types"
 
@@ -36,24 +35,13 @@ const linksSummaryTable = (deptId: string | number) => ({
   },
 })
 
-const pageParamsSchema = z.object({
-  userId: z.string(),
-  departmentId: z.string().transform((value) => {
-    return value as keyof typeof DepartmentLabelsById
-  }),
-  dealType: z.enum(UnionDealTypeParams),
-})
-
 const LinkToUserTable = () => {
-  // const { dealType, userId, departmentId } = useTypedParams(pageParamsSchema)
-
   const { departmentId, dealType, userId } = useParams<{
     departmentId: keyof typeof DepartmentLabelsById
     userId: string
     dealType: DealType
   }>()
 
-  // const departmentId = Number(depNum)
   const { authUser } = useStoreUser()
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)

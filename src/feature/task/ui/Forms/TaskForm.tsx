@@ -10,7 +10,6 @@ import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
-import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
 
 type TaskFormProps<T extends FieldValues> = {
@@ -23,12 +22,9 @@ const taskStatusOptions = transformObjValueToArr(LABEL_TASK_STATUS)
 const taskPriorityOptions = transformObjValueToArr(LABEL_TASK_PRIORITY)
 
 const TaskForm = <T extends FieldValues>({ form, onSubmit, isPending }: TaskFormProps<T>) => {
-  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
   const { departmentId } = useParams<{
     departmentId: string
   }>()
-
-  // const departmentId = Number(depNum)
   const getError = (name: keyof T) => form.formState.errors[name]?.message as string | undefined
 
   const { departments } = useStoreDepartment()

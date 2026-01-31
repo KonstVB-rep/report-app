@@ -19,7 +19,6 @@ import {
   CardFooter,
   CardHeader,
 } from "@/shared/components/ui/card"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 
 const EditTaskDialogButton = dynamic(() => import("@/feature/task/ui/Modals/EditTaskDialogButton"))
 
@@ -29,22 +28,11 @@ type TaskKanbanCardProps = {
   task: TaskWithUserInfo
 }
 
-const pageParamsSchema = z.object({
-  userId: z.string().optional(),
-  departmentId: z.string().transform((value) => {
-    return value as keyof typeof DepartmentLabelsById
-  }),
-})
-
 const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
-  // const { departmentId, userId: userIdFromUrl } = useTypedParams(pageParamsSchema)
-
   const { departmentId, userId: userIdFromUrl } = useParams<{
     departmentId: string
     userId: string
   }>()
-
-  // const departmentId = Number(depNum)
 
   const { authUser } = useStoreUser()
 

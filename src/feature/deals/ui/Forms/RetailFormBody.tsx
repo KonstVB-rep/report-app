@@ -88,7 +88,7 @@ const RetailFormBody = <T extends FieldValues>({
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
-          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[82vh] min-w-full gap-2 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
           onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="text-center font-semibold uppercase">{titleForm}</div>
@@ -223,29 +223,29 @@ const RetailFormBody = <T extends FieldValues>({
                 placeholder="Откуда пришёл клиент"
                 required
               />
-
-              <FormField
-                control={form.control}
-                name={"comments" as Path<T>}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Примечание / Комментарии</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        disabled={isPending}
-                        placeholder="Введите комментарии"
-                        required
-                        {...field}
-                      />
-                    </FormControl>
-                    {getError("comments") && (
-                      <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
-                    )}
-                  </FormItem>
-                )}
-              />
             </div>
           </div>
+
+          <FormField
+            control={form.control}
+            name={"comments" as Path<T>}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Примечание / Комментарии</FormLabel>
+                <FormControl>
+                  <Textarea
+                    disabled={isPending}
+                    placeholder="Введите комментарии"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+                {getError("comments") && (
+                  <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
 
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex gap-2">

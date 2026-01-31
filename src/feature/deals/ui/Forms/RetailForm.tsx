@@ -1,22 +1,15 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useParams } from "next/navigation"
 import { type Resolver, useForm } from "react-hook-form"
-import z from "zod"
 import { RetailFormSchema, type RetailSchema } from "@/entities/deal/model/schema"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { useCreateRetail } from "../../api/hooks/mutate"
 import { defaultRetailValues } from "../../model/defaultvaluesForm"
 import RetailFormBody from "./RetailFormBody"
-import { useParams } from "next/navigation"
-
-const pageParamsSchema = z.object({
-  userId: z.string(),
-})
 
 const RetailForm = ({ orderId, managerId }: { orderId?: string; managerId?: string }) => {
-  // const { userId } = useTypedParams(pageParamsSchema)
   const { userId } = useParams<{ userId: string }>()
 
   const form = useForm<RetailSchema>({

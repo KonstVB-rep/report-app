@@ -6,9 +6,7 @@ import type { VirtualItem } from "@tanstack/react-virtual"
 import dynamic from "next/dynamic"
 import { useParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
-import z from "zod"
 import { getUsers } from "@/entities/department/lib/utils"
-import type { DepartmentsUnionIds } from "@/entities/department/types"
 import { columnsDataTask } from "@/entities/task/model/column-data-tasks"
 import type { TaskWithUserInfo } from "@/entities/task/types"
 import TaskTableRow from "@/entities/task/ui/TaskTableRow"
@@ -25,7 +23,6 @@ import {
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow"
 import { useTableState } from "@/shared/hooks/useTableState"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable"
 
 const EditTaskDialogContextMenu = dynamic(
@@ -50,20 +47,8 @@ interface TaskTableProps<TData extends TaskWithUserInfo> {
   data: TData[]
 }
 
-// const pageParamsSchema = z.object({
-//   departmentId: z.coerce
-//     .number()
-//     .positive()
-//     .transform((value) => {
-//       return value as DepartmentsUnionIds
-//     }),
-// })
-
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
-  console.log(data, "data")
-
-  // const { departmentId } = useTypedParams(pageParamsSchema)
 
   const { departmentId } = useParams<{
     departmentId: string

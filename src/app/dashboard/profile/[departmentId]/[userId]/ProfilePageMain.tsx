@@ -2,15 +2,12 @@
 
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
-import z from "zod"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { useGetUser } from "@/feature/user/hooks/query"
 import Contacts from "@/shared/custom-components/ui/Contacts"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import UserCard from "@/shared/custom-components/ui/UserCard"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import ProfileDealsData from "./ui/ProfileDealsData"
-import { useParams } from "next/navigation"
 
 const AccessDeniedMessage = dynamic(
   () => import("@/shared/custom-components/ui/AccessDeniedMessage"),
@@ -21,16 +18,7 @@ const Loading = dynamic(() => import("./loading"), { ssr: false })
 
 const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false })
 
-// const pageParamsSchema = z.object({
-//   userId: z.string(),
-// })
-
 const ProfilePageMain = ({ userId }: { userId: string }) => {
-  // const { userId } = useTypedParams(pageParamsSchema)
-
-  //   const { userId } = useParams<{ userId: string }>();
-  //   console.log(userId,'userId')
-
   const { data: user, error, isPending } = useGetUser(userId)
 
   if (isPending) return <Loading />
@@ -81,10 +69,10 @@ const ProfilePageMain = ({ userId }: { userId: string }) => {
       </div>
 
       {userId === user.id ? (
-        <ProfileDealsData user={user} />
+        <ProfileDealsData position={user.position} />
       ) : (
         <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
-          <ProfileDealsData user={user} />
+          <ProfileDealsData position={user.position} />
         </ProtectedByPermissions>
       )}
     </section>

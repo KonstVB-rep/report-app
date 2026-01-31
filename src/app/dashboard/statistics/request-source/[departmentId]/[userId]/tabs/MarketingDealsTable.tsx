@@ -4,14 +4,11 @@ import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. �
 import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
-import { useParams } from "next/navigation"
-import z from "zod"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import type { TableType } from "@/entities/deal/types"
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs" // TabsContent НЕ импортируем
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
-import { useTypedParams } from "@/shared/hooks/useTypedParams"
 import { columnsDataProjectForMarketing } from "@/widgets/deal/model/columns-data-project-for-marketing"
 import { columnsDataRetailForMarketing } from "@/widgets/deal/model/columns-data-retail-for-marketing"
 

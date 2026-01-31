@@ -1,13 +1,11 @@
 "use client"
 
+import { useParams } from "next/navigation"
 import type { UserResponse } from "@/entities/user/types"
-import { pageParamsSchemaDepsId, useTypedParams } from "@/shared/hooks/useTypedParams"
 import useStoreDepartment from "../store/useStoreDepartment"
 import UserItem from "./UserItem"
-import { useParams } from "next/navigation"
 
 const UserDepartmentList = () => {
-  // const { departmentId } = useTypedParams(pageParamsSchemaDepsId)
   const { departmentId } = useParams<{
     departmentId: string
   }>()
