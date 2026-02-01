@@ -1,12 +1,15 @@
 import { useState } from "react"
 import { FilePenLine } from "lucide-react"
+import type { TaskWithUserInfo } from "@/entities/task/types"
 import { Button } from "@/shared/components/ui/button"
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
 import EditTaskForm from "../Forms/EditTaskForm"
 
-const EditTaskDialogButton = ({ id }: { id: string }) => {
+const EditTaskDialogButton = ({ data }: { data: TaskWithUserInfo }) => {
   const [open, setOpen] = useState(false)
   const closeModal = () => setOpen(false)
+
+  if (!data) return null
 
   return (
     <DialogComponent
@@ -21,7 +24,7 @@ const EditTaskDialogButton = ({ id }: { id: string }) => {
         </Button>
       }
     >
-      <EditTaskForm close={closeModal} taskId={id} />
+      <EditTaskForm close={closeModal} data={data} />
     </DialogComponent>
   )
 }

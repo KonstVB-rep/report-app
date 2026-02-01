@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
-import { useRouter } from "next/navigation"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import ExitAppScreen from "@/shared/custom-components/ui/ExitAppScreen"
 import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY"
@@ -17,17 +16,14 @@ const RedirectToPath = dynamic(
 )
 
 export default function ProtectedAuth({ children }: { children: React.ReactNode }) {
-  const { authUser } = useStoreUser()
-
-  const router = useRouter()
+  const authUser = useStoreUser((state) => state.authUser)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    if (!authUser) {
-      setTimeout(() => {
-        router.push("/login")
-      }, 300)
-    }
-  }, [authUser, router])
+    setIsLoaded(true)
+  }, [])
+
+  if (!isLoaded) return null
 
   if (!authUser) {
     return (

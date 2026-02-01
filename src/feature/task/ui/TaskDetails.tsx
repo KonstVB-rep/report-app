@@ -3,9 +3,10 @@
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
-import useStoreUser from "@/entities/user/store/useStoreUser"
-import { useGetTask } from "@/feature/task/hooks/query"
+import type { TaskWithUserInfo } from "@/entities/task/types"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
+import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import Loading from "./Loading"
 
 const TaskCard = dynamic(() => import("@/entities/task/ui/TaskCard"), {
@@ -13,14 +14,13 @@ const TaskCard = dynamic(() => import("@/entities/task/ui/TaskCard"), {
   ssr: false,
 })
 
-const TaskDetails = ({ taskId, departmentId }: { taskId: string; departmentId: number }) => {
-  const { authUser } = useStoreUser()
+const TaskDetails = ({ departmentId }: { departmentId: number }) => {
+  const authUser = useRequireAuth()
 
-  const { data, isPending } = useGetTask(taskId)
+  const { selectedDataItem } = useTableContext<TaskWithUserInfo>()
+  if (!selectedDataItem) return null
 
-  if (!authUser) {
-    return <RedirectToPath to="/login" />
-  }
+  if (!selectedDataItem) return null
 
   const hasAccess = hasAccessToData(authUser?.id, PermissionEnum.TASK_MANAGEMENT)
 
@@ -28,12 +28,9 @@ const TaskDetails = ({ taskId, departmentId }: { taskId: string; departmentId: n
     return <RedirectToPath to={`/tasks/${departmentId}/${authUser?.id}`} />
   }
 
-  if (isPending) return <Loading />
-  if (!data) return <h1 className="p-5 pt-20 text-2xl text-center">Задача не найдена</h1>
-
   return (
     <div className="p-5">
-      <TaskCard task={data} />
+      <TaskCard data={selectedDataItem} />
     </div>
   )
 }

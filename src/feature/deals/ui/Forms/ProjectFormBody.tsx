@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { StatusProject } from "@prisma/client"
 import { ArrowLeft } from "lucide-react"
 import { useParams } from "next/navigation"
@@ -76,11 +76,11 @@ const ProjectFormBody = <T extends FieldValues>({
   }>()
 
   const initialManagersIds = form.getValues("managersIds" as Path<T>)
-  const initialManagers = initialManagersIds?.length
-    ? initialManagersIds
-    : managerId
-      ? [{ userId: managerId }]
-      : []
+  const initialManagers = useMemo(
+    () =>
+      initialManagersIds?.length ? initialManagersIds : managerId ? [{ userId: managerId }] : [],
+    [initialManagersIds, managerId],
+  )
 
   const {
     contacts,

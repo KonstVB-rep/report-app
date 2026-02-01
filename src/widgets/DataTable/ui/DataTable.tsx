@@ -27,6 +27,7 @@ interface DataTableProps<T> {
   }) => ReactNode
   dealType: TableType
   hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>
+  paramsNotFilters?: string[]
 }
 
 const DataTable = <T extends { id: string }>({
@@ -37,11 +38,12 @@ const DataTable = <T extends { id: string }>({
   rowData,
   dealType,
   hiddenColumns,
+  paramsNotFilters,
 }: DataTableProps<T>) => {
   const { table, filtersContextValue, openFilters, setGlobalFilter, globalFilter } = useTableState(
     data,
     columns,
-    { hiddenColumns },
+    { hiddenColumns, paramsNotFilters },
   )
 
   const currentData = table.getRowModel().rows.map((row) => row.original)

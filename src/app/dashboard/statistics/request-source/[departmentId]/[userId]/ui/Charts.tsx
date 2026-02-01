@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { v4 as uuid } from "uuid"
@@ -36,6 +36,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const isDarkMode = useCurrentTheme()
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>()
   const searchParams = useSearchParams()
+  const pathname = usePathname()
   const router = useRouter()
   const [dateRangeState, setDateRangeState] = useState<DateRangeParams | null>(null)
   const [typeDataDisplay, setTypeDataDisplay] = useState<string>("")
@@ -91,7 +92,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       setDateRangeState(id)
       const params = new URLSearchParams(searchParams)
       params.set("dateRange", id)
-      router.replace(`?${params.toString()}`)
+      router.replace(`${pathname}?${params.toString()}`)
     }
   }
 
@@ -99,7 +100,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
     setTypeDataDisplay(type)
     const params = new URLSearchParams(searchParams)
     params.set("displayType", type)
-    router.replace(`?${params.toString()}`)
+    router.replace(`${pathname}?${params.toString()}`)
   }
 
   if (deals.length === 0) return <EmptyData />

@@ -1,5 +1,5 @@
 import { DealType } from "@prisma/client"
-import { useQuery } from "@tanstack/react-query"
+import { type UseQueryResult, useQuery } from "@tanstack/react-query"
 import {
   getAdditionalContacts,
   getAllDealsByDepartment,
@@ -16,7 +16,9 @@ import {
 import type {
   DateRange,
   DealsUnionType,
+  ProjectResponse,
   ProjectResponseWithContactsAndFiles,
+  RetailResponse,
   RetailResponseWithContactsAndFiles,
   TableType,
 } from "@/entities/deal/types"
@@ -224,7 +226,7 @@ export const useGetAllRetails = (userId: string | null, departmentId: number) =>
 
 export const useGetRetailsUser = (userId: string | undefined) => {
   const { authUser } = useStoreUser()
-  const { data, isError, ...restData } = useQuery({
+  return useQuery({
     queryKey: ["retails", userId],
     queryFn: async () => {
       try {
@@ -248,7 +250,6 @@ export const useGetRetailsUser = (userId: string | undefined) => {
     staleTime: 1000 * 60,
     refetchInterval: 60 * 1000 * 5,
   })
-  return { data, isError, ...restData }
 }
 
 export const useGetProjectsUser = (userId: string | undefined) => {
@@ -332,34 +333,56 @@ export const useGetDealsByDateRange = (userId: string, range: DateRange, departm
 }
 
 export const useDealsUser = (type: TableType, userId?: string) => {
-  const fetchers = {
+  // const fetchers = {
+  //   projects: useGetProjectsUser,
+  //   retails: useGetRetailsUser,
+  //   contracts: useGetContractsUser,
+  // }
+
+  if (!type) {
+    return {
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      error: null,
+    }
+  }
+
+  const fetchers: Record<
+    TableType,
+    (userId: string | undefined) => UseQueryResult<ProjectResponse[] | RetailResponse[], Error>
+  > = {
     projects: useGetProjectsUser,
     retails: useGetRetailsUser,
     contracts: useGetContractsUser,
-    project: useGetProjectsUser,
-    retail: useGetRetailsUser,
-    contract: useGetContractsUser,
-  }
-
-  if (!(type in fetchers)) {
-    throw new Error(`Invalid deal type: ${type}`)
   }
 
   return fetchers[type](userId)
 }
 
 export const useGetAllDealsByType = (
-  type: DealsUnionType,
+  type: DealsUnionType | null,
   userId: string | null,
   departmentId: number,
 ) => {
-  const fetchers = {
-    projects: useGetAllProjects,
-    retails: useGetAllRetails,
+  if (!type) {
+    return {
+      data: undefined,
+      isPending: true,
+      isError: false,
+      error: null,
+    }
   }
 
-  if (!(type in fetchers)) {
-    throw new Error(`Invalid deal type: ${type}`)
+  const fetchers: Record<
+    DealsUnionType,
+    (
+      userId: string | null,
+      departmentId: number,
+    ) => UseQueryResult<ProjectResponse[] | RetailResponse[], Error>
+  > = {
+    projects: useGetAllProjects,
+    retails: useGetAllRetails,
   }
 
   return fetchers[type](userId, departmentId)

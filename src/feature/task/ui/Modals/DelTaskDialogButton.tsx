@@ -1,16 +1,16 @@
 import { useState } from "react"
 import { Trash2 } from "lucide-react"
+import type { TaskWithUserInfo } from "@/entities/task/types"
 import { Button } from "@/shared/components/ui/button"
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
 import DelTaskForm from "../Forms/DelTaskForm"
 
-type Props = {
-  id: string
-}
-
-const DelTaskDialogButton = ({ id }: Props) => {
+const DelTaskDialogButton = ({ data }: { data: TaskWithUserInfo }) => {
   const [open, setOpen] = useState(false)
   const close = () => setOpen(false)
+
+  if (!data) return null
+
   return (
     <DialogComponent
       classNameContent="sm:max-w-[600px]"
@@ -24,7 +24,7 @@ const DelTaskDialogButton = ({ id }: Props) => {
         </Button>
       }
     >
-      <DelTaskForm close={close} id={id} />
+      <DelTaskForm close={close} data={data} />
     </DialogComponent>
   )
 }

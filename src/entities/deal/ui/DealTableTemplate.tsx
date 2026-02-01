@@ -1,7 +1,6 @@
 import type React from "react"
 import { PermissionEnum } from "@prisma/client"
 import { useParams } from "next/navigation"
-import z from "zod"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useGetUser } from "@/feature/user/hooks/query"
 import ErrorMessageTable from "./ErrorMessageTable"

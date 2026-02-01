@@ -1,24 +1,20 @@
 import type { Dispatch, SetStateAction } from "react"
 import { DealType } from "@prisma/client"
 import dynamic from "next/dynamic"
+import type { DealUnion } from "@/entities/deal/types"
+import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
 
 const EditProject = dynamic(() => import("./EditProject"), { ssr: false })
 const EditRetail = dynamic(() => import("./EditRetail"), { ssr: false })
 
-const EditDealContextMenu = ({
-  close,
-  id,
-  type,
-}: {
-  close: Dispatch<SetStateAction<void>>
-  id: string
-  type: DealType
-}) => {
-  switch (type) {
+const EditDealContextMenu = ({ close }: { close: Dispatch<SetStateAction<void>> }) => {
+  const { selectedDataItem } = useTableContext<DealUnion>()
+
+  switch (selectedDataItem?.type) {
     case DealType.PROJECT:
-      return <EditProject close={close} id={id} titleForm="Редактировать проект" />
+      return <EditProject close={close} titleForm="Редактировать проект" />
     case DealType.RETAIL:
-      return <EditRetail close={close} id={id} titleForm="Редактировать розницу" />
+      return <EditRetail close={close} titleForm="Редактировать розницу" />
     default:
       return null
   }

@@ -5,7 +5,6 @@ import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useGetTasksDepartment } from "@/feature/task/hooks/query"
 import { viewType } from "@/feature/task/model/constants"
 import type { ViewType } from "@/feature/task/types"
@@ -15,6 +14,7 @@ import { Separator } from "@/shared/components/ui/separator"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import useViewType from "@/shared/hooks/useViewType"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
@@ -28,15 +28,13 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
 const TasksPageMain = (params: { departmentId: string }) => {
   const departmentId = Number(params.departmentId)
 
-  const { authUser } = useStoreUser()
+  const authUser = useRequireAuth()
 
   const hasAccess = hasAccessToDataSummary(authUser?.id as string, PermissionEnum.TASK_MANAGEMENT)
 
   const { data, isPending } = useGetTasksDepartment()
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
-
-  if (!authUser) return null
 
   if (!hasAccess) {
     return <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />

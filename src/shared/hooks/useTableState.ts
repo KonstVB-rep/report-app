@@ -15,6 +15,7 @@ import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 
 interface UseTableStateOptions<T> extends Partial<TableOptions<T>> {
   hiddenColumns?: Partial<Record<string, boolean>>
+  paramsNotFilters?: string[]
 }
 
 export const useTableState = <T extends { id: string }>(
@@ -22,7 +23,7 @@ export const useTableState = <T extends { id: string }>(
   columns: ColumnDef<T>[],
   options: UseTableStateOptions<T> = {},
 ) => {
-  const { hiddenColumns, ...tableOptions } = options
+  const { hiddenColumns, paramsNotFilters, ...tableOptions } = options
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
 
@@ -40,7 +41,7 @@ export const useTableState = <T extends { id: string }>(
     selectedSearchColumns,
     setSelectedSearchColumns,
     searchableColumns,
-  } = useDataTableFilters()
+  } = useDataTableFilters(paramsNotFilters)
 
   const mergedColumnVisibility = useMemo<VisibilityState>(() => {
     const hiddenColsObj = hiddenColumns

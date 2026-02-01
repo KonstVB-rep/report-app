@@ -7,8 +7,8 @@ import { useParams } from "next/navigation"
 import Loading from "@/app/dashboard/summary-table/[departmentId]/[dealType]/[userId]/loading"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import type {
-  DealBase,
   DealsUnionType,
+  DealUnion,
   ProjectResponse,
   RetailResponse,
 } from "@/entities/deal/types"
@@ -30,7 +30,6 @@ const getColumns = (
     case "retails":
       return columnsDataRetailSummary
     default:
-      console.error(`Unknown table type: ${type}`)
       return []
   }
 }
@@ -80,8 +79,8 @@ const SummaryDealsTable = () => {
       </div>
 
       <DealsTable
-        columns={columns as ColumnDef<DealBase>[]}
-        data={(deals as DealBase[]) || []} // Защита от undefined
+        columns={columns as ColumnDef<DealUnion>[]}
+        data={(deals as DealUnion[]) || []} // Защита от undefined
         hasEditDeleteActions={false}
         hiddenCols={HIDDEN_COLS}
       />

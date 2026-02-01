@@ -1,11 +1,12 @@
 "use client"
 
-import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
+import { Activity, Suspense, useCallback, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
 import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
-import type { TableType } from "@/entities/deal/types"
+import type { DealsUnionType } from "@/entities/deal/types"
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs" // TabsContent НЕ импортируем
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
@@ -49,24 +50,50 @@ interface MarketingDealsTableProps {
   userId: string
 }
 
+const typesTab: Record<DealsUnionType, DealsUnionType> = {
+  retails: "retails",
+  projects: "projects",
+}
+
 const MarketingDealsTable = ({ userId }: MarketingDealsTableProps) => {
-  const [activeTab, setActiveTab] = useState<TableType>("retails")
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const queryTab = searchParams.get("typeTab") as DealsUnionType | null
+
+  const [activeTab, setActiveTab] = useState<DealsUnionType>(queryTab || "retails")
 
   const hasAccess = useMemo(
     () => hasAccessToDataSummary(userId, PermissionEnum.VIEW_UNION_REPORT),
     [userId],
   )
 
-  useEffect(() => {
-    const savedTab = localStorage.getItem("activeTabMarketing")
-    if (savedTab) {
-      setActiveTab(savedTab as TableType)
-    }
-  }, [])
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
+      return params.toString()
+    },
+    [searchParams],
+  )
 
-  const handleToggleTab = (v: TableType) => {
-    localStorage.setItem("activeTabMarketing", v)
-    setActiveTab(v)
+  useEffect(() => {
+    if (!queryTab) {
+      setActiveTab(typesTab.retails)
+      router.replace(`${pathname}?${createQueryString("typeTab", typesTab.retails)}`, {
+        scroll: false,
+      })
+    } else if (queryTab) {
+      setActiveTab(queryTab)
+    }
+  }, [createQueryString, pathname, queryTab, router.replace])
+
+  const handleToggleTab = (value: DealsUnionType) => {
+    setActiveTab(value)
+
+    const queryString = createQueryString("typeTab", value)
+    router.replace(`${pathname}?${queryString}`, { scroll: false })
   }
 
   if (!hasAccess) {
@@ -74,7 +101,7 @@ const MarketingDealsTable = ({ userId }: MarketingDealsTableProps) => {
   }
 
   return (
-    <Tabs onValueChange={(v) => handleToggleTab(v as TableType)} value={activeTab}>
+    <Tabs onValueChange={(v) => handleToggleTab(v as DealsUnionType)} value={activeTab}>
       <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2">
         <TabsTrigger value="retails">Розница</TabsTrigger>
         <TabsTrigger value="projects">Проекты</TabsTrigger>

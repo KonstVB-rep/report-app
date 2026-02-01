@@ -2,10 +2,9 @@
 
 import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
-import z from "zod"
-import { UnionDealTypeParams } from "@/entities/deal/lib/constants"
+import { useParams } from "next/navigation"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
-import type { DealBase, ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types"
+import type { DealUnion, ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types"
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton"
@@ -16,7 +15,6 @@ import { columnsDataContract } from "../model/columns-data-contracts"
 import { columnsDataProject } from "../model/columns-data-project"
 import { columnsDataRetail } from "../model/columns-data-retail"
 import DealsTable from "./DealsTable"
-import { useParams } from "next/navigation"
 
 export const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
@@ -85,8 +83,8 @@ const PersonDealsTable = () => {
           <TableRowsSkeleton />
         ) : (
           <DealsTable
-            columns={Columns(dealType as TableType) as ColumnDef<DealBase>[]}
-            data={data as DealBase[]}
+            columns={Columns(dealType as TableType) as ColumnDef<DealUnion>[]}
+            data={data as DealUnion[]}
             hiddenCols={hiddenDefCols[dealType as TableType]}
           />
         )}

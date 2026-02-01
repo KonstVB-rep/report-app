@@ -1,10 +1,9 @@
 "use client"
 
-import { useCallback, useRef } from "react"
+import { useCallback, useRef, useState } from "react"
 import type { ColumnDef, ColumnFiltersState, Row } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
 import dynamic from "next/dynamic"
-import { useParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
 import { getUsers } from "@/entities/department/lib/utils"
 import { columnsDataTask } from "@/entities/task/model/column-data-tasks"
@@ -16,6 +15,7 @@ import FilterByUsers from "@/feature/filter-persistence/ui/FilterByUsers"
 import FilterPopoverGroup from "@/feature/filter-persistence/ui/FilterPopoverGroup"
 import { LABEL_TASK_STATUS } from "@/feature/task/model/constants"
 import DateRangeFilter from "@/shared/custom-components/ui/DateRangeFilter"
+import { EntityActionModal } from "@/shared/custom-components/ui/EntityActionModal"
 import {
   type TableContextType,
   TableProvider,
@@ -24,6 +24,7 @@ import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow"
 import { useTableState } from "@/shared/hooks/useTableState"
 import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable"
+import type { ModalType } from "@/shared/types"
 
 const EditTaskDialogContextMenu = dynamic(
   () => import("@/feature/task/ui/Modals/EditTaskDialogContextMenu"),
@@ -50,31 +51,35 @@ interface TaskTableProps<TData extends TaskWithUserInfo> {
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const { departmentId } = useParams<{
-    departmentId: string
-  }>()
+  const [openedModal, setOpenedModal] = useState<"edit" | "delete" | "more" | null>(null)
 
-  const departmentIdNumber = Number(departmentId)
+  const [selectedDataItem, setSelectedDataItem] = useState<T | null>(null)
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
-    (
-      setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | "more" | null>>,
-      row: Row<T>,
-    ) => ({
-      edit: (
-        <EditTaskDialogContextMenu
-          close={() => setOpenModal(null)}
-          id={row.original.id as string}
-        />
-      ),
-      delete: (
-        <DelTaskDialogContextMenu close={() => setOpenModal(null)} id={row.original.id as string} />
-      ),
-      more: (
-        <ModalTaskDetails departmentId={departmentIdNumber} taskId={row.original.id as string} />
-      ),
-    }),
-    [departmentIdNumber],
+    (row: Row<T>) => {
+      console.log(row, "Row")
+      return {
+        edit: {
+          onClick: () => {
+            setSelectedDataItem(row.original)
+            setOpenedModal("edit")
+          },
+        },
+        delete: {
+          onClick: () => {
+            setSelectedDataItem(row.original)
+            setOpenedModal("delete")
+          },
+        },
+        more: {
+          onClick: () => {
+            setSelectedDataItem(row.original)
+            setOpenedModal("more")
+          },
+        },
+      }
+    },
+    [],
   )
 
   const { table, filtersContextValue } = useTableState(data, columnsDataTask as ColumnDef<T>[])
@@ -125,7 +130,10 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
             className="rounded-lg relative h-full overflow-auto max-h-[78vh] border transition-all duration-200"
             ref={tableContainerRef}
           >
-            <TableProvider<T> getContextMenuActions={getContextMenuActions}>
+            <TableProvider<T>
+              getContextMenuActions={getContextMenuActions}
+              selectedDataItem={selectedDataItem}
+            >
               <TableTemplate className="rounded-md" table={table} totalSize={totalSize}>
                 <VirtualRow<T>
                   renderRow={({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
@@ -140,6 +148,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
                   virtualItems={virtualItems}
                 />
               </TableTemplate>
+              <ActiveModalTask openedModal={openedModal} setOpenedModal={setOpenedModal} />
             </TableProvider>
           </div>
         )}
@@ -172,5 +181,25 @@ const FilterTasks = ({ columnFilters }: { columnFilters: ColumnFiltersState }) =
         value={value}
       />
     </>
+  )
+}
+
+const ActiveModalTask = ({
+  openedModal,
+  setOpenedModal,
+}: {
+  openedModal: ModalType
+  setOpenedModal: React.Dispatch<React.SetStateAction<"edit" | "delete" | "more" | null>>
+}) => {
+  return (
+    <EntityActionModal
+      openedModal={openedModal}
+      renderMap={{
+        edit: (close) => <EditTaskDialogContextMenu close={close} />,
+        more: () => <ModalTaskDetails />,
+        delete: (close) => <DelTaskDialogContextMenu close={close} />,
+      }}
+      setOpenedModal={setOpenedModal}
+    />
   )
 }

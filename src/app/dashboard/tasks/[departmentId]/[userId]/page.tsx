@@ -6,7 +6,6 @@ import dynamic from "next/dynamic"
 import { useParams } from "next/navigation"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink"
 import { useGetUserTasks } from "@/feature/task/hooks/query"
 import { viewType } from "@/feature/task/model/constants"
@@ -16,6 +15,7 @@ import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import useViewType from "@/shared/hooks/useViewType"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
@@ -29,14 +29,12 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
 })
 
 const UserTasksPage = () => {
-  const { authUser } = useStoreUser()
+  const authUser = useRequireAuth()
 
   const { userId, departmentId } = useParams<{
     userId: string
     departmentId: string
   }>()
-
-  const departmentIdNumber = Number(departmentId)
 
   const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 
@@ -44,11 +42,7 @@ const UserTasksPage = () => {
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
 
-  console.log(departmentIdNumber, departmentId, "departmentId", userId, "UserTasksPage")
-
-  if (!authUser) return
-
-  if (!hasAccess) return <RedirectToPath to={`/tasks/${departmentIdNumber}/${authUser.id}`} />
+  if (!hasAccess) return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />
 
   return (
     <section className="p-5">

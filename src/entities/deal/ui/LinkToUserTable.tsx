@@ -5,12 +5,10 @@ import { type DealType, PermissionEnum } from "@prisma/client"
 import { Redo2 } from "lucide-react"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
-import z from "zod"
 import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
-import { UnionDealTypeParams } from "../lib/constants"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import type { DealsUnionType } from "../types"
 
 const linksPersonTable = (deptId: string | number) => ({
@@ -42,7 +40,7 @@ const LinkToUserTable = () => {
     dealType: DealType
   }>()
 
-  const { authUser } = useStoreUser()
+  const authUser = useRequireAuth()
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -60,8 +58,6 @@ const LinkToUserTable = () => {
       return null
     return linksSummaryTable(authUser.departmentId)[dealType as DealsUnionType]
   }, [pathname, dealType, authUser])
-
-  if (!authUser) return null
 
   return (
     <>

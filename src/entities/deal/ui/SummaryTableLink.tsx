@@ -2,8 +2,8 @@
 
 import { DealType, PermissionEnum } from "@prisma/client"
 import Link from "next/link"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 
 type Props = {
   type: DealType
@@ -18,9 +18,7 @@ const DEAL_TYPE = {
 }
 
 const SummaryTableLink = ({ type, className = "", departmentId, protect = true }: Props) => {
-  const { authUser } = useStoreUser()
-
-  if (!authUser) return null
+  const authUser = useRequireAuth()
 
   const departmentIdValue = departmentId !== undefined ? departmentId : authUser.departmentId
 

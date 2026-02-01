@@ -10,6 +10,8 @@ import TableWithoutContent from "@/shared/custom-components/ui/Table/TableWithou
 import DataTable from "@/widgets/DataTable/ui/DataTable"
 import Loading from "../loading"
 
+const PARAMS_NOT_FILTERS = ["typeTab"]
+
 type HiddenColumns = Record<string, boolean>
 type DealsTabContentProps =
   | {
@@ -50,6 +52,7 @@ const DealsTabContent = (props: DealsTabContentProps) => {
         dealType={dealType}
         hasEditDeleteActions={false}
         hiddenColumns={hiddenColumns}
+        paramsNotFilters={PARAMS_NOT_FILTERS}
         rowData={({ table, openFilters, hasEditDeleteActions }) => (
           <TableRowsWrapper
             openFilters={openFilters}

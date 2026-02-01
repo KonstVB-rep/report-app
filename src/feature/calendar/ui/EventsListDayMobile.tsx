@@ -1,10 +1,7 @@
 "use client"
 
-import { useEffect } from "react"
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
 import { Plus } from "lucide-react"
-import { useRouter } from "next/navigation"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import { columnsDataCalendar } from "@/feature/calendar/model/column-data-calendar"
 import type { EventInputType } from "@/feature/calendar/types"
 import EventsListTable from "@/feature/calendar/ui/EventsListTable"
@@ -27,17 +24,6 @@ const EventsListDayMobile = ({
     columns: columnsDataCalendar,
     getCoreRowModel: getCoreRowModel(),
   })
-
-  const { authUser } = useStoreUser()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!authUser) {
-      router.replace("/login")
-    }
-  }, [authUser, router])
-
-  if (!authUser) return null
 
   return (
     <>

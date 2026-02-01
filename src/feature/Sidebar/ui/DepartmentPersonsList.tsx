@@ -7,7 +7,6 @@ import { ChevronRight } from "lucide-react"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import type { DepartmentListItemType, DepartmentUserItem } from "@/entities/department/types"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import {
   Accordion,
   AccordionContent,
@@ -26,6 +25,7 @@ import {
   SidebarMenuSub,
 } from "@/shared/components/ui/sidebar"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import { DepartmentLinks } from "./DepartmentLinks"
 import LinkProfile from "./LinkProfile"
 
@@ -36,7 +36,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
 
   const departmentIdNumber = Number(departmentId)
 
-  const { authUser } = useStoreUser()
+  const authUser = useRequireAuth()
 
   const router = useRouter()
 
@@ -52,8 +52,6 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
     },
     [router, item.url],
   )
-
-  if (!authUser) return null
 
   const currentUser = item.items.find((user) => user.id === authUser.id)
 

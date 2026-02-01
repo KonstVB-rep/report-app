@@ -316,7 +316,7 @@ export const getRetailsUser = async (idDealOwner: string): Promise<RetailRespons
       },
     })
 
-    const dealsFormat = deals.length
+    return deals.length
       ? deals.map((deal) => ({
           ...deal,
           amountCP: deal.amountCP ? deal.amountCP.toString() : "",
@@ -324,8 +324,6 @@ export const getRetailsUser = async (idDealOwner: string): Promise<RetailRespons
           retailManagers: JSON.stringify(deal.retailManagers),
         }))
       : []
-
-    return dealsFormat
   } catch (error) {
     console.error(error)
     return handleError((error as Error).message)

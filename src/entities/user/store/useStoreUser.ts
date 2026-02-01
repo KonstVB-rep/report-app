@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware"
 import { create } from "@/shared/lib/helpers/сreate"
 import type { UserWithoutPassword } from "@/shared/types"
 
-type AuthUserType = UserWithoutPassword & { permissions?: PermissionEnum[] }
+export type AuthUserType = UserWithoutPassword & { permissions?: PermissionEnum[] }
 
 type State = {
   authUser: AuthUserType | null

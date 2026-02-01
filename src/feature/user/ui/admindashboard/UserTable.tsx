@@ -1,7 +1,6 @@
 "use client"
 
 import { columnsDataUsers, type UserTypeTable } from "@/entities/user/model/column-data-user"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider"
 import DrawerComponent from "@/shared/custom-components/ui/DrawerComponent"
 import TableCaption from "@/shared/custom-components/ui/Table/TableCaption"
@@ -16,10 +15,7 @@ const hiddenColumns = {
 }
 
 const UserTable = () => {
-  const authUser = useStoreUser((state) => state.authUser)
   const { data, isLoading } = useGetAllUsers()
-
-  console.log(data, "data")
 
   const users = data || []
 
@@ -35,10 +31,6 @@ const UserTable = () => {
     .getRowModel()
     .rows.filter((row) => rowSelection[row.id])
     .map((row) => row.original)
-
-  if (!authUser) {
-    return <h1 className="text-2xl p-2 text-center">Пользователь не авторизован</h1>
-  }
 
   return (
     <>

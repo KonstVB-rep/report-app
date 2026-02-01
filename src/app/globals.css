@@ -519,6 +519,7 @@ td:has(.abs-element) {
 .grid-charts {
   display: grid;
   grid-template-columns: 1fr;
+  align-items: end;
   gap: 20px;
 }
 
@@ -720,6 +721,48 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 
 /*Мобильный календарь*/
 
+.calendar-mobile table{
+  width: 100%;
+}
+
+.calendar-mobile{
+  position: relative;
+  border: 1px solid var(--color-neutral-500);
+  border-radius: var(--radius-md);
+
+  & .rdp-month_caption{
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  & nav button{
+    box-shadow: 0 0 2px 0 var(--color-neutral-500);
+  }
+
+  & .shadow{
+    padding: 0;
+    border: none;
+  }
+
+  & :is(.rdp-weekdays > th) {
+    border: 1px solid var(--color-neutral-500);
+    border-radius: var(--radius-md);
+  }
+
+  & .rdp-week > td{
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    height: 100%;
+  }
+
+  & .calendar-day-today{
+   box-shadow: 0 0 0 1px var(--color-blue-500);
+    
+  }
+}
+
 .calendar-mobile .rdp-caption_start.rdp-caption_end {
   width: 100%;
   max-width: 1020px;
@@ -827,14 +870,14 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 
 /*DatePicker*/
 @media (max-width: 640px) {
-  .rdp-root > div {
-    display: grid;
-    grid-template-areas:
-      "n n"
-      "p ."
-      "f .";
-    gap: 0rem;
-  }
+    .rdp-root > div {
+        grid-template-areas:
+        "n"
+        "p"
+        "f";
+        gap: 0;
+        display: grid;
+    }
 }
 
 @media (min-width: 641px) {

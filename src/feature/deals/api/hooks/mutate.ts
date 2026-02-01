@@ -183,7 +183,9 @@ export const useMutationUpdateProject = (
 
       allManagers.forEach((id) => {
         queryClient.invalidateQueries({ queryKey: ["projects", id] })
-        queryClient.invalidateQueries({ queryKey: ["contracts", id] })
+        queryClient.invalidateQueries({
+          queryKey: ["contracts", id, Number(authUser?.departmentId)],
+        })
       })
     },
   })

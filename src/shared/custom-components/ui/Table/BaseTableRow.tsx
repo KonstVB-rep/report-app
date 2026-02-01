@@ -14,15 +14,16 @@ type BaseTableRowProps<T extends BaseEntity> = {
   virtualRow: { start: number; index: number }
   className?: string
   path?: string
-  getContextMenuActions: (
-    setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | "more" | null>>,
-    row: Row<T>,
-  ) => {
-    edit: React.ReactNode
-    delete: React.ReactNode
+  getContextMenuActions: (row: Row<T>) => {
+    edit: {
+      onClick: () => void
+    }
+    delete: { onClick: () => void }
+    more: { onClick: () => void }
   }
   renderAdditionalInfo?: (row: Row<T>) => React.ReactNode
   headers?: Header<T, unknown>[]
+  hasEditDeleteActions?: boolean
 }
 
 const BaseTableRow = <T extends { id: string }>({
@@ -33,12 +34,14 @@ const BaseTableRow = <T extends { id: string }>({
   getContextMenuActions,
   renderAdditionalInfo,
   headers,
+  hasEditDeleteActions = true,
 }: BaseTableRowProps<T>) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
   return (
     <ContextRowTable
-      modals={getContextMenuActions ? (set) => getContextMenuActions(set, row) : undefined}
+      hasEditDeleteActions={hasEditDeleteActions}
+      openModal={getContextMenuActions ? () => getContextMenuActions(row) : undefined}
       path={path}
     >
       <TableRow

@@ -1,12 +1,11 @@
 import { memo } from "react"
+import { Role } from "@prisma/client"
 import { format } from "date-fns"
 import { ru } from "date-fns/locale"
 import { ExternalLink } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import z from "zod"
-import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
 import { cleanDistance } from "@/entities/task/lib/helpers"
 import type { TaskWithUserInfo } from "@/entities/task/types"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -49,7 +48,12 @@ const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
     locale: ru,
   })
 
-  const canEditOrDelete = task.assignerId === authUser.id
+  const ADMIN_ROLES: Set<Role> = new Set([Role.ADMIN, Role.SUPER_ADMIN])
+
+  const isCanActionTask =
+    task.assignerId === authUser.id ||
+    task.executorId === authUser.id ||
+    ADMIN_ROLES.has(authUser.role)
 
   return (
     <Card className="relative p-0 pb-3 grid gap-2 cursor-pointer drop-shadow-xl group">
@@ -63,10 +67,10 @@ const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
           <ExternalLink />
         </span>
       </Link>
-      {canEditOrDelete && (
+      {isCanActionTask && (
         <div className="group-hover:flex hidden flex-col absolute top-0.5 right-0.5 gap-2 bg-background p-1 rounded-md border">
-          <EditTaskDialogButton id={task.id} />
-          <DelTaskDialogButton id={task.id} />
+          <EditTaskDialogButton data={task} />
+          <DelTaskDialogButton data={task} />
         </div>
       )}
       <CardHeader

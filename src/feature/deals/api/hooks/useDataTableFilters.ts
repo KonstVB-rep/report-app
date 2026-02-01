@@ -15,10 +15,20 @@ export const SEARCHABLE_COLUMNS = [
   "comments",
 ] as const
 
-// Тип для значения фильтра — поддерживаем строки, массивы и даты
+const clearNotFilterParams = (
+  delParamsFromFilter: (name: string) => void,
+  paramsNotFilters?: string[],
+) => {
+  if (paramsNotFilters && paramsNotFilters.length > 0) {
+    paramsNotFilters.forEach((p) => {
+      delParamsFromFilter(p)
+    })
+  }
+}
+
 type FilterValue = string | string[] | { from: Date; to: Date }
 
-export const useDataTableFilters = () => {
+export const useDataTableFilters = (paramsNotFilters?: string[]) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -39,6 +49,8 @@ export const useDataTableFilters = () => {
     isInitialMount.current = false
 
     const params = new URLSearchParams(searchParams)
+
+    clearNotFilterParams((p) => params.delete(p), paramsNotFilters)
 
     const q = params.get("search")
     if (q) setGlobalFilter(decodeURIComponent(q))

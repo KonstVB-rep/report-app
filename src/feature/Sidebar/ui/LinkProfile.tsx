@@ -2,7 +2,6 @@ import { memo } from "react"
 import { UserRound } from "lucide-react"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
-
 import type { DepartmentUserItem } from "@/entities/department/types"
 
 const LinkProfile = ({ user }: { user: DepartmentUserItem }) => {

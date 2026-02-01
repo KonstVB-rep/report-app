@@ -29,7 +29,7 @@ const CalendarContent = () => {
   const { events } = useEventActionContext()
 
   return (
-    <section className="flex h-full flex-col p-5">
+    <section className="flex h-full flex-col p-2 md:p-5">
       <header className="flex flex-wrap items-center justify-between gap-2 pb-4">
         <ButtonLink
           icon={<ListTodo className="h-4 w-4" />}

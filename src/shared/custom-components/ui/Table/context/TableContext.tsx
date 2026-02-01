@@ -2,14 +2,15 @@ import { type Context, createContext, useContext, useMemo } from "react"
 import type { Row } from "@tanstack/react-table"
 
 export type TableContextType<T> = {
-  getContextMenuActions: (
-    setOpenModal: React.Dispatch<React.SetStateAction<"delete" | "edit" | "more" | null>>,
-    row: Row<T>,
-  ) => {
-    edit: React.ReactNode
-    delete: React.ReactNode
+  getContextMenuActions: (row: Row<T>) => {
+    edit: {
+      onClick: () => void
+    }
+    delete: { onClick: () => void }
+    more: { onClick: () => void }
   }
   renderAdditionalInfo?: (id: string) => React.ReactNode
+  selectedDataItem: T | null
 }
 
 const TableContext = createContext<TableContextType<unknown> | null>(null)
@@ -26,19 +27,22 @@ interface TableProviderProps<T> {
   children: React.ReactNode
   getContextMenuActions: TableContextType<T>["getContextMenuActions"]
   renderAdditionalInfo?: (id: string) => React.ReactNode
+  selectedDataItem: T | null
 }
 
 function TableProvider<T>({
   children,
   getContextMenuActions,
   renderAdditionalInfo,
+  selectedDataItem,
 }: TableProviderProps<T>) {
   const contextValue = useMemo<TableContextType<T>>(
     () => ({
       getContextMenuActions,
       renderAdditionalInfo,
+      selectedDataItem,
     }),
-    [getContextMenuActions, renderAdditionalInfo],
+    [getContextMenuActions, renderAdditionalInfo, selectedDataItem],
   )
 
   return (

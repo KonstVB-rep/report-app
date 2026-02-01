@@ -59,7 +59,7 @@ const CalendarMobile = () => {
   }
 
   return (
-    <div className="calendar-mobile md:p-5">
+    <div className="calendar-mobile p-2 md:p-5">
       <Calendar
         className="rounded-md border shadow"
         disabled={isDateDisabled}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { rankItem } from "@tanstack/match-sorter-utils"
 import {
   type ColumnDef,
@@ -12,12 +12,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { CalendarFold } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useCalendarContext } from "@/app/dashboard/calendar/context/calendar-context"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import type { EventInputType } from "@/feature/calendar/types"
 import EventsListTable from "@/feature/calendar/ui/EventsListTable"
 import ButtonLink from "@/shared/custom-components/ui/Buttons/ButtonLink"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import { columnsDataCalendar } from "../model/column-data-calendar"
 import { handleEventClickOnEventsList } from "../utils/eventHandlers"
 import CalendarFormModal from "./CalendarFormModal"
@@ -70,18 +69,7 @@ const EventsList = ({ events }: EventsListProps) => {
     handleEventClickOnEventsList(eventCalendar, form, setEditingId, setOpenModal)
   }
 
-  const { authUser } = useStoreUser()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!authUser) {
-      router.replace("/login")
-    }
-  }, [authUser, router])
-
-  if (!authUser) {
-    return null
-  }
+  const authUser = useRequireAuth()
 
   return (
     <>
