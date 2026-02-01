@@ -2,15 +2,15 @@
 
 import { Building, Info } from "lucide-react"
 import dynamic from "next/dynamic"
-import type { RetailResponseWithContactsAndFiles } from "@/entities/deal/types"
+import type { DealRetail } from "@/entities/deal/types"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import FileUploadForm from "@/widgets/Files/ui/UploadFile"
 import useNormalizeRetailData from "../lib/hooks/useNormalizeRetailData"
 import FinanceInfo from "./FinanceInfo"
+import SettingDeal from "./SettingDeal"
 import ValueSpan from "./ValueSpan"
 
 const FileList = dynamic(() => import("@/widgets/Files/ui/FileList"), {
@@ -31,14 +31,8 @@ const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/Contac
 const IntoDealItem = dynamic(() => import("@/entities/deal/ui/IntoDealItem"), {
   ssr: false,
 })
-const DelButtonDeal = dynamic(() => import("@/feature/deals/ui/Modals/DelButtonDeal"), {
-  ssr: false,
-})
-const EditDealButtonIcon = dynamic(() => import("@/feature/deals/ui/Modals/EditDealButtonIcon"), {
-  ssr: false,
-})
 
-const RetailItemInfo = ({ dealData }: { dealData: RetailResponseWithContactsAndFiles }) => {
+const RetailItemInfo = ({ dealData }: { dealData: DealRetail }) => {
   const { dealInfo, dataFinance } = useNormalizeRetailData(dealData)
 
   return (
@@ -49,15 +43,7 @@ const RetailItemInfo = ({ dealData }: { dealData: RetailResponseWithContactsAndF
           <p className="text-xs">Дата: {dealData.createdAt?.toLocaleDateString()}</p>
         </div>
 
-        <div className="flex justify-end gap-2">
-          <FileUploadForm
-            dealId={dealData.id as string}
-            dealType="RETAIL"
-            userId={dealData?.userId || "Не назначен"}
-          />
-          <EditDealButtonIcon id={dealData.id} type={dealData.type} />
-          <DelButtonDeal id={dealData.id} type={dealData.type} />
-        </div>
+        <SettingDeal<DealRetail> dealData={dealData} />
       </div>
 
       <ManagersListByDeal managers={dealData.managers} userId={dealData?.userId || "Не назначен"} />

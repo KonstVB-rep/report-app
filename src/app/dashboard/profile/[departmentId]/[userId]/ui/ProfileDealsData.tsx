@@ -38,6 +38,8 @@ const ProfileDealsData = ({ position }: { position: string }) => {
 
   const { data, isPending } = useGetDealsByDateRange(userId, dateRangeState, departmentIdNumber)
 
+  console.log(data, "data")
+
   const isPendingData = isPending
 
   useEffect(() => {

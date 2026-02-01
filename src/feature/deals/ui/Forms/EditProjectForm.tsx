@@ -4,7 +4,7 @@ import type { DeliveryProject, DirectionProject, StatusProject } from "@prisma/c
 import { type Resolver, useForm } from "react-hook-form"
 import { formatNumberCurrency } from "@/entities/deal/lib/helpers"
 import { ProjectFormSchema, type ProjectSchema } from "@/entities/deal/model/schema"
-import type { ProjectResponseWithContactsAndFiles } from "@/entities/deal/types"
+import type { DealProject } from "@/entities/deal/types"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useMutationUpdateProject } from "../../api/hooks/mutate"
@@ -12,7 +12,7 @@ import ProjectFormBody from "./ProjectFormBody"
 
 type Props = {
   close: Dispatch<SetStateAction<void>>
-  dealInfo: ProjectResponseWithContactsAndFiles
+  dealInfo: DealProject
   isInvalidate: boolean
   titleForm: string
 }

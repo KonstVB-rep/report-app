@@ -1,25 +1,28 @@
 import { useState } from "react"
-import type { DealType } from "@prisma/client"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import type { DealUnion } from "@/entities/deal/types"
 import { Button } from "@/shared/components/ui/button"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import FileUploadForm from "@/widgets/Files/ui/UploadFile"
 import DelButtonDeal from "./Modals/DelButtonDeal"
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon"
 
-const SettingDeal = ({ id, userId, type }: { id: string; userId: string; type: DealType }) => {
+const SettingDeal = <T extends DealUnion>({ dealData }: { dealData: T }) => {
   const [open, setOpen] = useState(false)
+
+  const authUser = useRequireAuth()
 
   return (
     <div className="flex gap-2 items-center">
       {open && (
         <div className="flex justify-end gap-2">
           <FileUploadForm
-            dealId={id}
-            dealType={type === "RETAIL" ? "RETAIL" : "PROJECT"}
-            userId={userId}
+            dealId={dealData.id}
+            dealType={dealData.type === "RETAIL" ? "RETAIL" : "PROJECT"}
+            userId={dealData.userId || authUser.id}
           />
-          <EditDealButtonIcon id={id} type={type} />
-          <DelButtonDeal id={id} type={type} />
+          <EditDealButtonIcon dealInfo={dealData} />
+          <DelButtonDeal dealInfo={dealData} />
         </div>
       )}
       {open ? (

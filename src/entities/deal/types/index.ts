@@ -133,17 +133,6 @@ export type ContactFieldError = {
   }
 }
 
-export type DealBase = {
-  id: string
-  dateRequest: Date
-  nameDeal: string
-  nameObject: string
-  comments: string
-  userId: string
-  type?: Omit<DealType, "ORDER">
-  dealStatus: StatusProject | StatusRetail
-}
-
 export type DeletingDealsListItem = {
   id: string
   type: DealType

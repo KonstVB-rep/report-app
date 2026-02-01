@@ -3,7 +3,7 @@
 import type { Header, Row } from "@tanstack/react-table"
 import { flexRender } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-import type { DealBase } from "@/entities/deal/types"
+import type { DealUnion } from "@/entities/deal/types"
 import { TableRow } from "@/shared/components/ui/table"
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment"
@@ -15,9 +15,9 @@ const DealsTableRow = ({
   openFullInfoCell,
   setOpenFullInfoCell,
 }: {
-  row: Row<DealBase>
+  row: Row<DealUnion>
   virtualRow: VirtualItem
-  headers: Header<DealBase, unknown>[]
+  headers: Header<DealUnion, unknown>[]
   openFullInfoCell: string | null
   setOpenFullInfoCell: (id: string | null) => void
 }) => (
@@ -33,7 +33,7 @@ const DealsTableRow = ({
     }}
   >
     {row.getVisibleCells().map((cell, index) => (
-      <TableCellComponent<DealBase>
+      <TableCellComponent<DealUnion>
         cell={cell}
         handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}
         key={cell.id}

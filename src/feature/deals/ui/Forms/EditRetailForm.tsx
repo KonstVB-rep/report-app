@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import type { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client"
 import { type Resolver, useForm } from "react-hook-form"
 import { RetailFormSchema, type RetailSchema } from "@/entities/deal/model/schema"
-import type { RetailResponseWithContactsAndFiles } from "@/entities/deal/types"
+import type { DealRetail } from "@/entities/deal/types"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { formatterCurrency } from "@/shared/lib/utils"
@@ -20,7 +20,7 @@ type Props = {
   close: Dispatch<SetStateAction<void>>
   isInvalidate: boolean
   titleForm: string
-  dealInfo: RetailResponseWithContactsAndFiles
+  dealInfo: DealRetail
 }
 
 const EditRetailForm = ({ close, dealInfo, isInvalidate = false, titleForm }: Props) => {

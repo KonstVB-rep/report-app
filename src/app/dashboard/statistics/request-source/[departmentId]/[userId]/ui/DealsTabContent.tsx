@@ -1,6 +1,6 @@
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-import type { DealBase, ProjectResponse, RetailResponse } from "@/entities/deal/types"
+import type { DealUnion, ProjectResponse, RetailResponse } from "@/entities/deal/types"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable"
 import type { DepartmentsUnionIds } from "@/entities/department/types"
@@ -47,8 +47,8 @@ const DealsTabContent = (props: DealsTabContentProps) => {
   return (
     <DealTableTemplate>
       <DataTable
-        columns={columns as ColumnDef<DealBase>[]}
-        data={deals as DealBase[]}
+        columns={columns as ColumnDef<DealUnion>[]}
+        data={deals as DealUnion[]}
         dealType={dealType}
         hasEditDeleteActions={false}
         hiddenColumns={hiddenColumns}
@@ -60,10 +60,10 @@ const DealsTabContent = (props: DealsTabContentProps) => {
               row,
               virtualRow,
             }: {
-              row: Row<DealBase>
+              row: Row<DealUnion>
               virtualRow: VirtualItem
             }) => (
-              <TableWithoutContent<DealBase>
+              <TableWithoutContent<DealUnion>
                 entityType={"deal"}
                 hasEditDeleteActions={hasEditDeleteActions}
                 headers={table.getHeaderGroups()[0].headers}

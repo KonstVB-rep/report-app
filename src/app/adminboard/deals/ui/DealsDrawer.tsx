@@ -1,12 +1,12 @@
 import type { DealType } from "@prisma/client"
 import type { Table } from "@tanstack/react-table"
-import type { DealBase } from "@/entities/deal/types"
+import type { DealUnion } from "@/entities/deal/types"
 import DelButtonDeal from "@/feature/deals/ui/Modals/DelButtonDeal"
 import DelButtonMultiDeals from "@/feature/deals/ui/Modals/DelButtonMultiDeals"
 import DrawerComponent from "@/shared/custom-components/ui/DrawerComponent"
 import DialogReassignDealConfirm from "./DialogReassignDealConfirm"
 
-const DealsDrawer = ({ table }: { table: Table<DealBase> }) => {
+const DealsDrawer = ({ table }: { table: Table<DealUnion> }) => {
   const rowSelectionKeys = Object.keys(table.getState().rowSelection)
 
   if (!table || rowSelectionKeys.length === 0) {
@@ -19,7 +19,6 @@ const DealsDrawer = ({ table }: { table: Table<DealBase> }) => {
     return rowSelectionKeys.includes(row.id)
   })
 
-  const type = rowsSelectionData[0]?.original.type as DealType
   const dealId = rowsSelectionData[0]?.original.id
   const deals = rowsSelectionData.map((row) => {
     return {
@@ -33,8 +32,6 @@ const DealsDrawer = ({ table }: { table: Table<DealBase> }) => {
     return table.resetRowSelection()
   }
 
-  console.log(rowSelectionKeys, "rowSelectionKeys")
-
   return (
     <>
       {rowSelectionKeys.length > 0 && (
@@ -43,10 +40,9 @@ const DealsDrawer = ({ table }: { table: Table<DealBase> }) => {
             <div>
               <DelButtonDeal
                 clearData={clearSelection}
-                id={dealId}
+                dealInfo={rowsSelectionData[0]?.original}
                 isTextButton
                 key={dealId}
-                type={type}
                 withCheckPermissions={false}
               />
             </div>

@@ -333,12 +333,6 @@ export const useGetDealsByDateRange = (userId: string, range: DateRange, departm
 }
 
 export const useDealsUser = (type: TableType, userId?: string) => {
-  // const fetchers = {
-  //   projects: useGetProjectsUser,
-  //   retails: useGetRetailsUser,
-  //   contracts: useGetContractsUser,
-  // }
-
   if (!type) {
     return {
       data: undefined,

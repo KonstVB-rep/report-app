@@ -2,7 +2,7 @@
 
 import { Building, Info, PhoneOutgoing } from "lucide-react"
 import dynamic from "next/dynamic"
-import type { ProjectResponseWithContactsAndFiles } from "@/entities/deal/types"
+import type { DealProject } from "@/entities/deal/types"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
@@ -31,8 +31,7 @@ const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/Contac
   ssr: false,
 })
 
-const ProjectItemInfo = ({ dealData }: { dealData: ProjectResponseWithContactsAndFiles }) => {
-  console.log(dealData, "dealInfo")
+const ProjectItemInfo = ({ dealData }: { dealData: DealProject }) => {
   const { dataFinance, formattedDate, statusLabel, directionLabel, deliveryLabel, typeLabel } =
     useNormalizeProjectData(dealData)
 
@@ -43,11 +42,7 @@ const ProjectItemInfo = ({ dealData }: { dealData: ProjectResponseWithContactsAn
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
           <p className="text-xs">Дата: {formattedDate}</p>
         </div>
-        <SettingDeal
-          id={dealData.id}
-          type={dealData.type}
-          userId={dealData?.userId || "Не назначен"}
-        />
+        <SettingDeal<DealProject> dealData={dealData} />
       </div>
 
       <ManagersListByDeal managers={dealData.managers} userId={dealData?.userId || "Не назначен"} />

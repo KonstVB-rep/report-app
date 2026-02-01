@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef, Table } from "@tanstack/react-table"
-import type { DealBase } from "@/entities/deal/types"
+import type { DealUnion } from "@/entities/deal/types"
 import FiltersManagement from "@/feature/filter-persistence/ui/FiltersManagement"
 import ButtonExportTableXls from "@/feature/table-export-excel/ui/ButtonExportTableXls"
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
@@ -15,8 +15,8 @@ const DealsToolbar = ({
   openFilters,
 }: {
   totalCount: number
-  table: Table<DealBase>
-  columns: ColumnDef<DealBase>[]
+  table: Table<DealUnion>
+  columns: ColumnDef<DealUnion>[]
   globalFilter: string
   setGlobalFilter: (v: string) => void
   openFilters: boolean

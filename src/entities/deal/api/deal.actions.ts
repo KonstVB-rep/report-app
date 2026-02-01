@@ -19,7 +19,7 @@ import { handleError } from "@/shared/api/handleError"
 import type {
   Contact,
   DateRange,
-  DealBase,
+  DealUnion,
   ManagerShortInfo,
   ProjectResponse,
   ProjectResponseWithContactsAndFiles,
@@ -449,7 +449,7 @@ type DealsListWithResource =
 
 type DealsList =
   | {
-      deals: DealBase[]
+      deals: DealUnion[]
       totalDealsCount: number
     }
   | { deals: []; totalDealsCount: number }

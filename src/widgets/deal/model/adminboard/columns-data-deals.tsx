@@ -6,7 +6,7 @@ import { DealType } from "@prisma/client"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { endOfDay, startOfDay } from "date-fns"
 import type { DateRange } from "react-day-picker"
-import type { DealBase } from "@/entities/deal/types"
+import type { DealUnion } from "@/entities/deal/types"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
 import {
   DealTypeLabels,
@@ -16,11 +16,11 @@ import {
 import RowNumber from "../columnsDataColsTemplate/RowNumber"
 import { SelectColDataColumn } from "../columnsDataColsTemplate/SelectColHeader"
 
-export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
+export const columnsDataDeals: ColumnDef<DealUnion, unknown>[] = [
   {
-    ...RowNumber<DealBase>(),
+    ...RowNumber<DealUnion>(),
   },
-  { ...SelectColDataColumn<DealBase>() },
+  { ...SelectColDataColumn<DealUnion>() },
   {
     id: "id",
     header: "ID",
@@ -29,12 +29,12 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     meta: {
       hidden: true,
     },
-    accessorFn: (row: DealBase) => row.id,
+    accessorFn: (row: DealUnion) => row.id,
   },
   {
     id: "dateRequest",
     header: "Дата заявки",
-    cell: (info: CellContext<DealBase, unknown>) => {
+    cell: (info: CellContext<DealUnion, unknown>) => {
       const date = info.getValue() as Date
       return date.toLocaleDateString("ru-RU")
     },
@@ -70,12 +70,12 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
 
       return true
     },
-    accessorFn: (row: DealBase) => row.dateRequest,
+    accessorFn: (row: DealUnion) => row.dateRequest,
   },
   {
     id: "type",
     header: "Тип",
-    cell: (info: CellContext<DealBase, unknown>) => {
+    cell: (info: CellContext<DealUnion, unknown>) => {
       const value = info.getValue() as keyof typeof DealTypeLabels
       return DealTypeLabels[value]
     },
@@ -85,12 +85,12 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       title: "Тип",
     },
     enableHiding: true,
-    accessorFn: (row: DealBase) => row.type,
+    accessorFn: (row: DealUnion) => row.type,
   },
   {
     id: "nameDeal",
     header: "Название сделки",
-    cell: (info: CellContext<DealBase, unknown>) => {
+    cell: (info: CellContext<DealUnion, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
     },
@@ -98,12 +98,12 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       title: "Название сделки",
     },
     enableHiding: true,
-    accessorFn: (row: DealBase) => row.nameDeal,
+    accessorFn: (row: DealUnion) => row.nameDeal,
   },
   {
     id: "nameObject",
     header: "Название объекта",
-    cell: (info: CellContext<DealBase, unknown>) => {
+    cell: (info: CellContext<DealUnion, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
     },
@@ -111,12 +111,12 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       title: "Название объекта",
     },
     enableHiding: true,
-    accessorFn: (row: DealBase) => row.nameObject,
+    accessorFn: (row: DealUnion) => row.nameObject,
   },
   {
     id: "comments",
     header: "Комментарии",
-    cell: (info: CellContext<DealBase, unknown>) => {
+    cell: (info: CellContext<DealUnion, unknown>) => {
       const value = info.getValue() as ReactNode
       return value
     },
@@ -125,12 +125,12 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
     },
     minSize: 300,
     enableHiding: true,
-    accessorFn: (row: DealBase) => row.comments,
+    accessorFn: (row: DealUnion) => row.comments,
   },
   {
     id: "dealStatusR",
     header: "Статус Розницы",
-    cell: (info: CellContext<DealBase, unknown>) => {
+    cell: (info: CellContext<DealUnion, unknown>) => {
       const type = info.row.original.type
       const value = info.getValue()
 
@@ -142,7 +142,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       return StatusRetailLabels[statusKey as keyof typeof StatusRetailLabels]
     },
     enableHiding: true,
-    accessorFn: (row: DealBase) => (row.type === DealType.RETAIL ? row.dealStatus : null),
+    accessorFn: (row: DealUnion) => (row.type === DealType.RETAIL ? row.dealStatus : null),
     meta: {
       title: "Статус Розницы",
     },
@@ -151,7 +151,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
   {
     id: "dealStatusP",
     header: "Статус Проекта",
-    cell: (info: CellContext<DealBase, unknown>) => {
+    cell: (info: CellContext<DealUnion, unknown>) => {
       const type = info.row.original.type
       const value = info.getValue()
 
@@ -162,7 +162,7 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       return StatusProjectLabels[statusKey as keyof typeof StatusProjectLabels]
     },
     enableHiding: true,
-    accessorFn: (row: DealBase) => (row.type === DealType.PROJECT ? row.dealStatus : null),
+    accessorFn: (row: DealUnion) => (row.type === DealType.PROJECT ? row.dealStatus : null),
     meta: {
       title: "Статус Проекта",
     },
@@ -188,6 +188,6 @@ export const columnsDataDeals: ColumnDef<DealBase, unknown>[] = [
       hidden: true,
       title: "Менеджер",
     },
-    accessorFn: (row: DealBase) => row.userId,
+    accessorFn: (row: DealUnion) => row.userId,
   },
 ]

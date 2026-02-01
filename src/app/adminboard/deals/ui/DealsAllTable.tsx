@@ -3,7 +3,7 @@
 import type { RefObject } from "react"
 import type { Row, Table } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-import type { DealBase } from "@/entities/deal/types"
+import type { DealUnion } from "@/entities/deal/types"
 import { TableCell, TableRow } from "@/shared/components/ui/table"
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow"
@@ -11,8 +11,8 @@ import { cn } from "@/shared/lib/utils"
 import DealsTableRow from "./DealsTableRow"
 
 type Props = {
-  table: Table<DealBase>
-  rows: Row<DealBase>[]
+  table: Table<DealUnion>
+  rows: Row<DealUnion>[]
   virtualItems: VirtualItem[]
   totalSize: number
   openFullInfoCell: string | null

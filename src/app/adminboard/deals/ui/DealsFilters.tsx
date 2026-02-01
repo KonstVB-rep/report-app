@@ -2,7 +2,7 @@
 
 import type { Table } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
-import type { DealBase } from "@/entities/deal/types"
+import type { DealUnion } from "@/entities/deal/types"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 
 const Filters = dynamic(() => import("./Filters"), {
@@ -10,7 +10,7 @@ const Filters = dynamic(() => import("./Filters"), {
   loading: () => <LoaderCircle />,
 })
 
-const DealsFilters = ({ table, open }: { table: Table<DealBase>; open: boolean }) => {
+const DealsFilters = ({ table, open }: { table: Table<DealUnion>; open: boolean }) => {
   return (
     <>
       {open && (
