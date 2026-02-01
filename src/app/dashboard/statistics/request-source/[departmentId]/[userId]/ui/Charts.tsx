@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { v4 as uuid } from "uuid"
@@ -36,7 +36,6 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
   const isDarkMode = useCurrentTheme()
   const [selectedDate, setSelectedDate] = useState<DateRange | undefined>()
   const searchParams = useSearchParams()
-  const pathname = usePathname()
   const router = useRouter()
   const [dateRangeState, setDateRangeState] = useState<DateRangeParams | null>(null)
   const [typeDataDisplay, setTypeDataDisplay] = useState<string>("")
@@ -92,7 +91,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       setDateRangeState(id)
       const params = new URLSearchParams(searchParams)
       params.set("dateRange", id)
-      router.replace(`${pathname}?${params.toString()}`)
+      router.replace(`?${params.toString()}`)
     }
   }
 
@@ -100,7 +99,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
     setTypeDataDisplay(type)
     const params = new URLSearchParams(searchParams)
     params.set("displayType", type)
-    router.replace(`${pathname}?${params.toString()}`)
+    router.replace(`?${params.toString()}`)
   }
 
   if (deals.length === 0) return <EmptyData />
@@ -131,24 +130,33 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
             >
               {isCircleGraph && (
                 <ResponsiveContainer
-                  className="hidden sm:block justify-self-center"
+                  className="hidden md:block justify-self-center"
                   height="100%"
-                  minHeight={480}
-                  minWidth={480}
+                  minHeight={"30vw"}
+                  minWidth={"30vw"}
                   width="100%"
                 >
                   <PieChart>
                     <Pie
-                      className="pie-no-outline"
-                      cx="40%"
-                      cy="50%"
+                      className="circle-graph pie-no-outline"
+                      cornerRadius="50px"
                       data={data}
+                      // Corner radius is the rounded edge of each pie slice
                       dataKey="value"
+                      fill="#8884d8"
+                      // padding angle is the gap between each pie slice
+                      innerRadius="70%"
+                      isAnimationActive={true}
                       label={renderCustomizedLabel(isDarkMode)}
+                      // cx="40%"
+                      // cy="50%"
                       labelLine
+                      // dataKey="value"
                       minAngle={10}
                       nameKey="name"
-                      outerRadius={140}
+                      outerRadius="80%"
+                      paddingAngle={4}
+                      // outerRadius={140}
                     >
                       {data.map((_, index) => (
                         <Cell fill={COLORS[index % COLORS.length]} key={`cell-${uuid()}`} />
@@ -159,11 +167,11 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                 </ResponsiveContainer>
               )}
 
-              {isGraph && <Graph className="w-full h-[430px] hidden sm:block" data={data} />}
+              {isGraph && <Graph className="graph w-full h-full hidden md:block" data={data} />}
 
               <MobileCharts data={data} />
 
-              <div className="flex gap-2 w-full md:w-auto flex-1 min-w-max">
+              <div className="flex gap-2 w-full md:w-auto flex-1 min-w-max bg-neutral-800 p-4 self-stretch rounded-xl">
                 <ul className="grid gap-2 shrink-0 flex-1">
                   {data.map((item, index) => (
                     <ResourceRow

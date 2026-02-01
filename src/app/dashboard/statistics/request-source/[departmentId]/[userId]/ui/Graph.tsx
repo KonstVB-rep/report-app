@@ -63,7 +63,7 @@ interface GraphProps {
 const Graph: React.FC<GraphProps> = ({ data, className }) => {
   return (
     <div className={className}>
-      <ResponsiveContainer height="94%" width="100%">
+      <ResponsiveContainer height="100%" width="100%">
         <BarChart data={data} margin={{ top: 30, right: 10, bottom: 60, left: -30 }}>
           <CartesianGrid stroke="#ccc" strokeDasharray="3 3" />
           <XAxis
