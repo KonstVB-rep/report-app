@@ -2,13 +2,13 @@
 
 import { Building, Info, PhoneOutgoing } from "lucide-react"
 import dynamic from "next/dynamic"
-import type { DealProject } from "@/entities/deal/types"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
+import { useGetProjectById } from "../api/hooks/query"
 import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData"
 import FinanceInfo from "./FinanceInfo"
 import SettingDeal from "./SettingDeal"
@@ -24,6 +24,10 @@ const PreviewImagesList = dynamic(() => import("@/widgets/Files/ui/PreviewImages
   loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
 })
 
+const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
+  ssr: false,
+})
+
 const CardMainContact = dynamic(() => import("@/entities/contact/ui/CardMainContact"), {
   ssr: false,
 })
@@ -31,9 +35,14 @@ const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/Contac
   ssr: false,
 })
 
-const ProjectItemInfo = ({ dealData }: { dealData: DealProject }) => {
+const ProjectItemInfo = ({ id }: { id: string }) => {
+  const { data: dealData, isLoading } = useGetProjectById(id, false)
+
   const { dataFinance, formattedDate, statusLabel, directionLabel, deliveryLabel, typeLabel } =
     useNormalizeProjectData(dealData)
+
+  if (isLoading) return <LoaderCircleInWater />
+  if (!dealData) return <NotFoundDeal />
 
   return (
     <MotionDivY className="grid grid-rows-[auto_auto_1fr_auto] gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto w-full">
@@ -42,7 +51,7 @@ const ProjectItemInfo = ({ dealData }: { dealData: DealProject }) => {
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
           <p className="text-xs">Дата: {formattedDate}</p>
         </div>
-        <SettingDeal<DealProject> dealData={dealData} />
+        <SettingDeal dealData={dealData} />
       </div>
 
       <ManagersListByDeal managers={dealData.managers} userId={dealData?.userId || "Не назначен"} />
@@ -52,7 +61,6 @@ const ProjectItemInfo = ({ dealData }: { dealData: DealProject }) => {
           <div className="flex gap-2 items-center p-2 mt-2 border-blue-500 rounded border-2">
             <PhoneOutgoing className="text-orange-600" />
             <span>
-              {" "}
               Плановая дата контакта: {dealData?.plannedDateConnection?.toLocaleDateString()}
             </span>
           </div>

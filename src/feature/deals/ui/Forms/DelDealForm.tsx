@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Dispatch, SetStateAction } from "react"
-import type { DealUnion } from "@/entities/deal/types"
+import type { DealType } from "@prisma/client"
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton"
 import { Button } from "@/shared/components/ui/button"
 import { DialogClose } from "@/shared/components/ui/dialog"
@@ -12,11 +12,12 @@ import { useDelDeal } from "../../api/hooks/mutate"
 import { useGetDealById } from "../../api/hooks/query"
 
 type Props = {
-  dealInfo: DealUnion
+  id: string
+  type: DealType
   close: Dispatch<SetStateAction<void>>
 }
 
-const DelDealForm = ({ dealInfo: { id, type }, close }: Props) => {
+const DelDealForm = ({ id, type, close }: Props) => {
   const { data: deal, isPending: isLoadInfoAboutDeal } = useGetDealById(id, type)
 
   const userId = deal?.userId ?? ""

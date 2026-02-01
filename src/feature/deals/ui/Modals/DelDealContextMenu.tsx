@@ -9,11 +9,12 @@ import DelDealForm from "../Forms/DelDealForm"
 const DelDealContextMenu = ({ close }: { close: Dispatch<SetStateAction<void>> }) => {
   const { selectedDataItem } = useTableContext<DealUnion>()
   if (!selectedDataItem) return null
+
   return (
     <div className="hidden">
       <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
         <ModalContent className="sm:max-w-[400px]" title="Удалить проект">
-          <DelDealForm close={close} dealInfo={selectedDataItem} />
+          <DelDealForm close={close} id={selectedDataItem.id} type={selectedDataItem.type} />
         </ModalContent>
       </ProtectedByPermissions>
     </div>

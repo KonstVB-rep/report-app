@@ -20,6 +20,7 @@ const DealsDrawer = ({ table }: { table: Table<DealUnion> }) => {
   })
 
   const dealId = rowsSelectionData[0]?.original.id
+  const type = rowsSelectionData[0]?.original.type
   const deals = rowsSelectionData.map((row) => {
     return {
       id: row.original.id,
@@ -40,9 +41,10 @@ const DealsDrawer = ({ table }: { table: Table<DealUnion> }) => {
             <div>
               <DelButtonDeal
                 clearData={clearSelection}
-                dealInfo={rowsSelectionData[0]?.original}
+                id={dealId}
                 isTextButton
                 key={dealId}
+                type={type}
                 withCheckPermissions={false}
               />
             </div>

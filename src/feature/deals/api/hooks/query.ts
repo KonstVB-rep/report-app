@@ -15,11 +15,12 @@ import {
 } from "@/entities/deal/api/queryFn"
 import type {
   DateRange,
+  DealProject,
+  DealRetail,
   DealsUnionType,
+  DealUnion,
   ProjectResponse,
-  ProjectResponseWithContactsAndFiles,
   RetailResponse,
-  RetailResponseWithContactsAndFiles,
   TableType,
 } from "@/entities/deal/types"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -29,13 +30,10 @@ import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
 export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
   const { queryClient, authUser } = useFormSubmission()
 
-  const cachedDeals = queryClient.getQueryData<ProjectResponseWithContactsAndFiles[]>([
-    "projects",
-    authUser?.id,
-  ])
+  const cachedDeals = queryClient.getQueryData<DealProject[]>(["projects", authUser?.id])
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId)
 
-  return useQuery<ProjectResponseWithContactsAndFiles | null, Error>({
+  return useQuery<DealProject | null, Error>({
     queryKey: ["project", dealId],
     queryFn: async () => {
       try {
@@ -70,13 +68,10 @@ export const useGetProjectById = (dealId: string, useCache: boolean = true) => {
 export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   const { queryClient, authUser } = useFormSubmission()
 
-  const cachedDeals = queryClient.getQueryData<RetailResponseWithContactsAndFiles[]>([
-    "retails",
-    authUser?.id,
-  ])
+  const cachedDeals = queryClient.getQueryData<DealRetail[]>(["retails", authUser?.id])
   const cachedDeal = cachedDeals?.find((p) => p.id === dealId)
 
-  return useQuery<RetailResponseWithContactsAndFiles | null, Error>({
+  return useQuery<DealRetail | null, Error>({
     queryKey: ["retail", dealId],
     queryFn: async () => {
       try {
@@ -108,19 +103,15 @@ export const useGetRetailById = (dealId: string, useCache: boolean = true) => {
   })
 }
 
-export const useGetDealById = <
-  T extends ProjectResponseWithContactsAndFiles | RetailResponseWithContactsAndFiles,
->(
-  dealId: string,
-  type: DealType,
-) => {
+export const useGetDealById = <T extends DealUnion>(dealId: string, type: DealType) => {
   const { queryClient, authUser } = useFormSubmission()
 
   const queryKey = [type.toLowerCase(), dealId]
 
-  const cachedData = queryClient.getQueryData<
-    Array<ProjectResponseWithContactsAndFiles | RetailResponseWithContactsAndFiles>
-  >([`${type.toLowerCase()}s`, authUser?.id])
+  const cachedData = queryClient.getQueryData<Array<DealUnion>>([
+    `${type.toLowerCase()}s`,
+    authUser?.id,
+  ])
   const cachedEntity = cachedData?.find((p) => p.id === dealId) as T | undefined
 
   const fetchFn = async (): Promise<T | undefined> => {
@@ -161,7 +152,7 @@ export const useGetDealById = <
   return useQuery<T | undefined, Error>({
     queryKey,
     queryFn: fetchFn,
-    enabled: !cachedEntity,
+    enabled: !cachedEntity && !dealId,
     initialData: cachedEntity,
   })
 }

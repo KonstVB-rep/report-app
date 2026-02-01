@@ -1,7 +1,6 @@
 import React from "react"
-import { PermissionEnum } from "@prisma/client"
+import { type DealType, PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
-import type { DealUnion } from "@/entities/deal/types"
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import WrapperFormDeleteDialog from "@/shared/custom-components/ui/WrapperFormDeleteDialog"
@@ -12,12 +11,14 @@ const DelDealForm = dynamic(() => import("../Forms/DelDealForm"), {
 })
 
 const DelButtonDeal = ({
-  dealInfo,
+  id,
+  type,
   isTextButton = false,
   clearData,
   withCheckPermissions = true,
 }: {
-  dealInfo: DealUnion
+  id: string
+  type: DealType
   isTextButton?: boolean
   clearData?: () => void
   withCheckPermissions?: boolean
@@ -26,10 +27,10 @@ const DelButtonDeal = ({
     <>
       {withCheckPermissions ? (
         <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
-          <DelButton clearData={clearData} dealInfo={dealInfo} isTextButton={isTextButton} />
+          <DelButton clearData={clearData} id={id} isTextButton={isTextButton} type={type} />
         </ProtectedByPermissions>
       ) : (
-        <DelButton clearData={clearData} dealInfo={dealInfo} isTextButton={isTextButton} />
+        <DelButton clearData={clearData} id={id} isTextButton={isTextButton} type={type} />
       )}
     </>
   )
@@ -38,11 +39,13 @@ const DelButtonDeal = ({
 export default DelButtonDeal
 
 const DelButton = ({
-  dealInfo,
+  id,
+  type,
   isTextButton = false,
   clearData,
 }: {
-  dealInfo: DealUnion
+  id: string
+  type: DealType
   isTextButton?: boolean
   clearData?: () => void
 }) => {
@@ -55,7 +58,8 @@ const DelButton = ({
           clearData?.()
           setOpen(false)
         }}
-        dealInfo={dealInfo}
+        id={id}
+        type={type}
       />
     </WrapperFormDeleteDialog>
   )

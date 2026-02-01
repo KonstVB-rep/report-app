@@ -16,22 +16,23 @@ import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
 import { prisma } from "@/prisma/prisma-client"
 import { checkRole } from "@/shared/api/checkByServer"
 import { handleError } from "@/shared/api/handleError"
-import type {
-  Contact,
-  DateRange,
-  DealUnion,
-  ManagerShortInfo,
-  ProjectResponse,
-  ProjectResponseWithContactsAndFiles,
-  ProjectWithManagersIds,
-  ProjectWithoutDateCreateAndUpdate,
-  ProjectWithoutId,
-  ReAssignDeal,
-  RetailResponse,
-  RetailResponseWithContactsAndFiles,
-  RetailWithManagersIds,
-  RetailWithoutDateCreateAndUpdate,
-  RetailWithoutId,
+import {
+  type Contact,
+  type DateRange,
+  DEAL_TYPE,
+  type DealProject,
+  type DealRetail,
+  type DealUnion,
+  type ManagerShortInfo,
+  type ProjectResponse,
+  type ProjectWithManagersIds,
+  type ProjectWithoutDateCreateAndUpdate,
+  type ProjectWithoutId,
+  type ReAssignDeal,
+  type RetailResponse,
+  type RetailWithManagersIds,
+  type RetailWithoutDateCreateAndUpdate,
+  type RetailWithoutId,
 } from "../types"
 
 const requiredFields = ["nameObject", "direction", "comments", "contact", "dealStatus"]
@@ -50,7 +51,7 @@ const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
 /********************************************** Получить ****************************************************************/
 export const getProjectById = async (
   dealId: string,
-): Promise<(ProjectResponseWithContactsAndFiles & { managers: ManagerShortInfo[] }) | null> => {
+): Promise<(DealProject & { managers: ManagerShortInfo[] }) | null> => {
   try {
     const data = await handleAuthorization()
 
@@ -100,6 +101,7 @@ export const getProjectById = async (
 
     const formattedProject = {
       ...rest,
+      type: DEAL_TYPE.PROJECT,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
       amountWork: deal.amountWork ? deal.amountWork.toString() : "",
       amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
@@ -117,7 +119,7 @@ export const getProjectById = async (
 
 export const getRetailById = async (
   dealId: string,
-): Promise<(RetailResponseWithContactsAndFiles & { managers: ManagerShortInfo[] }) | null> => {
+): Promise<(DealRetail & { managers: ManagerShortInfo[] }) | null> => {
   try {
     const data = await handleAuthorization()
 
@@ -167,6 +169,7 @@ export const getRetailById = async (
 
     const formattedRetail = {
       ...rest,
+      type: DEAL_TYPE.RETAIL,
       amountCP: deal.amountCP ? deal.amountCP.toString() : "",
       delta: deal.delta ? deal.delta.toString() : "",
       dealFiles,

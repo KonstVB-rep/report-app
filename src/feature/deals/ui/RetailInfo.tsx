@@ -2,12 +2,12 @@
 
 import { Building, Info } from "lucide-react"
 import dynamic from "next/dynamic"
-import type { DealRetail } from "@/entities/deal/types"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
+import { useGetRetailById } from "../api/hooks/query"
 import useNormalizeRetailData from "../lib/hooks/useNormalizeRetailData"
 import FinanceInfo from "./FinanceInfo"
 import SettingDeal from "./SettingDeal"
@@ -21,6 +21,9 @@ const PreviewImagesList = dynamic(() => import("@/widgets/Files/ui/PreviewImages
   ssr: false,
   loading: () => <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />,
 })
+const NotFoundDeal = dynamic(() => import("@/entities/deal/ui/NotFoundDeal"), {
+  ssr: false,
+})
 
 const CardMainContact = dynamic(() => import("@/entities/contact/ui/CardMainContact"), {
   ssr: false,
@@ -32,8 +35,12 @@ const IntoDealItem = dynamic(() => import("@/entities/deal/ui/IntoDealItem"), {
   ssr: false,
 })
 
-const RetailItemInfo = ({ dealData }: { dealData: DealRetail }) => {
+const RetailItemInfo = ({ id }: { id: string }) => {
+  const { data: dealData, isLoading } = useGetRetailById(id, false)
   const { dealInfo, dataFinance } = useNormalizeRetailData(dealData)
+
+  if (isLoading) return <LoaderCircleInWater />
+  if (!dealData) return <NotFoundDeal />
 
   return (
     <MotionDivY className="grid grid-rows-[auto_auto_1fr_auto] gap-1 p-4 h-auto max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto">
@@ -43,7 +50,7 @@ const RetailItemInfo = ({ dealData }: { dealData: DealRetail }) => {
           <p className="text-xs">Дата: {dealData.createdAt?.toLocaleDateString()}</p>
         </div>
 
-        <SettingDeal<DealRetail> dealData={dealData} />
+        <SettingDeal dealData={dealData} />
       </div>
 
       <ManagersListByDeal managers={dealData.managers} userId={dealData?.userId || "Не назначен"} />

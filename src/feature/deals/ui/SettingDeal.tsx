@@ -4,13 +4,14 @@ import type { DealUnion } from "@/entities/deal/types"
 import { Button } from "@/shared/components/ui/button"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import FileUploadForm from "@/widgets/Files/ui/UploadFile"
-import DelButtonDeal from "./Modals/DelButtonDeal"
 import EditDealButtonIcon from "./Modals/EditDealButtonIcon"
 
-const SettingDeal = <T extends DealUnion>({ dealData }: { dealData: T }) => {
+const SettingDeal = ({ dealData }: { dealData: DealUnion }) => {
   const [open, setOpen] = useState(false)
 
   const authUser = useRequireAuth()
+
+  if (!dealData) return null
 
   return (
     <div className="flex gap-2 items-center">
@@ -22,7 +23,6 @@ const SettingDeal = <T extends DealUnion>({ dealData }: { dealData: T }) => {
             userId={dealData.userId || authUser.id}
           />
           <EditDealButtonIcon dealInfo={dealData} />
-          <DelButtonDeal dealInfo={dealData} />
         </div>
       )}
       {open ? (
