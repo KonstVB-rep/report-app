@@ -138,25 +138,22 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                 >
                   <PieChart>
                     <Pie
+                      animationBegin={200}
+                      animationDuration={500}
                       className="circle-graph pie-no-outline"
-                      cornerRadius="50px"
+                      cornerRadius="5%"
                       data={data}
-                      // Corner radius is the rounded edge of each pie slice
                       dataKey="value"
                       fill="#8884d8"
-                      // padding angle is the gap between each pie slice
-                      innerRadius="70%"
+                      innerRadius="20%"
                       isAnimationActive={true}
                       label={renderCustomizedLabel(isDarkMode)}
-                      // cx="40%"
-                      // cy="50%"
                       labelLine
-                      // dataKey="value"
-                      minAngle={10}
+                      legendType="circle"
+                      minAngle={5}
                       nameKey="name"
                       outerRadius="80%"
                       paddingAngle={4}
-                      // outerRadius={140}
                     >
                       {data.map((_, index) => (
                         <Cell fill={COLORS[index % COLORS.length]} key={`cell-${uuid()}`} />
