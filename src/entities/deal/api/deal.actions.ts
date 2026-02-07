@@ -22,7 +22,8 @@ import {
   DEAL_TYPE,
   type DealProject,
   type DealRetail,
-  type DealUnion,
+  type DealsList,
+  type DealsListWithResource,
   type ManagerShortInfo,
   type ProjectResponse,
   type ProjectWithManagersIds,
@@ -439,23 +440,6 @@ export const getAllRetailsByDepartment = async (
     return handleError((error as Error).message)
   }
 }
-
-type DealsListWithResource =
-  | {
-      deals: {
-        dateRequest: Date
-        resource: string
-      }[]
-      totalDealsCount: number
-    }
-  | { deals: []; totalDealsCount: number }
-
-type DealsList =
-  | {
-      deals: DealUnion[]
-      totalDealsCount: number
-    }
-  | { deals: []; totalDealsCount: number }
 
 export const getAllDealsRequestSourceByDepartment = async (
   departmentId: number,

@@ -30,7 +30,7 @@ const LinksPageBlock = () => {
     <div className="grid gap-3 self-end px-2 pb-2 w-full">
       <LinkPage path="/adminboard/bots" title="Боты" />
 
-      <LinkPage path={`/adminboard/deals/${authUser?.id}`} title="Сделки" />
+      <LinkPage path={`/adminboard/deals/${authUser?.departmentId}`} title="Сделки" />
 
       <LinkPage path="/adminboard/events" title="Календарь" />
     </div>

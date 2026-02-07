@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { useParams } from "next/navigation"
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable"
 import { useGetAllDealsDepartment } from "@/feature/deals/api/hooks/query"
 import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider"
@@ -17,10 +18,13 @@ import Loading from "./loading"
 const HIDDEN_COLS = { id: false, user: false }
 
 const AllDealsPage = () => {
+  const { departmentId } = useParams<{ departmentId: string }>()
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
-  const { data, error, isError, isPending } = useGetAllDealsDepartment()
+  const departmentIdNumber = Number(departmentId)
+
+  const { data, error, isError, isPending } = useGetAllDealsDepartment(departmentIdNumber)
   const { table, filtersContextValue, openFilters, setGlobalFilter } = useTableState(
     data?.deals || [],
     columnsDataDeals,

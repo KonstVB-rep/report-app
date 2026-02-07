@@ -1,11 +1,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { notFound } from "next/navigation"
 import { getQueryClient } from "@/app/provider/query-provider"
-import {
-  getContractsUserQuery,
-  getProjectsUserQuery,
-  getRetailsUserQuery,
-} from "@/entities/deal/api/queryFn"
+import { getContractsUser, getProjectsUser, getRetailsUser } from "@/entities/deal/api/deal.actions"
 import type { ProjectResponse, RetailResponse } from "@/entities/deal/types" // Импортируем типы
 import PersonDealsTable from "@/widgets/deal/ui/PersonDealsTable"
 
@@ -13,17 +9,17 @@ type DealResponse = ProjectResponse[] | RetailResponse[] | null
 
 const DEAL_RESOLVER = {
   projects: {
-    fetcher: getProjectsUserQuery,
+    fetcher: getProjectsUser,
     getId: (p: { userId: string }) => p.userId,
     title: "Проекты",
   },
   retails: {
-    fetcher: getRetailsUserQuery,
+    fetcher: getRetailsUser,
     getId: (p: { userId: string }) => p.userId,
     title: "Розница",
   },
   contracts: {
-    fetcher: getContractsUserQuery,
+    fetcher: getContractsUser,
     getId: (p: { userId: string }) => p.userId,
     title: "Договоры",
   },

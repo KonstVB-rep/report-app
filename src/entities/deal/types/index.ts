@@ -162,3 +162,20 @@ export type DealRetail = RetailResponseWithContactsAndFiles & {
 export type DealUnion = DealProject | DealRetail
 
 export type DealTableRowProps<T extends DealUnion> = SharedTableRowProps<T>
+
+export type DealsListWithResource =
+  | {
+      deals: {
+        dateRequest: Date
+        resource: string
+      }[]
+      totalDealsCount: number
+    }
+  | { deals: []; totalDealsCount: number }
+
+export type DealsList =
+  | {
+      deals: DealUnion[]
+      totalDealsCount: number
+    }
+  | { deals: []; totalDealsCount: number }

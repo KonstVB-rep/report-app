@@ -38,10 +38,10 @@ const DealsTabContent = (props: DealsTabContentProps) => {
     data: deals,
     error,
     isError,
-    isPending,
+    isLoading,
   } = useGetAllDealsByType(dealType, hasAccess ? userId : null, departmentId)
 
-  if (isPending) return <Loading />
+  if (isLoading) return <Loading />
   if (isError) return <ErrorMessageTable message={error?.message} />
 
   return (

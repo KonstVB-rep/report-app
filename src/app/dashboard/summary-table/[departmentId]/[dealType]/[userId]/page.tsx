@@ -2,9 +2,9 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { notFound } from "next/navigation"
 import { getQueryClient } from "@/app/provider/query-provider"
 import {
-  getAllProjectsByDepartmentQuery,
-  getAllRetailsByDepartmentQuery,
-} from "@/entities/deal/api/queryFn"
+  getAllProjectsByDepartment,
+  getAllRetailsByDepartment,
+} from "@/entities/deal/api/deal.actions"
 import type { ProjectResponse, RetailResponse } from "@/entities/deal/types"
 import SummaryDealsTable from "@/widgets/deal/ui/SummaryDealsTable"
 
@@ -12,11 +12,11 @@ type DealResponse = ProjectResponse[] | RetailResponse[]
 
 const DEAL_RESOLVER = {
   projects: {
-    fetcher: getAllProjectsByDepartmentQuery,
+    fetcher: getAllProjectsByDepartment,
     key: "all-projects",
   },
   retails: {
-    fetcher: getAllRetailsByDepartmentQuery,
+    fetcher: getAllRetailsByDepartment,
     key: "all-retails",
   },
 } as const

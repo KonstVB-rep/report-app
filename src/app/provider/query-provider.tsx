@@ -1,13 +1,40 @@
 import type { PropsWithChildren } from "react"
-import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import {
+  isServer,
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
 
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false,
+        retry: 1,
       },
     },
+    queryCache: new QueryCache({
+      onError: (error, query) => {
+        if (typeof window === "undefined") return
+
+        if (query.meta?.errorMessage) {
+          TOAST.ERROR(query.meta.errorMessage as string)
+          return
+        }
+
+        const message = error instanceof Error ? error.message : "Произошла ошибка"
+        TOAST.ERROR(message === "Failed to fetch" ? "Ошибка сети" : message)
+      },
+    }),
+    mutationCache: new MutationCache({
+      onError: (error) => {
+        if (typeof window === "undefined") return
+        TOAST.ERROR(error.message)
+      },
+    }),
   })
 }
 
