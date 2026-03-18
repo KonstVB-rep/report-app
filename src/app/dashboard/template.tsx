@@ -1,10 +1,43 @@
-"use client"
+import type { PropsWithChildren } from "react"
+import dynamic from "next/dynamic"
+import { usePathname } from "next/navigation"
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { SidebarInset } from "@/shared/components/ui/sidebar"
+import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY"
+import AppSidebar from "@/widgets/AppSidebar"
 
-import type { ReactNode } from "react"
-import ProtectedAuth from "@/shared/custom-components/ui/Protect/ProtectedAuth"
+const RedirectToPath = dynamic(
+  () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
+        <p className="text-2xl sm:text-4xl opacity-30">Идет завершение сессии...</p>
+      </div>
+    ),
+  },
+)
 
-const TemplateDashboard = ({ children }: { children: ReactNode }) => {
-  return <ProtectedAuth>{children}</ProtectedAuth>
+const TemplateDashboard = ({ children }: PropsWithChildren) => {
+  const pathname = usePathname()
+  const { authUser } = useStoreUser()
+  useGetDepartmentsWithUsers()
+
+  if (!authUser) {
+    return <RedirectToPath to="/login" />
+  }
+
+  return (
+    <>
+      <div className="flex min-h-[calc(100svh-var(--header-height)-2px)] max-h-[calc(100svh-var(--header-height)-2px)] flex-1">
+        <AppSidebar />
+        <SidebarInset className="h-auto min-h-min" key={pathname}>
+          <PageTransitionY>{children}</PageTransitionY>
+        </SidebarInset>
+      </div>
+    </>
+  )
 }
 
 export default TemplateDashboard

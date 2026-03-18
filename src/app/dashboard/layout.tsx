@@ -1,23 +1,20 @@
 "use client"
 
-import type { ReactNode } from "react"
-import { SiteHeader } from "@/feature/Sidebar/ui/site-header"
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
-import AppSidebar from "@/widgets/AppSidebar"
+import { PropsWithChildren } from "react"
 
-const DashboardLayout = ({ children }: { children: ReactNode }) => {
+import { SiteHeader } from "@/feature/Sidebar/ui/site-header"
+import { SidebarProvider } from "@/shared/components/ui/sidebar"
+
+const DashboardLayout = ({ children }: PropsWithChildren) => {
   return (
-    <div className="min-w-64 [--header-height:calc(--spacing(14))] h-screen">
-      <SidebarProvider className="h-full bottom-0">
-        <AppSidebar />
-        <main className="w-full">
+    <>
+      <div className="min-w-64 [--header-height:calc(theme(spacing.14))]">
+        <SidebarProvider className="flex flex-col">
           <SiteHeader />
-          <SidebarInset className="h-auto min-h-screen flex flex-col">
-            <div className="flex-1 flex flex-col">{children}</div>
-          </SidebarInset>
-        </main>
-      </SidebarProvider>
-    </div>
+          {children}
+        </SidebarProvider>
+      </div>
+    </>
   )
 }
 
