@@ -1,28 +1,21 @@
 import type { DealFile } from "@prisma/client"
 import { useMutation } from "@tanstack/react-query"
-import type { AxiosResponse } from "axios"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import axiosInstance from "@/shared/api/axiosInstance"
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
-import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization"
 import { downloadFile, uploadFile } from "../api/action_route"
 import { saveBlobToFile } from "../libs/helpers/saveBlobToFile"
 
 export const useUploadFileYdxDisk = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
     mutationFn: async (formData: FormData) => {
       if (!authUser?.id) throw new Error("Пользователь не авторизован")
 
-      const response = await handleMutationWithAuthCheck<FormData, AxiosResponse>(
-        uploadFile,
-        formData,
-        authUser,
-        isSubmittingRef,
-      )
+      const response = await uploadFile(formData)
 
       if (!response?.data.success) {
         throw new Error("Ошибка при загрузке файла")
@@ -52,17 +45,11 @@ export const useUploadFileYdxDisk = () => {
 }
 
 export const useDownLoadFile = () => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
   return useMutation({
     mutationFn: async (data: { localPath: string; name: string }) => {
       const { localPath, name } = data
 
-      const response = await handleMutationWithAuthCheck<{ filePath: string }, AxiosResponse>(
-        downloadFile,
-        { filePath: localPath },
-        authUser,
-        isSubmittingRef,
-      )
+      const response = await downloadFile({ filePath: localPath })
 
       if (!response?.data) {
         throw new Error("Файл не найден")
@@ -129,11 +116,11 @@ export const useDownLoadFile = () => {
 // }
 
 export const useDeleteFiles = (handleCloseDialog?: () => void) => {
-  const { queryClient, authUser } = useFormSubmission()
+  const { queryClient } = useFormSubmission()
 
   return useMutation({
     mutationFn: async (files: DealFile[]) => {
-      await checkAuthorization(authUser?.id)
+      await requireUser()
 
       // Отправляем весь массив одним запросом
       const response = await axiosInstance.delete(`/yandex-disk/delete`, {

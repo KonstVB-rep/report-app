@@ -11,9 +11,8 @@ import bcrypt from "bcrypt"
 import z from "zod"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { findUserByEmail } from "@/app/api/utils/findUserByEmail"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
-import { checkRole } from "@/shared/api/checkByServer"
 import { handleError } from "@/shared/api/handleError"
 import type { ActionResponse } from "@/shared/types"
 import type { UserTypeTable } from "../model/column-data-user"
@@ -36,6 +35,7 @@ const extractFormData = (formData: FormData, permissions: string[]): UserFormDat
   department: formData.get("department") as DepartmentEnum,
   role: formData.get("role") as Role,
   permissions: permissions as PermissionEnum[],
+  isBlocked: formData.get("isBlocked") === "on" || formData.get("isBlocked") === "true",
 })
 
 export const checkFormData = async (
@@ -129,7 +129,19 @@ const addUserToDb = async <T extends UserDataBase>(
     departmentId: true,
     position: true,
     phone: true,
+    isBlocked: true,
   }
+
+  console.log({
+    email: dataForm.email?.toLowerCase().trim(),
+    phone: dataForm.phone?.toLowerCase().trim(),
+    role: dataForm.role as Role,
+    ...(departmentId && { departmentId }),
+    username: dataForm.username?.toLowerCase().trim(),
+    position: dataForm.position?.toLowerCase().trim(),
+    ...(hashedPassword && { user_password: hashedPassword }),
+    isBlocked: dataForm.isBlocked,
+  })
 
   if (action === "create" && hashedPassword) {
     return await prisma.user.create({
@@ -141,6 +153,7 @@ const addUserToDb = async <T extends UserDataBase>(
         username: dataForm.username?.toLowerCase().trim(),
         position: dataForm.position?.toLowerCase().trim(),
         user_password: hashedPassword,
+        isBlocked: dataForm.isBlocked,
       },
       select: selectFields,
     })
@@ -156,6 +169,7 @@ const addUserToDb = async <T extends UserDataBase>(
         username: dataForm.username?.toLowerCase().trim(),
         position: dataForm.position?.toLowerCase().trim(),
         ...(hashedPassword && { user_password: hashedPassword }),
+        isBlocked: dataForm.isBlocked,
       },
       select: selectFields,
     })
@@ -187,9 +201,9 @@ const assignPermissionsToUser = async (userId: string, permissions: PermissionEn
 }
 
 const checkUserPermissions = async (requiredPermissions: PermissionEnum[] = []) => {
-  const dataAuthUser = await handleAuthorization()
-  if (dataAuthUser?.user && requiredPermissions.length > 0) {
-    await checkUserPermissionByRole(dataAuthUser.user, requiredPermissions)
+  const user = await requireUser()
+  if (user && requiredPermissions.length > 0) {
+    await checkUserPermissionByRole(user, requiredPermissions)
   }
 }
 
@@ -341,7 +355,7 @@ export const getUser = async (
   | undefined
 > => {
   try {
-    const { user, userId } = await handleAuthorization()
+    const user = await requireUser()
 
     const targetUser = await prisma.user.findUnique({
       where: { id: targetUserId },
@@ -363,7 +377,7 @@ export const getUser = async (
 
     if (!targetUser) return handleError("Пользователь не найден")
 
-    if (targetUserId !== userId && user && permissions && permissions.length > 0) {
+    if (targetUserId !== user.userId && user && permissions && permissions.length > 0) {
       await checkUserPermissionByRole(user, permissions)
     }
 
@@ -391,7 +405,7 @@ export const getUser = async (
 
 export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser<null>> => {
   try {
-    const { user } = await handleAuthorization()
+    const user = await requireUser()
 
     if (user) {
       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT])
@@ -427,7 +441,7 @@ export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser
 
 export const deleteUsersList = async (deletedUserIds: string[]): Promise<ResponseDelUser<null>> => {
   try {
-    const { user } = await handleAuthorization()
+    const user = await requireUser()
 
     if (user) await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT])
 
@@ -476,7 +490,7 @@ export const deleteUsersList = async (deletedUserIds: string[]): Promise<Respons
 
 export const getAllUsersByDepartment = async (id: number): Promise<User[] | null> => {
   try {
-    await handleAuthorization()
+    await requireUser()
 
     const users = await prisma.user.findMany({
       where: { departmentId: Number(id) },
@@ -491,9 +505,11 @@ export const getAllUsersByDepartment = async (id: number): Promise<User[] | null
 
 export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
   try {
-    await handleAuthorization()
+    const user = await requireUser()
 
-    await checkRole(Role.ADMIN)
+    if (user.role !== "ADMIN") {
+      return handleError("Не достаточно прав длЯ совершения действия")
+    }
 
     const lastLogins = await prisma.userLogin.groupBy({
       by: ["userId"],

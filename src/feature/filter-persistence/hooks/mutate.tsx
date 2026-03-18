@@ -1,7 +1,6 @@
 import type { UserFilter } from "@prisma/client"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import useStoreUser from "@/entities/user/store/useStoreUser"
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
 import {
@@ -11,19 +10,12 @@ import {
   selectFilter,
   updateFilter,
 } from "../api/filter.actions"
-import type { DeleteFilterReturnType, SaveFilterType, UpdateFilterDataType } from "../types"
+import type { SaveFilterType } from "../types"
 
 export const useSaveFilter = (setOpen: (value: boolean) => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
-    mutationFn: (saveData: SaveFilterType) => {
-      return handleMutationWithAuthCheck<SaveFilterType, UserFilter>(
-        saveFilter,
-        saveData,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (saveData: SaveFilterType) => saveFilter(saveData),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["filters", authUser?.id],
@@ -41,16 +33,10 @@ export const useSaveFilter = (setOpen: (value: boolean) => void) => {
 }
 
 export const useUpdateFilter = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
-    mutationFn: ({ data }: { data: Omit<UserFilter, "createdAt" | "updatedAt"> }) => {
-      return handleMutationWithAuthCheck<UpdateFilterDataType, UserFilter | undefined>(
-        updateFilter,
-        data,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: ({ data }: { data: Omit<UserFilter, "createdAt" | "updatedAt"> }) =>
+      updateFilter(data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["filters", authUser?.id],
@@ -65,16 +51,9 @@ export const useUpdateFilter = () => {
 }
 
 export const useDeleteFilter = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
-    mutationFn: (filterId: string) => {
-      return handleMutationWithAuthCheck<{ id: string }, DeleteFilterReturnType>(
-        deleteFilter,
-        { id: filterId },
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (filterId: string) => await deleteFilter({ id: filterId }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["filters", authUser?.id],

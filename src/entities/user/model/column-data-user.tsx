@@ -139,7 +139,6 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
     id: "tgUserId",
     header: "ID чата",
     cell: (info: CellContext<UserTypeTable, unknown>) => {
-      console.log(info.getValue(), "info")
       return info.getValue() ?? ""
     },
     enableHiding: true,

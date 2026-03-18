@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { StatusRetail } from "@prisma/client"
 import { ArrowLeft } from "lucide-react"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
@@ -54,11 +55,11 @@ const RetailFormBody = <T extends FieldValues>({
   titleForm,
 }: RetailFormBodyProps<T>) => {
   const initialManagersIds = form.getValues("managersIds" as Path<T>)
-  const initialManagers = initialManagersIds?.length
-    ? initialManagersIds
-    : managerId
-      ? [{ userId: managerId }]
-      : []
+  const initialManagers = useMemo(
+    () =>
+      initialManagersIds?.length ? initialManagersIds : managerId ? [{ userId: managerId }] : [],
+    [initialManagersIds, managerId],
+  )
 
   const {
     contacts,
@@ -281,7 +282,7 @@ const RetailFormBody = <T extends FieldValues>({
             <ArrowLeft />
           </Button>
           <ContactDeal
-            contacts={contactsKey ? (contacts as T[typeof contactsKey]) : []}
+            contacts={contacts as Contact[]}
             contactsKey={contactsKey as string}
             handleDeleteContact={handleDeleteContact}
             onContactsChange={setContacts}

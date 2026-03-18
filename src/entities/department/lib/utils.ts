@@ -22,38 +22,28 @@ export const formattedArr = <T extends Dept>(arr: T[] | null): DeptFormatted[] |
     id: dept.id,
     name: dept.name,
     description: dept.description,
-    users: dept.users.map((user) => {
-      return { [user.id]: user.username }
-    }),
+    users: Object.fromEntries(dept.users.map((user) => [user.id, user.username])),
   }))
 }
+
+const NOT_MANAGERS_SET = new Set(Object.values(NOT_MANAGERS_POSITIONS))
 
 export const getUsers = (data: { onlyManagers: boolean }) => {
   const { authUser } = useStoreUser.getState()
   const { departments } = useStoreDepartment.getState()
 
-  const currentDepartment = departments?.find((dept) => dept.id === authUser?.departmentId)
-  if (data?.onlyManagers) {
-    return (
-      currentDepartment?.users.reduce(
-        (acc, item) => {
-          if (!(Object.values(NOT_MANAGERS_POSITIONS) as string[]).includes(item.position)) {
-            acc[item.id] = capitalizeFullName(item.username)
-          }
-          return acc
-        },
-        {} as Record<string, string>,
-      ) ?? {}
-    )
-  } else {
-    return (
-      currentDepartment?.users.reduce(
-        (acc, item) => {
-          acc[item.id] = capitalizeFullName(item.username)
-          return acc
-        },
-        {} as Record<string, string>,
-      ) ?? {}
-    )
+  const dept = departments?.find((d) => d.id === authUser?.departmentId)
+  if (!dept) return {}
+
+  const result: Record<string, string> = {}
+
+  for (const user of dept.users) {
+    const isNotManager = NOT_MANAGERS_SET.has(user.position)
+
+    if (!data.onlyManagers || !isNotManager) {
+      result[user.id] = capitalizeFullName(user.username)
+    }
   }
+
+  return result
 }

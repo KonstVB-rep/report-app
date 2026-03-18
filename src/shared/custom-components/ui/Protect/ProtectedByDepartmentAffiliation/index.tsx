@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react"
+"use client"
 import { useParams } from "next/navigation"
-import { checkDepartment } from "@/shared/api/checkByServer"
+import NotFound from "@/app/not-found"
+import { usePermissions } from "@/app/provider/permission-provider"
 
 const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren) => {
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
-  const [loading, setloading] = useState(false)
+  const { departmentId: departmentContext, isLoading } = usePermissions() // Добавь role в провайдер!
 
   const { departmentId } = useParams<{
     departmentId: string
@@ -12,24 +12,10 @@ const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren)
 
   const departmentIdNumber = Number(departmentId)
 
-  useEffect(() => {
-    let mounted = true
-    if (!departmentIdNumber) return
-    setloading(true)
+  const hasAccessToDepartment = departmentContext === departmentIdNumber
+  if (isLoading) return <div className="w-auto h-auot animate-pulse rounded-md bg-muted" />
 
-    checkDepartment(departmentIdNumber)
-      .then((result) => {
-        if (mounted) setHasAccess(result)
-      })
-      .finally(() => setloading(false))
-
-    return () => {
-      mounted = false
-    }
-  }, [departmentIdNumber])
-  if (loading) return <div className="w-auto h-auot animate-pulse rounded-md bg-muted" />
-
-  return hasAccess ? children : null
+  return hasAccessToDepartment ? children : <NotFound />
 }
 
 export default ProtectedByDepartmentAffiliation

@@ -28,17 +28,12 @@ export const useGetTask = (taskId: string) => {
   })
 }
 
-export const useGetUserTasks = () => {
-  const { authUser } = useStoreUser()
+export const useGetUserTasks = ({ userId }: { userId: string }) => {
   return useQuery({
-    queryKey: ["userTasks", authUser?.id],
+    queryKey: ["userTasks", userId],
     queryFn: async () => {
       try {
-        if (!authUser?.id) {
-          throw new Error("Пользователь не авторизован")
-        }
-
-        return await getUserTasks(authUser?.id)
+        return await getUserTasks(userId)
       } catch (error) {
         if ((error as Error).message === "Failed to fetch") {
           TOAST.ERROR("Не удалось получить данные")
@@ -48,7 +43,7 @@ export const useGetUserTasks = () => {
         throw error
       }
     },
-    enabled: !!authUser?.id,
+    enabled: !!userId,
   })
 }
 

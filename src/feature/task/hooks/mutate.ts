@@ -1,4 +1,3 @@
-import type { Task } from "@prisma/client"
 import { useMutation } from "@tanstack/react-query"
 import {
   createTask,
@@ -7,24 +6,16 @@ import {
   updateTasksOrder,
 } from "@/entities/task/api/task.actions"
 import type { TaskWithUserInfo } from "@/entities/task/types"
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
-import type { CreateTaskReturn, DeleteTaskData, TaskFormType, TaskFormTypeWithId } from "../types"
+import type { TaskFormType, TaskFormTypeWithId } from "../types"
 
 export const useCreateTask = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: async (task: Omit<TaskFormType, "orderTask">) => {
-      return handleMutationWithAuthCheck<Omit<TaskFormType, "orderTask">, CreateTaskReturn>(
-        createTask,
-        task,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (task: Omit<TaskFormType, "orderTask">) => await createTask(task),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
@@ -40,17 +31,10 @@ export const useCreateTask = () => {
 }
 
 export const useUpdateTask = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: async (task: TaskFormTypeWithId) => {
-      return handleMutationWithAuthCheck<TaskFormTypeWithId, Task>(
-        updateTask,
-        task,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (task: TaskFormTypeWithId) => await updateTask(task),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
@@ -69,7 +53,7 @@ export const useUpdateTask = () => {
 }
 
 export const useDeleteTask = (close: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
     mutationFn: async (data: { taskId: string; idTaskOwner: string }) => {
@@ -78,12 +62,7 @@ export const useDeleteTask = (close: () => void) => {
         return
       }
       const dataRemove = { taskId: data.taskId, idTaskOwner: data.idTaskOwner }
-      return handleMutationWithAuthCheck<DeleteTaskData, Task>(
-        deleteTask,
-        dataRemove,
-        authUser,
-        isSubmittingRef,
-      )
+      return await deleteTask(dataRemove)
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({

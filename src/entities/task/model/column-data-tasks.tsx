@@ -168,19 +168,12 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
       const userId = info.getValue() as string
       const { deptsFormatted } = useStoreDepartment.getState()
-      const users = deptsFormatted?.reduce(
-        (acc, curr) => {
-          curr.users.forEach((user) => {
-            const [[key, value]] = Object.entries(user)
-            acc[key] = value
-          })
-          return acc
-        },
-        {} as Record<string, string>,
-      )
+      const users: Record<string, string> = {}
 
-      if (!users) {
-        return null
+      if (!deptsFormatted) return
+
+      for (const departmentInfo of deptsFormatted) {
+        Object.assign(users, departmentInfo.users)
       }
 
       const userName = (users[userId as keyof typeof users] as unknown as string)

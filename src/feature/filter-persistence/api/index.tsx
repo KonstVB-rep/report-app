@@ -1,20 +1,17 @@
 "use server"
 
 import type { UserFilter } from "@prisma/client"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { DeleteFilterReturnType, SaveFilterType, UpdateFilterDataType } from "../types"
 
 export const getUserFilters = async () => {
   try {
-    const { user } = await handleAuthorization()
-    if (!user?.id) {
-      throw new Error("User ID отсутствует")
-    }
+    const { userId } = await requireUser()
 
     const filters = await prisma.userFilter.findMany({
-      where: { userId: user.id },
+      where: { userId },
     })
 
     return filters
@@ -26,14 +23,10 @@ export const getUserFilters = async () => {
 
 export const getUserFilterById = async (filterId: string) => {
   try {
-    const { user } = await handleAuthorization()
-
-    if (!user?.id) {
-      throw new Error("User ID отсутствует")
-    }
+    const { userId } = await requireUser()
 
     const filter = await prisma.userFilter.findUnique({
-      where: { userId: user.id, id: filterId },
+      where: { userId, id: filterId },
     })
 
     return filter
@@ -45,12 +38,12 @@ export const getUserFilterById = async (filterId: string) => {
 
 export const saveFilter = async (savedData: SaveFilterType): Promise<UserFilter> => {
   try {
-    const { user } = await handleAuthorization()
+    const { userId } = await requireUser()
 
     const { data } = savedData
 
     const existingFilter = await prisma.userFilter.findUnique({
-      where: { id: user?.id, filterName: data.filterName },
+      where: { id: userId, filterName: data.filterName },
     })
 
     if (existingFilter) {
@@ -60,7 +53,7 @@ export const saveFilter = async (savedData: SaveFilterType): Promise<UserFilter>
     const newFilter = await prisma.userFilter.create({
       data: {
         ...data,
-        userId: user?.id,
+        userId: userId,
       },
     })
 
@@ -73,7 +66,7 @@ export const saveFilter = async (savedData: SaveFilterType): Promise<UserFilter>
 
 export const deleteFilter = async (data: { id: string }): Promise<DeleteFilterReturnType> => {
   try {
-    await handleAuthorization()
+    await requireUser()
 
     const { id } = data
 
@@ -98,7 +91,7 @@ export const deleteFilter = async (data: { id: string }): Promise<DeleteFilterRe
 
 export const updateFilter = async (data: UpdateFilterDataType): Promise<UserFilter | undefined> => {
   try {
-    await handleAuthorization()
+    await requireUser()
 
     const filter = await prisma.userFilter.findUnique({
       where: { id: data.id },
@@ -122,7 +115,7 @@ export const updateFilter = async (data: UpdateFilterDataType): Promise<UserFilt
 
 export const selectFilter = async (id: string) => {
   try {
-    const { user } = await handleAuthorization()
+    const { userId } = await requireUser()
 
     const filter = await prisma.userFilter.findUnique({
       where: { id },
@@ -132,12 +125,12 @@ export const selectFilter = async (id: string) => {
       return handleError("Фильтр не найден")
     }
 
-    if (filter.userId !== user?.id) {
+    if (filter.userId !== userId) {
       return handleError("Недостаточно прав")
     }
 
     await prisma.userFilter.updateMany({
-      where: { userId: user?.id },
+      where: { userId },
       data: { isActive: false },
     })
 
@@ -155,14 +148,10 @@ export const selectFilter = async (id: string) => {
 
 export const disableSavedFilters = async () => {
   try {
-    const { user } = await handleAuthorization()
-
-    if (!user?.id) {
-      throw new Error("Пользователь не найден")
-    }
+    const { userId } = await requireUser()
 
     await prisma.userFilter.updateMany({
-      where: { userId: user.id },
+      where: { userId },
       data: { isActive: false },
     })
   } catch (error) {

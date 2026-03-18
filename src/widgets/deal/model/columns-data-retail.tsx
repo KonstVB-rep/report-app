@@ -161,6 +161,19 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorFn: (row: RetailResponse) => row.nameObject,
   },
   {
+    id: "inn",
+    header: "ИНН",
+    cell: (info: CellContext<RetailResponse, unknown>) => {
+      const value = info.getValue()
+      return value
+    },
+    enableHiding: true,
+    meta: {
+      title: "Название объекта",
+    },
+    accessorFn: (row: RetailResponse) => row.inn,
+  },
+  {
     id: "direction",
     accessorKey: "direction",
     header: "Направление",

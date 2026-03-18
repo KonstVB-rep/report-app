@@ -2,6 +2,7 @@
 
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
+import { useParams } from "next/navigation"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
 import type { TaskWithUserInfo } from "@/entities/task/types"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
@@ -17,15 +18,18 @@ const TaskCard = dynamic(() => import("@/entities/task/ui/TaskCard"), {
 const TaskDetails = ({ departmentId }: { departmentId: number }) => {
   const authUser = useRequireAuth()
 
+  const { userId } = useParams<{
+    userId: string
+    departmentId: string
+  }>()
+
   const { selectedDataItem } = useTableContext<TaskWithUserInfo>()
   if (!selectedDataItem) return null
 
-  if (!selectedDataItem) return null
-
-  const hasAccess = hasAccessToData(authUser?.id, PermissionEnum.TASK_MANAGEMENT)
+  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 
   if (!hasAccess) {
-    return <RedirectToPath to={`/tasks/${departmentId}/${authUser?.id}`} />
+    return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />
   }
 
   return (

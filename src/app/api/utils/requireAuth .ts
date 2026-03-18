@@ -1,11 +1,11 @@
-import { getUserIdFromRequest } from "./getUserIdFromRequest"
+import { getUserFromCookie } from "@/shared/lib/auth/getUserFromCookie"
 
-export const requireAuth = async (): Promise<string> => {
-  const userId = await getUserIdFromRequest()
+export const requireUser = async () => {
+  const user = await getUserFromCookie()
 
-  if (!userId) {
-    throw new Error("Пользователь не авторизован")
+  if (!user) {
+    throw new Error("UNAUTHORIZED")
   }
 
-  return userId
+  return user
 }

@@ -27,8 +27,10 @@ const TaskPage = async () => {
 
   const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 
+  console.log("hasAccess", hasAccess)
+
   if (!hasAccess) {
-    return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />
+    return <RedirectToPath to={`/dashboard/tasks/${departmentId}/${authUser.id}`} />
   }
 
   if (isPending) return <Loading />

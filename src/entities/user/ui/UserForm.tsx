@@ -1,5 +1,6 @@
 import type React from "react"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
+import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label"
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
@@ -228,6 +229,34 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
               {getFieldError("permissions")}
             </p>
           )}
+
+          <div className="grid gap-2">
+            <Label className="text-sm font-medium" htmlFor="isBlocked">
+              Заблокировать
+            </Label>
+            <Checkbox
+              aria-describedby="isBLocked"
+              checked={!!state.inputs?.isBlocked}
+              className={getFieldError("isBlocked") ? "border-red-500" : ""}
+              disabled={isPending}
+              id="isBlocked"
+              name={"isBlocked"}
+              onCheckedChange={(val) => {
+                setState((prev) => ({
+                  ...prev,
+                  inputs: {
+                    ...(prev.inputs as Partial<T>),
+                    isBlocked: val,
+                  },
+                }))
+              }}
+            />
+            {getFieldError("position") && (
+              <p className="text-sm text-red-500" id="position">
+                {getFieldError("position")}
+              </p>
+            )}
+          </div>
         </div>
       </MotionDivY>
       <SubmitFormButton isPending={isPending} title="Сохранить" />

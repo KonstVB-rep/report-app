@@ -1,110 +1,56 @@
-"use server"
+// "use server"
 
-import { type PermissionEnum, Role } from "@prisma/client"
-import { jwtVerify } from "jose"
-import { cookies } from "next/headers"
-import { prisma } from "@/prisma/prisma-client"
+// import { type PermissionEnum, Role } from "@prisma/client"
+// import { requireUser } from "@/app/api/utils/requireAuth "
 
-const accessTokenSecretKey = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
+// export const checkRole = async (role: Role = Role.ADMIN): Promise<boolean> => {
+//   try {
+//     const payload = await requireUser()
 
-export const getRole = async (userId: string): Promise<Role> => {
-  const userDataRole = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { role: true },
-  })
+//     if (!payload) {
+//       return false
+//     }
 
-  if (!userDataRole) {
-    throw new Error(`Пользователь с id=${userId} не найден`)
-  }
+//     return payload.role === role
+//   } catch (error) {
+//     console.error("Ошибка при проверке прав доступа:", error)
+//     return false
+//   }
+// }
 
-  return userDataRole.role
-}
+// export const checkDepartment = async (depId: number): Promise<boolean> => {
+//   try {
+//     const payload = await requireUser()
 
-const recoderTokens = async () => {
-  try {
-    const cookieStore = await cookies()
-    const accessToken = cookieStore.get("accessToken")?.value
+//     if (!payload) {
+//       return false
+//     }
+//     if (payload.role === Role.ADMIN) {
+//       return true
+//     }
 
-    if (!accessToken) {
-      console.log("Токен отсутствует")
-      return false
-    }
+//     return payload?.departmentId === depId
+//   } catch (error) {
+//     console.error("Ошибка при проверке прав доступа:", error)
+//     return false
+//   }
+// }
 
-    const { payload } = await jwtVerify(accessToken, accessTokenSecretKey)
+// export const checkPermission = async (permission: PermissionEnum): Promise<boolean> => {
+//   try {
+//     const payload = await requireUser()
 
-    if (!payload.userId) {
-      return false
-    }
+//     if (!payload) {
+//       return false
+//     }
 
-    return payload
-  } catch (e) {
-    console.error("Ошибка с cookies в prerender:", e)
-    return false
-  }
-}
+//     if (payload.role === Role.ADMIN) {
+//       return true
+//     }
 
-export const checkRole = async (role: Role = Role.ADMIN): Promise<boolean> => {
-  try {
-    const payload = await recoderTokens()
-
-    if (!payload) {
-      return false
-    }
-
-    const userRole = await getRole(String(payload.userId))
-
-    return userRole === role
-  } catch (error) {
-    console.error("Ошибка при проверке прав доступа:", error)
-    return false
-  }
-}
-
-export const checkDepartment = async (depId: number): Promise<boolean> => {
-  try {
-    const payload = await recoderTokens()
-
-    if (!payload) {
-      return false
-    }
-    const userRole = await getRole(String(payload.userId))
-    const userData = await prisma.user.findUnique({
-      where: { id: String(payload.userId) },
-      select: { id: true, departmentId: true },
-    })
-
-    if (userRole === Role.ADMIN) {
-      return true
-    }
-
-    return userData?.departmentId === depId
-  } catch (error) {
-    console.error("Ошибка при проверке прав доступа:", error)
-    return false
-  }
-}
-
-export const checkPermission = async (permission: PermissionEnum): Promise<boolean> => {
-  try {
-    const payload = await recoderTokens()
-
-    if (!payload) {
-      return false
-    }
-
-    const userRole = await getRole(String(payload.userId))
-    const userPermissions = await prisma.userPermission.findMany({
-      where: { userId: String(payload.userId) },
-      include: { permission: true },
-    })
-
-    if (userRole === Role.ADMIN) {
-      return true
-    }
-
-    return userPermissions.some((p) => p.permission.name === permission)
-  } catch (error) {
-    console.error("Ошибка при проверке прав доступа:", error)
-    return false
-  }
-}
+//     return payload.permissions.some((p) => p === permission)
+//   } catch (error) {
+//     console.error("Ошибка при проверке прав доступа:", error)
+//     return false
+//   }
+// }

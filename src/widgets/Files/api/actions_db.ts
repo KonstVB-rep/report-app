@@ -2,7 +2,7 @@
 
 import { DealType, PermissionEnum } from "@prisma/client"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { FileInfo } from "../types"
@@ -17,7 +17,9 @@ const checkingAccessRight = async (
       handleError("Недостаточно данных")
     }
 
-    const { user, userId: currentUserId } = await handleAuthorization()
+    const user = await requireUser()
+
+    const currentUserId = user.userId
 
     const isOwner = fileUserId !== null && fileUserId === currentUserId
     if (isOwner) return true
@@ -54,9 +56,9 @@ export const getFileExists = async (where: {
 }) => {
   const file = await prisma.dealFile.findFirst({
     where,
-    select: { id: true }, // Оптимизация: только ID, чтобы не тянуть тяжелые строки
+    select: { id: true },
   })
-  return !!file // Возвращает true или false
+  return !!file
 }
 
 export const writeHrefDownloadFileInDB = async (data: {

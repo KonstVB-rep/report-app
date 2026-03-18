@@ -1,8 +1,8 @@
 "use server"
 
 import bcrypt from "bcrypt"
-import { generateTokens } from "@/feature/auth/lib/generateTokens"
 import { prisma } from "@/prisma/prisma-client"
+import { generateTokensAndSetCookies, type PayloadType } from "@/shared/lib/auth/session"
 
 export const login = async (_: unknown, formData: FormData) => {
   try {
@@ -20,7 +20,16 @@ export const login = async (_: unknown, formData: FormData) => {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      include: {
+      select: {
+        id: true,
+        departmentId: true,
+        role: true,
+        username: true,
+        position: true,
+        user_password: true,
+        lastlogin: true,
+        email: true,
+        phone: true,
         permissions: { select: { permission: { select: { name: true } } } },
         telegramInfo: { select: { tgUserId: true, tgUserName: true } },
       },
@@ -40,23 +49,28 @@ export const login = async (_: unknown, formData: FormData) => {
       }
     }
 
+    const { user_password: _password, ...userWithoutPassword } = user
+
+    const permissions = user.permissions.map((p) => p.permission.name)
+    const payload: PayloadType = {
+      userId: user.id,
+      departmentId: user.departmentId,
+      role: user.role,
+      username: user.username,
+      position: user.position,
+      permissions,
+    }
+
     await Promise.all([
       prisma.userLogin.create({
-        data: {
-          userId: user.id,
-          loginAt: new Date(),
-        },
+        data: { userId: user.id, loginAt: new Date() },
       }),
       prisma.user.update({
         where: { id: user.id },
-        data: {
-          lastlogin: new Date(),
-        },
+        data: { lastlogin: new Date() },
       }),
-      generateTokens(user.id, user.departmentId),
+      generateTokensAndSetCookies(payload),
     ])
-
-    const { user_password: _password, ...userWithoutPassword } = user
 
     return {
       data: {

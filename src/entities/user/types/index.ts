@@ -80,6 +80,7 @@ export type UserDataBase = {
   department: DepartmentEnum
   role: Role
   permissions?: PermissionEnum[]
+  isBlocked: boolean
 }
 
 export type UserFormData = UserDataBase & {

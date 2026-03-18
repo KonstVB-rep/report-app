@@ -53,7 +53,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
     [router, item.url],
   )
 
-  const currentUser = item.items.find((user) => user.id === authUser.id)
+  const currentUser = item.items.find((user) => user.id === authUser?.id)
 
   return (
     <ProtectedByPermissions

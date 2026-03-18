@@ -1,47 +1,21 @@
-"use client"
+import { redirect } from "next/navigation"
+import ClientProvidersWrapper from "@/shared/custom-components/ui/ClientProvidersWrapper"
+import { getUserFromCookie } from "@/shared/lib/auth/getUserFromCookie"
 
-import dynamic from "next/dynamic"
-import { usePathname } from "next/navigation"
-import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
-import useStoreUser from "@/entities/user/store/useStoreUser"
-import { SidebarInset } from "@/shared/components/ui/sidebar"
-import ButtonBack from "@/shared/custom-components/ui/Buttons/ButtonBack"
-import PageTransitionY from "@/shared/custom-components/ui/MotionComponents/PageTransitionY"
+const TemplateDashboard = async ({ children }: { children: React.ReactNode }) => {
+  try {
+    const user = await getUserFromCookie()
 
-const RedirectToPath = dynamic(
-  () => import("@/shared/custom-components/ui/Redirect/RedirectToPath"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-full w-full min-h-screen grid place-items-center bg-transparent">
-        <p className="text-2xl sm:text-4xl opacity-30">Идет завершение сессии...</p>
-      </div>
-    ),
-  },
-)
+    if (!user) redirect("/login")
 
-const TemplateDashboard = ({ children }: { children: React.ReactNode }) => {
-  const { authUser } = useStoreUser()
-  const pathName = usePathname()
+    if (user.role !== "ADMIN") {
+      redirect("/forbidden")
+    }
 
-  useGetDepartmentsWithUsers()
-
-  if (!authUser) {
-    return <RedirectToPath to="/login" />
+    return <ClientProvidersWrapper>{children}</ClientProvidersWrapper>
+  } catch (_error) {
+    redirect("/login")
   }
-
-  return (
-    <>
-      <SidebarInset className="h-auto">
-        <PageTransitionY>
-          <div className="max-h-[94vh] overflow-auto p-2">
-            {pathName?.includes("adminboard") && pathName !== "/adminboard" && <ButtonBack />}
-            {children}
-          </div>
-        </PageTransitionY>
-      </SidebarInset>
-    </>
-  )
 }
 
 export default TemplateDashboard

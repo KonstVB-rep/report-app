@@ -1,12 +1,15 @@
-import type { PermissionType, User } from "@/entities/user/types"
-import { isUserHasPermissionByRole } from "./isUserHasPermissionByRole"
+import type { PermissionEnum } from "@prisma/client"
+import type { PayloadType } from "@/shared/lib/auth/session"
+import { hasUserPermission } from "./hasUserPermission"
 
-export const checkUserPermissionByRole = async (user: User, permission?: PermissionType[]) => {
-  const hasUserPermission = await isUserHasPermissionByRole(user, permission || [])
+export const checkUserPermissionByRole = async (
+  user: PayloadType,
+  permissions?: PermissionEnum[],
+) => {
+  const hasAccess = await hasUserPermission(user, permissions)
 
-  if (!hasUserPermission) {
-    console.error("Ошибка прав доступа. Пользователь не имеет разрешения.")
+  if (!hasAccess) {
+    console.error(`Access Denied for user ${user.userId}`)
     throw new Error("У вас нет доступа к запрашиваемым данным")
   }
-  return null
 }

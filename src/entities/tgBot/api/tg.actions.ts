@@ -1,8 +1,7 @@
 // "use server"
 
-// import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
 // import { prisma } from "@/prisma/prisma-client"
-// import { checkRole } from "@/shared/api/checkByServer"
+
 // import { handleError } from "@/shared/api/handleError"
 // import type { SuccessResponse } from "@/shared/types"
 // import { Prisma, type UserTelegramChat } from "@prisma/client"
@@ -501,23 +500,22 @@
 
 import { Prisma, type UserTelegramChat } from "@prisma/client"
 import { revalidatePath } from "next/cache"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
-import { checkRole } from "@/shared/api/checkByServer"
 import { handleError } from "@/shared/api/handleError"
 import type { SuccessResponse } from "@/shared/types"
 import type { BotWithChats } from "../types"
 
-const ensureAuthorized = async () => {
-  await handleAuthorization()
-  await checkRole()
-}
+// const ensureAuthorized = async () => {
+//   await handleAuthorization()
+//   await checkRole()
+// }
 
 // --- Actions ---
 
 export const createTelegramBot = async (botName: string, token: string, description: string) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     const existingBot = await prisma.telegramBot.findFirst({
       where: {
@@ -542,7 +540,7 @@ export const createTelegramBot = async (botName: string, token: string, descript
 
 export const deleteTelegramBot = async (botName: string, token: string) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     const result = await prisma.$transaction(async (tx) => {
       const bot = await tx.telegramBot.findUnique({
@@ -570,7 +568,7 @@ export const deleteTelegramBot = async (botName: string, token: string) => {
 
 export const getAllChats = async () => {
   try {
-    await ensureAuthorized()
+    await requireUser()
     return await prisma.userTelegramChat.findMany({
       select: {
         chatName: true,
@@ -586,7 +584,7 @@ export const getAllChats = async () => {
 
 export const getAllBots = async (): Promise<BotWithChats[]> => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     const bots = await prisma.telegramBot.findMany({
       include: {
@@ -613,7 +611,7 @@ export const getAllBots = async (): Promise<BotWithChats[]> => {
 
 export const getChatsByBotId = async (botId: string) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
     return await prisma.userTelegramChat.findMany({
       where: { botId },
       include: {
@@ -644,7 +642,7 @@ export const createUserTelegramChat = async (
   isActive = true,
 ): Promise<SuccessResponse> => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     const bot = await prisma.telegramBot.findUnique({
       where: { botName },
@@ -698,7 +696,7 @@ export const updateUserTelegramChat = async (data: {
   result?: UserTelegramChat
 }> => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     const result = await prisma.userTelegramChat.update({
       where: {
@@ -729,7 +727,7 @@ export const toggleSubscribeChatBot = async (data: {
   isActive: boolean
 }) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     return await prisma.userTelegramChat.update({
       where: {
@@ -751,7 +749,7 @@ export const toggleSubscribeChatBot = async (data: {
 
 export const deleteChat = async (data: { botName: string; chatId: string }) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     const bot = await prisma.telegramBot.findUnique({
       where: { botName: data.botName },
@@ -776,7 +774,7 @@ export const deleteChat = async (data: { botName: string; chatId: string }) => {
 
 export const deleteBot = async (data: { botName: string; pathName: string }) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     const result = await prisma.$transaction(async (tx) => {
       const bot = await tx.telegramBot.findUnique({
@@ -809,7 +807,7 @@ export const updateBotDb = async (data: {
   token: string
 }) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
 
     if (data.token) {
       const tokenExists = await prisma.telegramBot.findFirst({
@@ -840,7 +838,7 @@ export const updateBotDb = async (data: {
 
 export const getBotByToken = async (token: string) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
     return await prisma.telegramBot.findUnique({
       where: { token },
       include: { chats: true },
@@ -853,7 +851,7 @@ export const getBotByToken = async (token: string) => {
 
 export const getUserTelegramInfo = async (tgUserId: string) => {
   try {
-    await ensureAuthorized()
+    await requireUser()
     return await prisma.telegramUserInfo.findUnique({
       where: { tgUserId },
       include: {

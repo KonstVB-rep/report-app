@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { DealType } from "@prisma/client"
 import Image from "next/image"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
@@ -22,7 +22,7 @@ type Props = {
   } | null
 }
 
-const yandexDiskSupportedImages = [
+const yandexDiskSupportedImages = new Set([
   "jpg",
   "jpeg",
   "png",
@@ -32,8 +32,8 @@ const yandexDiskSupportedImages = [
   "tif",
   "webp",
   "avif",
-]
-const LoaderFileX = () => (
+])
+const LoaderFileYNDX = () => (
   <div className="w-20 h-20 grid place-items-center">
     <LoaderCircle className="w-full h-full bg-muted" />
   </div>
@@ -66,7 +66,7 @@ const CarouselItemImage = ({ filePath }: { filePath: string }) => {
 const PreviewListItem = ({ filePath }: { filePath: string }) => {
   const { data: fileData, isPending } = useGetResourceInfo(filePath)
 
-  if (isPending) return <LoaderFileX />
+  if (isPending) return <LoaderFileYNDX />
   if (!fileData?.preview || fileData.media_type !== "image") return null
 
   return (
@@ -88,21 +88,43 @@ const PreviewImagesList = ({ data }: Props) => {
 
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
 
-  if (!files || files?.length === 0) {
-    return null
-  }
+  const filesImages = useMemo(() => {
+    if (!files) return []
 
-  const filesImages = files.filter((file) => {
-    const lastpoint = file.localPath.lastIndexOf(".") + 1
-    return yandexDiskSupportedImages.includes(file.localPath.slice(lastpoint))
-  })
+    return files.filter((file) => {
+      const dot = file.localPath.lastIndexOf(".")
+      if (dot === -1) return false
+
+      const ext = file.localPath.slice(dot + 1).toLowerCase()
+      return yandexDiskSupportedImages.has(ext)
+    })
+  }, [files])
+
+  const carouselMemo = useMemo(() => {
+    if (selectedImageIndex === null) return null
+    return (
+      <Carousel opts={{ startIndex: selectedImageIndex }}>
+        <CarouselContent className="h-full w-full">
+          {filesImages.map((file) => (
+            <CarouselItem className="h-full w-full" key={file.localPath}>
+              <div className="h-full flex items-center justify-center p-4">
+                <CarouselItemImage filePath={file.localPath} />
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="left-2.5" />
+        <CarouselNext className="right-2.5" />
+      </Carousel>
+    )
+  }, [selectedImageIndex, filesImages])
 
   if (filesImages.length === 0) {
     return null
   }
 
   if (isPending) {
-    return <LoaderFileX />
+    return <LoaderFileYNDX />
   }
 
   if (isError) {
@@ -112,13 +134,10 @@ const PreviewImagesList = ({ data }: Props) => {
   return (
     <IntoDealItem title="Галерея">
       <div className="flex flex-wrap gap-2">
-        {isPending && <LoaderFileX />}
-        {isError && <div>Произошла ошибка</div>}
-
         {filesImages.map((file, index) => (
           <Button
             className="cursor-pointer rounded-md border-none bg-transparent p-0 min-h-20"
-            key={file.name}
+            key={file.id}
             onClick={() => setSelectedImageIndex(index)}
             type="button"
           >
@@ -132,21 +151,7 @@ const PreviewImagesList = ({ data }: Props) => {
         onOpenChange={(open) => !open && setSelectedImageIndex(null)}
         open={selectedImageIndex !== null}
       >
-        {selectedImageIndex !== null && (
-          <Carousel className="w-full h-full" opts={{ startIndex: selectedImageIndex }}>
-            <CarouselContent className="h-full w-full">
-              {filesImages.map((file) => (
-                <CarouselItem className="h-full w-full" key={file.name}>
-                  <div className="h-full flex items-center justify-center p-4">
-                    <CarouselItemImage filePath={file.localPath} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-2.5" />
-            <CarouselNext className="right-2.5" />
-          </Carousel>
-        )}
+        {carouselMemo}
       </DialogComponent>
     </IntoDealItem>
   )

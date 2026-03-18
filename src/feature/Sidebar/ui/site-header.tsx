@@ -53,23 +53,27 @@ export function SiteHeader({ isHasSitebar = true }: { isHasSitebar?: boolean }) 
         )}
 
         <div className="hidden items-center gap-2 md:flex">
-          <Link
-            className="btn_hover text-sm font-medium"
-            href={`/dashboard/tasks/${departmentId}/${userId}`}
-            prefetch={false}
-          >
-            Мои задачи
-          </Link>
-
-          <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+          {departmentId && userId && (
             <Link
               className="btn_hover text-sm font-medium"
-              href={`/dashboard/tasks/${departmentId}`}
+              href={`/dashboard/tasks/${departmentId}/${userId}`}
               prefetch={false}
             >
-              Все задачи
+              Мои задачи
             </Link>
-          </ProtectedByPermissions>
+          )}
+
+          {departmentId && (
+            <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+              <Link
+                className="btn_hover text-sm font-medium"
+                href={`/dashboard/tasks/${departmentId}`}
+                prefetch={false}
+              >
+                Все задачи
+              </Link>
+            </ProtectedByPermissions>
+          )}
 
           {!pathName?.includes("summary-table") && (
             <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>

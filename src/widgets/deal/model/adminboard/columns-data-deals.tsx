@@ -173,8 +173,17 @@ export const columnsDataDeals: ColumnDef<DealUnion, unknown>[] = [
     cell: (info) => {
       const value = info.getValue() as keyof User
       const { deptsFormatted } = useStoreDepartment.getState()
-      const user = deptsFormatted?.flatMap((dept) => dept.users).find((u) => u[value] !== undefined)
-      return <span className="capitalize">{user?.[value] as string}</span>
+      let userName = ""
+      if (!deptsFormatted) return
+
+      for (const dep of deptsFormatted) {
+        const isFinded = dep.users[value] ?? false
+        if (isFinded) {
+          userName = dep.users[value]
+          return
+        }
+      }
+      return <span className="capitalize">{userName}</span>
     },
     filterFn: (row, _, filterValues) => {
       if (!filterValues || filterValues.length === 0) {

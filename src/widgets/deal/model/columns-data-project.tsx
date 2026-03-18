@@ -168,6 +168,19 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     accessorFn: (row: ProjectResponse) => row.nameObject,
   },
   {
+    id: "inn",
+    header: "ИНН",
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const value = info.getValue()
+      return value
+    },
+    enableHiding: true,
+    meta: {
+      title: "Название объекта",
+    },
+    accessorFn: (row: ProjectResponse) => row.inn,
+  },
+  {
     id: "direction",
     header: "Направление",
     cell: (info: CellContext<ProjectResponse, unknown>) => {

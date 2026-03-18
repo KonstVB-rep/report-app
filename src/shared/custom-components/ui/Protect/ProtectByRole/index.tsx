@@ -1,33 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import type { Role } from "@prisma/client"
-import { checkRole } from "@/shared/api/checkByServer"
+import { usePermissions } from "@/app/provider/permission-provider"
 
 interface ProtectedByRoleProps {
   children: React.ReactNode
   role?: string
 }
 
-const ProtectedByRole = ({ children, role = "ADMIN" }: ProtectedByRoleProps) => {
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null)
+export const ProtectedByRole = ({ children, role = "ADMIN" }: ProtectedByRoleProps) => {
+  const { role: userRole } = usePermissions()
 
-  useEffect(() => {
-    let mounted = true
-
-    checkRole(role as Role).then((result) => {
-      if (mounted) setHasAccess(result)
-    })
-
-    return () => {
-      mounted = false
-    }
-  }, [role])
-
-  if (hasAccess === null) return null
-  if (!hasAccess) return null
+  if (userRole !== role) return null
 
   return <>{children}</>
 }
-
-export default ProtectedByRole

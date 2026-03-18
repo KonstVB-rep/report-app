@@ -1,30 +1,19 @@
-import type { TelegramBot, UserTelegramChat } from "@prisma/client"
+import type { UserTelegramChat } from "@prisma/client"
 import { useMutation } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
 import { getQueryClient } from "@/app/provider/query-provider"
 import { deleteBot, deleteChat, toggleSubscribeChatBot } from "@/entities/tgBot/api"
 import type { ChatFormData } from "@/entities/tgBot/types"
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
 import { logout } from "@/shared/auth/logout"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
-import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
 import type { ActionResponse } from "@/shared/types"
 import { saveChat, updateChat } from "../actions/user-chat"
 
 const queryClient = getQueryClient()
 
 export const useCreateChatBot = (onSetState: (data: ActionResponse<ChatFormData>) => void) => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
-
   return useMutation({
-    mutationFn: async (chatData: FormData) => {
-      return handleMutationWithAuthCheck<FormData, ActionResponse<ChatFormData>>(
-        saveChat,
-        chatData,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (chatData: FormData) => await saveChat(chatData),
     onSuccess: (data) => {
       if (!data) {
         return
@@ -59,17 +48,8 @@ export const useCreateChatBot = (onSetState: (data: ActionResponse<ChatFormData>
 }
 
 export const useDeleteChat = () => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
-
   return useMutation({
-    mutationFn: async (data: { chatId: string; botName: string }) => {
-      return handleMutationWithAuthCheck<{ chatId: string; botName: string }, UserTelegramChat>(
-        deleteChat,
-        data,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (data: { chatId: string; botName: string }) => await deleteChat(data),
 
     onSuccess: (data) => {
       TOAST.SUCCESS(`Чат ${data.chatName} успешно удален`)
@@ -96,18 +76,10 @@ export const useDeleteChat = () => {
 }
 
 export const useDeleteBot = () => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
   const pathName = usePathname()
 
   return useMutation({
-    mutationFn: async (botName: string) => {
-      return handleMutationWithAuthCheck<{ botName: string; pathName: string }, TelegramBot>(
-        deleteBot,
-        { botName, pathName },
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (botName: string) => await deleteBot({ botName, pathName }),
     onSuccess: (data) => {
       TOAST.SUCCESS(`Чат ${data.botName} успешно удален`)
     },
@@ -129,17 +101,8 @@ export const useDeleteBot = () => {
 }
 
 export const useUpdateChatBot = (onSetState: (data: ActionResponse<UserTelegramChat>) => void) => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
-
   return useMutation({
-    mutationFn: async (chatData: FormData) => {
-      return handleMutationWithAuthCheck<FormData, ActionResponse<UserTelegramChat>>(
-        updateChat,
-        chatData,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (chatData: FormData) => await updateChat(chatData),
     onSuccess: (data) => {
       if (!data) {
         return
@@ -174,15 +137,9 @@ export const useUpdateChatBot = (onSetState: (data: ActionResponse<UserTelegramC
 }
 
 export const useToggleSudscribeChatBot = () => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
-
   return useMutation({
-    mutationFn: async (chatData: { botId: string; chatId: string; isActive: boolean }) => {
-      return handleMutationWithAuthCheck<
-        { botId: string; chatId: string; isActive: boolean },
-        UserTelegramChat
-      >(toggleSubscribeChatBot, chatData, authUser, isSubmittingRef)
-    },
+    mutationFn: async (chatData: { botId: string; chatId: string; isActive: boolean }) =>
+      await toggleSubscribeChatBot(chatData),
     onSuccess: () => {
       TOAST.SUCCESS("Вы подписались на чат бота")
 

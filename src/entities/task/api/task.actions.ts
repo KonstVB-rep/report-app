@@ -3,7 +3,7 @@
 import { PermissionEnum, type Task } from "@prisma/client"
 import { AxiosError } from "axios"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import type { DeleteTaskData, TaskFormType, TaskFormTypeWithId } from "@/feature/task/types"
 import { sendNotify } from "@/feature/telegramBot/actions/send-notify"
 import { prisma } from "@/prisma/prisma-client"
@@ -15,10 +15,10 @@ export const getTasksDepartment = async (
   departmentId: number,
 ): Promise<TaskWithUserInfo[] | null> => {
   try {
-    const { user } = await handleAuthorization()
+    const user = await requireUser()
 
     if (user?.departmentId !== departmentId) {
-      return checkUserPermissionByRole(user, [PermissionEnum.TASK_MANAGEMENT])
+      await checkUserPermissionByRole(user, [PermissionEnum.TASK_MANAGEMENT])
     }
 
     return await prisma.task.findMany({
@@ -51,10 +51,10 @@ export const getTasksDepartment = async (
 
 export const getUserTasks = async (userId: string): Promise<TaskWithUserInfo[] | null> => {
   try {
-    const { user } = await handleAuthorization()
+    const user = await requireUser()
 
-    if (user?.id !== userId) {
-      return checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
+    if (user?.userId !== userId) {
+      await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
     }
 
     const select = { username: true, email: true, position: true }
@@ -81,7 +81,7 @@ export const getUserTasks = async (userId: string): Promise<TaskWithUserInfo[] |
 
 export const getTask = async (taskId: string) => {
   try {
-    await handleAuthorization()
+    await requireUser()
 
     const select = { id: true, username: true, email: true, position: true }
 
@@ -106,9 +106,9 @@ export const getTask = async (taskId: string) => {
 
 export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
   try {
-    const data = await handleAuthorization()
+    const user = await requireUser()
 
-    const { userId } = data
+    const { userId } = user
 
     const agg = await prisma.task.aggregate({
       where: {
@@ -186,11 +186,9 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
 
 export const updateTask = async (taskTarget: TaskFormTypeWithId): Promise<Task> => {
   try {
-    const data = await handleAuthorization()
+    const user = await requireUser()
 
-    const { user, userId } = data
-
-    if (userId !== taskTarget.executorId) {
+    if (user.userId !== taskTarget.executorId) {
       await checkUserPermissionByRole(user, [PermissionEnum.TASK_MANAGEMENT])
     }
 
@@ -220,13 +218,13 @@ export const updateTask = async (taskTarget: TaskFormTypeWithId): Promise<Task> 
 
 export const deleteTask = async (taskData: DeleteTaskData): Promise<Task> => {
   try {
-    const { user, userId } = await handleAuthorization()
+    const user = await requireUser()
+
     const { taskId, idTaskOwner } = taskData // idTaskOwner — это создатель задачи
 
     if (!idTaskOwner) return handleError("Недостаточно данных")
 
-    // Если ты не создатель — проверь права менеджера
-    if (userId !== idTaskOwner) {
+    if (user.userId !== idTaskOwner) {
       await checkUserPermissionByRole(user, [PermissionEnum.TASK_MANAGEMENT])
     }
 
@@ -243,7 +241,7 @@ export const updateTasksOrder = async (
   updatedTasks: TaskWithUserInfo[],
 ): Promise<{ success: boolean; data: Task[] }> => {
   try {
-    await handleAuthorization()
+    await requireUser()
 
     const tasks = await prisma.$transaction(
       updatedTasks.map((task) =>

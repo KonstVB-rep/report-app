@@ -1,23 +1,17 @@
 "use server"
 
 import { Prisma, type UserFilter } from "@prisma/client"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { DeleteFilterReturnType, SaveFilterType, UpdateFilterDataType } from "../types"
 
-const getAuthUser = async () => {
-  const { user } = await handleAuthorization()
-  if (!user?.id) throw new Error("Пользователь не авторизован")
-  return user
-}
-
 export const getUserFilters = async () => {
   try {
-    const user = await getAuthUser()
+    const user = await requireUser()
 
     return await prisma.userFilter.findMany({
-      where: { userId: user.id },
+      where: { userId: user.userId },
       orderBy: { createdAt: "desc" },
     })
   } catch (error) {
@@ -28,10 +22,10 @@ export const getUserFilters = async () => {
 
 export const getUserFilterById = async (filterId: string) => {
   try {
-    const user = await getAuthUser()
+    const user = await requireUser()
 
     return await prisma.userFilter.findFirst({
-      where: { id: filterId, userId: user.id },
+      where: { id: filterId, userId: user.userId },
     })
   } catch (error) {
     console.error("Ошибка в getUserFilters:", error)
@@ -62,7 +56,7 @@ export const getUserFilterById = async (filterId: string) => {
 
 // export const deleteFilter = async (data: { id: string }): Promise<DeleteFilterReturnType> => {
 //   try {
-//    const user = await getAuthUser()
+//    const user = await requireUser()
 
 //     const { count } = await prisma.userFilter.deleteMany({
 //       where: {
@@ -82,7 +76,7 @@ export const getUserFilterById = async (filterId: string) => {
 
 // export const updateFilter = async (data: UpdateFilterDataType): Promise<UserFilter | undefined> => {
 //   try {
-//    const user = await getAuthUser()
+//    const user = await requireUser()
 
 //     // Prisma update требует уникальный селектор.
 //     // Если id уникален, мы обновляем с проверкой userId через updateMany
@@ -151,13 +145,13 @@ export const getUserFilterById = async (filterId: string) => {
 // }
 export const saveFilter = async (savedData: SaveFilterType): Promise<UserFilter> => {
   try {
-    const user = await getAuthUser()
+    const user = await requireUser()
     const { data } = savedData
 
     return await prisma.userFilter.create({
       data: {
         ...data,
-        userId: user.id,
+        userId: user.userId,
       },
     })
   } catch (error) {
@@ -170,12 +164,12 @@ export const saveFilter = async (savedData: SaveFilterType): Promise<UserFilter>
 
 export const deleteFilter = async (data: { id: string }): Promise<DeleteFilterReturnType> => {
   try {
-    const user = await getAuthUser()
+    const user = await requireUser()
 
     const { count } = await prisma.userFilter.deleteMany({
       where: {
         id: data.id,
-        userId: user.id,
+        userId: user.userId,
       },
     })
 
@@ -190,9 +184,9 @@ export const deleteFilter = async (data: { id: string }): Promise<DeleteFilterRe
 
 export const updateFilter = async (data: UpdateFilterDataType): Promise<UserFilter | undefined> => {
   try {
-    const user = await getAuthUser()
+    const user = await requireUser()
     const { count } = await prisma.userFilter.updateMany({
-      where: { id: data.id, userId: user.id },
+      where: { id: data.id, userId: user.userId },
       data,
     })
 
@@ -209,16 +203,16 @@ export const updateFilter = async (data: UpdateFilterDataType): Promise<UserFilt
 
 export const selectFilter = async (id: string) => {
   try {
-    const user = await getAuthUser()
+    const user = await requireUser()
 
     await prisma.$transaction([
       prisma.userFilter.updateMany({
-        where: { userId: user.id },
+        where: { userId: user.userId },
         data: { isActive: false },
       }),
 
       prisma.userFilter.updateMany({
-        where: { id, userId: user.id },
+        where: { id, userId: user.userId },
         data: { isActive: true },
       }),
     ])
@@ -232,10 +226,10 @@ export const selectFilter = async (id: string) => {
 
 export const disableSavedFilters = async () => {
   try {
-    const user = await getAuthUser()
+    const user = await requireUser()
 
     await prisma.userFilter.updateMany({
-      where: { userId: user.id },
+      where: { userId: user.userId },
       data: { isActive: false },
     })
 

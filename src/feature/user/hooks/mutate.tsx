@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
 import type { DepartmentInfo } from "@/entities/department/types"
@@ -6,31 +5,19 @@ import {
   createUser,
   deleteUser,
   deleteUsersList,
-  type ResponseDelUser,
   updateUser,
 } from "@/entities/user/api/user.actions"
 import type { UserFormData, UserFormEditData, UserResponse } from "@/entities/user/types"
-import { checkRole } from "@/shared/api/checkByServer"
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
-import { checkTokens } from "@/shared/lib/helpers/checkTokens"
 import type { ActionResponse } from "@/shared/types"
 
 export const useCreateUser = (onSuccessCallback?: (data: ActionResponse<UserFormData>) => void) => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
   const pathname = usePathname()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: FormData) => {
-      return handleMutationWithAuthCheck<FormData, ActionResponse<UserFormData>>(
-        createUser,
-        data,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (data: FormData) => await createUser(data),
     onSuccess: (data) => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
@@ -63,16 +50,9 @@ export const useUpdateUser = (
 ) => {
   const queryClient = useQueryClient()
   const pathname = usePathname()
-  const { authUser, isSubmittingRef } = useFormSubmission()
+  const { authUser } = useFormSubmission()
   return useMutation({
-    mutationFn: (formData: FormData) => {
-      return handleMutationWithAuthCheck<FormData, ActionResponse<UserFormEditData>>(
-        updateUser,
-        formData,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async (formData: FormData) => await updateUser(formData),
     onSuccess: (data) => {
       if (data.success) {
         queryClient.invalidateQueries({
@@ -107,23 +87,10 @@ export const useUpdateUser = (
 }
 
 export const useDeleteUser = (userId: string) => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
   const pathname = usePathname()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
-      const mutateFn = async (data: { userId: string }) => {
-        await Promise.all([checkTokens(), checkRole(), checkRole(Role.DIRECTOR)])
-        const result = await deleteUser(data.userId)
-        return result
-      }
-      return handleMutationWithAuthCheck<{ userId: string }, ResponseDelUser<null>>(
-        mutateFn,
-        { userId },
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async () => await deleteUser(userId),
     onMutate: async () => {
       const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"])
 
@@ -161,23 +128,10 @@ export const useDeleteUser = (userId: string) => {
 }
 
 export const useDeleteUsersList = (userIds: string[]) => {
-  const { authUser, isSubmittingRef } = useFormSubmission()
   const pathname = usePathname()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
-      const mutateFn = async (data: string[]) => {
-        await Promise.all([checkTokens(), checkRole(), checkRole(Role.DIRECTOR)])
-        const result = await deleteUsersList(data)
-        return result
-      }
-      return handleMutationWithAuthCheck<string[], ResponseDelUser<null>>(
-        mutateFn,
-        userIds,
-        authUser,
-        isSubmittingRef,
-      )
-    },
+    mutationFn: async () => await deleteUsersList(userIds),
     onMutate: async () => {
       const previousDepsWithUsers = queryClient.getQueryData(["depsWithUsers"])
 

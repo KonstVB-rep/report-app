@@ -63,7 +63,11 @@ const PersonDealsTable = () => {
 
   const hasAccess = hasAccessToData(userId as string, PermissionEnum.VIEW_USER_REPORT)
 
-  const { data = [], isLoading } = useDealsUser(dealType as TableType, userId as string)
+  const {
+    data = [],
+    isLoading,
+    isPlaceholderData,
+  } = useDealsUser(dealType as TableType, userId as string)
 
   if (!hasAccess)
     return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
@@ -82,11 +86,13 @@ const PersonDealsTable = () => {
         {isLoading ? (
           <TableRowsSkeleton />
         ) : (
-          <DealsTable
-            columns={Columns(dealType as TableType) as ColumnDef<DealUnion>[]}
-            data={data as DealUnion[]}
-            hiddenCols={hiddenDefCols[dealType as TableType]}
-          />
+          <div className={isPlaceholderData ? "opacity-50 transition-opacity" : "opacity-100"}>
+            <DealsTable
+              columns={Columns(dealType as TableType) as ColumnDef<DealUnion>[]}
+              data={data as DealUnion[]}
+              hiddenCols={hiddenDefCols[dealType as TableType]}
+            />
+          </div>
         )}
       </DealTableTemplate>
     </NotFoundByPosition>

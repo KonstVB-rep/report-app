@@ -2,7 +2,7 @@ import type { NextConfig } from "next" // 1. Импортируем тип
 import withBundleAnalyzer from "@next/bundle-analyzer"
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
+  cacheComponents: false,
 
   images: {
     remotePatterns: [

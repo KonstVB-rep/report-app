@@ -1,12 +1,25 @@
-import type { PermissionEnum } from "@prisma/client"
+import type { $Enums } from "@prisma/client"
 import { persist } from "zustand/middleware"
 import { create } from "@/shared/lib/helpers/сreate"
-import type { UserWithoutPassword } from "@/shared/types"
 
-export type AuthUserType = UserWithoutPassword & { permissions?: PermissionEnum[] }
+export type AuthUserType = {
+  permissions: $Enums.PermissionEnum[]
+  id: string
+  phone: string
+  email: string
+  position: string
+  username: string
+  departmentId: number
+  role: $Enums.Role
+  lastlogin: Date | null
+  telegramInfo: {
+    tgUserId: string
+    tgUserName: string | null
+  }[]
+}
 
 type State = {
-  authUser: AuthUserType | null
+  authUser: AuthUserType | null | undefined
   isAuth: boolean
   setAuthUser: (user: AuthUserType | null) => void
   setIsAuth: (isAuth: boolean) => void

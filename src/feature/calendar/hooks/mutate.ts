@@ -1,6 +1,4 @@
-import type { Prisma } from "@prisma/client"
 import { useMutation, type useQueryClient } from "@tanstack/react-query"
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
 import { logout } from "@/shared/auth/logout"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
@@ -10,7 +8,7 @@ import {
   deleteEventCalendar,
   updateEventCalendar,
 } from "../api/calendar.actions"
-import type { EventDataType, EventResponse } from "../types"
+import type { EventDataType } from "../types"
 
 const handleCalendarError = (error: unknown, defaultMessage: string) => {
   const err = error as Error & { status?: number }
@@ -48,17 +46,10 @@ const invalidateCalendarQueries = (
 // --- MUTATIONS ---
 
 export const useCreateEventCalendar = (closeModal?: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: (data: EventDataType) =>
-      handleMutationWithAuthCheck<EventDataType, EventResponse>(
-        createEventCalendar,
-        data,
-        authUser,
-        isSubmittingRef,
-      ),
-
+    mutationFn: async (data: EventDataType) => await createEventCalendar(data),
     onSuccess: () => {
       closeModal?.()
 
@@ -71,16 +62,10 @@ export const useCreateEventCalendar = (closeModal?: () => void) => {
 }
 
 export const useUpdateEventCalendar = (closeModal: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: (data: EventDataType) =>
-      handleMutationWithAuthCheck<EventDataType, EventResponse>(
-        updateEventCalendar,
-        data,
-        authUser,
-        isSubmittingRef,
-      ),
+    mutationFn: async (data: EventDataType) => await updateEventCalendar(data),
     onSuccess: () => {
       closeModal()
       invalidateCalendarQueries(queryClient, authUser?.id)
@@ -91,16 +76,10 @@ export const useUpdateEventCalendar = (closeModal: () => void) => {
 }
 
 export const useDeleteEventCalendar = (closeModal?: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: (id: string) =>
-      handleMutationWithAuthCheck<{ id: string }, { success: boolean }>(
-        deleteEventCalendar,
-        { id },
-        authUser,
-        isSubmittingRef,
-      ),
+    mutationFn: async (id: string) => await deleteEventCalendar({ id }),
     onSuccess: () => {
       closeModal?.()
       invalidateCalendarQueries(queryClient, authUser?.id)
@@ -111,16 +90,10 @@ export const useDeleteEventCalendar = (closeModal?: () => void) => {
 }
 
 export const useDeleteEventsCalendar = (closeModal?: () => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: (ids: string[]) =>
-      handleMutationWithAuthCheck<{ ids: string[] }, Prisma.BatchPayload>(
-        deleteArrayEventsCalendar,
-        { ids },
-        authUser,
-        isSubmittingRef,
-      ),
+    mutationFn: async (ids: string[]) => await deleteArrayEventsCalendar({ ids }),
     onSuccess: () => {
       closeModal?.()
       invalidateCalendarQueries(queryClient, authUser?.id)

@@ -19,20 +19,12 @@ import {
   type DealsList,
   type DealsUnionType,
   type DealUnion,
-  type ProjectResponse,
-  type RetailResponse,
   type TableType,
 } from "@/entities/deal/types"
-import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
-import { REFETCH_INTERVAL } from "@/shared/types"
+import { REFETCH_INTERVAL, REFETCH_INTERVAL_SUMMARY_TABLE } from "@/shared/types"
 
-const emptyQueryResult = {
-  data: undefined,
-  isLoading: true,
-  isError: false,
-  error: null,
-}
+const ERROR_TEXT = "Не удалось получить список объектов"
 
 export const queryKeys = {
   projectById: (id: string) => ["project", id] as const,
@@ -71,6 +63,9 @@ export const useGetProjectById = <T extends DealProject>(
     staleTime: useCache ? 60 * 1000 : 0,
     placeholderData: keepPreviousData,
     retry: 2,
+    meta: {
+      errorMessage: ERROR_TEXT,
+    },
   })
 }
 
@@ -94,6 +89,9 @@ export const useGetRetailById = <T extends DealRetail>(
     placeholderData: keepPreviousData,
     staleTime: useCache ? 60 * 1000 : 0,
     retry: 2,
+    meta: {
+      errorMessage: ERROR_TEXT,
+    },
   })
 }
 
@@ -134,91 +132,87 @@ export const useGetDealById = <T extends DealUnion>(dealId: string, type: DealTy
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
     retry: 1,
-  })
-}
-export const useGetAllProjects = <T extends ProjectResponse[]>(
-  userId: string | null,
-  departmentId: number,
-) => {
-  const { authUser } = useStoreUser()
-
-  const isEnabled = !!userId && !!departmentId && !!authUser?.id
-
-  return useQuery<T, Error>({
-    queryKey: queryKeys.allProjects(departmentId),
-    queryFn: async () => {
-      return ((await getAllProjectsByDepartment(departmentId)) as T) ?? []
-    },
-    enabled: isEnabled,
-    retry: 2,
-    staleTime: 1000 * 60,
-    refetchInterval: REFETCH_INTERVAL,
-    placeholderData: keepPreviousData,
-  })
-}
-
-export const useGetAllRetails = <T extends RetailResponse[]>(
-  userId: string | null,
-  departmentId: number,
-) => {
-  const isEnabled = !!userId && !!departmentId
-
-  return useQuery<T, Error>({
-    queryKey: queryKeys.allRetails(departmentId),
-    queryFn: async () => {
-      return ((await getAllRetailsByDepartment(departmentId)) as T) ?? []
-    },
-    enabled: isEnabled,
-    staleTime: 1000 * 60,
-    refetchInterval: REFETCH_INTERVAL,
-    placeholderData: keepPreviousData,
-  })
-}
-
-export const useGetRetailsUser = <T extends RetailResponse[]>(userId: string | undefined) => {
-  return useQuery<T, Error>({
-    queryKey: queryKeys.retailsUser(userId),
-    queryFn: async () => {
-      return ((await getRetailsUser(userId as string)) as T) ?? []
-    },
-    enabled: !!userId,
-    placeholderData: undefined,
-    staleTime: 1000 * 60,
-    refetchInterval: REFETCH_INTERVAL,
     meta: {
-      errorMessage: "Не удалось загрузить список проектов",
+      errorMessage: ERROR_TEXT,
     },
   })
 }
 
-export const useGetProjectsUser = <T extends ProjectResponse[]>(userId: string | undefined) => {
-  const isEnabled = !!userId
+const DEAL_QUERY_CONFIG = {
+  projects: {
+    queryKey: (userId: string) => queryKeys.projectsUser(userId),
+    fetcher: getProjectsUser,
+  },
+  retails: {
+    queryKey: (userId: string) => queryKeys.retailsUser(userId),
+    fetcher: getRetailsUser,
+  },
+  contracts: {
+    queryKey: (userId: string) => queryKeys.contractsUser(userId),
+    fetcher: getProjectsUser,
+  },
+} as const
 
-  return useQuery<T, Error>({
-    queryKey: queryKeys.projectsUser(userId),
+export const useDealsUser = (type: TableType | undefined, userId?: string) => {
+  const isEnabled = !!type && !!userId
+
+  return useQuery({
+    queryKey: isEnabled ? DEAL_QUERY_CONFIG[type].queryKey(userId) : ["deals", "disabled"],
+
     queryFn: async () => {
-      if (!userId) throw new Error("userId is required")
-      return ((await getProjectsUser(userId)) as T) ?? []
+      if (!type || !userId) throw new Error("Missing params")
+
+      const fetcher = DEAL_QUERY_CONFIG[type].fetcher
+      const data = await fetcher(userId)
+
+      return data ?? []
     },
+
     enabled: isEnabled,
     staleTime: REFETCH_INTERVAL,
+    placeholderData: keepPreviousData,
     meta: {
-      errorMessage: "Не удалось загрузить список проектов",
+      errorMessage: ERROR_TEXT,
     },
   })
 }
 
-export const useGetContractsUser = <T extends ProjectResponse[]>(userId: string | undefined) => {
-  return useQuery<T, Error>({
-    queryKey: queryKeys.contractsUser(userId),
+const DEAL_SUMMARY_QUERY_CONFIG = {
+  projects: {
+    queryKey: (departmentId: number) => queryKeys.allProjects(departmentId),
+    fetcher: getAllProjectsByDepartment,
+  },
+  retails: {
+    queryKey: (departmentId: number) => queryKeys.allRetails(departmentId),
+    fetcher: getAllRetailsByDepartment,
+  },
+} as const
+
+export const useGetAllDealsByType = (
+  type: DealsUnionType | null,
+  userId: string | null,
+  departmentId: number,
+) => {
+  const isEnabled = !!userId && !!departmentId && !!type
+
+  return useQuery({
+    queryKey: isEnabled
+      ? DEAL_SUMMARY_QUERY_CONFIG[type].queryKey(departmentId)
+      : ["all-deals", "disabled"],
     queryFn: async () => {
-      return ((await getProjectsUser(userId as string)) as T) ?? []
+      if (!type || !userId) throw new Error("Отсутствует обязательный параметр запроса!")
+
+      const fetcher = DEAL_SUMMARY_QUERY_CONFIG[type].fetcher
+      const data = await fetcher(departmentId)
+
+      return data ?? []
     },
-    enabled: !!userId,
+    enabled: isEnabled,
     staleTime: 1000 * 60,
-    refetchInterval: REFETCH_INTERVAL,
+    refetchInterval: REFETCH_INTERVAL_SUMMARY_TABLE,
+    placeholderData: keepPreviousData,
     meta: {
-      errorMessage: "Не удалось загрузить список проектов",
+      errorMessage: ERROR_TEXT,
     },
   })
 }
@@ -232,43 +226,10 @@ export const useGetDealsByDateRange = (userId: string, range: DateRange, departm
     },
     enabled: isEnabled,
     staleTime: 1000 * 60,
+    meta: {
+      errorMessage: ERROR_TEXT,
+    },
   })
-}
-
-export const useDealsUser = (type: TableType | undefined, userId?: string) => {
-  const projects = useGetProjectsUser(userId)
-
-  const retails = useGetRetailsUser(userId)
-
-  const contracts = useGetContractsUser(userId)
-  if (!type) return emptyQueryResult
-
-  switch (type) {
-    case "projects":
-      return projects
-    case "retails":
-      return retails
-    case "contracts":
-      return contracts
-  }
-}
-
-export const useGetAllDealsByType = (
-  type: DealsUnionType | null,
-  userId: string | null,
-  departmentId: number,
-) => {
-  const projects = useGetAllProjects(userId, departmentId)
-  const retails = useGetAllRetails(userId, departmentId)
-
-  if (!type) return emptyQueryResult
-
-  switch (type) {
-    case "projects":
-      return projects
-    case "retails":
-      return retails
-  }
 }
 
 export const useGetAdditionalContacts = (dealId: string) => {
@@ -279,6 +240,9 @@ export const useGetAdditionalContacts = (dealId: string) => {
     },
     enabled: !!dealId,
     staleTime: 1000 * 60,
+    meta: {
+      errorMessage: ERROR_TEXT,
+    },
   })
 }
 
@@ -291,5 +255,8 @@ export const useGetAllDealsDepartment = <T extends DealsList>(departmentId: numb
     },
     enabled: isEnabled,
     staleTime: 1000 * 60,
+    meta: {
+      errorMessage: ERROR_TEXT,
+    },
   })
 }

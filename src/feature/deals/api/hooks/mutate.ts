@@ -19,6 +19,7 @@ import {
   createRetail,
   deleteDeal,
   deleteMultipleDeals,
+  type MutationResponse,
   reassignDealsToManager,
   updateProject,
   updateRetail,
@@ -26,63 +27,54 @@ import {
 import type { ProjectSchema, RetailSchema } from "@/entities/deal/model/schema"
 import type {
   ProjectResponse,
-  ProjectWithManagersIds,
-  ProjectWithoutDateCreateAndUpdate,
-  ProjectWithoutId,
   ReAssignDeal,
   RetailResponse,
-  RetailWithManagersIds,
   RetailWithoutDateCreateAndUpdate,
-  RetailWithoutId,
 } from "@/entities/deal/types"
 import { defaultProjectValues, defaultRetailValues } from "@/feature/deals/model/defaultvaluesForm"
-import handleMutationWithAuthCheck from "@/shared/api/handleMutationWithAuthCheck"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
-import { checkAuthorization } from "@/shared/lib/helpers/checkAuthorization"
-import type { SuccessResponse } from "@/shared/types"
 
-export const useDelDeal = (
-  closeModalFn: Dispatch<SetStateAction<void>>,
-  type: DealType,
-  ownerId: string,
-) => {
-  const pathname = usePathname()
+export interface AppError {
+  success: false
+  message: string
+  error: true
+}
+
+interface DeleteResponse {
+  managers: { dealId: string; userId: string }[]
+}
+
+export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: DealType) => {
   const { queryClient, authUser } = useFormSubmission()
   return useMutation({
-    mutationFn: async (nealId: string) => {
-      await checkAuthorization(authUser?.id)
+    mutationFn: async (dealId: string) => {
+      const result = await deleteDeal(dealId, type)
 
-      return await deleteDeal(nealId, ownerId, type)
-    },
-    onSuccess: (data, dealId) => {
-      if (pathname.includes("adminboard")) {
-        queryClient.invalidateQueries({
-          queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
-        })
-        return
+      if (!result.success) {
+        throw result
       }
-      data.managers.forEach((manager) => {
+
+      return result.data as DeleteResponse
+    },
+
+    onSuccess: (data, dealId) => {
+      const depId = Number(authUser?.departmentId)
+      const queryType = type.toLowerCase() === "project" ? "projects" : "retails"
+
+      data.managers?.forEach((manager) => {
         queryClient.invalidateQueries({
-          queryKey: [`${type.toLowerCase()}s`, manager.userId],
+          queryKey: [queryType, manager.userId],
         })
       })
 
-      queryClient.invalidateQueries({
-        queryKey: [`${type.toLowerCase()}s`, ownerId],
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: [`${type.toLowerCase()}`, dealId],
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ["orders", Number(authUser?.departmentId)],
-      })
+      queryClient.invalidateQueries({ queryKey: [type.toLowerCase(), dealId] })
+      queryClient.invalidateQueries({ queryKey: ["orders", depId] })
 
       closeModalFn()
     },
-    onError: (error) => {
+
+    onError: (error: unknown) => {
       handleErrorSession(error)
     },
   })
@@ -98,8 +90,6 @@ export const useDelListDeal = (closeModalFn: (dataFiles: DealFile[]) => void) =>
         type: DealType
       }[],
     ) => {
-      await checkAuthorization(authUser?.id)
-
       return await deleteMultipleDeals(deals)
     },
     onSuccess: (data) => {
@@ -123,10 +113,10 @@ export const useMutationUpdateProject = (
   close: () => void,
   isInvalidate: boolean = false,
 ) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: (data: ProjectSchema) => {
+    mutationFn: async (data: ProjectSchema) => {
       const formData = {
         ...data,
         dateRequest: data.dateRequest
@@ -155,37 +145,36 @@ export const useMutationUpdateProject = (
         managersIds: data.managersIds,
       }
 
-      return handleMutationWithAuthCheck<
-        ProjectWithManagersIds,
-        ProjectWithoutDateCreateAndUpdate | null
-      >(updateProject, formData, authUser, isSubmittingRef)
+      const result = await updateProject(formData)
+
+      if (!result.success) {
+        throw result
+      }
+
+      return result.data
     },
-    onError: (error) => {
-      handleErrorSession(error)
+    onError: (error: MutationResponse<never>) => {
+      if (error.code === 401) {
+        handleErrorSession(error)
+      }
     },
+
     onSuccess: (_, variables) => {
       close()
-
-      const previousData = queryClient.getQueryData<ProjectResponse>(["project", dealId])
-
-      const prevManagers = previousData?.managers?.map((m) => m.id).sort() || []
-      const currManagers = variables.managersIds?.map((m) => m.userId).sort() || []
+      const depId = Number(authUser?.departmentId)
 
       if (isInvalidate) {
         queryClient.invalidateQueries({ queryKey: ["project", dealId] })
       }
 
-      queryClient.invalidateQueries({
-        queryKey: ["orders", Number(authUser?.departmentId)],
-      })
+      queryClient.invalidateQueries({ queryKey: ["orders", depId] })
 
-      const allManagers = [...new Set([...prevManagers, ...currManagers, userId])]
+      const currManagers = variables.managersIds?.map((m) => m.userId) || []
+      const allManagers = [...new Set([...currManagers, userId])]
 
       allManagers.forEach((id) => {
         queryClient.invalidateQueries({ queryKey: ["projects", id] })
-        queryClient.invalidateQueries({
-          queryKey: ["contracts", id, Number(authUser?.departmentId)],
-        })
+        queryClient.invalidateQueries({ queryKey: ["contracts", id, depId] })
       })
     },
   })
@@ -197,9 +186,9 @@ export const useMutationUpdateRetail = (
   close: () => void,
   isInvalidate: boolean = false,
 ) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
-    mutationFn: (
+    mutationFn: async (
       data: RetailSchema,
     ): Promise<RetailWithoutDateCreateAndUpdate | null | undefined> => {
       const formData = {
@@ -224,10 +213,13 @@ export const useMutationUpdateRetail = (
         managersIds: data.managersIds,
       }
 
-      return handleMutationWithAuthCheck<
-        RetailWithManagersIds,
-        RetailWithoutDateCreateAndUpdate | null
-      >(updateRetail, formData, authUser, isSubmittingRef)
+      const result = await updateRetail(formData)
+
+      if (!result.success) {
+        throw result
+      }
+
+      return result.data
     },
 
     onError: (error) => {
@@ -257,7 +249,7 @@ export const useMutationUpdateRetail = (
 }
 
 export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
     mutationFn: async (data: ProjectSchema) => {
       const formData = {
@@ -287,26 +279,22 @@ export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) =>
           : "0",
         managersIds: data.managersIds,
       }
-
-      return handleMutationWithAuthCheck<
-        ProjectWithoutId & { managersIds: { userId: string }[] },
-        ProjectResponse
-      >(createProject, formData, authUser, isSubmittingRef)
+      return await createProject(formData)
     },
 
-    onSuccess: (data) => {
-      if (!data) return
-
+    onSuccess: (data: ProjectResponse) => {
       reset(defaultProjectValues)
-
       queryClient.invalidateQueries({
-        queryKey: ["projects", data?.userId],
+        queryKey: ["projects", data.userId],
         exact: true,
       })
 
       queryClient.invalidateQueries({
         queryKey: ["orders", authUser?.departmentId],
         exact: true,
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
       })
     },
 
@@ -317,13 +305,11 @@ export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) =>
 }
 
 export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => void) => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: (data: RetailSchema) => {
-      if (!authUser?.id) {
-        throw new Error("Пользователь не авторизован")
-      }
+    mutationFn: async (data: RetailSchema) => {
+      if (!authUser?.id) throw new Error("Пользователь не авторизован")
 
       const formData = {
         ...data,
@@ -347,52 +333,54 @@ export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => v
         managersIds: data.managersIds,
       }
 
-      return handleMutationWithAuthCheck<
-        RetailWithoutId & { managersIds: { userId: string }[] },
-        RetailResponse
-      >(createRetail, formData, authUser, isSubmittingRef)
+      return await createRetail(formData)
     },
+
+    onSuccess: (data: RetailResponse) => {
+      reset(defaultRetailValues)
+
+      queryClient.invalidateQueries({
+        queryKey: ["retails", data.userId],
+        exact: true,
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ["orders", authUser?.departmentId],
+        exact: true,
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
+        exact: true,
+      })
+    },
+
     onError: (error) => {
       handleErrorSession(error)
-    },
-    onSuccess: (data) => {
-      if (data) {
-        reset(defaultRetailValues)
-
-        queryClient.invalidateQueries({
-          queryKey: ["retails", data.userId],
-          exact: true,
-        })
-
-        queryClient.invalidateQueries({
-          queryKey: ["orders", authUser?.departmentId],
-          exact: true,
-        })
-      }
     },
   })
 }
 
 export const useReassignDeal = () => {
-  const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
 
-  return useMutation({
-    mutationFn: (data: ReAssignDeal) => {
-      return handleMutationWithAuthCheck<ReAssignDeal, SuccessResponse | null>(
-        reassignDealsToManager,
-        data,
-        authUser,
-        isSubmittingRef,
-      )
-    },
-    onError: (error) => {
-      handleErrorSession(error)
+  return useMutation<Awaited<ReturnType<typeof reassignDealsToManager>>, AppError, ReAssignDeal>({
+    mutationFn: async (data: ReAssignDeal) => {
+      const result = await reassignDealsToManager(data)
+
+      if (result.error) {
+        throw result
+      }
+
+      return result
     },
     onSuccess: () => {
-      // close();
       queryClient.invalidateQueries({
         queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
       })
+    },
+    onError: (error) => {
+      handleErrorSession(error)
     },
   })
 }

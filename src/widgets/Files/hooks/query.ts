@@ -19,7 +19,7 @@ export const useGetHrefFilesDealFromDB = (
 ): UseQueryResult<DealFile[], Error> => {
   const { isAuth } = useStoreUser()
   return useQuery({
-    queryKey: ["get-deal-files", data?.userId, data?.dealId, data?.dealType],
+    queryKey: ["get-deal-files", data?.dealId, data?.dealType],
     queryFn: async () => {
       try {
         if (!isAuth) throw new Error("Пользователь не авторизован")
@@ -43,6 +43,7 @@ export const useGetHrefFilesDealFromDB = (
     enabled: !!isAuth && !!data?.dealId && !!data?.dealType,
   })
 }
+
 export const useGetInfoYandexDisk = () => {
   const { isAuth } = useStoreUser()
   return useQuery({

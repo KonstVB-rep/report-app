@@ -7,20 +7,22 @@ import DrawerComponent from "@/shared/custom-components/ui/DrawerComponent"
 import DialogReassignDealConfirm from "./DialogReassignDealConfirm"
 
 const DealsDrawer = ({ table }: { table: Table<DealUnion> }) => {
-  const rowSelectionKeys = Object.keys(table.getState().rowSelection)
+  const rowSelectionKeys = new Set<string>(Object.keys(table.getState().rowSelection))
 
-  if (!table || rowSelectionKeys.length === 0) {
+  if (!table || rowSelectionKeys.size === 0) {
     return null
   }
 
   const { rows } = table.getRowModel()
 
   const rowsSelectionData = rows.filter((row) => {
-    return rowSelectionKeys.includes(row.id)
+    return rowSelectionKeys.has(row.id)
   })
 
   const dealId = rowsSelectionData[0]?.original.id
   const type = rowsSelectionData[0]?.original.type
+
+  const rowSelectionSize = rowSelectionKeys.size
   const deals = rowsSelectionData.map((row) => {
     return {
       id: row.original.id,
@@ -32,12 +34,11 @@ const DealsDrawer = ({ table }: { table: Table<DealUnion> }) => {
   const clearSelection = () => {
     return table.resetRowSelection()
   }
-
   return (
     <>
-      {rowSelectionKeys.length > 0 && (
+      {rowSelectionSize > 0 && (
         <DrawerComponent positionSide="bottom-2">
-          {rowSelectionKeys?.length === 1 && (
+          {rowSelectionSize === 1 && (
             <div>
               <DelButtonDeal
                 clearData={clearSelection}
@@ -49,10 +50,10 @@ const DealsDrawer = ({ table }: { table: Table<DealUnion> }) => {
               />
             </div>
           )}
-          {rowSelectionKeys?.length > 1 && (
+          {rowSelectionSize > 1 && (
             <DelButtonMultiDeals clearSelection={clearSelection} deals={deals} />
           )}
-          {rowSelectionKeys?.length > 0 && <DialogReassignDealConfirm deals={deals} />}
+          {rowSelectionSize > 0 && <DialogReassignDealConfirm deals={deals} />}
         </DrawerComponent>
       )}
     </>

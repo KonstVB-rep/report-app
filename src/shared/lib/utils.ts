@@ -103,3 +103,11 @@ export const TAB_TO_DEAL_TYPE: Record<TableType, DealsUnionType> = {
 // export const mapTabToDealType = (tab: TableType): DealsUnionType => {
 //   return TAB_TO_DEAL_TYPE[tab]
 // }
+
+export function validateRequiredFields<T>(data: T, requiredFields: (keyof T)[]): void {
+  for (const field of requiredFields) {
+    if (!data[field]) {
+      throw new Error(`Отсутствует обязательное поле: ${String(field)}`)
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { jwtVerify } from "jose"
 import { type NextRequest, NextResponse } from "next/server"
-import { generateTokens } from "@/feature/auth/lib/generateTokens"
+import { generateTokensAndSetCookies, type PayloadType } from "@/shared/lib/auth/session"
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,16 +18,23 @@ export async function POST(req: NextRequest) {
     const { refreshToken } = body
 
     const secretKey = new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)
-    const { payload } = await jwtVerify(refreshToken, secretKey)
+    const { payload: rawPayload } = await jwtVerify(refreshToken, secretKey)
 
-    if (!payload?.userId || !payload?.departmentId) {
+    if (!rawPayload || !rawPayload.userId || rawPayload.departmentId === undefined) {
       return NextResponse.json({ error: "Некорректные данные в токене" }, { status: 401 })
     }
 
-    const tokens = await generateTokens(
-      payload.userId as string,
-      payload.departmentId as string | number,
-    )
+    const payload = rawPayload as unknown as PayloadType
+    const { userId, departmentId, role, username, position, permissions } = payload
+
+    const tokens = await generateTokensAndSetCookies({
+      userId,
+      departmentId,
+      role,
+      username,
+      position,
+      permissions,
+    })
 
     if (!tokens) throw new Error("Token generation failed")
 
@@ -35,8 +42,9 @@ export async function POST(req: NextRequest) {
       {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
-        userId: payload.userId,
-        departmentId: payload.departmentId,
+        userId,
+        departmentId,
+        role,
       },
       { status: 200 },
     )

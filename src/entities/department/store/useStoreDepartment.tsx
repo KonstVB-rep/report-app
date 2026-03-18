@@ -7,7 +7,7 @@ export type DeptFormatted = {
   id: number
   name: string
   description: string
-  users: Record<string, string>[]
+  users: Record<string, string>
 }
 
 type State = {

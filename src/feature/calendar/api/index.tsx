@@ -1,18 +1,16 @@
 "use server"
 
-import { Role } from "@prisma/client"
-import { handleAuthorization } from "@/app/api/utils/handleAuthorization"
+import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
-import { checkRole } from "@/shared/api/checkByServer"
 import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb"
 import { handleError } from "@/shared/api/handleError"
 import type { EventDataType, EventInputType, EventResponse } from "../types"
 
 export const createEventCalendar = async (eventData: Omit<EventDataType, "id">) => {
   try {
-    const data = await handleAuthorization()
+    const user = await requireUser()
 
-    const { userId } = data
+    const { userId } = user
     const { title, start, end, allDay = false } = eventData
     const newEvent = await prisma.eventCalendar.create({
       data: {
@@ -33,9 +31,9 @@ export const createEventCalendar = async (eventData: Omit<EventDataType, "id">) 
 
 export const updateEventCalendar = async (eventData: EventDataType) => {
   try {
-    const data = await handleAuthorization()
+    const user = await requireUser()
 
-    const { userId } = data
+    const { userId } = user
     const { id, title, start, end, allDay = false } = eventData
 
     const existingEvent = await prisma.eventCalendar.findFirst({
@@ -69,9 +67,9 @@ export const updateEventCalendar = async (eventData: EventDataType) => {
 
 export const deleteEventCalendar = async (eventData: { id: string }) => {
   try {
-    const data = await handleAuthorization()
+    const user = await requireUser()
 
-    const { userId } = data
+    const { userId } = user
 
     const { id } = eventData
 
@@ -99,7 +97,7 @@ export const deleteEventCalendar = async (eventData: { id: string }) => {
 
 export const deleteArrayEventsCalendar = async (eventData: { ids: string[] }) => {
   try {
-    await handleAuthorization()
+    await requireUser()
 
     const { ids } = eventData
 
@@ -127,7 +125,7 @@ export const deleteArrayEventsCalendar = async (eventData: { ids: string[] }) =>
 }
 export const getEventsCalendarUser = async (): Promise<EventInputType[]> => {
   try {
-    const data = await handleAuthorization()
+    const data = await requireUser()
     const events = await prisma.eventCalendar.findMany({
       where: { userId: data.userId },
       orderBy: { start: "asc" },
@@ -145,7 +143,7 @@ export const getEventsCalendarUserRange = async (
   end: Date,
 ): Promise<EventInputType[]> => {
   try {
-    const data = await handleAuthorization()
+    const data = await requireUser()
     const events = await prisma.eventCalendar.findMany({
       where: {
         userId: data.userId,
@@ -166,8 +164,11 @@ export const getEventsCalendarUserRange = async (
 // 3. Получить ВСЕ (Админ)
 export const getAllEventsCalendar = async (): Promise<EventInputType[]> => {
   try {
-    await handleAuthorization()
-    await checkRole(Role.ADMIN)
+    const user = await requireUser()
+
+    if (user.role !== "ADMIN") {
+      return handleError("Не достаточно прав длЯ совершения действия")
+    }
     const events = await prisma.eventCalendar.findMany({
       orderBy: { start: "asc" },
     })
@@ -179,7 +180,7 @@ export const getAllEventsCalendar = async (): Promise<EventInputType[]> => {
 }
 
 export const getChatBotInfoAction = async (botName: string) => {
-  const data = await handleAuthorization()
+  const data = await requireUser()
   return await getTelegramChatBotInDb(botName, data.userId)
 }
 

@@ -60,14 +60,14 @@ const SummaryDealsTable = () => {
     data: deals,
     error,
     isError,
-    isPending,
+    isLoading,
   } = useGetAllDealsByType(dealType, hasAccess ? userId : null, departmentId)
 
   if (!hasAccess) {
     return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
   }
 
-  if (isPending) return <Loading />
+  if (isLoading) return <Loading />
 
   return (
     <DealTableTemplate>

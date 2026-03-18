@@ -44,8 +44,6 @@ const TasksPageMain = (params: { departmentId: string }) => {
     return <LoaderCircleInWater />
   }
 
-  console.log(departmentId, "departmentId TasksPage")
-
   return (
     <section className="p-5">
       <h1 className="text-xl py-2">Все задачи</h1>

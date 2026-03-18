@@ -20,22 +20,17 @@ type Props = {
 const DelDealForm = ({ id, type, close }: Props) => {
   const { data: deal, isPending: isLoadInfoAboutDeal } = useGetDealById(id, type)
 
-  const userId = deal?.userId ?? ""
   const dealFiles = deal?.dealFiles ?? []
   const hasFiles = dealFiles.length > 0
 
-  const { mutate: delDeal, isPending } = useDelDeal(
-    () => {
-      if (!hasFiles) {
-        close()
-        return
-      }
+  const { mutate: delDeal, isPending } = useDelDeal(() => {
+    if (!hasFiles) {
+      close()
+      return
+    }
 
-      mutate(dealFiles)
-    },
-    type,
-    userId,
-  )
+    mutate(dealFiles)
+  }, type)
 
   const { mutate, isPending: isPendingDelete } = useDeleteFiles(() => close)
 

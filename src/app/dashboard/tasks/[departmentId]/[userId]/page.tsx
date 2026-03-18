@@ -1,12 +1,11 @@
 "use client"
 
-import { Activity, Suspense } from "react"
+import { Activity, Suspense, useEffect } from "react"
 import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
-import { useParams } from "next/navigation"
-import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
+import { useParams, useRouter } from "next/navigation"
+import { hasAccessToDataPage } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
-import CalendarBotLink from "@/feature/calendar/ui/CalendarBotLink"
 import { useGetUserTasks } from "@/feature/task/hooks/query"
 import { viewType } from "@/feature/task/model/constants"
 import type { ViewType } from "@/feature/task/types"
@@ -14,7 +13,6 @@ import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
 import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
-import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import useViewType from "@/shared/hooks/useViewType"
 
@@ -30,25 +28,35 @@ const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
 
 const UserTasksPage = () => {
   const authUser = useRequireAuth()
+  const router = useRouter()
 
-  const { userId, departmentId } = useParams<{
+  const { userId } = useParams<{
     userId: string
     departmentId: string
   }>()
 
-  const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
+  // const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
 
-  const { data } = useGetUserTasks()
+  const { data } = useGetUserTasks({ userId })
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
+  const hasAccess = authUser
+    ? hasAccessToDataPage(authUser, userId, PermissionEnum.TASK_MANAGEMENT)
+    : false
 
-  if (!hasAccess) return <RedirectToPath to={`/tasks/${departmentId}/${authUser.id}`} />
+  useEffect(() => {
+    if (authUser && !hasAccess) {
+      router.replace(`/dashboard/tasks/${authUser.departmentId}/${authUser.id}`)
+    }
+  }, [authUser, hasAccess, router])
+
+  if (!authUser || !hasAccess) return <LoadingView />
 
   return (
     <section className="p-5">
       <div className="flex items-center justify-between py-2">
         <h1 className="text-xl py-2 uppercase">Мои задачи</h1>
-        <CalendarBotLink botName="ertel_report_app_task_bot" />
+        {/* <CalendarBotLink botName="ertel_report_app_task_bot" /> */}
       </div>
 
       <Separator />

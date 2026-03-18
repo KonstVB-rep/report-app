@@ -18,8 +18,6 @@ function makeQueryClient() {
     },
     queryCache: new QueryCache({
       onError: (error, query) => {
-        if (typeof window === "undefined") return
-
         if (query.meta?.errorMessage) {
           TOAST.ERROR(query.meta.errorMessage as string)
           return

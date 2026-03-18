@@ -35,6 +35,7 @@ export interface ProjectResponse {
   userId: string | null
   nameDeal: string
   nameObject: string
+  inn?: string
   dateRequest: Date
   direction: DirectionProject
   deliveryType: DeliveryProject | null
@@ -67,6 +68,7 @@ export interface RetailResponse {
   nameDeal: string
   dateRequest: Date
   nameObject: string
+  inn?: string
   direction: DirectionRetail
   deliveryType: DeliveryRetail | null
   contact: string
