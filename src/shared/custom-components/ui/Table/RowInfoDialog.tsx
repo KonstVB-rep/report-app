@@ -39,7 +39,7 @@ const RowInfoDialog = ({
                 ref={ref}
                 className="absolute left-1/2 w-full max-h-[80vh] w-[max(96vw, 280px)] sm:max-w-[400px] top-1/2 -translate-x-1/2 -translate-y-1/2 h-auto p-5 bg-primary-foreground border-2 shadow-lg rounded-md z-10 text-primary"
               >
-                <span className="block text-base text-center md:text-lg p-1 ">{text}</span>
+                <span className="block text-base text-center md:text-lg p-2 bg-background rounded-md">{text}</span>
                 {isTargetCell && children}
                 <Button
                   type="button"
