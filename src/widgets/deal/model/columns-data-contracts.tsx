@@ -27,6 +27,71 @@ export const columnsDataContract: ColumnDef<ProjectResponse, unknown>[] = [
     },
   },
   {
+    id: "lastDateConnection",
+    header: "Последний контакт",
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const value = info.getValue()
+
+      if (value instanceof Date) {
+        return value.toLocaleDateString("ru-RU")
+      }
+
+      if (typeof value === "string") {
+        const date = new Date(value)
+        if (!Number.isNaN(date.getTime())) {
+          return date.toLocaleDateString("ru-RU")
+        }
+        return "-"
+      }
+
+      return "-"
+    },
+    enableHiding: true,
+    meta: {
+      title: "Последний контакт",
+      isDateFilter: true,
+    },
+    enableResizing: false,
+    filterFn: (row, columnId, filterValue) => {
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from)
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to)
+        }
+        return false
+      }
+
+      return true
+    },
+    accessorFn: (row: ProjectResponse) => row.lastDateConnection,
+  },
+  {
+    id: "commentsLastConnection",
+    header: "Последний комментарий",
+    cell: (info: CellContext<ProjectResponse, unknown>) => {
+      const value = info.getValue() as ReactNode
+      return value
+    },
+    minSize: 300,
+    enableHiding: true,
+    meta: {
+      title: "Последний комментарий",
+    },
+    accessorFn: (row: ProjectResponse) => row.commentsLastConnection,
+  },
+  {
     id: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {

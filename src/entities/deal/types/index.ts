@@ -35,7 +35,7 @@ export interface ProjectResponse {
   userId: string | null
   nameDeal: string
   nameObject: string
-  inn?: string
+  inn?: string | null
   dateRequest: Date
   direction: DirectionProject
   deliveryType: DeliveryProject | null
@@ -48,14 +48,21 @@ export interface ProjectResponse {
   delta: string
   dealStatus: StatusProject
   comments: string
+  lastDateConnection: Date | null
+  commentsLastConnection: string | null
   plannedDateConnection: Date | null
   resource: string | null
   createdAt: Date
   updatedAt: Date
   type: DealType
   managers?: ManagerShortInfo[]
+  highlights?: string | null
 }
 
+export type ProjectResponseWithId = ProjectResponse & {
+  id: string
+}
+export interface ProjectResponseOmitHighlights extends Omit<ProjectResponse, "highlights"> {}
 export type ProjectResponseWithContactsAndFiles = ProjectResponse & {
   additionalContacts: Contact[] | []
   dealFiles: DealFile[] | []
@@ -68,7 +75,7 @@ export interface RetailResponse {
   nameDeal: string
   dateRequest: Date
   nameObject: string
-  inn?: string
+  inn?: string | null
   direction: DirectionRetail
   deliveryType: DeliveryRetail | null
   contact: string
@@ -78,12 +85,15 @@ export interface RetailResponse {
   delta: string
   dealStatus: StatusRetail
   comments: string
+  lastDateConnection: Date | null
+  commentsLastConnection: string | null
   plannedDateConnection?: Date | null
   resource: string | null
   createdAt: Date
   updatedAt: Date
   type: DealType
   managers?: ManagerShortInfo[]
+  highlights?: string | null
 }
 
 export type RetailResponseWithContactsAndFiles = RetailResponse & {
@@ -181,3 +191,10 @@ export type DealsList =
       totalDealsCount: number
     }
   | { deals: []; totalDealsCount: number }
+
+export type DealHighlightType = {
+  id: string
+  type: typeof DEAL_TYPE.PROJECT | typeof DEAL_TYPE.RETAIL
+  color: string | null
+  ownerId: string
+}

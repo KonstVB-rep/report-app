@@ -23,7 +23,7 @@ export type SuccessResponse = {
 
 export type UserWithoutPassword = Omit<User, "user_password">
 
-export type ModalType = "edit" | "delete" | "more" | null
+export type ModalType = "edit" | "delete" | "more" | "color" | null
 
 export const REFETCH_INTERVAL = 1000 * 60 * 5
 

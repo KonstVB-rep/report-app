@@ -8,6 +8,9 @@ export type TableContextType<T> = {
     }
     delete: { onClick: () => void }
     more: { onClick: () => void }
+    color: {
+      onClick: () => void
+    }
   }
   renderAdditionalInfo?: (id: string) => React.ReactNode
   selectedDataItem: T | null

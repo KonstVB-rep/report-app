@@ -30,6 +30,8 @@ const EditProjectForm = ({ close, dealInfo, isInvalidate = false, titleForm }: P
       deliveryType: (dealInfo.deliveryType as DeliveryProject) || undefined,
       dealStatus: dealInfo.dealStatus as StatusProject,
       direction: dealInfo.direction as DirectionProject,
+      lastDateConnection: dealInfo.lastDateConnection?.toISOString(),
+      commentsLastConnection: dealInfo.commentsLastConnection ?? "",
       plannedDateConnection: dealInfo.plannedDateConnection?.toISOString(),
       amountCP: formatNumberCurrency(dealInfo.amountCP),
       amountPurchase: formatNumberCurrency(dealInfo.amountPurchase),
@@ -40,6 +42,7 @@ const EditProjectForm = ({ close, dealInfo, isInvalidate = false, titleForm }: P
       managersIds: Array.isArray(dealInfo.managers)
         ? dealInfo.managers.map((manager) => ({ userId: manager.id }))
         : [],
+      inn: dealInfo.inn ?? "",
     },
   })
 

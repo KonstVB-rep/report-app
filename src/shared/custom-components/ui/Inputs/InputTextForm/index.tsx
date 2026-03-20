@@ -22,7 +22,10 @@ const InputTextForm = <T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label}
+            {rest.required && <span className="pl-1 text-red-700">*</span>}
+          </FormLabel>
           <FormControl>
             <Input placeholder="Введите имя пользователя" {...field} {...rest} />
           </FormControl>

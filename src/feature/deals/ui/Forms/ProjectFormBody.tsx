@@ -138,15 +138,15 @@ const ProjectFormBody = <T extends FieldValues>({
   const currentStatus = form.watch("dealStatus" as Path<T>)
 
   return (
-    <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
+    <MotionDivY className="max-h-[85dvh] overflow-y-auto flex gap-1 overflow-x-hidden">
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
-          className={`grid max-h-[82vh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[85dvh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
           onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="text-center font-semibold uppercase">{titleForm}</div>
-          <div className="grid gap-2 px-2">
+          <div className="grid gap-2 p-2">
             <div className="grid sm:grid-cols-2 gap-2">
               <div className="flex flex-col gap-1">
                 <DatePickerFormField
@@ -155,6 +155,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   errorMessage={getError("dateRequest")}
                   label="Дата запроса"
                   name={"dateRequest" as Path<T>}
+                  required
                 />
 
                 <InputTextForm
@@ -165,6 +166,15 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"nameDeal" as Path<T>}
                   placeholder="Название..."
                   required
+                />
+
+                <InputTextForm
+                  control={form.control}
+                  disabled={isPending}
+                  errorMessage={getError("inn")}
+                  label="ИНН"
+                  name={"inn" as Path<T>}
+                  placeholder="Номер..."
                 />
 
                 <InputTextForm
@@ -216,7 +226,9 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"phone" as Path<T>}
                   placeholder="Введите телефон пользователя"
                 />
+              </div>
 
+              <div className="flex flex-col gap-1">
                 <InputTextForm
                   className="w-full invalid:not-placeholder-shown:border-red-500"
                   control={form.control}
@@ -226,9 +238,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"email" as Path<T>}
                   type="email"
                 />
-              </div>
 
-              <div className="flex flex-col gap-1">
                 <InputNumberForm
                   control={form.control}
                   disabled={isPending}
@@ -283,8 +293,18 @@ const ProjectFormBody = <T extends FieldValues>({
                     errorMessage={getError("plannedDateConnection")}
                     label="Планируемый контакт"
                     name={"plannedDateConnection" as Path<T>}
+                    required
                   />
                 )}
+
+                <DatePickerFormField
+                  className="mb-2"
+                  control={form.control}
+                  disabled={isPending}
+                  errorMessage={getError("lastDateConnection")}
+                  label="Последний контакт"
+                  name={"lastDateConnection" as Path<T>}
+                />
 
                 <InputTextForm
                   className="mb-2"
@@ -296,6 +316,31 @@ const ProjectFormBody = <T extends FieldValues>({
                   placeholder="Откуда пришёл клиент"
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name={"commentsLastConnection" as Path<T>}
+                render={({ field }) => (
+                  <FormItem className="col-span-full">
+                    <FormLabel>Последний комментарий</FormLabel>
+
+                    <FormControl>
+                      <Textarea
+                        disabled={isPending}
+                        placeholder="Введите комментарии"
+                        required
+                        {...field}
+                      />
+                    </FormControl>
+
+                    {getError("commentsLastConnection") && (
+                      <FormMessage className="text-red-500">
+                        {getError("commentsLastConnection")}
+                      </FormMessage>
+                    )}
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name={"comments" as Path<T>}

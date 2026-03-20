@@ -6,6 +6,7 @@ import { useParams } from "next/navigation"
 import type { DealUnion } from "@/entities/deal/types"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
+import ColorPickerDeal from "@/feature/deals/ui/Modals/ColorPickerDeal"
 import { EntityActionModal } from "@/shared/custom-components/ui/EntityActionModal"
 import {
   type TableContextType,
@@ -39,7 +40,7 @@ const DealsTable = <T extends DealUnion>(props: DealsTableProps<T>) => {
     dealType: "retails" | "projects" | "contracts"
   }>()
 
-  const [openedModal, setOpenedModal] = useState<"edit" | "delete" | "more" | null>(null)
+  const [openedModal, setOpenedModal] = useState<"edit" | "delete" | "more" | "color" | null>(null)
 
   const [selectedDataItem, setSelectedDataItem] = useState<T | null>(null)
 
@@ -62,6 +63,12 @@ const DealsTable = <T extends DealUnion>(props: DealsTableProps<T>) => {
           onClick: () => {
             setSelectedDataItem(row.original)
             setOpenedModal("more")
+          },
+        },
+        color: {
+          onClick: () => {
+            setSelectedDataItem(row.original)
+            setOpenedModal("color")
           },
         },
       }
@@ -101,7 +108,7 @@ const ActiveModalDeal = ({
   setOpenedModal,
 }: {
   openedModal: ModalType
-  setOpenedModal: React.Dispatch<React.SetStateAction<"edit" | "delete" | "more" | null>>
+  setOpenedModal: React.Dispatch<React.SetStateAction<"edit" | "delete" | "more" | "color" | null>>
 }) => (
   <EntityActionModal
     openedModal={openedModal}
@@ -109,6 +116,7 @@ const ActiveModalDeal = ({
       edit: (close) => <EditDealContextMenu close={close} />,
       more: () => <ModalDealInfo />,
       delete: (close) => <DelDealContextMenu close={close} />,
+      color: () => <ColorPickerDeal />,
     }}
     setOpenedModal={setOpenedModal}
   />

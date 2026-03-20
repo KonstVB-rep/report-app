@@ -89,7 +89,7 @@ const RetailFormBody = <T extends FieldValues>({
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
-          className={`grid max-h-[82vh] min-w-full gap-2 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[85dvh] min-w-full gap-2 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
           onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="text-center font-semibold uppercase">{titleForm}</div>
@@ -101,6 +101,7 @@ const RetailFormBody = <T extends FieldValues>({
                 errorMessage={getError("dateRequest")}
                 label="Дата запроса"
                 name={"dateRequest" as Path<T>}
+                required
               />
 
               <InputTextForm
@@ -111,6 +112,15 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"nameDeal" as Path<T>}
                 placeholder="Название..."
                 required
+              />
+
+              <InputTextForm
+                control={form.control}
+                disabled={isPending}
+                errorMessage={getError("inn")}
+                label="ИНН"
+                name={"inn" as Path<T>}
+                placeholder="Номер..."
               />
 
               <InputTextForm
@@ -153,7 +163,9 @@ const RetailFormBody = <T extends FieldValues>({
                 placeholder="Имя контакта"
                 required
               />
+            </div>
 
+            <div className="flex flex-col gap-1">
               <InputPhoneForm
                 control={form.control}
                 disabled={isPending}
@@ -162,9 +174,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"phone" as Path<T>}
                 placeholder="Введите телефон пользователя"
               />
-            </div>
 
-            <div className="flex flex-col gap-1">
               <InputTextForm
                 className="w-full invalid:not-placeholder-shown:border-red-500"
                 control={form.control}
@@ -214,6 +224,15 @@ const RetailFormBody = <T extends FieldValues>({
                 />
               )}
 
+              <DatePickerFormField
+                className="mb-2"
+                control={form.control}
+                disabled={isPending}
+                errorMessage={getError("lastDateConnection")}
+                label="Последний контакт"
+                name={"plannedDateConnection" as Path<T>}
+              />
+
               <InputTextForm
                 className="mb-2"
                 control={form.control}
@@ -229,10 +248,37 @@ const RetailFormBody = <T extends FieldValues>({
 
           <FormField
             control={form.control}
+            name={"commentsLastConnection" as Path<T>}
+            render={({ field }) => (
+              <FormItem className="col-span-full">
+                <FormLabel>Последний комментарий</FormLabel>
+
+                <FormControl>
+                  <Textarea
+                    disabled={isPending}
+                    placeholder="Введите комментарии"
+                    required
+                    {...field}
+                  />
+                </FormControl>
+
+                {getError("commentsLastConnection") && (
+                  <FormMessage className="text-red-500">
+                    {getError("commentsLastConnection")}
+                  </FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name={"comments" as Path<T>}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Примечание / Комментарии</FormLabel>
+                <FormLabel>
+                  Примечание / Комментарии <span className="bg-red-700">*</span>
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     disabled={isPending}

@@ -24,6 +24,7 @@ type ContextMenuTableProps = {
     }
     delete: { onClick: () => void }
     more: { onClick: () => void }
+    color: { onClick: () => void }
   }
   path?: string
 }
@@ -65,6 +66,13 @@ const ContextRowTable = ({
                 <Trash2 size="14" /> Удалить
               </ContextMenuItem>
             </ProtectedByPermissions>
+
+            <ContextMenuItem
+              className="flex cursor-pointer gap-2"
+              onClick={() => openModal?.().color.onClick()}
+            >
+              <FilePenLine size="14" /> Цвет
+            </ContextMenuItem>
           </>
         )}
       </ContextMenuContent>

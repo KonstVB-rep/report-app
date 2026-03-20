@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { StatusRetail } from "@prisma/client"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { endOfDay, startOfDay } from "date-fns"
@@ -34,6 +35,73 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       hidden: true,
       // title не добавляем — нет header
     },
+  },
+  {
+    id: "commentsLastConnection",
+    header: "Последний комментарий",
+    cell: (info: CellContext<RetailResponse, unknown>) => {
+      const value = info.getValue() as ReactNode
+      return value
+    },
+    minSize: 300,
+    enableHiding: true,
+    meta: {
+      title: "Последний комментарий",
+    },
+    accessorFn: (row: RetailResponse) => row.commentsLastConnection,
+  },
+  {
+    id: "lastDateConnection",
+    header: "Последний контакт",
+    cell: (info: CellContext<RetailResponse, unknown>) => {
+      const value = info.getValue()
+
+      if (!value) return "Дата не указана"
+
+      if (value instanceof Date) {
+        return value.toLocaleDateString("ru-RU")
+      }
+
+      if (typeof value === "string") {
+        const parsed = new Date(value)
+        if (!Number.isNaN(parsed.getTime())) {
+          return parsed.toLocaleDateString("ru-RU")
+        }
+        return "Дата не указана"
+      }
+
+      return "Дата не указана"
+    },
+    enableHiding: true,
+    meta: {
+      title: "Плановая дата контакта",
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (row.original.dealStatus === StatusRetail.REJECT) return false
+
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
+
+      if (filterValue) {
+        const { from, to } = filterValue as DateRange
+
+        if (from && to) {
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
+        }
+
+        if (from) {
+          return dateAtStartOfDay >= startOfDay(from)
+        }
+        if (to) {
+          return dateAtStartOfDay <= endOfDay(to)
+        }
+        return false
+      }
+
+      return true
+    },
+    accessorFn: (row: RetailResponse) => row.lastDateConnection,
   },
   {
     id: "dateRequest",

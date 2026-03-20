@@ -91,45 +91,6 @@ export const columnsDataProjectForMarketing: ColumnDef<ProjectResponse, unknown>
       hidden: true,
       title: "Плановая дата контакта",
     },
-    // header: "Плановая дата контакта",
-    // cell: (info: CellContext<ProjectResponse, unknown>) => {
-    //   const date = info.getValue() as Date | null;
-    //   if (date) {
-    //     return date.toLocaleDateString("ru-RU");
-    //   } else {
-    //     return "Дата не указана";
-    //   }
-    // },
-    // enableHiding: true,
-    // filterFn: (row, columnId, filterValue) => {
-    //   if (row.original.dealStatus === StatusProject.REJECT) return false;
-
-    //   const date = row.getValue(columnId) as Date;
-    //   const dateAtStartOfDay = startOfDay(date);
-
-    //   if (filterValue) {
-    //     const { from, to } = filterValue as DateRange;
-
-    //     if (from && to) {
-    //       const toAtEndOfDay = endOfDay(to);
-    //       return (
-    //         dateAtStartOfDay >= startOfDay(from) &&
-    //         dateAtStartOfDay <= toAtEndOfDay
-    //       );
-    //     }
-
-    //     if (from) {
-    //       return dateAtStartOfDay >= startOfDay(from);
-    //     }
-    //     if (to) {
-    //       return dateAtStartOfDay <= endOfDay(to);
-    //     }
-    //     return false;
-    //   }
-
-    //   return true;
-    // },
-    // accessorFn: (row: ProjectResponse) => row.plannedDateConnection,
   },
   {
     id: "nameDeal",

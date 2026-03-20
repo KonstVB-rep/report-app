@@ -32,7 +32,10 @@ const SelectFormField = <T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label}
+            {rest.required && <span className="pl-1 text-red-700">*</span>}
+          </FormLabel>
           <FormControl>
             <SelectComponent
               onValueChange={onValueChange || field.onChange}

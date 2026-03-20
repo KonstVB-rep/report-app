@@ -50,7 +50,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
                     }
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    <span className="text-xs font-semibold first-letter:capitalize">
+                    <span className="text-xs font-semibold first-letter:capitalize text-center">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </span>
                     {header.column.getCanSort() && (

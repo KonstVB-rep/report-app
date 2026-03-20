@@ -36,6 +36,8 @@ const EditRetailForm = ({ close, dealInfo, isInvalidate = false, titleForm }: Pr
       deliveryType: dealInfo.deliveryType as DeliveryRetail,
       dealStatus: dealInfo.dealStatus as StatusRetail,
       direction: dealInfo.direction as DirectionRetail,
+      lastDateConnection: dealInfo.lastDateConnection?.toISOString(),
+      commentsLastConnection: dealInfo.commentsLastConnection ?? "",
       plannedDateConnection: dealInfo.plannedDateConnection?.toISOString(),
       amountCP: formatCurrency(dealInfo.amountCP),
       delta: formatCurrency(dealInfo.delta),
@@ -44,6 +46,7 @@ const EditRetailForm = ({ close, dealInfo, isInvalidate = false, titleForm }: Pr
       managersIds: Array.isArray(dealInfo.managers)
         ? dealInfo.managers.map((manager) => ({ userId: manager.id }))
         : [],
+      inn: dealInfo.inn ?? "",
     },
   })
 

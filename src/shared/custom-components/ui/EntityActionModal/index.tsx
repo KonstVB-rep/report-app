@@ -9,6 +9,7 @@ interface EntityActionModalProps {
     edit?: (close: () => void) => React.ReactNode
     delete?: (close: () => void) => React.ReactNode
     more?: () => React.ReactNode
+    color?: () => React.ReactNode
   }
 }
 
@@ -24,6 +25,7 @@ export const EntityActionModal = ({
       {openedModal === "edit" && renderMap.edit?.(close)}
       {openedModal === "more" && renderMap.more?.()}
       {openedModal === "delete" && renderMap.delete?.(close)}
+      {openedModal === "color" && renderMap.color?.()}
     </Dialog>
   )
 }

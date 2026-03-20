@@ -26,6 +26,7 @@ import {
   type RetailWithoutDateCreateAndUpdate,
   type RetailWithoutId,
 } from "../types"
+import type { DealHighlightType } from "./../types/index"
 
 const requiredFields = ["nameObject", "direction", "comments", "contact", "dealStatus"]
 
@@ -205,18 +206,27 @@ export const getProjectsUser = async (idDealOwner: string): Promise<ProjectRespo
         projectManagers: {
           include: { project: true },
         },
+        highlights: {
+          where: { userId: user.userId },
+        },
       },
     })
 
     return deals.length
-      ? deals.map((deal) => ({
-          ...deal,
-          amountCP: deal.amountCP?.toString() || "",
-          amountWork: deal.amountWork?.toString() || "",
-          amountPurchase: deal.amountPurchase?.toString() || "",
-          delta: deal.delta?.toString() || "",
-          projectManagers: JSON.stringify(deal.projectManagers),
-        }))
+      ? deals.map((deal) => {
+          const appliedColor =
+            deal.highlights && deal.highlights.length > 0 ? deal.highlights[0].color : null
+
+          return {
+            ...deal,
+            amountCP: deal.amountCP?.toString() || "",
+            amountWork: deal.amountWork?.toString() || "",
+            amountPurchase: deal.amountPurchase?.toString() || "",
+            delta: deal.delta?.toString() || "",
+            projectManagers: JSON.stringify(deal.projectManagers),
+            highlights: appliedColor,
+          }
+        })
       : []
   } catch (error) {
     console.error(error)
@@ -303,16 +313,25 @@ export const getRetailsUser = async (idDealOwner: string): Promise<RetailRespons
         retailManagers: {
           include: { retail: true },
         },
+        highlights: {
+          where: { userId: user.userId },
+        },
       },
     })
 
     return deals.length
-      ? deals.map((deal) => ({
-          ...deal,
-          amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-          delta: deal.delta ? deal.delta.toString() : "",
-          retailManagers: JSON.stringify(deal.retailManagers),
-        }))
+      ? deals.map((deal) => {
+          const appliedColor =
+            deal.highlights && deal.highlights.length > 0 ? deal.highlights[0].color : null
+
+          return {
+            ...deal,
+            amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+            delta: deal.delta ? deal.delta.toString() : "",
+            retailManagers: JSON.stringify(deal.retailManagers),
+            highlights: appliedColor,
+          }
+        })
       : []
   } catch (error) {
     console.error(error)
@@ -790,7 +809,16 @@ export const createProject = async (
     if (!data) return handleError("Ошибка: данные не переданы")
     await checkAuthAndDataFill(data)
 
-    const { amountCP, amountPurchase, amountWork, delta, contacts, managersIds, ...dealData } = data
+    const {
+      amountCP,
+      amountPurchase,
+      amountWork,
+      delta,
+      contacts,
+      managersIds,
+      highlights,
+      ...dealData
+    } = data
 
     const idDeal = (dealData.id as string) || cuid()
     const safeAmountCP = new Prisma.Decimal(amountCP as string)
@@ -807,6 +835,7 @@ export const createProject = async (
         delta: safeDelta,
         amountWork: safeAmountWork,
         amountPurchase: safeAmountPurchase,
+        highlights: undefined,
         additionalContacts: {
           create: (contacts as Contact[]).map((contact) => ({
             name: contact.name ?? "",
@@ -949,7 +978,7 @@ export const createRetail = async (
     if (!data) return handleError("Ошибка: данные не переданы")
     await checkAuthAndDataFill(data)
 
-    const { amountCP, delta, contacts, managersIds, ...dealData } = data
+    const { amountCP, delta, contacts, managersIds, highlight, ...dealData } = data
 
     const idDeal = (dealData.id as string) || cuid()
 
@@ -960,6 +989,7 @@ export const createRetail = async (
         userId: data.userId as string,
         amountCP: new Prisma.Decimal((amountCP as string) || "0"),
         delta: new Prisma.Decimal((delta as string) || "0"),
+        highlights: undefined,
         additionalContacts: {
           create: (contacts as Contact[]).map((contact) => ({
             name: contact.name ?? "",
@@ -1882,9 +1912,7 @@ export const reassignDealsToManager = async (
     const allIds = dealIds.map((d) => d.id)
 
     await prisma.$transaction(async (tx) => {
-      /** --- PROJECTS --- **/
       if (projectIds.length > 0) {
-        // Удаляем старых менеджеров и создаем одну запись для нового
         await tx.projectManager.deleteMany({
           where: { dealId: { in: projectIds } },
         })
@@ -1893,14 +1921,12 @@ export const reassignDealsToManager = async (
           skipDuplicates: true,
         })
 
-        // Обновляем владельца в самой сделке
         await tx.project.updateMany({
           where: { id: { in: projectIds } },
           data: { userId: newManagerId },
         })
       }
 
-      /** --- RETAILS --- **/
       if (retailIds.length > 0) {
         await tx.retailManager.deleteMany({
           where: { dealId: { in: retailIds } },
@@ -1916,7 +1942,6 @@ export const reassignDealsToManager = async (
         })
       }
 
-      /** --- FILES --- **/
       if (allIds.length > 0) {
         await tx.dealFile.updateMany({
           where: { dealId: { in: allIds } },
@@ -1934,5 +1959,51 @@ export const reassignDealsToManager = async (
     console.error("[Reassign Error]:", error)
     const msg = error instanceof Error ? error.message : "Ошибка переназначения"
     return { success: false, message: msg, error: true }
+  }
+}
+
+export async function setHighlight(higlightData: DealHighlightType) {
+  try {
+    const user = await requireUser()
+    const { id, type, color, ownerId } = higlightData
+    const userId = user.userId
+
+    console.log(ownerId, "ownerId")
+
+    const selector =
+      type === DEAL_TYPE.PROJECT
+        ? { userId_projectId: { userId, projectId: id } }
+        : { userId_retailId: { userId, retailId: id } }
+
+    const data =
+      type === DEAL_TYPE.PROJECT
+        ? { userId, projectId: id, color: color ?? "" }
+        : { userId, retailId: id, color: color ?? "" }
+
+    if (!color) {
+      if (type === DEAL_TYPE.PROJECT) {
+        await prisma.userHighlight.deleteMany({
+          where: { userId, projectId: id },
+        })
+      } else {
+        await prisma.userHighlight.deleteMany({
+          where: { userId, retailId: id },
+        })
+      }
+    } else {
+      await prisma.userHighlight.upsert({
+        where: selector,
+        update: { color },
+        create: data,
+      })
+    }
+
+    return {
+      type,
+      userId: ownerId,
+    }
+  } catch (error) {
+    console.error("[setHighlight Error]:", error)
+    handleError((error as Error).message)
   }
 }

@@ -35,6 +35,7 @@ model User {
   tasksAssigned   Task[]             @relation("TaskAssigner")
   tasksExecuted   Task[]             @relation("TaskExecutor")
   telegramInfo    TelegramUserInfo[]
+  highlights      UserHighlight[]
   deletedAt       DateTime?
 
   @@index([departmentId])
@@ -69,31 +70,34 @@ model Department {
 }
 
 model Project {
-  id                    String              @id @default(cuid())
-  userId                String?
-  type                  DealType            @default(PROJECT) // <-- Тип сделки
-  dateRequest           DateTime
-  nameDeal              String
-  nameObject            String
-  inn                   String?
-  direction             DirectionProject
-  deliveryType          DeliveryProject?
-  contact               String
-  phone                 String?
-  email                 String?
-  amountCP              Decimal?            @db.Decimal(15, 2)
-  amountPurchase        Decimal?            @db.Decimal(15, 2)
-  amountWork            Decimal?            @db.Decimal(15, 2)
-  delta                 Decimal?            @db.Decimal(15, 2)
-  comments              String              @db.Text
-  dealStatus            StatusProject
-  plannedDateConnection DateTime?
-  resource              String?
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
-  user                  User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
-  projectManagers       ProjectManager[]
-  additionalContacts    AdditionalContact[] @relation("ProjectContacts")
+  id                     String              @id @default(cuid())
+  userId                 String?
+  type                   DealType            @default(PROJECT) // <-- Тип сделки
+  dateRequest            DateTime
+  nameDeal               String
+  nameObject             String
+  inn                    String?
+  direction              DirectionProject
+  deliveryType           DeliveryProject?
+  contact                String
+  phone                  String?
+  email                  String?
+  amountCP               Decimal?            @db.Decimal(15, 2)
+  amountPurchase         Decimal?            @db.Decimal(15, 2)
+  amountWork             Decimal?            @db.Decimal(15, 2)
+  delta                  Decimal?            @db.Decimal(15, 2)
+  comments               String              @db.Text
+  commentsLastConnection String?             @db.Text
+  dealStatus             StatusProject
+  lastDateConnection     DateTime?
+  plannedDateConnection  DateTime?
+  resource               String?
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+  user                   User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  projectManagers        ProjectManager[]
+  additionalContacts     AdditionalContact[] @relation("ProjectContacts")
+  highlights            UserHighlight[]
 
   orderId String? @unique
 
@@ -101,33 +105,55 @@ model Project {
 }
 
 model Retail {
-  id                    String              @id @default(cuid())
-  userId                String?
-  type                  DealType            @default(RETAIL) // <-- Тип сделки
-  dateRequest           DateTime
-  nameDeal              String
-  nameObject            String
-  inn                   String?
-  direction             DirectionRetail
-  deliveryType          DeliveryRetail?
-  contact               String
-  phone                 String?
-  email                 String?
-  amountCP              Decimal?            @db.Decimal(15, 2)
-  delta                 Decimal?            @db.Decimal(15, 2)
-  dealStatus            StatusRetail
-  comments              String              @db.Text
-  plannedDateConnection DateTime?
-  resource              String?
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
-  user                  User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id                     String              @id @default(cuid())
+  userId                 String?
+  type                   DealType            @default(RETAIL) // <-- Тип сделки
+  dateRequest            DateTime
+  nameDeal               String
+  nameObject             String
+  inn                    String?
+  direction              DirectionRetail
+  deliveryType           DeliveryRetail?
+  contact                String
+  phone                  String?
+  email                  String?
+  amountCP               Decimal?            @db.Decimal(15, 2)
+  delta                  Decimal?            @db.Decimal(15, 2)
+  dealStatus             StatusRetail
+  comments               String              @db.Text
+  commentsLastConnection String?              @db.Text
+  lastDateConnection     DateTime?
+  plannedDateConnection  DateTime?
+  resource               String?
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+  user                   User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   retailManagers        RetailManager[]
   additionalContacts    AdditionalContact[] @relation("RetailContacts")
+  highlights            UserHighlight[]
 
   orderId String? @unique
 
   @@index([userId], map: "Retail_userId_fkey")
+}
+
+model UserHighlight {
+  id        String   @id @default(cuid())
+  color     String 
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+
+  retailId  String?
+  retail    Retail?  @relation(fields: [retailId], references: [id], onDelete: Cascade)
+
+
+  @@unique([userId, projectId])
+  @@unique([userId, retailId])
 }
 
 model Order {

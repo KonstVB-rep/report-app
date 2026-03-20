@@ -20,7 +20,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     className={cn(
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
+      className,
     )}
     ref={ref}
     {...props}
@@ -44,7 +44,7 @@ const DialogContent = React.forwardRef<
         "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
         "data-[state=open]:slide-in-from-top-6",
         "data-[state=closed]:slide-out-to-top-6",
-        className
+        className,
       )}
       ref={ref}
       {...props}
@@ -53,8 +53,9 @@ const DialogContent = React.forwardRef<
       {showX && (
         <DialogPrimitive.Close
           className={cn(
-            closeStyle ?? "p-1 rounded right-1 top-1 opacity-70",
-            "absolute transition-all duration-150 active:scale-90 hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            closeStyle ??
+              "p-1 rounded right-1 top-1 :dark:bg-zinc-100 bg-zinc-900",
+            "absolute transition-all duration-150 active:scale-90 hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
           )}
         >
           <X className="h-8 w-8" />
@@ -73,7 +74,7 @@ const DialogHeader = ({
   <div
     className={cn(
       "flex flex-col space-y-1.5 text-center sm:text-left",
-      className
+      className,
     )}
     {...props}
   />
@@ -87,7 +88,7 @@ const DialogFooter = ({
   <div
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className
+      className,
     )}
     {...props}
   />
@@ -101,7 +102,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
-      className
+      className,
     )}
     ref={ref}
     {...props}

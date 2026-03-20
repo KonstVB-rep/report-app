@@ -27,7 +27,10 @@ export const DatePickerFormField = <T extends FieldValues>({
       name={name as Path<T>}
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label}
+            {rest.required && <span className="pl-1 text-red-700">*</span>}
+          </FormLabel>
           <CalendarComponent field={field} {...props} />
           {errorMessage && (
             <FormMessage className="text-red-500">{errorMessage as string}</FormMessage>

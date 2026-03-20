@@ -9,6 +9,7 @@ interface TableComponentProps<T extends DealUnion> {
   table: Table<T>
   hasEditDeleteActions?: boolean
   openFilters: boolean
+  highlight?: string
 }
 
 const TableComponent = <T extends DealUnion>({
@@ -19,15 +20,17 @@ const TableComponent = <T extends DealUnion>({
   const headers = table.getHeaderGroups()[0].headers
 
   const renderVirtualRow = useCallback(
-    ({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
-      <DealTableRow<T>
-        hasEditDeleteActions={hasEditDeleteActions}
-        headers={headers}
-        key={row.id}
-        row={row}
-        virtualRow={virtualRow}
-      />
-    ),
+    ({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => {
+      return (
+        <DealTableRow<T>
+          hasEditDeleteActions={hasEditDeleteActions}
+          headers={headers}
+          key={row.id}
+          row={row}
+          virtualRow={virtualRow}
+        />
+      )
+    },
     [headers, hasEditDeleteActions],
   )
 

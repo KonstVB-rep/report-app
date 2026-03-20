@@ -52,6 +52,12 @@ export const ProjectFormSchema = z
       message: "Выберите статус проекта",
     }),
     comments: z.string(),
+    lastDateConnection: z.preprocess((val) => {
+      if (val instanceof Date) return val.toISOString()
+      if (!val) return ""
+      return val
+    }, z.string()),
+    commentsLastConnection: z.string(),
     plannedDateConnection: z.preprocess((val) => {
       if (val instanceof Date) return val.toISOString()
       if (!val) return null
@@ -152,6 +158,12 @@ export const RetailFormSchema = z
       error: "Выберите статус проекта",
     }),
     comments: z.string(),
+    lastDateConnection: z.preprocess((val) => {
+      if (val instanceof Date) return val.toISOString()
+      if (!val) return ""
+      return val
+    }, z.string()),
+    commentsLastConnection: z.string(),
     plannedDateConnection: z.preprocess((val) => {
       if (val instanceof Date) return val.toISOString()
       if (!val) return ""

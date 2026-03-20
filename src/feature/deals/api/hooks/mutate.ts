@@ -21,19 +21,23 @@ import {
   deleteMultipleDeals,
   type MutationResponse,
   reassignDealsToManager,
+  setHighlight,
   updateProject,
   updateRetail,
 } from "@/entities/deal/api/deal.actions"
 import type { ProjectSchema, RetailSchema } from "@/entities/deal/model/schema"
-import type {
-  ProjectResponse,
-  ReAssignDeal,
-  RetailResponse,
-  RetailWithoutDateCreateAndUpdate,
+import {
+  DEAL_TYPE,
+  type DealHighlightType,
+  type ProjectResponse,
+  type ReAssignDeal,
+  type RetailResponse,
+  type RetailWithoutDateCreateAndUpdate,
 } from "@/entities/deal/types"
 import { defaultProjectValues, defaultRetailValues } from "@/feature/deals/model/defaultvaluesForm"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
+import { queryKeys } from "./query"
 
 export interface AppError {
   success: false
@@ -378,6 +382,38 @@ export const useReassignDeal = () => {
       queryClient.invalidateQueries({
         queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
       })
+    },
+    onError: (error) => {
+      handleErrorSession(error)
+    },
+  })
+}
+
+export const useSetHilight = () => {
+  const { queryClient } = useFormSubmission()
+  return useMutation({
+    mutationFn: async (data: DealHighlightType) => {
+      return await setHighlight(data)
+    },
+    onSuccess: (data) => {
+      if (!data) {
+        return
+      }
+      console.log(data)
+      console.log(queryKeys.projectsUser(data.userId), " queryKeys.projectsUser(data.userId)")
+      if (data.type === DEAL_TYPE.PROJECT) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.projectsUser(data.userId),
+        })
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.contractsUser(data.userId),
+        })
+      }
+      if (data.type === DEAL_TYPE.RETAIL) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.retailsUser(data.userId),
+        })
+      }
     },
     onError: (error) => {
       handleErrorSession(error)
