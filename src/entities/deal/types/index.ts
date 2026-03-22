@@ -192,9 +192,12 @@ export type DealsList =
     }
   | { deals: []; totalDealsCount: number }
 
+export type ProjectOrRetailType = typeof DEAL_TYPE.PROJECT | typeof DEAL_TYPE.RETAIL
+
 export type DealHighlightType = {
   id: string
-  type: typeof DEAL_TYPE.PROJECT | typeof DEAL_TYPE.RETAIL
+  type: ProjectOrRetailType
   color: string | null
-  ownerId: string
+  userId: string
+  all?: boolean
 }

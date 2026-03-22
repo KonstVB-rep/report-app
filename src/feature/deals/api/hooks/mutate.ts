@@ -390,7 +390,7 @@ export const useReassignDeal = () => {
 }
 
 export const useSetHilight = () => {
-  const { queryClient } = useFormSubmission()
+  const { queryClient, authUser } = useFormSubmission()
   return useMutation({
     mutationFn: async (data: DealHighlightType) => {
       return await setHighlight(data)
@@ -399,8 +399,8 @@ export const useSetHilight = () => {
       if (!data) {
         return
       }
-      console.log(data)
-      console.log(queryKeys.projectsUser(data.userId), " queryKeys.projectsUser(data.userId)")
+
+      console.log(queryKeys.projectsUser(data.userId), "data.userId")
       if (data.type === DEAL_TYPE.PROJECT) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.projectsUser(data.userId),
@@ -414,6 +414,10 @@ export const useSetHilight = () => {
           queryKey: queryKeys.retailsUser(data.userId),
         })
       }
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.colorsHiLightList(authUser?.id || ""),
+      })
     },
     onError: (error) => {
       handleErrorSession(error)

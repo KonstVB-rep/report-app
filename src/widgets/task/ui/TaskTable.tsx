@@ -51,7 +51,7 @@ interface TaskTableProps<TData extends TaskWithUserInfo> {
 const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const [openedModal, setOpenedModal] = useState<"edit" | "delete" | "more" | null>(null)
+  const [openedModal, setOpenedModal] = useState<ModalType>(null)
 
   const [selectedDataItem, setSelectedDataItem] = useState<T | null>(null)
 
@@ -189,7 +189,7 @@ const ActiveModalTask = ({
   setOpenedModal,
 }: {
   openedModal: ModalType
-  setOpenedModal: React.Dispatch<React.SetStateAction<"edit" | "delete" | "more" | null>>
+  setOpenedModal: React.Dispatch<React.SetStateAction<ModalType>>
 }) => {
   return (
     <EntityActionModal

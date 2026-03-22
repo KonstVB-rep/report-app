@@ -6,6 +6,7 @@ import {
   getAllProjectsByDepartment,
   getAllRetailsByDepartment,
   getDealsByDateRange,
+  getHilightList,
   getProjectById,
   getProjectsUser,
   getRetailById,
@@ -40,6 +41,7 @@ export const queryKeys = {
     ["dealsByRange", userId, range, departmentId] as const,
   additionalContacts: (dealId: string) => ["additionalContacts", dealId] as const,
   allDealsDepartment: (departmentId: number) => ["all-deals-department", departmentId] as const,
+  colorsHiLightList: (userId: string) => ["hilightlist", userId] as const,
 }
 
 export const useGetProjectById = <T extends DealProject>(
@@ -258,5 +260,17 @@ export const useGetAllDealsDepartment = <T extends DealsList>(departmentId: numb
     meta: {
       errorMessage: ERROR_TEXT,
     },
+  })
+}
+
+export const useGetHilightList = () => {
+  const { authUser } = useFormSubmission()
+  const isEnabled = !!authUser
+  return useQuery({
+    queryKey: queryKeys.colorsHiLightList(authUser?.id || ""),
+    queryFn: async () => {
+      return await getHilightList()
+    },
+    enabled: isEnabled,
   })
 }

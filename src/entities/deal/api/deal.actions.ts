@@ -1965,10 +1965,36 @@ export const reassignDealsToManager = async (
 export async function setHighlight(higlightData: DealHighlightType) {
   try {
     const user = await requireUser()
-    const { id, type, color, ownerId } = higlightData
+    const { id, type, color, userId: ownerDealId, all } = higlightData
     const userId = user.userId
 
-    console.log(ownerId, "ownerId")
+    console.log("1", id, type, color, ownerDealId, all)
+
+    if (all) {
+      const selector =
+        type === DEAL_TYPE.PROJECT
+          ? {
+              projectId: {
+                not: null,
+              },
+            }
+          : {
+              retailId: {
+                not: null,
+              },
+            }
+
+      await prisma.userHighlight.deleteMany({
+        where: selector,
+      })
+
+      return {
+        type,
+        userId: ownerDealId,
+      }
+    }
+
+    console.log("2", id, type, color, ownerDealId, all)
 
     const selector =
       type === DEAL_TYPE.PROJECT
@@ -2000,10 +2026,25 @@ export async function setHighlight(higlightData: DealHighlightType) {
 
     return {
       type,
-      userId: ownerId,
+      userId: ownerDealId,
     }
   } catch (error) {
     console.error("[setHighlight Error]:", error)
     handleError((error as Error).message)
+  }
+}
+
+export const getHilightList = async () => {
+  try {
+    const { userId } = await requireUser()
+
+    const colors = await prisma.userHighlight.findMany({
+      where: { userId },
+    })
+
+    return colors
+  } catch (error) {
+    handleError((error as Error).message)
+    return []
   }
 }

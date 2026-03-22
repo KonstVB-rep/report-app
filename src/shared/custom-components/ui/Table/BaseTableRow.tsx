@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { flexRender, type Header, type Row } from "@tanstack/react-table"
-import type { DealUnion } from "@/entities/deal/types"
 import { TableRow } from "@/shared/components/ui/table"
 import ContextRowTable from "../ContextRowTable"
 import RowInfoDialog from "./RowInfoDialog"
@@ -8,6 +7,7 @@ import TableCellComponent from "./TableCellCompoment"
 
 interface BaseEntity {
   id: string
+  highlights?: string | null
 }
 
 type BaseTableRowProps<T extends BaseEntity> = {
@@ -21,7 +21,7 @@ type BaseTableRowProps<T extends BaseEntity> = {
     }
     delete: { onClick: () => void }
     more: { onClick: () => void }
-    color: { onClick: () => void }
+    color?: { onClick: () => void }
   }
   renderAdditionalInfo?: (row: Row<T>) => React.ReactNode
   headers?: Header<T, unknown>[]
@@ -29,7 +29,7 @@ type BaseTableRowProps<T extends BaseEntity> = {
   highlight?: string
 }
 
-const BaseTableRow = <T extends DealUnion & { id: string }>({
+const BaseTableRow = <T extends BaseEntity>({
   row,
   virtualRow,
   className,

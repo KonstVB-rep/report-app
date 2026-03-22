@@ -35,6 +35,7 @@ const extractFormData = (formData: FormData, permissions: string[]): UserFormDat
   department: formData.get("department") as DepartmentEnum,
   role: formData.get("role") as Role,
   permissions: permissions as PermissionEnum[],
+  isBlocked: formData.get("isBlocked") === "on" || formData.get("isBlocked") === "true",
 })
 
 export const checkFormData = async (

@@ -6,7 +6,6 @@ import { useParams } from "next/navigation"
 import type { DealUnion } from "@/entities/deal/types"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
-import ColorPickerDeal from "@/feature/deals/ui/Modals/ColorPickerDeal"
 import { EntityActionModal } from "@/shared/custom-components/ui/EntityActionModal"
 import {
   type TableContextType,
@@ -27,6 +26,8 @@ const DelDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/DelDe
 const ModalDealInfo = dynamic(() => import("@/feature/deals/ui/Modals/ModalDealInfo"), {
   ssr: false,
 })
+
+const ColorPickerDeal = dynamic(() => import("@/feature/deals/ui/Modals/ColorPickerDeal"))
 
 interface DealsTableProps<T extends DealUnion> {
   columns: ColumnDef<T, unknown>[]

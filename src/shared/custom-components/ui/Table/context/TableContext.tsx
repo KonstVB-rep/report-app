@@ -8,7 +8,7 @@ export type TableContextType<T> = {
     }
     delete: { onClick: () => void }
     more: { onClick: () => void }
-    color: {
+    color?: {
       onClick: () => void
     }
   }
