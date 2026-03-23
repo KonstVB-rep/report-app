@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { usePermissions } from "@/app/provider/permission-provider"
 import useStoreUser, { selectAuthUser, selectIsAuth } from "@/entities/user/store/useStoreUser"
 
 const isValidAppPath = (path: string | null): path is string => {
@@ -15,15 +16,15 @@ export const useAuthRedirect = () => {
   const authUser = useStoreUser(selectAuthUser)
   const router = useRouter()
   const hasRedirectedRef = useRef(false)
+  const { isLoading } = usePermissions()
 
   useEffect(() => {
+    if (isLoading) return
     if (isAuth && authUser && !hasRedirectedRef.current) {
       const lastAppPath = typeof window !== "undefined" ? localStorage.getItem("lastAppPath") : null
       const redirectUrl = isValidAppPath(lastAppPath) ? lastAppPath : "/dashboard"
 
       hasRedirectedRef.current = true
-      router.replace(redirectUrl)
-
       try {
         router.replace(redirectUrl)
       } catch (error) {
@@ -35,5 +36,5 @@ export const useAuthRedirect = () => {
     if (!isAuth) {
       hasRedirectedRef.current = false
     }
-  }, [isAuth, authUser, router])
+  }, [isAuth, authUser, router, isLoading])
 }

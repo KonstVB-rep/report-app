@@ -8,6 +8,7 @@ import TableCellComponent from "./TableCellCompoment"
 interface BaseEntity {
   id: string
   highlights?: string | null
+  dealStatus?: string | null
 }
 
 type BaseTableRowProps<T extends BaseEntity> = {
@@ -43,6 +44,7 @@ const BaseTableRow = <T extends BaseEntity>({
 
   return (
     <ContextRowTable
+      dealStatus={row.original.dealStatus}
       hasEditDeleteActions={hasEditDeleteActions}
       openModal={getContextMenuActions ? () => getContextMenuActions(row) : undefined}
       path={path}

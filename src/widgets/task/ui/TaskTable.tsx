@@ -57,7 +57,6 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
     (row: Row<T>) => {
-      console.log(row, "Row")
       return {
         edit: {
           onClick: () => {

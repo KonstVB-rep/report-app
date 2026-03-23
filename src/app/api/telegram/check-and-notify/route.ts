@@ -400,7 +400,6 @@ async function sendDailyNotifications(
       await sendNotificationsToTelegram([notification])
 
       logs.push({ type, chatId, itemName: item.nameDeal, status: "sent" })
-      console.log(`✅ [${type}] Отправлено: ${item.nameDeal} (Chat: ${chatId})`)
     } catch (error: unknown) {
       // 4. Откат (Rollback) - Если не ушло, удаляем кеш, чтобы попробовать в след. раз
       await deleteCache(itemCacheKey)
@@ -578,7 +577,6 @@ export async function GET() {
       }
     }
 
-    console.log("📊 Логи:", JSON.stringify(logs, null, 2))
     return NextResponse.json({ message: "Проверка завершена", logs })
   } catch (error: unknown) {
     const reason = error instanceof Error ? error.message : "unknown error"

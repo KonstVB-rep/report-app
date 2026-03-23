@@ -400,7 +400,6 @@ export const useSetHilight = () => {
         return
       }
 
-      console.log(queryKeys.projectsUser(data.userId), "data.userId")
       if (data.type === DEAL_TYPE.PROJECT) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.projectsUser(data.userId),

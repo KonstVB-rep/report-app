@@ -9,11 +9,13 @@ export async function getUserPermissions() {
       return { permissions: [], role: null, departmentId: null }
     }
 
-    return {
+    const data = {
       permissions: user.permissions || [],
       role: user.role || null,
-      departmentId: user.departmentId ?? null, // Исправлено: depatmentId → departmentId
+      departmentId: user.departmentId ?? null,
     }
+
+    return data
   } catch (error) {
     console.error("Error getting permissions:", error)
     return { permissions: [], role: null, departmentId: null }

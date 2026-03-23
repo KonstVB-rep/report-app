@@ -1566,7 +1566,7 @@ export const deleteDeal = async (dealId: string, type: DealType) => {
 
     if (!deal) return { success: false, error: "Сделка не найдена", code: 404 }
 
-    await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT])
+    await checkUserPermissionByRole(user, [PermissionEnum.DEAL_DELETE])
 
     const contactIds = deal.additionalContacts.map((c) => c.id)
     let managers: { dealId: string; userId: string }[] = []
@@ -1968,8 +1968,6 @@ export async function setHighlight(higlightData: DealHighlightType) {
     const { id, type, color, userId: ownerDealId, all } = higlightData
     const userId = user.userId
 
-    console.log("1", id, type, color, ownerDealId, all)
-
     if (all) {
       const selector =
         type === DEAL_TYPE.PROJECT
@@ -1993,8 +1991,6 @@ export async function setHighlight(higlightData: DealHighlightType) {
         userId: ownerDealId,
       }
     }
-
-    console.log("2", id, type, color, ownerDealId, all)
 
     const selector =
       type === DEAL_TYPE.PROJECT

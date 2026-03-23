@@ -21,8 +21,6 @@ const Filters = ({ table }: { table: Table<DealUnion> }) => {
 
   const { columnFilters } = table.getState()
 
-  console.log(columnFilters, "columnFilters")
-
   const dateRequestValue = columnFilters.find((f) => f.id === "dateRequest")?.value as
     | DateRange
     | undefined

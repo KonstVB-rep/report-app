@@ -15,7 +15,6 @@ type EditTaskFormProps = {
 }
 
 const EditTaskForm = ({ close, data }: EditTaskFormProps) => {
-  console.log(data, "data")
   const form = useForm<TaskSchemaUpdate>({
     resolver: zodResolver(TaskFormSchemaUpdate) as Resolver<TaskSchemaUpdate>,
     defaultValues: {

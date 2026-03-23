@@ -26,7 +26,7 @@ const DelButtonDeal = ({
   return (
     <>
       {withCheckPermissions ? (
-        <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
+        <ProtectedByPermissions permission={PermissionEnum.DEAL_DELETE}>
           <DelButton clearData={clearData} id={id} isTextButton={isTextButton} type={type} />
         </ProtectedByPermissions>
       ) : (

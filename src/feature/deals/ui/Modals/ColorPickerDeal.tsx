@@ -104,6 +104,7 @@ const ColorsListUsed = ({ color, setColor }: ColorsListUsedType) => {
     const realType = item.projectId ? DEAL_TYPE.PROJECT : DEAL_TYPE.RETAIL
 
     if (!id || !userId) return
+    setColor("")
     mutate({
       id,
       type: realType,

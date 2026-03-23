@@ -359,6 +359,7 @@ enum PermissionEnum {
   USER_MANAGEMENT
   DEAL_MANAGEMENT
   TASK_MANAGEMENT
+  DEAL_DELETE
 }
 
 enum DirectionProject {

@@ -4,6 +4,7 @@ import { memo } from "react"
 import { PermissionEnum } from "@prisma/client"
 import { FilePenLine, FileText, Trash2 } from "lucide-react"
 import dynamic from "next/dynamic"
+import { ACTUAL_STATUS_DEAL } from "@/entities/deal/lib/constants"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -27,6 +28,7 @@ type ContextMenuTableProps = {
     color?: { onClick: () => void }
   }
   path?: string
+  dealStatus?: string | null
 }
 
 const ContextRowTable = ({
@@ -34,6 +36,7 @@ const ContextRowTable = ({
   hasEditDeleteActions = true,
   openModal,
   path = "",
+  dealStatus = "",
 }: ContextMenuTableProps) => {
   return (
     <ContextMenu>
@@ -58,7 +61,7 @@ const ContextRowTable = ({
               <FilePenLine size="14" /> Редактировать
             </ContextMenuItem>
 
-            <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
+            <ProtectedByPermissions permission={PermissionEnum.DEAL_DELETE}>
               <ContextMenuItem
                 className="flex cursor-pointer gap-2"
                 onClick={() => openModal?.().delete.onClick()}
@@ -67,7 +70,7 @@ const ContextRowTable = ({
               </ContextMenuItem>
             </ProtectedByPermissions>
 
-            {openModal?.().color && (
+            {dealStatus === ACTUAL_STATUS_DEAL && (
               <ContextMenuItem
                 className="flex cursor-pointer gap-2"
                 onClick={() => {

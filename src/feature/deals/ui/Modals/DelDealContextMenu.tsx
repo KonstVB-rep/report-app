@@ -12,7 +12,7 @@ const DelDealContextMenu = ({ close }: { close: Dispatch<SetStateAction<void>> }
 
   return (
     <div className="hidden">
-      <ProtectedByPermissions permission={PermissionEnum.DEAL_MANAGEMENT}>
+      <ProtectedByPermissions permission={PermissionEnum.DEAL_DELETE}>
         <ModalContent className="sm:max-w-[400px]" title="Удалить проект">
           <DelDealForm close={close} id={selectedDataItem.id} type={selectedDataItem.type} />
         </ModalContent>

@@ -132,17 +132,6 @@ const addUserToDb = async <T extends UserDataBase>(
     isBlocked: true,
   }
 
-  console.log({
-    email: dataForm.email?.toLowerCase().trim(),
-    phone: dataForm.phone?.toLowerCase().trim(),
-    role: dataForm.role as Role,
-    ...(departmentId && { departmentId }),
-    username: dataForm.username?.toLowerCase().trim(),
-    position: dataForm.position?.toLowerCase().trim(),
-    ...(hashedPassword && { user_password: hashedPassword }),
-    isBlocked: dataForm.isBlocked,
-  })
-
   if (action === "create" && hashedPassword) {
     return await prisma.user.create({
       data: {

@@ -35,8 +35,6 @@ const UserTasksPage = () => {
     departmentId: string
   }>()
 
-  // const hasAccess = hasAccessToData(userId, PermissionEnum.TASK_MANAGEMENT)
-
   const { data } = useGetUserTasks({ userId })
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])

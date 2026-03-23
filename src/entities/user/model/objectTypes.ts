@@ -11,6 +11,7 @@ export const PermissionUser = {
   VIEW_UNION_REPORT: "Просмотр сводных отчетов",
   DOWNLOAD_REPORTS: "Скачивание отчетов",
   USER_MANAGEMENT: "Управление пользователями",
-  DEAL_MANAGEMENT: "Редактирование/удаление сделок",
+  DEAL_MANAGEMENT: "Редактирование сделок",
   TASK_MANAGEMENT: "Редактирование/удаление задач",
+  DEAL_DELETE: "Удаление сделок",
 } as const

@@ -10,7 +10,12 @@ type IntoDealItemProps = {
 }
 
 const IntoDealItem = ({ title, children, className = "" }: IntoDealItemProps) => (
-  <div className={cn("overflow-hidden rounded-md border bg-zinc-200 dark:bg-zinc-800", className)}>
+  <div
+    className={cn(
+      "overflow-hidden rounded-md border bg-zinc-200 dark:bg-zinc-800 w-full",
+      className,
+    )}
+  >
     <p className="break-normal first-letter:capitalize bg-stone-100 dark:bg-black/40 px-4 py-2">
       {title}
     </p>

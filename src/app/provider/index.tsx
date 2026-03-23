@@ -5,7 +5,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import dynamic from "next/dynamic"
 import { Toaster } from "sonner"
 import { LastPathProvider } from "./last-path-provider"
-import { PermissionProvider } from "./permission-provider"
 import QueryProvider from "./query-provider"
 import { ThemeProvider } from "./theme-provider"
 
@@ -19,26 +18,22 @@ const ReactQueryDevtools = dynamic(
 const AppProvider = ({ children }: PropsWithChildren) => {
   return (
     <Suspense fallback={null}>
-      <PermissionProvider>
-        <LastPathProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            disableTransitionOnChange
-            enableSystem
-            storageKey="theme"
-          >
-            <QueryProvider>
-              {process.env.NODE_ENV === "development" && (
-                <ReactQueryDevtools initialIsOpen={false} />
-              )}
-              <Toaster position="top-center" />
-              <SpeedInsights />
-              {children}
-            </QueryProvider>
-          </ThemeProvider>
-        </LastPathProvider>
-      </PermissionProvider>
+      <LastPathProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          disableTransitionOnChange
+          enableSystem
+          storageKey="theme"
+        >
+          <QueryProvider>
+            {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
+            <Toaster position="top-center" />
+            <SpeedInsights />
+            {children}
+          </QueryProvider>
+        </ThemeProvider>
+      </LastPathProvider>
     </Suspense>
   )
 }
