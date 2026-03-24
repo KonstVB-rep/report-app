@@ -18,6 +18,7 @@ import {
   createProject,
   createRetail,
   deleteDeal,
+  deleteHighlight,
   deleteMultipleDeals,
   type MutationResponse,
   reassignDealsToManager,
@@ -400,6 +401,41 @@ export const useSetHilight = () => {
   return useMutation({
     mutationFn: async (data: DealHighlightType) => {
       return await setHighlight(data)
+    },
+    onSuccess: (data) => {
+      if (!data) {
+        return
+      }
+
+      if (data.type === DEAL_TYPE.PROJECT) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.projectsUser(data.userId),
+        })
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.contractsUser(data.userId),
+        })
+      }
+      if (data.type === DEAL_TYPE.RETAIL) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.retailsUser(data.userId),
+        })
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.colorsHiLightList(authUser?.id || ""),
+      })
+    },
+    onError: (error) => {
+      handleErrorSession(error)
+    },
+  })
+}
+
+export const useDeleteHilight = () => {
+  const { queryClient, authUser } = useFormSubmission()
+  return useMutation({
+    mutationFn: async (data: DealHighlightType) => {
+      return await deleteHighlight(data)
     },
     onSuccess: (data) => {
       if (!data) {

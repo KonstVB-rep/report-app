@@ -1,20 +1,24 @@
-import { type Dispatch, type SetStateAction, useMemo, useState } from "react"
-import type { UserHighlight } from "@prisma/client"
-import debounce from "debounce"
-import { useParams } from "next/navigation"
 import { ACTUAL_STATUS_DEAL } from "@/entities/deal/lib/constants"
 import { DEAL_TYPE, type DealUnion } from "@/entities/deal/types"
 import { Button } from "@/shared/components/ui/button"
 import { Input } from "@/shared/components/ui/input"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import ModalContent from "@/shared/custom-components/ui/ModalContent"
 import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
-import { useSetHilight } from "../../api/hooks/mutate"
+import type { UserHighlight } from "@prisma/client"
+import debounce from "debounce"
+import { useParams } from "next/navigation"
+import { type Dispatch, type SetStateAction, useMemo, useState } from "react"
+import { useDeleteHilight, useSetHilight } from "../../api/hooks/mutate"
 import { useGetHilightList } from "../../api/hooks/query"
 
 const ColorPickerDeal = () => {
   const { selectedDataItem } = useTableContext<DealUnion>()
   const [color, setColor] = useState(selectedDataItem?.highlights || "")
   const { mutate } = useSetHilight()
+  const { data: colors, refetch } = useGetHilightList()
+
+  const { mutate: deleteAllColors } = useDeleteHilight()
 
   const debouncedMutate = useMemo(
     () =>
@@ -26,7 +30,7 @@ const ColorPickerDeal = () => {
           color: colorValue,
           userId: selectedDataItem.userId,
         })
-      }, 500),
+      }, 200),
     [mutate, selectedDataItem],
   )
 
@@ -41,13 +45,14 @@ const ColorPickerDeal = () => {
   const deleteColors = () => {
     setColor("")
     if (!selectedDataItem.userId) return
-    mutate({
+    deleteAllColors({
       id: selectedDataItem.id,
       type: selectedDataItem.type,
       color: null,
       userId: selectedDataItem.userId,
       all: true,
     })
+    refetch()
   }
 
   return (
@@ -61,9 +66,11 @@ const ColorPickerDeal = () => {
           value={color}
         />
         <ColorsListUsed color={color} setColor={setColor} />
-        <Button onClick={deleteColors} variant="outline">
-          Удалить все
-        </Button>
+        {colors && colors.length > 0 && (
+          <Button onClick={deleteColors} variant="outline">
+            Удалить все
+          </Button>
+        )}
       </div>
     </ModalContent>
   )
@@ -77,27 +84,25 @@ type ColorsListUsedType = {
 }
 
 const ColorsListUsed = ({ color, setColor }: ColorsListUsedType) => {
-  const { data: colors } = useGetHilightList()
+  const { data: colors, isLoading, refetch } = useGetHilightList()
+  const { selectedDataItem } = useTableContext<DealUnion>()
   const { userId } = useParams<{ userId: string }>()
 
   const { mutate } = useSetHilight()
+  const { mutate: deleteCurrentColor } = useDeleteHilight()
 
-  const debouncedMutate = useMemo(
-    () =>
-      debounce((item: UserHighlight) => {
-        const id = item.projectId ?? item.retailId
-        const realType = item.projectId ? DEAL_TYPE.PROJECT : DEAL_TYPE.RETAIL
+  const uniqueColorObjects = useMemo(() => {
+    if (!colors) return []
+    const map = new Map<string, (typeof colors)[0]>()
 
-        if (!id || !userId) return
-        mutate({
-          id,
-          type: realType,
-          color: item.color,
-          userId: userId,
-        })
-      }, 500),
-    [mutate, userId],
-  )
+    colors.forEach((item) => {
+      if (!map.has(item.color)) {
+        map.set(item.color, item)
+      }
+    })
+
+    return Array.from(map.values())
+  }, [colors])
 
   const deleteColor = (item: UserHighlight) => {
     const id = item.projectId ?? item.retailId
@@ -105,41 +110,52 @@ const ColorsListUsed = ({ color, setColor }: ColorsListUsedType) => {
 
     if (!id || !userId) return
     setColor("")
-    mutate({
+    deleteCurrentColor({
       id,
       type: realType,
-      color: null,
+      color: item.color,
       userId: userId,
     })
+    refetch()
   }
 
-  if (!colors || !color.length) {
+  if (color && colors?.length === 0) {
     return null
   }
   const handleClick = (item: UserHighlight) => {
-    if (!item.color) return
-    if (color === item.color) return
+    if (!item.color || !selectedDataItem || !selectedDataItem.userId) return
+
+    mutate({
+      id: selectedDataItem.id,
+      type: selectedDataItem.type,
+      color: item.color,
+      userId: userId,
+    })
+
     setColor(item.color)
-    debouncedMutate(item)
   }
 
   return (
     <div className="pt-2 flex overflow-x-auto gap-2">
-      {colors?.map((item) => (
-        <div className="grid items-center justify-start gap-2" key={item.id}>
-          <div className="grid gap-2 justify-items-center items-center">
-            <Button
-              className="w-8 h-8 p-2 rounded-full text-muted"
-              onClick={() => handleClick(item)}
-              style={{ backgroundColor: item.color }}
-            ></Button>
-            <Button onClick={() => deleteColor(item)} variant="outline">
-              Удалить
-            </Button>
+      {isLoading ? (
+        <LoaderCircle className="h-20 bg-muted rounded-md w-full px-4" />
+      ) : (
+        uniqueColorObjects?.map((item) => (
+          <div className="grid items-center justify-start gap-2" key={item.id}>
+            <div className="grid gap-2 justify-items-center items-center">
+              <Button
+                className="w-8 h-8 p-2 rounded-full text-muted"
+                onClick={() => handleClick(item)}
+                style={{ backgroundColor: item.color }}
+              ></Button>
+              <Button onClick={() => deleteColor(item)} variant="outline">
+                Удалить
+              </Button>
+            </div>
+            <div className="text-center text-zinc-500">{item.color}</div>
           </div>
-          <div className="text-center text-zinc-500">{item.color}</div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   )
 }

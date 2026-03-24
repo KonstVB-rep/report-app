@@ -1,12 +1,12 @@
 "use server"
 
-import { type DealFile, DealType, PermissionEnum, Prisma, StatusContract } from "@prisma/client"
-import cuid from "cuid"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import { validateRequiredFields } from "@/shared/lib/utils"
+import { type DealFile, DealType, PermissionEnum, Prisma, StatusContract } from "@prisma/client"
+import cuid from "cuid"
 import {
   type Contact,
   type DateRange,
@@ -26,7 +26,7 @@ import {
   type RetailWithoutDateCreateAndUpdate,
   type RetailWithoutId,
 } from "../types"
-import type { DealHighlightType } from "./../types/index"
+import type { DealHighlightdeletedType, DealHighlightType } from "./../types/index"
 
 const requiredFields = ["nameObject", "direction", "comments", "contact", "dealStatus"]
 
@@ -1965,32 +1965,10 @@ export const reassignDealsToManager = async (
 export async function setHighlight(higlightData: DealHighlightType) {
   try {
     const user = await requireUser()
-    const { id, type, color, userId: ownerDealId, all } = higlightData
+    const { id, type, color, userId: ownerDealId } = higlightData
     const userId = user.userId
 
-    if (all) {
-      const selector =
-        type === DEAL_TYPE.PROJECT
-          ? {
-              projectId: {
-                not: null,
-              },
-            }
-          : {
-              retailId: {
-                not: null,
-              },
-            }
-
-      await prisma.userHighlight.deleteMany({
-        where: selector,
-      })
-
-      return {
-        type,
-        userId: ownerDealId,
-      }
-    }
+    if (!color) return
 
     const selector =
       type === DEAL_TYPE.PROJECT
@@ -1999,34 +1977,18 @@ export async function setHighlight(higlightData: DealHighlightType) {
 
     const data =
       type === DEAL_TYPE.PROJECT
-        ? { userId, projectId: id, color: color ?? "" }
-        : { userId, retailId: id, color: color ?? "" }
+        ? { userId, projectId: id, color }
+        : { userId, retailId: id, color }
 
-    if (!color) {
-      if (type === DEAL_TYPE.PROJECT) {
-        await prisma.userHighlight.deleteMany({
-          where: { userId, projectId: id },
-        })
-      } else {
-        await prisma.userHighlight.deleteMany({
-          where: { userId, retailId: id },
-        })
-      }
-    } else {
-      await prisma.userHighlight.upsert({
-        where: selector,
-        update: { color },
-        create: data,
-      })
-    }
+    await prisma.userHighlight.upsert({
+      where: selector,
+      update: { color },
+      create: data,
+    })
 
-    return {
-      type,
-      userId: ownerDealId,
-    }
+    return { type, userId: ownerDealId }
   } catch (error) {
     console.error("[setHighlight Error]:", error)
-    handleError((error as Error).message)
   }
 }
 
@@ -2042,5 +2004,48 @@ export const getHilightList = async () => {
   } catch (error) {
     handleError((error as Error).message)
     return []
+  }
+}
+
+export const deleteHighlight = async (higlightData: DealHighlightdeletedType) => {
+  try {
+    const user = await requireUser()
+    const { type, color, userId: ownerDealId, all } = higlightData
+    const userId = user.userId
+
+    //     if (id && !all && !color) {
+    //   await prisma.userHighlight.deleteMany({
+    //     where: type === DEAL_TYPE.PROJECT
+    //         ? { userId, projectId: id }
+    //         : { userId, retailId: id },
+    //   });
+    //   return { type, userId: ownerDealId };
+    // }
+
+    const typeDeal = type === DEAL_TYPE.PROJECT ? "projectId" : "retailId"
+
+    if (all) {
+      await prisma.userHighlight.deleteMany({
+        where: {
+          userId,
+          [typeDeal]: { not: null },
+        },
+      })
+      return { type, userId: ownerDealId }
+    }
+
+    if (color) {
+      await prisma.userHighlight.deleteMany({
+        where: {
+          userId,
+          color,
+          [typeDeal]: { not: null },
+        },
+      })
+      return { type, userId: ownerDealId }
+    }
+  } catch (error) {
+    console.error("[deleteHighlight Error]:", error)
+    handleError((error as Error).message)
   }
 }

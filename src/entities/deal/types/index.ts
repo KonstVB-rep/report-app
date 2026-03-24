@@ -201,3 +201,10 @@ export type DealHighlightType = {
   userId: string
   all?: boolean
 }
+
+export type DealHighlightdeletedType = {
+  type: ProjectOrRetailType
+  color: string | null
+  userId: string
+  all?: boolean
+}
