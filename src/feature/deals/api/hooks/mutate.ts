@@ -130,6 +130,9 @@ export const useMutationUpdateProject = (
         phone: data.phone || "",
         deliveryType: data.deliveryType as DeliveryProject,
         dealStatus: data.dealStatus as StatusProject,
+        lastDateConnection: data.lastDateConnection
+          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
+          : null,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,
@@ -204,6 +207,9 @@ export const useMutationUpdateRetail = (
         phone: data.phone || "",
         deliveryType: data.deliveryType as DeliveryRetail,
         dealStatus: data.dealStatus as StatusRetail,
+        lastDateConnection: data.lastDateConnection
+          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
+          : null,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,

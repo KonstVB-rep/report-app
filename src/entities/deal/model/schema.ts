@@ -23,13 +23,16 @@ export const ProjectFormSchema = z
     nameObject: z.string({
       error: "Введите название объекта",
     }),
-    inn: z
-      .string()
-      .regex(/^\d{10,12}$/, "ИНН должен содержать 10 или 12 цифр")
-      .refine((val) => val.length === 10 || val.length === 12, {
-        message: "ИНН должен содержать 10 (юрлицо) или 12 (физлицо) цифр",
-      })
-      .optional(),
+    inn: z.preprocess(
+      (val) => (val === "" ? null : val),
+      z
+        .string()
+        .regex(/^\d{10,12}$/, "ИНН должен содержать только цифры")
+        .refine((val) => val.length === 10 || val.length === 12, {
+          message: "ИНН должен содержать 10 (юрлицо) или 12 (физлицо) цифр",
+        })
+        .nullable(),
+    ),
     direction: z.enum(Object.values(DirectionProject).filter(Boolean) as [string, ...string[]], {
       error: "Выберите направление",
     }),
@@ -131,13 +134,16 @@ export const RetailFormSchema = z
         error: "Название объекта должно быть строкой",
       })
       .min(1, "Название объекта не может быть пустым"),
-    inn: z
-      .string()
-      .regex(/^\d{10,12}$/, "ИНН должен содержать 10 или 12 цифр")
-      .refine((val) => val.length === 10 || val.length === 12, {
-        message: "ИНН должен содержать 10 (юрлицо) или 12 (физлицо) цифр",
-      })
-      .optional(),
+    inn: z.preprocess(
+      (val) => (val === "" ? null : val),
+      z
+        .string()
+        .regex(/^\d{10,12}$/, "ИНН должен содержать только цифры")
+        .refine((val) => val.length === 10 || val.length === 12, {
+          message: "ИНН должен содержать 10 (юрлицо) или 12 (физлицо) цифр",
+        })
+        .nullable(),
+    ),
     direction: z.enum(Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]], {
       error: "Выберите направление",
     }),

@@ -986,3 +986,28 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
   outline: none !important;
   box-shadow: none !important;
 }
+
+
+
+.wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column {
+  flex-basis: 0;
+  flex-grow: 1;
+  align-self: stretch;
+  min-width: max-content;
+  padding: var(--padding-xl) !important;
+  border-radius: var(--br-xl);
+  border: 1px solid var(--border-color-lightgray);
+	container: wp-block-column / inline-size;
+}
+
+.wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column > p {
+  text-align: left;
+  padding-inline: var(--padding-md);
+  margin: 0;
+}
+
+@container wp-block-column (width <= 400px) {
+	.wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column > p {
+		display: grid;
+	}
+}

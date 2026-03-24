@@ -204,7 +204,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
 
       return true
     },
-    accessorFn: (row: ProjectResponse) => row.lastDateConnection,
+    accessorFn: (row: ProjectResponse) => row.plannedDateConnection,
   },
   {
     id: "nameDeal",
