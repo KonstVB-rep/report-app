@@ -277,7 +277,7 @@ const RetailFormBody = <T extends FieldValues>({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Примечание / Комментарии <span className="bg-red-700">*</span>
+                  Примечание / Комментарии <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Textarea
