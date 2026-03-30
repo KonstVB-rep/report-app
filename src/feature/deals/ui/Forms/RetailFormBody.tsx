@@ -1,9 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
-import { StatusRetail } from "@prisma/client"
-import { ArrowLeft } from "lucide-react"
-import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import type { Contact } from "@/entities/deal/types"
 import ContactDeal from "@/feature/contact/ui/ContactDeal"
 import { Button } from "@/shared/components/ui/button"
@@ -25,6 +21,10 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
+import { StatusRetail } from "@prisma/client"
+import { ArrowLeft } from "lucide-react"
+import { useMemo } from "react"
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryRetailLabels,
@@ -89,7 +89,7 @@ const RetailFormBody = <T extends FieldValues>({
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form
-          className={`grid max-h-[85dvh] min-w-full gap-2 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[85dvh] min-w-full pb-1 gap-2 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
           onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="text-center font-semibold uppercase">{titleForm}</div>
@@ -230,7 +230,7 @@ const RetailFormBody = <T extends FieldValues>({
                 disabled={isPending}
                 errorMessage={getError("lastDateConnection")}
                 label="Последний контакт"
-                name={"plannedDateConnection" as Path<T>}
+                name={"lastDateConnection" as Path<T>}
               />
 
               <InputTextForm

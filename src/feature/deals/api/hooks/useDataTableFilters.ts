@@ -13,6 +13,7 @@ export const SEARCHABLE_COLUMNS = [
   "phone",
   "email",
   "comments",
+  "inn",
 ] as const
 
 const clearNotFilterParams = (
@@ -133,7 +134,9 @@ export const useDataTableFilters = (paramsNotFilters?: string[]) => {
       const newQuery = params.toString()
       if (newQuery === currentQuery) return
 
-      router.replace(newQuery ? `${pathname}?${newQuery}` : pathname, { scroll: false })
+      router.replace(newQuery ? `${pathname}?${newQuery}` : pathname, {
+        scroll: false,
+      })
     },
     400,
   )

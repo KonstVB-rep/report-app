@@ -54,7 +54,7 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Close
           className={cn(
             closeStyle ??
-              "p-1 rounded right-1 top-1 :dark:bg-zinc-100 bg-zinc-900",
+              "p-1 rounded right-1 top-1 :dark:bg-zinc-100 bg-zinc-100",
             "absolute transition-all duration-150 active:scale-90 hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
           )}
         >

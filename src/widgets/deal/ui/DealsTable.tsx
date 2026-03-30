@@ -1,3 +1,8 @@
+import type React from "react"
+import { useCallback, useState } from "react"
+import type { ColumnDef, Row } from "@tanstack/react-table"
+import dynamic from "next/dynamic"
+import { useParams } from "next/navigation"
 import type { DealUnion } from "@/entities/deal/types"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
@@ -9,11 +14,6 @@ import {
 import TableComponent from "@/shared/custom-components/ui/Table/TableComponent"
 import type { ModalType } from "@/shared/types"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
-import type { ColumnDef, Row } from "@tanstack/react-table"
-import dynamic from "next/dynamic"
-import { useParams } from "next/navigation"
-import type React from "react"
-import { useCallback, useState } from "react"
 
 const EditDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/EditDealContextMenu"), {
   ssr: false,

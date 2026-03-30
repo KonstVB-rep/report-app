@@ -232,14 +232,13 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     id: "inn",
     header: "ИНН",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue()
-      return value
+      return info.getValue()
     },
     enableHiding: true,
     meta: {
-      title: "Название объекта",
+      title: "ИНН",
     },
-    accessorFn: (row: RetailResponse) => row.inn,
+    accessorFn: (row: RetailResponse) => (row.inn ? String(row.inn) : ""),
   },
   {
     id: "direction",

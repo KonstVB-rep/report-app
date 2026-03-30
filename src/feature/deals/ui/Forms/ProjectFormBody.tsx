@@ -138,7 +138,7 @@ const ProjectFormBody = <T extends FieldValues>({
   const currentStatus = form.watch("dealStatus" as Path<T>)
 
   return (
-    <MotionDivY className="max-h-[85dvh] overflow-y-auto flex gap-1 overflow-x-hidden">
+    <MotionDivY className="max-h-[85dvh] overflow-y-auto flex gap-1 overflow-x-hidden pb-1">
       <Overlay isPending={isPending} />
       <Form {...form}>
         <form

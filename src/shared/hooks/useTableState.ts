@@ -54,16 +54,15 @@ export const useTableState = <T extends { id: string }>(
     }
   }, [visibilityFromHook, hiddenColumns])
 
-  const tableState = useMemo(
-    () => ({
+  const tableState = useMemo(() => {
+    return {
       sorting,
       rowSelection,
       columnFilters,
       globalFilter,
       columnVisibility: mergedColumnVisibility,
-    }),
-    [sorting, rowSelection, columnFilters, globalFilter, mergedColumnVisibility],
-  )
+    }
+  }, [sorting, rowSelection, columnFilters, globalFilter, mergedColumnVisibility])
 
   const table = useReactTable({
     data,

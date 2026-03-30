@@ -155,15 +155,12 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue()
 
-      // Если null или undefined
       if (!value) return "Дата не указана"
 
-      // Если уже Date
       if (value instanceof Date) {
         return value.toLocaleDateString("ru-RU")
       }
 
-      // Если строка — пробуем преобразовать
       if (typeof value === "string") {
         const parsed = new Date(value)
         if (!Number.isNaN(parsed.getTime())) {
@@ -236,14 +233,13 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "inn",
     header: "ИНН",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue()
-      return value
+      return info.getValue()
     },
     enableHiding: true,
     meta: {
-      title: "Название объекта",
+      title: "ИНН",
     },
-    accessorFn: (row: ProjectResponse) => row.inn,
+    accessorFn: (row: ProjectResponse) => (row.inn ? String(row.inn) : ""),
   },
   {
     id: "direction",

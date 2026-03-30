@@ -272,6 +272,9 @@ export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) =>
           ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
         dealStatus: data.dealStatus as StatusProject,
+        lastDateConnection: data.lastDateConnection
+          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
+          : null,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,
@@ -331,6 +334,9 @@ export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => v
           ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
           : new Date(),
         dealStatus: data.dealStatus as StatusRetail,
+        lastDateConnection: data.lastDateConnection
+          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
+          : null,
         plannedDateConnection: data.plannedDateConnection
           ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
           : null,
