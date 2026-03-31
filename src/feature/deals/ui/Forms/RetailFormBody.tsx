@@ -1,5 +1,9 @@
 "use client"
 
+import { useMemo } from "react"
+import { StatusRetail } from "@prisma/client"
+import { ArrowLeft } from "lucide-react"
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import type { Contact } from "@/entities/deal/types"
 import ContactDeal from "@/feature/contact/ui/ContactDeal"
 import { Button } from "@/shared/components/ui/button"
@@ -21,10 +25,6 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import SelectFormField from "@/shared/custom-components/ui/SelectForm/SelectFormField"
 import { transformObjValueToArr } from "@/shared/lib/helpers/transformObjValueToArr"
-import { StatusRetail } from "@prisma/client"
-import { ArrowLeft } from "lucide-react"
-import { useMemo } from "react"
-import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryRetailLabels,

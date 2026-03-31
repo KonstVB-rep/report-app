@@ -26,7 +26,11 @@ import {
   type RetailWithoutDateCreateAndUpdate,
   type RetailWithoutId,
 } from "../types"
-import type { DealHighlightdeletedType, DealHighlightType } from "./../types/index"
+import type {
+  DealHighlightdeletedType,
+  DealHighlightType,
+  SerializedManagers,
+} from "./../types/index"
 
 const requiredFields = ["nameObject", "direction", "comments", "contact", "dealStatus"]
 
@@ -79,7 +83,7 @@ export const getProjectById = async (
 
     const managers = projectManagers.map((pm) => ({
       id: pm.user.id,
-      managerName: pm.user.username,
+      username: pm.user.username,
       position: pm.user.position,
     }))
 
@@ -141,7 +145,7 @@ export const getRetailById = async (
 
     const managers = retailManagers.map((rm) => ({
       id: rm.user.id,
-      managerName: rm.user.username,
+      username: rm.user.username,
       position: rm.user.position,
     }))
 
@@ -204,7 +208,15 @@ export const getProjectsUser = async (idDealOwner: string): Promise<ProjectRespo
       include: {
         additionalContacts: true,
         projectManagers: {
-          include: { project: true },
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                position: true,
+              },
+            },
+          },
         },
         highlights: {
           where: { userId: user.userId },
@@ -217,13 +229,18 @@ export const getProjectsUser = async (idDealOwner: string): Promise<ProjectRespo
           const appliedColor =
             deal.highlights && deal.highlights.length > 0 ? deal.highlights[0].color : null
 
+          const serializedManagers: SerializedManagers =
+            deal.projectManagers?.map((pm: { user: ManagerShortInfo }) => pm.user) ?? []
+
+          const { projectManagers, ...restDeal } = deal
+
           return {
-            ...deal,
+            ...restDeal,
             amountCP: deal.amountCP?.toString() || "",
             amountWork: deal.amountWork?.toString() || "",
             amountPurchase: deal.amountPurchase?.toString() || "",
             delta: deal.delta?.toString() || "",
-            projectManagers: JSON.stringify(deal.projectManagers),
+            managers: serializedManagers,
             highlights: appliedColor,
           }
         })
@@ -311,7 +328,15 @@ export const getRetailsUser = async (idDealOwner: string): Promise<RetailRespons
       include: {
         additionalContacts: true,
         retailManagers: {
-          include: { retail: true },
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                position: true,
+              },
+            },
+          },
         },
         highlights: {
           where: { userId: user.userId },
@@ -319,20 +344,23 @@ export const getRetailsUser = async (idDealOwner: string): Promise<RetailRespons
       },
     })
 
-    return deals.length
-      ? deals.map((deal) => {
-          const appliedColor =
-            deal.highlights && deal.highlights.length > 0 ? deal.highlights[0].color : null
+    return deals.map((deal) => {
+      const appliedColor =
+        deal.highlights && deal.highlights.length > 0 ? deal.highlights[0].color : null
 
-          return {
-            ...deal,
-            amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-            delta: deal.delta ? deal.delta.toString() : "",
-            retailManagers: JSON.stringify(deal.retailManagers),
-            highlights: appliedColor,
-          }
-        })
-      : []
+      const serializedManagers: SerializedManagers =
+        deal.retailManagers?.map((pm: { user: ManagerShortInfo }) => pm.user) ?? []
+
+      const { retailManagers, ...restDeal } = deal
+
+      return {
+        ...restDeal,
+        amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+        delta: deal.delta ? deal.delta.toString() : "",
+        managers: serializedManagers,
+        highlights: appliedColor,
+      }
+    })
   } catch (error) {
     console.error(error)
     return handleError((error as Error).message)
@@ -360,7 +388,9 @@ export const getAllProjectsByDepartment = async (
           include: {
             user: {
               select: {
+                id: true,
                 username: true,
+                position: true,
               },
             },
           },
@@ -376,16 +406,26 @@ export const getAllProjectsByDepartment = async (
       },
     })
 
-    return deals.length
-      ? deals.map((deal) => ({
-          ...deal,
-          user: deal.user?.username || "Нет менедежера",
-          amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-          amountWork: deal.amountWork ? deal.amountWork.toString() : "",
-          amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
-          delta: deal.delta ? deal.delta.toString() : "",
-        }))
-      : []
+    return deals.map((deal) => {
+      const managers: ManagerShortInfo[] = deal.projectManagers.map((pm) => ({
+        id: pm.userId,
+        username: pm.user?.username || "",
+        position: pm.user?.position || "",
+      }))
+
+      const { projectManagers, ...restDeal } = deal
+
+      return {
+        ...restDeal,
+        user: deal.user?.username || "Нет менеджера",
+
+        amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+        amountWork: deal.amountWork ? deal.amountWork.toString() : "",
+        amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
+        delta: deal.delta ? deal.delta.toString() : "",
+        managers,
+      }
+    })
   } catch (error) {
     console.log(error)
     return handleError((error as Error).message)
@@ -413,7 +453,9 @@ export const getAllRetailsByDepartment = async (
           include: {
             user: {
               select: {
+                id: true,
                 username: true,
+                position: true,
               },
             },
           },
@@ -429,14 +471,23 @@ export const getAllRetailsByDepartment = async (
       },
     })
 
-    return deals.length
-      ? deals.map((deal) => ({
-          ...deal,
-          user: deal.user?.username || "Нет менеджера",
-          amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-          delta: deal.delta ? deal.delta.toString() : "",
-        }))
-      : []
+    return deals.map((deal) => {
+      const managers: ManagerShortInfo[] = deal.retailManagers.map((pm) => ({
+        id: pm.userId,
+        username: pm.user?.username || "",
+        position: pm.user?.position || "",
+      }))
+
+      const { retailManagers, ...restDeal } = deal
+
+      return {
+        ...restDeal,
+        user: deal.user?.username || "Нет менеджера",
+        amountCP: deal.amountCP ? deal.amountCP.toString() : "",
+        delta: deal.delta ? deal.delta.toString() : "",
+        managers,
+      }
+    })
   } catch (error) {
     console.error(error)
     return handleError((error as Error).message)
@@ -688,6 +739,8 @@ export const getDealsByDateRange = async (
     },
   }
 }
+
+/******************************************Создать *********************************************************/
 
 export const createProject = async (
   data: ProjectWithoutId & { managersIds: { userId: string }[] },
@@ -1332,6 +1385,15 @@ export const deleteHighlight = async (higlightData: DealHighlightdeletedType) =>
     const user = await requireUser()
     const { type, color, userId: ownerDealId, all } = higlightData
     const userId = user.userId
+
+    //     if (id && !all && !color) {
+    //   await prisma.userHighlight.deleteMany({
+    //     where: type === DEAL_TYPE.PROJECT
+    //         ? { userId, projectId: id }
+    //         : { userId, retailId: id },
+    //   });
+    //   return { type, userId: ownerDealId };
+    // }
 
     const typeDeal = type === DEAL_TYPE.PROJECT ? "projectId" : "retailId"
 

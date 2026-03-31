@@ -25,7 +25,7 @@ export type StatusType = StatusProject
 
 export type ManagerShortInfo = {
   id: string
-  managerName: string
+  username: string
   position: string
 }
 
@@ -208,3 +208,5 @@ export type DealHighlightdeletedType = {
   userId: string
   all?: boolean
 }
+
+export type SerializedManagers = ManagerShortInfo[]

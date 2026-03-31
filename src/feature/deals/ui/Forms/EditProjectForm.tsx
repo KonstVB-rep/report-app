@@ -20,6 +20,14 @@ type Props = {
 const EditProjectForm = ({ close, dealInfo, isInvalidate = false, titleForm }: Props) => {
   const { authUser } = useStoreUser()
 
+  console.log(dealInfo, "dealInfo")
+
+  console.log(
+    dealInfo?.managers,
+    Array.isArray(dealInfo?.projectsManagers),
+    "-----------------------",
+  )
+
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,
     defaultValues: {
@@ -39,8 +47,8 @@ const EditProjectForm = ({ close, dealInfo, isInvalidate = false, titleForm }: P
       delta: dealInfo.delta,
       resource: dealInfo.resource ?? "",
       contacts: dealInfo.additionalContacts ?? [],
-      managersIds: Array.isArray(dealInfo.managers)
-        ? dealInfo.managers.map((manager) => ({ userId: manager.id }))
+      managersIds: Array.isArray(dealInfo?.managers)
+        ? dealInfo?.managers.map((manager) => ({ userId: manager.id }))
         : [],
       inn: dealInfo.inn ?? "",
     },
