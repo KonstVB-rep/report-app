@@ -6,7 +6,6 @@ generator client {
 datasource db {
   provider = "mysql"
 }
-
 model User {
   id              String             @id @default(cuid())
   username        String
@@ -39,26 +38,25 @@ model User {
   deletedAt       DateTime?
 
   @@index([departmentId])
+  @@index([username]) 
 }
-
 model UserPermission {
   id           String     @id @default(cuid())
   userId       String
   permissionId String
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
+  
+  @@unique([userId, permissionId]) 
   @@index([userId], map: "UserPermission_userId_fkey")
   @@index([permissionId], map: "UserPermission_permissionId_fkey")
 }
-
 model Permission {
   id              String           @id @default(cuid())
   name            PermissionEnum   @unique
   description     String?
   userPermissions UserPermission[] // Добавлена связь с UserPermission
 }
-
 model Department {
   id          Int            @id @default(autoincrement())
   name        DepartmentEnum @unique
@@ -68,7 +66,6 @@ model Department {
   users       User[]         @relation("DepartmentUsers")
   tasks       Task[]         @relation("DepartmentTask")
 }
-
 model Project {
   id                     String              @id @default(cuid())
   userId                 String?
@@ -102,6 +99,10 @@ model Project {
   orderId String? @unique
 
   @@index([userId], map: "Project_userId_fkey")
+  @@index([inn])                   // ДОБАВИТЬ: быстрый поиск по ИНН клиента
+  @@index([phone])                 // ДОБАВИТЬ: поиск по телефону клиента
+  @@index([plannedDateConnection]) // ДОБАВИТЬ: для списка "Задачи на сегодня"
+  @@index([createdAt])    
 }
 
 model Retail {
@@ -135,22 +136,23 @@ model Retail {
   orderId String? @unique
 
   @@index([userId], map: "Retail_userId_fkey")
+  @@index([inn])                   // ДОБАВИТЬ: быстрый поиск по ИНН клиента
+  @@index([phone])                 // ДОБАВИТЬ: поиск по телефону клиента
+  @@index([plannedDateConnection]) // ДОБАВИТЬ: для списка "Задачи на сегодня"
+  @@index([createdAt])    
 }
 
 model UserHighlight {
   id        String   @id @default(cuid())
   color     String 
-  
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-
   retailId  String?
   retail    Retail?  @relation(fields: [retailId], references: [id], onDelete: Cascade)
-
 
   @@unique([userId, projectId])
   @@unique([userId, retailId])
@@ -230,7 +232,7 @@ model DealFile {
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([dealId, dealType])
-  
+  @@index([createdAt]) 
   @@index([userId])
 }
 
@@ -261,6 +263,9 @@ model EventCalendar {
   notified  Boolean  @default(false)
 
   user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])  // ДОБАВИТЬ: чтобы быстро грузить календарь конкретного юзера
+  @@index([start])   // ДОБАВИТЬ: поиск событий по дате (начало)
 }
 
 model TelegramBot {
@@ -302,7 +307,6 @@ model UserTelegramChat {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Связь с информацией о Telegram пользователе
   telegramUserInfoId String
   telegramUserInfo   TelegramUserInfo @relation(fields: [telegramUserInfoId], references: [id], onDelete: Cascade)
 
@@ -312,6 +316,7 @@ model UserTelegramChat {
   @@unique([botId, chatId])
   @@unique([botId, telegramUserInfoId])
   @@index([userId])
+  @@index([chatId]) 
 }
 
 
@@ -339,6 +344,10 @@ model Task {
   executor User? @relation("TaskExecutor", fields: [executorId], references: [id], onDelete: SetNull)
 
   @@index([orderTask, taskStatus])
+  @@index([executorId])            // ДОБАВИТЬ: поиск задач по исполнителю
+  @@index([assignerId])            // ДОБАВИТЬ: поиск задач по автору
+  @@index([departmentId])          // ДОБАВИТЬ: задачи конкретного отдела
+  @@index([dueDate])               // ДОБАВИТЬ: фильтр по крайнему сроку
 }
 
 
