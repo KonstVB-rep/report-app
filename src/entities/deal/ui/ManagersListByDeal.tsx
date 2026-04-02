@@ -18,7 +18,7 @@ const ManagersListByDeal = ({ managers, userId }: ManagersListByDealProps) => {
       {responsible && (
         <div className="flex flex-col items-start justify-center gap-1 px-2 border-amber-400 border rounded-md">
           <span className={spanClass}>Ответственный менеджер</span>
-          <span className="text-sm capitalize flex items-center">{responsible.managerName}</span>
+          <span className="text-sm capitalize flex items-center">{responsible.username}</span>
           <span className={cn(spanClass, "first-letter:uppercase")}>{responsible.position}</span>
         </div>
       )}
@@ -27,7 +27,7 @@ const ManagersListByDeal = ({ managers, userId }: ManagersListByDealProps) => {
           className="flex flex-col items-start justify-center gap-1 px-2 border-accent-foreground border rounded-md"
           key={m.id}
         >
-          <span className="text-sm capitalize">{m.managerName}</span>
+          <span className="text-sm capitalize">{m.username}</span>
           <span className={spanClass}>{m.position}</span>
         </div>
       ))}
