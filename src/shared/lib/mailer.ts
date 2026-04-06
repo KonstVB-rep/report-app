@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer"
-import SMTPTransport from "nodemailer/lib/smtp-transport"
+import type SMTPTransport from "nodemailer/lib/smtp-transport"
 
 export const transporter = nodemailer.createTransport({
   host: "smtp.yandex.ru",
