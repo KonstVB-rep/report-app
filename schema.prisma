@@ -99,9 +99,9 @@ model Project {
   orderId String? @unique
 
   @@index([userId], map: "Project_userId_fkey")
-  @@index([inn])                   // ДОБАВИТЬ: быстрый поиск по ИНН клиента
-  @@index([phone])                 // ДОБАВИТЬ: поиск по телефону клиента
-  @@index([plannedDateConnection]) // ДОБАВИТЬ: для списка "Задачи на сегодня"
+  @@index([inn])                   
+  @@index([phone])                 
+  @@index([plannedDateConnection]) 
   @@index([createdAt])    
 }
 
@@ -136,9 +136,9 @@ model Retail {
   orderId String? @unique
 
   @@index([userId], map: "Retail_userId_fkey")
-  @@index([inn])                   // ДОБАВИТЬ: быстрый поиск по ИНН клиента
-  @@index([phone])                 // ДОБАВИТЬ: поиск по телефону клиента
-  @@index([plannedDateConnection]) // ДОБАВИТЬ: для списка "Задачи на сегодня"
+  @@index([inn])                  
+  @@index([phone])                 
+  @@index([plannedDateConnection])
   @@index([createdAt])    
 }
 
@@ -185,7 +185,7 @@ model ProjectManager {
   project Project @relation(fields: [dealId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([dealId, userId]) // составной ключ — один и тот же менеджер не может повторно быть в заказе
+  @@id([dealId, userId]) 
 }
 
 model RetailManager {
@@ -205,8 +205,8 @@ model AdditionalContact {
   email    String?
   position String?
 
-  projects Project[] @relation("ProjectContacts") // связь с несколькими проектами
-  retails  Retail[]  @relation("RetailContacts") // связь с несколькими розничными сделками
+  projects Project[] @relation("ProjectContacts")
+  retails  Retail[]  @relation("RetailContacts")
 }
 
 model UserLogin {
@@ -224,8 +224,8 @@ model DealFile {
   localPath   String
   storageType StorageType @default(YANDEX_DISK)
   userId      String?
-  dealId      String // Универсальный ID сделки (может быть как Project, так и Retail)
-  dealType    DealType // PROJECT или RETAIL
+  dealId      String 
+  dealType    DealType 
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -264,8 +264,8 @@ model EventCalendar {
 
   user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  @@index([userId])  // ДОБАВИТЬ: чтобы быстро грузить календарь конкретного юзера
-  @@index([start])   // ДОБАВИТЬ: поиск событий по дате (начало)
+  @@index([userId]) 
+  @@index([start]) 
 }
 
 model TelegramBot {
@@ -344,10 +344,10 @@ model Task {
   executor User? @relation("TaskExecutor", fields: [executorId], references: [id], onDelete: SetNull)
 
   @@index([orderTask, taskStatus])
-  @@index([executorId])            // ДОБАВИТЬ: поиск задач по исполнителю
-  @@index([assignerId])            // ДОБАВИТЬ: поиск задач по автору
-  @@index([departmentId])          // ДОБАВИТЬ: задачи конкретного отдела
-  @@index([dueDate])               // ДОБАВИТЬ: фильтр по крайнему сроку
+  @@index([executorId]) 
+  @@index([assignerId])
+  @@index([departmentId]) 
+  @@index([dueDate]) 
 }
 
 

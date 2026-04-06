@@ -43,6 +43,7 @@ const useSendDealInfo = <T extends FieldValues>(
         data.dealStatus !== (StatusProject.REJECT || StatusRetail.REJECT)
           ? data.plannedDateConnection
           : null,
+      comments: `${new Date().toLocaleString()}: ${data.commentsLastConnection}\n${data.comments}`,
     }
 
     onSubmit(fullData)

@@ -10,8 +10,6 @@ const EditRetail = dynamic(() => import("./EditRetail"), { ssr: false })
 const EditDealContextMenu = ({ close }: { close: Dispatch<SetStateAction<void>> }) => {
   const { selectedDataItem } = useTableContext<DealUnion>()
 
-  console.log(selectedDataItem, "selectedDataItem")
-
   if (!selectedDataItem) return null
 
   switch (selectedDataItem?.type) {
