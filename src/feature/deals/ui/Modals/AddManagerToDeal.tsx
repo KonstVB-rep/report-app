@@ -21,8 +21,6 @@ const AddManagerToDeal = ({
 }) => {
   const managersList = useMananagersStore()
 
-  console.log(managers, "managers")
-
   const handleChange = (value: { userId: string }) => {
     setManagers((prevManagers) => {
       const isSelected = prevManagers.some((user) => user.userId === value.userId)

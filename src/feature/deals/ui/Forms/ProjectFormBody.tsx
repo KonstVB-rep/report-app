@@ -40,6 +40,7 @@ import {
   StatusContractLabels,
   StatusProjectLabels,
 } from "../../lib/constants"
+import Comments from "../Comments"
 import AddManagerToDeal from "../Modals/AddManagerToDeal"
 
 type ProjectFormBodyProps<T extends FieldValues> = {
@@ -341,7 +342,8 @@ const ProjectFormBody = <T extends FieldValues>({
                   </FormItem>
                 )}
               />
-              <FormField
+              <Comments form={form} getError={getError} />
+              {/* <FormField
                 control={form.control}
                 name={"comments" as Path<T>}
                 render={({ field }) => (
@@ -358,11 +360,13 @@ const ProjectFormBody = <T extends FieldValues>({
                     </FormControl>
 
                     {getError("comments") && (
-                      <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
+                      <FormMessage className="text-red-500">
+                        {getError("comments")}
+                      </FormMessage>
                     )}
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex gap-2">
