@@ -12,4 +12,7 @@ export const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: true,
   },
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 100,
 } as SMTPTransport.Options)

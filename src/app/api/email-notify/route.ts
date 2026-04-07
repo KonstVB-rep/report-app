@@ -37,10 +37,10 @@ export async function GET(req: Request) {
 
     const tasks = [...projects, ...retails]
 
-    for (const task of tasks) {
-      if (!task.user?.email || !task.user.emailNotify) continue
+    const emailPromises = tasks.map((task) => {
+      if (!task.user?.email || !task.user.emailNotify) return Promise.resolve()
 
-      await transporter.sendMail({
+      return transporter.sendMail({
         from: `"CRM Уведомлениenpm" <${process.env.YANDEX_EMAIL}>`,
         to: task.user.email,
         subject: `📅 Напоминание: Созвон с ${task.contact || "Клиентом"}`,
@@ -58,7 +58,9 @@ export async function GET(req: Request) {
         </div>
       `,
       })
-    }
+    })
+
+    await Promise.all(emailPromises)
 
     return NextResponse.json({ success: true, count: tasks.length })
   } catch (error) {
