@@ -1,4 +1,3 @@
-import type React from "react"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Input } from "@/shared/components/ui/input"
@@ -10,6 +9,7 @@ import { MultiSelectNativeForm } from "@/shared/custom-components/ui/MultiSlectC
 import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent"
 import { cn, formatPhoneNumber } from "@/shared/lib/utils"
 import type { ActionResponse } from "@/shared/types"
+import type React from "react"
 import { RolesUser } from "../model/objectTypes"
 import { OPTIONS, type UserFormData, type UserFormEditData } from "../types"
 
@@ -230,10 +230,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             </p>
           )}
 
-          <div className="grid gap-2">
-            <Label className="text-sm font-medium" htmlFor="isBlocked">
-              Заблокировать
-            </Label>
+          <div className="flex gap-2">
             <Checkbox
               aria-describedby="isBLocked"
               checked={!!state.inputs?.isBlocked}
@@ -251,6 +248,37 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
                 }))
               }}
             />
+            <Label className="text-sm font-medium" htmlFor="isBlocked">
+              Заблокировать
+            </Label>
+            {getFieldError("position") && (
+              <p className="text-sm text-red-500" id="position">
+                {getFieldError("position")}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              aria-describedby="emailNotify"
+              checked={!!state.inputs?.emailNotify}
+              className={getFieldError("emailNotify") ? "border-red-500" : ""}
+              disabled={isPending}
+              id="emailNotify"
+              name={"emailNotify"}
+              onCheckedChange={(val) => {
+                setState((prev) => ({
+                  ...prev,
+                  inputs: {
+                    ...(prev.inputs as Partial<T>),
+                    emailNotify: val,
+                  },
+                }))
+              }}
+            />
+            <Label className="text-sm font-medium" htmlFor="emailNotify">
+              Оповещение о запланированном звонке клиенту на email
+            </Label>
             {getFieldError("position") && (
               <p className="text-sm text-red-500" id="position">
                 {getFieldError("position")}

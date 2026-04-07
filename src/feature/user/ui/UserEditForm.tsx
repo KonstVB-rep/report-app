@@ -47,6 +47,8 @@ const UserEditForm = ({
       department: formData.get("department") as DepartmentEnum,
       role: formData.get("role") as Role,
       permissions: JSON.parse(formData.get("permissions") as string) as PermissionEnum[],
+      isBlocked: formData.get("isBlocked") === "on" || formData.get("isBlocked") === "true",
+      emailNotify: formData.get("emailNotify") === "on" || formData.get("emailNotify") === "true",
     }
     mutateAsync(formData)
   }
@@ -66,6 +68,8 @@ const UserEditForm = ({
         department: user.departmentName,
         role: user.role,
         permissions: user.permissions,
+        isBlocked: user.isBlocked,
+        emailNotify: user.emailNotify,
       },
     })
   }, [user])

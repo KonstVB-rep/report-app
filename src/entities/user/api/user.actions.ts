@@ -36,6 +36,7 @@ const extractFormData = (formData: FormData, permissions: string[]): UserFormDat
   role: formData.get("role") as Role,
   permissions: permissions as PermissionEnum[],
   isBlocked: formData.get("isBlocked") === "on" || formData.get("isBlocked") === "true",
+  emailNotify: formData.get("emailNotify") === "on" || formData.get("emailNotify") === "true",
 })
 
 export const checkFormData = async (
@@ -143,6 +144,7 @@ const addUserToDb = async <T extends UserDataBase>(
         position: dataForm.position?.toLowerCase().trim(),
         user_password: hashedPassword,
         isBlocked: dataForm.isBlocked,
+        emailNotify: dataForm.emailNotify,
       },
       select: selectFields,
     })
@@ -159,6 +161,7 @@ const addUserToDb = async <T extends UserDataBase>(
         position: dataForm.position?.toLowerCase().trim(),
         ...(hashedPassword && { user_password: hashedPassword }),
         isBlocked: dataForm.isBlocked,
+        emailNotify: dataForm.emailNotify,
       },
       select: selectFields,
     })
@@ -408,9 +411,6 @@ export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser
       return { error: true, message: "Пользователь не найден", data: null }
     }
 
-    // Простое удаление — Prisma автоматически:
-    // - удалит все Cascade-сущности
-    // - установит null для всех SetNull полей
     await prisma.user.delete({ where: { id: deletedUserId } })
 
     return {

@@ -51,6 +51,14 @@ export const userFormSchema = z.object({
       return Boolean(val)
     }, z.boolean())
     .default(false),
+  emailNotify: z
+    .preprocess((val) => {
+      if (typeof val === "string") {
+        return val === "true" || val === "on"
+      }
+      return Boolean(val)
+    }, z.boolean())
+    .default(false),
 })
 
 export const userFormEditSchema = userFormSchema.extend({

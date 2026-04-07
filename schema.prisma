@@ -16,6 +16,7 @@ model User {
   departmentId    Int
   role            Role
   isBlocked       Boolean            @default(false)
+  emailNotify     Boolean            @default(true)
   lastlogin       DateTime?
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt

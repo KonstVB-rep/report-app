@@ -38,7 +38,7 @@ export async function GET(req: Request) {
     const tasks = [...projects, ...retails]
 
     for (const task of tasks) {
-      if (!task.user?.email) continue
+      if (!task.user?.email || !task.user.emailNotify) continue
 
       await transporter.sendMail({
         from: `"CRM Уведомлениenpm" <${process.env.YANDEX_EMAIL}>`,

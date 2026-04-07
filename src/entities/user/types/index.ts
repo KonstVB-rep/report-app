@@ -16,6 +16,8 @@ export type User = {
   permissions?: PermissionEnum[]
   tgUserId?: string
   tgUserName?: string
+  isBlocked: boolean
+  emailNotify: boolean
 }
 
 export type UserOmit = Omit<User, "user_password" | "lastlogin" | "createdAt" | "updatedAt">
@@ -85,6 +87,7 @@ export type UserDataBase = {
   role: Role
   permissions?: PermissionEnum[]
   isBlocked: boolean
+  emailNotify: boolean
 }
 
 export type UserFormData = UserDataBase & {
