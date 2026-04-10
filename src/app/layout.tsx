@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CRM web app",
-  description: "Приложеник для учето поступающих заявок",
+  description: "Приложеник для учета поступающих заявок",
   // manifest: "/manifest.webmanifest",
 
   icons: [
@@ -37,7 +37,6 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-status-bar-style": "black-translucent",
     "apple-mobile-web-app-title": "Report App",
 
-    // Android Chrome PWA
     "mobile-web-app-capable": "yes",
   },
 }

@@ -1153,7 +1153,6 @@ export const deleteMultipleDeals = async (
     const retailsIds = dealIds.filter((d) => d.type === DealType.RETAIL).map((r) => r.id)
     const allIds = [...projectsIds, ...retailsIds]
 
-    // 2. Сбор данных ДО удаления (параллельно)
     const [projects, retails, , files] = await Promise.all([
       projectsIds.length
         ? prisma.project.findMany({

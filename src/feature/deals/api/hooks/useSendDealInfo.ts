@@ -34,6 +34,12 @@ const useSendDealInfo = <T extends FieldValues>(
   }
 
   const handleSubmit = (data: T) => {
+    const lastComments = data?.comments.split("\n")[0].split(" ").at(-1)
+
+    const comments =
+      data.commentsLastConnection !== "" && data.commentsLastConnection !== lastComments
+        ? `${new Date().toLocaleString()}: ${data.commentsLastConnection}\n${data.comments}`
+        : data.comments
     const fullData = {
       ...data,
       userId: firstManager,
@@ -43,7 +49,7 @@ const useSendDealInfo = <T extends FieldValues>(
         data.dealStatus !== (StatusProject.REJECT || StatusRetail.REJECT)
           ? data.plannedDateConnection
           : null,
-      comments: `${new Date().toLocaleString()}: ${data.commentsLastConnection}\n${data.comments}`,
+      comments,
     }
 
     onSubmit(fullData)
