@@ -14,6 +14,7 @@ const InputTextForm = <T extends FieldValues>({
   label,
   control,
   errorMessage,
+  showStarRequired = false,
   ...rest
 }: InputFormProps<T>) => {
   return (
@@ -24,7 +25,7 @@ const InputTextForm = <T extends FieldValues>({
         <FormItem>
           <FormLabel>
             {label}
-            {rest.required && <span className="pl-1 text-red-700">*</span>}
+            {showStarRequired && <span className="pl-1 text-red-700">*</span>}
           </FormLabel>
           <FormControl>
             <Input placeholder="Введите имя пользователя" {...field} {...rest} />

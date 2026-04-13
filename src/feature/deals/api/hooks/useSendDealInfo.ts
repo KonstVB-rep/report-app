@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { StatusProject, StatusRetail } from "@prisma/client"
+import { isValid } from "date-fns/isValid"
+import { parse } from "date-fns/parse"
 import { useParams } from "next/navigation"
 import type { FieldValues } from "react-hook-form"
 import type { Contact } from "@/entities/deal/types"
@@ -36,8 +38,12 @@ const useSendDealInfo = <T extends FieldValues>(
   }
 
   const handleSubmit = (data: T) => {
-    const lastComments = data?.comments.split("\n")[0].split(" ").at(-1)
-
+    let lastComments = data?.comments.split("\n")[0].substring(22)
+    const dateInComents = data?.comments.split("\n")[0].substring(0, 20)
+    const dateParse = parse(dateInComents, "dd.MM.yyyy, HH:mm:ss", new Date())
+    if (!isValid(dateParse)) {
+      lastComments = data?.comments.split("\n")[0].split(" ").at(-1)
+    }
     const comments =
       data.commentsLastConnection !== "" && data.commentsLastConnection !== lastComments
         ? `${new Date().toLocaleString()}: ${data.commentsLastConnection}\n${data.comments}`
