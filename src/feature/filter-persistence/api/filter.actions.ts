@@ -227,7 +227,7 @@ export const selectFilter = async (id: string) => {
 export const disableSavedFilters = async () => {
   try {
     const user = await requireUser()
-
+    console.log(user, "user")
     await prisma.userFilter.updateMany({
       where: { userId: user.userId },
       data: { isActive: false },

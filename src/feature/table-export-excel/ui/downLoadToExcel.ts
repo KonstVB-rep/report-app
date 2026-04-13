@@ -1,5 +1,3 @@
-import type { ColumnDef, Table } from "@tanstack/react-table"
-import ExcelJS from "exceljs"
 import {
   DeliveryProjectLabels,
   DeliveryRetailLabels,
@@ -18,6 +16,8 @@ import type {
   typeofDirections as RetailDirection,
   typeofStatus as RetailStatus,
 } from "@/widgets/deal/model/columns-data-retail"
+import type { ColumnDef, Table } from "@tanstack/react-table"
+import ExcelJS from "exceljs"
 import { TOAST } from "../../../shared/custom-components/ui/Toast"
 
 const colsDefaultValue = ["phone", "nameDeal", "nameObject", "comments"]
@@ -43,52 +43,82 @@ function transformExcelValue(
   value: unknown,
   columnId?: string,
   tableType?: string,
-): string | number | boolean | Date {
+): string | number | boolean | Date | null {
   if (value == null) return ""
 
-  if (isProjectType(tableType)) {
-    if (typeof value === "string") {
-      if (columnId && colsDefaultValue.includes(columnId)) return value
-      if (columnId === "direction" && DirectionProjectLabels[value as typeofDirections])
-        return DirectionProjectLabels[value as typeofDirections]
-      if (columnId === "deliveryType" && DeliveryProjectLabels[value as typeofDelivery])
-        return DeliveryProjectLabels[value as typeofDelivery]
-      if (columnId === "dealStatus" && StatusProjectLabels[value as typeofStatus])
-        return StatusProjectLabels[value as typeofStatus]
-    }
-  } else if (isRetailType(tableType)) {
-    if (typeof value === "string") {
-      if (columnId && colsDefaultValue.includes(columnId)) return value
-      if (columnId === "direction" && DirectionRetailLabels[value as RetailDirection])
-        return DirectionRetailLabels[value as RetailDirection]
-      if (columnId === "deliveryType" && DeliveryRetailLabels[value as RetailDelivery])
-        return DeliveryRetailLabels[value as RetailDelivery]
-      if (columnId === "dealStatus" && StatusRetailLabels[value as RetailStatus])
-        return StatusRetailLabels[value as RetailStatus]
-    }
-  } else {
-    if (typeof value === "string" && columnId && colsDefaultValue.includes(columnId)) return value
-    if (columnId === "dealStatusR" && StatusRetailLabels[value as RetailStatus])
-      return StatusRetailLabels[value as RetailStatus]
-    if (columnId === "dealStatusP" && StatusProjectLabels[value as typeofStatus])
-      return StatusProjectLabels[value as typeofStatus]
+  // 1. Специальная обработка ИНН — всегда как текст
+  if (columnId === "inn") {
+    return String(value).trim()
   }
 
+  // 2. Суммы — как целое число (без копеек)
+  if (["amountCP", "amountWork", "amountPurchase", "delta"].includes(columnId || "")) {
+    const num = parseFloat(String(value))
+    return isNaN(num) ? 0 : num // округляем до целого
+  }
+
+  // 3. Остальные строки из списка
+  if (typeof value === "string") {
+    if (columnId && colsDefaultValue.includes(columnId)) {
+      return value.trim()
+    }
+
+    // Лейблы направлений, статусов и т.д.
+    if (columnId === "direction") {
+      if (tableType === "PROJECT" && DirectionProjectLabels[value as typeofDirections]) {
+        return DirectionProjectLabels[value as typeofDirections]
+      }
+      if (tableType === "RETAIL" && DirectionRetailLabels[value as RetailDirection]) {
+        return DirectionRetailLabels[value as RetailDirection]
+      }
+    }
+
+    if (columnId === "deliveryType") {
+      if (tableType === "PROJECT" && DeliveryProjectLabels[value as typeofDelivery]) {
+        return DeliveryProjectLabels[value as typeofDelivery]
+      }
+      if (tableType === "RETAIL" && DeliveryRetailLabels[value as RetailDelivery]) {
+        return DeliveryRetailLabels[value as RetailDelivery]
+      }
+    }
+
+    if (columnId === "dealStatus") {
+      if (tableType === "PROJECT" && StatusProjectLabels[value as typeofStatus]) {
+        return StatusProjectLabels[value as typeofStatus]
+      }
+      if (tableType === "RETAIL" && StatusRetailLabels[value as RetailStatus]) {
+        return StatusRetailLabels[value as RetailStatus]
+      }
+    }
+  }
+
+  // 4. Преобразование дат
   if (typeof value === "string") {
     const parsed = new Date(value)
-    if (!Number.isNaN(parsed.getTime())) return dateToExcelSerial(parsed)
+    if (!isNaN(parsed.getTime())) {
+      return dateToExcelSerial(parsed)
+    }
   }
 
-  if (value instanceof Date) return dateToExcelSerial(value)
+  if (value instanceof Date) {
+    return dateToExcelSerial(value)
+  }
 
-  if (typeof value === "string" && /^[0-9]+(\.[0-9]+)?$/.test(value)) return Number(value)
+  // 5. Числа
+  if (typeof value === "number") {
+    return value
+  }
 
-  if (typeof value === "string" || typeof value === "boolean") return value
-  if (Array.isArray(value))
+  // 6. Остальное
+  if (typeof value === "boolean") return value
+  if (Array.isArray(value)) {
     return value.map((v) => transformExcelValue(v, columnId, tableType)).join(", ")
-  if (typeof value === "object") return JSON.stringify(value)
+  }
+  if (typeof value === "object" && value !== null) {
+    return JSON.stringify(value)
+  }
 
-  return String(value)
+  return String(value).trim()
 }
 
 export const downloadToExcel = async <TData>(
@@ -122,8 +152,16 @@ export const downloadToExcel = async <TData>(
     const headerRow = worksheet.getRow(1)
     headerRow.eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 12 }
-      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "27272A" } }
-      cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true }
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "27272A" },
+      }
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+        wrapText: true,
+      }
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
@@ -165,6 +203,11 @@ export const downloadToExcel = async <TData>(
         cell.alignment = { vertical: "middle", horizontal: "left" }
       }
 
+      if (columnId === "inn") {
+        cell.numFmt = "@"
+        cell.alignment = { vertical: "middle", horizontal: "right" }
+      }
+
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
@@ -173,7 +216,11 @@ export const downloadToExcel = async <TData>(
       }
 
       if (rowNumber % 2 !== 0) {
-        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "D3D3D3" } }
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "D3D3D3" },
+        }
       }
     })
   })

@@ -23,6 +23,8 @@ const SavedFiltersList = ({
   setSelectedFilterName,
 }: SavedFiltersListType) => {
   const { data: userFilters = [] } = useGetUserFilters()
+  console.log(userFilters, "userFilters")
+
   const { setColumnFilters, setColumnVisibility } = useDataTableFiltersContext()
   const { isPending } = useDisableSavedFilters()
   const { mutate: selectFilter, isPending: isPendingSelect } = useSelectFilter()
@@ -31,52 +33,71 @@ const SavedFiltersList = ({
 
   const isRequest = isPending || isPendingSelect
 
-  const filterSelect = useCallback(
-    (filter: UserFilter) => {
-      const { filterName, filterValue } = filter
-      if (!filterValue) return
+  const filterSelect = useCallback((filter: UserFilter) => {
+    const { filterName, filterValue } = filter
 
-      if (selectedFilterName === filterName) return
-      setSelectedFilterName(filterName)
+    console.log(filterValue, "filterValue")
+    if (!filterValue) return
 
-      const queryParams = new URLSearchParams(filterValue)
+    console.log(selectedFilterName === filterName, "selectedFilterName")
 
-      const filters = decodeURIComponent(queryParams.get("filters") || "")
+    if (selectedFilterName === filterName) return
 
-      const filtersArr: {
-        id: string
-        value: unknown
-      }[] = filters.split("&").map((filter) => {
-        const [key, value] = filter.split("=")
+    setSelectedFilterName(filterName)
+
+    const queryParams = new URLSearchParams(filterValue)
+
+    console.log(queryParams, "queryParams")
+
+    const filtersStr = decodeURIComponent(queryParams.get("filters") || "")
+
+    console.log(filtersStr, "filtersStr")
+
+    const filtersArr: { id: string; value: unknown }[] = filtersStr
+      .split("&")
+      .filter(Boolean) // убираем пустые строки
+      .map((item) => {
+        const [key, value] = item.split("=")
+        if (!key) return null
+
+        let parsedValue: unknown
+
+        try {
+          // Защита от "undefined", "null" и некорректного JSON
+          const decoded = decodeURIComponent(value || "")
+          if (!decoded || decoded === "undefined" || decoded === "null") {
+            parsedValue = undefined
+          } else {
+            parsedValue = JSON.parse(decoded)
+          }
+        } catch (e) {
+          console.warn(`Failed to parse filter value for key "${key}":`, value)
+          parsedValue = undefined
+        }
+
         return {
           id: key,
-          value: JSON.parse(decodeURIComponent(value)),
+          value: parsedValue,
         }
       })
+      .filter((item): item is { id: string; value: unknown } => item !== null)
 
-      const hiddenCols = queryParams
-        .get("hidden")
-        ?.split(",")
-        ?.reduce(
-          (acc, item) => {
-            acc[item] = false
-            return acc
-          },
-          {} as { [key: string]: boolean },
-        )
+    const hiddenCols = queryParams
+      .get("hidden")
+      ?.split(",")
+      ?.reduce(
+        (acc, item) => {
+          if (item) acc[item] = false
+          return acc
+        },
+        {} as { [key: string]: boolean },
+      )
 
-      setColumnFilters((filtersArr as unknown as ColumnFiltersState) ?? [])
-      setColumnVisibility(hiddenCols ?? {})
-      selectFilter(filter.id)
-    },
-    [
-      selectFilter,
-      selectedFilterName,
-      setColumnFilters,
-      setColumnVisibility,
-      setSelectedFilterName,
-    ],
-  )
+    setColumnFilters((filtersArr as unknown as ColumnFiltersState) ?? [])
+    setColumnVisibility(hiddenCols ?? {})
+
+    selectFilter(filter.id)
+  }, [])
 
   useEffect(() => {
     if (defaultCheckedFilter) {

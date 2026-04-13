@@ -71,11 +71,11 @@ export const useSelectFilter = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationKey: ["selectFilter", authUser?.id],
-    mutationFn: (filterId: string) => {
+    mutationFn: async (filterId: string) => {
       if (!authUser?.id) {
         throw new Error("User ID is missing")
       }
-      return selectFilter(filterId)
+      return await selectFilter(filterId)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -93,11 +93,11 @@ export const useDisableSavedFilters = () => {
   const { authUser } = useStoreUser()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!authUser?.id) {
         throw new Error("Пользователь не найден")
       }
-      return disableSavedFilters()
+      return await disableSavedFilters()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
