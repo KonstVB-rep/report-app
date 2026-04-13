@@ -1,12 +1,12 @@
-import { Label } from "@/shared/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
-import HoverCardComponent from "@/shared/custom-components/ui/HoverCard"
+import type React from "react"
+import { type SetStateAction, useCallback, useEffect } from "react"
 import type { UserFilter } from "@prisma/client"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { ListFilterPlus } from "lucide-react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import type React from "react"
-import { type SetStateAction, useCallback, useEffect } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { Label } from "@/shared/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
+import HoverCardComponent from "@/shared/custom-components/ui/HoverCard"
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
 import { useDisableSavedFilters, useSelectFilter } from "../hooks/mutate"
 import { useGetUserFilters } from "../hooks/query"
@@ -24,19 +24,14 @@ const parseFilterValue = (filterValue: string) => {
   const filters: ColumnFiltersState = []
   const visibility: Record<string, boolean> = {}
 
-  // Проходим по всем параметрам строки
   params.forEach((value, key) => {
     if (key === "hidden") {
-      // Обрабатываем скрытые колонки
       value.split(",").forEach((col) => {
         if (col) visibility[col] = false
       })
     } else {
-      // Все остальные ключи считаем фильтрами колонок
       try {
         const decoded = decodeURIComponent(value)
-        // Пробуем распарсить как JSON (для массивов/объектов),
-        // если не выходит — оставляем как строку
         const parsedValue =
           decoded === "undefined" || decoded === "null" ? undefined : JSON.parse(decoded)
         filters.push({ id: key, value: parsedValue })
@@ -56,7 +51,6 @@ const SavedFiltersList = ({
 }: SavedFiltersListType) => {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const { data: userFilters = [] } = useGetUserFilters()
   const { setColumnFilters, setColumnVisibility } = useDataTableFiltersContext()
 
@@ -64,7 +58,6 @@ const SavedFiltersList = ({
 
   const { mutate: selectFilter, isPending: isPendingSelect } = useSelectFilter()
 
-  // Функция только для применения фильтра к UI (таблице)
   const applyFilterToTable = useCallback(
     (filter: UserFilter) => {
       if (!filter.filterValue) return
@@ -77,7 +70,6 @@ const SavedFiltersList = ({
     [setColumnFilters, setColumnVisibility, setSelectedFilterName],
   )
 
-  // Обработчик ручного клика пользователя
   const handleFilterChange = (filterName: string) => {
     console.log(filterName, "disableSavedFilters")
     if (filterName === "disableSavedFilters") {
@@ -96,13 +88,12 @@ const SavedFiltersList = ({
     }
   }
 
-  // Эффект для синхронизации при загрузке страницы
   useEffect(() => {
     const activeFilter = userFilters.find((f) => f.isActive)
     if (activeFilter && selectedFilterName !== activeFilter.filterName) {
       applyFilterToTable(activeFilter)
     }
-  }, [userFilters])
+  }, [userFilters, applyFilterToTable, selectedFilterName])
 
   return (
     <>
@@ -115,8 +106,9 @@ const SavedFiltersList = ({
         >
           <RadioGroup
             className="grid gap-1 p-2"
-            value={selectedFilterName || "disableSavedFilters"}
+            disabled={isPendingDisable || isPendingSelect}
             onValueChange={handleFilterChange}
+            value={selectedFilterName || "disableSavedFilters"}
           >
             {userFilters.map((filter) => {
               return (

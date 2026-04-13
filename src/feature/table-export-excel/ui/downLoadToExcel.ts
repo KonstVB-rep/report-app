@@ -1,3 +1,5 @@
+import type { ColumnDef, Table } from "@tanstack/react-table"
+import ExcelJS from "exceljs"
 import {
   DeliveryProjectLabels,
   DeliveryRetailLabels,
@@ -6,6 +8,7 @@ import {
   StatusProjectLabels,
   StatusRetailLabels,
 } from "@/feature/deals/lib/constants"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
 import type {
   typeofDelivery,
   typeofDirections,
@@ -16,21 +19,18 @@ import type {
   typeofDirections as RetailDirection,
   typeofStatus as RetailStatus,
 } from "@/widgets/deal/model/columns-data-retail"
-import type { ColumnDef, Table } from "@tanstack/react-table"
-import ExcelJS from "exceljs"
-import { TOAST } from "../../../shared/custom-components/ui/Toast"
 
 const colsDefaultValue = ["phone", "nameDeal", "nameObject", "comments"]
 
-type ProjectTableType = "PROJECT"
-function isProjectType(type: string | undefined): type is ProjectTableType {
-  return !!type && ["PROJECT"].includes(type)
-}
+// type ProjectTableType = "PROJECT";
+// function isProjectType(type: string | undefined): type is ProjectTableType {
+//   return !!type && ["PROJECT"].includes(type);
+// }
 
-type RetailTableType = "RETAIL"
-function isRetailType(type: string | undefined): type is RetailTableType {
-  return !!type && ["RETAIL"].includes(type)
-}
+// type RetailTableType = "RETAIL";
+// function isRetailType(type: string | undefined): type is RetailTableType {
+//   return !!type && ["RETAIL"].includes(type);
+// }
 
 function dateToExcelSerial(date: Date): number {
   const y = date.getFullYear()
@@ -54,7 +54,7 @@ function transformExcelValue(
   // 2. Суммы — как целое число (без копеек)
   if (["amountCP", "amountWork", "amountPurchase", "delta"].includes(columnId || "")) {
     const num = parseFloat(String(value))
-    return isNaN(num) ? 0 : num // округляем до целого
+    return Number.isNaN(num) ? 0 : num // округляем до целого
   }
 
   // 3. Остальные строки из списка
@@ -95,7 +95,7 @@ function transformExcelValue(
   // 4. Преобразование дат
   if (typeof value === "string") {
     const parsed = new Date(value)
-    if (!isNaN(parsed.getTime())) {
+    if (!Number.isNaN(parsed.getTime())) {
       return dateToExcelSerial(parsed)
     }
   }

@@ -1,9 +1,9 @@
 "use server"
 
+import { Prisma, type UserFilter } from "@prisma/client"
 import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
-import { Prisma, type UserFilter } from "@prisma/client"
 import type { DeleteFilterReturnType, SaveFilterType, UpdateFilterDataType } from "../types"
 
 export const getUserFilters = async () => {

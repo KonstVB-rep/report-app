@@ -18,6 +18,8 @@ const useSendDealInfo = <T extends FieldValues>(
   const firstManagerId = managerId || userId
 
   const [contacts, setContacts] = useState<Contact[]>([])
+  const [isAddFile, setIsAddFile] = useState(false)
+
   const [managers, setManagers] = useState<{ userId: string | undefined }[]>(
     managersIds.length === 0 ? [{ userId: firstManagerId }] : managersIds,
   )
@@ -85,6 +87,8 @@ const useSendDealInfo = <T extends FieldValues>(
     managers,
     firstManager,
     setFirstManager,
+    isAddFile,
+    setIsAddFile,
   }
 }
 

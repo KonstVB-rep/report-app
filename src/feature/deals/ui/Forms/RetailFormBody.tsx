@@ -1,8 +1,8 @@
 "use client"
 
 import { useMemo } from "react"
-import { StatusRetail } from "@prisma/client"
-import { ArrowLeft } from "lucide-react"
+import { type DealType, StatusRetail } from "@prisma/client"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import type { Contact } from "@/entities/deal/types"
 import ContactDeal from "@/feature/contact/ui/ContactDeal"
@@ -31,7 +31,9 @@ import {
   DirectionRetailLabels,
   StatusRetailLabels,
 } from "../../lib/constants"
+import Comments from "../Comments"
 import AddManagerToDeal from "../Modals/AddManagerToDeal"
+import Files from "./Files"
 
 type RetailFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -55,6 +57,7 @@ const RetailFormBody = <T extends FieldValues>({
   titleForm,
 }: RetailFormBodyProps<T>) => {
   const initialManagersIds = form.getValues("managersIds" as Path<T>)
+  const dataDeal = form.formState.defaultValues
   const initialManagers = useMemo(
     () =>
       initialManagersIds?.length ? initialManagersIds : managerId ? [{ userId: managerId }] : [],
@@ -74,6 +77,8 @@ const RetailFormBody = <T extends FieldValues>({
     setManagers,
     firstManager,
     setFirstManager,
+    isAddFile,
+    setIsAddFile,
   } = useSendDealInfo<T>(
     onSubmit,
     managerId,
@@ -85,11 +90,30 @@ const RetailFormBody = <T extends FieldValues>({
   const currentStatus = form.watch("dealStatus" as Path<T>)
 
   return (
-    <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
+    <MotionDivY className="max-h-[82vh] overflow-y-auto flex justify-center overflow-x-hidden">
       <Overlay isPending={isPending} />
+      <div
+        className={`min-w-full flex flex-col gap-2 trаnsform ${isAddFile ? "translate-x-full" : "translate-x-0"} duration-150`}
+      >
+        <Button onClick={() => setIsAddFile(false)} size="icon" type="button" variant="outline">
+          <ArrowRight />
+        </Button>
+
+        {dataDeal && (
+          <Files
+            dataDeal={{
+              id: dataDeal.id as string,
+              type: dataDeal.type as DealType,
+              userId: (dataDeal.userId as string) || null,
+            }}
+          />
+        )}
+      </div>
       <Form {...form}>
         <form
-          className={`grid max-h-[85dvh] min-w-full pb-1 gap-2 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[85dvh] min-w-full pb-1 gap-2 overflow-y-auto transform duration-150 ${
+            isAddContact ? "-translate-x-full" : isAddFile ? "translate-x-full" : "translate-x-0"
+          }`}
           onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="text-center font-semibold uppercase">{titleForm}</div>
@@ -270,32 +294,19 @@ const RetailFormBody = <T extends FieldValues>({
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name={"comments" as Path<T>}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Примечание / Комментарии <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    disabled={isPending}
-                    placeholder="Введите комментарии"
-                    required
-                    {...field}
-                  />
-                </FormControl>
-                {getError("comments") && (
-                  <FormMessage className="text-red-500">{getError("comments")}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
+          <Comments form={form} getError={getError} />
 
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex gap-2">
+              <Button
+                onClick={() => setIsAddFile(true)}
+                size={isAddFile ? "icon" : undefined}
+                type="button"
+                variant="outline"
+              >
+                {isAddFile ? <ArrowRight /> : "Добавить файлы"}
+              </Button>
+
               <Button
                 onClick={toggleAddContact}
                 size={isAddContact ? "icon" : undefined}

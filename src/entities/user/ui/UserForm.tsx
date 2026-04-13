@@ -1,3 +1,4 @@
+import type React from "react"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Input } from "@/shared/components/ui/input"
@@ -9,7 +10,6 @@ import { MultiSelectNativeForm } from "@/shared/custom-components/ui/MultiSlectC
 import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent"
 import { cn, formatPhoneNumber } from "@/shared/lib/utils"
 import type { ActionResponse } from "@/shared/types"
-import type React from "react"
 import { RolesUser } from "../model/objectTypes"
 import { OPTIONS, type UserFormData, type UserFormEditData } from "../types"
 

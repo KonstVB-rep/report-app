@@ -51,6 +51,10 @@ const BaseTableRow = <T extends BaseEntity>({
     >
       <TableRow
         className={className}
+        data-closed={row.original.dealStatus === "CLOSED"}
+        data-progress={row.original.dealStatus === "PROGRESS"}
+        data-reject={row.original.dealStatus === "REJECT"}
+        data-success={row.original.dealStatus === "PAID"}
         style={{
           position: "absolute",
           top: 0,

@@ -1,8 +1,8 @@
 "use client"
 
-import { Button } from "@/shared/components/ui/button"
 import { ChevronDown } from "lucide-react"
 import dynamic from "next/dynamic"
+import { Button } from "@/shared/components/ui/button"
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
 
 const FiltersManagementContent = dynamic(() => import("./FiltersManagementContent"), {

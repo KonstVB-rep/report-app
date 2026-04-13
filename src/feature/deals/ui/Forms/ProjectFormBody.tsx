@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useMemo } from "react"
-import { StatusProject } from "@prisma/client"
-import { ArrowLeft } from "lucide-react"
+import { type DealType, StatusProject } from "@prisma/client"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useParams } from "next/navigation"
 import {
   type FieldValues,
@@ -42,6 +42,7 @@ import {
 } from "../../lib/constants"
 import Comments from "../Comments"
 import AddManagerToDeal from "../Modals/AddManagerToDeal"
+import Files from "./Files"
 
 type ProjectFormBodyProps<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -76,6 +77,8 @@ const ProjectFormBody = <T extends FieldValues>({
     dealType: "retails" | "projects" | "contracts"
   }>()
 
+  const dataDeal = form.formState.defaultValues
+
   const initialManagersIds = form.getValues("managersIds" as Path<T>)
   const initialManagers = useMemo(
     () =>
@@ -96,6 +99,8 @@ const ProjectFormBody = <T extends FieldValues>({
     setManagers,
     firstManager,
     setFirstManager,
+    isAddFile,
+    setIsAddFile,
   } = useSendDealInfo<T>(
     onSubmit,
     managerId,
@@ -139,11 +144,31 @@ const ProjectFormBody = <T extends FieldValues>({
   const currentStatus = form.watch("dealStatus" as Path<T>)
 
   return (
-    <MotionDivY className="max-h-[85dvh] overflow-y-auto flex gap-1 overflow-x-hidden pb-1">
+    <MotionDivY className="max-h-[85dvh] overflow-y-auto flex justify-center overflow-x-hidden pb-1">
       <Overlay isPending={isPending} />
+
+      <div
+        className={`min-w-full flex flex-col gap-2 trаnsform ${isAddFile ? "translate-x-full" : "translate-x-0"} duration-150`}
+      >
+        <Button onClick={() => setIsAddFile(false)} size="icon" type="button" variant="outline">
+          <ArrowRight />
+        </Button>
+
+        {dataDeal && (
+          <Files
+            dataDeal={{
+              id: dataDeal.id as string,
+              type: dataDeal.type as DealType,
+              userId: (dataDeal.userId as string) || null,
+            }}
+          />
+        )}
+      </div>
       <Form {...form}>
         <form
-          className={`grid max-h-[85dvh] min-w-full gap-5 overflow-y-auto transform duration-150 ${isAddContact ? "-translate-x-full" : "translate-x-0"}`}
+          className={`grid max-h-[85dvh] min-w-full gap-5 overflow-y-auto transform duration-150 ${
+            isAddContact ? "-translate-x-full" : isAddFile ? "translate-x-full" : "translate-x-0"
+          }`}
           onSubmit={form.handleSubmit(handleSubmit)}
         >
           <div className="text-center font-semibold uppercase">{titleForm}</div>
@@ -343,33 +368,18 @@ const ProjectFormBody = <T extends FieldValues>({
                 )}
               />
               <Comments form={form} getError={getError} />
-              {/* <FormField
-                control={form.control}
-                name={"comments" as Path<T>}
-                render={({ field }) => (
-                  <FormItem className="col-span-full">
-                    <FormLabel>Примечание / Комментарии</FormLabel>
-
-                    <FormControl>
-                      <Textarea
-                        disabled={isPending}
-                        placeholder="Введите комментарии"
-                        required
-                        {...field}
-                      />
-                    </FormControl>
-
-                    {getError("comments") && (
-                      <FormMessage className="text-red-500">
-                        {getError("comments")}
-                      </FormMessage>
-                    )}
-                  </FormItem>
-                )}
-              /> */}
             </div>
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex gap-2">
+                <Button
+                  onClick={() => setIsAddFile(true)}
+                  size={isAddFile ? "icon" : undefined}
+                  type="button"
+                  variant="outline"
+                >
+                  {isAddFile ? <ArrowRight /> : "Добавить файлы"}
+                </Button>
+
                 <Button
                   onClick={toggleAddContact}
                   size={isAddContact ? "icon" : undefined}

@@ -2,13 +2,11 @@
 
 import { useState } from "react"
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
-import { useDisableSavedFilters } from "../hooks/mutate"
 import DropFilters from "./DropFilters"
 import SavedFiltersList from "./SavedFiltersList"
 
 const FiltersManagementContent = () => {
   const { setColumnFilters, setColumnVisibility } = useDataTableFiltersContext()
-  const { mutate: disableSavedFilters } = useDisableSavedFilters()
 
   const [selectedFilterName, setSelectedFilterName] = useState<string>("")
 
