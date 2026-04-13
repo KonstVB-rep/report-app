@@ -1,8 +1,8 @@
-import type { UserFilter } from "@prisma/client"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
+import type { UserFilter } from "@prisma/client"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   deleteFilter,
   disableSavedFilters,
@@ -80,7 +80,6 @@ export const useSelectFilter = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["filters", authUser?.id],
-        exact: true,
       })
     },
     onError: (error) => {
@@ -100,6 +99,7 @@ export const useDisableSavedFilters = () => {
       return await disableSavedFilters()
     },
     onSuccess: () => {
+      console.log(["filters", authUser?.id])
       queryClient.invalidateQueries({
         queryKey: ["filters", authUser?.id],
         exact: true,

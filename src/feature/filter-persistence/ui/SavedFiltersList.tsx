@@ -1,11 +1,12 @@
-import type React from "react"
-import { type SetStateAction, useCallback, useEffect } from "react"
-import type { UserFilter } from "@prisma/client"
-import type { ColumnFiltersState } from "@tanstack/react-table"
-import { ListFilterPlus } from "lucide-react"
 import { Label } from "@/shared/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard"
+import type { UserFilter } from "@prisma/client"
+import type { ColumnFiltersState } from "@tanstack/react-table"
+import { ListFilterPlus } from "lucide-react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import type React from "react"
+import { type SetStateAction, useCallback, useEffect } from "react"
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
 import { useDisableSavedFilters, useSelectFilter } from "../hooks/mutate"
 import { useGetUserFilters } from "../hooks/query"
@@ -17,93 +18,91 @@ type SavedFiltersListType = {
   setSelectedFilterName: React.Dispatch<SetStateAction<string>>
 }
 
+const parseFilterValue = (filterValue: string) => {
+  const params = new URLSearchParams(filterValue)
+
+  const filters: ColumnFiltersState = []
+  const visibility: Record<string, boolean> = {}
+
+  // Проходим по всем параметрам строки
+  params.forEach((value, key) => {
+    if (key === "hidden") {
+      // Обрабатываем скрытые колонки
+      value.split(",").forEach((col) => {
+        if (col) visibility[col] = false
+      })
+    } else {
+      // Все остальные ключи считаем фильтрами колонок
+      try {
+        const decoded = decodeURIComponent(value)
+        // Пробуем распарсить как JSON (для массивов/объектов),
+        // если не выходит — оставляем как строку
+        const parsedValue =
+          decoded === "undefined" || decoded === "null" ? undefined : JSON.parse(decoded)
+        filters.push({ id: key, value: parsedValue })
+      } catch {
+        filters.push({ id: key, value: decodeURIComponent(value) })
+      }
+    }
+  })
+
+  return { filters, visibility }
+}
+
 const SavedFiltersList = ({
   handleClearFilters,
   selectedFilterName,
   setSelectedFilterName,
 }: SavedFiltersListType) => {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { data: userFilters = [] } = useGetUserFilters()
-  console.log(userFilters, "userFilters")
-
   const { setColumnFilters, setColumnVisibility } = useDataTableFiltersContext()
-  const { isPending } = useDisableSavedFilters()
+
+  const { mutate: disableSavedFilters, isPending: isPendingDisable } = useDisableSavedFilters()
+
   const { mutate: selectFilter, isPending: isPendingSelect } = useSelectFilter()
 
-  const defaultCheckedFilter = userFilters.find((item) => item.isActive)
+  // Функция только для применения фильтра к UI (таблице)
+  const applyFilterToTable = useCallback(
+    (filter: UserFilter) => {
+      if (!filter.filterValue) return
+      const { filters, visibility } = parseFilterValue(filter.filterValue)
 
-  const isRequest = isPending || isPendingSelect
+      setColumnFilters(filters)
+      setColumnVisibility(visibility)
+      setSelectedFilterName(filter.filterName)
+    },
+    [setColumnFilters, setColumnVisibility, setSelectedFilterName],
+  )
 
-  const filterSelect = useCallback((filter: UserFilter) => {
-    const { filterName, filterValue } = filter
-
-    console.log(filterValue, "filterValue")
-    if (!filterValue) return
-
-    console.log(selectedFilterName === filterName, "selectedFilterName")
-
-    if (selectedFilterName === filterName) return
-
-    setSelectedFilterName(filterName)
-
-    const queryParams = new URLSearchParams(filterValue)
-
-    console.log(queryParams, "queryParams")
-
-    const filtersStr = decodeURIComponent(queryParams.get("filters") || "")
-
-    console.log(filtersStr, "filtersStr")
-
-    const filtersArr: { id: string; value: unknown }[] = filtersStr
-      .split("&")
-      .filter(Boolean) // убираем пустые строки
-      .map((item) => {
-        const [key, value] = item.split("=")
-        if (!key) return null
-
-        let parsedValue: unknown
-
-        try {
-          // Защита от "undefined", "null" и некорректного JSON
-          const decoded = decodeURIComponent(value || "")
-          if (!decoded || decoded === "undefined" || decoded === "null") {
-            parsedValue = undefined
-          } else {
-            parsedValue = JSON.parse(decoded)
-          }
-        } catch (e) {
-          console.warn(`Failed to parse filter value for key "${key}":`, value)
-          parsedValue = undefined
-        }
-
-        return {
-          id: key,
-          value: parsedValue,
-        }
-      })
-      .filter((item): item is { id: string; value: unknown } => item !== null)
-
-    const hiddenCols = queryParams
-      .get("hidden")
-      ?.split(",")
-      ?.reduce(
-        (acc, item) => {
-          if (item) acc[item] = false
-          return acc
-        },
-        {} as { [key: string]: boolean },
-      )
-
-    setColumnFilters((filtersArr as unknown as ColumnFiltersState) ?? [])
-    setColumnVisibility(hiddenCols ?? {})
-
-    selectFilter(filter.id)
-  }, [])
-
-  useEffect(() => {
-    if (defaultCheckedFilter) {
-      filterSelect(defaultCheckedFilter)
+  // Обработчик ручного клика пользователя
+  const handleFilterChange = (filterName: string) => {
+    console.log(filterName, "disableSavedFilters")
+    if (filterName === "disableSavedFilters") {
+      handleClearFilters()
+      router.replace(pathname, { scroll: false })
+      disableSavedFilters()
+      return
     }
-  }, [defaultCheckedFilter, filterSelect])
+
+    const filter = userFilters.find((f) => f.filterName === filterName)
+    if (filter && filterName !== selectedFilterName) {
+      // Пишем в URL только при ручном клике
+      router.replace(`${pathname}?${filter.filterValue}`, { scroll: false })
+      applyFilterToTable(filter)
+      selectFilter(filter.id)
+    }
+  }
+
+  // Эффект для синхронизации при загрузке страницы
+  useEffect(() => {
+    const activeFilter = userFilters.find((f) => f.isActive)
+    if (activeFilter && selectedFilterName !== activeFilter.filterName) {
+      applyFilterToTable(activeFilter)
+    }
+  }, [userFilters])
 
   return (
     <>
@@ -116,7 +115,8 @@ const SavedFiltersList = ({
         >
           <RadioGroup
             className="grid gap-1 p-2"
-            defaultValue={defaultCheckedFilter?.filterName || "disableSavedFilters"}
+            value={selectedFilterName || "disableSavedFilters"}
+            onValueChange={handleFilterChange}
           >
             {userFilters.map((filter) => {
               return (
@@ -124,9 +124,7 @@ const SavedFiltersList = ({
                   <div className="btn_hover flex w-full items-center gap-2">
                     <RadioGroupItem
                       className="transition-transform duration-150 active:scale-90"
-                      disabled={isRequest}
                       id={filter.id}
-                      onClick={() => filterSelect(filter)}
                       value={filter.filterName}
                     />
                     <Label
@@ -143,9 +141,7 @@ const SavedFiltersList = ({
             <div className="btn_hover flex h-9 w-full items-center space-x-2 py-2">
               <RadioGroupItem
                 className="transition-transform duration-150 active:scale-90"
-                disabled={isRequest}
                 id="disableSavedFilters"
-                onClick={handleClearFilters}
                 value="disableSavedFilters"
               />
               <Label

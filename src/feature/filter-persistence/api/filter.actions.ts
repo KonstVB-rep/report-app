@@ -1,9 +1,9 @@
 "use server"
 
-import { Prisma, type UserFilter } from "@prisma/client"
 import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
+import { Prisma, type UserFilter } from "@prisma/client"
 import type { DeleteFilterReturnType, SaveFilterType, UpdateFilterDataType } from "../types"
 
 export const getUserFilters = async () => {
@@ -227,11 +227,12 @@ export const selectFilter = async (id: string) => {
 export const disableSavedFilters = async () => {
   try {
     const user = await requireUser()
-    console.log(user, "user")
-    await prisma.userFilter.updateMany({
+
+    const res = await prisma.userFilter.updateMany({
       where: { userId: user.userId },
       data: { isActive: false },
     })
+    console.log("СКОЛЬКО ОБНОВЛЕНО:", res.count)
 
     return { success: true }
   } catch (error) {

@@ -16,7 +16,6 @@ const FiltersManagementContent = () => {
     setColumnFilters([])
     setColumnVisibility({})
     setSelectedFilterName("")
-    disableSavedFilters()
   }
 
   return (
