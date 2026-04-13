@@ -29,10 +29,17 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   return (
     <div
       className={`relative flex items-center gap-4 rounded-md border ${
-        value ? "border-solid min-w-[280px]" : "border-dashed max-w-fit"
-      } border-muted-foreground`}
+        value
+          ? "border-solid border-blue-500 min-w-[280px] overflow-hidden border-2"
+          : "border-dashed max-w-fit border-muted-foreground"
+      }`}
     >
-      <DateRangePicker label={label} onValueChange={onDateChange} value={value} />
+      <DateRangePicker
+        className={`${value ? "rounded-bl-md rounded-tl-md rounded-br-none rounded-tr-none" : "border-dashed rounded-md"} border-muted-foreground border-none`}
+        label={label}
+        onValueChange={onDateChange}
+        value={value}
+      />
       {value && (
         <Button
           className="absolute right-0 h-full p-2 rounded"

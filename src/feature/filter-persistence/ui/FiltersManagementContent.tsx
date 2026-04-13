@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
 import DropFilters from "./DropFilters"
 import SavedFiltersList from "./SavedFiltersList"
@@ -13,17 +13,19 @@ const FiltersManagementContent = () => {
   const handleClearFilters = () => {
     setColumnFilters([])
     setColumnVisibility({})
-    setSelectedFilterName("")
+    setSelectedFilterName("disableSavedFilters")
   }
 
   return (
     <div className="flex items-center gap-2">
       <DropFilters handleClearFilters={handleClearFilters} />
-      <SavedFiltersList
-        handleClearFilters={handleClearFilters}
-        selectedFilterName={selectedFilterName}
-        setSelectedFilterName={setSelectedFilterName}
-      />
+      <Suspense fallback={<div className="h-9 w-9 animate-pulse bg-stone-200 rounded-full" />}>
+        <SavedFiltersList
+          handleClearFilters={handleClearFilters}
+          selectedFilterName={selectedFilterName}
+          setSelectedFilterName={setSelectedFilterName}
+        />
+      </Suspense>
     </div>
   )
 }

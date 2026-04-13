@@ -5,6 +5,7 @@ export type InputFormProps<T extends FieldValues> = {
   label: string
   control: Control<T>
   errorMessage?: string
+  showStarRequired?: boolean
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 export type TextareaFormProps<T extends FieldValues> = {

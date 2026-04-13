@@ -48,6 +48,10 @@ const directionOptions = transformObjValueToArr(DirectionRetailLabels)
 const deliveryOptions = transformObjValueToArr(DeliveryRetailLabels)
 const statusOptions = transformObjValueToArr(StatusRetailLabels)
 
+const date = new Date()
+date.setUTCHours(6, 0, 0, 0)
+const today = date.toISOString()
+
 const RetailFormBody = <T extends FieldValues>({
   form,
   onSubmit,
@@ -136,6 +140,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"nameDeal" as Path<T>}
                 placeholder="Название..."
                 required
+                showStarRequired
               />
 
               <InputTextForm
@@ -155,6 +160,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"nameObject" as Path<T>}
                 placeholder="Название..."
                 required
+                showStarRequired
               />
 
               <SelectFormField
@@ -176,6 +182,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"deliveryType" as Path<T>}
                 options={deliveryOptions}
                 placeholder="Выберите тип поставки"
+                required
               />
 
               <InputTextForm
@@ -186,6 +193,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"contact" as Path<T>}
                 placeholder="Имя контакта"
                 required
+                showStarRequired
               />
             </div>
 
@@ -251,6 +259,7 @@ const RetailFormBody = <T extends FieldValues>({
               <DatePickerFormField
                 className="mb-2"
                 control={form.control}
+                defaultValue={today}
                 disabled={isPending}
                 errorMessage={getError("lastDateConnection")}
                 label="Последний контакт"
@@ -266,6 +275,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"resource" as Path<T>}
                 placeholder="Откуда пришёл клиент"
                 required
+                showStarRequired
               />
             </div>
           </div>
@@ -275,7 +285,9 @@ const RetailFormBody = <T extends FieldValues>({
             name={"commentsLastConnection" as Path<T>}
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Последний комментарий</FormLabel>
+                <FormLabel>
+                  Последний комментарий<span className="text-red-700">*</span>
+                </FormLabel>
 
                 <FormControl>
                   <Textarea

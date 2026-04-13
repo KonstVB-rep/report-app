@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { StatusProject, StatusRetail } from "@prisma/client"
+import { isValid } from "date-fns/isValid"
+import { parse } from "date-fns/parse"
 import { useParams } from "next/navigation"
 import type { FieldValues } from "react-hook-form"
 import type { Contact } from "@/entities/deal/types"
@@ -36,19 +38,30 @@ const useSendDealInfo = <T extends FieldValues>(
   }
 
   const handleSubmit = (data: T) => {
-    const lastComments = data?.comments.split("\n")[0].split(" ").at(-1)
+    const firstLine = data?.comments?.split("\n")[0] || ""
 
-    const comments =
+    let lastComments = firstLine.substring(22)
+    const dateInComents = firstLine.substring(0, 20)
+    const dateParse = parse(dateInComents, "dd.MM.yyyy, HH:mm:ss", new Date())
+
+    if (!isValid(dateParse)) {
+      lastComments = firstLine.split(" ").at(-1) || ""
+    }
+
+    const isNewComment =
       data.commentsLastConnection !== "" && data.commentsLastConnection !== lastComments
-        ? `${new Date().toLocaleString()}: ${data.commentsLastConnection}\n${data.comments}`
-        : data.comments
+
+    const comments = isNewComment
+      ? `${new Date().toLocaleString()}: ${data.commentsLastConnection}\n${data.comments}`
+      : data.comments
+
     const fullData = {
       ...data,
       userId: firstManager,
       contacts: selectedContacts,
       managersIds: managers,
       plannedDateConnection:
-        data.dealStatus !== (StatusProject.REJECT || StatusRetail.REJECT)
+        data.dealStatus !== StatusProject.REJECT && data.dealStatus !== StatusRetail.REJECT
           ? data.plannedDateConnection
           : null,
       comments,
