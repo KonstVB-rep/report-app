@@ -1,6 +1,6 @@
 // src/shared/hooks/useTableState.ts
 
-import { useMemo, useState } from "react"
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 import {
   type ColumnDef,
   getCoreRowModel,
@@ -11,7 +11,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
+import { useMemo, useState } from "react"
 
 interface UseTableStateOptions<T> extends Partial<TableOptions<T>> {
   hiddenColumns?: Partial<Record<string, boolean>>
@@ -24,7 +24,12 @@ export const useTableState = <T extends { id: string }>(
   options: UseTableStateOptions<T> = {},
 ) => {
   const { hiddenColumns, paramsNotFilters, ...tableOptions } = options
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      id: "dateRequest",
+      desc: true,
+    },
+  ])
   const [rowSelection, setRowSelection] = useState({})
 
   const {
