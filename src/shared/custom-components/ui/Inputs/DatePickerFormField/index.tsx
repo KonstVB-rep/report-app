@@ -11,6 +11,7 @@ type DatePickerFormFieldProps<T extends FieldValues> = {
   className?: string
   required?: boolean
   disabled?: boolean
+  defaultValue?: string
 }
 
 export const DatePickerFormField = <T extends FieldValues>({

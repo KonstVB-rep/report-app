@@ -58,6 +58,10 @@ const deliveryOptions = transformObjValueToArr(DeliveryProjectLabels)
 const statusOptionsProject = transformObjValueToArr(StatusProjectLabels)
 const statusOptionsContracts = transformObjValueToArr(StatusContractLabels)
 
+const date = new Date()
+date.setUTCHours(6, 0, 0, 0)
+const today = date.toISOString()
+
 const statusOptions = {
   projects: statusOptionsProject,
   project: statusOptionsProject,
@@ -192,6 +196,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"nameDeal" as Path<T>}
                   placeholder="Название..."
                   required
+                  showStarRequired
                 />
 
                 <InputTextForm
@@ -211,6 +216,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"nameObject" as Path<T>}
                   placeholder="Название..."
                   required
+                  showStarRequired
                 />
 
                 <SelectFormField
@@ -232,6 +238,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"deliveryType" as Path<T>}
                   options={deliveryOptions}
                   placeholder="Выберите тип поставки"
+                  required
                 />
 
                 <InputTextForm
@@ -242,6 +249,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"contact" as Path<T>}
                   placeholder="Имя контакта"
                   required
+                  showStarRequired
                 />
 
                 <InputPhoneForm
@@ -326,6 +334,7 @@ const ProjectFormBody = <T extends FieldValues>({
                 <DatePickerFormField
                   className="mb-2"
                   control={form.control}
+                  defaultValue={today}
                   disabled={isPending}
                   errorMessage={getError("lastDateConnection")}
                   label="Последний контакт"
@@ -340,6 +349,8 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Источник"
                   name={"resource" as Path<T>}
                   placeholder="Откуда пришёл клиент"
+                  required
+                  showStarRequired
                 />
               </div>
 
@@ -348,7 +359,9 @@ const ProjectFormBody = <T extends FieldValues>({
                 name={"commentsLastConnection" as Path<T>}
                 render={({ field }) => (
                   <FormItem className="col-span-full">
-                    <FormLabel>Последний комментарий</FormLabel>
+                    <FormLabel>
+                      Последний комментарий <span className="text-red-700">*</span>
+                    </FormLabel>
 
                     <FormControl>
                       <Textarea

@@ -13,10 +13,12 @@ import { cn } from "@/shared/lib/utils"
 type CalendarComponentProps = {
   required?: boolean
   field: FieldValues
+  defaultValue?: string
 }
 
-const CalendarComponent = ({ field, ...props }: CalendarComponentProps) => {
-  const selectedDate = field.value ? new Date(field.value) : undefined
+const CalendarComponent = ({ field, defaultValue, ...props }: CalendarComponentProps) => {
+  const rawValue = field.value ?? defaultValue
+  const selectedDate = rawValue ? new Date(rawValue) : undefined
 
   return (
     <Popover>
