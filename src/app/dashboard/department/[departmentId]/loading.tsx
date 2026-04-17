@@ -1,5 +1,5 @@
 const Loading = () => {
-  const placeholders = Array(5).fill(null)
+  const placeholders = Array(5).fill(null);
 
   return (
     <div className="grid gap-5">
@@ -13,7 +13,7 @@ const Loading = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Loading
+export default Loading;

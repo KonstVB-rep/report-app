@@ -1,31 +1,42 @@
-"use client"
+"use client";
 
-import { format } from "date-fns"
-import { ru } from "date-fns/locale"
-import { CalendarIcon } from "lucide-react"
-import type { FieldValues } from "react-hook-form"
-import { Button } from "@/shared/components/ui/button"
-import { Calendar } from "@/shared/components/ui/calendar"
-import { FormControl } from "@/shared/components/ui/form"
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
-import { cn } from "@/shared/lib/utils"
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import type { FieldValues } from "react-hook-form";
+import { Button } from "@/shared/components/ui/button";
+import { Calendar } from "@/shared/components/ui/calendar";
+import { FormControl } from "@/shared/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
+import { cn } from "@/shared/lib/utils";
 
 type CalendarComponentProps = {
-  required?: boolean
-  field: FieldValues
-  defaultValue?: string
-}
+  required?: boolean;
+  field: FieldValues;
+  defaultValue?: string;
+};
 
-const CalendarComponent = ({ field, defaultValue, ...props }: CalendarComponentProps) => {
-  const rawValue = field.value ?? defaultValue
-  const selectedDate = rawValue ? new Date(rawValue) : undefined
+const CalendarComponent = ({
+  field,
+  defaultValue,
+  ...props
+}: CalendarComponentProps) => {
+  const rawValue = field.value ?? defaultValue;
+  const selectedDate = rawValue ? new Date(rawValue) : undefined;
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <FormControl>
           <Button
-            className={cn("w-full text-left font-normal", !field.value && "text-muted-foreground")}
+            className={cn(
+              "w-full text-left font-normal",
+              !field.value && "text-muted-foreground",
+            )}
             variant={"outline"}
           >
             {selectedDate ? (
@@ -42,7 +53,7 @@ const CalendarComponent = ({ field, defaultValue, ...props }: CalendarComponentP
           locale={ru}
           mode="single"
           onSelect={(date: Date | undefined) => {
-            field.onChange(date || null)
+            field.onChange(date || null);
           }}
           required={props.required}
           selected={selectedDate}
@@ -50,7 +61,7 @@ const CalendarComponent = ({ field, defaultValue, ...props }: CalendarComponentP
         />
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};
 
-export default CalendarComponent
+export default CalendarComponent;

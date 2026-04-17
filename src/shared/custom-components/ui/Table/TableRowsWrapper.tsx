@@ -1,23 +1,23 @@
-import { useRef } from "react"
-import type { Row, Table } from "@tanstack/react-table"
-import type { VirtualItem } from "@tanstack/react-virtual"
-import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable"
-import { cn } from "@/shared/lib/utils"
-import TableTemplate from "./TableTemplate"
-import VirtualRow from "./VirtualRow"
+import { useRef } from "react";
+import type { Row, Table } from "@tanstack/react-table";
+import type { VirtualItem } from "@tanstack/react-virtual";
+import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable";
+import { cn } from "@/shared/lib/utils";
+import TableTemplate from "./TableTemplate";
+import VirtualRow from "./VirtualRow";
 
 interface TableComponentDTProps<T extends Record<string, unknown>> {
-  table: Table<T>
-  getRowLink?: (row: T & { id: string }, type: string) => string
-  hasEditDeleteActions?: boolean
-  openFilters: boolean
+  table: Table<T>;
+  getRowLink?: (row: T & { id: string }, type: string) => string;
+  hasEditDeleteActions?: boolean;
+  openFilters: boolean;
   renderVirtualRow: ({
     row,
     virtualRow,
   }: {
-    row: Row<T>
-    virtualRow: VirtualItem
-  }) => React.ReactNode
+    row: Row<T>;
+    virtualRow: VirtualItem;
+  }) => React.ReactNode;
 }
 
 const TableRowsWrapper = <T extends Record<string, unknown>>({
@@ -25,21 +25,24 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
   openFilters,
   renderVirtualRow,
 }: TableComponentDTProps<T>) => {
-  const tableContainerRef = useRef<HTMLDivElement | null>(null)
-  const { rows } = table.getRowModel()
-  const rowsCount = rows.length
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const { rows } = table.getRowModel();
+  const rowsCount = rows.length;
 
   const { virtualItems, totalSize } = useVirtualizedRowTable<T>({
     rows,
     tableContainerRef,
-  })
+  });
 
   return (
     <div
-      className={cn("rounded-lg relative h-full overflow-auto border transition-all duration-200", {
-        "max-h-[68vh]": openFilters,
-        "max-h-[75vh]": !openFilters,
-      })}
+      className={cn(
+        "rounded-lg relative h-full overflow-auto border transition-all duration-200",
+        {
+          "max-h-[68vh]": openFilters,
+          "max-h-[75vh]": !openFilters,
+        },
+      )}
       ref={tableContainerRef}
     >
       {rowsCount > 0 && (
@@ -50,7 +53,9 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
       {rowsCount > 0 ? (
         <TableTemplate table={table} totalSize={totalSize}>
           <VirtualRow
-            renderRow={({ row, virtualRow }) => renderVirtualRow({ row, virtualRow })}
+            renderRow={({ row, virtualRow }) =>
+              renderVirtualRow({ row, virtualRow })
+            }
             rows={rows}
             virtualItems={virtualItems}
           />
@@ -61,7 +66,7 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
         </p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default TableRowsWrapper
+export default TableRowsWrapper;

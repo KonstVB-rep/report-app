@@ -11,7 +11,7 @@ export const StatusProject = {
   // DELIVERY_WORKS : "Поставка / Выполнение работ",
   // SIGN_ACTS_PAYMENT : "Подписание актов / Оплата",
   CLOSED: "Закрыт",
-}
+};
 
 export const StatusRetail = {
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
@@ -22,13 +22,19 @@ export const StatusRetail = {
   PROGRESS: "В работе / Закупка / Производство",
   PAID: "Оплачено",
   CLOSED: "Закрыт",
-}
+};
 
-export const ACTUAL_STATUS_DEAL = "ACTUAL"
+export const STATUS_DEAL_COLOR = ["ACTUAL", "FIRST_CP_APPROVAL"];
 
-export type AllStatusKeys = keyof typeof StatusProject | keyof typeof StatusRetail
+export type AllStatusKeys =
+  | keyof typeof StatusProject
+  | keyof typeof StatusRetail;
 
-export const DealTypesArray = ["project", "retail", "contract"] as const
-export const TableTypes = ["retails", "projects"] as const
+export const DealTypesArray = ["project", "retail", "contract"] as const;
+export const TableTypes = ["retails", "projects"] as const;
 
-export const UnionDealTypeParams = ["retails", "projects", "contracts"] as const
+export const UnionDealTypeParams = [
+  "retails",
+  "projects",
+  "contracts",
+] as const;

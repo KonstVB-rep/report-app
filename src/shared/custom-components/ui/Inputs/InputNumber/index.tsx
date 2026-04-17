@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { formatNumberCurrency } from "@/entities/deal/lib/helpers"
-import { Input } from "@/shared/components/ui/input"
+import { useEffect, useRef, useState } from "react";
+import { formatNumberCurrency } from "@/entities/deal/lib/helpers";
+import { Input } from "@/shared/components/ui/input";
 
 interface InputNumberProps {
-  placeholder?: string
-  value?: string
-  onChange: (val: string) => void
-  disabled?: boolean
-  onBlur?: () => void
+  placeholder?: string;
+  value?: string;
+  onChange: (val: string) => void;
+  disabled?: boolean;
+  onBlur?: () => void;
 }
 
 const InputNumber: React.FC<InputNumberProps> = ({
@@ -19,46 +19,46 @@ const InputNumber: React.FC<InputNumberProps> = ({
   disabled = false,
   onBlur,
 }) => {
-  const [inputValue, setInputValue] = useState("")
-  const inputRef = useRef<HTMLInputElement>(null)
-  const cursorPos = useRef<number | null>(null)
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const cursorPos = useRef<number | null>(null);
 
   useEffect(() => {
     if (value !== undefined) {
-      setInputValue(value)
+      setInputValue(value);
     }
-  }, [value])
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value
+    const raw = e.target.value;
     const cleaned = raw
       .replace(/[^\d,.]/g, "") // только цифры, точка, запятая
       .replace(/\.(?=.*\.)/g, "") // только одна точка
       .replace(/,(?=.*,)/g, "") // только одна запятая
-      .replace(".", ",") // точка в запятую
+      .replace(".", ","); // точка в запятую
 
     // сохраняем позицию курсора
-    cursorPos.current = e.target.selectionStart
+    cursorPos.current = e.target.selectionStart;
 
-    setInputValue(cleaned)
-    onChange(cleaned)
-  }
+    setInputValue(cleaned);
+    onChange(cleaned);
+  };
 
   const handleBlur = () => {
-    const formatted = formatNumberCurrency(inputValue)
-    setInputValue(formatted)
-    onChange(formatted)
-    if (onBlur) onBlur()
-  }
+    const formatted = formatNumberCurrency(inputValue);
+    setInputValue(formatted);
+    onChange(formatted);
+    if (onBlur) onBlur();
+  };
 
   // восстанавливаем курсор после рендера
   // biome-ignore lint/correctness/useExhaustiveDependencies: code working good
   useEffect(() => {
-    const el = inputRef.current
+    const el = inputRef.current;
     if (el && cursorPos.current !== null) {
-      el.setSelectionRange(cursorPos.current, cursorPos.current)
+      el.setSelectionRange(cursorPos.current, cursorPos.current);
     }
-  }, [cursorPos.current])
+  }, [cursorPos.current]);
 
   return (
     <Input
@@ -71,7 +71,7 @@ const InputNumber: React.FC<InputNumberProps> = ({
       type="text"
       value={inputValue}
     />
-  )
-}
+  );
+};
 
-export default InputNumber
+export default InputNumber;

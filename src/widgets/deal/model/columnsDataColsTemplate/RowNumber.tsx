@@ -1,4 +1,4 @@
-import type { Row } from "@tanstack/react-table"
+import type { Row } from "@tanstack/react-table";
 
 const RowNumber = <T,>() => {
   return {
@@ -9,12 +9,12 @@ const RowNumber = <T,>() => {
     enableSorting: false,
     accessorFn: () => "",
     maxSize: 100,
-    enableResizing: false,
+    // enableResizing: false,
     meta: {
       isNotSearchable: true,
       title: "№",
     },
-  }
-}
+  };
+};
 
-export default RowNumber
+export default RowNumber;

@@ -1,27 +1,27 @@
-import { useState } from "react"
-import type { Header, Row } from "@tanstack/react-table"
-import { TableRow } from "@/shared/components/ui/table"
-import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
-import TableCellComponent from "./TableCellCompoment"
+import { useState } from "react";
+import type { Header, Row } from "@tanstack/react-table";
+import { TableRow } from "@/shared/components/ui/table";
+import { getRowClassName } from "@/shared/lib/helpers/getRowClassName";
+import TableCellComponent from "./TableCellCompoment";
 
 type Props<T extends Record<string, unknown>> = {
-  row: Row<T>
-  virtualRow: { index: number; start: number }
-  hasEditDeleteActions?: boolean
-  entityType: string
-  headers?: Header<T, unknown>[]
-}
+  row: Row<T>;
+  virtualRow: { index: number; start: number };
+  hasEditDeleteActions?: boolean;
+  entityType: string;
+  headers?: Header<T, unknown>[];
+};
 
 const TableWithoutContent = <T extends Record<string, unknown>>({
   row,
   virtualRow,
   headers,
 }: Props<T>) => {
-  const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
+  const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null);
 
   const handleOpenInfo = (cellId: string) => {
-    setOpenFullInfoCell(openFullInfoCell === cellId ? null : cellId)
-  }
+    setOpenFullInfoCell(openFullInfoCell === cellId ? null : cellId);
+  };
 
   return (
     <TableRow
@@ -51,10 +51,10 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
               maxWidth: headers?.[index]?.column.columnDef.maxSize,
             }}
           />
-        )
+        );
       })}
     </TableRow>
-  )
-}
+  );
+};
 
-export default TableWithoutContent
+export default TableWithoutContent;

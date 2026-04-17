@@ -1012,3 +1012,140 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 		display: grid;
 	}
 }
+
+
+.resizer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  right: 0;
+  width: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.resizer.isResizing {
+  background: blue;
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .resizer {
+    opacity: 0;
+  }
+
+  *:hover > .resizer {
+    opacity: 1;
+  }
+}
+
+
+.a4-preview {
+  width: 210mm;
+  /* min-height убираем или оставляем для печати */
+  height: 297mm; /* Фиксируем высоту для предпросмотра */
+  overflow-y: auto; /* Включаем скролл внутри листа */
+  padding: 10mm;
+  background: white;
+  position: relative;
+  
+  /* Для печати */
+  @media print {
+    margin: 0;
+    box-shadow: none;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+table,
+.divTable {
+  width: fit-content;
+}
+/*
+.tr {
+  display: flex;
+} */
+
+/* tr,
+.tr {
+  width: fit-content;
+  height: 30px;
+}
+
+th,
+.th,
+td,
+.td {
+  padding: 0.25rem;
+}
+
+th,
+.th {
+  padding: 2px 4px;
+  position: relative;
+  font-weight: bold;
+  text-align: center;
+  height: 30px;
+  & *{
+      color: #000000;
+  }
+} */
+
+/* td,
+.td {
+  height: 30px;
+} */
+
+.resizer {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  right: 0;
+  width: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.resizer.isResizing {
+  background: blue;
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .resizer {
+    opacity: 0;
+  }
+
+  *:hover > .resizer {
+    opacity: 1;
+  }
+}
+
+.tbody .tr-offer:first-child{
+    border-top: 1px solid black;
+}
+
+.tr-offer{
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  width: fit-content;
+  & .td-offer{
+    border-left: 1px solid black;
+  }
+}
+
+.td-offer{
+  padding: 0.25rem;
+  width: fit-content;
+}
+
+.td-offer{
+  padding: 0.25rem;
+  width: fit-content;
+}

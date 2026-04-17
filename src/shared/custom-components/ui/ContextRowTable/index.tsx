@@ -1,35 +1,38 @@
-"use client"
+"use client";
 
-import { memo } from "react"
-import { PermissionEnum } from "@prisma/client"
-import { FilePenLine, FileText, Trash2 } from "lucide-react"
-import dynamic from "next/dynamic"
-import { ACTUAL_STATUS_DEAL } from "@/entities/deal/lib/constants"
+import { memo } from "react";
+import { PermissionEnum } from "@prisma/client";
+import { FilePenLine, FileText, Trash2 } from "lucide-react";
+import dynamic from "next/dynamic";
+import { STATUS_DEAL_COLOR } from "@/entities/deal/lib/constants";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@/shared/components/ui/context-menu"
+} from "@/shared/components/ui/context-menu";
 
-const ProtectedByPermissions = dynamic(() => import("../Protect/ProtectedByPermissions"), {
-  ssr: false,
-})
+const ProtectedByPermissions = dynamic(
+  () => import("../Protect/ProtectedByPermissions"),
+  {
+    ssr: false,
+  },
+);
 
 type ContextMenuTableProps = {
-  children: React.ReactNode
-  hasEditDeleteActions?: boolean
+  children: React.ReactNode;
+  hasEditDeleteActions?: boolean;
   openModal?: () => {
     edit: {
-      onClick: () => void
-    }
-    delete: { onClick: () => void }
-    more: { onClick: () => void }
-    color?: { onClick: () => void }
-  }
-  path?: string
-  dealStatus?: string | null
-}
+      onClick: () => void;
+    };
+    delete: { onClick: () => void };
+    more: { onClick: () => void };
+    color?: { onClick: () => void };
+  };
+  path?: string;
+  dealStatus?: string | null;
+};
 
 const ContextRowTable = ({
   children,
@@ -70,12 +73,12 @@ const ContextRowTable = ({
               </ContextMenuItem>
             </ProtectedByPermissions>
 
-            {dealStatus === ACTUAL_STATUS_DEAL && (
+            {dealStatus && STATUS_DEAL_COLOR.includes(dealStatus) && (
               <ContextMenuItem
                 className="flex cursor-pointer gap-2"
                 onClick={() => {
-                  const actions = openModal?.()
-                  actions?.color?.onClick()
+                  const actions = openModal?.();
+                  actions?.color?.onClick();
                 }}
               >
                 <FilePenLine size="14" /> Цвет
@@ -85,7 +88,7 @@ const ContextRowTable = ({
         )}
       </ContextMenuContent>
     </ContextMenu>
-  )
-}
+  );
+};
 
-export default memo(ContextRowTable)
+export default memo(ContextRowTable);
