@@ -1,47 +1,36 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/shared/components/ui/tabs";
-import { useGetUserFilterById } from "../hooks/query";
-import DelSavedFilterForm from "./DelSavedFilterForm";
-import UpdateSavedFilterForm from "./UpdateSavedFilterForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs"
+import { useGetUserFilterById } from "../hooks/query"
+import DelSavedFilterForm from "./DelSavedFilterForm"
+import UpdateSavedFilterForm from "./UpdateSavedFilterForm"
 
 const TabsChangeFilter = ({ filterId }: { filterId: string }) => {
-  const { data: filter, isPending } = useGetUserFilterById(filterId);
+  const { data: filter, isPending } = useGetUserFilterById(filterId)
 
   if (isPending) {
-    return <FilterSleketonLoader />;
+    return <FilterSleketonLoader />
   }
 
   if (!filter) {
-    return null;
+    return null
   }
 
   return (
-    <Tabs
-      className="w-full min-w-[300px] md:min-w-[400px]"
-      defaultValue="update"
-    >
+    <Tabs className="w-full min-w-[300px] md:min-w-[400px]" defaultValue="update">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="update">Обновить</TabsTrigger>
         <TabsTrigger value="delete">Удалить</TabsTrigger>
       </TabsList>
       <TabsContent value="delete">
-        <DelSavedFilterForm
-          filterId={filter.id}
-          filterName={filter.filterName}
-        />
+        <DelSavedFilterForm filterId={filter.id} filterName={filter.filterName} />
       </TabsContent>
       <TabsContent value="update">
         <UpdateSavedFilterForm filter={filter} />
       </TabsContent>
     </Tabs>
-  );
-};
+  )
+}
 
-export default TabsChangeFilter;
+export default TabsChangeFilter
 
 const FilterSleketonLoader = () => {
   return (
@@ -52,5 +41,5 @@ const FilterSleketonLoader = () => {
       </div>
       <div className="h-52 w-full animate-pulse rounded-xl dark:bg-muted/50 bg-black/20" />
     </div>
-  );
-};
+  )
+}

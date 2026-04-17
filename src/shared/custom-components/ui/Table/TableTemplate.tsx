@@ -1,22 +1,17 @@
-import { Button } from "@/shared/components/ui/button";
-import {
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shared/components/ui/table";
-import { HEIGHT_ROW } from "@/shared/lib/constants";
-import { cn } from "@/shared/lib/utils";
-import { flexRender, type useReactTable } from "@tanstack/react-table";
-import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react";
-import { useMemo } from "react";
+import { Button } from "@/shared/components/ui/button"
+import { TableBody, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table"
+import { HEIGHT_ROW } from "@/shared/lib/constants"
+import { cn } from "@/shared/lib/utils"
+import { flexRender, type useReactTable } from "@tanstack/react-table"
+import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react"
+import { useMemo } from "react"
 
 type TableTemplateProps<T extends Record<string, unknown>> = {
-  table: ReturnType<typeof useReactTable<T>>;
-  className?: string;
-  totalSize?: number;
-  children: React.ReactNode;
-};
+  table: ReturnType<typeof useReactTable<T>>
+  className?: string
+  totalSize?: number
+  children: React.ReactNode
+}
 
 const TableTemplate = <T extends Record<string, unknown>>({
   table,
@@ -25,15 +20,15 @@ const TableTemplate = <T extends Record<string, unknown>>({
   children,
 }: TableTemplateProps<T>) => {
   const columnSizeVars = useMemo(() => {
-    const headers = table.getFlatHeaders();
-    const colSizes: { [key: string]: number } = {};
+    const headers = table.getFlatHeaders()
+    const colSizes: { [key: string]: number } = {}
     for (let i = 0; i < headers.length; i++) {
-      const header = headers[i]!;
-      colSizes[`--header-${header.id}-size`] = header.getSize();
-      colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
+      const header = headers[i]!
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
-    return colSizes;
-  }, [table.getState().columnSizingInfo, table.getState().columnSizing]);
+    return colSizes
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
 
   return (
     <table
@@ -84,10 +79,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <span className="text-xs font-semibold first-letter:capitalize text-center">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                     </span>
                     {header.column.getCanSort() && (
                       <Button onClick={header.column.getToggleSortingHandler()}>
@@ -105,9 +97,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
                           onDoubleClick: () => header.column.resetSize(),
                           onMouseDown: header.getResizeHandler(),
                           onTouchStart: header.getResizeHandler(),
-                          className: `resizer ${
-                            header.column.getIsResizing() ? "isResizing" : ""
-                          }`,
+                          className: `resizer ${header.column.getIsResizing() ? "isResizing" : ""}`,
                         }}
                       />
                     )}
@@ -129,7 +119,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
         {children}
       </TableBody>
     </table>
-  );
-};
+  )
+}
 
-export default TableTemplate;
+export default TableTemplate

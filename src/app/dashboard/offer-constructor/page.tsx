@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { Button } from "@/shared/components/ui/button";
-import List from "./List";
-import { addPart, addSection, selectItemStoreId, useOfferStore } from "./store";
+import { Button } from "@/shared/components/ui/button"
+import List from "./List"
+import { addPart, addSection, selectItemStoreId, useOfferStore } from "./store"
 
 const OfferConstructor = () => {
-  const selectedChapter = useOfferStore(selectItemStoreId);
+  const selectedChapter = useOfferStore(selectItemStoreId)
 
   // const handleDownload = async () => {
   //   // 1. Берем ВЕСЬ стейт из стора (через .getState())
@@ -26,31 +26,29 @@ const OfferConstructor = () => {
   // };
 
   const handleDownloadPdf = async () => {
-    const dataParts = useOfferStore.getState().dataParts;
-    const columnSizing = JSON.parse(
-      localStorage.getItem("offerConstructor_global_sizing") || "{}",
-    );
+    const dataParts = useOfferStore.getState().dataParts
+    const columnSizing = JSON.parse(localStorage.getItem("offerConstructor_global_sizing") || "{}")
 
     try {
       const response = await fetch("/api/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dataParts, columnSizing }),
-      });
+      })
 
-      if (!response.ok) throw new Error("Server Error");
+      if (!response.ok) throw new Error("Server Error")
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "Commercial_Offer.pdf";
-      link.click();
-      window.URL.revokeObjectURL(url);
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = "Commercial_Offer.pdf"
+      link.click()
+      window.URL.revokeObjectURL(url)
     } catch (err) {
-      alert("Ошибка скачивания");
+      alert("Ошибка скачивания")
     }
-  };
+  }
 
   // const handleDownloadPdf = async () => {
   //   const state = useOfferStore.getState().dataParts;
@@ -93,14 +91,12 @@ const OfferConstructor = () => {
       <div className="fixed flex gap-1 bottom-0 left-1/2 transform -translate-x-1/2 p-4 bg-black rounded-tl-2xl rounded-tr-2xl z-50">
         <Button
           onClick={() => {
-            addPart();
+            addPart()
           }}
         >
           Добавить раздел
         </Button>
-        <Button onClick={() => addSection(selectedChapter)}>
-          Добавить подраздел
-        </Button>
+        <Button onClick={() => addSection(selectedChapter)}>Добавить подраздел</Button>
         <Button variant="secondary" onClick={handleDownloadPdf}>
           Скачать PDF
         </Button>
@@ -109,7 +105,7 @@ const OfferConstructor = () => {
         </Button> */}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default OfferConstructor;
+export default OfferConstructor

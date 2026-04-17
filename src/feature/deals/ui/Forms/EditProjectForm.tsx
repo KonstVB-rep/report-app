@@ -1,36 +1,24 @@
-import type { Dispatch, SetStateAction } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  DeliveryProject,
-  DirectionProject,
-  StatusProject,
-} from "@prisma/client";
-import { type Resolver, useForm } from "react-hook-form";
-import { formatNumberCurrency } from "@/entities/deal/lib/helpers";
-import {
-  ProjectFormSchema,
-  type ProjectSchema,
-} from "@/entities/deal/model/schema";
-import type { DealProject } from "@/entities/deal/types";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { useMutationUpdateProject } from "../../api/hooks/mutate";
-import ProjectFormBody from "./ProjectFormBody";
+import type { Dispatch, SetStateAction } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { DeliveryProject, DirectionProject, StatusProject } from "@prisma/client"
+import { type Resolver, useForm } from "react-hook-form"
+import { formatNumberCurrency } from "@/entities/deal/lib/helpers"
+import { ProjectFormSchema, type ProjectSchema } from "@/entities/deal/model/schema"
+import type { DealProject } from "@/entities/deal/types"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { useMutationUpdateProject } from "../../api/hooks/mutate"
+import ProjectFormBody from "./ProjectFormBody"
 
 type Props = {
-  close: Dispatch<SetStateAction<void>>;
-  dealInfo: DealProject;
-  isInvalidate: boolean;
-  titleForm: string;
-};
+  close: Dispatch<SetStateAction<void>>
+  dealInfo: DealProject
+  isInvalidate: boolean
+  titleForm: string
+}
 
-const EditProjectForm = ({
-  close,
-  dealInfo,
-  isInvalidate = false,
-  titleForm,
-}: Props) => {
-  const { authUser } = useStoreUser();
+const EditProjectForm = ({ close, dealInfo, isInvalidate = false, titleForm }: Props) => {
+  const { authUser } = useStoreUser()
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectFormSchema) as Resolver<ProjectSchema>,
@@ -56,18 +44,18 @@ const EditProjectForm = ({
         : [],
       inn: dealInfo.inn ?? "",
     },
-  });
+  })
 
   const { mutateAsync, isPending } = useMutationUpdateProject(
     dealInfo ? dealInfo.id : "",
     dealInfo?.userId ?? "",
     close,
     isInvalidate,
-  );
+  )
 
   const onSubmit = (data: ProjectSchema) => {
-    TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-  };
+    TOAST.PROMISE(mutateAsync(data), "Данные обновлены")
+  }
 
   return (
     <ProjectFormBody
@@ -78,7 +66,7 @@ const EditProjectForm = ({
       onSubmit={onSubmit}
       titleForm={titleForm}
     />
-  );
-};
+  )
+}
 
-export default EditProjectForm;
+export default EditProjectForm

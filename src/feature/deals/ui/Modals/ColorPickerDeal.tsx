@@ -1,63 +1,59 @@
-import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
-import type { UserHighlight } from "@prisma/client";
-import debounce from "debounce";
-import { useParams } from "next/navigation";
-import { STATUS_DEAL_COLOR } from "@/entities/deal/lib/constants";
-import { DEAL_TYPE, type DealUnion } from "@/entities/deal/types";
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders";
-import ModalContent from "@/shared/custom-components/ui/ModalContent";
-import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext";
-import { useDeleteHilight, useSetHilight } from "../../api/hooks/mutate";
-import { useGetHilightList } from "../../api/hooks/query";
+import { type Dispatch, type SetStateAction, useMemo, useState } from "react"
+import type { UserHighlight } from "@prisma/client"
+import debounce from "debounce"
+import { useParams } from "next/navigation"
+import { STATUS_DEAL_COLOR } from "@/entities/deal/lib/constants"
+import { DEAL_TYPE, type DealUnion } from "@/entities/deal/types"
+import { Button } from "@/shared/components/ui/button"
+import { Input } from "@/shared/components/ui/input"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import ModalContent from "@/shared/custom-components/ui/ModalContent"
+import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
+import { useDeleteHilight, useSetHilight } from "../../api/hooks/mutate"
+import { useGetHilightList } from "../../api/hooks/query"
 
 const ColorPickerDeal = () => {
-  const { selectedDataItem } = useTableContext<DealUnion>();
-  const [color, setColor] = useState(selectedDataItem?.highlights || "");
-  const { mutate } = useSetHilight();
-  const { data: colors, refetch } = useGetHilightList();
+  const { selectedDataItem } = useTableContext<DealUnion>()
+  const [color, setColor] = useState(selectedDataItem?.highlights || "")
+  const { mutate } = useSetHilight()
+  const { data: colors, refetch } = useGetHilightList()
 
-  const { mutate: deleteAllColors } = useDeleteHilight();
+  const { mutate: deleteAllColors } = useDeleteHilight()
 
   const debouncedMutate = useMemo(
     () =>
       debounce((colorValue: string) => {
-        if (!selectedDataItem || !selectedDataItem.userId) return;
+        if (!selectedDataItem || !selectedDataItem.userId) return
         mutate({
           id: selectedDataItem.id,
           type: selectedDataItem.type,
           color: colorValue,
           userId: selectedDataItem.userId,
-        });
+        })
       }, 200),
     [mutate, selectedDataItem],
-  );
-
-  if (
-    !selectedDataItem ||
-    !STATUS_DEAL_COLOR.includes(selectedDataItem.dealStatus)
   )
-    return null;
+
+  if (!selectedDataItem || !STATUS_DEAL_COLOR.includes(selectedDataItem.dealStatus)) return null
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newColor = e.target.value;
-    setColor(newColor);
-    debouncedMutate(newColor);
-  };
+    const newColor = e.target.value
+    setColor(newColor)
+    debouncedMutate(newColor)
+  }
 
   const deleteColors = () => {
-    setColor("");
-    if (!selectedDataItem.userId) return;
+    setColor("")
+    if (!selectedDataItem.userId) return
     deleteAllColors({
       id: selectedDataItem.id,
       type: selectedDataItem.type,
       color: null,
       userId: selectedDataItem.userId,
       all: true,
-    });
-    refetch();
-  };
+    })
+    refetch()
+  }
 
   return (
     <ModalContent className="max-w-[300px]">
@@ -77,67 +73,67 @@ const ColorPickerDeal = () => {
         )}
       </div>
     </ModalContent>
-  );
-};
+  )
+}
 
-export default ColorPickerDeal;
+export default ColorPickerDeal
 
 type ColorsListUsedType = {
-  color: string;
-  setColor: Dispatch<SetStateAction<string>>;
-};
+  color: string
+  setColor: Dispatch<SetStateAction<string>>
+}
 
 const ColorsListUsed = ({ color, setColor }: ColorsListUsedType) => {
-  const { data: colors, isLoading, refetch } = useGetHilightList();
-  const { selectedDataItem } = useTableContext<DealUnion>();
-  const { userId } = useParams<{ userId: string }>();
+  const { data: colors, isLoading, refetch } = useGetHilightList()
+  const { selectedDataItem } = useTableContext<DealUnion>()
+  const { userId } = useParams<{ userId: string }>()
 
-  const { mutate } = useSetHilight();
-  const { mutate: deleteCurrentColor } = useDeleteHilight();
+  const { mutate } = useSetHilight()
+  const { mutate: deleteCurrentColor } = useDeleteHilight()
 
   const uniqueColorObjects = useMemo(() => {
-    if (!colors) return [];
-    const map = new Map<string, (typeof colors)[0]>();
+    if (!colors) return []
+    const map = new Map<string, (typeof colors)[0]>()
 
     colors.forEach((item) => {
       if (!map.has(item.color)) {
-        map.set(item.color, item);
+        map.set(item.color, item)
       }
-    });
+    })
 
-    return Array.from(map.values());
-  }, [colors]);
+    return Array.from(map.values())
+  }, [colors])
 
   const deleteColor = (item: UserHighlight) => {
-    const id = item.projectId ?? item.retailId;
-    const realType = item.projectId ? DEAL_TYPE.PROJECT : DEAL_TYPE.RETAIL;
+    const id = item.projectId ?? item.retailId
+    const realType = item.projectId ? DEAL_TYPE.PROJECT : DEAL_TYPE.RETAIL
 
-    if (!id || !userId) return;
-    setColor("");
+    if (!id || !userId) return
+    setColor("")
     deleteCurrentColor({
       id,
       type: realType,
       color: item.color,
       userId: userId,
-    });
-    refetch();
-  };
+    })
+    refetch()
+  }
 
   if (color && colors?.length === 0) {
-    return null;
+    return null
   }
   const handleClick = (item: UserHighlight) => {
-    if (!item.color || !selectedDataItem || !selectedDataItem.userId) return;
+    if (!item.color || !selectedDataItem || !selectedDataItem.userId) return
 
     mutate({
       id: selectedDataItem.id,
       type: selectedDataItem.type,
       color: item.color,
       userId: userId,
-    });
+    })
 
-    setColor(item.color);
-  };
+    setColor(item.color)
+  }
 
   return (
     <div className="pt-2 flex overflow-x-auto gap-2">
@@ -161,5 +157,5 @@ const ColorsListUsed = ({ color, setColor }: ColorsListUsedType) => {
         ))
       )}
     </div>
-  );
-};
+  )
+}

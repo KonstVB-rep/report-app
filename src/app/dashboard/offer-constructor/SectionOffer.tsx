@@ -1,11 +1,11 @@
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
-import { flexRender, Table } from "@tanstack/react-table";
-import { ImagePlus, X } from "lucide-react";
-import { ChangeEvent, memo, useState } from "react";
-import InputTitle from "./InputTitle";
-import { TableOffer } from "./List";
+import { Button } from "@/shared/components/ui/button"
+import { Input } from "@/shared/components/ui/input"
+import { Label } from "@/shared/components/ui/label"
+import { flexRender, Table } from "@tanstack/react-table"
+import { ImagePlus, X } from "lucide-react"
+import { ChangeEvent, memo, useState } from "react"
+import InputTitle from "./InputTitle"
+import { TableOffer } from "./List"
 import {
   addRow,
   DataRow,
@@ -14,16 +14,16 @@ import {
   removeRow,
   updateRow,
   updateSubSectionTitle,
-} from "./store";
+} from "./store"
 
 const SectionOffer = ({
   table,
   sectionData,
   partId,
 }: {
-  table: Table<TableOffer>;
-  sectionData: DataSection;
-  partId: string;
+  table: Table<TableOffer>
+  sectionData: DataSection
+  partId: string
 }) => {
   return (
     <>
@@ -41,10 +41,10 @@ const SectionOffer = ({
         </div>
       </section>
     </>
-  );
-};
+  )
+}
 
-export default SectionOffer;
+export default SectionOffer
 
 const SubSection = ({
   table,
@@ -52,19 +52,17 @@ const SubSection = ({
   partId,
   sectionId,
 }: {
-  table: Table<TableOffer>;
-  data: DataSubSection;
-  partId: string;
-  sectionId: string;
+  table: Table<TableOffer>
+  data: DataSubSection
+  partId: string
+  sectionId: string
 }) => {
   return (
     <>
       <div className="w-full">
         <InputTitle
           defaultTitle={data.name}
-          updateTitleAction={(title) =>
-            updateSubSectionTitle(partId, sectionId, data.id, title)
-          }
+          updateTitleAction={(title) => updateSubSectionTitle(partId, sectionId, data.id, title)}
           className="bg-blue-900 text-white"
         />
       </div>
@@ -76,8 +74,8 @@ const SubSection = ({
         partId={partId}
       />
     </>
-  );
-};
+  )
+}
 
 function TableBody({
   table,
@@ -86,11 +84,11 @@ function TableBody({
   subSectionId,
   rows,
 }: {
-  table: Table<TableOffer>;
-  rows: DataRow[];
-  partId: string;
-  sectionId: string;
-  subSectionId: string;
+  table: Table<TableOffer>
+  rows: DataRow[]
+  partId: string
+  sectionId: string
+  subSectionId: string
 }) {
   return (
     <div className="sub-section">
@@ -119,14 +117,7 @@ function TableBody({
                   table,
                   // Прокидываем кастомный хэндлер обновления в meta или напрямую
                   updateData: (value: string) =>
-                    updateRow(
-                      partId,
-                      sectionId,
-                      subSectionId,
-                      row.id,
-                      column.id,
-                      value,
-                    ),
+                    updateRow(partId, sectionId, subSectionId, row.id, column.id, value),
                 })}
                 {column.id === "name" && (
                   <Cell
@@ -142,11 +133,9 @@ function TableBody({
           </div>
         ))}
       </div>
-      <Button onClick={() => addRow(partId, sectionId, subSectionId)}>
-        Добавить строку
-      </Button>
+      <Button onClick={() => addRow(partId, sectionId, subSectionId)}>Добавить строку</Button>
     </div>
-  );
+  )
 }
 
 const Cell = ({
@@ -156,28 +145,28 @@ const Cell = ({
   rowId,
   image,
 }: {
-  partId: string;
-  sectionId: string;
-  subId: string;
-  rowId: string;
-  image: string | null;
+  partId: string
+  sectionId: string
+  subId: string
+  rowId: string
+  image: string | null
 }) => {
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]
 
     if (file) {
-      const reader = new FileReader();
-      const image = URL.createObjectURL(file);
+      const reader = new FileReader()
+      const image = URL.createObjectURL(file)
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        updateRow(partId, sectionId, subId, rowId, "image", base64String);
-      };
-      reader.readAsDataURL(file);
+        const base64String = reader.result as string
+        updateRow(partId, sectionId, subId, rowId, "image", base64String)
+      }
+      reader.readAsDataURL(file)
 
-      setImagePreview(image);
+      setImagePreview(image)
     }
-  };
+  }
   return (
     <div className="mt-2 flex flex-col gap-2">
       {imagePreview && (
@@ -200,26 +189,26 @@ const Cell = ({
         />
       </Label>
     </div>
-  );
-};
+  )
+}
 
 export const MemoizedTableBody = memo(TableBody, (prev, next) => {
   // 1. Сравниваем строки конкретного подраздела.
   // Если в Zustand изменилась цена в ЭТОМ подразделе, ссылка на rows станет новой.
-  const isRowsSame = prev.rows === next.rows;
+  const isRowsSame = prev.rows === next.rows
 
   // 2. Проверяем, идет ли ресайз В ЭТОМ РАЗДЕЛЕ (Section).
   // Мы берем состояние из объекта table, который общий для всего раздела.
-  const isResizing = !!next.table.getState().columnSizingInfo.isResizingColumn;
+  const isResizing = !!next.table.getState().columnSizingInfo.isResizingColumn
 
   // Если данные (строки) изменились — перерисовываем (возвращаем false)
-  if (!isRowsSame) return false;
+  if (!isRowsSame) return false
 
   // Если данные те же, но идет ресайз — блокируем рендер (возвращаем true).
   // Благодаря этому работают только CSS-переменные ширины, и всё "летает".
-  if (isResizing) return true;
+  if (isResizing) return true
 
   // В остальных случаях (например, если изменился номер КП где-то наверху)
   // тоже не перерисовываем, если сами строки не тронуты.
-  return true;
-});
+  return true
+})

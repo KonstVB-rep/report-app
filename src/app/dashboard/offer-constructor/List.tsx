@@ -1,15 +1,11 @@
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
-import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button"
+import { Input } from "@/shared/components/ui/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
+import { cn } from "@/shared/lib/utils"
 
-import { Calendar } from "@/shared/components/ui/calendar";
-import { Textarea } from "@/shared/components/ui/textarea";
-import { getLS, setLS } from "@/shared/hooks/useTableState";
+import { Calendar } from "@/shared/components/ui/calendar"
+import { Textarea } from "@/shared/components/ui/textarea"
+import { getLS, setLS } from "@/shared/hooks/useTableState"
 import {
   ColumnDef,
   ColumnSizingInfoState,
@@ -17,13 +13,13 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { ru } from "date-fns/locale/ru";
-import { CalendarIcon, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import InputTitle from "./InputTitle";
-import SectionOffer from "./SectionOffer";
-import SelectedItem from "./SelectedItem";
+} from "@tanstack/react-table"
+import { ru } from "date-fns/locale/ru"
+import { CalendarIcon, X } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import InputTitle from "./InputTitle"
+import SectionOffer from "./SectionOffer"
+import SelectedItem from "./SelectedItem"
 import {
   addPart,
   addRow,
@@ -37,19 +33,19 @@ import {
   selectParts,
   updatePartTitle,
   useOfferStore,
-} from "./store";
+} from "./store"
 
 let formatter = new Intl.DateTimeFormat("ru", {
   year: "numeric",
   month: "long",
   day: "numeric",
-});
+})
 
 const List = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 
-  const dataParts = useOfferStore(selectParts);
-  const isReadOnly = useOfferStore(selectIsReadonly);
+  const dataParts = useOfferStore(selectParts)
+  const isReadOnly = useOfferStore(selectIsReadonly)
 
   return (
     <div className="h-screen overflow-y-auto bg-gray-100 p-10 relative">
@@ -73,14 +69,8 @@ const List = () => {
                   className={cn("w-full text-left font-normal border-none")}
                   variant={"outline"}
                 >
-                  {selectedDate ? (
-                    formatter.format(selectedDate)
-                  ) : (
-                    <span>Выберите дату</span>
-                  )}
-                  {selectedDate ? null : (
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  )}
+                  {selectedDate ? formatter.format(selectedDate) : <span>Выберите дату</span>}
+                  {selectedDate ? null : <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />}
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="start" className="w-auto p-0">
@@ -88,7 +78,7 @@ const List = () => {
                   locale={ru}
                   mode="single"
                   onSelect={(date: Date | undefined) => {
-                    setSelectedDate(date);
+                    setSelectedDate(date)
                   }}
                   required={true}
                   selected={selectedDate}
@@ -98,14 +88,8 @@ const List = () => {
           </div>
         </div>
         <div className="pt-10 flex gap-2 justify-center items-center">
-          <p className="text-2xl text-black font-bold">
-            Коммерческое предложение №
-          </p>
-          <Input
-            name="title"
-            type="text"
-            className="text-2xl md:text-2xl w-1/6 text-black"
-          />
+          <p className="text-2xl text-black font-bold">Коммерческое предложение №</p>
+          <Input name="title" type="text" className="text-2xl md:text-2xl w-1/6 text-black" />
         </div>
         {dataParts.parts.map((part) => (
           <div key={part.id} className="relative">
@@ -122,18 +106,18 @@ const List = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default List;
+export default List
 export type TableOffer = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  count: number;
-  totalPrice: number;
-};
+  id: string
+  name: string
+  description: string
+  price: number
+  count: number
+  totalPrice: number
+}
 
 const defaultColumns: ColumnDef<TableOffer>[] = [
   {
@@ -141,13 +125,7 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
     header: "Наименование",
     accessorKey: "name",
     cell: ({ row }) => {
-      return (
-        <Textarea
-          name={row.id}
-          className="text-black"
-          defaultValue={row.original.name}
-        />
-      );
+      return <Textarea name={row.id} className="text-black" defaultValue={row.original.name} />
     },
   },
   {
@@ -156,12 +134,8 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
     accessorKey: "description",
     cell: ({ row }) => {
       return (
-        <Textarea
-          name={row.id}
-          className="text-black"
-          defaultValue={row.original.description}
-        />
-      );
+        <Textarea name={row.id} className="text-black" defaultValue={row.original.description} />
+      )
     },
   },
   {
@@ -169,36 +143,36 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
     header: "Цена",
     accessorKey: "price",
     cell: ({ row, updateData }) => {
-      const initialValue = row.original.price;
-      const [value, setValue] = useState(initialValue);
+      const initialValue = row.original.price
+      const [value, setValue] = useState(initialValue)
 
       useEffect(() => {
-        setValue(initialValue);
-      }, [initialValue]);
+        setValue(initialValue)
+      }, [initialValue])
 
       const onBlur = () => {
-        updateData(Number(value));
-      };
+        updateData(Number(value))
+      }
 
       return (
         <Input
           type="number"
           value={value}
           onChange={(e) => {
-            const val = Number(e.target.value);
+            const val = Number(e.target.value)
             if (!Number.isNaN(val)) {
-              setValue(val);
+              setValue(val)
             } else {
-              setValue(0);
+              setValue(0)
             }
             if (e.target.value === "") {
-              setValue(0);
+              setValue(0)
             }
           }}
           onBlur={onBlur}
           className="text-black text-end"
         />
-      );
+      )
     },
   },
   {
@@ -206,36 +180,36 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
     header: "Количество",
     accessorKey: "count",
     cell: ({ row, updateData }) => {
-      const initialValue = row.original.count;
-      const [value, setValue] = useState(initialValue);
+      const initialValue = row.original.count
+      const [value, setValue] = useState(initialValue)
 
       useEffect(() => {
-        setValue(initialValue);
-      }, [initialValue]);
+        setValue(initialValue)
+      }, [initialValue])
 
       const onBlur = () => {
-        updateData(Number(value));
-      };
+        updateData(Number(value))
+      }
 
       return (
         <Input
           type="number"
           value={value}
           onChange={(e) => {
-            const val = Number(e.target.value);
+            const val = Number(e.target.value)
             if (!Number.isNaN(val)) {
-              setValue(val);
+              setValue(val)
             } else {
-              setValue(0);
+              setValue(0)
             }
             if (e.target.value === "") {
-              setValue(0);
+              setValue(0)
             }
           }}
           onBlur={onBlur}
           className="text-black text-end"
         />
-      );
+      )
     },
   },
   {
@@ -247,30 +221,23 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
         <div className="font-bold py-1 px-3 text-black text-end">
           {row.original.totalPrice || 0}
         </div>
-      );
+      )
     },
   },
-];
+]
 
-const storageKey = "offer_global_column_sizing";
-const Part = ({
-  secionList,
-  partId,
-}: {
-  secionList: DataSection[];
-  partId: string;
-}) => {
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() =>
-    getLS(storageKey, {}),
-  );
+const storageKey = "offer_global_column_sizing"
+const Part = ({ secionList, partId }: { secionList: DataSection[]; partId: string }) => {
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() => getLS(storageKey, {}))
 
   useEffect(() => {
-    setLS(storageKey, columnSizing);
-  }, [columnSizing, storageKey]);
-  const [columnSizingInfo, setColumnSizingInfo] =
-    useState<ColumnSizingInfoState>({} as ColumnSizingInfoState);
+    setLS(storageKey, columnSizing)
+  }, [columnSizing, storageKey])
+  const [columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>(
+    {} as ColumnSizingInfoState,
+  )
 
-  const columns = useMemo(() => defaultColumns, []);
+  const columns = useMemo(() => defaultColumns, [])
 
   const table = useReactTable({
     data: [],
@@ -291,20 +258,20 @@ const Part = ({
       columnSizing,
       columnSizingInfo,
     },
-  });
+  })
 
   const columnSizeVars = useMemo(() => {
-    const headers = table.getFlatHeaders();
-    const colSizes: { [key: string]: number } = {};
+    const headers = table.getFlatHeaders()
+    const colSizes: { [key: string]: number } = {}
     for (let i = 0; i < headers.length; i++) {
-      const header = headers[i]!;
+      const header = headers[i]!
 
-      colSizes[`--header-${header.id}-size`] = header.getSize();
-      colSizes[`--col-${header.column.id}-size`] = header.column.getSize();
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
-    return colSizes;
-  }, [table.getState().columnSizingInfo, table.getState().columnSizing]);
-  const part = selectPart(partId);
+    return colSizes
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
+  const part = selectPart(partId)
 
   return (
     <>
@@ -323,20 +290,14 @@ const Part = ({
       >
         <div className="sticky top-0 z-10 bg-whit border-none shadow-none">
           {table.getHeaderGroups().map((headerGroup) => (
-            <div
-              className="flex w-fit border-none shadow-none"
-              key={headerGroup.id}
-            >
+            <div className="flex w-fit border-none shadow-none" key={headerGroup.id}>
               {headerGroup.headers.map((header, index) => (
                 <div
                   key={header.id}
-                  className={cn(
-                    "p-2! border-none shadow-none relative h-auto font-bold",
-                    {
-                      "rounded-tr-sm": index === headerGroup.headers.length - 1,
-                      "rounded-tl-sm": index === 0,
-                    },
-                  )}
+                  className={cn("p-2! border-none shadow-none relative h-auto font-bold", {
+                    "rounded-tr-sm": index === headerGroup.headers.length - 1,
+                    "rounded-tl-sm": index === 0,
+                  })}
                   style={{
                     width: `calc(var(--header-${header.id}-size) * 1px)`,
                     flex: "0 0 auto",
@@ -350,20 +311,14 @@ const Part = ({
                       )}
                     >
                       <span className="text-md font-bold first-letter:capitalize text-center text-black">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        {flexRender(header.column.columnDef.header, header.getContext())}
                       </span>
                       {header.column.getCanResize() && (
                         <span
                           onDoubleClick={() => header.column.resetSize()}
                           onMouseDown={header.getResizeHandler()}
                           onTouchStart={header.getResizeHandler()}
-                          className={cn(
-                            "resizer",
-                            header.column.getIsResizing() && "isResizing",
-                          )}
+                          className={cn("resizer", header.column.getIsResizing() && "isResizing")}
                         />
                       )}
                     </span>
@@ -389,5 +344,5 @@ const Part = ({
         ))}
       </div>
     </>
-  );
-};
+  )
+}

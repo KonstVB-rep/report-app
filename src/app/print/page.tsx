@@ -1,32 +1,31 @@
-"use client";
+"use client"
 
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { DataOffer, DataRow } from "../dashboard/offer-constructor/store";
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import { DataOffer, DataRow } from "../dashboard/offer-constructor/store"
 
 export default function PrintPage() {
-  const searchParams = useSearchParams();
-  const [data, setData] = useState<DataOffer | null>(null);
+  const searchParams = useSearchParams()
+  const [data, setData] = useState<DataOffer | null>(null)
 
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).__PRINTER_DATA__) {
-      setData((window as any).__PRINTER_DATA__);
-      return;
+      setData((window as any).__PRINTER_DATA__)
+      return
     }
-    const rawData = searchParams.get("data");
+    const rawData = searchParams.get("data")
     if (rawData) {
       try {
-        setData(JSON.parse(decodeURIComponent(rawData)));
+        setData(JSON.parse(decodeURIComponent(rawData)))
       } catch (e) {
-        console.error("Ошибка парсинга JSON для PDF");
+        console.error("Ошибка парсинга JSON для PDF")
       }
     }
-  }, [searchParams]);
+  }, [searchParams])
 
-  console.log(data, "data");
+  console.log(data, "data")
 
-  if (!data)
-    return <div className="p-10 text-center">Загрузка данных КП...</div>;
+  if (!data) return <div className="p-10 text-center">Загрузка данных КП...</div>
 
   return (
     <div className="bg-white text-black min-h-screen">
@@ -58,9 +57,7 @@ export default function PrintPage() {
         {data.parts.map((part) => (
           <div key={part.id} className="mb-10 page-break-inside-avoid">
             <div className="flex my-6 gap-2 justify-start items-center border-t-[4px] border-t-blue-900 border-b-[2px] border-b-black py-2">
-              <p className="text-xl font-bold uppercase tracking-tight">
-                Раздел: {part.name}
-              </p>
+              <p className="text-xl font-bold uppercase tracking-tight">Раздел: {part.name}</p>
             </div>
 
             {/* 4. СЕКЦИИ И ПОДСЕКЦИИ */}
@@ -77,36 +74,19 @@ export default function PrintPage() {
                     <table className="w-full border-collapse">
                       <thead>
                         <tr className="border-b-2 border-black">
-                          <th className="text-left p-2 text-xs uppercase">
-                            Наименование
-                          </th>
-                          <th className="text-left p-2 text-xs uppercase">
-                            описание
-                          </th>
-                          <th className="text-center p-2 text-xs uppercase w-24">
-                            Цена
-                          </th>
-                          <th className="text-center p-2 text-xs uppercase w-16">
-                            Кол-во
-                          </th>
-                          <th className="text-right p-2 text-xs uppercase w-32">
-                            Итого
-                          </th>
+                          <th className="text-left p-2 text-xs uppercase">Наименование</th>
+                          <th className="text-left p-2 text-xs uppercase">описание</th>
+                          <th className="text-center p-2 text-xs uppercase w-24">Цена</th>
+                          <th className="text-center p-2 text-xs uppercase w-16">Кол-во</th>
+                          <th className="text-right p-2 text-xs uppercase w-32">Итого</th>
                         </tr>
                       </thead>
                       <tbody>
                         {sub.rows.map((row: DataRow) => (
-                          <tr
-                            key={row.id}
-                            className="border-b border-gray-200 break-inside-avoid"
-                          >
+                          <tr key={row.id} className="border-b border-gray-200 break-inside-avoid">
                             <td className="p-2 align-top">
-                              <div className="font-bold text-sm">
-                                {row.name}
-                              </div>
-                              <div className="text-xs text-gray-600 mt-1">
-                                {row.description}
-                              </div>
+                              <div className="font-bold text-sm">{row.name}</div>
+                              <div className="text-xs text-gray-600 mt-1">{row.description}</div>
                               {/* КАРТИНКА ТОВАРА (Base64) */}
                               {row.image && (
                                 <img
@@ -119,9 +99,7 @@ export default function PrintPage() {
                             <td className="p-2 text-center align-top text-sm">
                               {row.price.toLocaleString()}
                             </td>
-                            <td className="p-2 text-center align-top text-sm">
-                              {row.count}
-                            </td>
+                            <td className="p-2 text-center align-top text-sm">{row.count}</td>
                             <td className="p-2 text-right align-top font-bold text-sm">
                               {row.totalPrice.toLocaleString()}
                             </td>
@@ -158,5 +136,5 @@ export default function PrintPage() {
         }
       `}</style>
     </div>
-  );
+  )
 }

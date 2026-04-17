@@ -1,22 +1,22 @@
-import { Input } from "@/shared/components/ui/input";
-import { cn } from "@/shared/lib/utils";
-import { ChangeEvent, useState } from "react";
+import { Input } from "@/shared/components/ui/input"
+import { cn } from "@/shared/lib/utils"
+import { ChangeEvent, useState } from "react"
 
 const InputTitle = ({
   defaultTitle,
   updateTitleAction,
   className,
 }: {
-  defaultTitle: string;
-  updateTitleAction: (title: string) => void;
-  className?: string;
+  defaultTitle: string
+  updateTitleAction: (title: string) => void
+  className?: string
 }) => {
-  const [title, setTitle] = useState(defaultTitle || "");
+  const [title, setTitle] = useState(defaultTitle || "")
 
   const handleSetTitle = (e: ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.trim();
-    setTitle(val);
-  };
+    const val = e.target.value.trim()
+    setTitle(val)
+  }
   return (
     <Input
       type="text"
@@ -25,11 +25,11 @@ const InputTitle = ({
       onChange={handleSetTitle}
       onBlur={() => {
         if (title !== defaultTitle) {
-          updateTitleAction(title);
+          updateTitleAction(title)
         }
       }}
     />
-  );
-};
+  )
+}
 
-export default InputTitle;
+export default InputTitle

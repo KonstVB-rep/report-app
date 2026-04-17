@@ -1,5 +1,5 @@
-import type { NextConfig } from "next"; // 1. Импортируем тип
-import withBundleAnalyzer from "@next/bundle-analyzer";
+import type { NextConfig } from "next" // 1. Импортируем тип
+import withBundleAnalyzer from "@next/bundle-analyzer"
 
 const nextConfig: NextConfig = {
   cacheComponents: false,
@@ -73,12 +73,12 @@ const nextConfig: NextConfig = {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
-};
+}
 
 // 4. Типизируем phase
 const withBundleAnalyzerConfig = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
   openAnalyzer: true,
-});
+})
 
-export default withBundleAnalyzerConfig(nextConfig);
+export default withBundleAnalyzerConfig(nextConfig)

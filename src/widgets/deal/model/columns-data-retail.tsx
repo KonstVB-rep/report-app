@@ -1,24 +1,24 @@
-"use client";
+"use client"
 
-import type { RetailResponse } from "@/entities/deal/types";
+import type { RetailResponse } from "@/entities/deal/types"
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
   StatusRetailLabels,
-} from "@/feature/deals/lib/constants";
-import { formatterCurrency } from "@/shared/lib/utils";
-import { StatusRetail } from "@prisma/client";
-import type { CellContext, ColumnDef } from "@tanstack/react-table";
-import { endOfDay, startOfDay } from "date-fns";
-import type { ReactNode } from "react";
-import type { DateRange } from "react-day-picker";
-import RowNumber from "./columnsDataColsTemplate/RowNumber";
+} from "@/feature/deals/lib/constants"
+import { formatterCurrency } from "@/shared/lib/utils"
+import { StatusRetail } from "@prisma/client"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { ReactNode } from "react"
+import type { DateRange } from "react-day-picker"
+import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
-export type typeofDirections = keyof typeof DirectionRetailLabels;
+export type typeofDirections = keyof typeof DirectionRetailLabels
 
-export type typeofDelivery = keyof typeof DeliveryRetailLabels;
+export type typeofDelivery = keyof typeof DeliveryRetailLabels
 
-export type typeofStatus = keyof typeof StatusRetailLabels;
+export type typeofStatus = keyof typeof StatusRetailLabels
 
 export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
   {
@@ -41,21 +41,21 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "dateRequest",
     header: "Дата заявки",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue();
+      const value = info.getValue()
 
       if (value instanceof Date) {
-        return value.toLocaleDateString("ru-RU");
+        return value.toLocaleDateString("ru-RU")
       }
 
       if (typeof value === "string") {
-        const date = new Date(value);
+        const date = new Date(value)
         if (!Number.isNaN(date.getTime())) {
-          return date.toLocaleDateString("ru-RU");
+          return date.toLocaleDateString("ru-RU")
         }
-        return "-";
+        return "-"
       }
 
-      return "-";
+      return "-"
     },
     enableHiding: true,
     meta: {
@@ -63,30 +63,27 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       title: "Дата заявки",
     },
     filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: RetailResponse) => row.dateRequest,
   },
@@ -94,55 +91,52 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     id: "lastDateConnection",
     header: "Последний контакт",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue();
+      const value = info.getValue()
 
-      if (!value) return "Дата не указана";
+      if (!value) return "Дата не указана"
 
       if (value instanceof Date) {
-        return value.toLocaleDateString("ru-RU");
+        return value.toLocaleDateString("ru-RU")
       }
 
       if (typeof value === "string") {
-        const parsed = new Date(value);
+        const parsed = new Date(value)
         if (!Number.isNaN(parsed.getTime())) {
-          return parsed.toLocaleDateString("ru-RU");
+          return parsed.toLocaleDateString("ru-RU")
         }
-        return "Дата не указана";
+        return "Дата не указана"
       }
 
-      return "Дата не указана";
+      return "Дата не указана"
     },
     enableHiding: true,
     meta: {
       title: "Плановая дата контакта",
     },
     filterFn: (row, columnId, filterValue) => {
-      if (row.original.dealStatus === StatusRetail.REJECT) return false;
+      if (row.original.dealStatus === StatusRetail.REJECT) return false
 
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: RetailResponse) => row.lastDateConnection,
   },
@@ -150,8 +144,8 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     id: "commentsLastConnection",
     header: "Последний комментарий",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as ReactNode;
-      return value;
+      const value = info.getValue() as ReactNode
+      return value
     },
     minSize: 300,
     enableHiding: true,
@@ -159,19 +153,17 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
       title: "Последний комментарий",
     },
     sortingFn: (rowA, rowB) => {
-      const dateA = rowA.original.updatedAt;
-      const dateB = rowB.original.updatedAt;
+      const dateA = rowA.original.updatedAt
+      const dateB = rowB.original.updatedAt
 
-      const timeA =
-        dateA instanceof Date ? dateA.getTime() : new Date(dateA).getTime();
+      const timeA = dateA instanceof Date ? dateA.getTime() : new Date(dateA).getTime()
 
-      const timeB =
-        dateB instanceof Date ? dateB.getTime() : new Date(dateB).getTime();
+      const timeB = dateB instanceof Date ? dateB.getTime() : new Date(dateB).getTime()
 
-      if (isNaN(timeA)) return 1;
-      if (isNaN(timeB)) return -1;
+      if (isNaN(timeA)) return 1
+      if (isNaN(timeB)) return -1
 
-      return timeB - timeA;
+      return timeB - timeA
     },
     sortDescFirst: true,
     accessorFn: (row: RetailResponse) => row.commentsLastConnection,
@@ -181,53 +173,50 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "plannedDateConnection",
     header: "Плановая дата контакта",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as Date | null;
+      const value = info.getValue() as Date | null
 
-      if (!value) return "Дата не указана";
+      if (!value) return "Дата не указана"
 
-      if (value instanceof Date) return value.toLocaleDateString("ru-RU");
+      if (value instanceof Date) return value.toLocaleDateString("ru-RU")
 
       if (typeof value === "string") {
-        const parsed = new Date(value);
+        const parsed = new Date(value)
         if (!Number.isNaN(parsed.getTime())) {
-          return parsed.toLocaleDateString("ru-RU");
+          return parsed.toLocaleDateString("ru-RU")
         }
-        return "Дата не указана";
+        return "Дата не указана"
       }
 
-      return "Дата не указана";
+      return "Дата не указана"
     },
     enableHiding: true,
     meta: {
       title: "Плановая дата контакта",
     },
     filterFn: (row, columnId, filterValue) => {
-      if (row.original.dealStatus === StatusRetail.REJECT) return false;
+      if (row.original.dealStatus === StatusRetail.REJECT) return false
 
-      const date = row.getValue(columnId) as Date;
-      const dateAtStartOfDay = startOfDay(date);
+      const date = row.getValue(columnId) as Date
+      const dateAtStartOfDay = startOfDay(date)
 
       if (filterValue) {
-        const { from, to } = filterValue as DateRange;
+        const { from, to } = filterValue as DateRange
 
         if (from && to) {
-          const toAtEndOfDay = endOfDay(to);
-          return (
-            dateAtStartOfDay >= startOfDay(from) &&
-            dateAtStartOfDay <= toAtEndOfDay
-          );
+          const toAtEndOfDay = endOfDay(to)
+          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
         }
 
         if (from) {
-          return dateAtStartOfDay >= startOfDay(from);
+          return dateAtStartOfDay >= startOfDay(from)
         }
         if (to) {
-          return dateAtStartOfDay <= endOfDay(to);
+          return dateAtStartOfDay <= endOfDay(to)
         }
-        return false;
+        return false
       }
 
-      return true;
+      return true
     },
     accessorFn: (row: RetailResponse) => row.plannedDateConnection,
   },
@@ -257,7 +246,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     id: "inn",
     header: "ИНН",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      return info.getValue();
+      return info.getValue()
     },
     enableHiding: true,
     meta: {
@@ -270,18 +259,16 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "direction",
     header: "Направление",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofDirections;
-      return <span>{DirectionRetailLabels[value]}</span>;
+      const value = info.getValue() as typeofDirections
+      return <span>{DirectionRetailLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
-      if (!rowValue) return false;
+      const rowValue = row.getValue(columnId)
+      if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.some((direction) =>
-          (rowValue as typeofDirections).includes(direction),
-        );
+        return value.some((direction) => (rowValue as typeofDirections).includes(direction))
       }
-      return rowValue === value;
+      return rowValue === value
     },
     enableHiding: true,
     meta: {
@@ -294,16 +281,16 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "deliveryType",
     header: "Тип поставки",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofDelivery;
-      return <span>{DeliveryRetailLabels[value]}</span>;
+      const value = info.getValue() as typeofDelivery
+      return <span>{DeliveryRetailLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
-      if (!rowValue) return false;
+      const rowValue = row.getValue(columnId)
+      if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     enableHiding: true,
     meta: {
@@ -377,18 +364,16 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofStatus;
-      return (
-        <span className="whitespace-nowrap">{StatusRetailLabels[value]}</span>
-      );
+      const value = info.getValue() as typeofStatus
+      return <span className="whitespace-nowrap">{StatusRetailLabels[value]}</span>
     },
     enableHiding: true,
     filterFn: (row, columnId, value) => {
-      const rowValue = row.getValue(columnId);
+      const rowValue = row.getValue(columnId)
       if (Array.isArray(value)) {
-        return value.includes(rowValue);
+        return value.includes(rowValue)
       }
-      return rowValue === value;
+      return rowValue === value
     },
     meta: {
       title: "Статус",
@@ -421,4 +406,4 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     },
     accessorFn: (row: RetailResponse) => row.resource,
   },
-];
+]

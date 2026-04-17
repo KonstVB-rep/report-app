@@ -1,10 +1,10 @@
-import type { CheckedState } from "@radix-ui/react-checkbox";
-import type { ColumnDef } from "@tanstack/react-table";
-import { ListCheck } from "lucide-react";
-import type { EventInputType } from "@/feature/calendar/types";
-import { Checkbox } from "@/shared/components/ui/checkbox";
-import { Label } from "@/shared/components/ui/label";
-import { cn } from "@/shared/lib/utils";
+import type { CheckedState } from "@radix-ui/react-checkbox"
+import type { ColumnDef } from "@tanstack/react-table"
+import { ListCheck } from "lucide-react"
+import type { EventInputType } from "@/feature/calendar/types"
+import { Checkbox } from "@/shared/components/ui/checkbox"
+import { Label } from "@/shared/components/ui/label"
+import { cn } from "@/shared/lib/utils"
 
 export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
   {
@@ -20,11 +20,8 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <Label
-        className={cn("flex items-center justify-center cursor-pointer gap-1")}
-      >
-        {table.getIsSomePageRowsSelected() ||
-        table.getIsAllPageRowsSelected() ? (
+      <Label className={cn("flex items-center justify-center cursor-pointer gap-1")}>
+        {table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected() ? (
           <ListCheck />
         ) : (
           "Выбрать"
@@ -36,9 +33,7 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           className="opacity-0 w-0 h-0"
-          onCheckedChange={(value: CheckedState) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
+          onCheckedChange={(value: CheckedState) => table.toggleAllPageRowsSelected(!!value)}
         />
       </Label>
     ),
@@ -70,11 +65,11 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
     id: "start",
     header: "Начало",
     cell: (info) => {
-      const { row } = info;
+      const { row } = info
       return row.original.start.toLocaleDateString("ru-RU", {
         hour: "2-digit",
         minute: "2-digit",
-      });
+      })
     },
     size: 150,
     minSize: 150,
@@ -86,17 +81,17 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
     id: "end",
     header: "Конец",
     cell: (info) => {
-      const { row } = info;
-      const endDate = row.original.end;
+      const { row } = info
+      const endDate = row.original.end
 
       if (!endDate) {
-        return "-"; // или любое другое значение по умолчанию
+        return "-" // или любое другое значение по умолчанию
       }
 
       return endDate.toLocaleDateString("ru-RU", {
         hour: "2-digit",
         minute: "2-digit",
-      });
+      })
     },
     size: 150,
     minSize: 150,
@@ -111,4 +106,4 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
     cell: (info) => <p className="break-all">{info.getValue() as string}</p>,
     enableHiding: false,
   },
-];
+]

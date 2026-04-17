@@ -1,42 +1,30 @@
-"use client";
+"use client"
 
-import type { Dispatch, SetStateAction } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  DeliveryRetail,
-  DirectionRetail,
-  StatusRetail,
-} from "@prisma/client";
-import { type Resolver, useForm } from "react-hook-form";
-import {
-  RetailFormSchema,
-  type RetailSchema,
-} from "@/entities/deal/model/schema";
-import type { DealRetail } from "@/entities/deal/types";
-import useStoreUser from "@/entities/user/store/useStoreUser";
-import { TOAST } from "@/shared/custom-components/ui/Toast";
-import { formatterCurrency } from "@/shared/lib/utils";
-import { useMutationUpdateRetail } from "../../api/hooks/mutate";
-import RetailFormBody from "./RetailFormBody";
+import type { Dispatch, SetStateAction } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { DeliveryRetail, DirectionRetail, StatusRetail } from "@prisma/client"
+import { type Resolver, useForm } from "react-hook-form"
+import { RetailFormSchema, type RetailSchema } from "@/entities/deal/model/schema"
+import type { DealRetail } from "@/entities/deal/types"
+import useStoreUser from "@/entities/user/store/useStoreUser"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
+import { formatterCurrency } from "@/shared/lib/utils"
+import { useMutationUpdateRetail } from "../../api/hooks/mutate"
+import RetailFormBody from "./RetailFormBody"
 
 const formatCurrency = (value: string | null | undefined): string => {
-  return formatterCurrency.format(parseFloat(value || "0"));
-};
+  return formatterCurrency.format(parseFloat(value || "0"))
+}
 
 type Props = {
-  close: Dispatch<SetStateAction<void>>;
-  isInvalidate: boolean;
-  titleForm: string;
-  dealInfo: DealRetail;
-};
+  close: Dispatch<SetStateAction<void>>
+  isInvalidate: boolean
+  titleForm: string
+  dealInfo: DealRetail
+}
 
-const EditRetailForm = ({
-  close,
-  dealInfo,
-  isInvalidate = false,
-  titleForm,
-}: Props) => {
-  const { authUser } = useStoreUser();
+const EditRetailForm = ({ close, dealInfo, isInvalidate = false, titleForm }: Props) => {
+  const { authUser } = useStoreUser()
 
   const form = useForm<RetailSchema>({
     resolver: zodResolver(RetailFormSchema) as Resolver<RetailSchema>,
@@ -60,18 +48,18 @@ const EditRetailForm = ({
         : [],
       inn: dealInfo.inn ?? "",
     },
-  });
+  })
 
   const { mutateAsync, isPending } = useMutationUpdateRetail(
     dealInfo.id,
     dealInfo?.userId ?? "",
     close,
     isInvalidate,
-  );
+  )
 
   const onSubmit = (data: RetailSchema) => {
-    TOAST.PROMISE(mutateAsync(data), "Данные обновлены");
-  };
+    TOAST.PROMISE(mutateAsync(data), "Данные обновлены")
+  }
 
   return (
     <RetailFormBody
@@ -83,7 +71,7 @@ const EditRetailForm = ({
       onSubmit={onSubmit}
       titleForm={titleForm}
     />
-  );
-};
+  )
+}
 
-export default EditRetailForm;
+export default EditRetailForm

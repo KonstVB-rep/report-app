@@ -1,13 +1,13 @@
-import type { FieldValues } from "react-hook-form";
+import type { FieldValues } from "react-hook-form"
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-import InputNumber from "@/shared/custom-components/ui/Inputs/InputNumber";
-import type { InputFormProps } from "../type";
+} from "@/shared/components/ui/form"
+import InputNumber from "@/shared/custom-components/ui/Inputs/InputNumber"
+import type { InputFormProps } from "../type"
 
 const InputNumberForm = <T extends FieldValues>({
   name,
@@ -32,20 +32,14 @@ const InputNumberForm = <T extends FieldValues>({
               onBlur={field.onBlur}
               onChange={(val) => field.onChange(val)}
               placeholder={rest.placeholder}
-              value={
-                typeof field.value === "string"
-                  ? field.value
-                  : String(field.value ?? "")
-              }
+              value={typeof field.value === "string" ? field.value : String(field.value ?? "")}
             />
           </FormControl>
-          {errorMessage && (
-            <FormMessage className="text-red-500">{errorMessage}</FormMessage>
-          )}
+          {errorMessage && <FormMessage className="text-red-500">{errorMessage}</FormMessage>}
         </FormItem>
       )}
     />
-  );
-};
+  )
+}
 
-export default InputNumberForm;
+export default InputNumberForm

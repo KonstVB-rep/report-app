@@ -1,8 +1,8 @@
-import { useParams } from "next/navigation";
-import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow";
-import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext";
-import { getRowClassName } from "@/shared/lib/helpers/getRowClassName";
-import type { DealTableRowProps, DealUnion } from "../types";
+import { useParams } from "next/navigation"
+import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
+import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
+import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
+import type { DealTableRowProps, DealUnion } from "../types"
 
 export const DealTableRow = <T extends DealUnion>({
   row,
@@ -11,14 +11,14 @@ export const DealTableRow = <T extends DealUnion>({
   ...rest
 }: DealTableRowProps<T>) => {
   const { departmentId } = useParams<{
-    departmentId: string;
-  }>();
+    departmentId: string
+  }>()
 
-  const departmentIdNumber = Number(departmentId);
-  const { getContextMenuActions, renderAdditionalInfo } = useTableContext<T>();
+  const departmentIdNumber = Number(departmentId)
+  const { getContextMenuActions, renderAdditionalInfo } = useTableContext<T>()
 
-  const dealType = row.original.type?.toLowerCase();
-  const path = `/dashboard/deal/${departmentIdNumber}/${dealType}/${row.original.id}`;
+  const dealType = row.original.type?.toLowerCase()
+  const path = `/dashboard/deal/${departmentIdNumber}/${dealType}/${row.original.id}`
 
   return (
     <BaseTableRow<T>
@@ -31,5 +31,5 @@ export const DealTableRow = <T extends DealUnion>({
       row={row}
       virtualRow={virtualRow}
     />
-  );
-};
+  )
+}

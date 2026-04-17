@@ -1,30 +1,24 @@
-"use client";
+"use client"
 
-import { type ReactNode, useRef } from "react";
-import { X } from "lucide-react";
-import { createPortal } from "react-dom";
-import { Button } from "@/shared/components/ui/button";
-import useKeyDown from "@/shared/hooks/useKeyDown";
-import { useOutsideLeftClick } from "@/shared/hooks/useOutsideLeftClick";
+import { type ReactNode, useRef } from "react"
+import { X } from "lucide-react"
+import { createPortal } from "react-dom"
+import { Button } from "@/shared/components/ui/button"
+import useKeyDown from "@/shared/hooks/useKeyDown"
+import { useOutsideLeftClick } from "@/shared/hooks/useOutsideLeftClick"
 
 type Props = {
-  text: ReactNode;
-  isActive: boolean;
-  closeFn: () => void;
-  isTargetCell?: boolean;
-  children?: ReactNode;
-};
+  text: ReactNode
+  isActive: boolean
+  closeFn: () => void
+  isTargetCell?: boolean
+  children?: ReactNode
+}
 
-const RowInfoDialog = ({
-  text,
-  isActive,
-  closeFn,
-  isTargetCell,
-  children,
-}: Props) => {
-  const ref = useRef<HTMLDivElement>(null);
-  useKeyDown(isActive, closeFn, "Escape");
-  useOutsideLeftClick(ref, closeFn, isActive);
+const RowInfoDialog = ({ text, isActive, closeFn, isTargetCell, children }: Props) => {
+  const ref = useRef<HTMLDivElement>(null)
+  useKeyDown(isActive, closeFn, "Escape")
+  useOutsideLeftClick(ref, closeFn, isActive)
   return (
     <>
       {isActive &&
@@ -51,6 +45,6 @@ const RowInfoDialog = ({
           document.body,
         )}
     </>
-  );
-};
-export default RowInfoDialog;
+  )
+}
+export default RowInfoDialog

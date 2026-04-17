@@ -1,14 +1,14 @@
-import type { CSSProperties } from "react";
-import { type Cell, flexRender } from "@tanstack/react-table";
-import { TableCell } from "@/shared/components/ui/table";
+import type { CSSProperties } from "react"
+import { type Cell, flexRender } from "@tanstack/react-table"
+import { TableCell } from "@/shared/components/ui/table"
 
 type TableCellComponentProps<TData> = {
-  cell: Cell<TData, unknown>;
-  styles?: CSSProperties;
-  handleOpenInfo?: (cellId: string) => void;
-  children?: React.ReactNode;
-  classNameSpan?: string;
-};
+  cell: Cell<TData, unknown>
+  styles?: CSSProperties
+  handleOpenInfo?: (cellId: string) => void
+  children?: React.ReactNode
+  classNameSpan?: string
+}
 
 const TableCellComponent = <TData,>({
   cell,
@@ -28,7 +28,7 @@ const TableCellComponent = <TData,>({
       </span>
       {children}
     </TableCell>
-  );
-};
+  )
+}
 
-export default TableCellComponent;
+export default TableCellComponent
