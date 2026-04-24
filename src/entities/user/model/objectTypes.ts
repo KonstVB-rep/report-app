@@ -14,4 +14,6 @@ export const PermissionUser = {
   DEAL_MANAGEMENT: "Редактирование сделок",
   TASK_MANAGEMENT: "Редактирование/удаление задач",
   DEAL_DELETE: "Удаление сделок",
+  EQUIPMENT_DELETE: "Удаление оборудования",
+  EQUIPMENT_MANAGEMENT: "Редактирование оборудования",
 } as const

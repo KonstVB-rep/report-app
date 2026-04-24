@@ -21,16 +21,13 @@ import InputTitle from "./InputTitle"
 import SectionOffer from "./SectionOffer"
 import SelectedItem from "./SelectedItem"
 import {
-  addPart,
-  addRow,
-  addSection,
   DataSection,
   removePart,
   removeSection,
-  selectIsReadonly,
-  selectItemStoreId,
   selectPart,
   selectParts,
+  updateDate,
+  updateOfferNumber,
   updatePartTitle,
   useOfferStore,
 } from "./store"
@@ -45,7 +42,12 @@ const List = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 
   const dataParts = useOfferStore(selectParts)
-  const isReadOnly = useOfferStore(selectIsReadonly)
+  // const encodedData = encodeURIComponent(JSON.stringify(dataParts));
+  // const isReadOnly = useOfferStore(selectIsReadonly);
+
+  const handleDateChange = (date: Date | undefined) => {
+    setSelectedDate(date)
+  }
 
   return (
     <div className="h-screen overflow-y-auto bg-gray-100 p-10 relative">
@@ -69,7 +71,11 @@ const List = () => {
                   className={cn("w-full text-left font-normal border-none")}
                   variant={"outline"}
                 >
-                  {selectedDate ? formatter.format(selectedDate) : <span>Выберите дату</span>}
+                  {selectedDate ? (
+                    <span>{formatter.format(selectedDate)}</span>
+                  ) : (
+                    <span>{formatter.format(new Date())}</span>
+                  )}
                   {selectedDate ? null : <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />}
                 </Button>
               </PopoverTrigger>
@@ -79,6 +85,9 @@ const List = () => {
                   mode="single"
                   onSelect={(date: Date | undefined) => {
                     setSelectedDate(date)
+                    if (date) {
+                      updateDate(date)
+                    }
                   }}
                   required={true}
                   selected={selectedDate}
@@ -87,9 +96,15 @@ const List = () => {
             </Popover>
           </div>
         </div>
-        <div className="pt-10 flex gap-2 justify-center items-center">
+        <div className="py-10 flex gap-2 justify-center items-center">
           <p className="text-2xl text-black font-bold">Коммерческое предложение №</p>
-          <Input name="title" type="text" className="text-2xl md:text-2xl w-1/6 text-black" />
+          <Input
+            name="title"
+            type="text"
+            className="text-2xl md:text-2xl w-1/6 text-black"
+            defaultValue={dataParts.number}
+            onChange={(e) => updateOfferNumber(e.target.value)}
+          />
         </div>
         {dataParts.parts.map((part) => (
           <div key={part.id} className="relative">
@@ -124,17 +139,35 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
     id: "name",
     header: "Наименование",
     accessorKey: "name",
-    cell: ({ row }) => {
-      return <Textarea name={row.id} className="text-black" defaultValue={row.original.name} />
+    cell: ({ row, updateData }) => {
+      const onBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        updateData(e.target.value)
+      }
+      return (
+        <Textarea
+          name={row.id}
+          className="text-black"
+          defaultValue={row.original.name}
+          onBlur={onBlur}
+        />
+      )
     },
   },
   {
     id: "description",
     header: "Описание",
     accessorKey: "description",
-    cell: ({ row }) => {
+    cell: ({ row, updateData }) => {
+      const onBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        updateData(e.target.value)
+      }
       return (
-        <Textarea name={row.id} className="text-black" defaultValue={row.original.description} />
+        <Textarea
+          name={row.id}
+          className="text-black"
+          defaultValue={row.original.description}
+          onBlur={onBlur}
+        />
       )
     },
   },
@@ -251,9 +284,6 @@ const Part = ({ secionList, partId }: { secionList: DataSection[]; partId: strin
     getCoreRowModel: getCoreRowModel(),
     onColumnSizingChange: setColumnSizing,
     onColumnSizingInfoChange: setColumnSizingInfo,
-    debugTable: false,
-    debugHeaders: false,
-    debugColumns: false,
     state: {
       columnSizing,
       columnSizingInfo,
@@ -262,6 +292,7 @@ const Part = ({ secionList, partId }: { secionList: DataSection[]; partId: strin
 
   const columnSizeVars = useMemo(() => {
     const headers = table.getFlatHeaders()
+
     const colSizes: { [key: string]: number } = {}
     for (let i = 0; i < headers.length; i++) {
       const header = headers[i]!
@@ -275,7 +306,7 @@ const Part = ({ secionList, partId }: { secionList: DataSection[]; partId: strin
 
   return (
     <>
-      <div className="flex my-10 gap-2 justify-start items-center border-t-[4px] border-t-blue-900 border-b-[2px] border-b-black">
+      <div className="flex gap-2 justify-start items-center border-t-[4px] border-t-blue-900 border-b-[2px] border-b-black">
         <p className="text-xl text-black font-bold">Раздел</p>
         <InputTitle
           defaultTitle={part?.name || ""}

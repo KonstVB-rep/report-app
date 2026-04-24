@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { DealsUnionType, TableType } from "@/entities/deal/types"
+import { Prisma } from "@prisma/client"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -111,3 +112,10 @@ export function validateRequiredFields<T>(data: T, requiredFields: (keyof T)[]):
     }
   }
 }
+
+export const toDec = (v: unknown): Prisma.Decimal =>
+  new Prisma.Decimal(
+    String(v || "0")
+      .replace(/\s/g, "")
+      .replace(",", "."),
+  )

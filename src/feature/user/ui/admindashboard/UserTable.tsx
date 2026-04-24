@@ -40,7 +40,6 @@ const UserTable = () => {
           <UserTableToolbar
             globalFilter={globalFilter ?? ""}
             onGlobalFilterChange={(value) => setGlobalFilter(String(value))}
-            // rowSelection={usersSelected}
           />
           <UserTableContent isLoading={isLoading} table={table} />
         </div>

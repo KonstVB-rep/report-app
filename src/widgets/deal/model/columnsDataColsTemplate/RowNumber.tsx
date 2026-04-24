@@ -8,11 +8,12 @@ const RowNumber = <T,>() => {
     enableHiding: true,
     enableSorting: false,
     accessorFn: () => "",
-    maxSize: 100,
+    // maxSize: 100,
     // enableResizing: false,
     meta: {
       isNotSearchable: true,
       title: "№",
+      hidden: true,
     },
   }
 }

@@ -361,6 +361,20 @@ model NotificationCache {
   @@index([expiresAt])
 }
 
+model EquipmentItem {
+  id             String   @id @default(cuid())
+  
+  name           String
+  image          String?  
+  description    String   @db.Text
+  
+  price           Decimal  @db.Decimal(12, 2)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+
 
 enum PermissionEnum {
   VIEW_USER_REPORT
@@ -370,6 +384,8 @@ enum PermissionEnum {
   DEAL_MANAGEMENT
   TASK_MANAGEMENT
   DEAL_DELETE
+  EQUIPMENT_DELETE
+  EQUIPMENT_MANAGEMENT
 }
 
 enum DirectionProject {

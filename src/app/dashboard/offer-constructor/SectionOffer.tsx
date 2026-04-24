@@ -1,6 +1,4 @@
 import { Button } from "@/shared/components/ui/button"
-import { Input } from "@/shared/components/ui/input"
-import { Label } from "@/shared/components/ui/label"
 import { flexRender, Table } from "@tanstack/react-table"
 import { ImagePlus, X } from "lucide-react"
 import { ChangeEvent, memo, useState } from "react"
@@ -15,6 +13,18 @@ import {
   updateRow,
   updateSubSectionTitle,
 } from "./store"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+} from "@/shared/components/ui/select"
+import { Label } from "@/shared/components/ui/label"
+import { Input } from "@/shared/components/ui/input"
 
 const SectionOffer = ({
   table,
@@ -76,6 +86,41 @@ const SubSection = ({
     </>
   )
 }
+
+const items = [
+  {
+    id: 1,
+    title: "Терминал Park Style ASP-N",
+    description: "Описание",
+    price: 24000,
+    count: 0,
+    image: "C:\Users\ro3en\OneDrive\Рабочий стол\ros-parking\фото\Контроллер управления К-09.png",
+  },
+  {
+    id: 2,
+    title: "Терминал Park Style ASP-N",
+    description: "Описание",
+    price: 284000,
+    count: 0,
+    image: "C:\Users\ro3en\OneDrive\Рабочий стол\ros-parking\фото\Контроллер управления К-09.png",
+  },
+  {
+    id: 3,
+    title: "Терминал Park Style ASP-N",
+    description: "Описание",
+    price: 127000,
+    count: 0,
+    image: "C:\Users\ro3en\OneDrive\Рабочий стол\ros-parking\фото\Контроллер управления К-09.png",
+  },
+  {
+    id: 4,
+    title: "Терминал Park Style ASP-N",
+    description: "Описание",
+    price: 350000,
+    count: 0,
+    image: "C:\Users\ro3en\OneDrive\Рабочий стол\ros-parking\фото\Контроллер управления К-09.png",
+  },
+]
 
 function TableBody({
   table,
@@ -156,10 +201,16 @@ const Cell = ({
     const file = event.target.files?.[0]
 
     if (file) {
+      if (file.type === "image/webp") {
+        alert("Формат WebP не поддерживается в PDF. Используйте PNG или JPG.")
+        return
+      }
       const reader = new FileReader()
       const image = URL.createObjectURL(file)
+
       reader.onloadend = () => {
         const base64String = reader.result as string
+
         updateRow(partId, sectionId, subId, rowId, "image", base64String)
       }
       reader.readAsDataURL(file)
@@ -176,6 +227,18 @@ const Cell = ({
           className=" h-20 object-cover rounded-md border w-full ratio-square border-gray-400"
         />
       )}
+
+      {/* <SelectComponent
+        options={[
+          ["1", "Терминал Park Style ASP-N"],
+          ["2", "Терминал Park Style ASP-N"],
+          ["3", "Терминал Park Style ASP-N"],
+          ["4", "Терминал Park Style ASP-N"],
+        ]}
+        placeholder=""
+      /> */}
+
+      {/* <SelectGroups /> */}
 
       <Label className="cursor-pointer text-black flex items-center gap-2">
         <ImagePlus size={20} />
@@ -212,3 +275,20 @@ export const MemoizedTableBody = memo(TableBody, (prev, next) => {
   // тоже не перерисовываем, если сами строки не тронуты.
   return true
 })
+
+export function SelectGroups() {
+  return (
+    <Select>
+      <SelectTrigger className="w-full max-w-48 bg-white text-black">
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        {items.map((item) => (
+          <SelectItem key={item.id} value={item.title} className="bg-white text-black">
+            {item.title}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}

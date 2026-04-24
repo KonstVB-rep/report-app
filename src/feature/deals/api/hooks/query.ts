@@ -23,9 +23,7 @@ import {
   type TableType,
 } from "@/entities/deal/types"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
-import { REFETCH_INTERVAL, REFETCH_INTERVAL_SUMMARY_TABLE } from "@/shared/types"
-
-const ERROR_TEXT = "Не удалось получить список объектов"
+import { ERROR_TEXT, REFETCH_INTERVAL, REFETCH_INTERVAL_SUMMARY_TABLE } from "@/shared/types"
 
 export const queryKeys = {
   projectById: (id: string) => ["project", id] as const,

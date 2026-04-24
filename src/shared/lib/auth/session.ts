@@ -39,8 +39,14 @@ export const generateTokensAndSetCookies = async (payload: PayloadType) => {
     path: "/",
   }
 
-  cookieStore.set("accessToken", accessToken, { ...commonOptions, maxAge: ACCESS_TIME_SEC })
-  cookieStore.set("refreshToken", refreshToken, { ...commonOptions, maxAge: REFRESH_TIME_SEC })
+  cookieStore.set("accessToken", accessToken, {
+    ...commonOptions,
+    maxAge: ACCESS_TIME_SEC,
+  })
+  cookieStore.set("refreshToken", refreshToken, {
+    ...commonOptions,
+    maxAge: REFRESH_TIME_SEC,
+  })
 
   return { accessToken, refreshToken }
 }

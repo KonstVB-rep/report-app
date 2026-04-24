@@ -6,7 +6,7 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
-import { validateRequiredFields } from "@/shared/lib/utils"
+import { validateRequiredFields, toDec } from "@/shared/lib/utils"
 import {
   type Contact,
   type DateRange,
@@ -879,13 +879,6 @@ export const updateProject = async (
       await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT])
     }
 
-    const toDec = (v: unknown): Prisma.Decimal =>
-      new Prisma.Decimal(
-        String(v || "0")
-          .replace(/\s/g, "")
-          .replace(",", "."),
-      )
-
     const finalDeal = await prisma.$transaction(async (tx) => {
       await tx.projectManager.deleteMany({ where: { dealId: id } })
       if (managersIds.length > 0) {
@@ -982,13 +975,6 @@ export const updateRetail = async (
     if (!isOwner && !isManager) {
       await checkUserPermissionByRole(user, [PermissionEnum.DEAL_MANAGEMENT])
     }
-
-    const toDec = (v: unknown): Prisma.Decimal =>
-      new Prisma.Decimal(
-        String(v || "0")
-          .replace(/\s/g, "")
-          .replace(",", "."),
-      )
 
     const finalDeal = await prisma.$transaction(async (tx) => {
       await tx.retailManager.deleteMany({ where: { dealId: retailId } })

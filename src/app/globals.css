@@ -1060,7 +1060,26 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
   }
 }
 
+.a4{
+  width: 210mm;
+  /* min-height убираем или оставляем для печати */
+  height: 297mm; /* Фиксируем высоту для предпросмотра */
+  overflow-y: auto; /* Включаем скролл внутри листа */
+  padding: 10mm;
+  
+  /* Для печати */
+  @media print {
+    margin: 0;
+    box-shadow: none;
+    width: 100%;
+    height: 100%;
+  }
+}
 
+.text-wrap-pretty{
+  word-break: break-all;
+  text-wrap:pretty;
+}
 table,
 .divTable {
   width: fit-content;
@@ -1148,4 +1167,8 @@ th,
 .td-offer{
   padding: 0.25rem;
   width: fit-content;
+}
+
+.fortune-toolbar{
+  color:black;
 }

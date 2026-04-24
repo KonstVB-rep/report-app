@@ -82,7 +82,12 @@ const TableTemplate = <T extends Record<string, unknown>>({
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </span>
                     {header.column.getCanSort() && (
-                      <Button onClick={header.column.getToggleSortingHandler()}>
+                      <Button
+                        onClick={header.column.getToggleSortingHandler()}
+                        variant="ghost"
+                        size="icon"
+                        className="grid place-content-center"
+                      >
                         {{
                           asc: <MoveUp className="ml-2 h-4 w-4" />,
                           desc: <MoveDown className="ml-2 h-4 w-4" />,
