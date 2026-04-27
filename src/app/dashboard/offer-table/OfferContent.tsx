@@ -1,3 +1,17 @@
+import { useEffect, useMemo, useState } from "react"
+import {
+  type CellContext,
+  type ColumnDef,
+  type ColumnSizingInfoState,
+  type ColumnSizingState,
+  getCoreRowModel,
+  type Table,
+  useReactTable,
+  type VisibilityState,
+} from "@tanstack/react-table"
+import { ru } from "date-fns/locale"
+import { CalendarIcon, X } from "lucide-react"
+import { updateDate } from "@/app/dashboard/offer-constructor/store"
 import { Button } from "@/shared/components/ui/button"
 import { Calendar } from "@/shared/components/ui/calendar"
 import { Input } from "@/shared/components/ui/input"
@@ -5,34 +19,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/
 import SelectColumns from "@/shared/custom-components/ui/SelectColumns"
 import { getLS, setLS } from "@/shared/hooks/useTableState"
 import { cn, formatterCurrency } from "@/shared/lib/utils"
-import {
-  CellContext,
-  ColumnDef,
-  ColumnSizingInfoState,
-  ColumnSizingState,
-  getCoreRowModel,
-  Table,
-  useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table"
-import { ru } from "date-fns/locale"
-import { CalendarIcon, X } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import RowNumber from "@/widgets/deal/model/columnsDataColsTemplate/RowNumber"
+import Part from "./components/Part"
 import SelectedItem from "./components/SelectedItem"
 import SheetEquipment from "./sheetEquipment"
 import {
-  OfferTableItem,
+  type OfferTableItem,
   removePart,
-  selectParts,
-  updateDate,
-  updateOfferNumber,
+  selectData,
+  updateNumber,
   useOfferStoreTable,
 } from "./store"
-import RowNumber from "@/widgets/deal/model/columnsDataColsTemplate/RowNumber"
-import OfferTable from "./components/OfferTable"
-import OfferSection from "./components/OfferSection"
 
-let formatter = new Intl.DateTimeFormat("ru", {
+const formatter = new Intl.DateTimeFormat("ru", {
   year: "numeric",
   month: "long",
   day: "numeric",
@@ -160,7 +159,10 @@ const colsListNotHidden = ["name", "description", "price", "count", "totalPrice"
 const OfferContent = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
 
-  const dataParts = useOfferStoreTable(selectParts)
+  const data = useOfferStoreTable(selectData)
+  const allRows = useMemo(() => {
+    return data.parts.flatMap((p) => p.sections.flatMap((s) => s.rows))
+  }, [data.parts])
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     id: false,
@@ -177,12 +179,12 @@ const OfferContent = () => {
 
   useEffect(() => {
     setLS(`${storageKey}_columnSizing`, columnSizing)
-  }, [columnSizing, storageKey])
+  }, [columnSizing])
 
   const columns = useMemo(() => defaultColumns, [])
 
   const table = useReactTable({
-    data: [],
+    data: allRows,
     columns,
     state: {
       columnVisibility,
@@ -199,6 +201,7 @@ const OfferContent = () => {
     columnResizeMode: "onChange",
   })
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <This is a hack>
   const columnSizeVars = useMemo(() => {
     const headers = table.getFlatHeaders()
     const colSizes: { [key: string]: number } = {}
@@ -210,27 +213,27 @@ const OfferContent = () => {
     return colSizes
   }, [table.getState().columnSizingInfo, table.getState().columnSizing])
 
-  console.log(dataParts, "dataParts")
+  console.log(data, "data")
   return (
     <div className="h-screen overflow-y-auto  p-10 relative">
       <div className="flex justify-start gap-2 mb-2">
         <SheetEquipment />
         <SelectColumns
-          data={table as Table<OfferTableItem>}
           colsListNotHidden={colsListNotHidden}
+          data={table as Table<OfferTableItem>}
         />
       </div>
       <div className="border shadow-lg  mx-auto">
         <div className="relative py-1 flex items-center justify-end">
           <img
-            src="/for-builder/header-bg.webp"
             alt="offer"
             className="absolute inset-0 h-full w-full object-cover"
+            src="/for-builder/header-bg.webp"
           />
           <textarea
-            id="address"
             className="w-[40%] text-[10px] text-left isolate bg-transparent "
             defaultValue={`Общество с ограниченной ответственностью "ЭРТЕЛ"\nЮридический адрес:127015, г. Москва, Бумажный проезд, дом 14, строение 1,\nпомещение I, комната 6 ИНН/КПП 7709407790/771401001\nЭлектронный адрес:ertel@ertel.ru Сайт www.ertel.ru\nТел. +7(495) 644-39-76`}
+            id="address"
           />
 
           <div className="absolute right-2 -bottom-10">
@@ -268,31 +271,33 @@ const OfferContent = () => {
         <div className="py-10 flex gap-2 justify-center items-center">
           <p className="text-2xl  font-bold">Коммерческое предложение №</p>
           <Input
-            name="title"
-            type="text"
             className="text-2xl md:text-2xl w-1/6 "
-            defaultValue={dataParts.number}
-            onChange={(e) => updateOfferNumber(e.target.value)}
+            defaultValue={data.number}
+            name="title"
+            onChange={(e) => updateNumber(e.target.value)}
+            type="text"
           />
         </div>
-        {dataParts.parts.map((part) => (
-          <div key={part.id} className="relative">
+        {data.parts.map((part) => (
+          <div className="relative" key={part.id}>
             <SelectedItem id={part.id} />
-            <OfferSection
-              table={table}
-              dataPart={part}
+            <Part
               columnSizeVars={columnSizeVars}
+              columnSizing={columnSizing}
+              columnVisibility={columnVisibility}
+              dataPart={part}
               partId={part.id}
+              table={table}
             />
             {/* <OfferTable
-              table={table}
-              dataParts={dataParts}
               columnSizeVars={columnSizeVars}
+              dataParts={data}
+              table={table}
             /> */}
             {/* <Part secionList={part.sections} partId={part.id} /> */}
             <Button
-              onClick={() => removePart(part.id)}
               className="absolute top-0 -right-8 z-10 bg-red-300"
+              onClick={() => removePart(part.id)}
               size="icon"
             >
               <X />

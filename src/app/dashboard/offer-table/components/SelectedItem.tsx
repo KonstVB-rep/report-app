@@ -1,5 +1,5 @@
 import { Checkbox } from "@/shared/components/ui/checkbox"
-import { selectItemStoreId, selectItemStoreIdAction, useOfferStoreTable } from "../store"
+import { selectSelectedItemId, setSelectedItemId, useOfferStoreTable } from "../store"
 
 const SelectedItem = ({
   id,
@@ -8,18 +8,18 @@ const SelectedItem = ({
   id: string
   className?: string
 }) => {
-  const selectedChapter = useOfferStoreTable(selectItemStoreId)
+  const selectedChapter = useOfferStoreTable(selectSelectedItemId)
   return (
     <Checkbox
       checked={id === selectedChapter}
+      className={className}
       onCheckedChange={() => {
         if (id !== selectedChapter) {
-          selectItemStoreIdAction(id)
+          setSelectedItemId(id)
         } else {
-          selectItemStoreIdAction("")
+          setSelectedItemId("")
         }
       }}
-      className={className}
     />
   )
 }

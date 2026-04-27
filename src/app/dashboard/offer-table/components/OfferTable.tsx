@@ -1,28 +1,10 @@
 "use client"
 
-import { Button } from "@/shared/components/ui/button"
-import { Textarea } from "@/shared/components/ui/textarea"
-import SelectColumns from "@/shared/custom-components/ui/SelectColumns"
-import { getLS, setLS } from "@/shared/hooks/useTableState"
-import { cn, formatterCurrency } from "@/shared/lib/utils"
-import RowNumber from "@/widgets/deal/model/columnsDataColsTemplate/RowNumber"
-import {
-  Cell,
-  CellContext,
-  ColumnDef,
-  ColumnSizingInfoState,
-  ColumnSizingState,
-  flexRender,
-  getCoreRowModel,
-  Table,
-  useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table"
-import { X } from "lucide-react"
+import { memo, useEffect, useMemo, useState } from "react"
+import type { Cell, ColumnSizingState, Table, VisibilityState } from "@tanstack/react-table"
 import Image from "next/image"
-import { ChangeEvent, memo, useEffect, useMemo, useState } from "react"
-import SheetEquipment from "../sheetEquipment"
-import { DataOffer, OfferTableItem, removeRow, updateRow, useOfferStoreTable } from "../store"
+import { Textarea } from "@/shared/components/ui/textarea"
+import { type OfferTableItem, updateRow, useOfferStoreTable } from "../store"
 
 // const canHiddenColumns = ["purchasePrice", "purchaseAmount", "delta"] as const
 
@@ -35,133 +17,122 @@ import { DataOffer, OfferTableItem, removeRow, updateRow, useOfferStoreTable } f
 // ];
 
 const OfferTable = ({
-  dataParts,
+  dataTable,
   table,
-  columnSizeVars,
+  columnSizing,
+  columnVisibility,
+  removeRow,
 }: {
-  dataParts: DataOffer
+  dataTable: OfferTableItem[]
   table: Table<OfferTableItem>
-  columnSizeVars: Record<string, number>
+  columnSizing: ColumnSizingState
+  columnVisibility: VisibilityState
+  removeRow: (rowId: string) => void
 }) => {
+  // const dataTable = useOfferStoreTable((state) => state.data.parts);
   return (
-    <>
-      <div className="h-screen overflow-y-auto relative p-10">
-        <div></div>
-        {dataParts.parts.map((part) => (
-          <div className="relative w-full overflow-auto" key={part.id}>
-            <div
-              className="w-full grid border-separate border-spacing-0 border border-border"
-              style={{
-                ...columnSizeVars,
-                width: table.getTotalSize(),
-              }}
-            >
-              <div className="sticky top-0 z-10 bg-white dark:bg-zinc-800 rounded-t-sm">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <div key={headerGroup.id} className="flex">
-                    {headerGroup.headers.map((header, index) => (
-                      <div
-                        key={header.id}
-                        className={cn("p-2! border-zinc-600 border border-solid relative h-auto", {
-                          "rounded-tr-sm": index === headerGroup.headers.length - 1,
-                          "rounded-tl-sm": index === 0,
-                        })}
-                        style={{
-                          width: `calc(var(--header-${header?.id}-size) * 1px)`,
-                        }}
-                      >
-                        {header.isPlaceholder ? null : (
-                          <div
-                            className={cn(
-                              "grid content-between justify-items-center gap-1 h-full text-primary px-1 py-2",
-                              // header.column.getCanSort() &&
-                              //   "cursor-pointer select-none",
-                            )}
-                            // onClick={header.column.getToggleSortingHandler()}
-                          >
-                            <span className="text-wrap-pretty text-xs font-semibold first-letter:capitalize text-center">
-                              {flexRender(header.column.columnDef.header, header.getContext())}
-                            </span>
-                          </div>
-                        )}
-                        {header.column.getCanResize() && (
-                          <div
-                            onDoubleClick={() => header.column.resetSize()}
-                            onMouseDown={header.getResizeHandler()}
-                            onTouchStart={header.getResizeHandler()}
-                            className={cn("resizer", header.column.getIsResizing() && "isResizing")}
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-              {/* <MemoizedTableBody
-                table={table}
-                columnVisibility={columnVisibility}
-                columnSizing={columnSizing}
-                dataTable={dataTable}
-              />
-              <TableBodyOffer table={table} />
-              <TableFooterOffer table={table} /> */}
-            </div>
-            {/* <div className="absolute top-0 left-0 a4 border-dashed border-2 border-white" /> */}
-          </div>
-        ))}
-      </div>
-    </>
+    <div className="overflow-y-auto relative">
+      <div></div>
+
+      <TableBodyOffer
+        // columnSizing={columnSizing}
+        // columnVisibility={columnVisibility}
+        dataTable={dataTable}
+        removeRow={removeRow}
+        table={table}
+      />
+      {/* <TableBodyOffer table={table} />
+      <TableFooterOffer table={table} />  */}
+      {/* </div> */}
+      {/* <div className="absolute top-0 left-0 a4 border-dashed border-2 border-white" /> */}
+      {/* </div>
+        ))} */}
+    </div>
   )
 }
 
 export default OfferTable
 
-const TableBodyOffer = ({
-  table,
-  columnSizing,
-  columnVisibility,
-  dataTable,
-}: {
-  table: Table<OfferTableItem>
-  columnSizing: ColumnSizingState
-  columnVisibility: VisibilityState
-  dataTable: OfferTableItem[]
-}) => {
-  return (
-    <>
+const TableBodyOffer = memo(
+  ({
+    table,
+    dataTable,
+    removeRow,
+  }: {
+    table: Table<OfferTableItem>
+    dataTable: OfferTableItem[]
+    removeRow: (rowId: string) => void
+  }) => {
+    // Оптимальный поиск: берем готовые строки TanStack и оставляем только нужные этой секции
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <This is docstyle>
+    const rows = useMemo(() => {
+      return table
+        .getRowModel()
+        .rows.filter((row) => dataTable.some((d) => d.id === row.original.id))
+    }, [table.getRowModel().rows, dataTable])
+
+    return (
       <div className="tbody">
-        {table.getRowModel().rows.map((row) => {
-          return (
-            <div key={row.id} className="flex w-fit relative">
-              <>
-                {row.getVisibleCells().map((cell) => {
-                  return <CellOfferTable key={cell.id} cell={cell} />
-                })}
-
-                {/* <Button
-                  size="icon"
-                  variant="destructive"
-                  className="top-0 -right-10 absolute"
-                  onClick={() => removeRow(row.original.id)}
-                >
-                  <X />
-                </Button> */}
-              </>
-            </div>
-          )
-        })}
+        {rows.map((row) => (
+          <div className="flex relative group" key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <CellOfferTable cell={cell} key={cell.id} />
+            ))}
+            {/* Кнопка удаления */}
+          </div>
+        ))}
       </div>
-    </>
-  )
-}
+    )
+  },
+)
 
-export const MemoizedTableBody = memo(TableBodyOffer, (prev, next) => {
-  const sameData = prev.dataTable === next.dataTable
+// const TableBodyOffer = ({
+//  table,
+//   columnSizing,
+//   columnVisibility,
+//   dataTable,
+//   removeRow,
+// }: {
+//   table: Table<OfferTableItem>;
+//   columnSizing: ColumnSizingState;
+//   columnVisibility: VisibilityState;
+//   dataTable: OfferTableItem[];
+//   removeRow: (rowId: string) => void;
+// }) => {
+//   const visibleColumns = table.getVisibleLeafColumns();
 
-  const sameVisibility = prev.columnVisibility === next.columnVisibility
+//   return (
+//     <div className="tbody border-l">
+//       {dataTable.map((rowData) => (
+//         <div className="flex w-fit relative group" key={rowData.id}>
+//           {/* Мапим не ячейки из RowModel, а видимые колонки таблицы */}
+//           {visibleColumns.map((column) => {
+//             return (
+//               <ManualCell column={column} key={column.id} rowData={rowData} />
+//             );
+//           })}
 
-  return sameData && sameVisibility
-}) as typeof TableBodyOffer
+//           <Button
+//             className="opacity-0 group-hover:opacity-100 transition-opacity top-1 -right-10 absolute"
+//             onClick={() => removeRow(rowData.id)}
+//             size="icon"
+//             variant="destructive"
+//           >
+//             <X className="h-4 w-4" />
+//           </Button>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export const MemoizedTableBody = memo(TableBodyOffer, (prev, next) => {
+//   const sameData = prev.dataTable === next.dataTable;
+
+//   const sameVisibility = prev.columnVisibility === next.columnVisibility;
+
+//   return sameData && sameVisibility;
+// }) as typeof TableBodyOffer;
 
 const TableFooterOffer = ({ table }: { table: Table<OfferTableItem> }) => {
   const { totalPriceOffer, totalPricePurchase, totalDelta } = useOfferStoreTable()
@@ -171,8 +142,8 @@ const TableFooterOffer = ({ table }: { table: Table<OfferTableItem> }) => {
         if (column.columnDef.meta?.hidden) return null
         return (
           <div
-            key={column.id}
             className="p-2 td min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
+            key={column.id}
             style={{
               width: `calc(var(--col-${column.id}-size) * 1px)`,
             }}
@@ -189,42 +160,62 @@ const TableFooterOffer = ({ table }: { table: Table<OfferTableItem> }) => {
   )
 }
 
-export const CellOfferTable = ({ cell }: { cell: Cell<OfferTableItem, unknown> }) => {
-  const [value, setValue] = useState<string>((cell.getValue() as string) ?? "")
+export const CellOfferTable = memo(({ cell }: { cell: Cell<OfferTableItem, unknown> }) => {
+  // 1. Сохраняем твою логику инициализации
+  const initialValue = (cell.getValue() as string) ?? ""
+  const [value, setValue] = useState<string>(initialValue)
 
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement> | ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      setValue(e.target.value)
+  // Синхронизация стейта (чтобы данные не "залипали" при обновлении стора)
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
+
+  // 2. Оптимизация: сохраняем в стор только при выходе (onBlur)
+  // Это уберет бесконечный рендеринг при печати
+  const handlePersist = () => {
+    if (value !== initialValue) {
       const updateItem = {
         ...cell.row.original,
-        [cell.column.id]: e.target.value,
+        [cell.column.id]: value,
       }
-      updateRow(updateItem)
+      updateRow(updateItem) // Вызываем твой экшен
     }
   }
 
   return (
     <div
-      key={cell.id}
       className="p-2 td min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
-      style={{
-        width: `calc(var(--col-${cell.column.id}-size) * 1px)`,
-      }}
+      key={cell.id}
+      style={{ width: `calc(var(--col-${cell.column.id}-size) * 1px)` }}
     >
       <div className="grid gap-2 justify-items-center">
+        {/* Твоя логика выбора инпута или текстареа */}
         {cell.column.id === "name" || cell.column.id === "description" ? (
-          <Textarea value={value} onChange={handleChange} />
+          <Textarea
+            onBlur={handlePersist}
+            onChange={(e) => setValue(e.target.value)}
+            value={value}
+          />
         ) : (
           <input
+            className="text-end w-full shadow-none border-none px-1 py-2 bg-transparent"
+            onBlur={handlePersist}
+            onChange={(e) => setValue(e.target.value)}
             value={value}
-            onChange={handleChange}
-            className="text-end w-full shadow-none border-none px-1 py-2"
           />
         )}
+
+        {/* ТВОЙ ФУНКЦИОНАЛ С КАРТИНКАМИ — СОХРАНЕН */}
         {cell.column.id === "name" && cell.row.original.image && (
-          <Image src={cell.row.original.image} alt="" width={80} height={80} />
+          <Image
+            alt=""
+            className="object-contain"
+            height={80}
+            src={cell.row.original.image}
+            width={80}
+          />
         )}
       </div>
     </div>
   )
-}
+})
