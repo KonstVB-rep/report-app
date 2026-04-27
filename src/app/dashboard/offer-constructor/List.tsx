@@ -50,8 +50,8 @@ const List = () => {
   }
 
   return (
-    <div className="h-screen overflow-y-auto bg-gray-100 p-10 relative">
-      <div className="a4-preview border shadow-lg bg-white mx-auto">
+    <div className="h-screen overflow-y-auto  p-10 relative">
+      <div className="border shadow-lg  mx-auto">
         <div className="relative py-1 flex items-center justify-end">
           <img
             src="/for-builder/header-bg.webp"
@@ -60,7 +60,7 @@ const List = () => {
           />
           <textarea
             id="address"
-            className="w-[40%] text-[10px] text-left isolate bg-transparent text-white"
+            className="w-[40%] text-[10px] text-left isolate bg-transparent "
             defaultValue={`Общество с ограниченной ответственностью "ЭРТЕЛ"\nЮридический адрес:127015, г. Москва, Бумажный проезд, дом 14, строение 1,\nпомещение I, комната 6 ИНН/КПП 7709407790/771401001\nЭлектронный адрес:ertel@ertel.ru Сайт www.ertel.ru\nТел. +7(495) 644-39-76`}
           />
 
@@ -97,11 +97,11 @@ const List = () => {
           </div>
         </div>
         <div className="py-10 flex gap-2 justify-center items-center">
-          <p className="text-2xl text-black font-bold">Коммерческое предложение №</p>
+          <p className="text-2xl  font-bold">Коммерческое предложение №</p>
           <Input
             name="title"
             type="text"
-            className="text-2xl md:text-2xl w-1/6 text-black"
+            className="text-2xl md:text-2xl w-1/6 "
             defaultValue={dataParts.number}
             onChange={(e) => updateOfferNumber(e.target.value)}
           />
@@ -144,12 +144,7 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
         updateData(e.target.value)
       }
       return (
-        <Textarea
-          name={row.id}
-          className="text-black"
-          defaultValue={row.original.name}
-          onBlur={onBlur}
-        />
+        <Textarea name={row.id} className="" defaultValue={row.original.name} onBlur={onBlur} />
       )
     },
   },
@@ -164,7 +159,7 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
       return (
         <Textarea
           name={row.id}
-          className="text-black"
+          className=""
           defaultValue={row.original.description}
           onBlur={onBlur}
         />
@@ -203,7 +198,7 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
             }
           }}
           onBlur={onBlur}
-          className="text-black text-end"
+          className="text-end"
         />
       )
     },
@@ -240,7 +235,7 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
             }
           }}
           onBlur={onBlur}
-          className="text-black text-end"
+          className="text-end"
         />
       )
     },
@@ -250,11 +245,7 @@ const defaultColumns: ColumnDef<TableOffer>[] = [
     header: "Итого",
     accessorKey: "totalPrice",
     cell: ({ row }) => {
-      return (
-        <div className="font-bold py-1 px-3 text-black text-end">
-          {row.original.totalPrice || 0}
-        </div>
-      )
+      return <div className="font-bold py-1 px-3 text-end">{row.original.totalPrice || 0}</div>
     },
   },
 ]
@@ -307,11 +298,11 @@ const Part = ({ secionList, partId }: { secionList: DataSection[]; partId: strin
   return (
     <>
       <div className="flex gap-2 justify-start items-center border-t-[4px] border-t-blue-900 border-b-[2px] border-b-black">
-        <p className="text-xl text-black font-bold">Раздел</p>
+        <p className="text-xl font-bold">Раздел</p>
         <InputTitle
           defaultTitle={part?.name || ""}
           updateTitleAction={(title) => updatePartTitle(partId, title)}
-          className="text-xl! text-black! h-10!"
+          className="text-xl! h-10!"
         />
       </div>
 
@@ -341,7 +332,7 @@ const Part = ({ secionList, partId }: { secionList: DataSection[]; partId: strin
                         "grid content-between justify-items-center gap-1 h-full text-primary px-1",
                       )}
                     >
-                      <span className="text-md font-bold first-letter:capitalize text-center text-black">
+                      <span className="text-md font-bold first-letter:capitalize text-center">
                         {flexRender(header.column.columnDef.header, header.getContext())}
                       </span>
                       {header.column.getCanResize() && (

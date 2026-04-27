@@ -116,6 +116,7 @@ export const useOfferStore = create<OfferStore>()(
 
       addPart: () =>
         set((state) => {
+          console.log(state, "state")
           state.dataParts.parts.push(createPart())
         }),
       removePart: (partId: string) =>

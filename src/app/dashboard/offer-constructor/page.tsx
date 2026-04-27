@@ -2,7 +2,6 @@
 
 import { Button } from "@/shared/components/ui/button"
 import { set } from "idb-keyval"
-import { exportToExcel } from "./ExportToExcel"
 import List from "./List"
 import { addPart, addSection, selectItemStoreId, useOfferStore } from "./store"
 
@@ -12,27 +11,29 @@ const OfferConstructor = () => {
   const selectedChapter = useOfferStore(selectItemStoreId)
   const dataParts = useOfferStore.getState().dataParts
 
-  const columnSizing = JSON.parse(localStorage.getItem(storageKey) || "{}")
+  // const columnSizing = JSON.parse(localStorage.getItem(storageKey) || "{}");
 
-  // 3. Собираем всё в один объект
-  const fullPayload = {
-    dataParts,
-    columnSizing,
-  }
-  const encodedData = encodeURIComponent(JSON.stringify(fullPayload))
+  // // 3. Собираем всё в один объект
+  // const fullPayload = {
+  //   dataParts,
+  //   columnSizing,
+  // };
+  // const encodedData = encodeURIComponent(JSON.stringify(fullPayload));
 
-  const handlePreview = async () => {
-    const payload = {
-      dataParts: useOfferStore.getState().dataParts,
-      columnSizing: JSON.parse(localStorage.getItem("offerConstructor_global_sizing") || "{}"),
-    }
+  // const handlePreview = async () => {
+  //   const payload = {
+  //     dataParts: useOfferStore.getState().dataParts,
+  //     columnSizing: JSON.parse(
+  //       localStorage.getItem("offerConstructor_global_sizing") || "{}",
+  //     ),
+  //   };
 
-    // 1. Сохраняем в IndexedDB (лимитов почти нет)
-    await set("pdf_preview_payload", payload)
+  //   // 1. Сохраняем в IndexedDB (лимитов почти нет)
+  //   await set("pdf_preview_payload", payload);
 
-    // 2. Открываем вкладку
-    window.open("/dashboard/offer-constructor/preview", "_blank")
-  }
+  //   // 2. Открываем вкладку
+  //   window.open("/dashboard/offer-constructor/preview", "_blank");
+  // };
 
   // const handlePreview = () => {
   //   // 1. Создаем канал связи
@@ -78,9 +79,7 @@ const OfferConstructor = () => {
 
   return (
     <>
-      <List />
-
-      <div className="fixed flex gap-1 bottom-0 left-1/2 transform -translate-x-1/2 p-4 bg-black rounded-tl-2xl rounded-tr-2xl z-50">
+      <div className=" flex gap-1">
         <Button
           onClick={() => {
             addPart()
@@ -89,22 +88,8 @@ const OfferConstructor = () => {
           Добавить раздел
         </Button>
         <Button onClick={() => addSection(selectedChapter)}>Добавить подраздел</Button>
-        {/* <Button variant="secondary" onClick={handleDownloadPdf}>
-          Скачать PDF
-        </Button> */}
-
-        {/* <Link
-          href={`/dashboard/offer-constructor/preview?data=${encodedData}`}
-          target="_blank"
-        >
-          Посмотреть PDF
-        </Link> */}
-
-        <Button variant="secondary" onClick={handlePreview}>
-          Посмотреть PDF
-        </Button>
-        <Button onClick={() => exportToExcel(dataParts, columnSizing)}>Экспорт в Excel</Button>
       </div>
+      <List />
     </>
   )
 }

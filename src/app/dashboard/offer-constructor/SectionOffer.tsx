@@ -139,10 +139,7 @@ function TableBody({
     <div className="sub-section">
       <div className="tbody flex flex-col">
         {rows.map((row: DataRow, rowIndex: number) => (
-          <div
-            key={row.id}
-            className="tr-offer flex border-b hover:bg-slate-50 transition-colors relative"
-          >
+          <div key={row.id} className="tr-offer flex border-b transition-colors relative">
             <Button
               size="icon"
               className="absolute top-0 right-0 bg-red-500"
