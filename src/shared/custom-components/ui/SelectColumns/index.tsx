@@ -15,18 +15,18 @@ const SelectColumns = <TData extends Record<string, unknown>>({
   colsListNotHidden = [],
 }: SelectColumnsProps<TData>) => {
   const [open, setOpen] = useState(false)
+
+  const columns = data.getAllColumns()
   const hiddenColumns = Object.entries(data.getState().columnVisibility)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .filter(([_id, isVisible]) => !isVisible && !colsListNotHidden.includes(_id))
     .map(([col]) => col)
 
   const handleResetVisibility = () => {
-    data.setColumnVisibility(Object.fromEntries(data.getAllColumns().map((col) => [col.id, true])))
+    data.setColumnVisibility(Object.fromEntries(columns.map((col) => [col.id, true])))
   }
 
-  const defaultHiddensColsCount = data
-    .getAllColumns()
-    .filter((col) => col.columnDef.meta?.hidden).length
+  const defaultHiddensColsCount = columns.filter((col) => col.columnDef.meta?.hidden).length
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -50,8 +50,7 @@ const SelectColumns = <TData extends Record<string, unknown>>({
       <PopoverContent className="w-fit px-1 pb-2">
         <div className="grid gap-4">
           <div className="grid grid-cols-1 items-center gap-1">
-            {data
-              .getAllColumns()
+            {columns
               .filter((col) => {
                 return (
                   col.getCanHide() &&

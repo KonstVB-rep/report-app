@@ -11,6 +11,7 @@ export const formatterCurrency = new Intl.NumberFormat("ru", {
   style: "decimal",
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
+  useGrouping: true,
 })
 
 export const formatPhoneNumber = (value: string): string => {

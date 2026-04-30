@@ -1,20 +1,27 @@
-import { useCallback } from "react"
-import type { ColumnSizingState, Table, VisibilityState } from "@tanstack/react-table"
 import OfferTable from "@/app/dashboard/offer-table/components/OfferTable"
-import { type DataSection, type OfferTableItem, removeRow } from "@/app/dashboard/offer-table/store"
+import {
+  addRow,
+  type DataSection,
+  type OfferTableItem,
+  removeRow,
+  removeSection,
+  updateSectionTitle,
+} from "@/app/dashboard/offer-table/store"
+import { Button } from "@/shared/components/ui/button"
+import type { Table } from "@tanstack/react-table"
+import { PlusCircle, X } from "lucide-react"
+import { useCallback } from "react"
+import InputTitle from "./InputTitle"
+import SelectedItem from "./SelectedItem"
 
 const PartSection = ({
   partId,
   section,
   table,
-  columnSizing,
-  columnVisibility,
 }: {
   partId: string
   section: DataSection
   table: Table<OfferTableItem>
-  columnSizing: ColumnSizingState
-  columnVisibility: VisibilityState
 }) => {
   const handleRemoveRow = useCallback(
     (rowId: string) => {
@@ -24,13 +31,42 @@ const PartSection = ({
   )
   return (
     <div>
-      <div className="bg-blue-950 p-2 my-2">{section.name}</div>
+      <div className="relative">
+        <InputTitle
+          className="text-lg! min-h-12! bg-blue-950 p-2 my-2 flex-1 pr-20"
+          defaultTitle={section.name || ""}
+          updateTitleAction={(title) => updateSectionTitle(partId, section.id, title)}
+        />
+        <SelectedItem
+          partId={partId}
+          sectionId={section.id}
+          className="absolute top-1/2 transform -translate-y-1/2 right-14"
+        />
+        <Button
+          variant="destructive"
+          className="absolute top-1/2 transform -translate-y-1/2 right-2"
+          onClick={() => removeSection(partId, section.id)}
+          size="icon"
+        >
+          <X />
+        </Button>
+        <Button
+          variant="outline"
+          className="absolute top-1/2 transform -translate-y-1/2 -right-10"
+          onClick={() => addRow(partId, section.id)}
+          title="Добавить строку"
+          size="icon"
+        >
+          <PlusCircle />
+        </Button>
+      </div>
       <OfferTable
-        columnSizing={columnSizing}
-        columnVisibility={columnVisibility}
         dataTable={section.rows}
+        sectionId={section.id}
+        partId={partId}
         removeRow={handleRemoveRow}
         table={table}
+        sectionName={section.name}
       />
     </div>
   )

@@ -56,16 +56,13 @@ const BaseTableRow = <T extends BaseEntity>({
         data-reject={row.original.dealStatus === "REJECT"}
         data-success={row.original.dealStatus === "PAID"}
         style={{
-          width: "fit-content",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          transform: `translateY(${virtualRow.start}px)`,
           display: "flex",
-          // contain: "content",
-          // position: "absolute",
-          // top: 0,
-          // left: 0,
-          // width: "100%",
-          // transform: `translateY(${virtualRow.start}px)`,
-          // // display: "flex",
-          // backgroundColor: row.original.highlights ?? "",
+          backgroundColor: row.original.highlights ?? "",
         }}
       >
         {row.getVisibleCells().map((cell, index) => (
@@ -74,13 +71,9 @@ const BaseTableRow = <T extends BaseEntity>({
             handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}
             key={cell.id}
             styles={{
-              width: `calc(var(--col-${cell.column.id}-size) * 1px)`,
+              width: cell.column.getSize(),
               minWidth: cell.column.columnDef.minSize,
-              flex: "0 0 auto", // Запрети флексам менять разме
-              willChange: "width",
-              // width: headers?.[index]?.getSize(),
-              // minWidth: headers?.[index]?.column.columnDef.minSize,
-              // maxWidth: headers?.[index]?.column.columnDef.maxSize,
+              flex: "0 0 auto",
             }}
           >
             {openFullInfoCell === cell.id && (

@@ -37,6 +37,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "dateRequest",
     header: "Дата заявки",
+    maxSize: 100,
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue()
 
@@ -87,6 +88,8 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "lastDateConnection",
     header: "Последний контакт",
+    maxSize: 100,
+
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue()
 
@@ -141,7 +144,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       const value = info.getValue() as ReactNode
       return value
     },
-    // minSize: 300,
+    minSize: 300,
     enableHiding: true,
     meta: {
       title: "Последний комментарий",
@@ -165,6 +168,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
   {
     id: "plannedDateConnection",
     header: "Плановая дата контакта",
+    maxSize: 100,
     cell: (info: CellContext<ProjectResponse, unknown>) => {
       const value = info.getValue()
 
@@ -283,19 +287,12 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       const value = info.getValue() as typeofDelivery
       return <span>{DeliveryProjectLabels[value]}</span>
     },
-    filterFn: (row, columnId, filterValue) => {
-      if (!filterValue || !Array.isArray(filterValue)) return true
+    filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId)
-
-      if (!rowValue) return false // Проверяем, есть ли значение в ячейке
-
-      if (Array.isArray(filterValue)) {
-        return filterValue.some(
-          (direction) => String(rowValue).includes(direction), // Приводим rowValue к строке, чтобы избежать ошибок
-        )
+      if (Array.isArray(value)) {
+        return value.includes(rowValue)
       }
-
-      return rowValue === filterValue
+      return rowValue === value
     },
     enableHiding: true,
     meta: {
@@ -412,7 +409,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
       const value = info.getValue() as ReactNode
       return value
     },
-    // minSize: 300,
+    minSize: 300,
     enableHiding: true,
     meta: {
       title: "Комментарии",

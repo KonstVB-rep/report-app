@@ -19,7 +19,7 @@ const SheetEquipment = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open</Button>
+        <Button variant="outline">Список оборудования</Button>
       </SheetTrigger>
       <SheetContent side="rightXl" className="">
         <SheetHeader>

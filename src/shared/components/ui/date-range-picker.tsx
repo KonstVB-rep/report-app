@@ -1,38 +1,47 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useEffect } from "react"
-import { format } from "date-fns"
-import { ru } from "date-fns/locale"
-import { CalendarIcon } from "lucide-react"
-import type { DateRange } from "react-day-picker"
-import { Button } from "@/shared/components/ui/button"
-import { Calendar } from "@/shared/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
-import { cn } from "@/shared/lib/utils"
+import * as React from "react";
+import { useEffect } from "react";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import type { DateRange } from "react-day-picker";
+import { Button } from "@/shared/components/ui/button";
+import { Calendar } from "@/shared/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
+import { cn } from "@/shared/lib/utils";
 
 type Props = React.HTMLAttributes<HTMLDivElement> & {
-  value?: DateRange
-  onValueChange?: (value: DateRange | undefined) => void
-  label: string
-}
+  value?: DateRange;
+  onValueChange?: (value: DateRange | undefined) => void;
+  label: string;
+};
 
-export function DateRangePicker({ className, value, onValueChange, label }: Props) {
-  const [date, setDate] = React.useState<DateRange | undefined>(value)
+export function DateRangePicker({
+  className,
+  value,
+  onValueChange,
+  label,
+}: Props) {
+  const [date, setDate] = React.useState<DateRange | undefined>(value);
 
   const stableValue = React.useMemo(
     () => ({ from: value?.from, to: value?.to }),
     [value?.from, value?.to],
-  )
+  );
 
   useEffect(() => {
-    setDate(stableValue)
-  }, [stableValue])
+    setDate(stableValue);
+  }, [stableValue]);
 
   const handleSelect = (date: DateRange | undefined) => {
-    setDate(date)
-    onValueChange?.(date)
-  }
+    setDate(date);
+    onValueChange?.(date);
+  };
 
   return (
     <div className={cn("grid gap-2 w-full xs:w-fit")}>
@@ -41,7 +50,8 @@ export function DateRangePicker({ className, value, onValueChange, label }: Prop
           <Button
             className={cn(
               "w-full sm:w-fit justify-start text-left font-normal border-muted-foreground border-dashed",
-              !date && "text-muted-foreground",className,
+              !date && "text-muted-foreground",
+              className,
             )}
             id="date"
             variant={"outline"}
@@ -80,5 +90,5 @@ export function DateRangePicker({ className, value, onValueChange, label }: Prop
         </PopoverContent>
       </Popover>
     </div>
-  )
+  );
 }

@@ -5,11 +5,13 @@ import { useMutation } from "@tanstack/react-query"
 import { DeepPartial } from "react-hook-form"
 import { addEquipment, deleteEquipmentList, updateEquipmentsList } from "../actions/offer.actions"
 import { EquipmentDb, Equipment } from "../lib/types"
+import { EquipmentFormValues } from "../components/AddNewEquipment"
+import { toDec } from "@/shared/lib/utils"
 
-export const useAddEquipment = (reset: (values?: DeepPartial<Equipment>) => void) => {
+export const useAddEquipment = (reset: (values: EquipmentFormValues) => void) => {
   const { queryClient } = useFormSubmission()
   return useMutation({
-    mutationFn: async (item: EquipmentItem) => {
+    mutationFn: async (item: EquipmentFormValues) => {
       return await addEquipment(item)
     },
     onSuccess: () => {
@@ -20,7 +22,7 @@ export const useAddEquipment = (reset: (values?: DeepPartial<Equipment>) => void
         name: "",
         image: "",
         description: "",
-        price: "0",
+        price: "0,00",
       })
     },
     onError: (error: unknown) => {

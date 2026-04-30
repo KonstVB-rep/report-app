@@ -183,13 +183,11 @@ function TableBody({
 const Cell = ({
   partId,
   sectionId,
-  subId,
   rowId,
   image,
 }: {
   partId: string
   sectionId: string
-  subId: string
   rowId: string
   image: string | null
 }) => {
@@ -208,7 +206,7 @@ const Cell = ({
       reader.onloadend = () => {
         const base64String = reader.result as string
 
-        updateRow(partId, sectionId, subId, rowId, "image", base64String)
+        updateRow(partId, sectionId, rowId, "image", base64String)
       }
       reader.readAsDataURL(file)
 
@@ -224,18 +222,6 @@ const Cell = ({
           className=" h-20 object-cover rounded-md border w-full ratio-square border-gray-400"
         />
       )}
-
-      {/* <SelectComponent
-        options={[
-          ["1", "Терминал Park Style ASP-N"],
-          ["2", "Терминал Park Style ASP-N"],
-          ["3", "Терминал Park Style ASP-N"],
-          ["4", "Терминал Park Style ASP-N"],
-        ]}
-        placeholder=""
-      /> */}
-
-      {/* <SelectGroups /> */}
 
       <Label className="cursor-pointer text-black flex items-center gap-2">
         <ImagePlus size={20} />

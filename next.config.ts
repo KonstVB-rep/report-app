@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.storage.yandex.net",
       },
+      {
+        protocol: "https",
+        hostname: "ertel-shop.ru",
+      },
     ],
     qualities: [25, 50, 75, 80, 90, 100],
     formats: ["image/webp", "image/avif"],

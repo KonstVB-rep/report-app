@@ -114,7 +114,7 @@ export const useTableState = <T extends { id: string }>(
     onColumnSizingChange: setColumnSizing,
     onColumnSizingInfoChange: setColumnSizingInfo,
     enableRowSelection: true,
-    enableColumnResizing: true,
+    enableColumnResizing: false,
     columnResizeMode: "onChange",
 
     state: tableState,

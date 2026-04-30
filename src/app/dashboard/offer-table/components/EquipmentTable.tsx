@@ -1,8 +1,8 @@
 import { cn } from "@/shared/lib/utils"
 import { EquipmentItem } from "@prisma/client"
-import { flexRender, Table, Row } from "@tanstack/react-table"
+import { flexRender, Row, Table } from "@tanstack/react-table"
 import { Dispatch, SetStateAction, useState } from "react"
-import { EquipmentDb, Equipment } from "../lib/types"
+import { Equipment, EquipmentDb } from "../lib/types"
 
 const EquipmentTable = ({
   table,
@@ -37,7 +37,7 @@ const EquipmentTable = ({
                       {header.isPlaceholder ? null : (
                         <div
                           className={cn(
-                            "flex items-center justify-center gap-1 w-full h-full text-primary select-none",
+                            "flex items-center justify-center gap-1 w-full h-full text-primary select-none min-h-12",
                             header.column.getCanSort() && "cursor-pointer",
                           )}
                           onClick={header.column.getToggleSortingHandler()}
@@ -80,6 +80,7 @@ const RowSheetEquipment = ({
       ...prev,
       [id]: { ...prev[id], [field]: value },
     }))
+    setIsEdit(false)
   }
   return (
     <div

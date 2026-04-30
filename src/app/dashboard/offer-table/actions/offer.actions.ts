@@ -4,9 +4,10 @@ import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionBy
 import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
-import { PermissionEnum, EquipmentItem } from "@prisma/client"
+import { toDec } from "@/shared/lib/utils"
+import { PermissionEnum } from "@prisma/client"
 import { Equipment, EquipmentDb } from "../lib/types"
-// import { toDec } from "@/shared/lib/utils";
+import { EquipmentFormValues } from "../components/AddNewEquipment"
 
 export const getEquipments = async (): Promise<Equipment[]> => {
   try {
@@ -22,13 +23,13 @@ export const getEquipments = async (): Promise<Equipment[]> => {
   }
 }
 
-export const addEquipment = async (item: EquipmentItem): Promise<void> => {
+export const addEquipment = async (item: EquipmentFormValues): Promise<void> => {
   try {
     await requireUser()
     await prisma.equipmentItem.create({
       data: {
         ...item,
-        price: item.price,
+        price: toDec(item.price),
       },
     })
   } catch (error) {
@@ -58,6 +59,7 @@ export const deleteEquipmentList = async (ids: string[]): Promise<void> => {
 
 export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
   try {
+    console.log(items)
     const user = await requireUser()
 
     await checkUserPermissionByRole(user, [PermissionEnum.EQUIPMENT_MANAGEMENT])
@@ -77,7 +79,7 @@ export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
 
     if (validUpdates.length === 0) return []
 
-    return await prisma.$transaction(
+    const updatedItems = await prisma.$transaction(
       validUpdates.map((item) => {
         const { id, ...payload } = item
         return prisma.equipmentItem.update({
@@ -86,6 +88,14 @@ export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
         })
       }),
     )
+
+    // СЕРИАЛИЗАЦИЯ: превращаем Decimal в числа
+    return updatedItems.map((item) => ({
+      ...item,
+      price: item.price.toString(), // или .toString(), если важна точность до копеек
+      createdAt: item.createdAt.toISOString(), // Date тоже лучше привести к строке
+      updatedAt: item.updatedAt.toISOString(),
+    }))
   } catch (error) {
     console.error(error)
     return handleError((error as Error).message)

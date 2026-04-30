@@ -17,6 +17,7 @@ import { Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import z from "zod"
 import { useAddEquipment } from "../hooks/mutate"
+import { toDec } from "@/shared/lib/utils"
 
 const defaultEquipmentValues = {
   name: "",
@@ -29,7 +30,7 @@ export const EquipmentFormSchema = z.object({
   name: z.string().min(1, "Обязательное поле"),
   image: z.string().optional().nullable(),
   description: z.string().min(1, "Обязательное поле"),
-  price: z.string().optional(),
+  price: z.string().min(1, "Обязательное поле"),
 })
 
 export type EquipmentFormValues = z.infer<typeof EquipmentFormSchema>
@@ -41,13 +42,20 @@ const AddNewEquipment = () => {
       name: "",
       image: "",
       description: "",
-      price: "0",
+      price: "0,00",
     },
   })
 
   const { mutateAsync, isPending } = useAddEquipment(form.reset)
 
-  const handleSubmit = async (values: EquipmentFormValues) => {}
+  const handleSubmit = async (values: EquipmentFormValues) => {
+    mutateAsync({
+      name: values.name,
+      image: values.image || "",
+      description: values.description,
+      price: values.price,
+    })
+  }
 
   const getError = (name: keyof typeof defaultEquipmentValues) =>
     form.formState.errors[name]?.message as string

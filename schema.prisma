@@ -368,7 +368,7 @@ model EquipmentItem {
   image          String?  
   description    String   @db.Text
   
-  price           Decimal  @db.Decimal(12, 2)
+  price          Decimal  @db.Decimal(15, 2)
   
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

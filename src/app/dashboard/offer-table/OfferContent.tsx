@@ -1,160 +1,33 @@
-import { useEffect, useMemo, useState } from "react"
-import {
-  type CellContext,
-  type ColumnDef,
-  type ColumnSizingInfoState,
-  type ColumnSizingState,
-  getCoreRowModel,
-  type Table,
-  useReactTable,
-  type VisibilityState,
-} from "@tanstack/react-table"
-import { ru } from "date-fns/locale"
-import { CalendarIcon, X } from "lucide-react"
+"use client"
+
 import { updateDate } from "@/app/dashboard/offer-constructor/store"
 import { Button } from "@/shared/components/ui/button"
 import { Calendar } from "@/shared/components/ui/calendar"
 import { Input } from "@/shared/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
-import SelectColumns from "@/shared/custom-components/ui/SelectColumns"
 import { getLS, setLS } from "@/shared/hooks/useTableState"
-import { cn, formatterCurrency } from "@/shared/lib/utils"
-import RowNumber from "@/widgets/deal/model/columnsDataColsTemplate/RowNumber"
-import Part from "./components/Part"
-import SelectedItem from "./components/SelectedItem"
-import SheetEquipment from "./sheetEquipment"
+import { cn } from "@/shared/lib/utils"
 import {
-  type OfferTableItem,
-  removePart,
-  selectData,
-  updateNumber,
-  useOfferStoreTable,
-} from "./store"
+  type ColumnSizingInfoState,
+  type ColumnSizingState,
+  getCoreRowModel,
+  useReactTable,
+  type VisibilityState,
+} from "@tanstack/react-table"
+import { ru } from "date-fns/locale"
+import { CalendarIcon } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import OfferContentHeader from "./components/OfferContentHeader"
+import Part from "./components/Part"
+import { STORAGE_KEY } from "./lib/constants"
+import { defaultColumns } from "./model/defaultColumns"
+import { selectData, updateNumber, useOfferStoreTable } from "./store"
 
 const formatter = new Intl.DateTimeFormat("ru", {
   year: "numeric",
   month: "long",
   day: "numeric",
 })
-const defaultColumns: ColumnDef<OfferTableItem>[] = [
-  {
-    ...RowNumber<OfferTableItem>(),
-  },
-  {
-    id: "id",
-    enableHiding: true,
-    enableSorting: false,
-    accessorFn: (row: OfferTableItem) => row.id,
-    meta: {
-      title: "id",
-      isNotSearchable: true,
-      hidden: true,
-    },
-  },
-  {
-    id: "name",
-    header: "Наименование",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = info.getValue()
-      return value
-    },
-    meta: {
-      title: "Наименование",
-    },
-    accessorFn: (row: OfferTableItem) => row.name,
-  },
-  {
-    id: "description",
-    header: "Описание",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = info.getValue()
-      return value
-    },
-    meta: {
-      title: "Описание",
-    },
-    accessorFn: (row: OfferTableItem) => row.description,
-  },
-  {
-    id: "price",
-    header: "Цена",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      return formatterCurrency.format(parseFloat(info.getValue() as string))
-    },
-    enableHiding: true,
-    meta: {
-      title: "Цена",
-    },
-    accessorFn: (row: OfferTableItem) => row.price,
-  },
-  {
-    id: "count",
-    header: "Количество",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      return info.getValue()
-    },
-    enableHiding: true,
-    meta: {
-      title: "Количество",
-    },
-    accessorFn: (row: OfferTableItem) => row.count,
-  },
-  {
-    id: "totalPrice",
-    header: "Итого, руб.",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      return formatterCurrency.format(parseFloat(info.getValue() as string))
-    },
-    enableHiding: true,
-    meta: {
-      title: "Итого, руб.",
-    },
-    accessorFn: (row: OfferTableItem) => row.totalPrice,
-  },
-  {
-    id: "purchasePrice",
-    header: "Цена закупки",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = formatterCurrency.format(parseFloat(info.getValue() as string))
-      return <div>{value}</div>
-    },
-    enableHiding: true,
-    meta: {
-      title: "Цена закупки",
-    },
-    accessorFn: (row: OfferTableItem) => row.purchasePrice,
-  },
-  {
-    id: "purchaseAmount",
-    header: "Сумма закупки",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = formatterCurrency.format(parseFloat(info.getValue() as string))
-      return <div>{value}</div>
-    },
-    enableHiding: true,
-    meta: {
-      title: "Сумма закупки",
-    },
-    accessorFn: (row: OfferTableItem) => row.purchaseAmount,
-  },
-  {
-    id: "delta",
-    header: "Дельта",
-    cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = formatterCurrency.format(parseFloat(info.getValue() as string))
-      return <div>{value}</div>
-    },
-    enableHiding: true,
-    meta: {
-      title: "Дельта",
-    },
-    accessorFn: (row: OfferTableItem) => row.delta,
-  },
-]
-
-const storageKey = "offer-table"
-
-const colsListNotHidden = ["name", "description", "price", "count", "totalPrice"]
 
 const OfferContent = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
@@ -170,7 +43,7 @@ const OfferContent = () => {
   })
 
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() =>
-    getLS(`${storageKey}_columnSizing`, {}),
+    getLS(`${STORAGE_KEY}_columnSizing`, {}),
   )
 
   const [_columnSizingInfo, setColumnSizingInfo] = useState<ColumnSizingInfoState>(
@@ -178,7 +51,7 @@ const OfferContent = () => {
   )
 
   useEffect(() => {
-    setLS(`${storageKey}_columnSizing`, columnSizing)
+    setLS(`${STORAGE_KEY}_columnSizing`, columnSizing)
   }, [columnSizing])
 
   const columns = useMemo(() => defaultColumns, [])
@@ -213,28 +86,21 @@ const OfferContent = () => {
     return colSizes
   }, [table.getState().columnSizingInfo, table.getState().columnSizing])
 
-  console.log(data, "data")
   return (
-    <div className="h-screen overflow-y-auto  p-10 relative">
-      <div className="flex justify-start gap-2 mb-2">
-        <SheetEquipment />
-        <SelectColumns
-          colsListNotHidden={colsListNotHidden}
-          data={table as Table<OfferTableItem>}
-        />
-      </div>
-      <div className="border shadow-lg  mx-auto">
+    <div className="max-h-[calc(100svh-80px)] overflow-y-auto px-3 pb-20 bg-sidebar">
+      <OfferContentHeader table={table} />
+      <div className="border shadow-lg mx-auto pb-20">
         <div className="relative py-1 flex items-center justify-end">
-          <img
+          {/* <img
             alt="offer"
             className="absolute inset-0 h-full w-full object-cover"
             src="/for-builder/header-bg.webp"
-          />
-          <textarea
+          /> */}
+          {/* <textarea
             className="w-[40%] text-[10px] text-left isolate bg-transparent "
             defaultValue={`Общество с ограниченной ответственностью "ЭРТЕЛ"\nЮридический адрес:127015, г. Москва, Бумажный проезд, дом 14, строение 1,\nпомещение I, комната 6 ИНН/КПП 7709407790/771401001\nЭлектронный адрес:ertel@ertel.ru Сайт www.ertel.ru\nТел. +7(495) 644-39-76`}
             id="address"
-          />
+          /> */}
 
           <div className="absolute right-2 -bottom-10">
             <Popover>
@@ -269,7 +135,7 @@ const OfferContent = () => {
           </div>
         </div>
         <div className="py-10 flex gap-2 justify-center items-center">
-          <p className="text-2xl  font-bold">Коммерческое предложение №</p>
+          <p className="text-2xl font-bold">Коммерческое предложение №</p>
           <Input
             className="text-2xl md:text-2xl w-1/6 "
             defaultValue={data.number}
@@ -279,44 +145,10 @@ const OfferContent = () => {
           />
         </div>
         {data.parts.map((part) => (
-          <div className="relative" key={part.id}>
-            <SelectedItem id={part.id} />
-            <Part
-              columnSizeVars={columnSizeVars}
-              columnSizing={columnSizing}
-              columnVisibility={columnVisibility}
-              dataPart={part}
-              partId={part.id}
-              table={table}
-            />
-            {/* <OfferTable
-              columnSizeVars={columnSizeVars}
-              dataParts={data}
-              table={table}
-            /> */}
-            {/* <Part secionList={part.sections} partId={part.id} /> */}
-            <Button
-              className="absolute top-0 -right-8 z-10 bg-red-300"
-              onClick={() => removePart(part.id)}
-              size="icon"
-            >
-              <X />
-            </Button>
+          <div className="flex items-start" key={part.id}>
+            <Part columnSizeVars={columnSizeVars} dataPart={part} partId={part.id} table={table} />
           </div>
         ))}
-        {/* {dataParts.parts.map((part) => (
-          <div key={part.id} className="relative">
-            <SelectedItem id={part.id} />
-            <Part secionList={part.sections} partId={part.id} />
-            <Button
-              onClick={() => removePart(part.id)}
-              className="absolute top-0 -right-8 z-10 bg-red-300"
-              size="icon"
-            >
-              <X />
-            </Button>
-          </div>
-        ))} */}
       </div>
     </div>
   )

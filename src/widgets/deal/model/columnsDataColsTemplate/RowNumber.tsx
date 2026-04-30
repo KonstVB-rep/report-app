@@ -5,10 +5,10 @@ const RowNumber = <T,>() => {
     id: "rowNumber",
     header: "№",
     cell: ({ row }: { row: Row<T> }) => Number(row.index) + 1,
-    enableHiding: true,
+    enableHiding: false,
     enableSorting: false,
     accessorFn: () => "",
-    // maxSize: 100,
+    maxSize: 100,
     // enableResizing: false,
     meta: {
       isNotSearchable: true,

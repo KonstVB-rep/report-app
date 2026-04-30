@@ -1,51 +1,41 @@
 "use client"
 
-import { memo, useEffect, useMemo, useState } from "react"
-import type { Cell, ColumnSizingState, Table, VisibilityState } from "@tanstack/react-table"
-import Image from "next/image"
+import { Button } from "@/shared/components/ui/button"
+import { Input } from "@/shared/components/ui/input"
+import { Label } from "@/shared/components/ui/label"
 import { Textarea } from "@/shared/components/ui/textarea"
-import { type OfferTableItem, updateRow, useOfferStoreTable } from "../store"
-
-// const canHiddenColumns = ["purchasePrice", "purchaseAmount", "delta"] as const
-
-// const colsListNotHidden = [
-//   "name",
-//   "description",
-//   "price",
-//   "count",
-//   "totalPrice",
-// ];
+import { formatterCurrency } from "@/shared/lib/utils"
+import type { Cell, Table } from "@tanstack/react-table"
+import { ImagePlus, Trash2 } from "lucide-react"
+import { ChangeEvent, memo, useEffect, useState } from "react"
+import { type OfferTableItem, selectSectionById, updateRow, useOfferStoreTable } from "../store"
 
 const OfferTable = ({
   dataTable,
   table,
-  columnSizing,
-  columnVisibility,
+  partId,
+  sectionId,
   removeRow,
+  sectionName,
 }: {
   dataTable: OfferTableItem[]
   table: Table<OfferTableItem>
-  columnSizing: ColumnSizingState
-  columnVisibility: VisibilityState
+  partId: string
+  sectionId: string
   removeRow: (rowId: string) => void
+  sectionName: string
 }) => {
-  // const dataTable = useOfferStoreTable((state) => state.data.parts);
   return (
-    <div className="overflow-y-auto relative">
-      <div></div>
-
-      <TableBodyOffer
-        // columnSizing={columnSizing}
-        // columnVisibility={columnVisibility}
-        dataTable={dataTable}
-        removeRow={removeRow}
+    <div className="relative">
+      <TableBodyOffer dataTable={dataTable} removeRow={removeRow} table={table} />
+      <TableFooterOffer
         table={table}
+        sectionName={sectionName}
+        sectionId={sectionId}
+        partId={partId}
       />
-      {/* <TableBodyOffer table={table} />
-      <TableFooterOffer table={table} />  */}
-      {/* </div> */}
       {/* <div className="absolute top-0 left-0 a4 border-dashed border-2 border-white" /> */}
-      {/* </div>
+      {/* 
         ))} */}
     </div>
   )
@@ -53,78 +43,43 @@ const OfferTable = ({
 
 export default OfferTable
 
-const TableBodyOffer = memo(
-  ({
-    table,
-    dataTable,
-    removeRow,
-  }: {
-    table: Table<OfferTableItem>
-    dataTable: OfferTableItem[]
-    removeRow: (rowId: string) => void
-  }) => {
-    // Оптимальный поиск: берем готовые строки TanStack и оставляем только нужные этой секции
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <This is docstyle>
-    const rows = useMemo(() => {
-      return table
-        .getRowModel()
-        .rows.filter((row) => dataTable.some((d) => d.id === row.original.id))
-    }, [table.getRowModel().rows, dataTable])
+const TableBodyOffer = ({
+  table,
+  dataTable,
+  removeRow,
+}: {
+  table: Table<OfferTableItem>
+  dataTable: OfferTableItem[]
+  removeRow: (rowId: string) => void
+}) => {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <This is docstyle>
+  const rows = table.getRowModel().rows.filter((row) => {
+    return dataTable.some((d) => d.id === row.original.id)
+  })
 
-    return (
-      <div className="tbody">
-        {rows.map((row) => (
-          <div className="flex relative group" key={row.id}>
+  return (
+    <div className="tbody">
+      {rows.map((row) => {
+        return (
+          <div className="flex relative" key={row.id}>
             {row.getVisibleCells().map((cell) => (
               <CellOfferTable cell={cell} key={cell.id} />
             ))}
-            {/* Кнопка удаления */}
+            <Button
+              variant="outline"
+              className="absolute top-0 -right-10"
+              onClick={() => removeRow(row.original.id)}
+              title="Удалить строку"
+              size="icon"
+            >
+              <Trash2 />
+            </Button>
           </div>
-        ))}
-      </div>
-    )
-  },
-)
-
-// const TableBodyOffer = ({
-//  table,
-//   columnSizing,
-//   columnVisibility,
-//   dataTable,
-//   removeRow,
-// }: {
-//   table: Table<OfferTableItem>;
-//   columnSizing: ColumnSizingState;
-//   columnVisibility: VisibilityState;
-//   dataTable: OfferTableItem[];
-//   removeRow: (rowId: string) => void;
-// }) => {
-//   const visibleColumns = table.getVisibleLeafColumns();
-
-//   return (
-//     <div className="tbody border-l">
-//       {dataTable.map((rowData) => (
-//         <div className="flex w-fit relative group" key={rowData.id}>
-//           {/* Мапим не ячейки из RowModel, а видимые колонки таблицы */}
-//           {visibleColumns.map((column) => {
-//             return (
-//               <ManualCell column={column} key={column.id} rowData={rowData} />
-//             );
-//           })}
-
-//           <Button
-//             className="opacity-0 group-hover:opacity-100 transition-opacity top-1 -right-10 absolute"
-//             onClick={() => removeRow(rowData.id)}
-//             size="icon"
-//             variant="destructive"
-//           >
-//             <X className="h-4 w-4" />
-//           </Button>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
+        )
+      })}
+    </div>
+  )
+}
 
 // export const MemoizedTableBody = memo(TableBodyOffer, (prev, next) => {
 //   const sameData = prev.dataTable === next.dataTable;
@@ -134,24 +89,43 @@ const TableBodyOffer = memo(
 //   return sameData && sameVisibility;
 // }) as typeof TableBodyOffer;
 
-const TableFooterOffer = ({ table }: { table: Table<OfferTableItem> }) => {
-  const { totalPriceOffer, totalPricePurchase, totalDelta } = useOfferStoreTable()
+const TableFooterOffer = ({
+  table,
+  sectionName,
+  sectionId,
+  partId,
+}: {
+  table: Table<OfferTableItem>
+  sectionName: string
+  sectionId: string
+  partId: string
+}) => {
+  // const { totalPriceOffer, totalPricePurchase, totalDelta } =
+  //   useOfferStoreTable();
+  const section = useOfferStoreTable(selectSectionById(partId, sectionId))
+
   return (
     <div className="tfooter flex">
       {table.getAllColumns().map((column) => {
-        if (column.columnDef.meta?.hidden) return null
+        if (column.columnDef.meta?.hidden || !column.getIsVisible()) return null
         return (
           <div
-            className="p-2 td min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
+            className="p-2 td min-w-12 min-h-[57px] relative flex items-center"
             key={column.id}
             style={{
               width: `calc(var(--col-${column.id}-size) * 1px)`,
             }}
           >
-            <span className="text-end">
-              {column.id === "totalPrice" && totalPriceOffer}
-              {column.id === "purchaseAmount" && totalPricePurchase}
-              {column.id === "delta" && totalDelta}
+            <span className="text-end block w-full relative">
+              {column.id === "totalPrice" && (
+                <>
+                  <span className="text-nowrap absolute right-[110%]">ИТОГО {sectionName}:</span>
+                  {formatterCurrency.format(Number(section?.totalPrice))}
+                </>
+              )}
+              {column.id === "purchaseAmount" &&
+                formatterCurrency.format(Number(section?.totalPurchase))}
+              {column.id === "delta" && formatterCurrency.format(Number(section?.totalDelta))}
             </span>
           </div>
         )
@@ -161,61 +135,128 @@ const TableFooterOffer = ({ table }: { table: Table<OfferTableItem> }) => {
 }
 
 export const CellOfferTable = memo(({ cell }: { cell: Cell<OfferTableItem, unknown> }) => {
-  // 1. Сохраняем твою логику инициализации
   const initialValue = (cell.getValue() as string) ?? ""
   const [value, setValue] = useState<string>(initialValue)
+  const [isEditing, setIsEditing] = useState(false) // Состояние для переключения режима
 
-  // Синхронизация стейта (чтобы данные не "залипали" при обновлении стора)
   useEffect(() => {
     setValue(initialValue)
   }, [initialValue])
 
-  // 2. Оптимизация: сохраняем в стор только при выходе (onBlur)
-  // Это уберет бесконечный рендеринг при печати
   const handlePersist = () => {
+    setIsEditing(false) // Выходим из режима редактирования
     if (value !== initialValue) {
+      // Убираем случайные пробелы, если пользователь их ввел вручную
+      const cleanValue = value.replace(/\s/g, "").replace(",", ".")
       const updateItem = {
         ...cell.row.original,
-        [cell.column.id]: value,
+        [cell.column.id]: cleanValue,
       }
-      updateRow(updateItem) // Вызываем твой экшен
+      updateRow(updateItem)
     }
   }
 
+  // Определяем, является ли колонка денежной
+  const isPriceCol = ["price", "purchasePrice", "totalPrice", "purchaseAmount", "delta"].includes(
+    cell.column.id,
+  )
+  // Колонки, которые нельзя редактировать вручную (только вывод)
+  const isReadOnlyPrice = ["totalPrice", "purchaseAmount", "delta"].includes(cell.column.id)
+
   return (
     <div
-      className="p-2 td min-w-12 border-b border-r leading-none box-border min-h-[57px] relative overflow-hidden"
+      className="p-2 min-w-12 border-b border-r min-h-[57px] flex items-start"
       key={cell.id}
       style={{ width: `calc(var(--col-${cell.column.id}-size) * 1px)` }}
     >
-      <div className="grid gap-2 justify-items-center">
-        {/* Твоя логика выбора инпута или текстареа */}
-        {cell.column.id === "name" || cell.column.id === "description" ? (
+      <div className="grid gap-2 justify-items-center w-full">
+        {isPriceCol ? (
+          isReadOnlyPrice || !isEditing ? (
+            <div
+              className="text-end w-full py-2 px-1 min-h-[37px] flex items-center justify-end cursor-text"
+              onClick={() => !isReadOnlyPrice && setIsEditing(true)}
+            >
+              {/* ВОТ ЗДЕСЬ РАЗРЯДНОСТЬ */}
+              {formatterCurrency.format(parseFloat(value || "0"))}
+            </div>
+          ) : (
+            <input
+              autoFocus
+              type="text"
+              className="text-end w-full shadow-none border-none px-1 py-2 bg-transparent outline-none ring-1 ring-blue-500 rounded-sm"
+              onBlur={handlePersist}
+              onChange={(e) => setValue(e.target.value)}
+              value={value}
+            />
+          )
+        ) : cell.column.id === "name" || cell.column.id === "description" ? (
           <Textarea
+            className="text-xs"
             onBlur={handlePersist}
             onChange={(e) => setValue(e.target.value)}
             value={value}
           />
         ) : (
           <input
-            className="text-end w-full shadow-none border-none px-1 py-2 bg-transparent"
+            className="text-end w-full shadow-none border-none px-1 py-2 bg-transparent outline-none"
             onBlur={handlePersist}
             onChange={(e) => setValue(e.target.value)}
             value={value}
           />
         )}
 
-        {/* ТВОЙ ФУНКЦИОНАЛ С КАРТИНКАМИ — СОХРАНЕН */}
-        {cell.column.id === "name" && cell.row.original.image && (
-          <Image
-            alt=""
-            className="object-contain"
-            height={80}
-            src={cell.row.original.image}
-            width={80}
-          />
-        )}
+        {cell.column.id === "name" && <Cell row={cell.row.original} />}
       </div>
     </div>
   )
 })
+
+const Cell = ({ row }: { row: OfferTableItem }) => {
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    "https://ertel-shop.ru/wp-content/uploads/2025/10/fotoelementy-complekt-300x300.png",
+  )
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+
+    if (file) {
+      if (file.type === "image/webp") {
+        alert("Формат WebP не поддерживается в PDF. Используйте PNG или JPG.")
+        return
+      }
+      const reader = new FileReader()
+      const image = URL.createObjectURL(file)
+
+      reader.onloadend = () => {
+        const base64String = reader.result as string
+
+        updateRow({ ...row, image: base64String })
+      }
+      reader.readAsDataURL(file)
+
+      setImagePreview(image)
+    }
+  }
+  return (
+    <div className="mt-2 flex flex-col gap-2">
+      {imagePreview && (
+        <img
+          src={row.image || imagePreview}
+          alt="Preview"
+          className=" h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
+        />
+      )}
+
+      <Label className="cursor-pointer flex items-center gap-2">
+        <ImagePlus size={20} />
+        <span>{imagePreview ? "Изменить фото" : "Добавить фото"}</span>
+        <Input
+          name="name"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+      </Label>
+    </div>
+  )
+}

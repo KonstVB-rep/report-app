@@ -1,9 +1,7 @@
+import { toast } from "sonner"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { immer } from "zustand/middleware/immer"
-import { mockOfferData } from "@/app/dashboard/offer-table/lib/mock"
-
-// --- ТИПЫ ДАННЫХ ---
 
 export type OfferTableItem = {
   id: string
@@ -19,7 +17,14 @@ export type OfferTableItem = {
 }
 
 // export type DataSubSection = { id: string; name: string; rows: OfferTableItem[] }
-export type DataSection = { id: string; name: string; rows: OfferTableItem[] }
+export type DataSection = {
+  id: string
+  name: string
+  rows: OfferTableItem[]
+  totalPrice: string
+  totalPurchase: string
+  totalDelta: string
+}
 export type DataPart = { id: string; name: string; sections: DataSection[] }
 
 export type DataOffer = {
@@ -28,14 +33,16 @@ export type DataOffer = {
   parts: DataPart[]
 }
 
-// --- ИНТЕРФЕЙС СТОРА ---
-
 interface OfferTableStore {
   data: DataOffer
   selectedItemId: string
   totalPriceOffer: string
   totalPricePurchase: string
   totalDelta: string
+
+  activeTarget: { partId: string; sectionId?: string } | null
+  setActiveTarget: (partId: string, sectionId?: string) => void
+  resetActiveTarget: () => void
 
   setSelectedItemId: (id: string) => void
   updateOfferDate: (value: Date) => void
@@ -48,7 +55,8 @@ interface OfferTableStore {
   addPart: () => void
   addSection: (partId: string) => void
   // addSubSection: (partId: string, sectionId: string) => void
-  addRows: (partId: string, sectionId: string, iddata: OfferTableItem[]) => void
+  addRows: (data: OfferTableItem[]) => void
+  addRow: (partId: string, sectionId: string) => void
 
   removePart: (partId: string) => void
   removeSection: (partId: string, sectionId: string) => void
@@ -58,8 +66,6 @@ interface OfferTableStore {
   updateRow: (updatedItem: OfferTableItem) => void
   clearData: () => void
 }
-
-// --- ХЕЛПЕРЫ ДЛЯ ГЕНЕРАЦИИ СТРУКТУРЫ ---
 
 const createEmptyRow = (): OfferTableItem => ({
   id: crypto.randomUUID(),
@@ -83,6 +89,9 @@ const createEmptySection = (): DataSection => ({
   id: crypto.randomUUID(),
   name: "Новая секция",
   rows: [createEmptyRow()],
+  totalPrice: "0",
+  totalPurchase: "0",
+  totalDelta: "0",
 })
 
 const createEmptyPart = (): DataPart => ({
@@ -91,7 +100,7 @@ const createEmptyPart = (): DataPart => ({
   sections: [createEmptySection()],
 })
 
-const Profit = 0.93
+const Profit = 0.95
 
 // --- ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПЕРЕСЧЕТА ---
 
@@ -117,23 +126,51 @@ const recalculateTotals = (state: OfferTableStore) => {
   state.totalDelta = totalDlt.toFixed(2)
 }
 
+const recalculateLocalTotal = (section: DataSection, rows: OfferTableItem[]) => {
+  const totalPrice = rows.reduce((acc, row) => acc + Number(row.totalPrice || 0), 0)
+  const totalPurchase = rows.reduce(
+    (acc, row) => acc + Number(row.purchasePrice || 0) * Number(row.count),
+    0,
+  )
+  const totalDelta = totalPrice * Profit - totalPurchase
+
+  section.totalPrice = totalPrice.toFixed(2)
+  section.totalPurchase = totalPurchase.toFixed(2)
+  section.totalDelta = totalDelta.toFixed(2)
+}
+
 export const useOfferStoreTable = create<OfferTableStore>()(
   persist(
     immer((set) => ({
-      // data: {
-      //   date: new Date(),
-      //   number: "",
-      //   parts: [createEmptyPart()],
-      // },
-      data: mockOfferData,
+      data: {
+        date: new Date(),
+        number: "",
+        parts: [createEmptyPart()],
+      },
       totalPriceOffer: "0",
       totalPricePurchase: "0",
       totalDelta: "0",
       selectedItemId: "",
+      activeTarget: null,
+      setActiveTarget: (partId, sectionId) =>
+        set((state) => {
+          const isSamePart = state.activeTarget?.partId === partId
+          const isSameSection = state.activeTarget?.sectionId === sectionId
 
+          if (isSamePart && isSameSection) {
+            state.activeTarget = null
+          } else {
+            state.activeTarget = { partId, sectionId }
+          }
+        }),
       setSelectedItemId: (id) =>
         set((state) => {
           state.selectedItemId = id
+        }),
+
+      resetActiveTarget: () =>
+        set((state) => {
+          state.activeTarget = null
         }),
 
       updateOfferDate: (date) =>
@@ -159,13 +196,6 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           if (section) section.name = value
         }),
 
-      // updateSubSectionTitle: (partId, sectionId, subId, value) =>
-      //   set((state) => {
-      //     const part = state.data.parts.find((p) => p.id === partId)
-      //     const section = part?.sections.find((s) => s.id === sectionId)
-      //     if (section) section.name = value
-      //   }),
-
       addPart: () =>
         set((state) => {
           state.data.parts.push(createEmptyPart())
@@ -173,25 +203,37 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       addSection: (partId) =>
         set((state) => {
-          const part = state.data.parts.find((p) => p.id === partId)
-          if (part) part.sections.push(createEmptySection())
+          const part = state.data.parts.find((p) => p.id === state.activeTarget?.partId)
+          if (!part) {
+            toast.info("Выберите раздел куда вставить подраздел")
+            return
+          }
+          part.sections.push(createEmptySection())
         }),
 
-      // addSubSection: (partId, sectionId) =>
-      //   set((state) => {
-      //     const part = state.data.parts.find((p) => p.id === partId)
-      //     const section = part?.sections.find((s) => s.id === sectionId)
-      //     if (section) section.subSections.push(createEmptySubSection())
-      //   }),
+      addRows: (rows) =>
+        set((state) => {
+          const activepartId = state.activeTarget?.partId
+          const activeSectionId = state.activeTarget?.sectionId
+          if (!activepartId || !activeSectionId) {
+            toast.info("Выберите раздел и подраздел куда вставить данные")
+            return
+          }
+          const part = state.data.parts.find((p) => p.id === state.activeTarget?.partId)
+          const section = part?.sections.find((s) => s.id === state.activeTarget?.sectionId)
 
-      addRows: (partId, sectionId, rows) =>
+          if (section) {
+            section.rows.push(...rows)
+            recalculateLocalTotal(section, rows)
+            recalculateTotals(state)
+          }
+        }),
+      addRow: (partId, sectionId) =>
         set((state) => {
           const part = state.data.parts.find((p) => p.id === partId)
           const section = part?.sections.find((s) => s.id === sectionId)
-          // const sub = section?.subSections.find((ss) => ss.id === subId)
           if (section) {
-            section.rows.push(...rows)
-            recalculateTotals(state)
+            section.rows.push(createEmptyRow())
           }
         }),
 
@@ -210,22 +252,16 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           }
         }),
 
-      // removeSubSection: (partId, sectionId, subId) =>
-      //   set((state) => {
-      //     const part = state.data.parts.find((p) => p.id === partId)
-      //     const section = part?.sections.find((s) => s.id === sectionId)
-      //     if (section) {
-      //       section.subSections = section.subSections.filter((ss) => ss.id !== subId)
-      //       recalculateTotals(state)
-      //     }
-      //   }),
-
       removeRow: (partId, sectionId, rowId) =>
         set((state) => {
           const part = state.data.parts.find((p) => p.id === partId)
           const section = part?.sections.find((s) => s.id === sectionId)
+
           if (section) {
-            section.rows = section.rows.filter((r) => r.id !== rowId)
+            section.rows = section.rows.filter((r) => {
+              return r.id !== rowId
+            })
+            recalculateLocalTotal(section, section.rows)
             recalculateTotals(state)
           }
         }),
@@ -246,15 +282,21 @@ export const useOfferStoreTable = create<OfferTableStore>()(
                   purchaseAmount: purchase.toFixed(2),
                   delta: (total * Profit - purchase).toFixed(2),
                 }
+                recalculateLocalTotal(sec, sec.rows)
               }
             })
           })
+
           recalculateTotals(state)
         }),
 
       clearData: () =>
         set((state) => {
-          state.data = { date: new Date(), number: "", parts: [createEmptyPart()] }
+          state.data = {
+            date: new Date(),
+            number: "",
+            parts: [createEmptyPart()],
+          }
           state.totalPriceOffer = "0"
           state.totalPricePurchase = "0"
           state.totalDelta = "0"
@@ -265,7 +307,6 @@ export const useOfferStoreTable = create<OfferTableStore>()(
   ),
 )
 
-// Просто пробрасываем вызовы в стор. Никакого дублирования логики!
 const act = () => useOfferStoreTable.getState()
 
 export const selectData = (s: OfferTableStore) => s.data
@@ -275,23 +316,36 @@ export const selectTotals = (s: OfferTableStore) => ({
   purchase: s.totalPricePurchase,
   delta: s.totalDelta,
 })
-export const selectSelectedItemId = (s: OfferTableStore) => s.selectedItemId
+
+export const selectActiveTarget = (s: OfferTableStore) => s.activeTarget
+
+export const setSelectActiveTarget = (partId: string, sectionId?: string) =>
+  act().setActiveTarget(partId, sectionId)
+
+export const resetActiveTarget = () => act().resetActiveTarget()
 
 export const addPart = () => act().addPart()
 export const addSection = (pId: string) => act().addSection(pId)
-// export const addSubSection = (pId: string, sId: string) => act().addSubSection(pId, sId);
-export const addRows = (pId: string, sId: string, rows: OfferTableItem[]) =>
-  act().addRows(pId, sId, rows)
+export const addRows = (rows: OfferTableItem[]) => act().addRows(rows)
+export const addRow = (pId: string, sId: string) => act().addRow(pId, sId)
+
 export const updateRow = (item: OfferTableItem) => act().updateRow(item)
-export const removeRow = (pId: string, sId: string, rId: string) => act().removeRow(pId, sId, rId)
 export const updatePartTitle = (pId: string, val: string) => act().updatePartTitle(pId, val)
 export const updateSectionTitle = (pId: string, sId: string, val: string) =>
   act().updateSectionTitle(pId, sId, val)
-// export const updateSubSectionTitle = (pId: string, sId: string,idval: string) => act().updateSubSectionTitle(pId, sId, subId, val);
 export const updateDate = (date: Date) => act().updateOfferDate(date)
 export const updateNumber = (val: string) => act().updateOfferNumber(val)
+
+export const removeRow = (pId: string, sId: string, rId: string) => act().removeRow(pId, sId, rId)
 export const removePart = (pId: string) => act().removePart(pId)
 export const removeSection = (pId: string, sId: string) => act().removeSection(pId, sId)
-// export const removeSubSection = (pId: string, sId: string, subId: string) => act().removeSubSection(pId, sId, subId);
+
+export const selectSelectedItemId = (s: OfferTableStore) => s.selectedItemId
 export const setSelectedItemId = (id: string) => act().setSelectedItemId(id)
 export const clearData = () => act().clearData()
+
+export const selectSectionById =
+  (partId: string, sectionId: string) => (state: OfferTableStore) => {
+    const part = state.data.parts.find((p) => p.id === partId)
+    return part?.sections.find((s) => s.id === sectionId) || null
+  }

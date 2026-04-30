@@ -1,11 +1,11 @@
-import React, { useState, useTransition } from "react"
-import type { ColumnFilter } from "@tanstack/react-table"
-import { Filter } from "lucide-react"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
 import { Button } from "@/shared/components/ui/button"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Label } from "@/shared/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
+import { cn } from "@/shared/lib/utils"
+import { Filter } from "lucide-react"
+import React, { useState, useTransition, useCallback, useMemo } from "react"
 
 type Props = {
   columnId: string
@@ -14,41 +14,59 @@ type Props = {
 }
 
 const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
   const { columnFilters, setColumnFilters } = useDataTableFiltersContext()
 
-  const existingFilter: ColumnFilter[] | undefined = columnFilters?.filter((f) => f.id === columnId)
+  // Находим объект фильтра для текущей колонки
+  const activeFilter = useMemo(
+    () => columnFilters?.find((f) => f.id === columnId),
+    [columnFilters, columnId],
+  )
 
-  const normalizedOptions = Array.isArray(options)
-    ? options
-    : Object.entries(options).map(([id, label]) => ({ id, label }))
+  // Приводим значение к массиву строк. split(",") превратит "A,B" в ["A", "B"],
+  // а "SINGLE" в ["SINGLE"]. Это исключает дробление на буквы.
+  const currentValues = useMemo(() => {
+    const val = activeFilter?.value
+    if (Array.isArray(val)) return val as string[]
+    if (typeof val === "string" && val !== "") return val.split(",")
+    return []
+  }, [activeFilter])
+
+  // console.log(currentValues, "currentValues");
 
   const handleChange = (id: string) => {
-    if (setColumnFilters) {
-      startTransition(() => {
-        setColumnFilters((prev) => {
-          const existingFilter = prev.find((f) => f.id === columnId)
+    if (!setColumnFilters) return
 
-          let updatedValues = existingFilter ? [...(existingFilter.value as string[])] : []
+    startTransition(() => {
+      setColumnFilters((prev) => {
+        const filterObj = prev.find((f) => f.id === columnId)
+        const val = filterObj?.value
 
-          if (updatedValues.includes(id)) {
-            updatedValues = updatedValues.filter((s) => s !== id)
-          } else {
-            updatedValues.push(id)
-          }
+        let updatedValues: string[] = []
+        if (Array.isArray(val)) {
+          updatedValues = [...val]
+        } else if (typeof val === "string" && val !== "") {
+          updatedValues = val.split(",")
+        }
 
-          if (updatedValues.length === 0) {
-            return prev.filter((f) => f.id !== columnId)
-          }
+        // Toggle ID
+        if (updatedValues.includes(id)) {
+          updatedValues = updatedValues.filter((v) => v !== id)
+        } else {
+          updatedValues.push(id)
+        }
 
-          return prev.some((f) => f.id === columnId)
-            ? prev.map((f) => (f.id === columnId ? { ...f, value: updatedValues } : f))
-            : [...prev, { id: columnId, value: updatedValues }]
-        })
+        // Если значений не осталось — удаляем фильтр из массива совсем
+        if (updatedValues.length === 0) {
+          return prev.filter((f) => f.id !== columnId)
+        }
+
+        // Обновляем существующий или добавляем новый
+        const otherFilters = prev.filter((f) => f.id !== columnId)
+        return [...otherFilters, { id: columnId, value: updatedValues }]
       })
-    }
+    })
   }
 
   const handleClear = () => {
@@ -59,47 +77,53 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
     }
   }
 
+  const normalizedOptions = useMemo(
+    () =>
+      Array.isArray(options)
+        ? options
+        : Object.entries(options).map(([id, label]) => ({ id, label })),
+    [options],
+  )
+
+  const hasFilter = currentValues.length > 0
+
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger
-        asChild
-        className={`${
-          existingFilter.length > 0 ? "border-solid" : "border-dashed"
-        } border-muted-foreground`}
-      >
-        <Button className="relative h-auto" variant="outline">
+      <PopoverTrigger asChild>
+        <Button
+          className={cn("relative h-auto", hasFilter ? "border-solid" : "border-dashed")}
+          variant="outline"
+        >
           <Filter className="h-4 w-4" />
           {label}
-          {existingFilter.length > 0 && (
+          {hasFilter && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
-              {existingFilter.length}
+              {currentValues.length}
             </span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit px-1 pb-2">
+      <PopoverContent className="w-fit px-1 pb-2" align="start">
         <div className="grid gap-4">
           <div className="grid grid-cols-1 items-center gap-1">
             {normalizedOptions.map(({ id, label }) => (
               <div className="flex w-fit items-center gap-2 px-1 text-sm p-1" key={id}>
                 <Checkbox
-                  checked={existingFilter.some((f) => {
-                    if (Array.isArray(f.value)) {
-                      return Array.isArray(f.value) && f.value.includes(id)
-                    }
-                    return f.value === id
-                  })}
-                  id={id}
+                  checked={currentValues.includes(id)}
+                  id={`${columnId}-${id}`}
                   onCheckedChange={() => handleChange(id)}
                 />
-                <Label className="cursor-pointer whitespace-nowrap capitalize" htmlFor={id}>
+                <Label
+                  className="cursor-pointer whitespace-nowrap capitalize"
+                  htmlFor={`${columnId}-${id}`}
+                >
                   {label}
                 </Label>
               </div>
             ))}
           </div>
-          {existingFilter.length > 0 && (
-            <Button className="btn_hover w-full text-xs" onClick={handleClear} variant="outline">
+          {hasFilter && (
+            <Button className="w-full text-xs h-8" onClick={handleClear} variant="outline">
               Очистить
             </Button>
           )}
@@ -112,3 +136,5 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
 FilterPopover.displayName = "FilterPopover"
 
 export default FilterPopover
+
+// Вспомогательная функция cn, если она не импортирован

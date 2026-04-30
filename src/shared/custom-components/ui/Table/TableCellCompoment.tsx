@@ -1,6 +1,6 @@
-import type { CSSProperties } from "react"
-import { type Cell, flexRender } from "@tanstack/react-table"
 import { TableCell } from "@/shared/components/ui/table"
+import { type Cell, flexRender } from "@tanstack/react-table"
+import type { CSSProperties } from "react"
 
 type TableCellComponentProps<TData> = {
   cell: Cell<TData, unknown>

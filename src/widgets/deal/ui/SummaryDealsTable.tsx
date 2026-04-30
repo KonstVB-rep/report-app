@@ -34,7 +34,7 @@ const getColumns = (
   }
 }
 
-const HIDDEN_COLS = { id: false, resource: false }
+const HIDDEN_COLS = { id: false, resource: false, rowNumber: false }
 
 const SummaryDealsTable = () => {
   const {
