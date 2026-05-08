@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import loginBg from "@/assets/login-bg"
-import LoginForm from "@/feature/auth/ui/login-form"
-import { useAuthRedirect } from "@/shared/hooks/useAuthRedirect"
+import Image from "next/image";
+import loginBg from "@/assets/login-bg";
+import LoginForm from "@/feature/auth/ui/login-form";
+import { useAuthRedirect } from "@/shared/hooks/useAuthRedirect";
 
 const LoginPage = () => {
-  useAuthRedirect()
+  useAuthRedirect();
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
       <Image
@@ -23,7 +23,7 @@ const LoginPage = () => {
         <LoginForm />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

@@ -363,18 +363,41 @@ model NotificationCache {
 
 model EquipmentItem {
   id             String   @id @default(cuid())
-  
   name           String
   image          String?  
-  description    String   @db.Text
+  isKit          Boolean  @default(false)
   
-  price          Decimal  @db.Decimal(15, 2)
+  description    String?  @db.Text
+  price          Decimal? @db.Decimal(15, 2)
   
+  contents       EquipmentKitItem[] @relation("KitToItems")
+  includedIn     EquipmentKitItem[] @relation("ItemInKits")
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@index([isKit]) 
+  @@index([name]) 
 }
 
+model EquipmentKitItem {
+  id            String @id @default(cuid())
+  
+  kitId         String
+  kit           EquipmentItem @relation("KitToItems", fields: [kitId], references: [id])
 
+  itemId        String
+  item          EquipmentItem @relation("ItemInKits", fields: [itemId], references: [id])
+
+  count      Int    @default(1)
+  description   String @db.Text
+  price         Decimal @db.Decimal(15, 2)
+
+  @@unique([kitId, itemId]) 
+  
+  @@index([kitId]) 
+  @@index([itemId]) 
+}
 
 enum PermissionEnum {
   VIEW_USER_REPORT
@@ -439,6 +462,7 @@ enum StatusProject {
   DELIVERY_WORKS
   SIGN_ACTS_PAYMENT
   CLOSED
+  REQUEST
 }
 
 enum StatusContract {
@@ -464,6 +488,7 @@ enum StatusRetail {
   PROGRESS
   PAID
   CLOSED
+  REQUEST
 }
 
 enum DepartmentEnum {

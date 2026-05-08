@@ -1,10 +1,10 @@
 // src/shared/hooks/useTableState.ts
 
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
+import { useEffect, useMemo, useState } from "react"
 import {
   type ColumnDef,
-  ColumnSizingInfoState,
-  ColumnSizingState,
+  type ColumnSizingInfoState,
+  type ColumnSizingState,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -13,7 +13,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { useEffect, useMemo, useState } from "react"
+import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
 
 export const getLS = <T>(key: string, fallback: T): T => {
   if (typeof window === "undefined") return fallback

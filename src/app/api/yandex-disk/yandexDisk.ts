@@ -190,11 +190,11 @@ const deleteFileOrFolderFromYandexDiskAnDB = async (file: {
 }
 
 export {
+  createFolderOnYandexDisk,
+  deleteFileOrFolderFromYandexDiskAnDB,
+  downloadFileFromYandexDisk,
   getFiles,
   getInfoDisk,
   getResourceInfo,
   uploadFilesToYandexDiskAndDB,
-  downloadFileFromYandexDisk,
-  createFolderOnYandexDisk,
-  deleteFileOrFolderFromYandexDiskAnDB,
 }

@@ -1,6 +1,6 @@
-import { TableRow } from "@/shared/components/ui/table"
-import { flexRender, type Header, type Row } from "@tanstack/react-table"
 import { useState } from "react"
+import { flexRender, type Header, type Row } from "@tanstack/react-table"
+import { TableRow } from "@/shared/components/ui/table"
 import ContextRowTable from "../ContextRowTable"
 import RowInfoDialog from "./RowInfoDialog"
 import TableCellComponent from "./TableCellCompoment"

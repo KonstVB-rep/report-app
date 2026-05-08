@@ -1,24 +1,24 @@
-import type React from "react"
-import { DepartmentLabels } from "@/entities/department/lib/constants"
-import { Checkbox } from "@/shared/components/ui/checkbox"
-import { Input } from "@/shared/components/ui/input"
-import { Label } from "@/shared/components/ui/label"
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
-import InputPassword from "@/shared/custom-components/ui/Inputs/InputPassword"
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
-import { MultiSelectNativeForm } from "@/shared/custom-components/ui/MultiSlectComponent"
-import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent"
-import { cn, formatPhoneNumber } from "@/shared/lib/utils"
-import type { ActionResponse } from "@/shared/types"
-import { RolesUser } from "../model/objectTypes"
-import { OPTIONS, type UserFormData, type UserFormEditData } from "../types"
+import type React from "react";
+import { DepartmentLabels } from "@/entities/department/lib/constants";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
+import InputPassword from "@/shared/custom-components/ui/Inputs/InputPassword";
+import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY";
+import { MultiSelectNativeForm } from "@/shared/custom-components/ui/MultiSlectComponent";
+import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComponent";
+import { cn, formatPhoneNumber } from "@/shared/lib/utils";
+import type { ActionResponse } from "@/shared/types";
+import { RolesUser } from "../model/objectTypes";
+import { OPTIONS, type UserFormData, type UserFormEditData } from "../types";
 
 type UserFormProps<T extends UserFormData | UserFormEditData> = {
-  state: ActionResponse<T>
-  onSubmit: React.FormEventHandler<HTMLFormElement>
-  isPending: boolean
-  setState: React.Dispatch<React.SetStateAction<ActionResponse<T>>>
-}
+  state: ActionResponse<T>;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  isPending: boolean;
+  setState: React.Dispatch<React.SetStateAction<ActionResponse<T>>>;
+};
 const UserForm = <T extends UserFormData | UserFormEditData>({
   state,
   onSubmit,
@@ -26,8 +26,8 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
   setState,
 }: UserFormProps<T>) => {
   const getFieldError = (fieldName: keyof UserFormData) => {
-    return state?.errors?.properties?.[fieldName]?.errors[0]
-  }
+    return state?.errors?.properties?.[fieldName]?.errors[0];
+  };
 
   return (
     <form
@@ -87,9 +87,9 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
             id="phone"
             name={"phone"}
             onInput={(e) => {
-              const input = e.target as HTMLInputElement
-              const value = input.value
-              input.value = formatPhoneNumber(value)
+              const input = e.target as HTMLInputElement;
+              const value = input.value;
+              input.value = formatPhoneNumber(value);
             }}
             placeholder="+7 (999) 123-45-67"
             title="Формат: +7 (999) 123-45-67"
@@ -151,22 +151,25 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
           </Label>
           <SelectComponent
             aria-describedby="department"
-            className={cn("capitalize", getFieldError("department") ? "border-red-500" : "")}
+            className={cn(
+              "capitalize",
+              getFieldError("department") ? "border-red-500" : "",
+            )}
             disabled={isPending}
             name={"department"}
             onValueChange={(val) => {
-              if (!val) return
+              if (!val) return;
               setState((prev) => ({
                 ...prev,
                 inputs: {
                   ...(prev.inputs as Partial<T>),
                   department: val as unknown as T extends {
-                    department: infer D
+                    department: infer D;
                   }
                     ? D
                     : never,
                 },
-              }))
+              }));
             }}
             options={Object.entries(DepartmentLabels)}
             placeholder="Выберите отдел"
@@ -185,18 +188,23 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
           </Label>
           <SelectComponent
             aria-describedby="role"
-            className={cn("capitalize", getFieldError("role") ? "border-red-500" : "")}
+            className={cn(
+              "capitalize",
+              getFieldError("role") ? "border-red-500" : "",
+            )}
             disabled={isPending}
             name={"role"}
             onValueChange={(val) => {
-              if (!val) return
+              if (!val) return;
               setState((prev) => ({
                 ...prev,
                 inputs: {
                   ...(prev.inputs as Partial<T>),
-                  role: val as unknown as T extends { role: infer R } ? R : never,
+                  role: val as unknown as T extends { role: infer R }
+                    ? R
+                    : never,
                 },
-              }))
+              }));
             }}
             options={Object.entries(RolesUser)}
             placeholder="Выберите роль"
@@ -216,7 +224,9 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
           <MultiSelectNativeForm
             aria-describedby="permissions"
             defaultValue={
-              state.inputs?.permissions ? state.inputs.permissions.map((s) => s.trim()) : undefined
+              state.inputs?.permissions
+                ? state.inputs.permissions.map((s) => s.trim())
+                : undefined
             }
             disabled={isPending}
             id="permissions"
@@ -245,17 +255,12 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
                     ...(prev.inputs as Partial<T>),
                     isBlocked: val,
                   },
-                }))
+                }));
               }}
             />
             <Label className="text-sm font-medium" htmlFor="isBlocked">
               Заблокировать
             </Label>
-            {getFieldError("position") && (
-              <p className="text-sm text-red-500" id="position">
-                {getFieldError("position")}
-              </p>
-            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -273,23 +278,18 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
                     ...(prev.inputs as Partial<T>),
                     emailNotify: val,
                   },
-                }))
+                }));
               }}
             />
             <Label className="text-sm font-medium" htmlFor="emailNotify">
               Оповещение о запланированном звонке клиенту на email
             </Label>
-            {getFieldError("position") && (
-              <p className="text-sm text-red-500" id="position">
-                {getFieldError("position")}
-              </p>
-            )}
           </div>
         </div>
       </MotionDivY>
       <SubmitFormButton isPending={isPending} title="Сохранить" />
     </form>
-  )
-}
+  );
+};
 
-export default UserForm
+export default UserForm;

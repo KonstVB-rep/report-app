@@ -1,8 +1,8 @@
+import { useCallback, useMemo } from "react"
+import type { Row, Table } from "@tanstack/react-table"
+import type { VirtualItem } from "@tanstack/react-virtual"
 import type { DealUnion } from "@/entities/deal/types"
 import { DealTableRow } from "@/entities/deal/ui/DealTableRow"
-import { type Row, type Table } from "@tanstack/react-table"
-import type { VirtualItem } from "@tanstack/react-virtual"
-import { useCallback, useMemo } from "react"
 import TableRowsWrapper from "./TableRowsWrapper"
 
 interface TableComponentProps<T extends DealUnion> {

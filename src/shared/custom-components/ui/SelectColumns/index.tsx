@@ -1,42 +1,62 @@
-import { Button } from "@/shared/components/ui/button"
-import { Checkbox } from "@/shared/components/ui/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
-import type { Table } from "@tanstack/react-table"
-import { ListChecks } from "lucide-react"
-import { useState } from "react"
+import { useState } from "react";
+import type { Table } from "@tanstack/react-table";
+import { ListChecks } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
 
 interface SelectColumnsProps<TData extends Record<string, unknown>> {
-  data: Table<TData>
-  colsListNotHidden?: string[]
+  data: Table<TData>;
+  colsListNotHidden?: string[];
 }
 
 const SelectColumns = <TData extends Record<string, unknown>>({
   data,
   colsListNotHidden = [],
 }: SelectColumnsProps<TData>) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  const columns = data.getAllColumns()
+  const columns = data.getAllColumns();
   const hiddenColumns = Object.entries(data.getState().columnVisibility)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .filter(([_id, isVisible]) => !isVisible && !colsListNotHidden.includes(_id))
-    .map(([col]) => col)
+    .filter(
+      ([_id, isVisible]) => !isVisible && !colsListNotHidden.includes(_id),
+    )
+    .map(([col]) => col);
 
   const handleResetVisibility = () => {
-    data.setColumnVisibility(Object.fromEntries(columns.map((col) => [col.id, true])))
-  }
+    console.log(
+      Object.fromEntries(columns.map((col) => [col.id, true])),
+      "Object.fromEntries(columns.map((col) => [col.id, true]))",
+    );
+    data.setColumnVisibility(
+      Object.fromEntries(
+        columns.map((col) => {
+          if (col.columnDef.meta?.hidden) {
+            return [col.id, false];
+          }
+          return [col.id, true];
+        }),
+      ),
+    );
+  };
 
-  const defaultHiddensColsCount = columns.filter((col) => col.columnDef.meta?.hidden).length
+  const defaultHiddensColsCount = columns.filter(
+    (col) => col.columnDef.meta?.hidden,
+  ).length;
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger
-        asChild
-        className={`${
-          hiddenColumns.length - defaultHiddensColsCount > 0 ? "border-solid" : "border-dashed"
-        } border-muted-foreground`}
-      >
-        <Button className="relative flex gap-1" title="Visibility columns" variant="outline">
+      <PopoverTrigger asChild className="border-solid border-muted-foreground">
+        <Button
+          className="relative flex gap-1"
+          title="Visibility columns"
+          variant="outline"
+        >
           <ListChecks />
           {hiddenColumns.length - defaultHiddensColsCount > 0 && (
             <span className="absolute right-0 top-0 inline-flex h-4 w-4 -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full border border-primary bg-blue-700 text-xs font-medium text-white">
@@ -54,9 +74,10 @@ const SelectColumns = <TData extends Record<string, unknown>>({
               .filter((col) => {
                 return (
                   col.getCanHide() &&
-                  !(col.columnDef.meta as { hidden: boolean | string })?.hidden &&
+                  !(col.columnDef.meta as { hidden: boolean | string })
+                    ?.hidden &&
                   !colsListNotHidden.includes(col.id)
-                )
+                );
               })
               .map((col) => (
                 <div className="flex items-center gap-1" key={col.id}>
@@ -84,7 +105,7 @@ const SelectColumns = <TData extends Record<string, unknown>>({
         </div>
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};
 
-export default SelectColumns
+export default SelectColumns;

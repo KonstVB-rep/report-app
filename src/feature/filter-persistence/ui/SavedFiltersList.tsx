@@ -1,13 +1,12 @@
 "use client"
-import { useRouter, usePathname } from "next/navigation"
 import { ListFilterPlus } from "lucide-react"
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
+import { usePathname, useRouter } from "next/navigation"
 import { Label } from "@/shared/components/ui/label"
-
-import UserFiltersChange from "./UserFiltersChange"
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard"
-import { useSelectFilter, useDisableSavedFilters } from "../hooks/mutate"
+import { useDisableSavedFilters, useSelectFilter } from "../hooks/mutate"
 import { useGetUserFilters } from "../hooks/query"
+import UserFiltersChange from "./UserFiltersChange"
 
 const SavedFiltersList = ({
   handleClearFilters,
@@ -47,17 +46,17 @@ const SavedFiltersList = ({
   }
 
   return (
-    <HoverCardComponent title={<ListFilterPlus />} align="end">
+    <HoverCardComponent align="end" title={<ListFilterPlus />}>
       <RadioGroup
+        className="grid gap-1 p-2"
         onValueChange={handleFilterChange}
         value={selectedFilterName || "disableSavedFilters"}
-        className="grid gap-1 p-2"
       >
         {userFilters.map((filter) => (
           <div className="flex items-center justify-between space-x-2" key={filter.id}>
             <div className="flex items-center gap-2 p-2">
               <RadioGroupItem id={filter.id} value={filter.filterName} />
-              <Label htmlFor={filter.id} className="cursor-pointer truncate max-w-36">
+              <Label className="cursor-pointer truncate max-w-36" htmlFor={filter.id}>
                 {filter.filterName}
               </Label>
             </div>
@@ -66,7 +65,7 @@ const SavedFiltersList = ({
         ))}
         <div className="flex items-center space-x-2 p-2 border-t mt-1">
           <RadioGroupItem id="disableSavedFilters" value="disableSavedFilters" />
-          <Label htmlFor="disableSavedFilters" className="cursor-pointer text-muted-foreground">
+          <Label className="cursor-pointer text-muted-foreground" htmlFor="disableSavedFilters">
             Отключить фильтры
           </Label>
         </div>

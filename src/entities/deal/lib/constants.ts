@@ -7,6 +7,7 @@ export const StatusProject = {
   UNDER_APPROVAL: "На согласовании",
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
+  REQUEST: "Запрос",
   // PROGRESS : "Проект в работе / Закупка / Производство",
   // DELIVERY_WORKS : "Поставка / Выполнение работ",
   // SIGN_ACTS_PAYMENT : "Подписание актов / Оплата",
@@ -21,6 +22,7 @@ export const StatusRetail = {
   INVOICE_ISSUED: "Выставлен счёт / Авансирование",
   PROGRESS: "В работе / Закупка / Производство",
   PAID: "Оплачено",
+  REQUEST: "Запрос",
   CLOSED: "Закрыт",
 }
 

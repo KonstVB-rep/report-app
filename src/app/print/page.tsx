@@ -1,8 +1,8 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { DataOffer, DataRow } from "../dashboard/offer-constructor/store"
+import { useSearchParams } from "next/navigation"
+import type { DataOffer, DataRow } from "../dashboard/offer-constructor/store"
 
 export default function PrintPage() {
   const searchParams = useSearchParams()
@@ -32,9 +32,9 @@ export default function PrintPage() {
       {/* 1. ХЕДЕР (Копия из List.tsx) */}
       <div className="relative py-1 flex items-center justify-end h-40">
         <img
-          src={`${window.location.origin}/for-builder/header-bg.webp`}
           alt="header"
           className="absolute inset-0 h-full w-full object-cover"
+          src={`${window.location.origin}/for-builder/header-bg.webp`}
         />
         <div className="w-[40%] text-[10px] text-left isolate text-white whitespace-pre-wrap pr-4">
           {`Общество с ограниченной ответственностью "ЭРТЕЛ"\nЮридический адрес:127015, г. Москва, Бумажный проезд, дом 14, строение 1,\nпомещение I, комната 6 ИНН/КПП 7709407790/771401001\nЭлектронный адрес:ertel@ertel.ru Сайт www.ertel.ru\nТел. +7(495) 644-39-76`}
@@ -55,16 +55,16 @@ export default function PrintPage() {
 
         {/* 3. МАПИНГ ЧАСТЕЙ (Part.tsx) */}
         {data.parts.map((part) => (
-          <div key={part.id} className="mb-10 page-break-inside-avoid">
+          <div className="mb-10 page-break-inside-avoid" key={part.id}>
             <div className="flex my-6 gap-2 justify-start items-center border-t-[4px] border-t-blue-900 border-b-[2px] border-b-black py-2">
               <p className="text-xl font-bold uppercase tracking-tight">Раздел: {part.name}</p>
             </div>
 
             {/* 4. СЕКЦИИ И ПОДСЕКЦИИ */}
             {part.sections.map((section) => (
-              <div key={section.id} className="mb-6">
+              <div className="mb-6" key={section.id}>
                 {section.subSections.map((sub) => (
-                  <div key={sub.id} className="mb-4">
+                  <div className="mb-4" key={sub.id}>
                     {/* Синий заголовок подраздела */}
                     <div className="w-full bg-[#1c398e] text-white font-bold p-2 mb-2 uppercase text-sm">
                       {sub.name || "Наименование подраздела"}
@@ -83,16 +83,16 @@ export default function PrintPage() {
                       </thead>
                       <tbody>
                         {sub.rows.map((row: DataRow) => (
-                          <tr key={row.id} className="border-b border-gray-200 break-inside-avoid">
+                          <tr className="border-b border-gray-200 break-inside-avoid" key={row.id}>
                             <td className="p-2 align-top">
                               <div className="font-bold text-sm">{row.name}</div>
                               <div className="text-xs text-gray-600 mt-1">{row.description}</div>
                               {/* КАРТИНКА ТОВАРА (Base64) */}
                               {row.image && (
                                 <img
-                                  src={row.image}
-                                  className="h-32 w-auto mt-2 rounded border"
                                   alt="item"
+                                  className="h-32 w-auto mt-2 rounded border"
+                                  src={row.image}
                                 />
                               )}
                             </td>
@@ -115,7 +115,7 @@ export default function PrintPage() {
         ))}
       </div>
 
-      <style jsx global>{`
+      <style global jsx>{`
         @media print {
           @page {
             size: A4;

@@ -97,17 +97,12 @@ export const StatusProjectLabels: StatusProjectLabelsType = {
   UNDER_APPROVAL: "На согласовании",
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
+  REQUEST: "Запрос",
   // PROGRESS: "Проект в работе / Закупка / Производство",
   // DELIVERY_WORKS: "Поставка / Выполнение работ",
   // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
 } as const
-
-// export const DealTypeLabels: Record<keyof typeof DealType, string> = {
-//   PROJECT: "Проект",
-//   RETAIL: "Розница",
-//   // ORDER: "Заявки",
-// } as const;
 
 export const DealTypeLabels: Record<keyof Pick<typeof DealType, "PROJECT" | "RETAIL">, string> = {
   PROJECT: "Проект",
@@ -122,6 +117,7 @@ export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   INVOICE_ISSUED: "Выставлен счёт / Авансирование",
   PROGRESS: "Проект в работе / Закупка / Производство",
   PAID: "Оплачено",
+  REQUEST: "Запрос",
   CLOSED: "Закрыт",
 } as const
 

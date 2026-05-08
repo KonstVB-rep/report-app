@@ -1,5 +1,10 @@
 "use client"
 
+import type { ReactNode } from "react"
+import { StatusProject } from "@prisma/client"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { DateRange } from "react-day-picker"
 import type { ProjectResponse } from "@/entities/deal/types"
 import {
   DeliveryProjectLabels,
@@ -7,11 +12,6 @@ import {
   StatusProjectLabels,
 } from "@/feature/deals/lib/constants"
 import { formatterCurrency } from "@/shared/lib/utils"
-import { StatusProject } from "@prisma/client"
-import type { CellContext, ColumnDef } from "@tanstack/react-table"
-import { endOfDay, startOfDay } from "date-fns"
-import type { ReactNode } from "react"
-import type { DateRange } from "react-day-picker"
 import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
 export type typeofDirections = keyof typeof DirectionProjectLabels
@@ -157,8 +157,8 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
 
       const timeB = dateB instanceof Date ? dateB.getTime() : new Date(dateB).getTime()
 
-      if (isNaN(timeA)) return 1
-      if (isNaN(timeB)) return -1
+      if (Number.isNaN(timeA)) return 1
+      if (Number.isNaN(timeB)) return -1
 
       return timeB - timeA
     },

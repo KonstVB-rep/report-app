@@ -159,8 +159,8 @@ const RetailFormBody = <T extends FieldValues>({
                 label="Название объекта/Город"
                 name={"nameObject" as Path<T>}
                 placeholder="Название..."
-                required
-                showStarRequired
+                required={currentStatus !== StatusRetail.REQUEST}
+                showStarRequired={currentStatus !== StatusRetail.REQUEST}
               />
 
               <SelectFormField
@@ -171,7 +171,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"direction" as Path<T>}
                 options={directionOptions}
                 placeholder="Выберите направление"
-                required
+                required={currentStatus !== StatusRetail.REQUEST}
               />
 
               <SelectFormField
@@ -182,7 +182,7 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"deliveryType" as Path<T>}
                 options={deliveryOptions}
                 placeholder="Выберите тип поставки"
-                required
+                required={currentStatus !== StatusRetail.REQUEST}
               />
 
               <InputTextForm
@@ -192,8 +192,8 @@ const RetailFormBody = <T extends FieldValues>({
                 label="Контакты"
                 name={"contact" as Path<T>}
                 placeholder="Имя контакта"
-                required
-                showStarRequired
+                required={currentStatus !== StatusRetail.REQUEST}
+                showStarRequired={currentStatus !== StatusRetail.REQUEST}
               />
             </div>
 
@@ -274,8 +274,8 @@ const RetailFormBody = <T extends FieldValues>({
                 label="Источник"
                 name={"resource" as Path<T>}
                 placeholder="Откуда пришёл клиент"
-                required
-                showStarRequired
+                required={currentStatus !== StatusRetail.REQUEST}
+                showStarRequired={currentStatus !== StatusRetail.REQUEST}
               />
             </div>
           </div>

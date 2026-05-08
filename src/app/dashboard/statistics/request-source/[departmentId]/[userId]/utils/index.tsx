@@ -97,4 +97,4 @@ const renderCustomizedLabel = (isDark: boolean) => {
   }
 }
 
-export { isFromSite, normalizeResource, dateFilter, renderCustomizedLabel }
+export { dateFilter, isFromSite, normalizeResource, renderCustomizedLabel }

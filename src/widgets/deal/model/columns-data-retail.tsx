@@ -1,5 +1,10 @@
 "use client"
 
+import type { ReactNode } from "react"
+import { StatusRetail } from "@prisma/client"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { endOfDay, startOfDay } from "date-fns"
+import type { DateRange } from "react-day-picker"
 import type { RetailResponse } from "@/entities/deal/types"
 import {
   DeliveryRetailLabels,
@@ -7,11 +12,6 @@ import {
   StatusRetailLabels,
 } from "@/feature/deals/lib/constants"
 import { formatterCurrency } from "@/shared/lib/utils"
-import { StatusRetail } from "@prisma/client"
-import type { CellContext, ColumnDef } from "@tanstack/react-table"
-import { endOfDay, startOfDay } from "date-fns"
-import type { ReactNode } from "react"
-import type { DateRange } from "react-day-picker"
 import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
 export type typeofDirections = keyof typeof DirectionRetailLabels
@@ -160,8 +160,8 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
 
       const timeB = dateB instanceof Date ? dateB.getTime() : new Date(dateB).getTime()
 
-      if (isNaN(timeA)) return 1
-      if (isNaN(timeB)) return -1
+      if (Number.isNaN(timeA)) return 1
+      if (Number.isNaN(timeB)) return -1
 
       return timeB - timeA
     },

@@ -25,14 +25,14 @@ const SelectComponent = ({
   return (
     <Select key={value} onValueChange={(val) => onValueChange?.(val)} value={value} {...props}>
       <SelectTrigger className="w-full border border-solid">
-        <SelectValue placeholder={placeholder} className="text-red-500" />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 
       <SelectContent>
         <SelectGroup>
           {options?.map(([key, value], index) => (
             <SelectItem className={`${className}`} key={key} value={key}>
-              <span className={`${className} ${index === 0 ? "text-red-500" : ""}`}>{value}</span>
+              <span className={`${className}`}>{value}</span>
             </SelectItem>
           ))}
         </SelectGroup>

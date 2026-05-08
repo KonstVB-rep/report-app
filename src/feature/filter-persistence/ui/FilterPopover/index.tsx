@@ -1,11 +1,11 @@
+import React, { useCallback, useMemo, useState, useTransition } from "react"
+import { Filter } from "lucide-react"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
 import { Button } from "@/shared/components/ui/button"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Label } from "@/shared/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
 import { cn } from "@/shared/lib/utils"
-import { Filter } from "lucide-react"
-import React, { useState, useTransition, useCallback, useMemo } from "react"
 
 type Props = {
   columnId: string
@@ -103,7 +103,7 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit px-1 pb-2" align="start">
+      <PopoverContent align="start" className="w-fit px-1 pb-2">
         <div className="grid gap-4">
           <div className="grid grid-cols-1 items-center gap-1">
             {normalizedOptions.map(({ id, label }) => (

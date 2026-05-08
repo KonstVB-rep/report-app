@@ -215,8 +215,8 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Название объекта/Город"
                   name={"nameObject" as Path<T>}
                   placeholder="Название..."
-                  required
-                  showStarRequired
+                  required={currentStatus !== StatusProject.REQUEST}
+                  showStarRequired={currentStatus !== StatusProject.REQUEST}
                 />
 
                 <SelectFormField
@@ -227,7 +227,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"direction" as Path<T>}
                   options={directionOptions}
                   placeholder="Выберите направление"
-                  required
+                  required={currentStatus !== StatusProject.REQUEST}
                 />
 
                 <SelectFormField
@@ -238,7 +238,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"deliveryType" as Path<T>}
                   options={deliveryOptions}
                   placeholder="Выберите тип поставки"
-                  required
+                  required={currentStatus !== StatusProject.REQUEST}
                 />
 
                 <InputTextForm
@@ -248,8 +248,8 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Контакты"
                   name={"contact" as Path<T>}
                   placeholder="Имя контакта"
-                  required
-                  showStarRequired
+                  required={currentStatus !== StatusProject.REQUEST}
+                  showStarRequired={currentStatus !== StatusProject.REQUEST}
                 />
 
                 <InputPhoneForm
@@ -327,7 +327,7 @@ const ProjectFormBody = <T extends FieldValues>({
                     errorMessage={getError("plannedDateConnection")}
                     label="Планируемый контакт"
                     name={"plannedDateConnection" as Path<T>}
-                    required
+                    required={currentStatus !== StatusProject.REQUEST}
                   />
                 )}
 
@@ -349,8 +349,8 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Источник"
                   name={"resource" as Path<T>}
                   placeholder="Откуда пришёл клиент"
-                  required
-                  showStarRequired
+                  required={currentStatus !== StatusProject.REQUEST}
+                  showStarRequired={currentStatus !== StatusProject.REQUEST}
                 />
               </div>
 

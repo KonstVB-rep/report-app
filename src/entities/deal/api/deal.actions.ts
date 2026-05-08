@@ -1,12 +1,20 @@
 "use server"
 
-import { type DealFile, DealType, PermissionEnum, Prisma, StatusContract } from "@prisma/client"
+import {
+  type DealFile,
+  DealType,
+  PermissionEnum,
+  Prisma,
+  StatusContract,
+  StatusProject,
+  StatusRetail,
+} from "@prisma/client"
 import cuid from "cuid"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { requireUser } from "@/app/api/utils/requireAuth "
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
-import { validateRequiredFields, toDec } from "@/shared/lib/utils"
+import { toDec, validateRequiredFields } from "@/shared/lib/utils"
 import {
   type Contact,
   type DateRange,
@@ -747,7 +755,11 @@ export const createProject = async (
 ): Promise<ProjectResponse> => {
   try {
     if (!data) return handleError("Ошибка: данные не переданы")
-    await checkAuthAndDataFill(data)
+    if (data.dealStatus !== StatusProject.REQUEST) {
+      await checkAuthAndDataFill(data)
+    } else {
+      await requireUser()
+    }
 
     const {
       amountCP,
@@ -810,7 +822,14 @@ export const createRetail = async (
 ) => {
   try {
     if (!data) return handleError("Ошибка: данные не переданы")
-    await checkAuthAndDataFill(data)
+    console.log(data.dealStatus, StatusRetail.REQUEST, "**************************")
+    if (data.dealStatus !== StatusRetail.REQUEST) {
+      await checkAuthAndDataFill(data)
+    } else {
+      await requireUser()
+    }
+
+    console.log("**************************")
 
     const { amountCP, delta, contacts, managersIds, highlight, ...dealData } = data
 

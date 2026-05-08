@@ -1,9 +1,9 @@
+import { flexRender, type useReactTable } from "@tanstack/react-table"
+import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { TableBody, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table"
 import { HEIGHT_ROW } from "@/shared/lib/constants"
 import { cn } from "@/shared/lib/utils"
-import { flexRender, type useReactTable } from "@tanstack/react-table"
-import { ArrowDownUp, MoveDown, MoveUp } from "lucide-react"
 
 type TableTemplateProps<T extends Record<string, unknown>> = {
   table: ReturnType<typeof useReactTable<T>>
@@ -27,11 +27,11 @@ const TableTemplate = <T extends Record<string, unknown>>({
           <TableRow className="flex w-fit" key={headerGroup.id}>
             {headerGroup.headers.map((header, index) => (
               <TableHead
-                key={header.id}
                 className={cn("p-2! border-zinc-600 border border-solid relative h-auto", {
                   "rounded-tr-sm": index === headerGroup.headers.length - 1,
                   "rounded-tl-sm": index === 0,
                 })}
+                key={header.id}
                 style={{
                   // 3. Ширина теперь берется напрямую из конфига колонки, без CSS-переменных
                   width: header.getSize(),
@@ -45,10 +45,10 @@ const TableTemplate = <T extends Record<string, unknown>>({
                     </span>
                     {header.column.getCanSort() && (
                       <Button
-                        size="icon"
-                        variant="ghost"
                         className="flex justify-center"
                         onClick={header.column.getToggleSortingHandler()}
+                        size="icon"
+                        variant="ghost"
                       >
                         {{
                           asc: <MoveUp className="ml-2 h-4 w-4" />,
