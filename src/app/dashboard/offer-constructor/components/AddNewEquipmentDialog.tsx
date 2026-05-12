@@ -1,5 +1,9 @@
-import { Button } from "@/shared/components/ui/button";
-import { Checkbox } from "@/shared/components/ui/checkbox";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Plus } from "lucide-react"
+import { useForm } from "react-hook-form"
+import z from "zod"
+import { Button } from "@/shared/components/ui/button"
+import { Checkbox } from "@/shared/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -7,16 +11,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/shared/components/ui/form";
-import { Textarea } from "@/shared/components/ui/textarea";
-import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton";
-import DialogComponent from "@/shared/custom-components/ui/DialogComponent";
-import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
-import { useForm } from "react-hook-form";
-import z from "zod";
-import { useAddEquipment } from "../hooks/mutate";
+} from "@/shared/components/ui/form"
+import { Textarea } from "@/shared/components/ui/textarea"
+import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
+import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
+import { useAddEquipment } from "../hooks/mutate"
 
 const defaultEquipmentValues = {
   name: "",
@@ -24,7 +24,7 @@ const defaultEquipmentValues = {
   isKit: false,
   description: "",
   price: 0,
-};
+}
 
 export const EquipmentFormSchema = z.object({
   name: z.string().min(1, "Обязательное поле"),
@@ -32,9 +32,9 @@ export const EquipmentFormSchema = z.object({
   isKit: z.boolean(),
   description: z.string().min(1, "Обязательное поле"),
   price: z.string().min(1, "Обязательное поле"),
-});
+})
 
-export type EquipmentFormValues = z.infer<typeof EquipmentFormSchema>;
+export type EquipmentFormValues = z.infer<typeof EquipmentFormSchema>
 
 const AddNewEquipmentDialog = () => {
   const form = useForm<EquipmentFormValues>({
@@ -46,9 +46,9 @@ const AddNewEquipmentDialog = () => {
       description: "",
       price: "0,00",
     },
-  });
+  })
 
-  const { mutateAsync, isPending } = useAddEquipment(form.reset);
+  const { mutateAsync, isPending } = useAddEquipment(form.reset)
 
   const handleSubmit = async (values: EquipmentFormValues) => {
     mutateAsync({
@@ -57,24 +57,20 @@ const AddNewEquipmentDialog = () => {
       isKit: values.isKit,
       description: values.description,
       price: values.price,
-    });
-  };
+    })
+  }
 
   const getError = (name: keyof typeof defaultEquipmentValues) =>
-    form.formState.errors[name]?.message as string;
+    form.formState.errors[name]?.message as string
 
-  const isKit = form.watch("isKit");
+  const isKit = form.watch("isKit")
 
   return (
     <DialogComponent
       classNameContent="sm:max-w-[400px]"
       disableClose
       trigger={
-        <Button
-          aria-label="Добавить новую сделку"
-          className="ml-auto"
-          variant="outline"
-        >
+        <Button aria-label="Добавить новую сделку" className="ml-auto" variant="outline">
           <Plus />
         </Button>
       }
@@ -84,9 +80,7 @@ const AddNewEquipmentDialog = () => {
           className={`grid max-h-[85dvh] w-full gap-5 overflow-y-auto transform duration-150`}
           onSubmit={form.handleSubmit(handleSubmit)}
         >
-          <div className="text-center font-semibold uppercase">
-            Новое оборудование
-          </div>
+          <div className="text-center font-semibold uppercase">Новое оборудование</div>
           <div className="grid gap-2 p-2">
             <div className="flex flex-col gap-1">
               <InputTextForm
@@ -120,18 +114,11 @@ const AddNewEquipmentDialog = () => {
                     </FormLabel>
 
                     <FormControl>
-                      <Textarea
-                        disabled={isPending}
-                        placeholder="Описание"
-                        required
-                        {...field}
-                      />
+                      <Textarea disabled={isPending} placeholder="Описание" required {...field} />
                     </FormControl>
 
                     {getError("description") && (
-                      <FormMessage className="text-red-500">
-                        {getError("description")}
-                      </FormMessage>
+                      <FormMessage className="text-red-500">{getError("description")}</FormMessage>
                     )}
                   </FormItem>
                 )}
@@ -153,24 +140,22 @@ const AddNewEquipmentDialog = () => {
                   <FormItem className="flex flex-row items-center py-2 gap-1">
                     <FormControl>
                       <Checkbox
-                        id="isKit"
-                        disabled={isPending}
                         checked={field.value}
-                        onCheckedChange={field.onChange}
                         className="m-0" // Передает true/false автоматически
+                        disabled={isPending}
+                        id="isKit"
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel
-                        htmlFor="isKit"
                         className="text-sm flex items-center font-medium cursor-pointer"
+                        htmlFor="isKit"
                       >
                         Комплект
                       </FormLabel>
                       {getError("isKit") && (
-                        <FormMessage className="text-red-500">
-                          {getError("isKit")}
-                        </FormMessage>
+                        <FormMessage className="text-red-500">{getError("isKit")}</FormMessage>
                       )}
                     </div>
                   </FormItem>
@@ -187,7 +172,7 @@ const AddNewEquipmentDialog = () => {
         </form>
       </Form>
     </DialogComponent>
-  );
-};
+  )
+}
 
-export default AddNewEquipmentDialog;
+export default AddNewEquipmentDialog

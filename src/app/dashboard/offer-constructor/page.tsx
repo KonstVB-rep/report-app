@@ -1,7 +1,11 @@
 import OfferContent from "./components/OfferContent"
 
 const OfferPage = () => {
-  return <OfferContent />
+  return (
+    <div>
+      <OfferContent />
+    </div>
+  )
 }
 
 export default OfferPage

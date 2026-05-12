@@ -13,8 +13,8 @@ import {
   StatusProjectLabels,
   StatusRetailLabels,
 } from "@/feature/deals/lib/constants"
-import RowNumber from "../columnsDataColsTemplate/RowNumber"
-import { SelectColDataColumn } from "../columnsDataColsTemplate/SelectColHeader"
+import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
+import { SelectColDataColumn } from "@/shared/lib/tanstack-table/columnsDataColsTemplate/SelectColHeader"
 
 export const columnsDataDeals: ColumnDef<DealUnion, unknown>[] = [
   {

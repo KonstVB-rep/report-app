@@ -1,37 +1,39 @@
-import { Button } from "@/shared/components/ui/button";
-import { Checkbox } from "@/shared/components/ui/checkbox";
+import { useState } from "react"
+import type { CheckedState } from "@radix-ui/react-checkbox"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { MoreHorizontal, Trash, X } from "lucide-react"
+import { toast } from "sonner"
+import DialogKitTable from "@/app/dashboard/offer-constructor/components/DialogKitTable"
+import {
+  useDeleteEquipments,
+  useDeleteFromKit,
+} from "@/app/dashboard/offer-constructor/hooks/mutate"
+import { Button } from "@/shared/components/ui/button"
+import { Checkbox } from "@/shared/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
-import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
-import { cn, formatterCurrency } from "@/shared/lib/utils";
-import RowNumber from "@/widgets/deal/model/columnsDataColsTemplate/RowNumber";
-import type { CheckedState } from "@radix-ui/react-checkbox";
-import { type CellContext, type ColumnDef } from "@tanstack/react-table";
-import { Check, MoreHorizontal, X } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import EditableCell from "../components/EditabledCell";
-import { calculateKitTotal } from "../lib/calculateKitTotal";
-import type {
-  EquipmentWithQuantity,
-  SerializedEquipmentKitItem,
-} from "../lib/types";
-import type { OfferTableItem } from "../store";
+} from "@/shared/components/ui/dropdown-menu"
+import { Input } from "@/shared/components/ui/input"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
+import {
+  SelectColDataColumn,
+  SelectColHeader,
+} from "@/shared/lib/tanstack-table/columnsDataColsTemplate/SelectColHeader"
+import { formatterCurrency } from "@/shared/lib/utils"
+import EditableCell from "../components/EditabledCell"
+import { calculateKitTotal } from "../lib/calculateKitTotal"
+import type { EquipmentWithQuantity, SerializedEquipmentKitItem } from "../lib/types"
+import type { OfferTableItem } from "../store"
 import {
   selectedKitId,
-  selectedKits,
   selectSetSelectedKitId,
   selectUpdateLocalKit,
   useEquipmentStore,
-} from "../store/localtemsStore";
-
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import KitTable from "../components/KitTable";
+} from "../store/localtemsStore"
 
 export const defaultColumns: ColumnDef<OfferTableItem>[] = [
   {
@@ -52,8 +54,8 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "name",
     header: "Наименование",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = info.getValue();
-      return value;
+      const value = info.getValue()
+      return value
     },
     meta: {
       title: "Наименование",
@@ -64,8 +66,8 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "description",
     header: "Описание",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = info.getValue();
-      return value;
+      const value = info.getValue()
+      return value
     },
     meta: {
       title: "Описание",
@@ -76,7 +78,7 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "price",
     header: "Цена",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      return formatterCurrency.format(parseFloat(info.getValue() as string));
+      return formatterCurrency.format(parseFloat(info.getValue() as string))
     },
     enableHiding: true,
     meta: {
@@ -88,7 +90,7 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "count",
     header: "Количество",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      return info.getValue();
+      return info.getValue()
     },
     enableHiding: true,
     meta: {
@@ -100,7 +102,7 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "totalPrice",
     header: "Итого, руб.",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      return formatterCurrency.format(parseFloat(info.getValue() as string));
+      return formatterCurrency.format(parseFloat(info.getValue() as string))
     },
     enableHiding: true,
     meta: {
@@ -112,10 +114,8 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "purchasePrice",
     header: "Цена закупки",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = formatterCurrency.format(
-        parseFloat(info.getValue() as string),
-      );
-      return <div>{value}</div>;
+      const value = formatterCurrency.format(parseFloat(info.getValue() as string))
+      return <div>{value}</div>
     },
     enableHiding: true,
     meta: {
@@ -127,10 +127,8 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "purchaseAmount",
     header: "Сумма закупки",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = formatterCurrency.format(
-        parseFloat(info.getValue() as string),
-      );
-      return <div>{value}</div>;
+      const value = formatterCurrency.format(parseFloat(info.getValue() as string))
+      return <div>{value}</div>
     },
     enableHiding: true,
     meta: {
@@ -142,10 +140,8 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     id: "delta",
     header: "Дельта",
     cell: (info: CellContext<OfferTableItem, unknown>) => {
-      const value = formatterCurrency.format(
-        parseFloat(info.getValue() as string),
-      );
-      return <div>{value}</div>;
+      const value = formatterCurrency.format(parseFloat(info.getValue() as string))
+      return <div>{value}</div>
     },
     enableHiding: true,
     meta: {
@@ -153,7 +149,7 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
     },
     accessorFn: (row: OfferTableItem) => row.delta,
   },
-];
+]
 
 export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
   {
@@ -172,52 +168,101 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
   },
   {
     id: "select",
-    header: ({ table }) => (
-      <Label
-        className={cn("flex items-center justify-center cursor-pointer gap-1")}
-      >
-        {table.getIsSomePageRowsSelected() ||
-        table.getIsAllPageRowsSelected() ? (
-          <Check />
-        ) : (
-          "Выбрать"
-        )}
-        <Checkbox
-          aria-label="Select all"
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          className="opacity-0 w-0 h-0"
-          onCheckedChange={(value: CheckedState) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-        />
-      </Label>
-    ),
+    header: ({ table }) => SelectColHeader<EquipmentWithQuantity>().label(table),
+    //   cell: ({ row, table }) => {
+    //     const selectKitId = useEquipmentStore(selectedKitId);
+
+    //     // Если это сам редактируемый комплект — показываем иконку отмены
+    //     if (selectKitId === row.original.id) {
+    //       return (
+    //         <div className="flex items-center justify-center gap-1">
+    //           <div className="h-4 w-4 border-1 border-red-500 bg-amber-50 rounded-[4px] grid place-items-center relative">
+    //             <X className="absolute text-red-500" size={16} />
+    //           </div>
+    //         </div>
+    //       );
+    //     }
+
+    //     const handleUpdateStore = (isSelected: boolean) => {
+    //       // 1. Получаем текущее состояние выбора
+    //       const { rowSelection } = table.getState();
+
+    //       // 2. Создаем ПРЕДПОЛАГАЕМОЕ новое состояние выбора
+    //       // (так как стейт таблицы еще не обновился)
+    //       const nextSelection = {
+    //         ...rowSelection,
+    //         [row.id]: isSelected,
+    //       };
+
+    //       // 3. Фильтруем данные на основе этого "будущего" стейта
+    //       const allRows = table
+    //         .getCoreRowModel()
+    //         .rows.filter((r) => nextSelection[r.id])
+    //         .map((r) => ({ ...r.original, count: 1 }));
+
+    //       // 4. Отправляем в стор
+    //       selectSetLocalKit(allRows);
+    //     };
+
+    //     console.log(row.getIsSelected(), 'getIsSelected')
+
+    //     return (
+    //       <div className="flex items-center justify-center gap-1">
+    //         <Checkbox
+    //           checked={row.getIsSelected()}
+    //           onCheckedChange={(value) => {
+    //             const isSelected = !!value;
+    //             // Сначала обновляем визуал в таблице
+    //             row.toggleSelected(isSelected);
+    //             // Сразу же отправляем актуальные данные в стор
+    //             handleUpdateStore(isSelected);
+    //           }}
+    //         />
+    //       </div>
+    //     );
+    //   },
+
     cell: ({ row }) => {
-      const selectKitId = useEquipmentStore(selectedKitId);
+      const selectKitId = useEquipmentStore(selectedKitId)
 
       if (selectKitId === row.original.id) {
         return (
           <div className="flex items-center justify-center gap-1">
             <div className="h-4 w-4 border-1 border-red-500 bg-amber-50 rounded-[4px] grid place-items-center relative">
-              <X size={16} className="absolute text-red-500" />
+              <X className="absolute text-red-500" size={16} />
             </div>
           </div>
-        );
+        )
       }
+
+      // const { rowSelection } = table.getState();
+      // const equipmentSelected = table
+      //   .getRowModel()
+      //   .rows.filter((row) => rowSelection[row.id]);
+
+      // const allRows = equipmentSelected.map((row) => ({
+      //   ...row.original,
+      //   count: 1,
+      // }));
+
+      // const handleAddToKitLocal = () => {
+      //   if (!selectKitId) {
+      //     toast.error("Сначала выберите комплект!");
+      //     return;
+      //   }
+      //   selectSetLocalKit(allRows);
+      // };
       return (
         <div className="flex items-center justify-center gap-1">
           <Checkbox
             aria-label="Select row"
             checked={row.getIsSelected()}
-            onCheckedChange={(value: CheckedState) =>
+            onCheckedChange={(value: CheckedState) => {
               row.toggleSelected(!!value)
-            }
+            }}
           />
         </div>
-      );
+      )
     },
     accessorFn: (row) => row.id,
     enableSorting: false,
@@ -227,6 +272,8 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
   },
   {
     id: "name",
+    size: 140,
+    maxSize: 140,
     header: "Наименование",
     cell: (props) => <EditableCell {...props} tag="textarea" />,
     meta: {
@@ -246,7 +293,17 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
   {
     id: "price",
     header: "Цена",
-    cell: (props) => <EditableCell {...props} tag="input" />,
+    cell: (props) => {
+      const { row, getValue } = props
+
+      const isKit = row.original.isKit
+
+      return isKit ? (
+        <div>{formatterCurrency.format(parseFloat(getValue() as string))}</div>
+      ) : (
+        <EditableCell {...props} tag="input" />
+      )
+    },
     enableHiding: true,
     meta: {
       title: "Цена",
@@ -261,27 +318,29 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     size: 80,
     maxSize: 80,
     accessorFn: (row) => row.id,
-    cell: ({ setIsEdit, row, table }) => {
-      const item = row.original;
+    cell: ({ isEdit, setIsEdit, row, table }) => {
+      const item = row.original
+      const isKit = item.isKit
       const handleClick = () => {
-        setIsEdit((prev: boolean) => !prev);
-      };
+        setIsEdit((prev: boolean) => !prev)
+      }
 
-      const selectKitId = useEquipmentStore(selectedKitId);
+      const selectKitId = useEquipmentStore(selectedKitId)
+      const { mutate: deleleEq, isPending } = useDeleteEquipments()
 
-      const contentsKit = item.contents ?? [];
+      const contentsKit = item.contents ?? []
 
       const handleSelectKit = () => {
         if (selectKitId) {
-          selectSetSelectedKitId(null);
-          return;
+          selectSetSelectedKitId(null)
+          return
         }
-        selectSetSelectedKitId(item.id);
-        table.resetRowSelection();
+        selectSetSelectedKitId(item.id)
+        table.resetRowSelection()
         toast.info("Выберите позиции из списка для добавления в комплект", {
           duration: 3000,
-        });
-      };
+        })
+      }
 
       return (
         <div className="flex justify-center">
@@ -293,84 +352,28 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Удалить</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => deleleEq([item.id])}>Удалить</DropdownMenuItem>
               <DropdownMenuItem onClick={handleClick}>
-                Изменить
+                {isEdit ? "Отменить изменения" : "Изменить"}
               </DropdownMenuItem>
-              {item.isKit && (
+              {isKit && (
                 <DropdownMenuItem onClick={handleSelectKit}>
                   <div className="grid gap-1">
-                    <span>
-                      {selectKitId
-                        ? "Отменить добавление"
-                        : "Добавить в комплект"}
-                    </span>
+                    <span>{selectKitId ? "Отменить добавление" : "Добавить в комплект"}</span>
                     <span className="text-xs text-gray-500">
-                      {contentsKit.length === 0 &&
-                        `Количетсво позиций: (${item.contents?.length})`}
+                      {contentsKit.length === 0 && `Количетсво позиций: (${item.contents?.length})`}
                     </span>
                   </div>
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                <Drawer>
-                  <DrawerTrigger asChild>
-                    <Button variant="outline">Open Drawer</Button>
-                  </DrawerTrigger>
-                  <DrawerContent>
-                    <KitTable data={contentsKit} />
-                  </DrawerContent>
-                </Drawer>
-              </DropdownMenuItem>
+              {isKit && <DialogKitTable contentsKit={contentsKit} />}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      );
+      )
     },
   },
-];
-
-const data = [
-  {
-    goal: 400,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 278,
-  },
-  {
-    goal: 189,
-  },
-  {
-    goal: 239,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 278,
-  },
-  {
-    goal: 189,
-  },
-  {
-    goal: 349,
-  },
-];
+]
 
 export const defaultColumnsKitEquipment: ColumnDef<EquipmentWithQuantity>[] = [
   {
@@ -387,56 +390,15 @@ export const defaultColumnsKitEquipment: ColumnDef<EquipmentWithQuantity>[] = [
       hidden: true,
     },
   },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Label
-        className={cn("flex items-center justify-center cursor-pointer gap-1")}
-      >
-        {table.getIsSomePageRowsSelected() ||
-        table.getIsAllPageRowsSelected() ? (
-          <Check />
-        ) : (
-          "Выбрать"
-        )}
-        <Checkbox
-          aria-label="Select all"
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          className="opacity-0 w-0 h-0"
-          onCheckedChange={(value: CheckedState) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-        />
-      </Label>
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center justify-center gap-1">
-          <Checkbox
-            aria-label="Select row"
-            checked={row.getIsSelected()}
-            onCheckedChange={(value: CheckedState) =>
-              row.toggleSelected(!!value)
-            }
-          />
-        </div>
-      );
-    },
-    accessorFn: (row) => row.id,
-    enableSorting: false,
-    enableHiding: false,
-    minSize: 80,
-    maxSize: 80,
-  },
+  { ...SelectColDataColumn<EquipmentWithQuantity>() },
   {
     id: "name",
+    size: 140,
+    maxSize: 140,
     header: "Наименование",
     cell: ({ row }) => {
-      const value = row.original.name;
-      return value;
+      const value = row.original.name
+      return value
     },
     meta: {
       title: "Наименование",
@@ -447,8 +409,8 @@ export const defaultColumnsKitEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     id: "description",
     header: "Описание",
     cell: ({ row }) => {
-      const value = row.original.description;
-      return value;
+      const value = row.original.description
+      return value
     },
     meta: {
       title: "Описание",
@@ -459,17 +421,10 @@ export const defaultColumnsKitEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     id: "price",
     header: "Цена",
     cell: ({ row }) => {
-      const item = row.original;
-      const value = item.price as string;
+      const item = row.original
 
-      const displayPrice = item.isKit
-        ? calculateKitTotal(item)
-        : Number(item.price);
-      return (
-        <span>
-          {formatterCurrency.format(parseFloat(String(displayPrice))) as string}
-        </span>
-      );
+      const displayPrice = item.isKit ? calculateKitTotal(item) : Number(item.price)
+      return <span>{formatterCurrency.format(parseFloat(String(displayPrice))) as string}</span>
     },
     enableHiding: true,
     meta: {
@@ -483,32 +438,29 @@ export const defaultColumnsKitEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     id: "count",
     header: "Количество",
     cell: ({ row }) => {
-      const initialValue = row.original.count;
+      const initialValue = row.original.count
 
-      const [value, setValue] = useState<Number>(initialValue);
-      const selectedKitsItems = useEquipmentStore(selectedKits);
-
-      console.log(selectedKitsItems, "selectedKitsItems");
+      const [value, setValue] = useState<number>(initialValue)
 
       return (
         <Input
-          type="number"
-          value={Number(value) as number}
           onChange={(e) => {
             if (Number.isNaN(Number(e.target.value))) {
               toast.error("Количество должно быть числом", {
                 duration: 3000,
-              });
-              return;
+              })
+              return
             }
             if (e.target.value === "") {
-              setValue(0);
+              setValue(0)
             }
-            setValue(Number(e.target.value));
-            selectUpdateLocalKit(row.original.id, "count", e.target.value);
+            setValue(Number(e.target.value))
+            selectUpdateLocalKit(row.original.id, "count", e.target.value)
           }}
+          type="number"
+          value={Number(value) as number}
         />
-      );
+      )
     },
     enableHiding: true,
     meta: {
@@ -518,7 +470,7 @@ export const defaultColumnsKitEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     maxSize: 120,
     accessorFn: (row: EquipmentWithQuantity) => row.count,
   },
-];
+]
 
 export const defaultColumnsKitItems: ColumnDef<SerializedEquipmentKitItem>[] = [
   {
@@ -535,57 +487,16 @@ export const defaultColumnsKitItems: ColumnDef<SerializedEquipmentKitItem>[] = [
       hidden: true,
     },
   },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Label
-        className={cn("flex items-center justify-center cursor-pointer gap-1")}
-      >
-        {table.getIsSomePageRowsSelected() ||
-        table.getIsAllPageRowsSelected() ? (
-          <Check />
-        ) : (
-          "Выбрать"
-        )}
-        <Checkbox
-          aria-label="Select all"
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          className="opacity-0 w-0 h-0"
-          onCheckedChange={(value: CheckedState) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-        />
-      </Label>
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center justify-center gap-1">
-          <Checkbox
-            aria-label="Select row"
-            checked={row.getIsSelected()}
-            onCheckedChange={(value: CheckedState) =>
-              row.toggleSelected(!!value)
-            }
-          />
-        </div>
-      );
-    },
-    accessorFn: (row) => row.id,
-    enableSorting: false,
-    enableHiding: false,
-    minSize: 80,
-    maxSize: 80,
-  },
+  { ...SelectColDataColumn<SerializedEquipmentKitItem>() },
   {
     id: "name",
     header: "Наименование",
     cell: ({ row }) => {
-      const value = row.original.item.name;
-      return value;
+      const value = row.original.item.name
+      return value
     },
+    size: 140,
+    maxSize: 140,
     meta: {
       title: "Наименование",
     },
@@ -595,8 +506,8 @@ export const defaultColumnsKitItems: ColumnDef<SerializedEquipmentKitItem>[] = [
     id: "description",
     header: "Описание",
     cell: ({ row }) => {
-      const value = row.original.description;
-      return value;
+      const value = row.original.description
+      return value
     },
     meta: {
       title: "Описание",
@@ -608,17 +519,12 @@ export const defaultColumnsKitItems: ColumnDef<SerializedEquipmentKitItem>[] = [
     header: "Цена",
 
     cell: ({ row }) => {
-      const kitItem = row.original;
-      const value = kitItem.item.price as string;
+      const kitItem = row.original
 
       const displayPrice = kitItem.item.isKit
         ? calculateKitTotal(kitItem.item)
-        : Number(kitItem.price);
-      return (
-        <span>
-          {formatterCurrency.format(parseFloat(String(displayPrice))) as string}
-        </span>
-      );
+        : Number(kitItem.price)
+      return <span>{formatterCurrency.format(parseFloat(String(displayPrice))) as string}</span>
     },
     enableHiding: true,
     meta: {
@@ -632,32 +538,29 @@ export const defaultColumnsKitItems: ColumnDef<SerializedEquipmentKitItem>[] = [
     id: "count",
     header: "Количество",
     cell: ({ row }) => {
-      const initialValue = row.original.count;
+      const initialValue = row.original.count
 
-      const [value, setValue] = useState<Number>(initialValue);
-      const selectedKitsItems = useEquipmentStore(selectedKits);
-
-      console.log(selectedKitsItems, "selectedKitsItems");
+      const [value, setValue] = useState<number>(initialValue)
 
       return (
         <Input
-          type="number"
-          value={Number(value) as number}
           onChange={(e) => {
             if (Number.isNaN(Number(e.target.value))) {
               toast.error("Количество должно быть числом", {
                 duration: 3000,
-              });
-              return;
+              })
+              return
             }
             if (e.target.value === "") {
-              setValue(0);
+              setValue(0)
             }
-            setValue(Number(e.target.value));
-            selectUpdateLocalKit(row.original.id, "count", e.target.value);
+            setValue(Number(e.target.value))
+            selectUpdateLocalKit(row.original.id, "count", e.target.value)
           }}
+          type="number"
+          value={Number(value) as number}
         />
-      );
+      )
     },
     enableHiding: true,
     meta: {
@@ -667,4 +570,27 @@ export const defaultColumnsKitItems: ColumnDef<SerializedEquipmentKitItem>[] = [
     maxSize: 120,
     accessorFn: (row: SerializedEquipmentKitItem) => row.count,
   },
-];
+  {
+    id: "actions",
+    header: "",
+    size: 80,
+    maxSize: 80,
+    accessorFn: (row) => row.id,
+    cell: ({ row }) => {
+      const { mutate: delFromKit, isPending } = useDeleteFromKit()
+
+      const item = row.original
+
+      const handleDelete = () => {
+        delFromKit({ idKit: item.kitId, idsKitItem: [item.itemId] })
+      }
+      return (
+        <div className="flex justify-center">
+          <Button className="p-0" onClick={handleDelete} size="icon" variant="ghost">
+            {isPending ? <LoaderCircle className="" /> : <Trash />}
+          </Button>
+        </div>
+      )
+    },
+  },
+]

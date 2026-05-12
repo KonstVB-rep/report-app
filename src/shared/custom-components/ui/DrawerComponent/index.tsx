@@ -1,12 +1,12 @@
-import type { ReactNode } from "react";
-import { cn } from "@/shared/lib/utils";
+import type { ReactNode } from "react"
+import { cn } from "@/shared/lib/utils"
 
 const DrawerComponent = ({
   children,
   positionSide,
 }: {
-  positionSide: string;
-  children: ReactNode;
+  positionSide: string
+  children: ReactNode
 }) => {
   return (
     <div
@@ -17,7 +17,7 @@ const DrawerComponent = ({
     >
       {children}
     </div>
-  );
-};
+  )
+}
 
-export default DrawerComponent;
+export default DrawerComponent

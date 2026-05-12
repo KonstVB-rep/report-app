@@ -54,12 +54,7 @@ export const useTableState = <T extends { id: string }>(
   useEffect(() => {
     setLS(`${storageKey}_columnSizing`, columnSizing)
   }, [columnSizing, storageKey])
-  const [sorting, setSorting] = useState<SortingState>([
-    {
-      id: "dateRequest",
-      desc: true,
-    },
-  ])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
 
   const {

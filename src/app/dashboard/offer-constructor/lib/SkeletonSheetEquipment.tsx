@@ -1,6 +1,6 @@
 const skeletonItems = Array.from({ length: 12 }, (_, index) => (
   <div className="h-12 animate-pulse rounded-md bg-muted" key={index} />
-));
+))
 
 const SkeletonSheetEquipment = () => {
   return (
@@ -19,7 +19,7 @@ const SkeletonSheetEquipment = () => {
         <div className="w-28 h-9 animate-pulse rounded-md bg-muted" />
       </div>
     </>
-  );
-};
+  )
+}
 
-export default SkeletonSheetEquipment;
+export default SkeletonSheetEquipment

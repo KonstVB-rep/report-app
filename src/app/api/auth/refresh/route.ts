@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => null)
 
-    if (!body || !body.refreshToken) {
+    if (!body?.refreshToken) {
       return NextResponse.json({ error: "Refresh token отсутствует" }, { status: 400 })
     }
     const { refreshToken } = body
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const secretKey = new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)
     const { payload: rawPayload } = await jwtVerify(refreshToken, secretKey)
 
-    if (!rawPayload || !rawPayload.userId || rawPayload.departmentId === undefined) {
+    if (!rawPayload?.userId || rawPayload.departmentId === undefined) {
       return NextResponse.json({ error: "Некорректные данные в токене" }, { status: 401 })
     }
 

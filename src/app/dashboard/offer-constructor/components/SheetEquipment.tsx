@@ -1,4 +1,8 @@
-import { Button } from "@/shared/components/ui/button";
+import { useState } from "react"
+import dynamic from "next/dynamic"
+import SkeletonSheetEquipment from "@/app/dashboard/offer-constructor/lib/SkeletonSheetEquipment"
+import { selectSetSelectedKitId } from "@/app/dashboard/offer-constructor/store/localtemsStore"
+import { Button } from "@/shared/components/ui/button"
 import {
   Sheet,
   SheetContent,
@@ -6,18 +10,22 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/shared/components/ui/sheet";
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
+} from "@/shared/components/ui/sheet"
 
 const SheetEquipmentBody = dynamic(() => import("./SheetEquipmentBody"), {
   ssr: false,
-  // loading: () => <SkeletonSheetEquipment />,
-});
+  loading: () => <SkeletonSheetEquipment />,
+})
 
 const SheetEquipment = () => {
+  const [open, setOpen] = useState(false)
+
+  const hanleToggleOpen = (value: boolean) => {
+    setOpen(value)
+    selectSetSelectedKitId(null)
+  }
   return (
-    <Sheet>
+    <Sheet onOpenChange={hanleToggleOpen} open={open}>
       <SheetTrigger asChild>
         <Button variant="outline">Список оборудования</Button>
       </SheetTrigger>
@@ -31,7 +39,7 @@ const SheetEquipment = () => {
         </div>
       </SheetContent>
     </Sheet>
-  );
-};
+  )
+}
 
-export default SheetEquipment;
+export default SheetEquipment

@@ -1,6 +1,6 @@
 import type { CheckedState } from "@radix-ui/react-checkbox"
 import type { Row, Table } from "@tanstack/react-table"
-import { ClipboardCheck } from "lucide-react"
+import { ClipboardCheck, Square } from "lucide-react"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Label } from "@/shared/components/ui/label"
 import { cn } from "@/shared/lib/utils"
@@ -11,7 +11,7 @@ export const SelectColHeader = <T,>() => ({
       {table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected() ? (
         <ClipboardCheck />
       ) : (
-        "Выбрать"
+        <Square />
       )}
       <Checkbox
         aria-label="Select all"

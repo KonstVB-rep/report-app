@@ -1,10 +1,10 @@
-import { exportСalculationToExcel } from "../lib/exportСalculationToExcel";
+import { exportСalculationToExcel } from "../lib/exportСalculationToExcel"
 
 self.onmessage = async (e) => {
-  const { dataOffer, image } = e.data;
+  const { dataOffer, image } = e.data
   // Финализируем
-  const buffer = await exportСalculationToExcel(dataOffer, image);
+  const buffer = await exportСalculationToExcel(dataOffer, image)
 
   // Отправляем массив байтов обратно
-  self.postMessage(buffer);
-};
+  self.postMessage(buffer)
+}

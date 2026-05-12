@@ -10,8 +10,8 @@ import {
   DirectionProjectLabels,
   StatusProjectLabels,
 } from "@/feature/deals/lib/constants"
+import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
 import { formatterCurrency } from "@/shared/lib/utils"
-import RowNumber from "./columnsDataColsTemplate/RowNumber"
 
 export type typeofDirections = keyof typeof DirectionProjectLabels
 

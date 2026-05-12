@@ -384,10 +384,10 @@ model EquipmentKitItem {
   id            String @id @default(cuid())
   
   kitId         String
-  kit           EquipmentItem @relation("KitToItems", fields: [kitId], references: [id])
+  kit         EquipmentItem @relation("KitToItems", fields: [kitId], references: [id], onDelete: Cascade)
 
   itemId        String
-  item          EquipmentItem @relation("ItemInKits", fields: [itemId], references: [id])
+  item          EquipmentItem @relation("ItemInKits", fields: [itemId], references: [id], onDelete: Cascade)
 
   count      Int    @default(1)
   description   String @db.Text

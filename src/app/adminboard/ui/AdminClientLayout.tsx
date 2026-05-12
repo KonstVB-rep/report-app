@@ -1,8 +1,8 @@
-import type { PropsWithChildren } from "react";
-import { SiteHeader } from "@/feature/Sidebar/ui/site-header";
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
-import AdminSidebar from "@/widgets/AminSidebar";
-import LinksPageBlock from "./LinksPageBlock";
+import type { PropsWithChildren } from "react"
+import { SiteHeader } from "@/feature/Sidebar/ui/site-header"
+import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
+import AdminSidebar from "@/widgets/AminSidebar"
+import LinksPageBlock from "./LinksPageBlock"
 
 const AdminClientLayout = ({ children }: PropsWithChildren) => {
   return (
@@ -21,7 +21,7 @@ const AdminClientLayout = ({ children }: PropsWithChildren) => {
         </SidebarProvider>
       </SidebarProvider>
     </div>
-  );
-};
+  )
+}
 
-export default AdminClientLayout;
+export default AdminClientLayout

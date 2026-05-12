@@ -1,18 +1,12 @@
-import { OfferTableItem } from "../store";
-import { SerializedEquipmentItem } from "./types";
-export const flattenKit = (
-  items: SerializedEquipmentItem[],
-): OfferTableItem[] => {
-  const result: OfferTableItem[] = [];
-  
+import type { OfferTableItem } from "../store"
+import type { SerializedEquipmentItem } from "./types"
+export const flattenKit = (items: SerializedEquipmentItem[]): OfferTableItem[] => {
+  const result: OfferTableItem[] = []
+
   items.forEach((item) => {
-    if (
-      item.isKit &&
-      Array.isArray(item.contents) &&
-      item.contents.length > 0
-    ) {
-      const subItems = item.contents.map((kitEntry) => kitEntry.item);
-      result.push(...flattenKit(subItems));
+    if (item.isKit && Array.isArray(item.contents) && item.contents.length > 0) {
+      const subItems = item.contents.map((kitEntry) => kitEntry.item)
+      result.push(...flattenKit(subItems))
     } else {
       result.push({
         id: item.id,
@@ -26,9 +20,8 @@ export const flattenKit = (
         purchasePrice: item.price || "0",
         purchaseAmount: item.price || "0",
         delta: "0",
-      } as OfferTableItem);
+      } as OfferTableItem)
     }
-  });
-  return result;
-};
-
+  })
+  return result
+}

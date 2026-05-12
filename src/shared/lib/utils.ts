@@ -1,10 +1,10 @@
-import { Prisma } from "@prisma/client";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import type { DealsUnionType, TableType } from "@/entities/deal/types";
+import { Prisma } from "@prisma/client"
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+import type { DealsUnionType, TableType } from "@/entities/deal/types"
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 export const formatterCurrency = new Intl.NumberFormat("ru", {
@@ -12,109 +12,104 @@ export const formatterCurrency = new Intl.NumberFormat("ru", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
   useGrouping: true,
-});
+})
 
 export const formatPhoneNumber = (value: string): string => {
-  if (!value) return "";
+  if (!value) return ""
 
   // Очищаем от всего, кроме цифр
-  let cleaned = value.replace(/\D/g, "");
+  let cleaned = value.replace(/\D/g, "")
 
   if (cleaned.length > 11) {
-    cleaned = cleaned.substring(0, 11);
+    cleaned = cleaned.substring(0, 11)
   }
 
   // Форматируем: +7 (999) 123-45-67
-  if (cleaned.length === 0) return "";
+  if (cleaned.length === 0) return ""
 
   if (cleaned.startsWith("7")) {
-    cleaned = `7${cleaned.substring(1)}`;
+    cleaned = `7${cleaned.substring(1)}`
   } else if (cleaned.startsWith("8")) {
-    cleaned = `7${cleaned.substring(1)}`;
+    cleaned = `7${cleaned.substring(1)}`
   }
 
-  let formatted = "+7";
+  let formatted = "+7"
 
   if (cleaned.length > 1) {
-    formatted += ` (${cleaned.substring(1, 4)}`;
+    formatted += ` (${cleaned.substring(1, 4)}`
   }
   if (cleaned.length > 4) {
-    formatted += `) ${cleaned.substring(4, 7)}`;
+    formatted += `) ${cleaned.substring(4, 7)}`
   }
   if (cleaned.length > 7) {
-    formatted += `-${cleaned.substring(7, 9)}`;
+    formatted += `-${cleaned.substring(7, 9)}`
   }
   if (cleaned.length > 9) {
-    formatted += `-${cleaned.substring(9, 11)}`;
+    formatted += `-${cleaned.substring(9, 11)}`
   }
 
-  return formatted;
-};
+  return formatted
+}
 
 export const normalizePhone = (phone: string): string => {
   if (!phone) {
-    return "";
+    return ""
   } else {
-    const normalized = phone.replace(/\D/g, ""); // убираем всё, кроме цифр
-    return `+${normalized}`;
+    const normalized = phone.replace(/\D/g, "") // убираем всё, кроме цифр
+    return `+${normalized}`
   }
-};
+}
 
 export function capitalizeFirstLetter(str: string): string {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  if (!str) return ""
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
 export function capitalizeFullName(fullName: string): string {
-  if (!fullName) return "";
+  if (!fullName) return ""
 
   return fullName
     .split(" ")
     .map((word) => capitalizeFirstLetter(word))
-    .join(" ");
+    .join(" ")
 }
 
 export function toMoscowISOString(date: Date): string {
-  const moscowTime = new Date(
-    date.toLocaleString("en-US", { timeZone: "Europe/Moscow" }),
-  );
+  const moscowTime = new Date(date.toLocaleString("en-US", { timeZone: "Europe/Moscow" }))
 
-  return moscowTime.toISOString();
+  return moscowTime.toISOString()
 }
 
 export async function subscribeUser() {
-  if (!("serviceWorker" in navigator)) return null;
+  if (!("serviceWorker" in navigator)) return null
 
-  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
   if (!vapidKey) {
-    throw new Error("VAPID public key is not defined");
+    throw new Error("VAPID public key is not defined")
   }
 
-  const reg = await navigator.serviceWorker.ready;
+  const reg = await navigator.serviceWorker.ready
 
   return await reg.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: vapidKey,
-  });
+  })
 }
 
 export const TAB_TO_DEAL_TYPE: Record<TableType, DealsUnionType> = {
   projects: "projects",
   retails: "retails",
   contracts: "projects",
-};
+}
 
 // export const mapTabToDealType = (tab: TableType): DealsUnionType => {
 //   return TAB_TO_DEAL_TYPE[tab]
 // }
 
-export function validateRequiredFields<T>(
-  data: T,
-  requiredFields: (keyof T)[],
-): void {
+export function validateRequiredFields<T>(data: T, requiredFields: (keyof T)[]): void {
   for (const field of requiredFields) {
     if (!data[field]) {
-      throw new Error(`Отсутствует обязательное поле: ${String(field)}`);
+      throw new Error(`Отсутствует обязательное поле: ${String(field)}`)
     }
   }
 }
@@ -124,4 +119,4 @@ export const toDec = (v: unknown): Prisma.Decimal =>
     String(v || "0")
       .replace(/\s/g, "")
       .replace(",", "."),
-  );
+  )

@@ -1,22 +1,24 @@
-import { cn } from "@/shared/lib/utils";
+import { useState } from "react"
 import {
-  VisibilityState,
   flexRender,
   getCoreRowModel,
+  type Row,
   useReactTable,
-} from "@tanstack/react-table";
-import { useState } from "react";
-import { SerializedEquipmentKitItem } from "../lib/types";
-import { defaultColumnsKitItems } from "../model/defaultColumns";
+  type VisibilityState,
+} from "@tanstack/react-table"
+import { ArrowDownUp } from "lucide-react"
+import { Button } from "@/shared/components/ui/button"
+import { cn } from "@/shared/lib/utils"
+import type { SerializedEquipmentKitItem } from "../lib/types"
+import { defaultColumnsKitItems } from "../model/defaultColumns"
 
 const KitTable = ({ data }: { data: SerializedEquipmentKitItem[] }) => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     id: false,
     rowNumber: false,
-  });
-  const [columns] = useState<typeof defaultColumnsKitItems>(() => [
-    ...defaultColumnsKitItems,
-  ]);
+  })
+
+  const [columns] = useState<typeof defaultColumnsKitItems>(() => [...defaultColumnsKitItems])
   const table = useReactTable<SerializedEquipmentKitItem>({
     data,
     columns,
@@ -26,14 +28,13 @@ const KitTable = ({ data }: { data: SerializedEquipmentKitItem[] }) => {
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     defaultColumn: {
-      minSize: 60,
+      minSize: 50,
       maxSize: 800,
     },
-    columnResizeMode: "onChange",
-  });
+  })
   return (
-    <div className="grid gap-2 items-start">
-      <div className="rounded-md border overflow-x-auto overflow-y-auto max-h-[calc(100vh-10rem)]">
+    <div className="px-4 pb-8 mt-4 overflow-y-auto max-h-[80vh]">
+      <div className="rounded-md border">
         <div className="grid">
           <div className="sticky top-0 z-10 bg-white dark:bg-zinc-800 border-b shadow-sm">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -43,8 +44,7 @@ const KitTable = ({ data }: { data: SerializedEquipmentKitItem[] }) => {
                     className={cn(
                       "p-3 border-r border-zinc-600 relative h-auto flex flex-col justify-center items-center flex-shrink-0",
                       index === 0 && "rounded-tl-sm",
-                      index === headerGroup.headers.length - 1 &&
-                        "border-r-0 rounded-tr-sm",
+                      index === headerGroup.headers.length - 1 && "border-r-0 rounded-tr-sm",
                       header.column.id === "description" && "flex-1",
                     )}
                     key={header.id}
@@ -57,17 +57,25 @@ const KitTable = ({ data }: { data: SerializedEquipmentKitItem[] }) => {
                     {header.isPlaceholder ? null : (
                       <div
                         className={cn(
-                          "flex items-center justify-center gap-1 w-full h-full text-primary select-none min-h-12",
-                          header.column.getCanSort() && "cursor-pointer",
+                          "grid items-center gap-1 w-full h-full text-primary select-none min-h-12",
                         )}
-                        onClick={header.column.getToggleSortingHandler()}
                       >
-                        <span className="text-xs font-bold text-center uppercase tracking-wider">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                        <span className="text-sm font-bold text-center">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
+
+                        {header.column.id !== "select" && (
+                          <Button
+                            className={cn(
+                              "flex items-center justify-center w-fit mx-auto",
+                              header.column.getCanSort() && "cursor-pointer",
+                            )}
+                            onClick={header.column.getToggleSortingHandler()}
+                            variant="ghost"
+                          >
+                            <ArrowDownUp />
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -78,62 +86,45 @@ const KitTable = ({ data }: { data: SerializedEquipmentKitItem[] }) => {
 
           <div className="bg-transparent">
             {table.getRowModel().rows.map((row) => (
-              <div
-                className={cn(
-                  "flex w-full border-b last:border-b-0 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors",
-                )}
-                key={row.id}
-              >
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <div
-                      className={cn(
-                        "p-2 flex items-start justify-center border-r last:border-r-0 overflow-hidden text-sm min-h-[57px]",
-                        cell.column.id === "description" && "flex-1",
-                        cell.column.id === "select" &&
-                          "grid place-content-center",
-                      )}
-                      key={cell.id}
-                      style={{
-                        width: cell.column.getSize(),
-                        maxWidth: cell.column.columnDef.maxSize,
-                      }}
-                    >
-                      <div
-                        className={cn(
-                          "w-full",
-                          cell.column.id === "price"
-                            ? "text-end"
-                            : "text-start",
-                        )}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                          //   isEdit,
-                          //   setIsEdit,
-                          //   localEditData: (
-                          //     id: string,
-                          //     field: string,
-                          //     value: string,
-                          //   ) =>
-                          //     localEdit(
-                          //       id,
-                          //       field as keyof EquipmentWithQuantity,
-                          //       value as EquipmentWithQuantity[keyof EquipmentWithQuantity],
-                          //     ),
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <KitTableCell key={row.id} row={row} />
             ))}
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default KitTable;
+export default KitTable
+
+const KitTableCell = ({ row }: { row: Row<SerializedEquipmentKitItem> }) => {
+  return (
+    <div
+      className={cn(
+        "flex w-full border-b last:border-b-0 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors",
+      )}
+      key={row.id}
+    >
+      {row.getVisibleCells().map((cell) => {
+        return (
+          <div
+            className={cn(
+              "p-2 flex items-start justify-center border-r last:border-r-0 overflow-hidden text-sm min-h-[57px]",
+              cell.column.id === "description" && "flex-1",
+              cell.column.id === "select" && "grid place-content-center",
+            )}
+            key={cell.id}
+            style={{
+              width: cell.column.getSize(),
+              maxWidth: cell.column.columnDef.maxSize,
+            }}
+          >
+            <div className={cn("w-full", cell.column.id === "price" ? "text-end" : "text-start")}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}

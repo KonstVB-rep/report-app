@@ -1,16 +1,11 @@
-import { flexRender, type Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
-import {
-  type DataPart,
-  type OfferTableItem,
-  removePart,
-  updatePartTitle,
-} from "../store";
-import InputTitle from "./InputTitle";
-import SelectedItem from "./SelectedItem";
-import PartSection from "./PartSection";
+import { flexRender, type Table } from "@tanstack/react-table"
+import { X } from "lucide-react"
+import { Button } from "@/shared/components/ui/button"
+import { cn } from "@/shared/lib/utils"
+import { type DataPart, type OfferTableItem, removePart, updatePartTitle } from "../store"
+import InputTitle from "./InputTitle"
+import PartSection from "./PartSection"
+import SelectedItem from "./SelectedItem"
 
 const Part = ({
   table,
@@ -18,15 +13,15 @@ const Part = ({
   dataPart,
   partId,
 }: {
-  table: Table<OfferTableItem>;
-  columnSizeVars: { [key: string]: number };
-  dataPart: DataPart;
-  partId: string;
+  table: Table<OfferTableItem>
+  columnSizeVars: { [key: string]: number }
+  dataPart: DataPart
+  partId: string
 }) => {
   return (
     <div className="relative px-10">
       <div className="relative w-full overflow-y-auto min-w-7xl">
-        <div className="flex gap-2 justify-start items-center border-t-[4px] border-t-blue-900 border-b-[2px] border-b-black mb-3">
+        <div className="flex gap-2 justify-start items-center border-t-[4px] border-t-[#0070C0] border-b-[2px] border-b-black mb-3">
           <p className="text-xl font-bold">Раздел</p>
           <div className="relative flex-1">
             <InputTitle
@@ -60,14 +55,10 @@ const Part = ({
               <div className="flex w-fit" key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => (
                   <div
-                    className={cn(
-                      "p-2! border-zinc-600 border border-solid relative h-auto",
-                      {
-                        "rounded-tr-sm":
-                          index === headerGroup.headers.length - 1,
-                        "rounded-tl-sm": index === 0,
-                      },
-                    )}
+                    className={cn("p-2! border-zinc-600 border border-solid relative h-auto", {
+                      "rounded-tr-sm": index === headerGroup.headers.length - 1,
+                      "rounded-tl-sm": index === 0,
+                    })}
                     key={header.id}
                     style={{
                       width: `calc(var(--header-${header?.id}-size) * 1px)`,
@@ -76,17 +67,14 @@ const Part = ({
                     {header.isPlaceholder ? null : (
                       <div
                         className={cn(
-                          "grid content-between justify-items-center gap-1 h-full text-primary px-1 py-2",
+                          "grid justify-items-center gap-1 h-full text-primary px-1 py-2 content-center",
                           // header.column.getCanSort() &&
                           //   "cursor-pointer select-none",
                         )}
                         // onClick={header.column.getToggleSortingHandler()}
                       >
                         <span className="text-wrap-pretty text-xs font-semibold first-letter:capitalize text-center">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       </div>
                     )}
@@ -108,18 +96,13 @@ const Part = ({
           </div>
 
           {dataPart?.sections.map((section) => (
-            <PartSection
-              key={section.id}
-              partId={partId}
-              section={section}
-              table={table}
-            />
+            <PartSection key={section.id} partId={partId} section={section} table={table} />
           ))}
         </div>
         {/* <div className="absolute top-0 left-0 a4 border-dashed border-2 border-white" /> */}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Part;
+export default Part

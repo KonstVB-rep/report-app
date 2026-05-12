@@ -1,36 +1,36 @@
-"use client";
+"use client"
 
-import {
-  columnsDataUsers,
-  type UserTypeTable,
-} from "@/entities/user/model/column-data-user";
-import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider";
-import DrawerComponent from "@/shared/custom-components/ui/DrawerComponent";
-import TableCaption from "@/shared/custom-components/ui/Table/TableCaption";
-import { useTableState } from "@/shared/hooks/useTableState";
-import { useGetAllUsers } from "../../hooks/query";
-import UserActionsBlock from "./UserActionsBlock";
-import UserTableContent from "./UserTableContent";
-import UserTableToolbar from "./UserTableToolbar";
+import { columnsDataUsers, type UserTypeTable } from "@/entities/user/model/column-data-user"
+import { DataTableFiltersProvider } from "@/feature/filter-persistence/context/DataTableFiltersProvider"
+import DrawerComponent from "@/shared/custom-components/ui/DrawerComponent"
+import TableCaption from "@/shared/custom-components/ui/Table/TableCaption"
+import { useTableState } from "@/shared/hooks/useTableState"
+import { useGetAllUsers } from "../../hooks/query"
+import UserActionsBlock from "./UserActionsBlock"
+import UserTableContent from "./UserTableContent"
+import UserTableToolbar from "./UserTableToolbar"
 
 const hiddenColumns = {
   id: false,
-};
+}
 
 const UserTable = () => {
-  const { data, isLoading } = useGetAllUsers();
+  const { data, isLoading } = useGetAllUsers()
 
-  const users = data || [];
+  const users = data || []
 
-  const { table, filtersContextValue, setGlobalFilter } =
-    useTableState<UserTypeTable>(users, columnsDataUsers, { hiddenColumns });
+  const { table, filtersContextValue, setGlobalFilter } = useTableState<UserTypeTable>(
+    users,
+    columnsDataUsers,
+    { hiddenColumns },
+  )
 
-  const { globalFilter, rowSelection } = table.getState();
+  const { globalFilter, rowSelection } = table.getState()
 
   const usersSelected = table
     .getRowModel()
     .rows.filter((row) => rowSelection[row.id])
-    .map((row) => row.original);
+    .map((row) => row.original)
 
   return (
     <>
@@ -48,7 +48,7 @@ const UserTable = () => {
         <UserActionsBlock rowSelection={usersSelected} />
       </DrawerComponent>
     </>
-  );
-};
+  )
+}
 
-export default UserTable;
+export default UserTable

@@ -1,25 +1,17 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { immer } from "zustand/middleware/immer";
-import { EquipmentWithQuantity } from "../lib/types";
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
+import { immer } from "zustand/middleware/immer"
+import type { EquipmentWithQuantity } from "../lib/types"
 
 interface EquipmentStore {
-  selectedKitId: string | null;
-  setSelectedKitId: (id: string | null) => void;
-  localKits: EquipmentWithQuantity[];
-  setLocalKit: (data: EquipmentWithQuantity[]) => void;
-  localItems: Record<string, Partial<EquipmentWithQuantity>>;
-  updateLocalKit: (
-    id: string,
-    columnId: string,
-    value: number | string,
-  ) => void;
-  setLocalItem: (
-    id: string,
-    columnId: string,
-    value: string | boolean | Date | null,
-  ) => void;
-  resetLocalItems: () => void;
+  selectedKitId: string | null
+  setSelectedKitId: (id: string | null) => void
+  localKits: EquipmentWithQuantity[]
+  setLocalKit: (data: EquipmentWithQuantity[]) => void
+  localItems: Record<string, Partial<EquipmentWithQuantity>>
+  updateLocalKit: (id: string, columnId: string, value: number | string) => void
+  setLocalItem: (id: string, columnId: string, value: string | boolean | Date | null) => void
+  resetLocalItems: () => void
 }
 
 export const useEquipmentStore = create<EquipmentStore>()(
@@ -33,11 +25,11 @@ export const useEquipmentStore = create<EquipmentStore>()(
         set((state) => ({
           localKits: state.localKits.map((kit) => {
             if (kit.id === id) {
-              return { ...kit, [columnId]: value };
+              return { ...kit, [columnId]: value }
             }
-            return kit;
+            return kit
           }),
-        }));
+        }))
       },
       localItems: {},
       setLocalItem: (id, columnId, value) =>
@@ -51,37 +43,35 @@ export const useEquipmentStore = create<EquipmentStore>()(
     })),
     { name: "local-equipment-storage" },
   ),
-);
+)
 
 export const selectSetLocalItem = (
   id: string,
   columnId: string,
   value: string | boolean | Date | null,
 ) => {
-  return useEquipmentStore.getState().setLocalItem(id, columnId, value);
-};
+  return useEquipmentStore.getState().setLocalItem(id, columnId, value)
+}
 
-export const selectedKitId = (s: EquipmentStore) => s.selectedKitId;
+export const selectedKitId = (s: EquipmentStore) => s.selectedKitId
 
 export const selectSetSelectedKitId = (id: string | null) => {
-  return useEquipmentStore.getState().setSelectedKitId(id);
-};
+  return useEquipmentStore.getState().setSelectedKitId(id)
+}
 
 export const selectLocalItem = (id: string) => {
-  return useEquipmentStore.getState().localItems[id];
-};
+  return useEquipmentStore.getState().localItems[id]
+}
 
-export const selectLocalItems = (s: EquipmentStore) => s.localItems;
+export const selectLocalItems = (s: EquipmentStore) => s.localItems
 
-export const selectedKits = (s: EquipmentStore) => s.localKits;
+export const selectedKits = (s: EquipmentStore) => s.localKits
 export const selectSetLocalKit = (data: EquipmentWithQuantity[]) => {
-  return useEquipmentStore.getState().setLocalKit(data);
-};
+  return useEquipmentStore.getState().setLocalKit(data)
+}
 
-export const selectUpdateLocalKit = (
-  id: string,
-  columnId: string,
-  value: number | string,
-) => {
-  return useEquipmentStore.getState().updateLocalKit(id, columnId, value);
-};
+export const selectResetLocalItems = () => useEquipmentStore.getState().resetLocalItems()
+
+export const selectUpdateLocalKit = (id: string, columnId: string, value: number | string) => {
+  return useEquipmentStore.getState().updateLocalKit(id, columnId, value)
+}

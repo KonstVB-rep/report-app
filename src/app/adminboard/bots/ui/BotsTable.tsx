@@ -9,7 +9,7 @@ import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment"
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import { useTableState } from "@/shared/hooks/useTableState"
-import RowNumber from "@/widgets/deal/model/columnsDataColsTemplate/RowNumber"
+import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
 import BotActionsMenu from "./BotActionsMenu"
 
 const columnsDataBots: ColumnDef<BotWithChats>[] = [

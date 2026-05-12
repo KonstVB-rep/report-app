@@ -1,95 +1,143 @@
-import { cn } from "@/shared/lib/utils";
+import { useMemo, useState } from "react"
 import {
   flexRender,
   getCoreRowModel,
-  Row,
-  Table,
+  type Row,
+  type Table,
   useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
-import { Equipment, EquipmentWithQuantity } from "../lib/types";
-import { defaultColumnsKitEquipment } from "../model/defaultColumns";
+  type VisibilityState,
+} from "@tanstack/react-table"
+import { ArrowDownUp } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "@/shared/components/ui/button"
+import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
+import { cn } from "@/shared/lib/utils"
+import { useAddItemsToKit } from "../hooks/mutate"
+import type { EquipmentWithQuantity, SerializedEquipmentKitItem } from "../lib/types"
+import { defaultColumnsKitEquipment } from "../model/defaultColumns"
 import {
   selectedKitId,
   selectedKits,
   selectSetLocalItem,
   selectSetLocalKit,
+  selectSetSelectedKitId,
   useEquipmentStore,
-} from "../store/localtemsStore";
-import { useAddItemsToKit } from "../hooks/mutate";
-import { Button } from "@/shared/components/ui/button";
-import { toast } from "sonner";
+} from "../store/localtemsStore"
 
 const AddToKitDialog = ({
   rowSelection,
+  ids,
 }: {
-  rowSelection: Row<EquipmentWithQuantity>[];
+  rowSelection: Row<EquipmentWithQuantity>[]
+  ids: string[]
 }) => {
-  const columns = useMemo(() => defaultColumnsKitEquipment, []);
+  const columns = useMemo(() => defaultColumnsKitEquipment, [])
+
+  const [open, setOpen] = useState(false)
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     id: false,
     rowNumber: false,
-  });
-  const { mutate: addToKit, isPending: isPendingKit } = useAddItemsToKit();
+  })
+  const { mutate: addToKit, isPending: isPendingKit } = useAddItemsToKit()
 
-  const selectedKitIdCurrent = useEquipmentStore(selectedKitId);
-  const selectedKitsItems = useEquipmentStore(selectedKits);
+  const selectedKitIdCurrent = useEquipmentStore(selectedKitId)
+  const selectedKitsItems = useEquipmentStore(selectedKits)
 
-  const allRows = useMemo(() => {
-    return rowSelection.map((row) => ({ ...row.original, count: 1 }));
-  }, [rowSelection]);
+  const kitItemList = useEquipmentStore(selectedKits)
 
   const table = useReactTable<EquipmentWithQuantity>({
-    data: allRows,
+    data: kitItemList,
     columns,
     state: {
       columnVisibility,
     },
+    getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     defaultColumn: {
       minSize: 60,
       maxSize: 800,
     },
-  });
+  })
+
+  const selectKitId = useEquipmentStore(selectedKitId)
+
+  const allRows = useMemo(() => {
+    return rowSelection.map((row) => ({ ...row.original, count: 1 }))
+  }, [rowSelection])
+
+  const handleAddToKitLocal = () => {
+    if (!selectKitId) {
+      toast.error("Сначала выберите комплект!")
+      return
+    }
+    selectSetLocalKit(allRows)
+  }
 
   const handleAddToKit = () => {
     if (!selectedKitIdCurrent) {
-      toast.error("Сначала выберите комплект!");
-      return;
+      toast.error("Сначала выберите комплект!")
+      return
     }
     addToKit({
       kitId: selectedKitIdCurrent,
       itemsKit: selectedKitsItems,
-    });
-  };
+    })
+    selectSetSelectedKitId(null)
+    table.resetRowSelection()
+  }
 
-  //   useEffect(() => {
-  //     return () => {
-  //       selectSetLocalKit([]);
-  //     };
-  //   }, []);
+  const handlDeleteItemFromKitLocal = () => {
+    const { rowSelection } = table.getState()
 
-  //   console.log(selectedKitsItems, "selectedKitsItems");
+    const remainingItems = kitItemList.filter((item) => !rowSelection[item.id])
+    selectSetLocalKit(remainingItems)
+
+    if (remainingItems.length === 0) {
+      setOpen(false)
+      selectSetSelectedKitId(null)
+    }
+    table.resetRowSelection()
+  }
 
   return (
-    <div>
-      <EquipmentKitTable setLocalItem={selectSetLocalItem} table={table} />
-      <Button disabled={isPendingKit} onClick={handleAddToKit}>
-        {isPendingKit ? "Идет добавление..." : "Подтвердить добавление"}
-      </Button>
-    </div>
-  );
-};
+    <DialogComponent
+      classNameContent="w-full sm:max-w-[1200px]"
+      dialogTitle="Добавить в комплект"
+      onOpenChange={setOpen}
+      open={open}
+      trigger={
+        <Button disabled={!ids.length} onClick={handleAddToKitLocal}>
+          Добавить в комплект
+        </Button>
+      }
+    >
+      <div className="grid gap-2 ">
+        <EquipmentKitTable setLocalItem={selectSetLocalItem} table={table} />
+        <div className="flex gap-2 justify-end">
+          <Button className="w-fit" disabled={isPendingKit} onClick={handleAddToKit}>
+            {isPendingKit ? "Идет добавление..." : "Подтвердить добавление"}
+          </Button>
+          <Button className="w-fit" onClick={handlDeleteItemFromKitLocal}>
+            Удалить из списка
+          </Button>
+        </div>
+      </div>
+    </DialogComponent>
+  )
+}
 
 const EquipmentKitTable = ({
   table,
   setLocalItem,
 }: {
-  table: Table<EquipmentWithQuantity>;
-  setLocalItem: (id: string, columnId: string, value: any) => void;
+  table: Table<EquipmentWithQuantity>
+  setLocalItem: (
+    id: string,
+    columnId: string,
+    value: string | number | boolean | Date | SerializedEquipmentKitItem[] | null | undefined,
+  ) => void
 }) => {
   return (
     <div className="grid gap-2 items-start">
@@ -103,8 +151,7 @@ const EquipmentKitTable = ({
                     className={cn(
                       "p-3 border-r border-zinc-600 relative h-auto flex flex-col justify-center items-center flex-shrink-0",
                       index === 0 && "rounded-tl-sm",
-                      index === headerGroup.headers.length - 1 &&
-                        "border-r-0 rounded-tr-sm",
+                      index === headerGroup.headers.length - 1 && "border-r-0 rounded-tr-sm",
                       header.column.id === "description" && "flex-1",
                     )}
                     key={header.id}
@@ -117,17 +164,25 @@ const EquipmentKitTable = ({
                     {header.isPlaceholder ? null : (
                       <div
                         className={cn(
-                          "flex items-center justify-center gap-1 w-full h-full text-primary select-none min-h-12",
-                          header.column.getCanSort() && "cursor-pointer",
+                          "grid items-center gap-1 w-full h-full text-primary select-none min-h-12",
                         )}
-                        onClick={header.column.getToggleSortingHandler()}
                       >
-                        <span className="text-xs font-bold text-center uppercase tracking-wider">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                        <span className="text-sm font-bold text-center">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
+
+                        {header.column.id !== "select" && (
+                          <Button
+                            className={cn(
+                              "flex items-center justify-center w-fit mx-auto",
+                              header.column.getCanSort() && "cursor-pointer",
+                            )}
+                            onClick={header.column.getToggleSortingHandler()}
+                            variant="ghost"
+                          >
+                            <ArrowDownUp />
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -138,35 +193,35 @@ const EquipmentKitTable = ({
 
           <div className="bg-transparent">
             {table.getRowModel().rows.map((row) => (
-              <RowSheetEquipmentKit
-                key={row.id}
-                row={row}
-                setLocalItem={setLocalItem}
-              />
+              <RowSheetEquipmentKit key={row.id} row={row} setLocalItem={setLocalItem} />
             ))}
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const RowSheetEquipmentKit = ({
   row,
   setLocalItem,
 }: {
-  row: Row<EquipmentWithQuantity>;
-  setLocalItem: (id: string, columnId: string, value: any) => void;
+  row: Row<EquipmentWithQuantity>
+  setLocalItem: (
+    id: string,
+    columnId: string,
+    value: string | number | boolean | Date | SerializedEquipmentKitItem[] | null | undefined,
+  ) => void
 }) => {
-  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false)
   const localEdit = <K extends keyof EquipmentWithQuantity>(
     id: string,
     field: K,
     value: EquipmentWithQuantity[K],
   ) => {
-    setLocalItem(id, field, value);
-    setIsEdit(false);
-  };
+    setLocalItem(id, field, value)
+    setIsEdit(false)
+  }
 
   return (
     <div
@@ -189,12 +244,7 @@ const RowSheetEquipmentKit = ({
               maxWidth: cell.column.columnDef.maxSize,
             }}
           >
-            <div
-              className={cn(
-                "w-full",
-                cell.column.id === "price" ? "text-end" : "text-start",
-              )}
-            >
+            <div className={cn("w-full", cell.column.id === "price" ? "text-end" : "text-start")}>
               {flexRender(cell.column.columnDef.cell, {
                 ...cell.getContext(),
                 isEdit,
@@ -208,10 +258,10 @@ const RowSheetEquipmentKit = ({
               })}
             </div>
           </div>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default AddToKitDialog;
+export default AddToKitDialog

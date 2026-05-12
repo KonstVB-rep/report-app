@@ -39,7 +39,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
                 }}
               >
                 {!header.isPlaceholder && (
-                  <div className="grid content-between justify-items-center gap-1 h-full text-primary px-1">
+                  <div className="grid content-center justify-items-center h-full text-primary px-1">
                     <span className="text-xs font-semibold first-letter:capitalize text-center">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </span>
@@ -54,7 +54,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
                           asc: <MoveUp className="ml-2 h-4 w-4" />,
                           desc: <MoveDown className="ml-2 h-4 w-4" />,
                         }[header.column.getIsSorted() as string] ?? (
-                          <ArrowDownUp className="ml-2 h-4 w-4" />
+                          <ArrowDownUp className="h-4 w-4" />
                         )}
                       </Button>
                     )}
