@@ -7,12 +7,27 @@ import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import { toDec } from "@/shared/lib/utils"
 import type { EquipmentFormValues } from "../components/AddNewEquipmentDialog"
-import type { EquipmentDb, EquipmentWithQuantity, SerializedEquipmentKitItem } from "../lib/types"
+import type {
+  EquipmentDb,
+  EquipmentWithQuantity,
+  SerializedEquipmentItem,
+  SerializedEquipmentKitItem,
+} from "../lib/types"
+import type { DataOffer } from "../store"
 
-export const getEquipments = async (): Promise<EquipmentWithQuantity[]> => {
+type RawEquipment = Prisma.EquipmentItemGetPayload<{
+  include: { contents: { include: { item: true } } }
+}>
+
+type RawKitItem = Prisma.EquipmentKitItemGetPayload<{
+  include: { item: true }
+}>
+
+export const getEquipments = async (): Promise<SerializedEquipmentItem[]> => {
   try {
     await requireUser()
-    const items = await prisma.equipmentItem.findMany({
+
+    const items: RawEquipment[] = await prisma.equipmentItem.findMany({
       include: {
         contents: {
           include: {
@@ -21,21 +36,31 @@ export const getEquipments = async (): Promise<EquipmentWithQuantity[]> => {
         },
       },
     })
-    const serializeItem = (item: any) => ({
-      ...item,
-      price: item.price ? item.price.toString() : "0",
-      contents: item.contents?.map((kitItem: SerializedEquipmentKitItem) => ({
-        ...kitItem,
-        price: kitItem.price ? kitItem.price.toString() : "0",
-        // Рекурсивно обрабатываем вложенный item, если он есть
-        item: kitItem.item ? serializeItem(kitItem.item) : null,
-      })),
-    })
+
+    // 3. Рекурсивная функция с четкими типами Входа и Выхода
+    const serializeItem = (item: RawEquipment): SerializedEquipmentItem => {
+      return {
+        ...item,
+        // Явное приведение к строке
+        price: item.price ? item.price.toString() : "0",
+        // Типизируем маппинг вложений
+        contents: item.contents?.map(
+          (kitItem: RawKitItem): SerializedEquipmentKitItem => ({
+            ...kitItem,
+            price: kitItem.price ? kitItem.price.toString() : "0",
+            // Рекурсивный вызов: приводим вложенный item к типу RawEquipment
+            // так как по схеме он идентичен родителю
+            item: serializeItem(kitItem.item as RawEquipment),
+          }),
+        ),
+      }
+    }
 
     return items.map(serializeItem)
   } catch (error) {
     console.error(error)
-    return handleError((error as Error).message)
+    // Убедись, что handleError возвращает массив, чтобы соответствовать Promise<SerializedEquipmentItem[]>
+    return []
   }
 }
 
@@ -259,6 +284,63 @@ export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
     }))
   } catch (error) {
     console.error("Ошибка при обновлении оборудования:", error)
+    return handleError((error as Error).message)
+  }
+}
+
+export const getOfferTemplates = async () => {
+  try {
+    const { userId } = await requireUser()
+    const temp =
+      (await prisma.offerTemplate.findMany({
+        where: { ownerId: userId },
+      })) || []
+
+    return temp || []
+  } catch (error) {
+    console.error("Ошибка при получении шаблонов:", error)
+    return handleError((error as Error).message)
+  }
+}
+
+export const saveOfferTemplate = async (data: DataOffer, name: string) => {
+  try {
+    const { userId } = await requireUser()
+
+    return await prisma.offerTemplate.upsert({
+      where: {
+        name_ownerId: {
+          name: name,
+          ownerId: userId,
+        },
+      },
+      update: {
+        json: JSON.stringify({ ...data, image: null }),
+      },
+      create: {
+        name: name,
+        ownerId: userId,
+        json: JSON.stringify({ ...data, image: null }),
+      },
+    })
+  } catch (error) {
+    console.error(error)
+    return handleError(
+      "Ошибка сохранения: шаблон с таким именем уже существует или данные повреждены",
+    )
+  }
+}
+
+export const deleteOfferTemplate = async (templateId: string) => {
+  try {
+    await requireUser()
+    return await prisma.offerTemplate.delete({
+      where: {
+        id: templateId,
+      },
+    })
+  } catch (error) {
+    console.error("Ошибка при удалении шаблона:", error)
     return handleError((error as Error).message)
   }
 }

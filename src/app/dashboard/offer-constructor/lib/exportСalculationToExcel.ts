@@ -1,6 +1,7 @@
 import ExcelJS, { type Fill, type ImagePosition } from "exceljs"
 // import { saveAs } from "file-saver";
 import type { DataOffer, DataPart } from "../store"
+import { BASE_FONT_COLOR, FONT_FAMILY } from "./constants"
 import { format, rubleFormat } from "./excelUtils"
 
 const formattedDate = new Intl.DateTimeFormat("ru-RU", {
@@ -15,7 +16,6 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
     pageSetup: {
       paperSize: 9, // A4
       orientation: "portrait",
-      // ВОЗВРАЩАЕМ «УМНОЕ» ВПИСЫВАНИЕ
       fitToPage: true,
       fitToWidth: 1, // Строго 1 страница в ширину
       fitToHeight: 0, // В длину может быть сколько угодно страниц
@@ -80,7 +80,7 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
         cell.border = {
           bottom: {
             style: "medium",
-            color: { argb: "FF000000" },
+            color: { argb: BASE_FONT_COLOR },
           },
         }
         cell.value = null
@@ -103,7 +103,7 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
   const titleRow = worksheet.addRow([`КОММЕРЧЕСКОМУ ПРЕДЛОЖЕНИЮ № ${data.number}`])
   worksheet.mergeCells(titleRow.number, 1, titleRow.number, 2)
   titleRow.height = 45
-  titleRow.getCell(1).font = { size: 26, bold: true }
+  titleRow.getCell(1).font = { size: 26, bold: true, name: FONT_FAMILY }
   titleRow.getCell(1).alignment = { horizontal: "center", vertical: "middle" }
   worksheet.addRow([])
 
@@ -123,9 +123,11 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
       sec.rows.forEach((row) => {
         const t = Number(row.totalPrice || 0)
         const c = Number(row.purchaseAmount || 0)
+        const vat = Number(data.vat || 5)
         partTotal += t
         partCost += c
-        partDelta += t - c
+        const nalog = t * (vat / 100)
+        partDelta += t - c - nalog
       })
     })
 
@@ -135,7 +137,7 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
 
     // 2. Основная строка раздела
     const partRow = worksheet.addRow([
-      part.name.toUpperCase(),
+      `${part.orderNumber} ${part.name.toUpperCase()}`,
       partTotal,
       partCost,
       partDelta,
@@ -163,24 +165,31 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
         cell.font = {
           size: 16,
           bold: isBold,
-          color: { argb: "FF000000" },
+          color: { argb: BASE_FONT_COLOR },
+          name: FONT_FAMILY,
         }
       } else {
         cell.font = {
           size: 16,
-          color: { argb: "FF000000" },
+          color: { argb: BASE_FONT_COLOR },
+          name: FONT_FAMILY,
         }
       }
       cell.alignment = { vertical: "middle" }
       cell.border = {
-        bottom: { style: "medium", color: { argb: "FF000000" } },
+        bottom: { style: "medium", color: { argb: BASE_FONT_COLOR } },
       }
 
       // Твои форматы для чисел
       if (i === 2) cell.numFmt = rubleFormat
       if (i > 2) {
         cell.numFmt = i === 5 ? percentFormat : format
-        cell.font = { size: 16, bold: true, color: { argb: "FF000000" } }
+        cell.font = {
+          size: 16,
+          bold: true,
+          color: { argb: BASE_FONT_COLOR },
+          name: FONT_FAMILY,
+        }
       }
     }
 
@@ -204,7 +213,7 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
 
       // ВЫВОД СТРОКИ ПОДРАЗДЕЛА
       const secRow = worksheet.addRow([
-        section.name,
+        `${section.orderNumber} ${section.name}`,
         secTotal,
         secCost,
         secDelta,
@@ -214,16 +223,22 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
 
       for (let i = 1; i <= 5; i++) {
         const cell = secRow.getCell(i)
-        cell.font = { size: 16 }
+        cell.font = { size: 16, name: FONT_FAMILY }
         cell.fill = grayFill
         cell.alignment = { vertical: "middle" }
-        cell.border = { top: { style: "thin", color: { argb: "FF000000" } } } // Верхняя черная граница
+        cell.border = {
+          top: { style: "thin", color: { argb: BASE_FONT_COLOR } },
+        } // Верхняя черная граница
 
         if (i === 2) cell.numFmt = rubleFormat
         if (i > 2) {
           cell.fill = grayFill
           cell.numFmt = i === 5 ? percentFormat : format
-          cell.font = { size: 16, color: { argb: "FF000000" } }
+          cell.font = {
+            size: 16,
+            color: { argb: BASE_FONT_COLOR },
+            name: FONT_FAMILY,
+          }
         }
       }
     })
@@ -233,7 +248,7 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
     grandCost += partCost
     grandDelta += partDelta
 
-    worksheet.addRow([]) // Отступ между разделами
+    worksheet.addRow([])
   })
 
   // 4. ИТОГО СТОИМОСТЬ (Гранд итог)
@@ -253,7 +268,12 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
       pattern: "solid",
       fgColor: { argb: "FF0070C0" },
     } // Синий фон
-    cell.font = { bold: true, size: 16, color: { argb: "FFFFFF00" } } // Желтый текст
+    cell.font = {
+      bold: true,
+      size: 16,
+      color: { argb: "FFFFFF00" },
+      name: FONT_FAMILY,
+    } // Желтый текст
     cell.alignment = {
       vertical: "middle",
       horizontal: "right",

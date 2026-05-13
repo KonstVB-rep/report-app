@@ -24,7 +24,7 @@ export const getTelegramChatBotInDb = async (botName: string, userId: string) =>
       },
     })
 
-    if (!getUser || !getUser.telegramInfo[0]?.tgUserId) {
+    if (!getUser?.telegramInfo[0]?.tgUserId) {
       return {
         ...bot,
         isActive: false,

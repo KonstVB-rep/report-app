@@ -1,16 +1,20 @@
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
 import {
   addEquipment,
   addToKit,
   deleteEquipmentList,
   deleteFromKit,
+  deleteOfferTemplate,
+  saveOfferTemplate,
   updateEquipmentsList,
 } from "../actions/offer.actions"
 import type { EquipmentFormValues } from "../components/AddNewEquipmentDialog"
 import type { EquipmentDb, EquipmentWithQuantity } from "../lib/types"
+import type { DataOffer } from "../store"
 
 export const useAddEquipment = (reset: (values: EquipmentFormValues) => void) => {
   const { queryClient } = useFormSubmission()
@@ -96,6 +100,37 @@ export const useDeleteFromKit = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["equipments"] })
+    },
+    onError: (error: unknown) => {
+      handleErrorSession(error)
+    },
+  })
+}
+
+export const useSaveOfferTemplate = () => {
+  const { queryClient } = useFormSubmission()
+  return useMutation({
+    mutationFn: async (data: { data: DataOffer; name: string }) => {
+      return await saveOfferTemplate(data.data, data.name)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["offerTemplates"] })
+      TOAST.SUCCESS("Шаблон сохранен")
+    },
+    onError: (error: unknown) => {
+      handleErrorSession(error)
+    },
+  })
+}
+
+export const useDeleteOfferTemplate = () => {
+  const { queryClient } = useFormSubmission()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return await deleteOfferTemplate(id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["offerTemplates"] })
     },
     onError: (error: unknown) => {
       handleErrorSession(error)

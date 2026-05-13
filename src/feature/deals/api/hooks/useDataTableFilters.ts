@@ -225,7 +225,7 @@ export const SEARCHABLE_COLUMNS = [
 ] as const
 
 type DateRangeValue = { from: Date; to: Date }
-const isValidDate = (d: unknown): d is Date => d instanceof Date && !isNaN(d.getTime())
+const isValidDate = (d: unknown): d is Date => d instanceof Date && !Number.isNaN(d.getTime())
 
 const useDataTableFilters = (paramsNotFilters?: string[]) => {
   const router = useRouter()
@@ -275,7 +275,6 @@ const useDataTableFilters = (paramsNotFilters?: string[]) => {
         }
       }
 
-      // Массивы или строки
       filters.push({
         id: key,
         value: val.includes(",") ? val.split(",") : val,
@@ -292,12 +291,10 @@ const useDataTableFilters = (paramsNotFilters?: string[]) => {
     }, 50)
   }, [searchParams, paramsNotFilters])
 
-  // 2. Следим за URL: если он изменился (по кнопке или вручную) — синхронизируем стейт
   useEffect(() => {
     syncUrlToState()
-  }, [searchParams, syncUrlToState])
+  }, [syncUrlToState])
 
-  // 3. Сериализация стейта для записи в URL
   const serializeValue = (value: unknown): string => {
     if (Array.isArray(value)) return value.join(",")
     if (value && typeof value === "object" && "from" in value) {

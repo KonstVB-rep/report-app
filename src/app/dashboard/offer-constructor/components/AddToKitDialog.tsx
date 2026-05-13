@@ -13,7 +13,7 @@ import { Button } from "@/shared/components/ui/button"
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
 import { cn } from "@/shared/lib/utils"
 import { useAddItemsToKit } from "../hooks/mutate"
-import type { EquipmentWithQuantity, SerializedEquipmentKitItem } from "../lib/types"
+import type { EquipmentWithQuantity, SerializedEquipmentItem } from "../lib/types"
 import { defaultColumnsKitEquipment } from "../model/defaultColumns"
 import {
   selectedKitId,
@@ -28,7 +28,7 @@ const AddToKitDialog = ({
   rowSelection,
   ids,
 }: {
-  rowSelection: Row<EquipmentWithQuantity>[]
+  rowSelection: Row<SerializedEquipmentItem>[]
   ids: string[]
 }) => {
   const columns = useMemo(() => defaultColumnsKitEquipment, [])
@@ -133,11 +133,7 @@ const EquipmentKitTable = ({
   setLocalItem,
 }: {
   table: Table<EquipmentWithQuantity>
-  setLocalItem: (
-    id: string,
-    columnId: string,
-    value: string | number | boolean | Date | SerializedEquipmentKitItem[] | null | undefined,
-  ) => void
+  setLocalItem: (id: string, columnId: string, value: string | boolean | Date | null) => void
 }) => {
   return (
     <div className="grid gap-2 items-start">
@@ -207,17 +203,13 @@ const RowSheetEquipmentKit = ({
   setLocalItem,
 }: {
   row: Row<EquipmentWithQuantity>
-  setLocalItem: (
-    id: string,
-    columnId: string,
-    value: string | number | boolean | Date | SerializedEquipmentKitItem[] | null | undefined,
-  ) => void
+  setLocalItem: (id: string, columnId: string, value: string | boolean | Date | null) => void
 }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const localEdit = <K extends keyof EquipmentWithQuantity>(
     id: string,
     field: K,
-    value: EquipmentWithQuantity[K],
+    value: string | boolean | Date | null,
   ) => {
     setLocalItem(id, field, value)
     setIsEdit(false)
@@ -250,11 +242,7 @@ const RowSheetEquipmentKit = ({
                 isEdit,
                 setIsEdit,
                 localEditData: (id: string, field: string, value: string) =>
-                  localEdit(
-                    id,
-                    field as keyof EquipmentWithQuantity,
-                    value as EquipmentWithQuantity[keyof EquipmentWithQuantity],
-                  ),
+                  localEdit(id, field as keyof EquipmentWithQuantity, value),
               })}
             </div>
           </div>

@@ -3,12 +3,22 @@
 import { type ChangeEvent, memo, useEffect, useState } from "react"
 import type { Cell, Table } from "@tanstack/react-table"
 import { ImagePlus, Trash2, X } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/shared/components/ui/button"
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label"
 import { Textarea } from "@/shared/components/ui/textarea"
 import { cn, formatterCurrency } from "@/shared/lib/utils"
 import { type OfferTableItem, selectSectionById, updateRow, useOfferStoreTable } from "../store"
+
+type OfferTablepProps = {
+  dataTable: OfferTableItem[]
+  table: Table<OfferTableItem>
+  partId: string
+  sectionId: string
+  removeRow: (rowId: string) => void
+  sectionName: string
+}
 
 const OfferTable = ({
   dataTable,
@@ -17,14 +27,7 @@ const OfferTable = ({
   sectionId,
   removeRow,
   sectionName,
-}: {
-  dataTable: OfferTableItem[]
-  table: Table<OfferTableItem>
-  partId: string
-  sectionId: string
-  removeRow: (rowId: string) => void
-  sectionName: string
-}) => {
+}: OfferTablepProps) => {
   return (
     <div className="relative">
       <TableBodyOffer dataTable={dataTable} removeRow={removeRow} table={table} />
@@ -52,7 +55,6 @@ const TableBodyOffer = ({
   dataTable: OfferTableItem[]
   removeRow: (rowId: string) => void
 }) => {
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <This is style from documentation library>
   const rows = table.getRowModel().rows.filter((row) => {
     return dataTable.some((d) => d.id === row.original.id)
   })
@@ -100,8 +102,6 @@ const TableFooterOffer = ({
   sectionId: string
   partId: string
 }) => {
-  // const { totalPriceOffer, totalPricePurchase, totalDelta } =
-  //   useOfferStoreTable();
   const section = useOfferStoreTable(selectSectionById(partId, sectionId))
 
   return (
@@ -144,7 +144,7 @@ export const CellOfferTable = memo(({ cell }: { cell: Cell<OfferTableItem, unkno
   }, [initialValue])
 
   const handlePersist = () => {
-    setIsEditing(false) // Выходим из режима редактирования
+    setIsEditing(false)
     if (value !== initialValue) {
       // Убираем случайные пробелы, если пользователь их ввел вручную
       const cleanValue = value.replace(/\s/g, "").replace(",", ".")
@@ -156,11 +156,10 @@ export const CellOfferTable = memo(({ cell }: { cell: Cell<OfferTableItem, unkno
     }
   }
 
-  // Определяем, является ли колонка денежной
   const isPriceCol = ["price", "purchasePrice", "totalPrice", "purchaseAmount", "delta"].includes(
     cell.column.id,
   )
-  // Колонки, которые нельзя редактировать вручную (только вывод)
+
   const isReadOnlyPrice = ["totalPrice", "purchaseAmount", "delta"].includes(cell.column.id)
 
   return (
@@ -239,10 +238,15 @@ const Cell = ({ row }: { row: OfferTableItem }) => {
     <div className="mt-2 flex flex-col gap-2">
       {imagePreview && (
         <div className="flex gap-1 items-start">
-          <img
+          <Image
+            // alt="Preview"
+            // className=" h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
+            // src={row.image || imagePreview}
             alt="Preview"
-            className=" h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
+            className="h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
+            height={96}
             src={row.image || imagePreview}
+            width={96}
           />
 
           <Button onClick={() => setImagePreview("")} size="icon" variant="destructive">

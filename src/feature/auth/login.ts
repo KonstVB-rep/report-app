@@ -36,11 +36,7 @@ export const login = async (_: unknown, formData: FormData) => {
     })
 
     // Проверка существования и пароля (одним блоком для безопасности timing attacks)
-    if (
-      !user ||
-      !user.user_password ||
-      !(await bcrypt.compare(user_password, user.user_password))
-    ) {
+    if (!user?.user_password || !(await bcrypt.compare(user_password, user.user_password))) {
       return {
         data: null,
         message: "Неверный email или пароль",

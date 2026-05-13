@@ -2,7 +2,14 @@ import { flexRender, type Table } from "@tanstack/react-table"
 import { X } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { cn } from "@/shared/lib/utils"
-import { type DataPart, type OfferTableItem, removePart, updatePartTitle } from "../store"
+import {
+  type DataPart,
+  type OfferTableItem,
+  removePart,
+  selectOrderNumberByPartId,
+  updatePartTitle,
+  useOfferStoreTable,
+} from "../store"
 import InputTitle from "./InputTitle"
 import PartSection from "./PartSection"
 import SelectedItem from "./SelectedItem"
@@ -12,23 +19,32 @@ const Part = ({
   columnSizeVars,
   dataPart,
   partId,
+  partIndex,
 }: {
   table: Table<OfferTableItem>
   columnSizeVars: { [key: string]: number }
   dataPart: DataPart
   partId: string
+  partIndex: number
 }) => {
+  const orderNumberStore = useOfferStoreTable(selectOrderNumberByPartId(partId))
+  const orderNumber = orderNumberStore || `${partIndex + 1}. `
+
+  const title = dataPart.name || ""
   return (
     <div className="relative px-10">
       <div className="relative w-full overflow-y-auto min-w-7xl">
         <div className="flex gap-2 justify-start items-center border-t-[4px] border-t-[#0070C0] border-b-[2px] border-b-black mb-3">
           <p className="text-xl font-bold">Раздел</p>
           <div className="relative flex-1">
-            <InputTitle
-              className="text-xl! min-h-12! p-2 my-2 flex-1 pr-20"
-              defaultTitle={dataPart?.name || ""}
-              updateTitleAction={(title) => updatePartTitle(partId, title)}
-            />
+            <div className="flex gap-2 items-center text-xl">
+              <span>{orderNumber}</span>
+              <InputTitle
+                className="text-xl! min-h-12! p-2 my-2 flex-1 pr-20"
+                defaultTitle={title}
+                updateTitleAction={(title) => updatePartTitle(partId, title, orderNumber)}
+              />
+            </div>
             <SelectedItem
               className="absolute top-1/2 transform -translate-y-1/2 right-14"
               partId={partId}
@@ -68,10 +84,7 @@ const Part = ({
                       <div
                         className={cn(
                           "grid justify-items-center gap-1 h-full text-primary px-1 py-2 content-center",
-                          // header.column.getCanSort() &&
-                          //   "cursor-pointer select-none",
                         )}
-                        // onClick={header.column.getToggleSortingHandler()}
                       >
                         <span className="text-wrap-pretty text-xs font-semibold first-letter:capitalize text-center">
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -95,8 +108,15 @@ const Part = ({
             ))}
           </div>
 
-          {dataPart?.sections.map((section) => (
-            <PartSection key={section.id} partId={partId} section={section} table={table} />
+          {dataPart?.sections.map((section, sectionIndex) => (
+            <PartSection
+              key={section.id}
+              partId={partId}
+              partIndex={partIndex}
+              section={section}
+              sectionIndex={sectionIndex}
+              table={table}
+            />
           ))}
         </div>
         {/* <div className="absolute top-0 left-0 a4 border-dashed border-2 border-white" /> */}

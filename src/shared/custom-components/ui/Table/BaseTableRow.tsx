@@ -37,7 +37,6 @@ const BaseTableRow = <T extends BaseEntity>({
   path,
   getContextMenuActions,
   renderAdditionalInfo,
-  headers,
   hasEditDeleteActions = true,
 }: BaseTableRowProps<T>) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
@@ -65,7 +64,7 @@ const BaseTableRow = <T extends BaseEntity>({
           backgroundColor: row.original.highlights ?? "",
         }}
       >
-        {row.getVisibleCells().map((cell, index) => (
+        {row.getVisibleCells().map((cell) => (
           <TableCellComponent
             cell={cell}
             handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}

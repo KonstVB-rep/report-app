@@ -21,6 +21,8 @@ import { defaultColumns } from "../model/defaultColumns"
 import { selectData, updateDate, updateNumber, useOfferStoreTable } from "../store"
 import OfferContentHeader from "./OfferContentHeader"
 import Part from "./Part"
+import SelectOfferTemplate from "./SelectOfferTemplate"
+import SelectVat from "./SelectVat"
 
 export const formatter = new Intl.DateTimeFormat("ru", {
   year: "numeric",
@@ -91,8 +93,10 @@ const OfferContent = () => {
     <div className="max-h-[calc(100svh-80px)] min-h-[calc(100svh-80px)] overflow-y-auto px-3 pb-20 bg-stone-800/20 backdrop-blur-sm ">
       <OfferContentHeader table={table} />
       <div className="border shadow-lg mx-auto pb-20">
-        <div className="relative py-1 flex items-center justify-end">
-          <div className="absolute right-2 -bottom-10">
+        <div className="relative py-1 flex items-center justify-between">
+          <SelectVat />
+          <div className="relative py-1 flex items-center justify-end px-1">
+            <SelectOfferTemplate />
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -134,9 +138,15 @@ const OfferContent = () => {
             type="text"
           />
         </div>
-        {data.parts.map((part) => (
+        {data.parts.map((part, partIndex) => (
           <div className="flex items-start" key={part.id}>
-            <Part columnSizeVars={columnSizeVars} dataPart={part} partId={part.id} table={table} />
+            <Part
+              columnSizeVars={columnSizeVars}
+              dataPart={part}
+              partId={part.id}
+              partIndex={partIndex}
+              table={table}
+            />
           </div>
         ))}
       </div>

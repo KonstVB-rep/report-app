@@ -149,7 +149,7 @@ const FileList = ({ data }: FileListProps) => {
     config: { duration: 200 },
   })
 
-  if (!files || !files?.length) return null
+  if (files?.length) return null
 
   return (
     <IntoDealItem className="relative" title="Файлы">

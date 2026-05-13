@@ -1,14 +1,22 @@
-import { useState } from "react"
-import { flexRender, type Row, type Table } from "@tanstack/react-table"
+import { type Dispatch, type SetStateAction, useState } from "react"
+import { PermissionEnum } from "@prisma/client"
+import {
+  type Cell,
+  flexRender,
+  type HeaderGroup,
+  type Row,
+  type Table,
+} from "@tanstack/react-table"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { cn } from "@/shared/lib/utils"
-import type { Equipment, EquipmentWithQuantity } from "../lib/types"
+import type { Equipment, SerializedEquipmentItem } from "../lib/types"
 import { selectedKitId, useEquipmentStore } from "../store/localtemsStore"
 
 const EquipmentTable = ({
   table,
   setLocalItem,
 }: {
-  table: Table<EquipmentWithQuantity>
+  table: Table<SerializedEquipmentItem>
   setLocalItem: (id: string, columnId: string, value: string | boolean | Date | null) => void
 }) => {
   return (
@@ -18,34 +26,28 @@ const EquipmentTable = ({
           <div className="sticky top-0 z-10 bg-white dark:bg-zinc-800 border-b shadow-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <div className="flex w-full" key={headerGroup.id}>
-                {headerGroup.headers.map((header, index) => (
-                  <div
-                    className={cn(
-                      "p-3 border-r border-zinc-600 relative h-auto flex flex-col justify-center items-center flex-shrink-0",
-                      index === 0 && "rounded-tl-sm",
-                      index === headerGroup.headers.length - 1 && "border-r-0 rounded-tr-sm",
-                      header.column.id === "description" && "flex-1",
-                    )}
-                    key={header.id}
-                    style={{
-                      width: header.getSize(), // Прямая привязка к размеру из TanStack
-                      minWidth: header.column.columnDef.minSize,
-                      maxWidth: header.column.columnDef.maxSize,
-                    }}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div
-                        className={cn(
-                          "flex items-center justify-center gap-1 w-full h-full text-primary select-none min-h-12",
-                        )}
-                      >
-                        <span className="text-sm font-bold text-center tracking-wider">
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                {headerGroup.headers.map((header, index) =>
+                  header.id === "actions" ? (
+                    <ProtectedByPermissions
+                      key={header.id}
+                      permission={PermissionEnum.EQUIPMENT_MANAGEMENT}
+                    >
+                      <HeaderEquipment
+                        header={header}
+                        headerGroup={headerGroup}
+                        index={index}
+                        key={header.id}
+                      />
+                    </ProtectedByPermissions>
+                  ) : (
+                    <HeaderEquipment
+                      header={header}
+                      headerGroup={headerGroup}
+                      index={index}
+                      key={header.id}
+                    />
+                  ),
+                )}
               </div>
             ))}
           </div>
@@ -63,11 +65,50 @@ const EquipmentTable = ({
 
 export default EquipmentTable
 
+const HeaderEquipment = ({
+  headerGroup,
+  index,
+  header,
+}: {
+  headerGroup: HeaderGroup<SerializedEquipmentItem>
+  index: number
+  header: HeaderGroup<SerializedEquipmentItem>["headers"][number]
+}) => {
+  return (
+    <div
+      className={cn(
+        "p-3 border-r border-zinc-600 relative h-auto flex flex-col justify-center items-center flex-shrink-0",
+        index === 0 && "rounded-tl-sm",
+        index === headerGroup.headers.length - 1 && "border-r-0 rounded-tr-sm",
+        header.column.id === "description" && "flex-1",
+      )}
+      key={header.id}
+      style={{
+        width: header.getSize(), // Прямая привязка к размеру из TanStack
+        minWidth: header.column.columnDef.minSize,
+        maxWidth: header.column.columnDef.maxSize,
+      }}
+    >
+      {header.isPlaceholder ? null : (
+        <div
+          className={cn(
+            "flex items-center justify-center gap-1 w-full h-full text-primary select-none min-h-12",
+          )}
+        >
+          <span className="text-sm font-bold text-center tracking-wider">
+            {flexRender(header.column.columnDef.header, header.getContext())}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const RowSheetEquipment = ({
   row,
   setLocalItem,
 }: {
-  row: Row<EquipmentWithQuantity>
+  row: Row<SerializedEquipmentItem>
   setLocalItem: (id: string, columnId: string, value: string | boolean | Date | null) => void
 }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false)
@@ -88,31 +129,62 @@ const RowSheetEquipment = ({
       key={row.id}
     >
       {row.getVisibleCells().map((cell) => {
-        return (
-          <div
-            className={cn(
-              "p-2 flex items-start justify-center border-r last:border-r-0 overflow-hidden text-sm min-h-[57px]",
-              cell.column.id === "description" && "flex-1",
-              cell.column.id === "select" && "grid place-content-center",
-            )}
+        return cell.column.id === "actions" ? (
+          <ProtectedByPermissions key={cell.id} permission={PermissionEnum.EQUIPMENT_MANAGEMENT}>
+            <CellEquipment
+              cell={cell}
+              isEdit={isEdit}
+              localEdit={localEdit}
+              setIsEdit={setIsEdit}
+            />
+          </ProtectedByPermissions>
+        ) : (
+          <CellEquipment
+            cell={cell}
+            isEdit={isEdit}
             key={cell.id}
-            style={{
-              width: cell.column.getSize(),
-              maxWidth: cell.column.columnDef.maxSize,
-            }}
-          >
-            <div className={cn("w-full", cell.column.id === "price" ? "text-end" : "text-start")}>
-              {flexRender(cell.column.columnDef.cell, {
-                ...cell.getContext(),
-                isEdit,
-                setIsEdit,
-                localEditData: (id: string, field: string, value: string) =>
-                  localEdit(id, field as keyof Equipment, value as Equipment[keyof Equipment]),
-              })}
-            </div>
-          </div>
+            localEdit={localEdit}
+            setIsEdit={setIsEdit}
+          />
         )
       })}
+    </div>
+  )
+}
+
+const CellEquipment = ({
+  cell,
+  isEdit,
+  setIsEdit,
+  localEdit,
+}: {
+  cell: Cell<SerializedEquipmentItem, unknown>
+  isEdit: boolean
+  setIsEdit: Dispatch<SetStateAction<boolean>>
+  localEdit: (id: string, field: keyof Equipment, value: Equipment[keyof Equipment]) => void
+}) => {
+  return (
+    <div
+      className={cn(
+        "p-2 flex items-start justify-center border-r last:border-r-0 overflow-hidden text-sm min-h-[57px]",
+        cell.column.id === "description" && "flex-1",
+        cell.column.id === "select" && "grid place-content-center",
+      )}
+      key={cell.id}
+      style={{
+        width: cell.column.getSize(),
+        maxWidth: cell.column.columnDef.maxSize,
+      }}
+    >
+      <div className={cn("w-full", cell.column.id === "price" ? "text-end" : "text-start")}>
+        {flexRender(cell.column.columnDef.cell, {
+          ...cell.getContext(),
+          isEdit,
+          setIsEdit,
+          localEditData: (id: string, field: string, value: string) =>
+            localEdit(id, field as keyof Equipment, value),
+        })}
+      </div>
     </div>
   )
 }

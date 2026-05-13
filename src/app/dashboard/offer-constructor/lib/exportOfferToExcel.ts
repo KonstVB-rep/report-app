@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs"
 import type { DataOffer } from "../store"
+import { BASE_FONT_COLOR, FONT_FAMILY } from "./constants"
 import { format } from "./excelUtils"
 
 export const exportOfferToExcel = async (
@@ -8,6 +9,8 @@ export const exportOfferToExcel = async (
 ) => {
   const workbook = new ExcelJS.Workbook()
   const worksheet = workbook.addWorksheet("КП")
+
+  worksheet.addRow({})
 
   // 1. ИНИЦИАЛИЗАЦИЯ КОЛОНОК
   worksheet.columns = [
@@ -40,25 +43,65 @@ export const exportOfferToExcel = async (
 
     // --- РАЗДЕЛ (PART) ---
     worksheet.addRow({})
-    const partRow = worksheet.addRow({ name: part.name.toUpperCase() })
+    const blurLine = worksheet.addRow({})
+
+    blurLine.height = 8
+
+    for (let i = 2; i <= 9; i++) {
+      const cell = blurLine.getCell(i)
+
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF0070C0" },
+      }
+
+      cell.border = {}
+    }
+
+    const partRow = worksheet.addRow({
+      name: `${part.orderNumber} ${part.name.toUpperCase()}`,
+    })
     worksheet.mergeCells(partRow.number, 2, partRow.number, 9)
 
     // Проходим по всем ячейкам строки раздела, чтобы задать границы
     for (let i = 2; i <= 9; i++) {
       const cell = partRow.getCell(i)
-      cell.font = { bold: true, size: 16 }
+      cell.font = { bold: true, size: 22, name: FONT_FAMILY }
       cell.border = {
-        top: { style: "thick", color: { argb: "FF0070C0" } },
-        bottom: { style: "medium", color: { argb: "FF000000" } },
+        bottom: { style: "medium", color: { argb: BASE_FONT_COLOR } },
         left: { style: "thin" },
         right: { style: "thin" },
       }
       cell.alignment = { vertical: "middle", horizontal: "left" }
     }
 
+    const hRow = worksheet.addRow(["", ...headerLabels])
+    hRow.eachCell((cell, i) => {
+      if (i < 2) return
+      cell.font = {
+        bold: true,
+        size: 18,
+        name: FONT_FAMILY,
+        color: { argb: BASE_FONT_COLOR },
+      }
+      cell.alignment = {
+        horizontal: "center",
+        vertical: "middle",
+        wrapText: true,
+      }
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFF2F2F2" },
+      }
+    })
+
     for (const section of part.sections) {
       // --- СЕКЦИЯ (ПОДРАЗДЕЛ) ---
-      const secRow = worksheet.addRow({ name: section.name })
+      const secRow = worksheet.addRow({
+        name: `${section.orderNumber} ${section.name}`,
+      })
       worksheet.mergeCells(secRow.number, 2, secRow.number, 9)
 
       for (let i = 2; i <= 9; i++) {
@@ -68,7 +111,12 @@ export const exportOfferToExcel = async (
           pattern: "solid",
           fgColor: { argb: "FF0070C0" },
         }
-        cell.font = { bold: true, color: { argb: "FFFFFFFF" } }
+        cell.font = {
+          bold: true,
+          size: 18,
+          name: FONT_FAMILY,
+          color: { argb: "FFFFFFFF" },
+        }
         cell.border = {
           top: { style: "thin" },
           left: { style: "thin" },
@@ -78,31 +126,12 @@ export const exportOfferToExcel = async (
         cell.alignment = { vertical: "middle", horizontal: "left" }
       }
 
-      // --- ШАПКА ТАБЛИЦЫ ---
-      const hRow = worksheet.addRow(["", ...headerLabels])
-      hRow.eachCell((cell, i) => {
-        if (i < 2) return
-        cell.font = { bold: true, size: 9, color: { argb: "FF666666" } }
-        cell.alignment = { horizontal: "center", vertical: "middle" }
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFF2F2F2" },
-        }
-        cell.border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" },
-        }
-      })
-
       for (const row of section.rows) {
         partTotalOffer += Number(row.totalPrice || 0)
         partTotalPurchase += Number(row.purchaseAmount || 0)
         partTotalDelta += Number(row.delta || 0)
 
-        const startRowIdx = worksheet.lastRow!.number + 1
+        const startRowIdx = (worksheet.lastRow?.number ?? 0) + 1
         const mainRow = worksheet.addRow({
           name: row.name,
           description: row.description,
@@ -122,9 +151,14 @@ export const exportOfferToExcel = async (
           for (let col = 2; col <= 9; col++) {
             worksheet.mergeCells(startRowIdx, col, endRowIdx, col)
             const cell = worksheet.getCell(startRowIdx, col)
+            cell.font = {
+              size: 16,
+              name: FONT_FAMILY,
+              color: { argb: BASE_FONT_COLOR },
+            }
             cell.alignment = {
               vertical: "top",
-              horizontal: col === 2 || col === 3 ? "left" : "right",
+              horizontal: col === 2 || col === 3 ? "left" : col === 5 ? "center" : "right",
               wrapText: true,
               indent: col === 2 ? 1 : 0,
             }
@@ -160,9 +194,15 @@ export const exportOfferToExcel = async (
           mainRow.height = 30
           mainRow.eachCell((cell, i) => {
             if (i < 2) return
+            cell.font = {
+              size: 16,
+              color: { argb: BASE_FONT_COLOR },
+              name: FONT_FAMILY,
+            }
+
             cell.alignment = {
               vertical: "middle",
-              horizontal: i === 2 ? "left" : "center",
+              horizontal: i === 2 || i === 3 ? "left" : i === 5 ? "center" : "right",
               wrapText: true,
             }
             cell.border = {
@@ -178,8 +218,22 @@ export const exportOfferToExcel = async (
     }
 
     // --- ИТОГО ПО РАЗДЕЛУ ---
+    const beforeTotalRow = worksheet.addRow({})
+    beforeTotalRow.height = 10
+    for (let i = 2; i <= 9; i++) {
+      const cell = worksheet.getCell(beforeTotalRow.number, i)
+      cell.border = {
+        top: { style: "thin" },
+        bottom: { style: "thin" },
+      }
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFD9D9D9" },
+      }
+    }
     const totalRow = worksheet.addRow({
-      name: `ИТОГО "${part.name.toUpperCase()}":`,
+      name: `ИТОГО ${part.name.toUpperCase()}:`,
       totalPrice: partTotalOffer,
       purchaseAmount: partTotalPurchase,
       delta: partTotalDelta,
@@ -191,21 +245,27 @@ export const exportOfferToExcel = async (
     totalRow.eachCell({ includeEmpty: true }, (cell, i) => {
       if (i < 2) return
 
-      cell.font = { bold: true, size: 10 }
+      cell.font = { bold: true, size: 16, name: FONT_FAMILY }
       cell.fill = {
         type: "pattern",
         pattern: "solid",
         fgColor: { argb: "FFFFFFFF" },
       }
 
-      // Добавляем боковые границы, чтобы сетка не разрывалась
+      cell.border = {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      }
+      if (i >= 4) cell.numFmt = format
       cell.border = {
         top: { style: "medium" },
         bottom: { style: "thin" },
       }
 
       // Стандартное выравнивание для числовых ячеек (6, 7, 8, 9)
-      cell.alignment = { vertical: "middle", horizontal: "center" }
+      cell.alignment = { vertical: "middle", horizontal: "right" }
     })
 
     const mergedCell = totalRow.getCell(2)

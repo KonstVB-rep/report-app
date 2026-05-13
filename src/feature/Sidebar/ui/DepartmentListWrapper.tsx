@@ -33,22 +33,24 @@ const DepartmentListWrapper = () => {
   }, [departmentData, setDepartments])
 
   const navMainItems = useMemo(() => {
-    if (!departmentData || !departmentData.length) {
+    if (!departmentData || departmentData.length === 0) {
       return []
     }
+
     return (departmentData as DepartmentInfo[]).map((dept) => ({
       id: dept.id,
       title: dept.name,
       icon: icons[dept.name],
       url: `/dashboard/department/${dept.id}`,
       directorId: dept.directorId,
-      items: dept.users.map((person: Omit<UserResponse, "email" | "role">) => ({
-        id: person.id,
-        departmentId: person.departmentId,
-        username: person.username,
-        position: person.position,
-        url: getUrlPath(person.departmentId)[dept.name],
-      })),
+      items:
+        dept.users?.map((person: Omit<UserResponse, "email" | "role">) => ({
+          id: person.id,
+          departmentId: person.departmentId,
+          username: person.username,
+          position: person.position,
+          url: getUrlPath(person.departmentId)[dept.name],
+        })) || [],
     })) as DepartmentListItemType[]
   }, [departmentData])
 

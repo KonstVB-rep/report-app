@@ -24,17 +24,24 @@ export type OfferTableItem = {
 export type DataSection = {
   id: string
   name: string
+  orderNumber: string
   rows: OfferTableItem[]
   totalPrice: string
   totalPurchase: string
   totalDelta: string
 }
-export type DataPart = { id: string; name: string; sections: DataSection[] }
+export type DataPart = {
+  id: string
+  orderNumber: string
+  name: string
+  sections: DataSection[]
+}
 
 export type DataOffer = {
   date: Date
   number: string
   parts: DataPart[]
+  vat: number
 }
 
 interface OfferTableStore {
@@ -45,6 +52,9 @@ interface OfferTableStore {
   totalDelta: string
 
   activeTarget: { partId: string; sectionId?: string } | null
+
+  setData: (data: DataOffer) => void
+  setVat: (value: number) => void
   setActiveTarget: (partId: string, sectionId?: string) => void
   resetActiveTarget: () => void
 
@@ -52,8 +62,13 @@ interface OfferTableStore {
   updateOfferDate: (value: Date) => void
   updateOfferNumber: (value: string) => void
 
-  updatePartTitle: (partId: string, value: string) => void
-  updateSectionTitle: (partId: string, sectionId: string, value: string) => void
+  updatePartTitle: (partId: string, value: string, orderNumber: string) => void
+  updateSectionTitle: (
+    partId: string,
+    sectionId: string,
+    value: string,
+    orderNumber: string,
+  ) => void
   // updateSubSectionTitle: (partId: string, sectionId: string,idvalue: string) => void
 
   addPart: () => void
@@ -85,14 +100,29 @@ const createEmptyRow = (): OfferTableItem => ({
   delta: "0",
 })
 
-// const createEmptySubSection = (): DataSubSection => ({
-//   id: crypto.randomUUID(),
-//   name: "Новый подраздел",
-//   rows: [createEmptyRow()],
-// })
+// const counterOrderPartNumber = () => {
+//   let num = 0;
+//   return () => {
+//     num++;
+//     return num.toString();
+//   };
+// };
+
+// const genOrderPartNumber = counterOrderPartNumber();
+
+// const counterOrderSectionNumber = () => {
+//   let num = 0;
+//   return (partOrderNumber: string) => {
+//     num++;
+//     return `${partOrderNumber}.${num}`;
+//   };
+// };
+
+// const genOrderSectionNumber = counterOrderSectionNumber();
 
 const createEmptySection = (): DataSection => ({
   id: crypto.randomUUID(),
+  orderNumber: "",
   name: "Новая секция",
   rows: [createEmptyRow()],
   totalPrice: "0",
@@ -100,9 +130,17 @@ const createEmptySection = (): DataSection => ({
   totalDelta: "0",
 })
 
+// const createEmptyPart = (): DataPart => ({
+//   id: crypto.randomUUID(),
+//   name: "Новый раздел",
+//   orderNumber: genOrderPartNumber().toString(),
+//   sections: [createEmptySection(genOrderPartNumber().toString())],
+// });
+
 const createEmptyPart = (): DataPart => ({
   id: crypto.randomUUID(),
   name: "Новый раздел",
+  orderNumber: "",
   sections: [createEmptySection()],
 })
 
@@ -152,12 +190,21 @@ export const useOfferStoreTable = create<OfferTableStore>()(
         date: new Date(),
         number: "",
         parts: [createEmptyPart()],
+        vat: 5,
       },
       totalPriceOffer: "0",
       totalPricePurchase: "0",
       totalDelta: "0",
       selectedItemId: "",
       activeTarget: null,
+      setData: (data) =>
+        set((state) => {
+          state.data = data
+        }),
+      setVat: (value) =>
+        set((state) => {
+          state.data.vat = value
+        }),
       setActiveTarget: (partId, sectionId) =>
         set((state) => {
           const isSamePart = state.activeTarget?.partId === partId
@@ -189,17 +236,23 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           state.data.number = value
         }),
 
-      updatePartTitle: (partId, value) =>
+      updatePartTitle: (partId, value, orderNumber) =>
         set((state) => {
           const part = state.data.parts.find((p) => p.id === partId)
-          if (part) part.name = value
+          if (part) {
+            part.name = value
+            part.orderNumber = orderNumber
+          }
         }),
 
-      updateSectionTitle: (partId, sectionId, value) =>
+      updateSectionTitle: (partId, sectionId, value, orderNumber) =>
         set((state) => {
           const part = state.data.parts.find((p) => p.id === partId)
           const section = part?.sections.find((s) => s.id === sectionId)
-          if (section) section.name = value
+          if (section) {
+            section.name = value
+            section.orderNumber = orderNumber
+          }
         }),
 
       addPart: () =>
@@ -207,7 +260,7 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           state.data.parts.push(createEmptyPart())
         }),
 
-      addSection: (partId) =>
+      addSection: () =>
         set((state) => {
           const part = state.data.parts.find((p) => p.id === state.activeTarget?.partId)
           if (!part) {
@@ -259,29 +312,6 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           recalculateTotals(state)
         }),
 
-      // addRows: (rows) =>
-      //   set((state) => {
-
-      //     console.log(rows, "rows");
-      //     const activepartId = state.activeTarget?.partId;
-      //     const activeSectionId = state.activeTarget?.sectionId;
-      //     if (!activepartId || !activeSectionId) {
-      //       toast.info("Выберите раздел и подраздел куда вставить данные");
-      //       return;
-      //     }
-      //     const part = state.data.parts.find(
-      //       (p) => p.id === state.activeTarget?.partId,
-      //     );
-      //     const section = part?.sections.find(
-      //       (s) => s.id === state.activeTarget?.sectionId,
-      //     );
-      //     // const allRows = flattenKit(rows);
-      //     // if (section) {
-      //     //   section.rows.push(...allRows);
-      //     //   recalculateLocalTotal(section, rows);
-      //     //   recalculateTotals(state);
-      //     // }
-      //   }),
       addRow: (partId, sectionId) =>
         set((state) => {
           const part = state.data.parts.find((p) => p.id === partId)
@@ -349,6 +379,7 @@ export const useOfferStoreTable = create<OfferTableStore>()(
             date: new Date(),
             number: "",
             parts: [createEmptyPart()],
+            vat: 5,
           }
           state.totalPriceOffer = "0"
           state.totalPricePurchase = "0"
@@ -370,6 +401,10 @@ export const selectTotals = (s: OfferTableStore) => ({
   delta: s.totalDelta,
 })
 
+export const selectSetData = (data: DataOffer) => act().setData(data)
+
+export const selectSetVat = (value: number) => act().setVat(value)
+
 export const selectActiveTarget = (s: OfferTableStore) => s.activeTarget
 
 export const setSelectActiveTarget = (partId: string, sectionId?: string) =>
@@ -383,9 +418,10 @@ export const addRows = (rows: SerializedEquipmentItem[]) => act().addRows(rows)
 export const addRow = (pId: string, sId: string) => act().addRow(pId, sId)
 
 export const updateRow = (item: OfferTableItem) => act().updateRow(item)
-export const updatePartTitle = (pId: string, val: string) => act().updatePartTitle(pId, val)
-export const updateSectionTitle = (pId: string, sId: string, val: string) =>
-  act().updateSectionTitle(pId, sId, val)
+export const updatePartTitle = (pId: string, val: string, orderNumber: string) =>
+  act().updatePartTitle(pId, val, orderNumber)
+export const updateSectionTitle = (pId: string, sId: string, val: string, orderNumber: string) =>
+  act().updateSectionTitle(pId, sId, val, orderNumber)
 export const updateDate = (date: Date) => act().updateOfferDate(date)
 export const updateNumber = (val: string) => act().updateOfferNumber(val)
 
@@ -401,4 +437,16 @@ export const selectSectionById =
   (partId: string, sectionId: string) => (state: OfferTableStore) => {
     const part = state.data.parts.find((p) => p.id === partId)
     return part?.sections.find((s) => s.id === sectionId) || null
+  }
+
+export const selectOrderNumberByPartId = (partId: string) => (state: OfferTableStore) => {
+  const part = state.data.parts.find((p) => p.id === partId)
+  return part?.orderNumber || ""
+}
+
+export const selectOrderNumberBySectionId =
+  (partId: string, sectionId: string) => (state: OfferTableStore) => {
+    const part = state.data.parts.find((p) => p.id === partId)
+    const section = part?.sections.find((s) => s.id === sectionId)
+    return section?.orderNumber || null
   }

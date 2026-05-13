@@ -1,3 +1,5 @@
+import type { Decimal } from "@prisma/client/runtime/client"
+
 // 1. Базовый тип оборудования
 export type Equipment = {
   id: string
@@ -46,3 +48,29 @@ export type EquipmentItemKit = Equipment & {
 //   price: string | null;
 //   description: string;
 // };
+
+export type EquipmentPriceDecimal = {
+  id: string
+  kitId: string
+  count: number
+  itemId: string
+  description: string | null
+  price: Decimal | null
+}
+
+export type SerializedEquipmentItemPriceDecimal = EquipmentPriceDecimal & {
+  contents?: SerializedEquipmentKitItem[]
+}
+
+// 3. Строка внутри комплекта (связующее звено)
+export type SerializedEquipmentKitItemPriceDecimal = {
+  id: string
+  kitId: string
+  itemId: string
+  count: number
+  price: Decimal | null
+  description: string
+  item: SerializedEquipmentItemPriceDecimal
+  createdAt: Date
+  updatedAt: Date
+}

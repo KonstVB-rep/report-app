@@ -26,7 +26,11 @@ import {
 import { formatterCurrency } from "@/shared/lib/utils"
 import EditableCell from "../components/EditabledCell"
 import { calculateKitTotal } from "../lib/calculateKitTotal"
-import type { EquipmentWithQuantity, SerializedEquipmentKitItem } from "../lib/types"
+import type {
+  EquipmentWithQuantity,
+  SerializedEquipmentItem,
+  SerializedEquipmentKitItem,
+} from "../lib/types"
 import type { OfferTableItem } from "../store"
 import {
   selectedKitId,
@@ -151,15 +155,15 @@ export const defaultColumns: ColumnDef<OfferTableItem>[] = [
   },
 ]
 
-export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
+export const defaultColumnsEquipment: ColumnDef<SerializedEquipmentItem>[] = [
   {
-    ...RowNumber<EquipmentWithQuantity>(),
+    ...RowNumber<SerializedEquipmentItem>(),
   },
   {
     id: "id",
     enableHiding: true,
     enableSorting: false,
-    accessorFn: (row: EquipmentWithQuantity) => row.id,
+    accessorFn: (row: SerializedEquipmentItem) => row.id,
     meta: {
       title: "id",
       isNotSearchable: true,
@@ -168,60 +172,7 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
   },
   {
     id: "select",
-    header: ({ table }) => SelectColHeader<EquipmentWithQuantity>().label(table),
-    //   cell: ({ row, table }) => {
-    //     const selectKitId = useEquipmentStore(selectedKitId);
-
-    //     // Если это сам редактируемый комплект — показываем иконку отмены
-    //     if (selectKitId === row.original.id) {
-    //       return (
-    //         <div className="flex items-center justify-center gap-1">
-    //           <div className="h-4 w-4 border-1 border-red-500 bg-amber-50 rounded-[4px] grid place-items-center relative">
-    //             <X className="absolute text-red-500" size={16} />
-    //           </div>
-    //         </div>
-    //       );
-    //     }
-
-    //     const handleUpdateStore = (isSelected: boolean) => {
-    //       // 1. Получаем текущее состояние выбора
-    //       const { rowSelection } = table.getState();
-
-    //       // 2. Создаем ПРЕДПОЛАГАЕМОЕ новое состояние выбора
-    //       // (так как стейт таблицы еще не обновился)
-    //       const nextSelection = {
-    //         ...rowSelection,
-    //         [row.id]: isSelected,
-    //       };
-
-    //       // 3. Фильтруем данные на основе этого "будущего" стейта
-    //       const allRows = table
-    //         .getCoreRowModel()
-    //         .rows.filter((r) => nextSelection[r.id])
-    //         .map((r) => ({ ...r.original, count: 1 }));
-
-    //       // 4. Отправляем в стор
-    //       selectSetLocalKit(allRows);
-    //     };
-
-    //     console.log(row.getIsSelected(), 'getIsSelected')
-
-    //     return (
-    //       <div className="flex items-center justify-center gap-1">
-    //         <Checkbox
-    //           checked={row.getIsSelected()}
-    //           onCheckedChange={(value) => {
-    //             const isSelected = !!value;
-    //             // Сначала обновляем визуал в таблице
-    //             row.toggleSelected(isSelected);
-    //             // Сразу же отправляем актуальные данные в стор
-    //             handleUpdateStore(isSelected);
-    //           }}
-    //         />
-    //       </div>
-    //     );
-    //   },
-
+    header: ({ table }) => SelectColHeader<SerializedEquipmentItem>().label(table),
     cell: ({ row }) => {
       const selectKitId = useEquipmentStore(selectedKitId)
 
@@ -234,24 +185,6 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
           </div>
         )
       }
-
-      // const { rowSelection } = table.getState();
-      // const equipmentSelected = table
-      //   .getRowModel()
-      //   .rows.filter((row) => rowSelection[row.id]);
-
-      // const allRows = equipmentSelected.map((row) => ({
-      //   ...row.original,
-      //   count: 1,
-      // }));
-
-      // const handleAddToKitLocal = () => {
-      //   if (!selectKitId) {
-      //     toast.error("Сначала выберите комплект!");
-      //     return;
-      //   }
-      //   selectSetLocalKit(allRows);
-      // };
       return (
         <div className="flex items-center justify-center gap-1">
           <Checkbox
@@ -279,7 +212,7 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     meta: {
       title: "Наименование",
     },
-    accessorFn: (row: EquipmentWithQuantity) => row.name,
+    accessorFn: (row: SerializedEquipmentItem) => row.name,
   },
   {
     id: "description",
@@ -288,7 +221,7 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     meta: {
       title: "Описание",
     },
-    accessorFn: (row: EquipmentWithQuantity) => row.description,
+    accessorFn: (row: SerializedEquipmentItem) => row.description,
   },
   {
     id: "price",
@@ -310,7 +243,7 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
     },
     size: 120,
     maxSize: 120,
-    accessorFn: (row: EquipmentWithQuantity) => row.price,
+    accessorFn: (row: SerializedEquipmentItem) => row.price,
   },
   {
     id: "actions",
@@ -326,7 +259,7 @@ export const defaultColumnsEquipment: ColumnDef<EquipmentWithQuantity>[] = [
       }
 
       const selectKitId = useEquipmentStore(selectedKitId)
-      const { mutate: deleleEq, isPending } = useDeleteEquipments()
+      const { mutate: deleleEq } = useDeleteEquipments()
 
       const contentsKit = item.contents ?? []
 

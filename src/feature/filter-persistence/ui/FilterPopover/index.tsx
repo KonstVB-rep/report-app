@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useTransition } from "react"
+import React, { useMemo, useState, useTransition } from "react"
 import { Filter } from "lucide-react"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
 import { Button } from "@/shared/components/ui/button"

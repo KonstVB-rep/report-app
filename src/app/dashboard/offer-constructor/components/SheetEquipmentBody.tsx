@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { PermissionEnum } from "@prisma/client"
 import { rankItem } from "@tanstack/match-sorter-utils"
 import {
   type ColumnFiltersState,
@@ -13,10 +14,11 @@ import { Button } from "@/shared/components/ui/button"
 import { SheetFooter } from "@/shared/components/ui/sheet"
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useDeleteEquipments, useUpdateEquipments } from "../hooks/mutate"
 import { useGetEquipments } from "../hooks/query"
 import SkeletonSheetEquipment from "../lib/SkeletonSheetEquipment"
-import type { EquipmentWithQuantity } from "../lib/types"
+import type { EquipmentWithQuantity, SerializedEquipmentItem } from "../lib/types"
 import { defaultColumnsEquipment } from "../model/defaultColumns"
 import { addRows, selectActiveTarget, useOfferStoreTable } from "../store"
 import { selectLocalItems, selectSetLocalItem, useEquipmentStore } from "../store/localtemsStore"
@@ -24,7 +26,7 @@ import AddNewEquipmentDialog from "./AddNewEquipmentDialog"
 import AddToKitDialog from "./AddToKitDialog"
 import EquipmentTable from "./EquipmentTable"
 
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+const fuzzyFilter: FilterFn<EquipmentWithQuantity> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
 
   addMeta({
@@ -48,7 +50,7 @@ const SheetEquipmentBody = () => {
     rowNumber: false,
   })
 
-  const table = useReactTable<EquipmentWithQuantity>({
+  const table = useReactTable<SerializedEquipmentItem>({
     data: tableData,
     columns,
     filterFns: {
@@ -108,7 +110,7 @@ const SheetEquipmentFooter = ({
   rowSelection,
   resetSelections,
 }: {
-  rowSelection: Row<EquipmentWithQuantity>[]
+  rowSelection: Row<SerializedEquipmentItem>[]
   resetSelections: () => void
 }) => {
   const ids: string[] = []
@@ -144,24 +146,26 @@ const SheetEquipmentFooter = ({
 
   return (
     <SheetFooter className="p-1 z-50 flex gap-2">
-      {rowSelection.length > 0 && (
-        <Button
-          disabled={!ids.length}
-          onClick={() => {
-            deleteItems(ids)
-            resetSelections()
-          }}
-        >
-          {isPending ? (
-            <span className="flex gap-2">
-              <LoaderCircle className="w-5 h-5" />
-              "Удаление..."
-            </span>
-          ) : (
-            "Удалить"
-          )}
-        </Button>
-      )}
+      <ProtectedByPermissions permission={PermissionEnum.EQUIPMENT_MANAGEMENT}>
+        {rowSelection.length > 0 && (
+          <Button
+            disabled={!ids.length}
+            onClick={() => {
+              deleteItems(ids)
+              resetSelections()
+            }}
+          >
+            {isPending ? (
+              <span className="flex gap-2">
+                <LoaderCircle className="w-5 h-5" />
+                "Удаление..."
+              </span>
+            ) : (
+              "Удалить"
+            )}
+          </Button>
+        )}
+      </ProtectedByPermissions>
       <Button
         disabled={!isSelected?.sectionId}
         onClick={() => {
@@ -171,23 +175,25 @@ const SheetEquipmentFooter = ({
       >
         Добавить в таблицу
       </Button>
-      <Button
-        disabled={!Object.keys(localItems).length || isPendingUpdate}
-        onClick={() => {
-          updateItems(updatedItems)
-          resetSelections()
-        }}
-      >
-        {isPendingUpdate ? (
-          <span className="flex gap-2">
-            <LoaderCircle className="w-5 h-5" />
-            "Обновление..."
-          </span>
-        ) : (
-          "Обновить"
-        )}
-      </Button>
-      <AddToKitDialog ids={ids} rowSelection={rowSelection} />
+      <ProtectedByPermissions permission={PermissionEnum.EQUIPMENT_MANAGEMENT}>
+        <Button
+          disabled={!Object.keys(localItems).length || isPendingUpdate}
+          onClick={() => {
+            updateItems(updatedItems)
+            resetSelections()
+          }}
+        >
+          {isPendingUpdate ? (
+            <span className="flex gap-2">
+              <LoaderCircle className="w-5 h-5" />
+              "Обновление..."
+            </span>
+          ) : (
+            "Обновить"
+          )}
+        </Button>
+        <AddToKitDialog ids={ids} rowSelection={rowSelection} />
+      </ProtectedByPermissions>
     </SheetFooter>
   )
 }

@@ -23,7 +23,7 @@ const ColorPickerDeal = () => {
   const debouncedMutate = useMemo(
     () =>
       debounce((colorValue: string) => {
-        if (!selectedDataItem || !selectedDataItem.userId) return
+        if (!selectedDataItem?.userId) return
         mutate({
           id: selectedDataItem.id,
           type: selectedDataItem.type,
@@ -123,7 +123,7 @@ const ColorsListUsed = ({ color, setColor }: ColorsListUsedType) => {
     return null
   }
   const handleClick = (item: UserHighlight) => {
-    if (!item.color || !selectedDataItem || !selectedDataItem.userId) return
+    if (!item.color || !selectedDataItem?.userId) return
 
     mutate({
       id: selectedDataItem.id,
