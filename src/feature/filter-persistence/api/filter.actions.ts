@@ -232,8 +232,6 @@ export const disableSavedFilters = async () => {
       where: { userId: user.userId },
       data: { isActive: false },
     })
-    console.log("СКОЛЬКО ОБНОВЛЕНО:", res.count)
-
     return { success: true }
   } catch (error) {
     console.log(error, "disableSavedFilters")

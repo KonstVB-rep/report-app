@@ -23,10 +23,6 @@ const SelectColumns = <TData extends Record<string, unknown>>({
     .map(([col]) => col)
 
   const handleResetVisibility = () => {
-    console.log(
-      Object.fromEntries(columns.map((col) => [col.id, true])),
-      "Object.fromEntries(columns.map((col) => [col.id, true]))",
-    )
     data.setColumnVisibility(
       Object.fromEntries(
         columns.map((col) => {

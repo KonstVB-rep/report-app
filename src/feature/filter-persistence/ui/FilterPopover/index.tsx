@@ -24,16 +24,12 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
     [columnFilters, columnId],
   )
 
-  // Приводим значение к массиву строк. split(",") превратит "A,B" в ["A", "B"],
-  // а "SINGLE" в ["SINGLE"]. Это исключает дробление на буквы.
   const currentValues = useMemo(() => {
     const val = activeFilter?.value
     if (Array.isArray(val)) return val as string[]
     if (typeof val === "string" && val !== "") return val.split(",")
     return []
   }, [activeFilter])
-
-  // console.log(currentValues, "currentValues");
 
   const handleChange = (id: string) => {
     if (!setColumnFilters) return

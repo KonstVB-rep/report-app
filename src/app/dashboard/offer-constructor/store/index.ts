@@ -100,26 +100,6 @@ const createEmptyRow = (): OfferTableItem => ({
   delta: "0",
 })
 
-// const counterOrderPartNumber = () => {
-//   let num = 0;
-//   return () => {
-//     num++;
-//     return num.toString();
-//   };
-// };
-
-// const genOrderPartNumber = counterOrderPartNumber();
-
-// const counterOrderSectionNumber = () => {
-//   let num = 0;
-//   return (partOrderNumber: string) => {
-//     num++;
-//     return `${partOrderNumber}.${num}`;
-//   };
-// };
-
-// const genOrderSectionNumber = counterOrderSectionNumber();
-
 const createEmptySection = (): DataSection => ({
   id: crypto.randomUUID(),
   orderNumber: "",
@@ -281,33 +261,25 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           const section = part?.sections.find((s) => s.id === sectionId)
           if (!section) return
 
-          // 1. Разворачиваем комплекты в плоский список
           const newItems = flattenKit(items)
 
-          console.log("newItems", newItems)
-
           newItems.forEach((newItem) => {
-            // 2. Ищем существующую строку (по id оборудования из базы)
             const existingRow = section.rows.find((r) => r.id === newItem.id)
 
             if (existingRow) {
-              // Суммируем количество
               existingRow.count = (existingRow.count || 0) + (newItem.count || 1)
-              // Обновляем totalPrice строки
               const price = Number(existingRow.price || 0)
               existingRow.totalPrice = (price * existingRow.count).toString()
             } else {
-              // Добавляем новую уникальную строку
               section.rows.push({
                 ...newItem,
-                rowId: crypto.randomUUID(), // Обязательно для стабильности TanStack Table
+                rowId: crypto.randomUUID(),
                 count: newItem.count || 1,
                 totalPrice: newItem.totalPrice || newItem.price || "0",
               })
             }
           })
 
-          // 5. Глобальные пересчеты (суммы разделов, налоги и т.д.)
           recalculateLocalTotal(section, section.rows)
           recalculateTotals(state)
         }),
@@ -342,7 +314,6 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           const section = part?.sections.find((s) => s.id === sectionId)
 
           if (section) {
-            console.log(section.rows, "section.rows")
             section.rows = section.rows.filter((r) => r.rowId !== rowId)
             recalculateLocalTotal(section, section.rows)
             recalculateTotals(state)

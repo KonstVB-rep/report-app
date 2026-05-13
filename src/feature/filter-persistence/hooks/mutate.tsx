@@ -99,7 +99,6 @@ export const useDisableSavedFilters = () => {
       return await disableSavedFilters()
     },
     onSuccess: () => {
-      console.log(["filters", authUser?.id])
       queryClient.invalidateQueries({
         queryKey: ["filters", authUser?.id],
         exact: true,

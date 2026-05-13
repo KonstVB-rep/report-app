@@ -73,6 +73,14 @@ export const OPTIONS: Option[] = [
     label: PermissionUser.DEAL_DELETE,
     value: PermissionEnum.DEAL_DELETE,
   },
+  {
+    label: PermissionUser.EQUIPMENT_DELETE,
+    value: PermissionEnum.EQUIPMENT_DELETE,
+  },
+  {
+    label: PermissionUser.EQUIPMENT_MANAGEMENT,
+    value: PermissionEnum.EQUIPMENT_MANAGEMENT,
+  },
 ]
 
 export type PermissionType = keyof typeof PermissionEnum

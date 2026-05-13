@@ -1,4 +1,8 @@
-import { useState } from "react"
+import { Button } from "@/shared/components/ui/button"
+import { SheetFooter } from "@/shared/components/ui/sheet"
+import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { PermissionEnum } from "@prisma/client"
 import { rankItem } from "@tanstack/match-sorter-utils"
 import {
@@ -10,11 +14,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { Button } from "@/shared/components/ui/button"
-import { SheetFooter } from "@/shared/components/ui/sheet"
-import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { useState } from "react"
 import { useDeleteEquipments, useUpdateEquipments } from "../hooks/mutate"
 import { useGetEquipments } from "../hooks/query"
 import SkeletonSheetEquipment from "../lib/SkeletonSheetEquipment"
@@ -84,6 +84,17 @@ const SheetEquipmentBody = () => {
     return <SkeletonSheetEquipment />
   }
 
+  if (equipmets?.length === 0) {
+    return (
+      <>
+        <div />
+        <div className="text-xl text-center uppercase grid place-items-center">
+          Список оборудования пуст
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <div className="flex gap-2">
@@ -142,11 +153,9 @@ const SheetEquipmentFooter = ({
 
   const isSelected = useOfferStoreTable(selectActiveTarget)
 
-  console.log(Object.keys(localItems), "Object.keys(localItems)")
-
   return (
     <SheetFooter className="p-1 z-50 flex gap-2">
-      <ProtectedByPermissions permission={PermissionEnum.EQUIPMENT_MANAGEMENT}>
+      <ProtectedByPermissions permission={PermissionEnum.EQUIPMENT_DELETE}>
         {rowSelection.length > 0 && (
           <Button
             disabled={!ids.length}

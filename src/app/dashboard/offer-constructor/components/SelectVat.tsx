@@ -44,7 +44,6 @@ const SelectVat = () => {
     <Select
       defaultValue={currentTemplateName || ""}
       onValueChange={(name) => {
-        console.log(name, "name")
         updateUrl(name)
       }}
       value={currentTemplateName || undefined}

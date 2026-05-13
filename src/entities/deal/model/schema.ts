@@ -450,8 +450,6 @@ export const RetailFormSchema = z
       .default([]),
   })
   .superRefine((data, ctx) => {
-    // ГЛАВНОЕ: Если статус REQUEST — форма валидна только по dateRequest
-    console.log(data, "data")
     if (data.dealStatus === "REQUEST") {
       return
     }

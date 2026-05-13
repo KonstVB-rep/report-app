@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query"
-import { toast } from "sonner"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
@@ -51,7 +50,7 @@ export const useAddItemsToKit = () => {
       queryClient.invalidateQueries({
         queryKey: ["equipments"],
       })
-      toast.success("Состав комплекта обновлен")
+      TOAST.SUCCESS("Состав комплекта обновлен")
     },
     onError: (error: unknown) => {
       handleErrorSession(error)

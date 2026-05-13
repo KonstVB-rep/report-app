@@ -822,14 +822,12 @@ export const createRetail = async (
 ) => {
   try {
     if (!data) return handleError("Ошибка: данные не переданы")
-    console.log(data.dealStatus, StatusRetail.REQUEST, "**************************")
+
     if (data.dealStatus !== StatusRetail.REQUEST) {
       await checkAuthAndDataFill(data)
     } else {
       await requireUser()
     }
-
-    console.log("**************************")
 
     const { amountCP, delta, contacts, managersIds, highlight, ...dealData } = data
 

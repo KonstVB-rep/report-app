@@ -4,14 +4,20 @@ import type { SerializedEquipmentKitItem } from "@/app/dashboard/offer-construct
 import { Button } from "@/shared/components/ui/button"
 import DialogComponent from "@/shared/custom-components/ui/DialogComponent"
 
-const DialogKitTable = ({ contentsKit }: { contentsKit: SerializedEquipmentKitItem[] }) => {
+const DialogKitTable = ({
+  contentsKit,
+  id,
+}: {
+  contentsKit: SerializedEquipmentKitItem[]
+  id: string
+}) => {
   const { mutate: delFromKit, isPending } = useDeleteFromKit()
 
   const contentsIds = contentsKit.map((item) => item.itemId)
-  const kitId = contentsKit[0].kitId
+
   const handleDelete = () => {
     if (isPending) return
-    delFromKit({ idKit: kitId, idsKitItem: contentsIds })
+    delFromKit({ idKit: id, idsKitItem: contentsIds })
   }
   return (
     <DialogComponent

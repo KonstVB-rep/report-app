@@ -209,13 +209,15 @@ export const deleteEquipmentList = async (ids: string[]): Promise<void> => {
     })
 
     // Получаем уникальный список ID комплектов
-    const kitIdsToUpdate = Array.from(new Set(affectedKits.map((k) => k.kitId)))
+    const uniqueKitIds = Array.from(new Set(affectedKits.map((k) => k.kitId)))
 
     // 2. Удаляем оборудование.
     // Благодаря onDelete: Cascade в схеме, связи в EquipmentKitItem удалятся сами.
     await prisma.equipmentItem.deleteMany({
       where: { id: { in: ids } },
     })
+
+    const kitIdsToUpdate = uniqueKitIds.filter((kitId) => !ids.includes(kitId))
 
     // 3. Пересчитываем цены для всех затронутых комплектов.
     // Выполняем это последовательно для каждого комплекта.
@@ -252,7 +254,6 @@ export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
         const { id, ...payload } = item
         return prisma.equipmentItem.update({
           where: { id: String(id) },
-          // Если в payload есть price, конвертируем его через твой toDec
           data: payload.price ? { ...payload, price: toDec(payload.price) } : payload,
         })
       }),
