@@ -3,7 +3,6 @@ import { toast } from "sonner"
 import type { DataOffer } from "../store"
 
 export const handleOfferToExcel = (dataOffer: DataOffer, columnSizing: Record<string, number>) => {
-  // Возвращаем промис, чтобы toast.promise его подхватил
   const exportPromise: Promise<DataOffer> = new Promise((resolve, reject) => {
     const worker = new Worker(new URL("../workers/exportOffer.worker.ts", import.meta.url))
 

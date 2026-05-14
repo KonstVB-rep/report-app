@@ -14,13 +14,13 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
   const workbook = new ExcelJS.Workbook()
   const worksheet = workbook.addWorksheet("Расчет", {
     pageSetup: {
-      paperSize: 9, // A4
+      paperSize: 9,
       orientation: "portrait",
       fitToPage: true,
-      fitToWidth: 1, // Строго 1 страница в ширину
-      fitToHeight: 0, // В длину может быть сколько угодно страниц
+      fitToWidth: 1,
+      fitToHeight: 0,
       margins: {
-        left: 0, // Минимизируем поля, чтобы больше влезло
+        left: 0,
         right: 0,
         top: 0,
         bottom: 0,
@@ -113,10 +113,12 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
   let grandDelta = 0
 
   // 3. ЦИКЛ ПО ДАННЫМ
-  data.parts.forEach((part: DataPart) => {
+  data.parts.forEach((part: DataPart, partIdx: number) => {
     let partTotal = 0
     let partCost = 0
     let partDelta = 0
+
+    const pIdx = `${partIdx + 1}.`
 
     // Сначала считаем все суммы внутри раздела (включая все секции)
     part.sections.forEach((sec) => {
@@ -137,7 +139,7 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
 
     // 2. Основная строка раздела
     const partRow = worksheet.addRow([
-      `${part.orderNumber} ${part.name.toUpperCase()}`,
+      `${pIdx} ${part.name.toUpperCase()}`,
       partTotal,
       partCost,
       partDelta,
@@ -194,7 +196,7 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
     }
 
     // ЦИКЛ ПО ПОДРАЗДЕЛАМ
-    part.sections.forEach((section) => {
+    part.sections.forEach((section, secIdx) => {
       let secTotal = 0
       let secCost = 0
       let secDelta = 0
@@ -207,13 +209,13 @@ export const exportСalculationToExcel = async (data: DataOffer, headerImageBase
         secCost += c
         secDelta += t - c
       })
-
+      const sIdx = `${partIdx + 1}.${secIdx + 1}.`
       const emptyRow = worksheet.addRow([])
       emptyRow.height = 14
 
       // ВЫВОД СТРОКИ ПОДРАЗДЕЛА
       const secRow = worksheet.addRow([
-        `${section.orderNumber} ${section.name}`,
+        `${sIdx} ${section.name}`,
         secTotal,
         secCost,
         secDelta,

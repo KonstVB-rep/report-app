@@ -12,18 +12,26 @@ export const exportOfferToExcel = async (
 
   worksheet.addRow({})
 
-  // 1. ИНИЦИАЛИЗАЦИЯ КОЛОНОК
   worksheet.columns = [
-    { key: "margin", width: 4 }, // A
-    { key: "name", width: (columnSizing?.name || 250) / 7.5 },
-    { key: "description", width: (columnSizing?.description || 200) / 7.5 },
-    { key: "price", width: 15 },
-    { key: "count", width: 10 },
-    { key: "totalPrice", width: 18 },
-    { key: "purchasePrice", width: 15 },
-    { key: "purchaseAmount", width: 18 },
-    { key: "delta", width: 15 },
+    { key: "margin", width: 4 },
+    { key: "name", width: (columnSizing?.name || 250) / 10 },
+    { key: "description", width: (columnSizing?.description || 200) / 10 },
+    { key: "price", width: 12 },
+    { key: "count", width: 8 },
+    { key: "totalPrice", width: 14 },
+    { key: "purchasePrice", width: 12 },
+    { key: "purchaseAmount", width: 14 },
+    { key: "delta", width: 12 },
   ]
+
+  worksheet.columns.forEach((column) => {
+    column.font = {
+      name: FONT_FAMILY,
+      size: 11,
+      bold: false,
+      color: { argb: BASE_FONT_COLOR },
+    }
+  })
 
   const headerLabels = [
     "Наименование",
@@ -36,7 +44,7 @@ export const exportOfferToExcel = async (
     "Дельта",
   ]
 
-  for (const part of offerData.parts) {
+  for (const [pIdx, part] of offerData.parts.entries()) {
     let partTotalOffer = 0
     let partTotalPurchase = 0
     let partTotalDelta = 0
@@ -59,19 +67,21 @@ export const exportOfferToExcel = async (
       cell.border = {}
     }
 
+    const partOrderNumber = `${pIdx + 1}.`
+
     const partRow = worksheet.addRow({
-      name: `${part.orderNumber} ${part.name.toUpperCase()}`,
+      name: `${partOrderNumber} ${part.name.toUpperCase()}`,
     })
     worksheet.mergeCells(partRow.number, 2, partRow.number, 9)
 
     // Проходим по всем ячейкам строки раздела, чтобы задать границы
     for (let i = 2; i <= 9; i++) {
       const cell = partRow.getCell(i)
-      cell.font = { bold: true, size: 22, name: FONT_FAMILY }
+      cell.font = { bold: true, size: 18 }
       cell.border = {
-        bottom: { style: "medium", color: { argb: BASE_FONT_COLOR } },
-        left: { style: "thin" },
-        right: { style: "thin" },
+        bottom: { style: "medium" },
+        // left: { style: "thin" },
+        // right: { style: "thin" },
       }
       cell.alignment = { vertical: "middle", horizontal: "left" }
     }
@@ -81,9 +91,7 @@ export const exportOfferToExcel = async (
       if (i < 2) return
       cell.font = {
         bold: true,
-        size: 18,
-        name: FONT_FAMILY,
-        color: { argb: BASE_FONT_COLOR },
+        size: 16,
       }
       cell.alignment = {
         horizontal: "center",
@@ -97,11 +105,13 @@ export const exportOfferToExcel = async (
       }
     })
 
-    for (const section of part.sections) {
-      // --- СЕКЦИЯ (ПОДРАЗДЕЛ) ---
+    for (const [sIdx, section] of part.sections.entries()) {
+      const sectionOrderNumber = `${pIdx + 1}.${sIdx + 1}.`
+
       const secRow = worksheet.addRow({
-        name: `${section.orderNumber} ${section.name}`,
+        name: `${sectionOrderNumber} ${section.name}`,
       })
+
       worksheet.mergeCells(secRow.number, 2, secRow.number, 9)
 
       for (let i = 2; i <= 9; i++) {
@@ -114,14 +124,13 @@ export const exportOfferToExcel = async (
         cell.font = {
           bold: true,
           size: 18,
-          name: FONT_FAMILY,
           color: { argb: "FFFFFFFF" },
         }
         cell.border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" },
+          // top: { style: "thin" },
+          // left: { style: "thin" },
+          // bottom: { style: "thin" },
+          // right: { style: "thin" },
         }
         cell.alignment = { vertical: "middle", horizontal: "left" }
       }
@@ -153,8 +162,6 @@ export const exportOfferToExcel = async (
             const cell = worksheet.getCell(startRowIdx, col)
             cell.font = {
               size: 16,
-              name: FONT_FAMILY,
-              color: { argb: BASE_FONT_COLOR },
             }
             cell.alignment = {
               vertical: "top",
@@ -196,8 +203,6 @@ export const exportOfferToExcel = async (
             if (i < 2) return
             cell.font = {
               size: 16,
-              color: { argb: BASE_FONT_COLOR },
-              name: FONT_FAMILY,
             }
 
             cell.alignment = {
@@ -245,7 +250,7 @@ export const exportOfferToExcel = async (
     totalRow.eachCell({ includeEmpty: true }, (cell, i) => {
       if (i < 2) return
 
-      cell.font = { bold: true, size: 16, name: FONT_FAMILY }
+      cell.font = { bold: true, size: 16 }
       cell.fill = {
         type: "pattern",
         pattern: "solid",
@@ -290,7 +295,7 @@ export const exportOfferToExcel = async (
 
   // 2. Убираем поля (Margins). Если не указать - Excel поставит свои по 2 см.
   worksheet.pageSetup.margins = {
-    left: 0,
+    left: 0, // Даем отступы, чтобы таблица не растягивалась на весь лист
     right: 0,
     top: 0,
     bottom: 0,
@@ -306,28 +311,28 @@ export const exportOfferToExcel = async (
   worksheet.pageSetup.fitToWidth = 1
   worksheet.pageSetup.fitToHeight = 0
 
-  for (let i = 2; i <= 9; i++) {
-    const cell = worksheet.getCell(2, i)
-    cell.border = { ...cell.border, top: { style: "medium" } }
-  }
+  // for (let i = 2; i <= 9; i++) {
+  //   const cell = worksheet.getCell(2, i);
+  //   cell.border = { ...cell.border, top: { style: "medium" } };
+  // }
 
-  // 2. Нижняя граница (последняя строка, от B до I)
-  for (let i = 2; i <= 9; i++) {
-    const cell = worksheet.getCell(lastRow, i)
-    cell.border = { ...cell.border, bottom: { style: "medium" } }
-  }
+  // // 2. Нижняя граница (последняя строка, от B до I)
+  // for (let i = 2; i <= 9; i++) {
+  //   const cell = worksheet.getCell(lastRow, i);
+  //   cell.border = { ...cell.border, bottom: { style: "medium" } };
+  // }
 
-  // 3. Левая граница (колонка B, от 2 строки до последней)
-  for (let i = 2; i <= lastRow; i++) {
-    const cell = worksheet.getCell(i, 2)
-    cell.border = { ...cell.border, left: { style: "medium" } }
-  }
+  // // 3. Левая граница (колонка B, от 2 строки до последней)
+  // for (let i = 2; i <= lastRow; i++) {
+  //   const cell = worksheet.getCell(i, 2);
+  //   cell.border = { ...cell.border, left: { style: "medium" } };
+  // }
 
-  // 4. Правая граница (колонка I, от 2 строки до последней)
-  for (let i = 2; i <= lastRow; i++) {
-    const cell = worksheet.getCell(i, 9)
-    cell.border = { ...cell.border, right: { style: "medium" } }
-  }
+  // // 4. Правая граница (колонка I, от 2 строки до последней)
+  // for (let i = 2; i <= lastRow; i++) {
+  //   const cell = worksheet.getCell(i, 9);
+  //   cell.border = { ...cell.border, right: { style: "medium" } };
+  // }
 
   const buffer = await workbook.xlsx.writeBuffer()
   // saveAs(new Blob([buffer]), `Offer_${offerData.number || "export"}.xlsx`);

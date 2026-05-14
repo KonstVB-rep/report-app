@@ -1,48 +1,41 @@
 import {
   CartesianGrid,
+  type LabelProps,
   Legend,
   Line,
   LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
-  type LabelProps,
   type XAxisTickContentProps,
-} from "recharts";
+  YAxis,
+} from "recharts"
 
 const CustomizedLabel = ({ x, y, stroke, value }: LabelProps) => {
   return (
     <text dy={-4} fill={stroke} fontSize={10} textAnchor="middle" x={x} y={y}>
       {value}
     </text>
-  );
-};
+  )
+}
 
 const CustomizedAxisTick = ({ x, y, payload }: XAxisTickContentProps) => {
   return (
     <g transform={`translate(${x},${y})`}>
-      <text
-        dy={16}
-        fill="#666"
-        textAnchor="end"
-        transform="rotate(-35)"
-        x={0}
-        y={0}
-      >
+      <text dy={16} fill="#666" textAnchor="end" transform="rotate(-35)" x={0} y={0}>
         {payload.value}
       </text>
     </g>
-  );
-};
+  )
+}
 
 const CustomizedLabelLineChart = ({
   data,
 }: {
   data: {
-    name: string;
-    value: number;
-  }[];
+    name: string
+    value: number
+  }[]
 }) => {
   return (
     <div style={{ width: "100%", height: "100%" }}>
@@ -72,17 +65,12 @@ const CustomizedLabelLineChart = ({
           <YAxis width="auto" />
           <Tooltip />
           <Legend />
-          <Line
-            dataKey="value"
-            label={CustomizedLabel}
-            stroke="#8884d8"
-            type="monotone"
-          />
+          <Line dataKey="value" label={CustomizedLabel} stroke="#8884d8" type="monotone" />
           {/* <Line dataKey="uv" stroke="#82ca9d" type="monotone" /> */}
         </LineChart>
       </ResponsiveContainer>
     </div>
-  );
-};
+  )
+}
 
-export default CustomizedLabelLineChart;
+export default CustomizedLabelLineChart

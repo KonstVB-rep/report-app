@@ -1,7 +1,7 @@
 "use client"
 
 import { type ChangeEvent, memo, useEffect, useState } from "react"
-import type { Cell, Table } from "@tanstack/react-table"
+import type { Cell, Row, Table } from "@tanstack/react-table"
 import { ImagePlus, Trash2, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/shared/components/ui/button"
@@ -20,31 +20,55 @@ type OfferTablepProps = {
   sectionName: string
 }
 
-const OfferTable = ({
-  dataTable,
-  table,
-  partId,
-  sectionId,
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import ButtonDndGrab from "./ButtonDndGrab"
+
+const SortableTableRow = ({
+  row,
+  currentId,
   removeRow,
-  sectionName,
-}: OfferTablepProps) => {
+}: {
+  row: Row<OfferTableItem>
+  currentId: string
+  removeRow: (id: string) => void
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: currentId,
+  })
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 30 : "auto",
+    backgroundColor: isDragging ? "var(--muted)" : "transparent",
+  }
+
   return (
-    <div className="relative">
-      <TableBodyOffer dataTable={dataTable} removeRow={removeRow} table={table} />
-      <TableFooterOffer
-        partId={partId}
-        sectionId={sectionId}
-        sectionName={sectionName}
-        table={table}
-      />
-      {/* <div className="absolute top-0 left-0 a4 border-dashed border-2 border-white" /> */}
-      {/* 
-        ))} */}
+    <div
+      className="flex relative items-center border-b border-border transition-colors"
+      ref={setNodeRef}
+      style={style}
+    >
+      <ButtonDndGrab dragHandleProps={{ attributes, listeners }} />
+
+      {row.getVisibleCells().map((cell) => (
+        <CellOfferTable cell={cell} key={cell.id} />
+      ))}
+
+      <Button
+        className="absolute top-0 -right-10"
+        onClick={() => removeRow(row.original.rowId)}
+        size="icon"
+        title="Удалить строку"
+        variant="outline"
+      >
+        <Trash2 size={16} />
+      </Button>
     </div>
   )
 }
-
-export default OfferTable
 
 const TableBodyOffer = ({
   table,
@@ -56,40 +80,22 @@ const TableBodyOffer = ({
   removeRow: (rowId: string) => void
 }) => {
   const rows = table.getRowModel().rows.filter((row) => {
-    return dataTable.some((d) => d.id === row.original.id)
+    return dataTable.some((d) => d.rowId === row.original.rowId)
   })
 
   return (
-    <div className="tbody">
-      {rows.map((row) => {
-        return (
-          <div className="flex relative" key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <CellOfferTable cell={cell} key={cell.id} />
-            ))}
-            <Button
-              className="absolute top-0 -right-10"
-              onClick={() => removeRow(row.original.rowId)}
-              size="icon"
-              title="Удалить строку"
-              variant="outline"
-            >
-              <Trash2 />
-            </Button>
-          </div>
-        )
-      })}
+    <div className="tbody grid w-full">
+      {rows.map((row) => (
+        <SortableTableRow
+          currentId={row.original.rowId}
+          key={row.original.rowId} // Стабильный UUID ключ для React
+          removeRow={removeRow}
+          row={row}
+        />
+      ))}
     </div>
   )
 }
-
-// export const MemoizedTableBody = memo(TableBodyOffer, (prev, next) => {
-//   const sameData = prev.dataTable === next.dataTable;
-
-//   const sameVisibility = prev.columnVisibility === next.columnVisibility;
-
-//   return sameData && sameVisibility;
-// }) as typeof TableBodyOffer;
 
 const TableFooterOffer = ({
   table,
@@ -239,9 +245,6 @@ const Cell = ({ row }: { row: OfferTableItem }) => {
       {imagePreview && (
         <div className="flex gap-1 items-start">
           <Image
-            // alt="Preview"
-            // className=" h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
-            // src={row.image || imagePreview}
             alt="Preview"
             className="h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
             height={96}
@@ -270,3 +273,32 @@ const Cell = ({ row }: { row: OfferTableItem }) => {
     </div>
   )
 }
+
+const OfferTable = ({
+  dataTable,
+  table,
+  partId,
+  sectionId,
+  removeRow,
+  sectionName,
+}: OfferTablepProps) => {
+  const hasRows = dataTable.length > 0
+  return (
+    <div className="relative">
+      <SortableContext items={dataTable.map((r) => r.rowId)} strategy={verticalListSortingStrategy}>
+        <TableBodyOffer dataTable={dataTable} removeRow={removeRow} table={table} />
+      </SortableContext>
+
+      {hasRows && (
+        <TableFooterOffer
+          partId={partId}
+          sectionId={sectionId}
+          sectionName={sectionName}
+          table={table}
+        />
+      )}
+    </div>
+  )
+}
+
+export default OfferTable

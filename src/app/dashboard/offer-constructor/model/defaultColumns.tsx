@@ -1,3 +1,8 @@
+import { useState } from "react"
+import type { CheckedState } from "@radix-ui/react-checkbox"
+import type { CellContext, ColumnDef } from "@tanstack/react-table"
+import { MoreHorizontal, Trash, X } from "lucide-react"
+import { toast } from "sonner"
 import DialogKitTable from "@/app/dashboard/offer-constructor/components/DialogKitTable"
 import {
   useDeleteEquipments,
@@ -20,11 +25,6 @@ import {
   SelectColHeader,
 } from "@/shared/lib/tanstack-table/columnsDataColsTemplate/SelectColHeader"
 import { formatterCurrency } from "@/shared/lib/utils"
-import type { CheckedState } from "@radix-ui/react-checkbox"
-import type { CellContext, ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal, Trash, X } from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
 import EditableCell from "../components/EditabledCell"
 import { calculateKitTotal } from "../lib/calculateKitTotal"
 import type {
@@ -287,14 +287,14 @@ export const defaultColumnsEquipment: ColumnDef<SerializedEquipmentItem>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => deleleEq([item.id])} className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => deleleEq([item.id])}>
                 Удалить
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleClick} className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer" onClick={handleClick}>
                 {isEdit ? "Отменить изменения" : "Изменить"}
               </DropdownMenuItem>
               {isKit && (
-                <DropdownMenuItem onClick={handleSelectKit} className="cursor-pointer">
+                <DropdownMenuItem className="cursor-pointer" onClick={handleSelectKit}>
                   <div className="grid gap-1">
                     <span>{selectKitId ? "Отменить добавление" : "Добавить в комплект"}</span>
                     <span className="text-xs text-gray-500">
@@ -305,15 +305,29 @@ export const defaultColumnsEquipment: ColumnDef<SerializedEquipmentItem>[] = [
               )}
               {!isKit && (
                 <DropdownMenuItem
-                  onClick={() => updateItems([{ id: item.id, isKit: true }])}
                   className="cursor-pointer"
+                  onClick={() => updateItems([{ id: item.id, isKit: true }])}
                 >
-                  <div className="grid gap-1">
+                  <div className="flex gap-1">
+                    {isPendingUpdate && <LoaderCircle className="h-6 w-6 text-blue-600" />}
                     <span>Сделать как комплект?</span>
                   </div>
                 </DropdownMenuItem>
               )}
-              {isKit && <DialogKitTable contentsKit={contentsKit} id={item.id} />}
+              {isKit && (
+                <>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => updateItems([{ id: item.id, isKit: false }])}
+                  >
+                    <div className="flex gap-1">
+                      {isPendingUpdate && <LoaderCircle className="h-6 w-6 text-blue-600" />}
+                      <span>Убрать статус комплекта</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DialogKitTable contentsKit={contentsKit} id={item.id} />
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

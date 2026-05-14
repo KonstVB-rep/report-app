@@ -1,3 +1,4 @@
+import { arrayMove } from "@dnd-kit/sortable"
 import { toast } from "sonner"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
@@ -69,21 +70,21 @@ interface OfferTableStore {
     value: string,
     orderNumber: string,
   ) => void
-  // updateSubSectionTitle: (partId: string, sectionId: string,idvalue: string) => void
 
   addPart: () => void
   addSection: (partId: string) => void
-  // addSubSection: (partId: string, sectionId: string) => void
   addRows: (data: SerializedEquipmentItem[]) => void
   addRow: (partId: string, sectionId: string) => void
 
   removePart: (partId: string) => void
   removeSection: (partId: string, sectionId: string) => void
-  // removeSubSection: (partId: string, sectionId: string, subId: string) => void
   removeRow: (partId: string, sectionId: string, idrowId: string) => void
 
   updateRow: (updatedItem: OfferTableItem) => void
   clearData: () => void
+  movePart: (activeId: string, overId: string) => void
+  moveSection: (activeId: string, overId: string) => void
+  moveRow: (activeId: string, overId: string) => void
 }
 
 const createEmptyRow = (): OfferTableItem => ({
@@ -110,13 +111,6 @@ const createEmptySection = (): DataSection => ({
   totalDelta: "0",
 })
 
-// const createEmptyPart = (): DataPart => ({
-//   id: crypto.randomUUID(),
-//   name: "Новый раздел",
-//   orderNumber: genOrderPartNumber().toString(),
-//   sections: [createEmptySection(genOrderPartNumber().toString())],
-// });
-
 const createEmptyPart = (): DataPart => ({
   id: crypto.randomUUID(),
   name: "Новый раздел",
@@ -124,17 +118,11 @@ const createEmptyPart = (): DataPart => ({
   sections: [createEmptySection()],
 })
 
-const Profit = 0.95
-
-// --- ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ПЕРЕСЧЕТА ---
-
 const recalculateTotals = (state: OfferTableStore) => {
-  // Используем let, потому что мы будем прибавлять к ним значения
   let totalOffer = 0
   let totalPurch = 0
   let totalDlt = 0
 
-  // Просто проходим по всему дереву и суммируем
   state.data.parts.forEach((part) => {
     part.sections.forEach((sec) => {
       sec.rows.forEach((row) => {
@@ -177,6 +165,124 @@ export const useOfferStoreTable = create<OfferTableStore>()(
       totalDelta: "0",
       selectedItemId: "",
       activeTarget: null,
+
+      movePart: (activeId: string, overId: string) =>
+        set((state) => {
+          // Принудительно приводим к строке, чтобы исключить конфликты типов dnd-kit
+          const targetActiveId = String(activeId)
+          const targetOverId = String(overId)
+
+          const oldIndex = state.data.parts.findIndex((p) => String(p.id) === targetActiveId)
+          const newIndex = state.data.parts.findIndex((p) => String(p.id) === targetOverId)
+
+          if (oldIndex !== -1 && newIndex !== -1) {
+            state.data.parts = arrayMove(state.data.parts, oldIndex, newIndex)
+          }
+        }),
+
+      moveSection: (activeId: string, overId: string) =>
+        set((state) => {
+          let activePartIdx = -1
+          let activeSecIdx = -1
+          let overPartIdx = -1
+          let overSecIdx = -1
+
+          // 1. Ищем, в каком разделе и на каком индексе лежит перетаскиваемый подраздел
+          state.data.parts.forEach((part, pIdx) => {
+            const sIdx = part.sections.findIndex((s) => s.id === activeId)
+            if (sIdx !== -1) {
+              activePartIdx = pIdx
+              activeSecIdx = sIdx
+            }
+          })
+
+          // 2. Ищем, куда его сбрасывают (над каким подразделом держим мышку)
+          state.data.parts.forEach((part, pIdx) => {
+            const sIdx = part.sections.findIndex((s) => s.id === overId)
+            if (sIdx !== -1) {
+              overPartIdx = pIdx
+              overSecIdx = sIdx
+            }
+          })
+
+          // 3. Если сбросили на пустой Раздел (над его шапкой), а не над конкретным подразделом
+          if (overPartIdx === -1) {
+            overPartIdx = state.data.parts.findIndex((p) => p.id === overId)
+            overSecIdx = 0 // Вставляем в самое начало этого раздела
+          }
+
+          // 4. Если оба индекса найдены — выполняем перемещение внутри Immer массивов
+          if (activePartIdx !== -1 && overPartIdx !== -1) {
+            const activePart = state.data.parts[activePartIdx]
+            const overPart = state.data.parts[overPartIdx]
+
+            // Вырезаем подраздел из старого места
+            const [movedSection] = activePart.sections.splice(activeSecIdx, 1)
+
+            // Вставляем в новое место (в тот же или уже в другой раздел)
+            overPart.sections.splice(overSecIdx, 0, movedSection)
+          }
+        }),
+
+      moveRow: (activeRowId: string, overRowId: string) =>
+        set((state) => {
+          let activePartIdx = -1
+          let activeSecIdx = -1
+          let activeRowIdx = -1
+
+          let overPartIdx = -1
+          let overSecIdx = -1
+          let overRowIdx = -1
+
+          // 1. Ищем, где изначально лежит перетаскиваемая строка
+          state.data.parts.forEach((part, pIdx) => {
+            part.sections.forEach((sec, sIdx) => {
+              const rIdx = sec.rows.findIndex((r) => r.rowId === activeRowId)
+              if (rIdx !== -1) {
+                activePartIdx = pIdx
+                activeSecIdx = sIdx
+                activeRowIdx = rIdx
+              }
+            })
+          })
+
+          // 2. Ищем, над какой строкой её сейчас удерживают
+          state.data.parts.forEach((part, pIdx) => {
+            part.sections.forEach((sec, sIdx) => {
+              const rIdx = sec.rows.findIndex((r) => r.rowId === overRowId)
+              if (rIdx !== -1) {
+                overPartIdx = pIdx
+                overSecIdx = sIdx
+                overRowIdx = rIdx
+              }
+            })
+          })
+
+          // 3. Защита: если сбросили на пустой подраздел (над его шапкой), а не над строкой
+          if (overPartIdx === -1) {
+            state.data.parts.forEach((part, pIdx) => {
+              const sIdx = part.sections.findIndex((s) => s.id === overRowId)
+              if (sIdx !== -1) {
+                overPartIdx = pIdx
+                overSecIdx = sIdx
+                overRowIdx = 0 // Кидаем в начало этого подраздела
+              }
+            })
+          }
+
+          // 4. Если нашли обе точки — выполняем перенос элемента в Immer-массиве
+          if (activePartIdx !== -1 && overPartIdx !== -1) {
+            const sourceRows = state.data.parts[activePartIdx].sections[activeSecIdx].rows
+            const targetRows = state.data.parts[overPartIdx].sections[overSecIdx].rows
+
+            // Вырезаем строку из старого подраздела
+            const [movedRow] = sourceRows.splice(activeRowIdx, 1)
+
+            // Вставляем строку в новый подраздел на нужную позицию
+            targetRows.splice(overRowIdx, 0, movedRow)
+          }
+        }),
+
       setData: (data) =>
         set((state) => {
           state.data = data
@@ -334,7 +440,7 @@ export const useOfferStoreTable = create<OfferTableStore>()(
                   ...updatedItem,
                   totalPrice: total.toFixed(2),
                   purchaseAmount: purchase.toFixed(2),
-                  delta: (total * Profit - purchase).toFixed(2),
+                  delta: (total - purchase).toFixed(2),
                 }
                 recalculateLocalTotal(sec, sec.rows)
               }
@@ -421,3 +527,7 @@ export const selectOrderNumberBySectionId =
     const section = part?.sections.find((s) => s.id === sectionId)
     return section?.orderNumber || null
   }
+
+export const selectMovePart = (activeId: string, overId: string) => {
+  act().movePart(activeId, overId)
+}

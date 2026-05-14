@@ -1,15 +1,11 @@
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { flexRender, type Table } from "@tanstack/react-table"
 import { X } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { cn } from "@/shared/lib/utils"
-import {
-  type DataPart,
-  type OfferTableItem,
-  removePart,
-  selectOrderNumberByPartId,
-  updatePartTitle,
-  useOfferStoreTable,
-} from "../store"
+import type { DragHandleProps } from "../lib/types"
+import { type DataPart, type OfferTableItem, removePart, updatePartTitle } from "../store"
+import ButtonDndGrab from "./ButtonDndGrab"
 import InputTitle from "./InputTitle"
 import PartSection from "./PartSection"
 import SelectedItem from "./SelectedItem"
@@ -20,21 +16,24 @@ const Part = ({
   dataPart,
   partId,
   partIndex,
+  dragHandleProps,
 }: {
   table: Table<OfferTableItem>
   columnSizeVars: { [key: string]: number }
   dataPart: DataPart
   partId: string
   partIndex: number
+  dragHandleProps: DragHandleProps
 }) => {
-  const orderNumberStore = useOfferStoreTable(selectOrderNumberByPartId(partId))
-  const orderNumber = orderNumberStore || `${partIndex + 1}. `
-
   const title = dataPart.name || ""
+  const orderNumber = `${partIndex + 1}. `
+
+  console.log(orderNumber, "orderNumber")
   return (
-    <div className="relative px-10">
-      <div className="relative w-full overflow-y-auto min-w-7xl">
+    <div className="relative px-10 w-full overflow-y-auto min-w-7xl">
+      <div className="relative">
         <div className="flex gap-2 justify-start items-center border-t-[4px] border-t-[#0070C0] border-b-[2px] border-b-black mb-3">
+          <ButtonDndGrab dragHandleProps={dragHandleProps} />
           <p className="text-xl font-bold">Раздел</p>
           <div className="relative flex-1">
             <div className="flex gap-2 items-center text-xl">
@@ -108,16 +107,23 @@ const Part = ({
             ))}
           </div>
 
-          {dataPart?.sections.map((section, sectionIndex) => (
-            <PartSection
-              key={section.id}
-              partId={partId}
-              partIndex={partIndex}
-              section={section}
-              sectionIndex={sectionIndex}
-              table={table}
-            />
-          ))}
+          <SortableContext
+            items={dataPart?.sections.map((s) => s.id) || []}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-4">
+              {dataPart?.sections.map((section, sectionIndex) => (
+                <PartSection
+                  key={section.id}
+                  partId={partId}
+                  partIndex={partIndex}
+                  section={section}
+                  sectionIndex={sectionIndex}
+                  table={table}
+                />
+              ))}
+            </div>
+          </SortableContext>
         </div>
         {/* <div className="absolute top-0 left-0 a4 border-dashed border-2 border-white" /> */}
       </div>

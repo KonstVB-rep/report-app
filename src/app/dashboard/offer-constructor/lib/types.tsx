@@ -1,4 +1,12 @@
+import type { DraggableAttributes } from "@dnd-kit/core"
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities"
 import type { Decimal } from "@prisma/client/runtime/client"
+
+// Описываем строгий интерфейс для пропсов ручки захвата
+export type DragHandleProps = {
+  attributes: DraggableAttributes
+  listeners: SyntheticListenerMap | undefined
+}
 
 // 1. Базовый тип оборудования
 export type Equipment = {

@@ -1,8 +1,4 @@
-import { Button } from "@/shared/components/ui/button"
-import { SheetFooter } from "@/shared/components/ui/sheet"
-import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
-import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { useState } from "react"
 import { PermissionEnum } from "@prisma/client"
 import { rankItem } from "@tanstack/match-sorter-utils"
 import {
@@ -14,7 +10,11 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { useState } from "react"
+import { Button } from "@/shared/components/ui/button"
+import { SheetFooter } from "@/shared/components/ui/sheet"
+import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useDeleteEquipments, useUpdateEquipments } from "../hooks/mutate"
 import { useGetEquipments } from "../hooks/query"
 import SkeletonSheetEquipment from "../lib/SkeletonSheetEquipment"

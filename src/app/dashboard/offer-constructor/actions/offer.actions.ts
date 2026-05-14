@@ -230,6 +230,9 @@ export const deleteEquipmentList = async (ids: string[]): Promise<void> => {
   }
 }
 
+// Предполагаем, что у тебя есть хелперы перевода цен в Decimal и пересчета сумм
+// import { toDec, updateKitTotalPrice } from "./helpers";
+
 export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
   try {
     const user = await requireUser()
@@ -237,34 +240,48 @@ export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
 
     const ids = items.map((i) => String(i.id))
 
-    // 1. Находим существующие ID
     const existingItems = await prisma.equipmentItem.findMany({
       where: { id: { in: ids } },
       select: { id: true },
     })
     const existingIds = new Set(existingItems.map((i) => i.id))
 
-    // 2. Фильтруем только существующие
     const validUpdates = items.filter((item) => existingIds.has(String(item.id)))
     if (validUpdates.length === 0) return []
 
-    // 3. Выполняем обновление в транзакции
+    // 1. Выполняем обновление в транзакции
     const updatedItems = await prisma.$transaction(
-      validUpdates.map((item) => {
+      validUpdates.map((item: Partial<EquipmentDb>) => {
         const { id, ...payload } = item
+
+        let updateData: Prisma.EquipmentItemUpdateInput = payload.price
+          ? { ...payload, price: toDec(payload.price) }
+          : payload
+
+        // 🔥 КЛЮЧЕВАЯ ЛОГИКА: Если мы сбрасываем статус комплекта (isKit: false)
+        // Дописываем команду удаления вложенных строк состава для этого kitId
+        if (payload.isKit === false) {
+          updateData = {
+            ...updateData,
+            contents: {
+              deleteMany: {}, // Стирает только связи в EquipmentKitItem, товары в EquipmentItem не трогает
+            },
+          }
+        }
+
         return prisma.equipmentItem.update({
-          where: { id: String(id) },
-          data: payload.price ? { ...payload, price: toDec(payload.price) } : payload,
+          where: { id },
+          data: updateData,
         })
       }),
     )
 
-    // 4. ЛОГИКА ОБНОВЛЕНИЯ ЦЕН В КОМПЛЕКТАХ
-    // Если мы обновили цены ТОВАРОВ, нужно найти комплекты, где они лежат
+    // 4. ЛОГИКА ОБНОВЛЕНИЯ ЦЕН В СВЯЗАННЫХ КОМПЛЕКТАХ
+    // Если мы изменили цены ТОВАРОВ, нужно найти комплекты, в которые они входят
     const updatedItemIds = validUpdates.filter((i) => i.price).map((i) => String(i.id))
 
     if (updatedItemIds.length > 0) {
-      // Ищем все комплекты, которые зависят от этих товаров
+      // Ищем все родительские комплекты, которые зависят от этих товаров
       const affectedKits = await prisma.equipmentKitItem.findMany({
         where: { itemId: { in: updatedItemIds } },
         select: { kitId: true },
@@ -272,13 +289,12 @@ export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
 
       const kitIdsToUpdate = Array.from(new Set(affectedKits.map((k) => k.kitId)))
 
-      // Пересчитываем цены комплектов
+      // Пересчитываем цены оставшихся комплектов последовательно
       if (kitIdsToUpdate.length > 0) {
         await Promise.all(kitIdsToUpdate.map((kitId) => updateKitTotalPrice(kitId)))
       }
     }
 
-    // 5. СЕРИАЛИЗАЦИЯ для фронтенда
     return updatedItems.map((item) => ({
       ...item,
       price: item.price ? item.price.toString() : "0,00",
