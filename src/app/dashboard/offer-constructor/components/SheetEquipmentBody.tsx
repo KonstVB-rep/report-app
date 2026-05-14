@@ -84,17 +84,6 @@ const SheetEquipmentBody = () => {
     return <SkeletonSheetEquipment />
   }
 
-  if (equipmets?.length === 0) {
-    return (
-      <>
-        <div />
-        <div className="text-xl text-center uppercase grid place-items-center">
-          Список оборудования пуст
-        </div>
-      </>
-    )
-  }
-
   return (
     <>
       <div className="flex gap-2">
@@ -106,11 +95,19 @@ const SheetEquipmentBody = () => {
           value={table.getState().globalFilter ?? ""}
         />
       </div>
-      <EquipmentTable setLocalItem={selectSetLocalItem} table={table} />
-      <SheetEquipmentFooter
-        resetSelections={table.resetRowSelection}
-        rowSelection={equipmentSelected}
-      />
+      {equipmets?.length === 0 ? (
+        <div className="text-xl text-center uppercase grid place-items-center">
+          Список оборудования пуст
+        </div>
+      ) : (
+        <>
+          <EquipmentTable setLocalItem={selectSetLocalItem} table={table} />
+          <SheetEquipmentFooter
+            resetSelections={table.resetRowSelection}
+            rowSelection={equipmentSelected}
+          />
+        </>
+      )}
     </>
   )
 }
