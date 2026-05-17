@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Dispatch, SetStateAction } from "react"
 import type { DealFile } from "@prisma/client"
+import { useParams } from "next/navigation"
 import type { DeletingDealsListItem } from "@/entities/deal/types"
 import { Button } from "@/shared/components/ui/button"
 import { DialogClose } from "@/shared/components/ui/dialog"
@@ -16,23 +17,25 @@ type Props = {
 }
 
 const DelDealListForm = ({ deals, close }: Props) => {
-  const { mutate: delDeals, isPending } = useDelListDeal((dataFiles: DealFile[]) => {
-    if (!dataFiles) {
-      close()
+  const { departmentId } = useParams()
 
+  const { mutate: delDeals, isPending } = useDelListDeal((dataFiles: DealFile[]) => {
+    if (!dataFiles || dataFiles.length === 0) {
+      console.log("[YANDEX] У удаляемых сделок нет файлов на Диске. Пропускаем запрос.")
+      close()
       return
     }
 
     mutate(dataFiles)
-  })
+  }, departmentId as string)
 
   const { mutate, isPending: isPendingDelete } = useDeleteFiles(() => close)
 
   const isLoading = isPending || isPendingDelete
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
-    delDeals(deals)
+    if (deals.length && departmentId) delDeals(deals)
   }
 
   return (
@@ -42,7 +45,9 @@ const DelDealListForm = ({ deals, close }: Props) => {
         <p className="text-center">Вы точно уверены что хотите удалить данные</p>
         <p className="rounded-xl bg-muted px-4 py-2 text-center text-xl font-bold break-all max-h-60 overflow-y-auto">
           {deals.map((deal) => (
-            <> &quot;{deal?.title}&quot;?</>
+            <span className="block" key={deal.id}>
+              &quot;{deal?.title}&quot;?
+            </span>
           ))}
         </p>
         <p className="text-center">Их нельзя будет восстановить!</p>

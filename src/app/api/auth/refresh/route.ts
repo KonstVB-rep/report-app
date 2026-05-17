@@ -19,13 +19,14 @@ export async function POST(req: NextRequest) {
 
     const secretKey = new TextEncoder().encode(process.env.REFRESH_SECRET_KEY)
     const { payload: rawPayload } = await jwtVerify(refreshToken, secretKey)
+    console.log(rawPayload, "rawPayload")
 
     if (!rawPayload?.userId || rawPayload.departmentId === undefined) {
       return NextResponse.json({ error: "Некорректные данные в токене" }, { status: 401 })
     }
 
     const payload = rawPayload as unknown as PayloadType
-    const { userId, departmentId, role, username, position, permissions } = payload
+    const { userId, departmentId, role, username, position, permissions, isBlocked } = payload
 
     const tokens = await generateTokensAndSetCookies({
       userId,
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
       username,
       position,
       permissions,
+      isBlocked,
     })
 
     if (!tokens) throw new Error("Token generation failed")

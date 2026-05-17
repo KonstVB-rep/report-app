@@ -4,7 +4,14 @@ import { X } from "lucide-react"
 import { Button } from "@/shared/components/ui/button"
 import { cn } from "@/shared/lib/utils"
 import type { DragHandleProps } from "../lib/types"
-import { type DataPart, type OfferTableItem, removePart, updatePartTitle } from "../store"
+import {
+  type DataPart,
+  type OfferTableItem,
+  removePart,
+  selectParts,
+  updatePartTitle,
+  useOfferStoreTable,
+} from "../store"
 import ButtonDndGrab from "./ButtonDndGrab"
 import InputTitle from "./InputTitle"
 import PartSection from "./PartSection"
@@ -28,12 +35,13 @@ const Part = ({
   const title = dataPart.name || ""
   const orderNumber = `${partIndex + 1}. `
 
-  console.log(orderNumber, "orderNumber")
+  const data = useOfferStoreTable(selectParts)
+
   return (
     <div className="relative px-10 w-full overflow-y-auto min-w-7xl">
       <div className="relative">
         <div className="flex gap-2 justify-start items-center border-t-[4px] border-t-[#0070C0] border-b-[2px] border-b-black mb-3">
-          <ButtonDndGrab dragHandleProps={dragHandleProps} />
+          {data.length > 1 && <ButtonDndGrab dragHandleProps={dragHandleProps} />}
           <p className="text-xl font-bold">Раздел</p>
           <div className="relative flex-1">
             <div className="flex gap-2 items-center text-xl">

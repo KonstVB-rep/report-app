@@ -35,6 +35,8 @@ export const useAuthRedirect = () => {
 
     if (!isAuth) {
       hasRedirectedRef.current = false
+
+      fetch("/api/auth/clear-cookies").catch(console.error)
     }
   }, [isAuth, authUser, router, isLoading])
 }

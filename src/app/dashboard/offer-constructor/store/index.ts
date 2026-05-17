@@ -477,7 +477,11 @@ export const selectTotals = (s: OfferTableStore) => ({
   purchase: s.totalPricePurchase,
   delta: s.totalDelta,
 })
+export const selectSectionsCount = (s: OfferTableStore) => {
+  const sections = s.data.parts.map((p) => p.sections)
 
+  return sections.flat().length
+}
 export const selectSetData = (data: DataOffer) => act().setData(data)
 
 export const selectSetVat = (value: number) => act().setVat(value)

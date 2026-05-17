@@ -33,116 +33,6 @@ export const getUserFilterById = async (filterId: string) => {
   }
 }
 
-// export const saveFilter = async (savedData: SaveFilterType): Promise<UserFilter> => {
-//   try {
-//     const { user } = await handleAuthorization()
-
-//     const { data } = savedData
-
-//      const existing = await prisma.userFilter.findFirst({
-//       where: { userId: user.id, filterName: data.filterName }
-//     })
-
-//     if (existing) return handleError("Фильтр с таким именем уже существует")
-
-//     return await prisma.userFilter.create({
-//       data: { ...data, userId: user.id },
-//     })
-//   } catch (error) {
-//     console.error(error)
-//     return handleError((error as Error).message)
-//   }
-// }
-
-// export const deleteFilter = async (data: { id: string }): Promise<DeleteFilterReturnType> => {
-//   try {
-//    const user = await requireUser()
-
-//     const { count } = await prisma.userFilter.deleteMany({
-//       where: {
-//         id: data.id,
-//         userId: user.id
-//       },
-//     })
-
-//     if (count === 0) return handleError("Фильтр не найден или нет прав")
-
-//     return { data: null, message: "Фильтр успешно удален", error: false }
-//   } catch (error) {
-//     console.error(error)
-//     return handleError((error as Error).message)
-//   }
-// }
-
-// export const updateFilter = async (data: UpdateFilterDataType): Promise<UserFilter | undefined> => {
-//   try {
-//    const user = await requireUser()
-
-//     // Prisma update требует уникальный селектор.
-//     // Если id уникален, мы обновляем с проверкой userId через updateMany
-//     // или через update, если в схеме есть @@unique([id, userId])
-//     const updated = await prisma.userFilter.update({
-//       where: { id: data.id, userId: user.id }, // Добавляем проверку владельца
-//       data,
-//     })
-
-//     return updated
-//   } catch (error) {
-//     console.error(error)
-//     return handleError((error as Error).message)
-//   }
-// }
-
-// export const selectFilter = async (id: string) => {
-//   try {
-//     const { user } = await handleAuthorization()
-
-//     const filter = await prisma.userFilter.findUnique({
-//       where: { id },
-//     })
-
-//     if (!filter) {
-//       return handleError("Фильтр не найден")
-//     }
-
-//     if (filter.userId !== user?.id) {
-//       return handleError("Недостаточно прав")
-//     }
-
-//     await prisma.userFilter.updateMany({
-//       where: { userId: user?.id },
-//       data: { isActive: false },
-//     })
-
-//     await prisma.userFilter.update({
-//       where: { id },
-//       data: { isActive: true },
-//     })
-
-//     return { success: true, message: "Фильтр успешно выбран" }
-//   } catch (error) {
-//     console.error(error)
-//     return handleError((error as Error).message)
-//   }
-// }
-
-// export const disableSavedFilters = async () => {
-//   try {
-//     const { user } = await handleAuthorization()
-
-//     if (!user?.id) {
-//       throw new Error("Пользователь не найден")
-//     }
-
-//     await prisma.userFilter.updateMany({
-//       where: { userId: user.id },
-//       data: { isActive: false },
-//     })
-//   } catch (error) {
-//     console.error(error)
-//     return handleError((error as Error).message)
-//   }
-// }
 export const saveFilter = async (savedData: SaveFilterType): Promise<UserFilter> => {
   try {
     const user = await requireUser()
@@ -185,9 +75,14 @@ export const deleteFilter = async (data: { id: string }): Promise<DeleteFilterRe
 export const updateFilter = async (data: UpdateFilterDataType): Promise<UserFilter | undefined> => {
   try {
     const user = await requireUser()
+    const { id, userId, ...updateBody } = data
+
     const { count } = await prisma.userFilter.updateMany({
-      where: { id: data.id, userId: user.userId },
-      data,
+      where: {
+        id: data.id,
+        userId: user.userId,
+      },
+      data: updateBody,
     })
 
     if (count === 0) return handleError("Фильтр не найден или нет прав")

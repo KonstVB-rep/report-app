@@ -1,7 +1,8 @@
 "use server"
 
+import { cache } from "react"
 import { requireUser } from "@/app/api/utils/requireAuth "
-export async function getUserPermissions() {
+export const getUserPermissions = cache(async () => {
   try {
     const user = await requireUser()
 
@@ -20,4 +21,4 @@ export async function getUserPermissions() {
     console.error("Error getting permissions:", error)
     return { permissions: [], role: null, departmentId: null }
   }
-}
+})

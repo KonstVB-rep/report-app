@@ -30,6 +30,7 @@ export const login = async (_: unknown, formData: FormData) => {
         lastlogin: true,
         email: true,
         phone: true,
+        isBlocked: true,
         permissions: { select: { permission: { select: { name: true } } } },
         telegramInfo: { select: { tgUserId: true, tgUserName: true } },
       },
@@ -55,6 +56,7 @@ export const login = async (_: unknown, formData: FormData) => {
       username: user.username,
       position: user.position,
       permissions,
+      isBlocked: user.isBlocked,
     }
 
     await Promise.all([

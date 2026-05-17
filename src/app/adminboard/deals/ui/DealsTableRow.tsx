@@ -7,6 +7,7 @@ import type { DealUnion } from "@/entities/deal/types"
 import { TableRow } from "@/shared/components/ui/table"
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment"
+import { NOT_GROW_COLS } from "@/shared/lib/constants"
 
 const DealsTableRow = ({
   row,
@@ -32,27 +33,30 @@ const DealsTableRow = ({
       display: "flex",
     }}
   >
-    {row.getVisibleCells().map((cell, index) => (
-      <TableCellComponent<DealUnion>
-        cell={cell}
-        handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}
-        key={cell.id}
-        styles={{
-          width: headers?.[index]?.getSize(),
-          minWidth: headers?.[index]?.column.columnDef.minSize,
-          maxWidth: headers?.[index]?.column.columnDef.maxSize,
-        }}
-      >
-        {openFullInfoCell === cell.id && (
-          <RowInfoDialog
-            closeFn={() => setOpenFullInfoCell(null)}
-            isActive
-            isTargetCell={true}
-            text={flexRender(cell.column.columnDef.cell, cell.getContext())}
-          />
-        )}
-      </TableCellComponent>
-    ))}
+    {row.getVisibleCells().map((cell, index) => {
+      const header = headers?.[index]
+      return (
+        <TableCellComponent<DealUnion>
+          cell={cell}
+          handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}
+          key={cell.id}
+          styles={{
+            width: headers?.[index]?.getSize(),
+            minWidth: headers?.[index]?.column.columnDef.minSize,
+            flex: header && NOT_GROW_COLS.includes(header.id) ? "0 0 auto" : "1 0 auto",
+          }}
+        >
+          {openFullInfoCell === cell.id && (
+            <RowInfoDialog
+              closeFn={() => setOpenFullInfoCell(null)}
+              isActive
+              isTargetCell={true}
+              text={flexRender(cell.column.columnDef.cell, cell.getContext())}
+            />
+          )}
+        </TableCellComponent>
+      )
+    })}
   </TableRow>
 )
 

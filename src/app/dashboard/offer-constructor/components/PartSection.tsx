@@ -10,7 +10,9 @@ import {
   type OfferTableItem,
   removeRow,
   removeSection,
+  selectSectionsCount,
   updateSectionTitle,
+  useOfferStoreTable,
 } from "../store"
 import ButtonDndGrab from "./ButtonDndGrab"
 import InputTitle from "./InputTitle"
@@ -48,13 +50,14 @@ const PartSection = ({ partId, section, table, partIndex, sectionIndex }: PartSe
   }
 
   const title = section.name || ""
+  const sectionsCount = useOfferStoreTable(selectSectionsCount)
 
   return (
     <div className="w-full" ref={setNodeRef} style={style}>
       <div
         className={`relative flex items-center ${isOver && !isDragging ? "ring-2 ring-dashed ring-[#0070C0] bg-blue-50/40 rounded-lg p-1" : ""}`}
       >
-        <ButtonDndGrab dragHandleProps={{ attributes, listeners }} />
+        {sectionsCount > 1 && <ButtonDndGrab dragHandleProps={{ attributes, listeners }} />}
 
         <div className="flex gap-2 items-center text-lg min-h-12! bg-[#0070C0] p-2 my-2 flex-1 pr-20">
           <span className="text-white font-medium">{order}</span>

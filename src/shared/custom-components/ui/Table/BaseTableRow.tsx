@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { flexRender, type Header, type Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
+import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import ContextRowTable from "../ContextRowTable"
 import RowInfoDialog from "./RowInfoDialog"
 import TableCellComponent from "./TableCellCompoment"
@@ -38,6 +39,7 @@ const BaseTableRow = <T extends BaseEntity>({
   getContextMenuActions,
   renderAdditionalInfo,
   hasEditDeleteActions = true,
+  headers,
 }: BaseTableRowProps<T>) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
@@ -64,28 +66,32 @@ const BaseTableRow = <T extends BaseEntity>({
           backgroundColor: row.original.highlights ?? "",
         }}
       >
-        {row.getVisibleCells().map((cell) => (
-          <TableCellComponent
-            cell={cell}
-            handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}
-            key={cell.id}
-            styles={{
-              width: cell.column.getSize(),
-              minWidth: cell.column.columnDef.minSize,
-              flex: "0 0 auto",
-            }}
-          >
-            {openFullInfoCell === cell.id && (
-              <RowInfoDialog
-                closeFn={() => setOpenFullInfoCell(null)}
-                isActive={true}
-                text={flexRender(cell.column.columnDef.cell, cell.getContext())}
-              >
-                {renderAdditionalInfo?.(row)}
-              </RowInfoDialog>
-            )}
-          </TableCellComponent>
-        ))}
+        {row.getVisibleCells().map((cell, index) => {
+          const header = headers?.[index]
+          return (
+            <TableCellComponent
+              cell={cell}
+              handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}
+              key={cell.id}
+              styles={{
+                width: cell.column.getSize(),
+                minWidth: cell.column.columnDef.minSize,
+
+                flex: header && NOT_GROW_COLS.includes(header.id) ? "0 0 auto" : "1 0 auto",
+              }}
+            >
+              {openFullInfoCell === cell.id && (
+                <RowInfoDialog
+                  closeFn={() => setOpenFullInfoCell(null)}
+                  isActive={true}
+                  text={flexRender(cell.column.columnDef.cell, cell.getContext())}
+                >
+                  {renderAdditionalInfo?.(row)}
+                </RowInfoDialog>
+              )}
+            </TableCellComponent>
+          )
+        })}
       </TableRow>
     </ContextRowTable>
   )

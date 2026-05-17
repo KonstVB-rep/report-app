@@ -1,6 +1,5 @@
 "use client"
 
-import { StatusRetail } from "@prisma/client"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { endOfDay, startOfDay } from "date-fns"
 import type { DateRange } from "react-day-picker"
@@ -84,51 +83,6 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
     accessorFn: (row: RetailResponse) => row.dateRequest,
   },
   {
-    id: "plannedDateConnection",
-    accessorKey: "plannedDateConnection",
-    header: "Плановая дата контакта",
-    cell: (info: CellContext<RetailResponse, unknown>) => {
-      const date = info.getValue() as Date | null
-
-      if (date) {
-        return date.toLocaleDateString("ru-RU")
-      } else {
-        return "Дата не указана"
-      }
-    },
-    enableHiding: false,
-    meta: {
-      hidden: true,
-      title: "Плановая дата контакта",
-    },
-    filterFn: (row, columnId, filterValue) => {
-      if (row.original.dealStatus === StatusRetail.REJECT) return false
-
-      const date = row.getValue(columnId) as Date
-      const dateAtStartOfDay = startOfDay(date)
-
-      if (filterValue) {
-        const { from, to } = filterValue as DateRange
-
-        if (from && to) {
-          const toAtEndOfDay = endOfDay(to)
-          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
-        }
-
-        if (from) {
-          return dateAtStartOfDay >= startOfDay(from)
-        }
-        if (to) {
-          return dateAtStartOfDay <= endOfDay(to)
-        }
-        return false
-      }
-
-      return true
-    },
-    accessorFn: (row: RetailResponse) => row.plannedDateConnection,
-  },
-  {
     id: "nameDeal",
     accessorKey: "nameDeal",
     header: "Название сделки",
@@ -198,48 +152,6 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
     accessorFn: (row: RetailResponse) => row.deliveryType,
   },
   {
-    id: "contact",
-    accessorKey: "contact",
-    header: "Контактное лицо",
-    cell: (info: CellContext<RetailResponse, unknown>) => info.getValue(),
-    enableHiding: false,
-    meta: {
-      hidden: true,
-      title: "Контактное лицо",
-    },
-    accessorFn: (row: RetailResponse) => row.contact,
-  },
-  {
-    id: "phone",
-    accessorKey: "phone",
-    header: "Телефон",
-    cell: (info: CellContext<RetailResponse, unknown>) => {
-      return (
-        <span className="whitespace-nowrap">{info.getValue() as string}</span> //тег
-      )
-    },
-    enableHiding: false,
-    meta: {
-      hidden: true,
-      title: "Телефон",
-    },
-    accessorFn: (row: RetailResponse) => row.phone,
-  },
-  {
-    id: "email",
-    accessorKey: "email",
-    header: "Email",
-    cell: (info: CellContext<RetailResponse, unknown>) => (
-      <span className="whitespace-nowrap">{info.getValue() as string}</span>
-    ),
-    enableHiding: false,
-    meta: {
-      hidden: true,
-      title: "Email",
-    },
-    accessorFn: (row: RetailResponse) => row.email,
-  },
-  {
     id: "amountCP",
     accessorKey: "amountCP",
     header: "Сумма",
@@ -250,19 +162,6 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
       title: "Сумма",
     },
     accessorFn: (row: RetailResponse) => row.amountCP,
-  },
-  {
-    id: "delta",
-    accessorKey: "delta",
-    header: "Дельта",
-    cell: (info: CellContext<RetailResponse, unknown>) =>
-      formatterCurrency.format(parseFloat(info.getValue() as string)),
-    enableHiding: false,
-    meta: {
-      hidden: true,
-      title: "Дельта",
-    },
-    accessorFn: (row: RetailResponse) => row.delta,
   },
   {
     id: "dealStatus",
@@ -304,39 +203,9 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
     header: "Ресурс",
     cell: (info) => info.getValue(),
     enableHiding: true,
-    // meta: {
-    //   hidden: true,
-    // },
     meta: {
       title: "Ресурс",
     },
-    // filterFn: (row, _, filterValues) => {
-    //   if (!filterValues || filterValues.length === 0) {
-    //     return true
-    //   }
-
-    //   const userIdOfProject = row.original.userId
-    //   return filterValues.includes(userIdOfProject)
-    // },
     accessorFn: (row: RetailResponse) => row.resource,
-  },
-  {
-    id: "user",
-    header: "Менеджер",
-    cell: (info) => info.getValue(),
-    enableHiding: false,
-    meta: {
-      hidden: true,
-      title: "Менеджер",
-    },
-    filterFn: (row, _, filterValues) => {
-      if (!filterValues || filterValues.length === 0) {
-        return true
-      }
-
-      const userIdOfProject = row.original.userId
-      return filterValues.includes(userIdOfProject)
-    },
-    accessorFn: (row: RetailResponse) => row.userId,
   },
 ]

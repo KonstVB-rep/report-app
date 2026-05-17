@@ -1,6 +1,6 @@
 "use client"
 
-import { Activity, Suspense, useCallback, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
+import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
 import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
@@ -23,27 +23,15 @@ export interface SummaryTableProps<T extends { id: string }> {
 
 const hiddenColsProject = {
   id: false,
-  contact: false,
-  phone: false,
-  email: false,
   amountWork: false,
-  amountPurchase: false,
-  delta: false,
-  plannedDateConnection: false,
   direction: false,
   deliveryType: false,
-  user: false,
 }
 const hiddenColsRetail = {
   id: false,
-  contact: false,
-  phone: false,
-  email: false,
-  delta: false,
   plannedDateConnection: false,
   direction: false,
   deliveryType: false,
-  user: false,
 }
 
 interface MarketingDealsTableProps {
@@ -69,31 +57,28 @@ const MarketingDealsTable = ({ userId }: MarketingDealsTableProps) => {
     [userId],
   )
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.set(name, value)
-      return params.toString()
-    },
-    [searchParams],
-  )
-
   useEffect(() => {
     if (!queryTab) {
       setActiveTab(typesTab.retails)
-      router.replace(`${pathname}?${createQueryString("typeTab", typesTab.retails)}`, {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("typeTab", typesTab.retails)
+
+      router.replace(`${pathname}?${params.toString()}`, {
         scroll: false,
       })
     } else if (queryTab) {
       setActiveTab(queryTab)
     }
-  }, [createQueryString, pathname, queryTab, router.replace])
+  }, [pathname, queryTab, router.replace, searchParams.toString])
 
   const handleToggleTab = (value: DealsUnionType) => {
     setActiveTab(value)
 
-    const queryString = createQueryString("typeTab", value)
-    router.replace(`${pathname}?${queryString}`, { scroll: false })
+    const params = new URLSearchParams()
+
+    params.set("typeTab", value)
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
   }
 
   if (!hasAccess) {

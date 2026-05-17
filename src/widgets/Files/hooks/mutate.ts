@@ -64,57 +64,6 @@ export const useDownLoadFile = () => {
   })
 }
 
-// export const useDeleteFiles = (handleCloseDialog?: React.Dispatch<React.SetStateAction<void>>) => {
-//   const { queryClient, authUser, isSubmittingRef } = useFormSubmission()
-
-//   return useMutation({
-//     mutationFn: async (data: DealFile[]) => {
-//       if (isSubmittingRef.current) {
-//         throw new Error("Операция уже выполняется") // ✅ Явная ошибка вместо return
-//       }
-
-//       isSubmittingRef.current = true
-//       try {
-//         await checkAuthorization(authUser?.id)
-
-//         const responses = await Promise.all(
-//           data.map(({ localPath: filePath, id, dealType, userId, dealId }) =>
-//             deleteFile({ id, filePath, dealType, userId, dealId }),
-//           ),
-//         )
-//         return responses.map((r) => r.data)
-//       } finally {
-//         isSubmittingRef.current = false // 🔄 Гарантированный сброс
-//       }
-//     },
-//     onSuccess: (data) => {
-//       if (!data) {
-//         return
-//       }
-//       TOAST.SUCCESS("Данные успешно удалены")
-
-//       const { userId, dealId, dealType } = data[0]
-
-//       queryClient.invalidateQueries({
-//         queryKey: ["get-deal-files", userId, dealId, dealType],
-//       })
-
-//       queryClient.invalidateQueries({ queryKey: ["info-yandex-disk"] })
-
-//       queryClient.invalidateQueries({
-//         queryKey: [dealType.toLowerCase(), dealId],
-//       })
-
-//       isSubmittingRef.current = false
-
-//       handleCloseDialog?.()
-//     },
-//     onError: (error) => {
-//       handleErrorSession(error)
-//     },
-//   })
-// }
-
 export const useDeleteFiles = (handleCloseDialog?: () => void) => {
   const { queryClient } = useFormSubmission()
 

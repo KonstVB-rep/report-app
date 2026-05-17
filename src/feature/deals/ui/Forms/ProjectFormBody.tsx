@@ -317,6 +317,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"dealStatus" as Path<T>}
                   options={statusOptions[dealType as keyof typeof statusOptions]}
                   placeholder="Выберите статус КП"
+                  required={currentStatus !== StatusProject.REQUEST}
                 />
 
                 {currentStatus !== StatusProject.REJECT && (

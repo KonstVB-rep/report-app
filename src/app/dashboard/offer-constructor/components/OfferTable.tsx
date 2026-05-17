@@ -9,7 +9,13 @@ import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label"
 import { Textarea } from "@/shared/components/ui/textarea"
 import { cn, formatterCurrency } from "@/shared/lib/utils"
-import { type OfferTableItem, selectSectionById, updateRow, useOfferStoreTable } from "../store"
+import {
+  type OfferTableItem,
+  selectSectionById,
+  selectSectionsCount,
+  updateRow,
+  useOfferStoreTable,
+} from "../store"
 
 type OfferTablepProps = {
   dataTable: OfferTableItem[]
@@ -24,15 +30,19 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-
 import { CSS } from "@dnd-kit/utilities"
 import ButtonDndGrab from "./ButtonDndGrab"
 
+type SortableTableRowProps = {
+  row: Row<OfferTableItem>
+  currentId: string
+  removeRow: (id: string) => void
+  isShowDnDButton: boolean
+}
+
 const SortableTableRow = ({
   row,
   currentId,
   removeRow,
-}: {
-  row: Row<OfferTableItem>
-  currentId: string
-  removeRow: (id: string) => void
-}) => {
+  isShowDnDButton,
+}: SortableTableRowProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: currentId,
   })
@@ -51,7 +61,7 @@ const SortableTableRow = ({
       ref={setNodeRef}
       style={style}
     >
-      <ButtonDndGrab dragHandleProps={{ attributes, listeners }} />
+      {isShowDnDButton && <ButtonDndGrab dragHandleProps={{ attributes, listeners }} />}
 
       {row.getVisibleCells().map((cell) => (
         <CellOfferTable cell={cell} key={cell.id} />
@@ -83,11 +93,14 @@ const TableBodyOffer = ({
     return dataTable.some((d) => d.rowId === row.original.rowId)
   })
 
+  const sectionsCount = useOfferStoreTable(selectSectionsCount)
+
   return (
     <div className="tbody grid w-full">
       {rows.map((row) => (
         <SortableTableRow
           currentId={row.original.rowId}
+          isShowDnDButton={sectionsCount > 1}
           key={row.original.rowId} // Стабильный UUID ключ для React
           removeRow={removeRow}
           row={row}

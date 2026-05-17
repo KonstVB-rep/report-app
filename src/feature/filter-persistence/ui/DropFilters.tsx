@@ -12,6 +12,7 @@ type DropFiltersType = {
 const DropFilters = ({ handleClearFilters }: DropFiltersType) => {
   const searchParams = useSearchParams()
   const { columnFilters, columnVisibility, setSelectedColumns } = useDataTableFiltersContext()
+
   return (
     <>
       {searchParams.size > 0 && (

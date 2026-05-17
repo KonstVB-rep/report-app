@@ -43,46 +43,56 @@ const FiltersBlock = ({ table, dealType }: FiltersBlockProps) => {
 
   const safeType = FormatedParamsType[dealType]
 
+  const headersIds = table.getFlatHeaders().map((h) => h.id)
+
+  const baseOptionsGroup = [
+    {
+      label: "Статус",
+      columnId: "dealStatus",
+      options: LABELS[safeType].STATUS,
+    },
+    {
+      label: "Направление",
+      columnId: "direction",
+      options: LABELS[safeType].DIRECTION,
+    },
+    {
+      label: "Тип поставки",
+      columnId: "deliveryType",
+      options: LABELS[safeType].DELIVERY,
+    },
+  ]
+
+  const filteredOptionsGroup = baseOptionsGroup.filter((group) =>
+    headersIds.includes(group.columnId),
+  )
+
   return (
     <MotionDivY className="min-h-0">
       <div className="py-2 flex flex-wrap justify-start gap-2">
         {hasTable && <FilterByUser label="Менеджер" managers={getUsers({ onlyManagers: true })} />}
 
         <div className="flex gap-2 justify-start flex-wrap">
-          <DateRangeFilter
-            label="Дата заявки"
-            onClearDateFilter={handleClearDateFilter}
-            onDateChange={handleDateChange("dateRequest")}
-            value={value.dateRequest}
-          />
-          <DateRangeFilter
-            columnId="plannedDateConnection"
-            label="Дата контакта"
-            onClearDateFilter={handleClearDateFilter}
-            onDateChange={handleDateChange("plannedDateConnection")}
-            value={value.plannedDateConnection}
-          />
+          {headersIds.includes("dateRequest") && (
+            <DateRangeFilter
+              label="Дата заявки"
+              onClearDateFilter={handleClearDateFilter}
+              onDateChange={handleDateChange("dateRequest")}
+              value={value.dateRequest}
+            />
+          )}
+          {headersIds.includes("plannedDateConnection") && (
+            <DateRangeFilter
+              columnId="plannedDateConnection"
+              label="Дата контакта"
+              onClearDateFilter={handleClearDateFilter}
+              onDateChange={handleDateChange("plannedDateConnection")}
+              value={value.plannedDateConnection}
+            />
+          )}
         </div>
         <div className="flex flex-wrap items-center justify-start gap-2 bg-background">
-          <FilterPopoverGroup
-            options={[
-              {
-                label: "Статус",
-                columnId: "dealStatus",
-                options: LABELS[safeType].STATUS,
-              },
-              {
-                label: "Направление",
-                columnId: "direction",
-                options: LABELS[safeType].DIRECTION,
-              },
-              {
-                label: "Тип поставки",
-                columnId: "deliveryType",
-                options: LABELS[safeType].DELIVERY,
-              },
-            ]}
-          />
+          <FilterPopoverGroup options={filteredOptionsGroup} />
 
           <SelectColumns data={table as Table<Record<string, unknown>>} />
         </div>

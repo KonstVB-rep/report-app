@@ -48,10 +48,11 @@ export interface AppError {
 
 interface DeleteResponse {
   managers: { dealId: string; userId: string }[]
+  depId: number
 }
 
 export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: DealType) => {
-  const { queryClient, authUser } = useFormSubmission()
+  const { queryClient } = useFormSubmission()
   return useMutation({
     mutationFn: async (dealId: string) => {
       const result = await deleteDeal(dealId, type)
@@ -64,7 +65,7 @@ export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: D
     },
 
     onSuccess: (data, dealId) => {
-      const depId = Number(authUser?.departmentId)
+      const depId = data.depId
       const queryType = type.toLowerCase() === "project" ? "projects" : "retails"
 
       data.managers?.forEach((manager) => {
@@ -74,7 +75,8 @@ export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: D
       })
 
       queryClient.invalidateQueries({ queryKey: [type.toLowerCase(), dealId] })
-      queryClient.invalidateQueries({ queryKey: ["orders", depId] })
+      // queryClient.invalidateQueries({ queryKey: ["orders", depId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.allDealsDepartment(Number(depId)) })
 
       closeModalFn()
     },
@@ -85,9 +87,12 @@ export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: D
   })
 }
 
-export const useDelListDeal = (closeModalFn: (dataFiles: DealFile[]) => void) => {
+export const useDelListDeal = (
+  closeModalFn: (dataFiles: DealFile[]) => void,
+  departmentId: string,
+) => {
   const pathname = usePathname()
-  const { queryClient, authUser } = useFormSubmission()
+  const { queryClient } = useFormSubmission()
   return useMutation({
     mutationFn: async (
       deals: {
@@ -95,12 +100,13 @@ export const useDelListDeal = (closeModalFn: (dataFiles: DealFile[]) => void) =>
         type: DealType
       }[],
     ) => {
-      return await deleteMultipleDeals(deals)
+      if (!departmentId) return
+      return await deleteMultipleDeals(deals, Number(departmentId))
     },
     onSuccess: (data) => {
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
-          queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
+          queryKey: ["all-deals-department", Number(departmentId)],
         })
       }
 

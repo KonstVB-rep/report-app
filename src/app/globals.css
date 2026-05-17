@@ -1050,9 +1050,8 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 
 .a4-preview {
   width: 210mm;
-  /* min-height убираем или оставляем для печати */
-  height: 297mm; /* Фиксируем высоту для предпросмотра */
-  overflow-y: auto; /* Включаем скролл внутри листа */
+  height: 297mm; 
+  overflow-y: auto; 
   padding: 10mm;
   background: white;
   position: relative;
@@ -1068,9 +1067,8 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
 
 .a4{
   width: 210mm;
-  /* min-height убираем или оставляем для печати */
-  height: 297mm; /* Фиксируем высоту для предпросмотра */
-  overflow-y: auto; /* Включаем скролл внутри листа */
+  height: 297mm;
+  overflow-y: auto;
   padding: 10mm;
 
   /* Для печати */
@@ -1086,44 +1084,10 @@ a.fc-event.fc-event-start.fc-event-end.fc-event-today.fc-daygrid-event.fc-daygri
   word-break: break-all;
   text-wrap:pretty;
 }
-table,
+
 .divTable {
   width: fit-content;
-}
-/*
-.tr {
-  display: flex;
-} */
-
-/* tr,
-.tr {
-  width: fit-content;
-  height: 30px;
-}
-
-th,
-.th,
-td,
-.td {
-  padding: 0.25rem;
-}
-
-th,
-.th {
-  padding: 2px 4px;
-  position: relative;
-  font-weight: bold;
-  text-align: center;
-  height: 30px;
-  & *{
-      color: #000000;
-  }
-} */
-
-/* td,
-.td {
-  height: 30px;
-} */
+} 
 
 .resizer {
   position: absolute;

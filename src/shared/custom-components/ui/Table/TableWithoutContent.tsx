@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type { Header, Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
+import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
 import TableCellComponent from "./TableCellCompoment"
 
@@ -40,6 +41,7 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
       }}
     >
       {row.getVisibleCells().map((cell, index) => {
+        const header = headers?.[index]
         return (
           <TableCellComponent<T>
             cell={cell}
@@ -47,8 +49,9 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
             key={cell.id}
             styles={{
               width: headers?.[index]?.getSize(),
-              minWidth: headers?.[index]?.column.columnDef.minSize,
-              maxWidth: headers?.[index]?.column.columnDef.maxSize,
+              // minWidth: headers?.[index]?.column.columnDef.minSize,
+              // maxWidth: headers?.[index]?.column.columnDef.maxSize,
+              flex: header && NOT_GROW_COLS.includes(header.id) ? "0 0 auto" : "1 0 auto",
             }}
           />
         )

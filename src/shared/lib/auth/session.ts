@@ -11,6 +11,7 @@ export type PayloadType = {
   username: string
   position: string
   permissions: PermissionEnum[]
+  isBlocked: boolean
 }
 
 const ACCESS_SECRET = new TextEncoder().encode(process.env.JWT_SECRET_KEY)

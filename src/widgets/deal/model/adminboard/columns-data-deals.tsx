@@ -172,15 +172,16 @@ export const columnsDataDeals: ColumnDef<DealUnion, unknown>[] = [
     header: "Менеджер",
     cell: (info) => {
       const value = info.getValue() as keyof User
+
       const { deptsFormatted } = useStoreDepartment.getState()
       let userName = ""
       if (!deptsFormatted) return
 
       for (const dep of deptsFormatted) {
         const isFinded = dep.users[value] ?? false
+
         if (isFinded) {
           userName = dep.users[value]
-          return
         }
       }
       return <span className="capitalize">{userName}</span>

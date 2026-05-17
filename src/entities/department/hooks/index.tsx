@@ -44,6 +44,11 @@ export const useGetDepartmentsWithUsers = () => {
         return null
       }
     },
-    enabled: isAuth,
+    enabled: isAuth && !!authUser?.id,
+
+    // В течение часа React Query вообще НЕ БУДЕТ делать повторных фоновых сетевых запросов
+    staleTime: 1000 * 60 * 60 * 24,
+    // Сколько данные лежат в памяти, если компонент размонтировался (ушли со страницы)
+    gcTime: 1000 * 60 * 60 * 24,
   })
 }
