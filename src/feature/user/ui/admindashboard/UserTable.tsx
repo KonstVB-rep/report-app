@@ -36,7 +36,7 @@ const UserTable = () => {
     <>
       <TableCaption title="Список пользователей" />
       <DataTableFiltersProvider value={filtersContextValue}>
-        <div className="py-2 grid gap-2">
+        <div className="py-2 grid gap-2 overflow-auto">
           <UserTableToolbar
             globalFilter={globalFilter ?? ""}
             onGlobalFilterChange={(value) => setGlobalFilter(String(value))}
