@@ -1,4 +1,4 @@
-import type { NextConfig } from "next" // 1. Импортируем тип
+import type { NextConfig } from "next"
 import withBundleAnalyzer from "@next/bundle-analyzer"
 
 const nextConfig: NextConfig = {

@@ -364,7 +364,7 @@ model NotificationCache {
 
 model EquipmentItem {
   id             String   @id @default(cuid())
-  name           String
+  name           String   @db.VarChar(500)
   image          String?  
   isKit          Boolean  @default(false)
   
