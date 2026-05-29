@@ -97,7 +97,7 @@ const ContactDeal = ({
 
                 {(fields.length > 1 || field.name) && (
                   <Button
-                    className="w-fit flex items-center justify-center ml-auto"
+                    className="w-fit flex items-center justify-center ml-auto text-white"
                     onClick={() => handleRemove(index)}
                     type="button"
                     variant="destructive"

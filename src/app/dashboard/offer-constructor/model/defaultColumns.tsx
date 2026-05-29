@@ -206,8 +206,7 @@ export const defaultColumnsEquipment: ColumnDef<SerializedEquipmentItem>[] = [
   },
   {
     id: "name",
-    size: 140,
-    maxSize: 140,
+    maxSize: 500,
     header: "Наименование",
     cell: (props) => <EditableCell {...props} tag="textarea" />,
     meta: {

@@ -68,7 +68,7 @@ const FormUploadFiles = ({
                 style={styles}
               >
                 <Button
-                  className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md"
+                  className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md text-white"
                   onClick={() => handleSelectFile(file.name)}
                   size="icon"
                   title="Удалить из списка"

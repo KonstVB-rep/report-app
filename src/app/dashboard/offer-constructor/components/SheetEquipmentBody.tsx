@@ -69,7 +69,7 @@ const SheetEquipmentBody = () => {
     getCoreRowModel: getCoreRowModel(),
     defaultColumn: {
       minSize: 60,
-      maxSize: 1600,
+      maxSize: 1000,
     },
     autoResetPageIndex: false,
     meta: {

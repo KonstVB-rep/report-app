@@ -64,7 +64,7 @@ const EditableCell = <T extends Equipment>({
       {tag === "textarea" && (
         <Textarea
           className={cn(
-            "w-full text-start text-black dark:text-white bg-white dark:bg-black p-2",
+            "w-full text-start text-black dark:text-white bg-white dark:bg-black p-2 resize-y",
             isEditValue && "border-blue-500",
           )}
           onBlur={() => localEditData(row.original.id, column.id, value)}

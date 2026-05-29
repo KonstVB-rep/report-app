@@ -62,7 +62,7 @@ const PartSection = ({ partId, section, table, partIndex, sectionIndex }: PartSe
         <div className="flex gap-2 items-center text-lg min-h-12! bg-[#0070C0] p-2 my-2 flex-1 pr-20">
           <span className="text-white font-medium">{order}</span>
           <InputTitle
-            className="text-lg!"
+            className="text-lg! text-white"
             defaultTitle={title}
             updateTitleAction={(newTitle) =>
               updateSectionTitle(partId, section.id, newTitle, order)
@@ -76,7 +76,7 @@ const PartSection = ({ partId, section, table, partIndex, sectionIndex }: PartSe
           sectionId={section.id}
         />
         <Button
-          className="absolute top-1/2 transform -translate-y-1/2 right-2"
+          className="absolute top-1/2 transform -translate-y-1/2 right-2 text-white"
           onClick={() => removeSection(partId, section.id)}
           size="icon"
           variant="destructive"

@@ -28,6 +28,9 @@ export const getEquipments = async (): Promise<SerializedEquipmentItem[]> => {
     await requireUser()
 
     const items: RawEquipment[] = await prisma.equipmentItem.findMany({
+      orderBy: {
+        name: "asc",
+      },
       include: {
         contents: {
           include: {
@@ -37,13 +40,10 @@ export const getEquipments = async (): Promise<SerializedEquipmentItem[]> => {
       },
     })
 
-    // 3. Рекурсивная функция с четкими типами Входа и Выхода
     const serializeItem = (item: RawEquipment): SerializedEquipmentItem => {
       return {
         ...item,
-        // Явное приведение к строке
         price: item.price ? item.price.toString() : "0",
-        // Типизируем маппинг вложений
         contents: item.contents?.map(
           (kitItem: RawKitItem): SerializedEquipmentKitItem => ({
             ...kitItem,
@@ -59,7 +59,6 @@ export const getEquipments = async (): Promise<SerializedEquipmentItem[]> => {
     return items.map(serializeItem)
   } catch (error) {
     console.error(error)
-    // Убедись, что handleError возвращает массив, чтобы соответствовать Promise<SerializedEquipmentItem[]>
     return []
   }
 }

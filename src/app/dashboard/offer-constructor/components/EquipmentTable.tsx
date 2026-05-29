@@ -12,6 +12,8 @@ import { cn } from "@/shared/lib/utils"
 import type { Equipment, SerializedEquipmentItem } from "../lib/types"
 import { selectedKitId, useEquipmentStore } from "../store/localtemsStore"
 
+const fullWidthCols = ["name", "description"]
+
 const EquipmentTable = ({
   table,
   setLocalItem,
@@ -80,7 +82,7 @@ const HeaderEquipment = ({
         "p-3 border-r border-zinc-600 relative h-auto flex flex-col justify-center items-center flex-shrink-0",
         index === 0 && "rounded-tl-sm",
         index === headerGroup.headers.length - 1 && "border-r-0 rounded-tr-sm",
-        header.column.id === "description" && "flex-1",
+        fullWidthCols.includes(header.column.id) && "flex-1",
       )}
       key={header.id}
       style={{
@@ -167,7 +169,7 @@ const CellEquipment = ({
     <div
       className={cn(
         "p-2 flex items-start justify-center border-r last:border-r-0 overflow-hidden text-sm min-h-[57px]",
-        cell.column.id === "description" && "flex-1",
+        fullWidthCols.includes(cell.column.id) && "flex-1",
         cell.column.id === "select" && "grid place-content-center",
       )}
       key={cell.id}

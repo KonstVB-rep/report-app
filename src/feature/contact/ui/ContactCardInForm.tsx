@@ -85,7 +85,7 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
           {!editContact && (
             <>
               <Button
-                className="active:scale-95 transition-transform duration-150"
+                className="active:scale-95 transition-transform duration-150 text-white"
                 onClick={() => onDelete(contact.id)}
                 size={"icon"}
                 title="Удалить контакт"

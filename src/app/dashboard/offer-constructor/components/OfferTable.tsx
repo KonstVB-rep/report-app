@@ -1,8 +1,16 @@
 "use client"
 
-import { type ChangeEvent, memo, useEffect, useState } from "react"
+import {
+  type ChangeEvent,
+  type ClipboardEvent,
+  type DragEvent,
+  type MouseEvent,
+  memo,
+  useEffect,
+  useState,
+} from "react"
 import type { Cell, Row, Table } from "@tanstack/react-table"
-import { ImagePlus, Trash2, X } from "lucide-react"
+import { Edit, ImagePlus, Plus, Trash2, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/shared/components/ui/button"
 import { Input } from "@/shared/components/ui/input"
@@ -28,6 +36,7 @@ type OfferTablepProps = {
 
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
 import ButtonDndGrab from "./ButtonDndGrab"
 
 type SortableTableRowProps = {
@@ -232,57 +241,122 @@ export const CellOfferTable = memo(({ cell }: { cell: Cell<OfferTableItem, unkno
 
 const Cell = ({ row }: { row: OfferTableItem }) => {
   const [imagePreview, setImagePreview] = useState<string | null>("")
+  const [isDragging, setIsDragging] = useState(false)
+
+  const processFile = (file: File | undefined) => {
+    if (!file) return
+
+    if (file.type === "image/webp") {
+      TOAST.ERROR("Формат WebP не поддерживается в PDF. Используйте PNG или JPG.")
+      return
+    }
+
+    const reader = new FileReader()
+    const objectUrl = URL.createObjectURL(file)
+
+    reader.onloadend = () => {
+      const base64String = reader.result as string
+      updateRow({ ...row, image: base64String })
+    }
+    reader.readAsDataURL(file)
+
+    setImagePreview(objectUrl)
+  }
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
+    processFile(file)
+  }
 
-    if (file) {
-      if (file.type === "image/webp") {
-        alert("Формат WebP не поддерживается в PDF. Используйте PNG или JPG.")
-        return
+  const handlePaste = (event: ClipboardEvent<HTMLButtonElement>) => {
+    const items = event.clipboardData?.items
+
+    if (!items) return
+
+    for (let i = 0; i < items.length; i++) {
+      console.log(items[i].type.indexOf("image") !== -1, '(items[i].type.indexOf("image") !== -1')
+      if (items[i].type.indexOf("image") !== -1) {
+        const file = items[i].getAsFile()
+        console.log(file, "file")
+        if (file) {
+          processFile(file)
+          break
+        }
       }
-      const reader = new FileReader()
-      const image = URL.createObjectURL(file)
-
-      reader.onloadend = () => {
-        const base64String = reader.result as string
-
-        updateRow({ ...row, image: base64String })
-      }
-      reader.readAsDataURL(file)
-
-      setImagePreview(image)
     }
   }
+
+  const handleDragOver = (event: DragEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragging(false)
+  }
+
+  const handleDrop = (event: DragEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    setIsDragging(false)
+    const file = event.dataTransfer?.files?.[0]
+    processFile(file)
+  }
+
+  const handleRemoveImage = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setImagePreview("")
+    updateRow({ ...row, image: "" })
+  }
+
+  console.log(imagePreview, "imagePreview")
+
   return (
-    <div className="mt-2 flex flex-col gap-2">
-      {imagePreview && (
-        <div className="flex gap-1 items-start">
-          <Image
-            alt="Preview"
-            className="h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
-            height={96}
-            src={row.image || imagePreview}
-            width={96}
+    <div
+      className={`flex w-full flex-col relative rounded-lg border-2 border-dashed transition-all outline-none focus:border-primary p-1 focus:bg-primary/5 ${
+        isDragging ? "border-primary bg-primary/10" : "border-gray-200"
+      }`}
+    >
+      <Button
+        aria-label="Зона загрузки изображения"
+        className="w-full h-full p-0 flex flex-col justify-center"
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onMouseEnter={(e) => e.currentTarget.focus()}
+        onMouseLeave={(e) => e.currentTarget.blur()}
+        onPaste={handlePaste}
+        variant="ghost"
+      >
+        {imagePreview && (
+          <div className="flex gap-1 items-start">
+            <Image
+              alt="Preview"
+              className="h-24 w-24 object-cover rounded-md border ratio-square border-gray-400 m-auto"
+              height={96}
+              src={row.image || imagePreview}
+              width={96}
+            />
+          </div>
+        )}
+
+        <Label className="cursor-pointer flex items-center gap-2 p-2 hover:bg-muted rounded-md transition-colors">
+          <ImagePlus size={20} />
+          <span className="flex gap-1 items-center">{imagePreview ? <Edit /> : <Plus />}</span>
+
+          <Input
+            accept="image/png, image/jpeg, image/jpg" // WebP исключаем на уровне фильтра системы
+            className="hidden"
+            name="image-file"
+            onChange={handleFileChange}
+            type="file"
           />
-
-          <Button onClick={() => setImagePreview("")} size="icon" variant="destructive">
-            <X />
-          </Button>
-        </div>
+        </Label>
+      </Button>
+      {imagePreview && (
+        <Button className="p-0 text-white" onClick={handleRemoveImage} variant="destructive">
+          Удалить
+        </Button>
       )}
-
-      <Label className="cursor-pointer flex items-center gap-2">
-        <ImagePlus size={20} />
-        <span>{imagePreview ? "Изменить фото" : "Добавить фото"}</span>
-
-        <Input
-          accept="image/*"
-          className="hidden"
-          name="name"
-          onChange={handleFileChange}
-          type="file"
-        />
-      </Label>
     </div>
   )
 }

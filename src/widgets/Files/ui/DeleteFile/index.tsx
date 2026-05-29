@@ -58,7 +58,7 @@ const DeleteFile = ({ className, selectedFilesForDelete, setSelectedFiles }: Del
           open={open}
           showX={!isPending}
           trigger={
-            <Button className="h-8 w-8 p-1" disabled={isPending} variant="destructive">
+            <Button className="h-8 w-8 p-1 text-white" disabled={isPending} variant="destructive">
               <FileX className="h-6! w-6!" strokeWidth={1} />
             </Button>
           }

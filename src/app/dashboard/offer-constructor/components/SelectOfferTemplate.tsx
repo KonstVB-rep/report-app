@@ -113,7 +113,7 @@ const SelectItemOfferTemplate = ({ id, name }: { id: string; name: string }) => 
         {name}
       </SelectItem>
       <Button
-        className="p-0 h-6 w-6 shrink-0"
+        className="p-0 h-6 w-6 shrink-0 text-white"
         onClick={() => deleteOfferTemplate(id, name)}
         size="icon"
         title="Удалить шаблон"

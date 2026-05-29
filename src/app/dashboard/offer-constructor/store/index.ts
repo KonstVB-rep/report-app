@@ -464,7 +464,25 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           state.selectedItemId = ""
         }),
     })),
-    { name: "offer-table-storage" },
+    {
+      name: "offer-table-storage",
+      partialize: (state) => ({
+        ...state,
+        data: {
+          ...state.data,
+          parts: state.data?.parts?.map((dataSection) => ({
+            ...dataSection,
+            sections: dataSection.sections?.map((dataRow) => ({
+              ...dataRow,
+              rows: dataRow.rows?.map((row) => {
+                const { image, ...rest } = row
+                return rest
+              }),
+            })),
+          })),
+        },
+      }),
+    },
   ),
 )
 
