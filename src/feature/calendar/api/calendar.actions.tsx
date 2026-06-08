@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma, Role } from "@prisma/client"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { requireUser } from "@/app/api/utils/requireAuth"
 import { prisma } from "@/prisma/prisma-client"
 import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb"
 import { handleError } from "@/shared/api/handleError"

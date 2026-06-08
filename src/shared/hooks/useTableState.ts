@@ -13,7 +13,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import useDataTableFilters from "@/feature/deals/api/hooks/useDataTableFilters"
+import useDataTableFilters from "@/shared/hooks/useDataTableFilters"
 
 export const getLS = <T>(key: string, fallback: T): T => {
   if (typeof window === "undefined") return fallback
@@ -34,6 +34,7 @@ interface UseTableStateOptions<T> extends Partial<TableOptions<T>> {
   hiddenColumns?: Partial<Record<string, boolean>>
   paramsNotFilters?: string[]
   storageKey?: string
+  searchableCols?: string[]
 }
 
 export const useTableState = <T extends { id: string }>(
@@ -41,7 +42,7 @@ export const useTableState = <T extends { id: string }>(
   columns: ColumnDef<T>[],
   options: UseTableStateOptions<T> = {},
 ) => {
-  const { hiddenColumns, paramsNotFilters, ...tableOptions } = options
+  const { hiddenColumns, paramsNotFilters, searchableCols, ...tableOptions } = options
   const storageKey = options.storageKey ?? ""
 
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() =>
@@ -71,7 +72,7 @@ export const useTableState = <T extends { id: string }>(
     selectedSearchColumns,
     setSelectedSearchColumns,
     searchableColumns,
-  } = useDataTableFilters(paramsNotFilters)
+  } = useDataTableFilters(paramsNotFilters, searchableCols)
 
   const mergedColumnVisibility = useMemo<VisibilityState>(() => {
     const hiddenColsObj = hiddenColumns

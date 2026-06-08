@@ -1,6 +1,6 @@
 import type { DealFile } from "@prisma/client"
 import { useMutation } from "@tanstack/react-query"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { requireUser } from "@/app/api/utils/requireAuth"
 import axiosInstance from "@/shared/api/axiosInstance"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { TOAST } from "@/shared/custom-components/ui/Toast"

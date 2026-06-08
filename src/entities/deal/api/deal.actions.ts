@@ -11,7 +11,7 @@ import {
 import cuid from "cuid"
 import { updateTag } from "next/cache"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { requireUser } from "@/app/api/utils/requireAuth"
 import {
   getCachedAdditionalContacts,
   getCachedAllDealsByDepartment,

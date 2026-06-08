@@ -1,7 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { Button } from "@/shared/components/ui/button"
+import ErrorTemplate from "@/shared/components/error-template"
 
 export default function ErrorFallback({
   error,
@@ -10,24 +9,5 @@ export default function ErrorFallback({
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  const didHandleError = useRef(false)
-
-  useEffect(() => {
-    if (!didHandleError.current) {
-      console.error(error)
-      didHandleError.current = true
-    }
-  }, [error])
-
-  return (
-    <section className="grid h-full place-items-center content-center gap-4 text-center">
-      <h2 className="text-2xl font-semibold">Что-то пошло не так</h2>
-      <p className="text-muted-foreground">
-        Попробуйте повторить запрос или перезагрузите страницу.
-      </p>
-      <Button onClick={reset} variant="outline">
-        Повторить запрос
-      </Button>
-    </section>
-  )
+  return <ErrorTemplate error={error} reset={reset} />
 }

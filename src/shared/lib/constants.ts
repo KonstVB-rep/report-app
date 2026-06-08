@@ -7,3 +7,13 @@ export const NOT_GROW_COLS = [
   "phone",
   "lastDateConnection",
 ]
+
+export const SEARCHABLE_COLUMNS = [
+  "nameObject",
+  "nameDeal",
+  "contact",
+  "phone",
+  "email",
+  "comments",
+  "inn",
+] as const

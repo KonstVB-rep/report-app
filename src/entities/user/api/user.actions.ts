@@ -13,7 +13,7 @@ import { updateTag } from "next/cache"
 import z from "zod"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { findUserByEmail } from "@/app/api/utils/findUserByEmail"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { requireUser } from "@/app/api/utils/requireAuth"
 import {
   getCachedAllUsersTable,
   getCachedBaseUserData,
@@ -401,7 +401,6 @@ export const updateUser = async (formData: FormData): Promise<ActionResponse<Use
     if (isUserFormData(parsedData)) {
       await checkUserPermissions([PermissionEnum.USER_MANAGEMENT])
 
-      // 🔥 ДОБАВИЛИ departmentId в select, чтобы поймать перевод сотрудника в другой отдел
       const currentUser = await prisma.user.findUnique({
         where: { id: parsedData.id },
         select: { email: true, departmentId: true },

@@ -34,7 +34,7 @@ const UserEditForm = ({
     },
   )
 
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>) => {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)

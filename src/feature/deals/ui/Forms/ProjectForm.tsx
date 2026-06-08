@@ -18,6 +18,7 @@ const ProjectForm = ({ orderId, managerId }: { orderId?: string; managerId?: str
       ...defaultProjectValues,
       managersIds: [{ userId: managerId ?? userId }],
     },
+    mode: "onTouched",
   })
 
   const { mutateAsync, isPending } = useCreateProject(form.reset)

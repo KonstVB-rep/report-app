@@ -2,7 +2,7 @@
 
 import { PermissionEnum, Prisma } from "@prisma/client"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { requireUser } from "@/app/api/utils/requireAuth"
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import { toDec } from "@/shared/lib/utils"

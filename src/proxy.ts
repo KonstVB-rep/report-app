@@ -20,6 +20,14 @@ export default async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value
   const refreshToken = request.cookies.get("refreshToken")?.value
 
+  if (request.method === "POST" && pathname === "/login") {
+    return NextResponse.next()
+  }
+
+  if (request.headers.has("next-action")) {
+    return NextResponse.next()
+  }
+
   if (pathname.startsWith("/adminboard")) {
     const tokenToVerify = accessToken || refreshToken
 

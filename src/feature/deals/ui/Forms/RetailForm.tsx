@@ -18,6 +18,7 @@ const RetailForm = ({ orderId, managerId }: { orderId?: string; managerId?: stri
       ...defaultRetailValues,
       managersIds: [{ userId: managerId ?? userId }],
     },
+    mode: "onTouched",
   })
 
   const { mutateAsync, isPending } = useCreateRetail(form.reset)

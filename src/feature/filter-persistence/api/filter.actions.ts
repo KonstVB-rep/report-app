@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma, type UserFilter } from "@prisma/client"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { requireUser } from "@/app/api/utils/requireAuth"
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { DeleteFilterReturnType, SaveFilterType, UpdateFilterDataType } from "../types"

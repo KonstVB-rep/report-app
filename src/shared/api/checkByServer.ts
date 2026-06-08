@@ -1,7 +1,7 @@
 // "use server"
 
 // import { type PermissionEnum, Role } from "@prisma/client"
-// import { requireUser } from "@/app/api/utils/requireAuth "
+// import { requireUser } from "@/app/api/utils/requireAuth"
 
 // export const checkRole = async (role: Role = Role.ADMIN): Promise<boolean> => {
 //   try {

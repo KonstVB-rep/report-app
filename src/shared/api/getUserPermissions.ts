@@ -1,10 +1,11 @@
 "use server"
 
 import { cache } from "react"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { getUserFromCookie } from "@/shared/lib/auth/getUserFromCookie"
+
 export const getUserPermissions = cache(async () => {
   try {
-    const user = await requireUser()
+    const user = await getUserFromCookie()
 
     if (!user) {
       return { permissions: [], role: null, departmentId: null }

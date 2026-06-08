@@ -3,24 +3,17 @@ import type { ColumnFilter, ColumnFiltersState, VisibilityState } from "@tanstac
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
 import { useDebounceCallback } from "@/shared/hooks/useDebounceCallback"
-
-export const SEARCHABLE_COLUMNS = [
-  "nameObject",
-  "nameDeal",
-  "contact",
-  "phone",
-  "email",
-  "comments",
-  "inn",
-] as const
+import { SEARCHABLE_COLUMNS } from "@/shared/lib/constants"
 
 type DateRangeValue = { from: Date; to: Date }
 const isValidDate = (d: unknown): d is Date => d instanceof Date && !Number.isNaN(d.getTime())
 
-const useDataTableFilters = (paramsNotFilters?: string[]) => {
+const useDataTableFilters = (paramsNotFilters?: string[], searchableCols?: string[]) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const accessColsSearch = searchableCols || SEARCHABLE_COLUMNS
 
   // Флаг-предохранитель, чтобы обновление URL не зацикливало обновление стейта
   const isUpdatingFromUrl = useRef(false)
@@ -29,7 +22,7 @@ const useDataTableFilters = (paramsNotFilters?: string[]) => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [globalFilter, setGlobalFilter] = useState<string>("")
   const [selectedSearchColumns, setSelectedSearchColumns] = useState<string[]>(() => [
-    ...SEARCHABLE_COLUMNS,
+    ...accessColsSearch,
   ])
   const [openFilters, setOpenFilters] = useState(false)
 

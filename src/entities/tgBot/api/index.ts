@@ -500,7 +500,7 @@
 
 import { Prisma, type UserTelegramChat } from "@prisma/client"
 import { revalidatePath } from "next/cache"
-import { requireUser } from "@/app/api/utils/requireAuth "
+import { requireUser } from "@/app/api/utils/requireAuth"
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { SuccessResponse } from "@/shared/types"
