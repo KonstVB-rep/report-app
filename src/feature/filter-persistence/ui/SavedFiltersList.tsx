@@ -35,15 +35,15 @@ const SavedFiltersList = ({
     const filter = userFilters.find((f) => f.filterName === filterName)
 
     if (filter && filterName !== selectedFilterName) {
-      // 1. Просто обновляем URL.
-      // Хук useDataTableFilters сам распарсит filterValue и применит его к таблице.
       router.replace(`${pathname}?${filter.filterValue}`, { scroll: false })
-
-      // 2. Логика выделения и активности в БД
       selectFilter(filter.id)
       setSelectedFilterName(filter.filterName)
     }
   }
+
+  const isExistSavedFilters = userFilters.length > 0
+
+  if (!isExistSavedFilters) return null
 
   return (
     <HoverCardComponent align="end" title={<ListFilterPlus />}>

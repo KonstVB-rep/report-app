@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, type PropsWithChildren, useCallback, useState } from "react"
+import { memo, type PropsWithChildren, useCallback, useMemo, useState } from "react"
 import { PermissionEnum } from "@prisma/client"
 import clsx from "clsx"
 import { ChevronRight } from "lucide-react"
@@ -29,6 +29,14 @@ import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import { DepartmentLinks } from "./DepartmentLinks"
 import LinkProfile from "./LinkProfile"
 
+type DepartmentLayoutProps = {
+  item: DepartmentListItemType
+  isActiveDepartment: boolean
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  handleDepartmentClick: (e: React.MouseEvent) => void
+}
+
 const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
   const { departmentId } = useParams<{
     departmentId: string
@@ -53,45 +61,79 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
     [router, item.url],
   )
 
-  const currentUser = item.items.find((user) => user.id === authUser?.id)
+  const currentUser = useMemo(() => {
+    if (item.id !== authUser?.departmentId) {
+      return null
+    }
+
+    return item.items.find((user) => user.id === authUser?.id) || null
+  }, [item.id, item.items, authUser?.id, authUser?.departmentId])
+
+  const itemыCurrDep = item.items.filter((item) => item.id === authUser?.id)
 
   return (
     <ProtectedByPermissions
-      defaultNode={currentUser ? <SideBarMenuItemWrapper user={currentUser} /> : null}
+      defaultNode={
+        currentUser ? (
+          <DepartmentLayout
+            handleDepartmentClick={handleDepartmentClick}
+            isActiveDepartment={isActiveDepartment}
+            item={{ ...item, items: itemыCurrDep }}
+            open={open}
+            setOpen={setOpen}
+          />
+        ) : null
+      }
       permission={PermissionEnum.VIEW_USER_REPORT}
     >
-      <Collapsible asChild onOpenChange={() => setOpen((prev) => !prev)} open={open}>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            asChild
-            className={clsx(
-              "h-max border-2 border-border",
-              isActiveDepartment && "border-blue-600 text-primary dark:text-stone-400",
-            )}
-            onClick={handleDepartmentClick}
-            tooltip={item.title}
-          >
-            <div
-              className={clsx(!item.icon && "grid gap-0.5", "cursor-pointer")}
-              style={{ width: "calc(100% - 45px)" }}
-            >
-              {item.icon ?? null}
-              <span className="text-primary">
-                {DepartmentLabels[item.title as keyof typeof DepartmentLabels]}
-              </span>
-            </div>
-          </SidebarMenuButton>
-
-          {item.items?.length ? (
-            <DrppdownSidebarItem isActiveDepartment={isActiveDepartment} item={item} />
-          ) : null}
-        </SidebarMenuItem>
-      </Collapsible>
+      <DepartmentLayout
+        handleDepartmentClick={handleDepartmentClick}
+        isActiveDepartment={isActiveDepartment}
+        item={item}
+        open={open}
+        setOpen={setOpen}
+      />
     </ProtectedByPermissions>
   )
 }
 
 export default memo(DepartmentPersonsList)
+
+const DepartmentLayout = ({
+  item,
+  isActiveDepartment,
+  open,
+  setOpen,
+  handleDepartmentClick,
+}: DepartmentLayoutProps) => (
+  <Collapsible asChild onOpenChange={() => setOpen((prev: boolean) => !prev)} open={open}>
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        className={clsx(
+          "h-max border-2 border-border",
+          isActiveDepartment && "border-blue-600 text-primary dark:text-stone-400",
+        )}
+        onClick={handleDepartmentClick}
+        tooltip={item.title}
+      >
+        <div
+          className={clsx(!item.icon && "grid gap-0.5", "cursor-pointer")}
+          style={{ width: "calc(100% - 45px)" }}
+        >
+          {item.icon ?? null}
+          <span className="text-primary">
+            {DepartmentLabels[item.title as keyof typeof DepartmentLabels]}
+          </span>
+        </div>
+      </SidebarMenuButton>
+
+      {item.items?.length ? (
+        <DropdownSidebarItem isActiveDepartment={isActiveDepartment} item={item} />
+      ) : null}
+    </SidebarMenuItem>
+  </Collapsible>
+)
 
 const SideBarMenuItemWrapper = ({ user }: { user: DepartmentUserItem }) => {
   const { userId, dealType } = useParams<{
@@ -139,7 +181,7 @@ const SideBarMenuItemWrapper = ({ user }: { user: DepartmentUserItem }) => {
   )
 }
 
-const DrppdownSidebarItem = ({
+const DropdownSidebarItem = ({
   item,
   isActiveDepartment,
 }: {

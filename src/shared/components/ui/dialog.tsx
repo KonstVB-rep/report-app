@@ -39,7 +39,7 @@ const DialogContent = React.forwardRef<
     <DialogOverlay />
     <DialogPrimitive.Content
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background px-2 pt-6 md:p-4 shadow-lg duration-200 sm:rounded-lg",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background px-2 pt-6 md:px-4 md:pb-4 shadow-lg duration-200 sm:rounded-lg",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
         "data-[state=open]:slide-in-from-top-6",
@@ -54,7 +54,7 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Close
           className={cn(
             closeStyle ??
-              "p-1 rounded right-1 top-1 light:bg-zinc-100 bg-zinc-900 text-zinc-100 light:text-zinc-900",
+              "right-0 top-0 text-zinc-100 light:text-zinc-900",
             "absolute transition-all duration-150 active:scale-90 hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
           )}
         >

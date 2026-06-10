@@ -56,7 +56,7 @@ const DialogComponent = ({
     <Dialog onOpenChange={onOpenChange} open={open}>
       {renderTrigger()}
       <DialogContent
-        className={`max-w-[90vw] sm:max-w-[825px] ${classNameContent}`}
+        className={`max-w-[90vw] sm:max-w-[825px] pt-8 ${classNameContent}`}
         onInteractOutside={(e) => {
           if (disableClose) e.preventDefault()
         }}
