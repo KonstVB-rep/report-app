@@ -1,4 +1,4 @@
-import React, { useState, useTransition } from "react"
+import React, { useState } from "react"
 import { Filter } from "lucide-react"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
 import { Button } from "@/shared/components/ui/button"
@@ -13,7 +13,6 @@ type Props = {
 }
 
 const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
-  const [, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
   const { columnFilters, setColumnFilters } = useDataTableFiltersContext()
 
@@ -27,22 +26,18 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
   const handleChange = (value: string) => {
     if (!setColumnFilters) return
 
-    startTransition(() => {
-      setColumnFilters((prev) => {
-        if (selectedValue === value) {
-          return prev
-        }
-        const oldFilters = prev.filter((f) => f.id !== columnId)
-        return [...oldFilters, { id: columnId, value }]
-      })
+    setColumnFilters((prev) => {
+      if (selectedValue === value) {
+        return prev
+      }
+      const oldFilters = prev.filter((f) => f.id !== columnId)
+      return [...oldFilters, { id: columnId, value }]
     })
   }
 
   const handleClear = () => {
     if (setColumnFilters) {
-      startTransition(() => {
-        setColumnFilters((prev) => prev.filter((f) => f.id !== columnId))
-      })
+      setColumnFilters((prev) => prev.filter((f) => f.id !== columnId))
     }
     setOpen(false)
   }

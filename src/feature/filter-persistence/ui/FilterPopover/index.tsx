@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useTransition } from "react"
+import React, { useMemo, useState } from "react"
 import { Filter } from "lucide-react"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
 import { Button } from "@/shared/components/ui/button"
@@ -14,7 +14,6 @@ type Props = {
 }
 
 const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
-  const [_, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
   const { columnFilters, setColumnFilters } = useDataTableFiltersContext()
 
@@ -34,42 +33,38 @@ const FilterPopover = React.memo(({ columnId, options, label }: Props) => {
   const handleChange = (id: string) => {
     if (!setColumnFilters) return
 
-    startTransition(() => {
-      setColumnFilters((prev) => {
-        const filterObj = prev.find((f) => f.id === columnId)
-        const val = filterObj?.value
+    setColumnFilters((prev) => {
+      const filterObj = prev.find((f) => f.id === columnId)
+      const val = filterObj?.value
 
-        let updatedValues: string[] = []
-        if (Array.isArray(val)) {
-          updatedValues = [...val]
-        } else if (typeof val === "string" && val !== "") {
-          updatedValues = val.split(",")
-        }
+      let updatedValues: string[] = []
+      if (Array.isArray(val)) {
+        updatedValues = [...val]
+      } else if (typeof val === "string" && val !== "") {
+        updatedValues = val.split(",")
+      }
 
-        // Toggle ID
-        if (updatedValues.includes(id)) {
-          updatedValues = updatedValues.filter((v) => v !== id)
-        } else {
-          updatedValues.push(id)
-        }
+      // Toggle ID
+      if (updatedValues.includes(id)) {
+        updatedValues = updatedValues.filter((v) => v !== id)
+      } else {
+        updatedValues.push(id)
+      }
 
-        // Если значений не осталось — удаляем фильтр из массива совсем
-        if (updatedValues.length === 0) {
-          return prev.filter((f) => f.id !== columnId)
-        }
+      // Если значений не осталось — удаляем фильтр из массива совсем
+      if (updatedValues.length === 0) {
+        return prev.filter((f) => f.id !== columnId)
+      }
 
-        // Обновляем существующий или добавляем новый
-        const otherFilters = prev.filter((f) => f.id !== columnId)
-        return [...otherFilters, { id: columnId, value: updatedValues }]
-      })
+      // Обновляем существующий или добавляем новый
+      const otherFilters = prev.filter((f) => f.id !== columnId)
+      return [...otherFilters, { id: columnId, value: updatedValues }]
     })
   }
 
   const handleClear = () => {
     if (setColumnFilters) {
-      startTransition(() => {
-        setColumnFilters((prev) => prev.filter((f) => f.id !== columnId))
-      })
+      setColumnFilters((prev) => prev.filter((f) => f.id !== columnId))
     }
   }
 

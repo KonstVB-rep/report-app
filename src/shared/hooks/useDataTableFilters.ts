@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { ColumnFilter, ColumnFiltersState, VisibilityState } from "@tanstack/react-table"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
@@ -26,8 +26,9 @@ const useDataTableFilters = (paramsNotFilters?: string[], searchableCols?: strin
   ])
   const [openFilters, setOpenFilters] = useState(false)
 
-  // 1. Функция парсинга параметров URL в стейт React
-  const syncUrlToState = useCallback(() => {
+  useEffect(() => {
+    if (isUpdatingFromUrl.current) return
+
     const params = new URLSearchParams(searchParams.toString())
     const filters: ColumnFiltersState = []
     const visibility: VisibilityState = {}
@@ -47,7 +48,6 @@ const useDataTableFilters = (paramsNotFilters?: string[], searchableCols?: strin
 
       const val = decodeURIComponent(value)
 
-      // Обработка дат
       if (val.includes("..")) {
         const [fromStr, toStr] = val.split("..")
         const from = new Date(fromStr)
@@ -64,19 +64,9 @@ const useDataTableFilters = (paramsNotFilters?: string[], searchableCols?: strin
       })
     })
 
-    isUpdatingFromUrl.current = true
     setColumnFilters(filters)
     setColumnVisibility(visibility)
-
-    // Сбрасываем флаг в конце тика, чтобы разрешить updateUrl
-    setTimeout(() => {
-      isUpdatingFromUrl.current = false
-    }, 50)
   }, [searchParams, paramsNotFilters])
-
-  useEffect(() => {
-    syncUrlToState()
-  }, [syncUrlToState])
 
   const serializeValue = (value: unknown): string => {
     if (Array.isArray(value)) return value.join(",")
@@ -126,12 +116,17 @@ const useDataTableFilters = (paramsNotFilters?: string[], searchableCols?: strin
       const currentQuery = searchParams.toString()
 
       if (newQuery !== currentQuery) {
+        isUpdatingFromUrl.current = true
         router.replace(newQuery ? `${pathname}?${newQuery}` : pathname, {
           scroll: false,
         })
+
+        queueMicrotask(() => {
+          isUpdatingFromUrl.current = false
+        })
       }
     },
-    400,
+    150,
   )
 
   // Следим за изменениями стейта (только для ручных фильтров в UI)
