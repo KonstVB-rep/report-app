@@ -12,7 +12,6 @@ import { SingleContactFormSchema } from "@/entities/contact/model/schema"
 export const ProjectFormSchema = z
   .object({
     id: z.string().optional(),
-    // Единственное всегда обязательное поле
     dateRequest: z.preprocess(
       (val) => {
         if (val instanceof Date) return val.toISOString()

@@ -1,11 +1,8 @@
-import { memo } from "react"
+import { memo, useState } from "react"
 import { Role } from "@prisma/client"
 import { format } from "date-fns"
 import { ru } from "date-fns/locale"
-import { ExternalLink } from "lucide-react"
 import dynamic from "next/dynamic"
-import Link from "next/link"
-import { useParams } from "next/navigation"
 import { cleanDistance } from "@/entities/task/lib/helpers"
 import type { TaskWithUserInfo } from "@/entities/task/types"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -18,6 +15,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/shared/components/ui/card"
+import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
 
 const EditTaskDialogButton = dynamic(() => import("@/feature/task/ui/Modals/EditTaskDialogButton"))
 
@@ -28,16 +26,9 @@ type TaskKanbanCardProps = {
 }
 
 const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
-  const { departmentId, userId: userIdFromUrl } = useParams<{
-    departmentId: string
-    userId: string
-  }>()
-
   const { authUser } = useStoreUser()
 
   if (!authUser || !task) return null
-
-  const taskUserId = userIdFromUrl || task.executorId || task.assignerId
 
   const duedate = cleanDistance(new Date(task.dueDate))
 
@@ -56,19 +47,9 @@ const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
     ADMIN_ROLES.has(authUser.role)
 
   return (
-    <Card className="relative p-0 pb-3 grid gap-2 cursor-pointer drop-shadow-xl group">
-      <Link
-        className="group-hover:grid hidden place-items-center border-primary hover:border-2 absolute inset-0 bg-background/80 rounded-md"
-        href={`/dashboard/tasks/${departmentId}/${taskUserId}/${task.id}`}
-        prefetch={false}
-      >
-        <span className="hover:border-primary hover:border-2 p-2 rounded-md bg-background flex gap-2">
-          Перейти к задаче
-          <ExternalLink />
-        </span>
-      </Link>
+    <Card className="relative p-0 pb-3 grid gap-2 drop-shadow-xl group overflow-visible">
       {isCanActionTask && (
-        <div className="group-hover:flex hidden flex-col absolute top-0.5 right-0.5 gap-2 bg-background p-1 rounded-md border">
+        <div className="group-hover:flex hover:flex hidden flex-col absolute top-0.5 right-0.5 gap-2 bg-background p-1 rounded-md border">
           <EditTaskDialogButton data={task} />
           <DelTaskDialogButton data={task} />
         </div>
@@ -78,7 +59,7 @@ const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
       >
         {task.title}
       </CardHeader>
-      <CardDescription className="px-3 py-0 line-clamp-2">{task.description}</CardDescription>
+      <DescriptionTask description={task.description} />
       <CardContent className="flex gap-2 px-3 py-0">
         <Badge variant="outline">{LABEL_TASK_PRIORITY[task.taskPriority]}</Badge>
       </CardContent>
@@ -105,3 +86,22 @@ const TaskKanbanCard = memo(({ task }: TaskKanbanCardProps) => {
 })
 
 export default TaskKanbanCard
+
+const DescriptionTask = ({ description }: { description: string }) => {
+  const [openDescribe, setOpenDescribe] = useState(false)
+  return (
+    <>
+      <CardDescription
+        className="px-3 py-0 line-clamp-2 overflow-hidden wrap-break-word hover:shadow-[0_0_0_1px_#3b82f6] rounded-xs cursor-pointer"
+        onClick={() => setOpenDescribe(true)}
+        title="Нажми для просмотра"
+      >
+        {description}
+      </CardDescription>
+
+      {openDescribe && (
+        <RowInfoDialog closeFn={() => setOpenDescribe(false)} isActive={true} text={description} />
+      )}
+    </>
+  )
+}

@@ -36,20 +36,14 @@ const TaskCard = ({ data }: { data: TaskWithUserInfo }) => {
         </Badge>
       </div>
       <Card
-        className={`relative p-0 pb-3 grid gap-3 cursor-pointer drop-shadow-xl max-w-xl border-4 ${TASK_PRIORITY_COLOR_BORDER[data.taskPriority]}`}
+        className={`relative p-0 pb-3 grid gap-3 cursor-pointer drop-shadow-xl w-full border-4 ${TASK_PRIORITY_COLOR_BORDER[data.taskPriority]}`}
       >
-        <CardHeader className="pt-3 text-lg px-3 py-2 rounded-lg">
+        <CardHeader className="pt-3 text-lg px-3 py-2 rounded-lg overflow-hidden wrap-break-word">
           Наименование: {data.title}
         </CardHeader>
         <CardDescription className="px-3 py-0 text-lg">
           Описание: {data.description}
         </CardDescription>
-        {/* <CardContent className="flex gap-2 px-3 py-0">
-          <Badge>{LABEL_TASK_STATUS[data.taskStatus]}</Badge>
-          <Badge variant="outline" className="text-lg">
-            Приоритет: {LABEL_TASK_PRIORITY[data.taskPriority]}
-          </Badge>
-        </CardContent> */}
         <CardFooter className="grid gap-3 px-3 py-0">
           <div className="grid gap-1 flex-1">
             <span className="capitalize text-md">автор:</span>

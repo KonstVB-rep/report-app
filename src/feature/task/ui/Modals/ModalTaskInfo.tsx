@@ -7,7 +7,7 @@ const ModalTaskDetails = () => {
   const { selectedDataItem } = useTableContext<TaskWithUserInfo>()
   if (!selectedDataItem) return null
   return (
-    <ModalContent className="max-h-[94vh] overflow-y-auto max-w-[90%] w-max" title="">
+    <ModalContent className="max-h-[94vh] overflow-y-auto max-w-5xl min-w-3xs w-full" title="">
       <TaskDetails departmentId={selectedDataItem.departmentId} />
     </ModalContent>
   )

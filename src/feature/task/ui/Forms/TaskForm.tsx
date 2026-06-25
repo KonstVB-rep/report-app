@@ -3,7 +3,15 @@ import type { FieldValues, Path, UseFormReturn } from "react-hook-form"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
 import type { DepartmentInfo } from "@/entities/department/types"
 import { LABEL_TASK_PRIORITY, LABEL_TASK_STATUS } from "@/feature/task/model/constants"
-import { Form } from "@/shared/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shared/components/ui/form"
+import { Textarea } from "@/shared/components/ui/textarea"
 import SubmitFormButton from "@/shared/custom-components/ui/Buttons/SubmitFormButton"
 import DatePickerFormField from "@/shared/custom-components/ui/Inputs/DatePickerFormField"
 import InputTextForm from "@/shared/custom-components/ui/Inputs/InputTextForm"
@@ -52,13 +60,24 @@ const TaskForm = <T extends FieldValues>({ form, onSubmit, isPending }: TaskForm
               required
             />
 
-            <InputTextForm
+            <FormField
               control={form.control}
-              errorMessage={getError("description")}
-              label="Описание"
               name={"description" as Path<T>}
-              placeholder="Описание..."
-              required
+              render={({ field }) => (
+                <FormItem className="col-span-full">
+                  <FormLabel>
+                    Последний комментарий<span className="text-red-700">*</span>
+                  </FormLabel>
+
+                  <FormControl>
+                    <Textarea disabled={isPending} placeholder="Тест.." required {...field} />
+                  </FormControl>
+
+                  {getError("description") && (
+                    <FormMessage className="text-red-500">{getError("description")}</FormMessage>
+                  )}
+                </FormItem>
+              )}
             />
 
             <SelectFormField

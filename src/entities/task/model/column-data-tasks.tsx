@@ -143,18 +143,9 @@ export const columnsDataTask: ColumnDef<TaskWithUserInfo, unknown>[] = [
     header: "Приоритет",
     cell: (info: CellContext<TaskWithUserInfo, unknown>) => {
       const value = info.getValue() as keyof typeof LABEL_TASK_PRIORITY
-      // const bgColor =
-      //   value === TaskPriority.LOW
-      //     ? "bg-green-600"
-      //     : value === TaskPriority.MEDIUM
-      //       ? "bg-yellow-600"
-      //       : value === TaskPriority.HIGH
-      //         ? "bg-orange-600"
-      //         : "bg-red-600";
-
       return (
         <span
-          className={`abs-element absolute inset-4 flex items-center justify-center rounded-md ${TASK_PRIORITY_COLOR_BG[value]} `}
+          className={`abs-element absolute inset-4 flex items-center justify-center rounded-md ${TASK_PRIORITY_COLOR_BG[value]} text-white`}
         >
           {LABEL_TASK_PRIORITY[value]}
         </span>

@@ -10,7 +10,7 @@ import {
   useState,
 } from "react"
 import type { Cell, Row, Table } from "@tanstack/react-table"
-import { Edit, ImagePlus, Plus, Trash2, X } from "lucide-react"
+import { Edit, ImagePlus, Plus, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/shared/components/ui/button"
 import { Input } from "@/shared/components/ui/input"

@@ -27,7 +27,7 @@ type ContextMenuTableProps = {
     more: { onClick: () => void }
     color?: { onClick: () => void }
   }
-  path?: string
+  // path?: string;
   dealStatus?: string | null
 }
 
@@ -35,7 +35,7 @@ const ContextRowTable = ({
   children,
   hasEditDeleteActions = true,
   openModal,
-  path = "",
+  // path = "",
   dealStatus = "",
 }: ContextMenuTableProps) => {
   return (
@@ -43,14 +43,14 @@ const ContextRowTable = ({
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 
       <ContextMenuContent className="grid gap-1 bg-background">
-        {path && (
-          <ContextMenuItem
-            className="flex w-full items-center justify-start gap-2 p-2 cursor-pointer"
-            onClick={() => openModal?.().more.onClick()}
-          >
-            <FileText size="14" /> Подробнее
-          </ContextMenuItem>
-        )}
+        {/* {path && ( */}
+        <ContextMenuItem
+          className="flex w-full items-center justify-start gap-2 p-2 cursor-pointer"
+          onClick={() => openModal?.().more.onClick()}
+        >
+          <FileText size="14" /> Подробнее
+        </ContextMenuItem>
+        {/* )} */}
 
         {hasEditDeleteActions && (
           <>
@@ -89,3 +89,53 @@ const ContextRowTable = ({
 }
 
 export default memo(ContextRowTable)
+
+type ContextMenuTaskTableProps = {
+  children: React.ReactNode
+  hasEditDeleteActions?: boolean
+  openModal?: () => {
+    edit: {
+      onClick: () => void
+    }
+    delete: { onClick: () => void }
+    more: { onClick: () => void }
+    color?: { onClick: () => void }
+  }
+}
+
+export const ContextRowTaskTable = memo(
+  ({ children, hasEditDeleteActions = true, openModal }: ContextMenuTaskTableProps) => {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+
+        <ContextMenuContent className="grid gap-1 bg-background">
+          <ContextMenuItem
+            className="flex w-full items-center justify-start gap-2 p-2 cursor-pointer"
+            onClick={() => openModal?.().more.onClick()}
+          >
+            <FileText size="14" /> Подробнее
+          </ContextMenuItem>
+
+          {hasEditDeleteActions && (
+            <>
+              <ContextMenuItem
+                className="flex cursor-pointer gap-2"
+                onClick={() => openModal?.().edit.onClick()}
+              >
+                <FilePenLine size="14" /> Редактировать
+              </ContextMenuItem>
+
+              <ContextMenuItem
+                className="flex cursor-pointer gap-2"
+                onClick={() => openModal?.().delete.onClick()}
+              >
+                <Trash2 size="14" /> Удалить
+              </ContextMenuItem>
+            </>
+          )}
+        </ContextMenuContent>
+      </ContextMenu>
+    )
+  },
+)

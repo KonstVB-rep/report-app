@@ -34,6 +34,7 @@ const useDataTableFilters = (paramsNotFilters?: string[], searchableCols?: strin
     const visibility: VisibilityState = {}
 
     params.forEach((value, key) => {
+      if (key === "viewType") return
       if (key === "search") {
         setGlobalFilter(decodeURIComponent(value))
         return

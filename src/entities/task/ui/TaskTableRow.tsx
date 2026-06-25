@@ -1,5 +1,4 @@
 import { Role } from "@prisma/client"
-import { useParams } from "next/navigation"
 import type { TaskWithUserInfo } from "@/entities/task/types"
 import type { TaskTableRowProps } from "@/entities/tgBot/types"
 import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
@@ -12,13 +11,8 @@ const TaskTableRow = <T extends TaskWithUserInfo>({
   headers,
 }: TaskTableRowProps<T>) => {
   const authUser = useRequireAuth()
-  const { departmentId } = useParams<{
-    departmentId: string
-  }>()
 
   const { getContextMenuActions } = useTableContext<T>()
-
-  const path = `/dashboard/tasks/${departmentId}/${row.original.assignerId}/${row.original.id}/`
 
   const ADMIN_ROLES: Set<Role> = new Set([Role.ADMIN, Role.SUPER_ADMIN])
 
@@ -28,12 +22,11 @@ const TaskTableRow = <T extends TaskWithUserInfo>({
     ADMIN_ROLES.has(authUser.role)
 
   return (
-    <BaseTableRow<T>
-      className="tr hover:bg-zinc-600"
+    <BaseTableRow.Task<T>
+      className="tr hover:bg-zinc-300"
       getContextMenuActions={getContextMenuActions}
       hasEditDeleteActions={isCanActionTask}
       headers={headers}
-      path={path}
       row={row}
       virtualRow={virtualRow}
     />
