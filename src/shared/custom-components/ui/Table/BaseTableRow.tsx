@@ -66,6 +66,7 @@ type BaseTableRowProps<T extends BaseEntity> = {
     color?: { onClick: () => void }
   }
   renderAdditionalInfo?: (row: Row<T>) => React.ReactNode
+  path?: string
   headers?: Header<T, unknown>[]
   hasEditDeleteActions?: boolean
   highlight?: string
@@ -79,7 +80,7 @@ const TaskRow = <T extends BaseEntity>({
   renderAdditionalInfo,
   hasEditDeleteActions = true,
   headers,
-}: BaseTableRowProps<T>) => {
+}: Omit<BaseTableRowProps<T>, "path">) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
   return (
@@ -119,6 +120,7 @@ const BaseTableRow = <T extends BaseEntity>({
   renderAdditionalInfo,
   hasEditDeleteActions = true,
   headers,
+  path,
 }: BaseTableRowProps<T>) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
@@ -127,6 +129,7 @@ const BaseTableRow = <T extends BaseEntity>({
       dealStatus={row.original.dealStatus}
       hasEditDeleteActions={hasEditDeleteActions}
       openModal={getContextMenuActions ? () => getContextMenuActions(row) : undefined}
+      path={path}
     >
       <TableRow
         className={className}

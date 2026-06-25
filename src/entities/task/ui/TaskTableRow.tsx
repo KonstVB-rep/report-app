@@ -23,7 +23,7 @@ const TaskTableRow = <T extends TaskWithUserInfo>({
 
   return (
     <BaseTableRow.Task<T>
-      className="tr hover:bg-zinc-300"
+      className="tr hover:bg-zinc-300 dark:hover:bg-zinc-800"
       getContextMenuActions={getContextMenuActions}
       hasEditDeleteActions={isCanActionTask}
       headers={headers}
