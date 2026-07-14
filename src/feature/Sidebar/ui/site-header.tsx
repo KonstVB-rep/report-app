@@ -7,6 +7,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink"
 import useStoreUser from "@/entities/user/store/useStoreUser"
+import { FindOrgModal } from "@/feature/find-organization-by-inn/ui/FindOrgModal"
 import { Button } from "@/shared/components/ui/button"
 import { ModeToggle } from "@/shared/components/ui/mode-toggle"
 import { Separator } from "@/shared/components/ui/separator"
@@ -53,6 +54,7 @@ export function SiteHeader({ isHasSitebar = true }: { isHasSitebar?: boolean }) 
         )}
 
         <div className="hidden items-center gap-2 md:flex">
+          <FindOrgModal />
           {departmentId && userId && (
             <Link
               className="btn_hover text-sm font-medium"

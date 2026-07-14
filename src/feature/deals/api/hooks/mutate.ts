@@ -76,7 +76,9 @@ export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: D
 
       queryClient.invalidateQueries({ queryKey: [type.toLowerCase(), dealId] })
       // queryClient.invalidateQueries({ queryKey: ["orders", depId] })
-      queryClient.invalidateQueries({ queryKey: queryKeys.allDealsDepartment(Number(depId)) })
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.allDealsDepartment(Number(depId)),
+      })
 
       closeModalFn()
     },

@@ -4,13 +4,8 @@ import { cacheLife, cacheTag } from "next/cache"
 import { prisma } from "@/prisma/prisma-client"
 
 export const tagKeysUserActions = {
-  // Тег для одиночной базовой карточки пользователя
   baseUser: (userId: string) => `user-${userId}`,
-
-  // Тег для списка пользователей конкретного департамента
   usersByDept: (departmentId: number) => `users-dept-${departmentId}`,
-
-  // Статический тег для глобальной таблицы пользователей в админке
   allUsersAdminTable: () => "users-global-admin-table",
 } as const
 
@@ -43,15 +38,12 @@ export const getCachedUsersByDepartment = async (departmentId: number) => {
     where: { departmentId },
   })
 }
-
-// 2. Тяжелый кэш всех пользователей для Админки (на день)
 export const getCachedAllUsersTable = async () => {
   cacheLife("days")
   cacheTag(tagKeysUserActions.allUsersAdminTable())
 
   console.log("[Cache DB] Тяжелый пересчет списка пользователей для Админки...")
 
-  // Группируем логины параллельно
   const [lastLogins, users] = await Promise.all([
     prisma.userLogin.groupBy({
       by: ["userId"],
@@ -70,7 +62,6 @@ export const getCachedAllUsersTable = async () => {
     }),
   ])
 
-  // Выполняем маппинг и сборку плоских объектов СТРОГО внутри кэша
   return users.map((user) => {
     const lastLoginRecord = lastLogins.find((ll) => ll.userId === user.id)
     const lastLoginDate = lastLoginRecord?._max.loginAt || new Date(0)

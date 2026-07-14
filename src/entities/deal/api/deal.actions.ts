@@ -1064,11 +1064,15 @@ export const deleteMultipleDeals = async (
 
     await prisma.$transaction(async (tx) => {
       if (projectsIds.length) {
-        await tx.projectManager.deleteMany({ where: { dealId: { in: projectsIds } } })
+        await tx.projectManager.deleteMany({
+          where: { dealId: { in: projectsIds } },
+        })
         await tx.project.deleteMany({ where: { id: { in: projectsIds } } })
       }
       if (retailsIds.length) {
-        await tx.retailManager.deleteMany({ where: { dealId: { in: retailsIds } } })
+        await tx.retailManager.deleteMany({
+          where: { dealId: { in: retailsIds } },
+        })
         await tx.retail.deleteMany({ where: { id: { in: retailsIds } } })
       }
       await tx.dealFile.deleteMany({ where: { dealId: { in: allIds } } })

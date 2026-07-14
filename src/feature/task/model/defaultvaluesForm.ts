@@ -7,6 +7,6 @@ export const defaultTaskValues = {
   executorId: "",
   dueDate: undefined,
   startDate: undefined,
-  startTime: "",
-  endTime: "",
+  startTime: "09:00",
+  endTime: "18:00",
 }

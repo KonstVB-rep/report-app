@@ -26,6 +26,8 @@ const CreateTaskForm = () => {
 
   const onSubmit = (task: TaskSchema) => {
     const { startTime, endTime, startDate, dueDate, taskPriority, taskStatus, ...taskRest } = task
+
+    console.log(endTime, "endTime")
     const [startDateWithTime, dueDateWithTime] = addCorrectTimeInDates(
       startTime,
       endTime,
