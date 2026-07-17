@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React, { useState } from "react" // Добавили useState
 import type { DeletingDealsListItem } from "@/entities/deal/types"
 import { getUsers } from "@/entities/department/lib/utils"
 import { useReassignDeal } from "@/feature/deals/api/hooks/mutate"
@@ -13,7 +13,11 @@ import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComp
 const managers = getUsers({ onlyManagers: true })
 
 const DialogReassignDealConfirm = ({ deals }: { deals: DeletingDealsListItem[] }) => {
-  const { mutate, isPending } = useReassignDeal()
+  // 1. Создаем стейт для контроля открытия/закрытия окна
+  const [isOpen, setIsOpen] = useState(false)
+
+  // 2. Передаем onSuccess в хук мутации
+  const { mutate, isPending } = useReassignDeal(() => setIsOpen(false))
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -31,11 +35,15 @@ const DialogReassignDealConfirm = ({ deals }: { deals: DeletingDealsListItem[] }
 
     mutate(data)
   }
+
   return (
     <DialogComponent
       classNameContent="sm:max-w-[400px]"
       dialogTitle="Передать сделки другому менеджеру"
       trigger={<Button variant="outline">Переназначить</Button>}
+      // 3. Передаем пропсы контроля состояния в ваш DialogComponent
+      open={isOpen}
+      onOpenChange={setIsOpen}
     >
       <form className="grid gap-4 py-4" id="form" onSubmit={handleSubmit}>
         <p className="text-center">Вы точно уверены что хотите перназначить клиентов?</p>

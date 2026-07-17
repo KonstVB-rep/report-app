@@ -39,6 +39,7 @@ import { defaultProjectValues, defaultRetailValues } from "@/feature/deals/model
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
 import { queryKeys } from "./query"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
 
 export interface AppError {
   success: false
@@ -386,7 +387,7 @@ export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => v
   })
 }
 
-export const useReassignDeal = () => {
+export const useReassignDeal = (setOpenModal: (value: boolean) => void) => {
   const { queryClient, authUser } = useFormSubmission()
 
   return useMutation<Awaited<ReturnType<typeof reassignDealsToManager>>, AppError, ReAssignDeal>({
@@ -399,10 +400,24 @@ export const useReassignDeal = () => {
 
       return result
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
-      })
+    onSuccess: (data) => {
+      if (data.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["orders", authUser?.departmentId],
+          exact: true,
+        })
+        queryClient.invalidateQueries({
+          queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
+          exact: true,
+        })
+        TOAST.SUCCESS(data.message)
+      }
+
+      if (!data.success) {
+        TOAST.ERROR(data.message)
+      }
+
+      setOpenModal(false)
     },
     onError: (error) => {
       handleErrorSession(error)
@@ -418,6 +433,10 @@ export const useSetHilight = () => {
     },
     onSuccess: (data) => {
       if (!data) {
+        return
+      }
+      if (!data.success) {
+        TOAST.ERROR("Произошла ошибка при установке цвета")
         return
       }
 
@@ -438,6 +457,8 @@ export const useSetHilight = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.colorsHiLightList(authUser?.id || ""),
       })
+
+      TOAST.SUCCESS("Цвет успешно установлен")
     },
     onError: (error) => {
       handleErrorSession(error)
@@ -456,6 +477,11 @@ export const useDeleteHilight = () => {
         return
       }
 
+      if (!data.success) {
+        TOAST.ERROR("Произошла ошибка при удалении цвета")
+        return
+      }
+
       if (data.type === DEAL_TYPE.PROJECT) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.projectsUser(data.userId),
@@ -473,6 +499,8 @@ export const useDeleteHilight = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.colorsHiLightList(authUser?.id || ""),
       })
+
+      TOAST.SUCCESS("Цвет успешно удален")
     },
     onError: (error) => {
       handleErrorSession(error)
