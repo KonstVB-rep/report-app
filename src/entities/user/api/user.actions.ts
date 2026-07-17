@@ -28,8 +28,8 @@ import { userFormEditSchema, userFormSchema } from "../model/schema"
 import type { UserDataBase, UserFormData, UserFormEditData, UserRequest } from "../types"
 
 export interface ResponseDelUser<T> {
-  error: boolean
-  message: string | null
+  success: boolean
+  message: string
   data: T | null
 }
 
@@ -546,14 +546,14 @@ export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser
     if (user) {
       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT])
     }
-
+    console.log(deletedUserId, "deletedUserId")
     const person = await prisma.user.findUnique({
       where: { id: deletedUserId },
       select: { id: true, departmentId: true }, // 🔥 Дописываем select, чтобы вытащить департамент
     })
 
     if (!person) {
-      return { error: true, message: "Пользователь не найден", data: null }
+      return { success: false, message: "Пользователь не найден", data: null }
     }
 
     await prisma.user.delete({ where: { id: deletedUserId } })
@@ -564,14 +564,14 @@ export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser
     updateTag("departments-global-list")
 
     return {
-      error: false,
+      success: true,
       message: "Пользователь успешно удален",
       data: null,
     }
   } catch (error) {
     console.error(error)
     return {
-      error: true,
+      success: false,
       message: "Ошибка при удалении пользователя",
       data: null,
     }
@@ -644,7 +644,7 @@ export const deleteUsersList = async (deletedUserIds: string[]): Promise<Respons
 
     if (nonExistingUserIds.length > 0) {
       return {
-        error: true,
+        success: true,
         message: `Пользователи с ID: ${nonExistingUserIds.join(", ")} не найдены`,
         data: null,
       }
@@ -670,14 +670,14 @@ export const deleteUsersList = async (deletedUserIds: string[]): Promise<Respons
     updateTag("departments-global-list")
 
     return {
-      error: false,
+      success: false,
       message: `Успешно удалено пользователей: ${deletedUserIds.length}`,
       data: null,
     }
   } catch (error) {
     console.error(error)
     return {
-      error: true,
+      success: true,
       message: "Ошибка при удалении пользователей",
       data: null,
     }

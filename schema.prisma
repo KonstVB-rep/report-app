@@ -64,7 +64,7 @@ model Department {
   name        DepartmentEnum @unique
   directorId  String?        @unique
   description String         @unique
-  director    User?          @relation("DepartmentDirector", fields: [directorId], references: [id])
+  director     User?         @relation("DepartmentDirector", fields: [directorId], references: [id], onDelete: SetNull)
   users       User[]         @relation("DepartmentUsers")
   tasks       Task[]         @relation("DepartmentTask")
 }
@@ -247,7 +247,7 @@ model UserFilter {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], map: "NO_FK")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, filterName]) 
   @@index([userId])
@@ -264,7 +264,7 @@ model EventCalendar {
   updatedAt DateTime @updatedAt
   notified  Boolean  @default(false)
 
-  user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId]) 
   @@index([start]) 
@@ -339,10 +339,8 @@ model Task {
 
   department Department @relation("DepartmentTask", fields: [departmentId], references: [id])
 
-  // Автор задачи (assigner)
   assigner User? @relation("TaskAssigner", fields: [assignerId], references: [id], onDelete: SetNull)
 
-  // Исполнитель задачи (executor)
   executor User? @relation("TaskExecutor", fields: [executorId], references: [id], onDelete: SetNull)
 
   @@index([orderTask, taskStatus])

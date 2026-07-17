@@ -105,7 +105,13 @@ export const useDeleteUser = (userId: string) => {
       })
       return { previousDepsWithUsers }
     },
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      if (!data?.success) {
+        TOAST.ERROR(data.message)
+        return
+      }
+      TOAST.SUCCESS(data.message)
+
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
           queryKey: ["all-users"],
