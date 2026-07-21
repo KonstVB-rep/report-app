@@ -82,9 +82,9 @@ const FileItem = ({
         {fileTypeIcons[fileType]}
       </p>
 
-      <p className="truncate text-xs">{fileName}</p>
+      <p className="truncate text-xs text-primary">{fileName}</p>
 
-      <div className="absolute inset-0 -z-1 h-full w-full rounded-md bg-black/80 group-hover:z-1 group-focus-visible:z-2" />
+      <div className="absolute inset-0 -z-1 h-full w-full rounded-md bg-primary-foreground group-hover:z-1 group-focus-visible:z-2" />
 
       <DownLoadOrCheckFile
         className="absolute inset-0 z-10 h-full w-full items-center justify-center"
@@ -149,7 +149,7 @@ const FileList = ({ data }: FileListProps) => {
     config: { duration: 200 },
   })
 
-  if (files?.length) return null
+  if (!files?.length) return null
 
   return (
     <IntoDealItem className="relative" title="Файлы">

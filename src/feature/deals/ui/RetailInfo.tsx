@@ -1,10 +1,11 @@
 "use client"
 
-import { Building, Info } from "lucide-react"
+import { Building, FileDigit, Info } from "lucide-react"
 import dynamic from "next/dynamic"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
-import { LoaderCircle, LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
+import DealInfoSkeleton from "@/entities/deal/ui/Skeletons/DealInfoSkeleton"
+import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
 import { useGetRetailById } from "../api/hooks/query"
@@ -39,7 +40,7 @@ const RetailItemInfo = ({ id }: { id: string }) => {
   const { data: dealData, isLoading } = useGetRetailById(id, false)
   const { dealInfo, dataFinance } = useNormalizeRetailData(dealData)
 
-  if (isLoading) return <LoaderCircleInWater />
+  if (isLoading) return <DealInfoSkeleton />
   if (!dealData) return <NotFoundDeal />
 
   return (
@@ -63,6 +64,14 @@ const RetailItemInfo = ({ id }: { id: string }) => {
                 <Building className="icon-deal_info" size="40" strokeWidth={1} />
                 <ValueSpan>{dealInfo.nameObject}</ValueSpan>
               </div>
+
+              <p className="flex flex-col items-center flex-wrap gap-2">
+                <span className="text-sm first-letter:capitalize dark:font-light w-full flex items-center gap-4">
+                  <FileDigit className="icon-deal_info" size="40" strokeWidth={1} />
+                  <ValueSpan>ИНН: {dealData.inn || "-"}</ValueSpan>
+                </span>
+              </p>
+
               <div className="first-letter:capitalize">
                 <div className="flex flex-col  gap-2 justify-start">
                   <p className="flex items-center justify-start gap-4">
@@ -96,16 +105,12 @@ const RetailItemInfo = ({ id }: { id: string }) => {
                 value={dealInfo?.nameDeal}
               />
 
-              <RowInfoDealProp direction="column" label="Тип сделки:" value={dealInfo.dealType} />
-
               <RowInfoDealProp
                 direction="column"
                 label="Дата запроса:"
                 value={dealInfo.dateRequest}
               />
-            </IntoDealItem>
 
-            <IntoDealItem className="flex-item-contact" title={"Детали"}>
               <RowInfoDealProp direction="column" label="Направление:" value={dealInfo.direction} />
 
               <RowInfoDealProp
@@ -113,9 +118,9 @@ const RetailItemInfo = ({ id }: { id: string }) => {
                 label="Тип поставки:"
                 value={dealInfo.deliveryType}
               />
+            </IntoDealItem>
 
-              <hr className="w-full h-[] rounded-lg bg-gray-500" />
-
+            <IntoDealItem className="flex-item-contact" title={"Детали"}>
               <FinanceInfo data={dataFinance} />
             </IntoDealItem>
           </div>

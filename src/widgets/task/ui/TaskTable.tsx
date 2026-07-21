@@ -136,12 +136,7 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
               <TableTemplate className="rounded-md" table={table} totalSize={totalSize}>
                 <VirtualRow<T>
                   renderRow={({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
-                    <TaskTableRow
-                      headers={table.getHeaderGroups()[0].headers}
-                      key={row.id}
-                      row={row}
-                      virtualRow={virtualRow}
-                    />
+                    <TaskTableRow key={row.id} row={row} virtualRow={virtualRow} />
                   )}
                   rows={rows}
                   virtualItems={virtualItems}

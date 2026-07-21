@@ -16,7 +16,7 @@ const ManagersListByDeal = ({ managers, userId }: ManagersListByDealProps) => {
   return (
     <div className="flex flex-wrap gap-2 divide-x divide-solid border-t border-b py-1">
       {responsible && (
-        <div className="flex flex-col items-start justify-center gap-1 px-2 border-amber-400 border rounded-md">
+        <div className="flex flex-col items-start justify-center gap-1 px-2 border-amber-400 border rounded-md p-2">
           <span className={spanClass}>Ответственный менеджер</span>
           <span className="text-sm capitalize flex items-center">{responsible.username}</span>
           <span className={cn(spanClass, "first-letter:uppercase")}>{responsible.position}</span>

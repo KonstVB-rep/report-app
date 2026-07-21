@@ -5,7 +5,7 @@ const ValueSpan = ({ children, className }: { children: ReactNode; className?: s
   return (
     <span
       className={cn(
-        "break-normal text-md prop-deal-value min-h-10 px-2 py-1 flex-1 bg-white dark:bg-black",
+        "break-normal text-sm prop-deal-value min-h-10 px-2 py-1 flex-1 bg-white dark:bg-black",
         className,
       )}
     >

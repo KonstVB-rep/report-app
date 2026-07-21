@@ -2,7 +2,7 @@
 
 import { prisma } from "@/prisma/prisma-client"
 import type { CompanySuggestionItem, FoundCompanySuggestion } from "../api/useFindOrganization"
-import { SearchType } from "../model/schema"
+import type { SearchType } from "../model/schema"
 
 export async function getOrganizationByQueryAction(
   query: string,
@@ -16,7 +16,7 @@ export async function getOrganizationByQueryAction(
     const searchTrim = query.trim()
     if (!searchTrim) return { success: true, data: null, error: null }
 
-    let whereCondition: any = {}
+    let whereCondition = {}
 
     switch (searchType) {
       case "inn":

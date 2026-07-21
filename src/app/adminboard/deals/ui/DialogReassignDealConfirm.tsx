@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from "react" // Добавили useState
+import type React from "react" // Добавили useState
+import { useState } from "react"
 import type { DeletingDealsListItem } from "@/entities/deal/types"
 import { getUsers } from "@/entities/department/lib/utils"
 import { useReassignDeal } from "@/feature/deals/api/hooks/mutate"
@@ -40,10 +41,10 @@ const DialogReassignDealConfirm = ({ deals }: { deals: DeletingDealsListItem[] }
     <DialogComponent
       classNameContent="sm:max-w-[400px]"
       dialogTitle="Передать сделки другому менеджеру"
-      trigger={<Button variant="outline">Переназначить</Button>}
+      onOpenChange={setIsOpen}
       // 3. Передаем пропсы контроля состояния в ваш DialogComponent
       open={isOpen}
-      onOpenChange={setIsOpen}
+      trigger={<Button variant="outline">Переназначить</Button>}
     >
       <form className="grid gap-4 py-4" id="form" onSubmit={handleSubmit}>
         <p className="text-center">Вы точно уверены что хотите перназначить клиентов?</p>

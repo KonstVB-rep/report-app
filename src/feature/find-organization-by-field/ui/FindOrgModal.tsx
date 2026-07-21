@@ -1,6 +1,9 @@
 // src/features/find-organization-by-inn/ui/FindOrgModal.tsx
 "use client"
 
+import { useState } from "react"
+import { EllipsisVertical, Search, X } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/shared/components/ui/button"
 import {
   Dialog,
@@ -22,11 +25,8 @@ import {
 import PhoneInput from "@/shared/custom-components/ui/Inputs/PhoneInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
-import { EllipsisVertical, Search, X } from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
 import { useFindOrganization } from "../api/useFindOrganization"
-import { SearchType, findOrgSchema } from "../model/schema"
+import { findOrgSchema, type SearchType } from "../model/schema"
 
 export const FindOrgModal = () => {
   const [searchQuery, setSearchQuery] = useState<string>("")
@@ -99,7 +99,7 @@ export const FindOrgModal = () => {
                         <p className="font-medium text-blue-600">Доп. контакты:</p>
                         <ul className="space-y-1 pl-2">
                           {p.additionalContacts.map((c) => (
-                            <li key={c.id} className="leading-relaxed">
+                            <li className="leading-relaxed" key={c.id}>
                               <span className="font-semibold text-foreground">{c.name}</span>
                               {c.position && <span className="text-gray-400"> ({c.position})</span>}
 
@@ -183,10 +183,10 @@ export const FindOrgModal = () => {
             <div className="relative">
               <Button
                 className="absolute left-1 top-1/2 -translate-y-1/2 p-1 flex items-center justify-center text-muted-foreground border-none z-10"
+                disabled={isPending}
                 size="icon"
                 type="submit"
                 variant="ghost"
-                disabled={isPending}
               >
                 {isPending ? (
                   <LoaderCircle className="h-5 w-5 animate-spin" />

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { flexRender, type Header, type Row } from "@tanstack/react-table"
+import { flexRender, type Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
 import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import ContextRowTable, { ContextRowTaskTable } from "../ContextRowTable"
@@ -14,19 +14,20 @@ interface BaseEntity {
 
 function renderCells<T extends BaseEntity>({
   row,
-  headers,
   openFullInfoCell,
   setOpenFullInfoCell,
   renderAdditionalInfo,
 }: {
   row: Row<T>
-  headers?: Header<T, unknown>[]
   openFullInfoCell: string | null
   setOpenFullInfoCell: (v: string | null) => void
   renderAdditionalInfo?: (row: Row<T>) => React.ReactNode
 }) {
-  return row.getVisibleCells().map((cell, index) => {
-    const header = headers?.[index]
+  return row.getVisibleCells().map((cell) => {
+    const columnId = cell.column.id
+
+    const isNotGrow = NOT_GROW_COLS.includes(columnId)
+    const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
 
     return (
       <TableCellComponent
@@ -35,8 +36,10 @@ function renderCells<T extends BaseEntity>({
         key={cell.id}
         styles={{
           width: cell.column.getSize(),
-          minWidth: cell.column.columnDef.minSize,
-          flex: header && NOT_GROW_COLS.includes(header.id) ? "0 0 auto" : "1 0 auto",
+          minWidth: cell.column.columnDef.minSize || 60,
+          flex: flexValue,
+          overflow: "hidden",
+          boxSizing: "border-box",
         }}
       >
         {openFullInfoCell === cell.id && (
@@ -67,7 +70,6 @@ type BaseTableRowProps<T extends BaseEntity> = {
   }
   renderAdditionalInfo?: (row: Row<T>) => React.ReactNode
   path?: string
-  headers?: Header<T, unknown>[]
   hasEditDeleteActions?: boolean
   highlight?: string
 }
@@ -79,7 +81,6 @@ const TaskRow = <T extends BaseEntity>({
   getContextMenuActions,
   renderAdditionalInfo,
   hasEditDeleteActions = true,
-  headers,
 }: Omit<BaseTableRowProps<T>, "path">) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
@@ -102,7 +103,6 @@ const TaskRow = <T extends BaseEntity>({
       >
         {renderCells({
           row: row,
-          headers: headers,
           openFullInfoCell,
           setOpenFullInfoCell,
           renderAdditionalInfo: renderAdditionalInfo,
@@ -119,7 +119,6 @@ const BaseTableRow = <T extends BaseEntity>({
   getContextMenuActions,
   renderAdditionalInfo,
   hasEditDeleteActions = true,
-  headers,
   path,
 }: BaseTableRowProps<T>) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
@@ -149,7 +148,6 @@ const BaseTableRow = <T extends BaseEntity>({
       >
         {renderCells({
           row: row,
-          headers: headers,
           openFullInfoCell,
           setOpenFullInfoCell,
           renderAdditionalInfo: renderAdditionalInfo,

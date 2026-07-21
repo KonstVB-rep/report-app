@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { getOrganizationByQueryAction } from "../actions/getOrganizationByQueryAction"
-import { SearchType } from "../model/schema"
+import type { SearchType } from "../model/schema"
 
 export type AdditionalContactItem = {
   id: string

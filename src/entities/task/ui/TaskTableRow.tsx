@@ -5,11 +5,7 @@ import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
 import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 
-const TaskTableRow = <T extends TaskWithUserInfo>({
-  row,
-  virtualRow,
-  headers,
-}: TaskTableRowProps<T>) => {
+const TaskTableRow = <T extends TaskWithUserInfo>({ row, virtualRow }: TaskTableRowProps<T>) => {
   const authUser = useRequireAuth()
 
   const { getContextMenuActions } = useTableContext<T>()
@@ -26,7 +22,6 @@ const TaskTableRow = <T extends TaskWithUserInfo>({
       className="tr hover:bg-zinc-300 dark:hover:bg-zinc-800"
       getContextMenuActions={getContextMenuActions}
       hasEditDeleteActions={isCanActionTask}
-      headers={headers}
       row={row}
       virtualRow={virtualRow}
     />

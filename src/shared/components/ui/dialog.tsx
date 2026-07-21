@@ -53,7 +53,7 @@ const DialogContent = React.forwardRef<
       {showX && (
         <DialogPrimitive.Close
           className={cn(
-            closeStyle ?? "right-0 top-0 text-zinc-100 light:text-zinc-900",
+            closeStyle ?? "right-0 top-0 dark:text-zinc-100 text-zinc-900",
             "absolute transition-all duration-150 active:scale-90 hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
           )}
         >

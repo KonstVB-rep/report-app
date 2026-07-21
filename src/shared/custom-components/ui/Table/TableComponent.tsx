@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import type { Row, Table } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
 import type { DealUnion } from "@/entities/deal/types"
@@ -16,19 +16,16 @@ const TableComponent = <T extends DealUnion>({
   hasEditDeleteActions = true,
   openFilters,
 }: TableComponentProps<T>) => {
-  const headers = useMemo(() => table.getHeaderGroups()[0].headers, [table])
-
   const renderVirtualRow = useCallback(
     ({ row, virtualRow }: { row: Row<T>; virtualRow: VirtualItem }) => (
       <DealTableRow<T>
         hasEditDeleteActions={hasEditDeleteActions}
-        headers={headers}
         key={row.id}
         row={row}
         virtualRow={virtualRow}
       />
     ),
-    [headers, hasEditDeleteActions],
+    [hasEditDeleteActions],
   )
 
   return (

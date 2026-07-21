@@ -37,9 +37,9 @@ import {
 } from "@/entities/deal/types"
 import { defaultProjectValues, defaultRetailValues } from "@/feature/deals/model/defaultvaluesForm"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
+import { TOAST } from "@/shared/custom-components/ui/Toast"
 import { useFormSubmission } from "@/shared/hooks/useFormSubmission"
 import { queryKeys } from "./query"
-import { TOAST } from "@/shared/custom-components/ui/Toast"
 
 export interface AppError {
   success: false

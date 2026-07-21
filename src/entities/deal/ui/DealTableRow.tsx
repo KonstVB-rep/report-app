@@ -7,7 +7,6 @@ import type { DealTableRowProps, DealUnion } from "../types"
 export const DealTableRow = <T extends DealUnion>({
   row,
   virtualRow,
-  headers,
   ...rest
 }: DealTableRowProps<T>) => {
   const { departmentId } = useParams<{
@@ -25,7 +24,6 @@ export const DealTableRow = <T extends DealUnion>({
       {...rest}
       className={getRowClassName(row.original.dealStatus)}
       getContextMenuActions={getContextMenuActions}
-      headers={headers}
       path={path}
       renderAdditionalInfo={(row) => renderAdditionalInfo?.(row.original.id)}
       row={row}
