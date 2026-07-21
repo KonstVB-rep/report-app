@@ -3,13 +3,27 @@ import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { getOrganizationByQueryAction } from "../actions/getOrganizationByQueryAction"
+import { SearchType } from "../model/schema"
 
+export type AdditionalContactItem = {
+  id: string
+  name: string
+  phone: string | null
+  email: string | null
+  position: string | null
+}
+
+// 2. Обновляем основной тип элемента поиска
 export type CompanySuggestionItem = {
   id: string
   inn: string | null
   nameDeal: string
   nameObject: string
   type: "PROJECT" | "RETAIL"
+  phone: string | null
+  email: string | null
+  contact: string
+  additionalContacts: AdditionalContactItem[]
   mainManager: {
     username: string
     position: string
@@ -23,27 +37,16 @@ export type FoundCompanySuggestion = {
 
 interface FindOrgVariables {
   value: string
-  searchType: "inn" | "orgName"
+  searchType: SearchType
 }
 
 export function useFindOrganization() {
-  // Передаем дженерик типы: <ТипОтвета, Ошибка, ТипПеременныхMutate>
   return useMutation<FoundCompanySuggestion | null, Error, FindOrgVariables>({
     mutationFn: async (variables: FindOrgVariables) => {
-      const dataTrim = variables.value.trim()
-      const currentType = variables.searchType
-
-      if (currentType === "inn" && dataTrim.length !== 10 && dataTrim.length !== 12) {
-        toast.error("Некорректный ИНН, должен быть 10 или 12 символов")
-        return null
-      }
-
-      if (currentType === "orgName" && dataTrim.length < 2) {
-        toast.error("Некорректное название организации, должно быть не менее 2 символов")
-        return null
-      }
-
-      const response = await getOrganizationByQueryAction(dataTrim, currentType)
+      const response = await getOrganizationByQueryAction(
+        variables.value.trim(),
+        variables.searchType,
+      )
 
       if (!response.success) {
         toast.error(response.error || "Ошибка загрузки")
@@ -52,7 +55,6 @@ export function useFindOrganization() {
 
       return response.data
     },
-    onSuccess: () => {},
     onError: (error: Error) => {
       handleErrorSession(error)
     },

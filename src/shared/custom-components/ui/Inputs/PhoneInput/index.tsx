@@ -21,20 +21,6 @@ const PhoneInput = ({
   required,
   ...props
 }: PhoneInputProps) => {
-  const handleValueChange = (value: string) => {
-    // Проверяем, есть ли добавочный номер
-    const cleanValue = value.replace(/\D/g, "") // Убираем все символы, кроме цифр
-    const hasExtension = cleanValue.length > 11 // Если длина больше 11, значит есть добавочный номер
-
-    if (!hasExtension) {
-      // Если добавочного номера нет, просто передаем номер без изменений
-      onAccept?.(value)
-    } else {
-      // Если есть добавочный номер, передаем его
-      onAccept?.(value)
-    }
-  }
-
   return (
     <IMaskInput
       className={cn(
@@ -42,7 +28,7 @@ const PhoneInput = ({
         className,
       )}
       mask={mask}
-      onAccept={handleValueChange}
+      onAccept={onAccept}
       placeholder={placeholder}
       required={required}
       value={value}
