@@ -225,6 +225,17 @@ export const FindOrgModal = () => {
                   value={searchQuery}
                 />
               )}
+
+              {searchType === "email" && (
+                <Input
+                  autoComplete="off"
+                  className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Введите email"
+                  type="email"
+                  value={searchQuery}
+                />
+              )}
             </div>
           </form>
         </div>
