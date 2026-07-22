@@ -46,10 +46,13 @@ type HiddenColumns = Record<string, boolean>
 const hiddenDefCols: Record<TableType, HiddenColumns> = {
   projects: {
     resource: false,
+    // deliveryType: false,
+    // direction: false,
     id: false,
   },
   retails: {
     resource: false,
+    direction: false,
     id: false,
   },
   contracts: {},

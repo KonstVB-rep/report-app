@@ -5,7 +5,7 @@ const RowInfoDealProp = ({
   value,
   direction = "row",
 }: {
-  label: string
+  label?: string
   value: string | undefined
   direction?: "row" | "column"
 }) => {
@@ -16,9 +16,11 @@ const RowInfoDealProp = ({
     <p
       className={`${direction === "column" ? "flex flex-col" : "items-center flex flex-wrap"} gap-2`}
     >
-      <span className="text-sm first-letter:capitalize p-2 prop-deal-value dark:font-light">
-        {label}
-      </span>
+      {label && (
+        <span className="text-sm first-letter:capitalize p-3 prop-deal-value dark:font-light">
+          {label}
+        </span>
+      )}
 
       <ValueSpan>{value}</ValueSpan>
     </p>

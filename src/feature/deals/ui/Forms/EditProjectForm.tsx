@@ -31,7 +31,7 @@ const EditProjectForm = ({ close, dealInfo, isInvalidate = false, titleForm }: P
       dealStatus: dealInfo.dealStatus as StatusProject,
       direction: dealInfo.direction as DirectionProject,
       lastDateConnection: dealInfo.lastDateConnection?.toISOString(),
-      commentsLastConnection: "",
+      commentsLastConnection: dealInfo.commentsLastConnection ?? "",
       plannedDateConnection: dealInfo.plannedDateConnection?.toISOString(),
       amountCP: formatNumberCurrency(dealInfo.amountCP),
       amountPurchase: formatNumberCurrency(dealInfo.amountPurchase),

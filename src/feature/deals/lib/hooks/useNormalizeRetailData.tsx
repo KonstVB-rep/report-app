@@ -1,4 +1,4 @@
-import type { DealRetail } from "@/entities/deal/types"
+import type { DealUnion } from "@/entities/deal/types"
 import { formatterCurrency } from "@/shared/lib/utils"
 import type {
   typeofDelivery,
@@ -12,7 +12,7 @@ import {
   StatusRetailLabels,
 } from "../constants"
 
-const useNormalizeRetailData = (deal: DealRetail | null | undefined) => {
+const useNormalizeRetailData = (deal: DealUnion | null | undefined) => {
   const statusLabel = StatusRetailLabels[deal?.dealStatus as typeofStatus] || "Нет данных"
   const directionLabel = DirectionRetailLabels[deal?.direction as typeofDirections] || "Нет данных"
   const deliveryLabel = DeliveryRetailLabels[deal?.deliveryType as typeofDelivery] || "Нет данных"

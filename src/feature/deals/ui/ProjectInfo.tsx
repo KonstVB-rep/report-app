@@ -2,14 +2,13 @@
 
 import { Building, FileDigit, Info, PhoneOutgoing } from "lucide-react"
 import dynamic from "next/dynamic"
+import type { DealUnion } from "@/entities/deal/types"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
-import DealInfoSkeleton from "@/entities/deal/ui/Skeletons/DealInfoSkeleton"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import TooltipComponent from "@/shared/custom-components/ui/TooltipComponent"
-import { useGetProjectById } from "../api/hooks/query"
 import useNormalizeProjectData from "../lib/hooks/useNormalizeProjectData"
 import FinanceInfo from "./FinanceInfo"
 import SettingDeal from "./SettingDeal"
@@ -36,36 +35,31 @@ const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/Contac
   ssr: false,
 })
 
-const ProjectItemInfo = ({ id }: { id: string }) => {
-  const { data: dealData, isLoading } = useGetProjectById(id, false)
-
-  console.log(dealData, "dealData")
+const ProjectItemInfo = ({ data }: { data: DealUnion }) => {
+  console.log(data, "data")
 
   const { dataFinance, formattedDate, statusLabel, directionLabel, deliveryLabel } =
-    useNormalizeProjectData(dealData)
+    useNormalizeProjectData(data)
 
-  if (isLoading) return <DealInfoSkeleton />
-  if (!dealData) return <NotFoundDeal />
+  if (!data) return <NotFoundDeal />
 
   return (
-    <MotionDivY className="grid grid-rows-[auto_auto_1fr_auto] gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto w-full">
+    <MotionDivY className="scrollbar-none grid grid-rows-[auto_auto_1fr_auto] gap-1 p-4 max-h-[calc(100svh-var(--header-height)-2px)] overflow-auto w-full">
       <div className="flex items-center justify-between rounded-md bg-muted p-2 pb-2">
         <div className="grid gap-1">
           <h1 className="text-2xl first-letter:capitalize">проект</h1>
           <p className="text-xs">Дата: {formattedDate}</p>
         </div>
-        <SettingDeal dealData={dealData} />
+        <SettingDeal dealData={data} />
       </div>
 
-      <ManagersListByDeal managers={dealData.managers} userId={dealData?.userId || "Не назначен"} />
+      <ManagersListByDeal managers={data.managers} userId={data?.userId || "Не назначен"} />
 
       <div className="grid gap-2">
-        {dealData?.plannedDateConnection && (
+        {data?.plannedDateConnection && (
           <div className="flex gap-2 items-center p-2 mt-2 border-blue-500 rounded border-2">
             <PhoneOutgoing className="text-orange-600" />
-            <span>
-              Плановая дата контакта: {dealData?.plannedDateConnection?.toLocaleDateString()}
-            </span>
+            <span>Плановая дата контакта: {data?.plannedDateConnection?.toLocaleDateString()}</span>
           </div>
         )}
         <div className="grid grid-cols-1 gap-2 py-2 lg:grid-cols-[1fr_2fr]">
@@ -75,12 +69,12 @@ const ProjectItemInfo = ({ id }: { id: string }) => {
                 <div className="grid w-full gap-2">
                   <div className="flex w-full items-start justify-start gap-4 text-lg">
                     <Building className="icon-deal_info" size="40" strokeWidth={1} />
-                    <ValueSpan>{dealData.nameObject}</ValueSpan>
+                    <ValueSpan>{data.nameObject}</ValueSpan>
                   </div>
                   <p className="flex flex-col items-center flex-wrap gap-2">
                     <span className="text-sm first-letter:capitalize dark:font-light w-full flex items-center gap-4">
                       <FileDigit className="icon-deal_info" size="40" strokeWidth={1} />
-                      <ValueSpan>ИНН: {dealData.inn || "-"}</ValueSpan>
+                      <ValueSpan>ИНН: {data.inn || "------------"}</ValueSpan>
                     </span>
                   </p>
 
@@ -100,11 +94,7 @@ const ProjectItemInfo = ({ id }: { id: string }) => {
 
             <div className="grid gap-2">
               <IntoDealItem title="Основной контакт">
-                <CardMainContact
-                  contact={dealData.contact}
-                  email={dealData.email}
-                  phone={dealData.phone}
-                />
+                <CardMainContact contact={data.contact} email={data.email} phone={data.phone} />
               </IntoDealItem>
             </div>
           </div>
@@ -112,16 +102,12 @@ const ProjectItemInfo = ({ id }: { id: string }) => {
           <div className="grid-rows-auto grid gap-2">
             <div className="flex flex-wrap gap-2">
               <IntoDealItem className="flex-item-contact" title="Информация о сделке">
-                <RowInfoDealProp
-                  direction="column"
-                  label="Название сделки:"
-                  value={dealData.nameDeal}
-                />
+                <RowInfoDealProp direction="column" value={data.nameDeal} />
 
                 <RowInfoDealProp
-                  direction="column"
+                  direction="row"
                   label="Дата запроса:"
-                  value={dealData.dateRequest?.toLocaleDateString()}
+                  value={data.dateRequest?.toLocaleDateString()}
                 />
 
                 <RowInfoDealProp label="Направление:" value={directionLabel} />
@@ -129,17 +115,15 @@ const ProjectItemInfo = ({ id }: { id: string }) => {
                 <RowInfoDealProp label="Тип поставки:" value={deliveryLabel} />
               </IntoDealItem>
 
-              <IntoDealItem className="flex-item-contact" title="Детали">
-                <hr className="w-full h-px rounded-lg bg-gray-500" />
-
+              <IntoDealItem className="flex-item-contact" title="Финансы">
                 <FinanceInfo data={dataFinance} />
               </IntoDealItem>
             </div>
 
-            {dealData.additionalContacts?.length > 0 && (
+            {data.additionalContacts?.length > 0 && (
               <IntoDealItem title="Дополнительные контакты">
                 <div className="flex h-full flex-wrap gap-2">
-                  {dealData.additionalContacts.map((contact) => (
+                  {data.additionalContacts.map((contact) => (
                     <ContactCardInDealInfo contact={contact} key={contact.id} />
                   ))}
                 </div>
@@ -149,25 +133,23 @@ const ProjectItemInfo = ({ id }: { id: string }) => {
         </div>
 
         <IntoDealItem title="Комментарии">
-          <ValueSpan className="first-letter:capitalize">
-            {dealData.comments || "Нет данных"}
-          </ValueSpan>
+          <ValueSpan className="first-letter:capitalize">{data.comments || "Нет данных"}</ValueSpan>
         </IntoDealItem>
       </div>
 
       <div className="flex flex-wrap gap-2">
         <FileList
           data={{
-            userId: dealData.userId,
-            dealId: dealData.id,
-            dealType: dealData.type,
+            userId: data.userId,
+            dealId: data.id,
+            dealType: data.type,
           }}
         />
         <PreviewImagesList
           data={{
-            userId: dealData.userId,
-            dealId: dealData.id,
-            dealType: dealData.type,
+            userId: data.userId,
+            dealId: data.id,
+            dealType: data.type,
           }}
         />
       </div>

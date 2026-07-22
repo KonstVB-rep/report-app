@@ -29,6 +29,8 @@ function renderCells<T extends BaseEntity>({
     const isNotGrow = NOT_GROW_COLS.includes(columnId)
     const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
 
+    if (cell.column.columnDef?.meta?.hidden) return null
+
     return (
       <TableCellComponent
         cell={cell}

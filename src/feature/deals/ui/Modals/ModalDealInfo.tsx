@@ -16,8 +16,8 @@ const ModalDealInfo = () => {
       closeStyle="bg-background p-1 -right-1 -top-1 rounded"
       title="Редактировать проект"
     >
-      {selectedDataItem.type === DealType.PROJECT && <ProjectItemInfo id={selectedDataItem.id} />}
-      {selectedDataItem.type === DealType.RETAIL && <RetailItemInfo id={selectedDataItem.id} />}
+      {selectedDataItem.type === DealType.PROJECT && <ProjectItemInfo data={selectedDataItem} />}
+      {selectedDataItem.type === DealType.RETAIL && <RetailItemInfo data={selectedDataItem} />}
     </ModalContent>
   )
 }

@@ -27,6 +27,7 @@ const TableTemplate = <T extends Record<string, unknown>>({
           return (
             <TableRow className="flex w-full" key={headerGroup.id}>
               {headerGroup.headers.map((header, index) => {
+                if (header.column.columnDef?.meta?.hidden) return null
                 return (
                   <TableHead
                     className={cn("p-2! border-zinc-600 border border-solid relative h-auto", {

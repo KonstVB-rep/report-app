@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { redirect } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { treeifyError } from "zod"
 import useStoreUser from "@/entities/user/store/useStoreUser"
@@ -62,6 +63,7 @@ const LoginForm = () => {
     if (state?.data) {
       setAuthUser(state.data)
       setIsAuth(true)
+      redirect(localStorage.getItem("lastAppPath") || "/adminboard")
     }
   }, [setAuthUser, setIsAuth, state])
 

@@ -111,6 +111,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     meta: {
       title: "Последний контакт",
       isDateFilter: true,
+      hidden: true,
     },
     filterFn: (row, columnId, filterValue) => {
       const date = row.getValue(columnId) as Date
@@ -148,6 +149,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Последний комментарий",
+      hidden: true,
     },
     sortingFn: (rowA, rowB) => {
       const dateA = rowA.original.updatedAt
@@ -186,12 +188,12 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
         return "Дата не указана"
       }
 
-      // Что-то неожиданное
       return "Дата не указана"
     },
     enableHiding: true,
     meta: {
       title: "Плановая дата контакта",
+      hidden: true,
     },
     filterFn: (row, columnId, filterValue) => {
       if (row.original.dealStatus === StatusProject.REJECT) return false
@@ -230,6 +232,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Название сделки",
+      hidden: true,
     },
     accessorFn: (row: ProjectResponse) => row.nameDeal,
   },
@@ -255,6 +258,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "ИНН",
+      hidden: true,
     },
     accessorFn: (row: ProjectResponse) => (row.inn ? String(row.inn) : ""),
   },
@@ -277,6 +281,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     meta: {
       title: "Направление",
       isMultiSelect: true,
+      hidden: true,
     },
     accessorFn: (row: ProjectResponse) => row.direction,
   },
@@ -297,6 +302,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Тип поставки",
+      hidden: true,
     },
     accessorFn: (row: ProjectResponse) => row.deliveryType,
   },
@@ -357,6 +363,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Сумма работ",
+      hidden: true,
     },
     accessorFn: (row: ProjectResponse) => row.amountWork,
   },
@@ -368,6 +375,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Сумма закупки",
+      hidden: true,
     },
     accessorFn: (row: ProjectResponse) => row.amountPurchase,
   },
@@ -379,6 +387,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Дельта",
+      hidden: true,
     },
     accessorFn: (row: ProjectResponse) => row.delta,
   },
@@ -392,6 +401,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Статус",
+      hidden: true,
     },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId)

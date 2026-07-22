@@ -37,7 +37,7 @@ const EditRetailForm = ({ close, dealInfo, isInvalidate = false, titleForm }: Pr
       dealStatus: dealInfo.dealStatus as StatusRetail,
       direction: dealInfo.direction as DirectionRetail,
       lastDateConnection: dealInfo.lastDateConnection?.toISOString(),
-      commentsLastConnection: "",
+      commentsLastConnection: dealInfo.commentsLastConnection ?? "",
       plannedDateConnection: dealInfo.plannedDateConnection?.toISOString(),
       amountCP: formatCurrency(dealInfo.amountCP),
       delta: formatCurrency(dealInfo.delta),

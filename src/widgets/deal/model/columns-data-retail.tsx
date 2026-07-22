@@ -33,7 +33,6 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     meta: {
       isNotSearchable: true,
       hidden: true,
-      // title не добавляем — нет header
     },
   },
   {
@@ -112,6 +111,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Плановая дата контакта",
+      hidden: true,
     },
     filterFn: (row, columnId, filterValue) => {
       if (row.original.dealStatus === StatusRetail.REJECT) return false
@@ -151,6 +151,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Последний комментарий",
+      hidden: true,
     },
     sortingFn: (rowA, rowB) => {
       const dateA = rowA.original.updatedAt
@@ -192,6 +193,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Плановая дата контакта",
+      hidden: true,
     },
     filterFn: (row, columnId, filterValue) => {
       if (row.original.dealStatus === StatusRetail.REJECT) return false
@@ -228,6 +230,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Название сделки",
+      hidden: true,
     },
     accessorFn: (row: RetailResponse) => row.nameDeal,
   },
@@ -251,6 +254,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "ИНН",
+      hidden: true,
     },
     accessorFn: (row: RetailResponse) => (row.inn ? String(row.inn) : ""),
   },
@@ -273,6 +277,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Направление",
+      hidden: true,
     },
     accessorFn: (row: RetailResponse) => row.direction,
   },
@@ -356,6 +361,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Дельта",
+      hidden: true,
     },
     accessorFn: (row: RetailResponse) => row.delta,
   },
@@ -377,6 +383,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     },
     meta: {
       title: "Статус",
+      hidden: true,
     },
     accessorFn: (row: RetailResponse) => row.dealStatus,
   },
