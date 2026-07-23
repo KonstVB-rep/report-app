@@ -34,16 +34,24 @@ const DealsTableRow = ({
     }}
   >
     {row.getVisibleCells().map((cell, index) => {
-      const header = headers?.[index]
+      const columnId = cell.column.id
+
+      const isNotGrow = NOT_GROW_COLS.includes(columnId)
+      const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
+
+      if (cell.column.columnDef?.meta?.hidden) return null
+
       return (
         <TableCellComponent<DealUnion>
           cell={cell}
           handleOpenInfo={(id) => setOpenFullInfoCell(openFullInfoCell === id ? null : id)}
           key={cell.id}
           styles={{
-            width: headers?.[index]?.getSize(),
-            minWidth: headers?.[index]?.column.columnDef.minSize,
-            flex: header && NOT_GROW_COLS.includes(header.id) ? "0 0 auto" : "1 0 auto",
+            width: cell.column.getSize(),
+            minWidth: cell.column.columnDef.minSize || 60,
+            flex: flexValue,
+            overflow: "hidden",
+            boxSizing: "border-box",
           }}
         >
           {openFullInfoCell === cell.id && (
