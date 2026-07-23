@@ -200,6 +200,10 @@
   }
 }
 
+*{
+    scrollbar-width: thin;
+}
+
 textarea {
   field-sizing: content;
 }

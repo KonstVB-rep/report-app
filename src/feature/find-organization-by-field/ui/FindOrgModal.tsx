@@ -5,13 +5,7 @@ import { useState } from "react"
 import { EllipsisVertical, Search, X } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/shared/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/shared/components/ui/dialog"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/shared/components/ui/drawer"
 import { Input } from "@/shared/components/ui/input"
 import {
@@ -43,7 +37,6 @@ export const FindOrgModal = () => {
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // Запускаем валидацию Zod перед отправкой
     const validation = findOrgSchema.safeParse({
       searchType,
       value: searchQuery,
@@ -77,71 +70,138 @@ export const FindOrgModal = () => {
   }
 
   const renderContent = () => {
-    return (
-      <div className="space-y-4">
-        {(organizations?.projects?.length || 0) > 0 && (
-          <div className="space-y-2">
-            <p className="font-semibold uppercase text-center text-muted-foreground">Проекты</p>
-            <ul className="space-y-2 p-4 border rounded-md max-h-[50vh] overflow-y-auto">
-              {organizations?.projects.map((p) => (
-                <li className="grid gap-1 border-b pb-2 last:border-none" key={p.id}>
-                  <span className="block text-right px-3 py-1 rounded-full bg-muted w-fit border border-red-500 font-medium">
-                    {formatManagerName(p.mainManager?.username, p.mainManager?.position)}
-                  </span>
-                  <div className="flex flex-col gap-1 p-2">
-                    <span className="font-medium">{p.nameObject}</span>
-                    <span className="text-muted-foreground">{p.nameDeal}</span>
-                    <div className="mt-1">Контакт: {p.contact}</div>
-                    <div className="mt-1">Телефон: {p.phone || "-"}</div>
-                    <div className="mt-1">Email: {p.email || "-"}</div>
-                    {p.additionalContacts?.length > 0 && (
-                      <div className="mt-2 text-muted-foreground space-y-1 border-t pt-1 border-dashed">
-                        <p className="font-medium text-blue-600">Доп. контакты:</p>
-                        <ul className="space-y-1 pl-2">
-                          {p.additionalContacts.map((c) => (
-                            <li className="leading-relaxed" key={c.id}>
-                              <span className="font-semibold text-foreground">{c.name}</span>
-                              {c.position && <span className="text-gray-400"> ({c.position})</span>}
+    const hasProjects = (organizations?.projects?.length || 0) > 0
+    const hasRetails = (organizations?.retails?.length || 0) > 0
 
-                              {(c.phone || c.email) && " — "}
-                              {c.phone && (
-                                <span className="bg-muted px-1 rounded mr-1 text-sm">
-                                  {c.phone}
-                                </span>
-                              )}
-                              {c.email && (
-                                <span className="text-blue-500 underline">{c.email}</span>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+    if (!hasProjects && !hasRetails) {
+      return (
+        <div className="flex h-full items-center justify-center text-muted-foreground">
+          Ничего не найдено
+        </div>
+      )
+    }
+
+    return (
+      // Контейнер колонок: фиксированная высота для работы внутреннего скролла
+      <div className="flex flex-col sm:flex-row gap-4 max-h-[80vh] w-full overflow-hidden">
+        {/* КОЛОНКА ПРОЕКТЫ */}
+        {hasProjects && (
+          <div className="flex-1 flex flex-col min-w-0 border rounded-lg bg-muted/5 overflow-hidden">
+            <div className="p-3 font-semibold uppercase text-center text-xs tracking-wider text-muted-foreground shrink-0 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+              Проекты ({organizations?.projects?.length})
+            </div>
+            <ul className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
+              {organizations?.projects.map((p) => (
+                <li
+                  className="grid gap-2 border p-3 bg-card rounded-md shadow-sm hover:shadow-md transition-shadow"
+                  key={p.id}
+                >
+                  <div className="flex flex-col justify-start items-start gap-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 whitespace-nowrap shrink-0">
+                      {formatManagerName(p.mainManager?.username, p.mainManager?.position)}
+                    </span>
+                    <span className="font-medium text-base leading-tight text-foreground">
+                      {p.nameObject}
+                    </span>
                   </div>
+                  <span className="text-sm text-muted-foreground line-clamp-1">{p.nameDeal}</span>
+
+                  <div className="mt-1 text-sm grid gap-1.5 pt-2 border-t border-dashed">
+                    <div className="flex justify-start gap-2 text-sm">
+                      <span className="text-muted-foreground">Контакт:</span>
+                      <span className="text-foreground font-medium">{p.contact}</span>
+                    </div>
+                    <div className="flex justify-start gap-2 text-sm">
+                      <span className="text-muted-foreground">Тел:</span>
+                      <span className="text-foreground">{p.phone || "-"}</span>
+                    </div>
+                    <div className="flex justify-start gap-2 text-sm">
+                      <span className="text-muted-foreground">Email:</span>
+                      <span className="truncate max-w-[150px]">{p.email || "-"}</span>
+                    </div>
+                  </div>
+
+                  {p.additionalContacts?.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-dashed text-xs text-muted-foreground space-y-2 bg-muted/30 p-2 rounded">
+                      <p className="font-medium text-blue-600">Доп. контакты:</p>
+                      {p.additionalContacts.map((c) => (
+                        <div className="pl-2 border-l-2 border-blue-200" key={c.id}>
+                          <div className="font-semibold text-foreground flex items-center gap-1">
+                            {c.name}
+                            {c.position && (
+                              <span className="text-[10px] text-gray-400">({c.position})</span>
+                            )}
+                          </div>
+                          <div className="mt-0.5 flex flex-wrap gap-x-2">
+                            {c.phone && <span>{c.phone}</span>}
+                            {c.email && <span className="text-blue-500">{c.email}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {(organizations?.retails?.length || 0) > 0 && (
-          <div className="space-y-2">
-            <p className="font-semibold uppercase text-center text-muted-foreground">Розница</p>
-            <ul className="space-y-2 p-2 border rounded-md max-h-[30vh] overflow-y-auto">
+        {/* КОЛОНКА РОЗНИЦА */}
+        {hasRetails && (
+          <div className="flex-1 flex flex-col min-w-0 border rounded-lg bg-muted/5 overflow-hidden">
+            <div className="p-3 font-semibold uppercase text-center text-xs tracking-wider text-muted-foreground shrink-0 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+              Розница ({organizations?.retails?.length})
+            </div>
+            <ul className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
               {organizations?.retails.map((r) => (
-                <li className="grid gap-1 border-b pb-2 last:border-none" key={r.id}>
-                  <span className="block text-right px-3 py-1 rounded-full bg-muted w-fit border border-red-500 font-medium">
-                    {formatManagerName(r.mainManager?.username, r.mainManager?.position)}
-                  </span>
-                  <div className="flex flex-col gap-1 p-2">
-                    <span className="font-medium">{r.nameObject}</span>
-                    <span className="text-muted-foreground">{r.nameDeal}</span>
-                    {r.additionalContacts?.length > 0 && (
-                      <div className="mt-1 text-[11px] text-blue-600">
-                        Доп. контакты: {r.additionalContacts.map((c) => c.name).join(", ")}
-                      </div>
-                    )}
+                <li
+                  className="grid gap-2 border p-3 bg-card rounded-md shadow-sm hover:shadow-md transition-shadow"
+                  key={r.id}
+                >
+                  <div className="flex flex-col justify-start items-start gap-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 whitespace-nowrap shrink-0">
+                      {formatManagerName(r.mainManager?.username, r.mainManager?.position)}
+                    </span>
+                    <span className="font-medium text-base leading-tight text-foreground">
+                      {r.nameObject}
+                    </span>
                   </div>
+                  <span className="text-sm text-muted-foreground line-clamp-1">{r.nameDeal}</span>
+
+                  <div className="mt-1 text-sm grid gap-1.5 pt-2 border-t border-dashed">
+                    <div className="flex justify-start gap-2 text-sm">
+                      <span className="text-muted-foreground">Контакт:</span>
+                      <span className="text-foreground font-medium">{r.contact}</span>
+                    </div>
+                    <div className="flex justify-start gap-2 text-sm">
+                      <span className="text-muted-foreground">Тел:</span>
+                      <span className="text-foreground">{r.phone || "-"}</span>
+                    </div>
+                    <div className="flex justify-start gap-2 text-sm">
+                      <span className="text-muted-foreground">Email:</span>
+                      <span className="truncate max-w-[150px]">{r.email || "-"}</span>
+                    </div>
+                  </div>
+
+                  {r.additionalContacts?.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-dashed text-xs text-muted-foreground space-y-2 bg-muted/30 p-2 rounded">
+                      <p className="font-medium text-blue-600">Доп. контакты:</p>
+                      {r.additionalContacts.map((c) => (
+                        <div className="pl-2 border-l-2 border-blue-200" key={c.id}>
+                          <div className="font-semibold text-foreground flex items-center gap-1">
+                            {c.name}
+                            {c.position && (
+                              <span className="text-[10px] text-gray-400">({c.position})</span>
+                            )}
+                          </div>
+                          <div className="mt-0.5 flex flex-wrap gap-x-2">
+                            {c.phone && <span>{c.phone}</span>}
+                            {c.email && <span className="text-blue-500">{c.email}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -260,18 +320,16 @@ const SerachResult = ({
   if (isDesktop) {
     return (
       <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
-        <DialogContent className="sm:max-w-[600px] rounded-2xl p-5 border-border/60 shadow-2xl">
-          <DialogHeader className="sr-only">
-            <DialogTitle></DialogTitle>
-            <DialogDescription className="sr-only">Результаты поиска</DialogDescription>
-          </DialogHeader>
-          <Button className="absolute top-2 right-2" onClick={onClose} variant={"ghost"}>
-            <X className="h-5 w-5" />
-          </Button>
-          <DialogHeader>
-            <DialogTitle className="sr-only">Поиск организации</DialogTitle>
-          </DialogHeader>
-          {renderContent()}
+        <DialogContent className="sm:max-w-[min(900px,95vw)] rounded-2xl p-0 border-border/60 shadow-2xl max-h-[80dvh] flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between p-5 border-b bg-background/50 backdrop-blur-sm shrink-0">
+            <DialogTitle className="text-lg font-semibold">Результаты поиска</DialogTitle>
+            <Button className="rounded-full" onClick={onClose} size="icon" variant={"ghost"}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Контент без общего скролла, скролл внутри колонок */}
+          <div className="p-5 flex-1 min-h-0 bg-muted/10">{renderContent()}</div>
         </DialogContent>
       </Dialog>
     )
@@ -279,14 +337,17 @@ const SerachResult = ({
 
   return (
     <Drawer onOpenChange={(open) => !open && onClose()} open={isOpen}>
-      <DrawerContent className="rounded-t-2xl pb-6">
-        <div className="mx-auto w-12 h-1.5 rounded-full bg-muted-foreground/20 my-2" />
-        <DrawerHeader className="text-left px-4 pt-1">
+      <DrawerContent className="rounded-t-2xl px-0 flex flex-col data-[vaul-drawer-direction=bottom]:max-h-[90dvh]">
+        <div className="mx-auto w-12 h-1.5 rounded-full bg-muted-foreground/20 my-3 shrink-0" />
+
+        <DrawerHeader className="text-left px-5 pt-1 pb-3 shrink-0 border-b">
           <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
             Поиск организации
           </DrawerTitle>
         </DrawerHeader>
-        {renderContent()}
+
+        {/* Контент без общего скролла, скролл внутри колонок */}
+        <div className="flex-1 p-4 min-h-0 bg-muted/10">{renderContent()}</div>
       </DrawerContent>
     </Drawer>
   )

@@ -31,8 +31,6 @@ const DealsAllTable = ({
   tableContainerRef,
   openFilters,
 }: Props) => {
-  const headers = table.getHeaderGroups()[0].headers
-
   return (
     <>
       {table.getRowModel().rows.length > 0 && (
@@ -59,7 +57,6 @@ const DealsAllTable = ({
             <VirtualRow
               renderRow={({ row, virtualRow }) => (
                 <DealsTableRow
-                  headers={headers}
                   key={row.id}
                   openFullInfoCell={openFullInfoCell}
                   row={row}

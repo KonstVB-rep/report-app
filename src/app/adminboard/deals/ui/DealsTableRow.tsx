@@ -1,6 +1,6 @@
 "use client"
 
-import type { Header, Row } from "@tanstack/react-table"
+import type { Row } from "@tanstack/react-table"
 import { flexRender } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
 import type { DealUnion } from "@/entities/deal/types"
@@ -12,13 +12,11 @@ import { NOT_GROW_COLS } from "@/shared/lib/constants"
 const DealsTableRow = ({
   row,
   virtualRow,
-  headers,
   openFullInfoCell,
   setOpenFullInfoCell,
 }: {
   row: Row<DealUnion>
   virtualRow: VirtualItem
-  headers: Header<DealUnion, unknown>[]
   openFullInfoCell: string | null
   setOpenFullInfoCell: (id: string | null) => void
 }) => (
@@ -33,7 +31,7 @@ const DealsTableRow = ({
       display: "flex",
     }}
   >
-    {row.getVisibleCells().map((cell, index) => {
+    {row.getVisibleCells().map((cell) => {
       const columnId = cell.column.id
 
       const isNotGrow = NOT_GROW_COLS.includes(columnId)
