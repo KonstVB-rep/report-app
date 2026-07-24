@@ -195,7 +195,6 @@ export const columnsDataDeals: ColumnDef<DealUnion, unknown>[] = [
       return filterValues.includes(userIdOfProject)
     },
     meta: {
-      hidden: true,
       title: "Менеджер",
     },
     accessorFn: (row: DealUnion) => row.userId,

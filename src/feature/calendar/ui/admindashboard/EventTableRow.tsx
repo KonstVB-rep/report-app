@@ -5,6 +5,7 @@ import { TableRow } from "@/shared/components/ui/table"
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment"
 import type { EventInputType } from "../../types"
+import { NOT_GROW_COLS } from "@/shared/lib/constants"
 
 interface EventTableRowProps {
   row: Row<EventInputType>
@@ -50,18 +51,29 @@ const EventTableRow = ({
         </Fragment>
       ))}
 
-      {row.getVisibleCells().map((cell, index) => (
-        <TableCellComponent<EventInputType>
-          cell={cell}
-          handleOpenInfo={onOpenInfo}
-          key={cell.id}
-          styles={{
-            width: headers?.[index]?.getSize(),
-            minWidth: headers?.[index]?.column.columnDef.minSize,
-            maxWidth: headers?.[index]?.column.columnDef.maxSize,
-          }}
-        />
-      ))}
+      {row.getVisibleCells().map((cell, index) => {
+        const columnId = cell.column.id
+
+        const isNotGrow = NOT_GROW_COLS.includes(columnId)
+        const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
+
+        if (cell.column.columnDef?.meta?.hidden) return null
+
+        return (
+          <TableCellComponent<EventInputType>
+            cell={cell}
+            handleOpenInfo={onOpenInfo}
+            key={cell.id}
+            styles={{
+              width: cell.column.getSize(),
+              minWidth: cell.column.columnDef.minSize || 60,
+              flex: flexValue,
+              overflow: "hidden",
+              boxSizing: "border-box",
+            }}
+          />
+        )
+      })}
     </TableRow>
   )
 }

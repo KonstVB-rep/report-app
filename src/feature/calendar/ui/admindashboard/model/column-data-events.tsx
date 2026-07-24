@@ -51,16 +51,16 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
     minSize: 100,
     maxSize: 100,
   },
-  {
-    id: "id",
-    header: "",
-    cell: (info) => info.getValue(),
-    enableHiding: true,
-    meta: {
-      hidden: true,
-    },
-    accessorFn: (row: EventInputType) => row.id,
-  },
+  // {
+  //   id: "id",
+  //   header: "",
+  //   cell: (info) => info.getValue(),
+  //   enableHiding: true,
+  //   meta: {
+  //     hidden: true,
+  //   },
+  //   accessorFn: (row: EventInputType) => row.id,
+  // },
   {
     id: "start",
     header: "Начало",

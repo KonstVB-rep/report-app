@@ -27,6 +27,7 @@ const DialogCreateChatForm = ({
       }
     >
       <CreateUserChatForm bot={bot} />
+      <span>Добавить чат</span>
     </DialogComponent>
   )
 }

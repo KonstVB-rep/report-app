@@ -50,7 +50,7 @@ const EventsTableContent = ({
       table={table}
       totalSize={totalSize || 57}
     >
-      {table.getRowModel().rows.length > 0 ? (
+      {rows.length > 0 ? (
         <VirtualRow
           renderRow={({ row, virtualRow }) => (
             <EventTableRow

@@ -1,15 +1,16 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
-import type { ColumnDef } from "@tanstack/react-table"
-import { flexRender } from "@tanstack/react-table"
 import type { BotWithChats } from "@/entities/tgBot/types"
 import { TableRow } from "@/shared/components/ui/table"
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment"
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import { useTableState } from "@/shared/hooks/useTableState"
+import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
+import type { ColumnDef } from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table"
+import { useCallback, useMemo, useState } from "react"
 import BotActionsMenu from "./BotActionsMenu"
 
 const columnsDataBots: ColumnDef<BotWithChats>[] = [
@@ -60,8 +61,6 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
   })
 
   const { rows } = table.getRowModel()
-  const headerGroups = table.getHeaderGroups()
-  const headers = headerGroups[0]?.headers
 
   const handleOpenInfo = useCallback(
     (id: string) => setOpenFullInfoCell((prev) => (prev === id ? null : id)),
@@ -73,21 +72,26 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
       {rows.map((row) => (
         <TableRow key={row.id} style={ROW_STYLE}>
           {row.getVisibleCells().map((cell, index) => {
-            const header = headers?.[index]
-            const cellStyle = header
-              ? {
-                  width: header.getSize(),
-                  minWidth: header.column.columnDef.minSize,
-                  maxWidth: header.column.columnDef.maxSize,
-                }
-              : undefined
+            const columnId = cell.column.id
+
+            const isNotGrow = NOT_GROW_COLS.includes(columnId)
+            const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
+
+            if (cell.column.columnDef?.meta?.hidden) return null
 
             return (
               <TableCellComponent<BotWithChats>
                 cell={cell}
                 handleOpenInfo={handleOpenInfo}
                 key={cell.id}
-                styles={cellStyle}
+                styles={{
+                  width: cell.column.getSize(),
+                  minWidth: cell.column.columnDef.minSize,
+                  maxWidth: cell.column.columnDef.maxSize,
+                  flex: flexValue,
+                  overflow: "hidden",
+                  boxSizing: "border-box",
+                }}
               >
                 {openFullInfoCell === cell.id && cell.column.id !== "actions" ? (
                   <RowInfoDialog

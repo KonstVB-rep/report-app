@@ -371,14 +371,19 @@ export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => v
       })
 
       queryClient.invalidateQueries({
-        queryKey: ["orders", authUser?.departmentId],
+        queryKey: ["projects", data.userId],
         exact: true,
       })
 
       queryClient.invalidateQueries({
-        queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
+        queryKey: ["orders", authUser?.departmentId],
         exact: true,
       })
+
+      if (authUser?.departmentId)
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.allDealsDepartment(authUser?.departmentId),
+        })
     },
 
     onError: (error) => {
@@ -406,10 +411,12 @@ export const useReassignDeal = (setOpenModal: (value: boolean) => void) => {
           queryKey: ["orders", authUser?.departmentId],
           exact: true,
         })
-        queryClient.invalidateQueries({
-          queryKey: ["all-deals-department", authUser?.departmentId, authUser?.id],
-          exact: true,
-        })
+
+        if (authUser?.departmentId)
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.allDealsDepartment(authUser?.departmentId),
+          })
+
         TOAST.SUCCESS(data.message)
       }
 

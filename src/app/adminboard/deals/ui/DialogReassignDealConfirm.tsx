@@ -14,10 +14,8 @@ import SelectComponent from "@/shared/custom-components/ui/SelectForm/SelectComp
 const managers = getUsers({ onlyManagers: true })
 
 const DialogReassignDealConfirm = ({ deals }: { deals: DeletingDealsListItem[] }) => {
-  // 1. Создаем стейт для контроля открытия/закрытия окна
   const [isOpen, setIsOpen] = useState(false)
 
-  // 2. Передаем onSuccess в хук мутации
   const { mutate, isPending } = useReassignDeal(() => setIsOpen(false))
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

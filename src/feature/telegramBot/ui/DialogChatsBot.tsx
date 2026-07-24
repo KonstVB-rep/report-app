@@ -24,11 +24,11 @@ const DialogChatsBot = ({ bot }: { bot: BotData }) => {
       trigger={
         <Button
           className="flex items-center gap-2 justify-center shrink-0"
-          size="icon"
           title="Открыть чаты бота"
           variant="outline"
         >
           <MessageSquareMore />
+          <span>Чаты бота</span>
         </Button>
       }
     >

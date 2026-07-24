@@ -25,6 +25,7 @@ import {
 } from "@/shared/components/ui/dropdown-menu"
 import { cn } from "@/shared/lib/utils"
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions"
+import { FindOrgModal } from "@/feature/find-organization-by-field/ui/FindOrgModal"
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL]
 
@@ -60,7 +61,7 @@ const MobileMenu = () => {
             <Menu />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuContent align="start" className="w-fit">
           {!isSummaryTable && (
             <>
               <Accordion className="w-full" collapsible type="single">
@@ -87,6 +88,8 @@ const MobileMenu = () => {
               <DropdownMenuSeparator className="bg-muted-foreground" />
             </>
           )}
+
+          <FindOrgModal />
 
           <DropdownMenuItem className="p-0">
             <Link

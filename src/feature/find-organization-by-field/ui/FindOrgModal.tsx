@@ -82,9 +82,7 @@ export const FindOrgModal = () => {
     }
 
     return (
-      // Контейнер колонок: фиксированная высота для работы внутреннего скролла
       <div className="flex flex-col sm:flex-row gap-4 max-h-[80vh] w-full overflow-hidden">
-        {/* КОЛОНКА ПРОЕКТЫ */}
         {hasProjects && (
           <div className="flex-1 flex flex-col min-w-0 border rounded-lg bg-muted/5 overflow-hidden">
             <div className="p-3 font-semibold uppercase text-center text-xs tracking-wider text-muted-foreground shrink-0 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
@@ -97,7 +95,7 @@ export const FindOrgModal = () => {
                   key={p.id}
                 >
                   <div className="flex flex-col justify-start items-start gap-2">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 whitespace-nowrap shrink-0">
+                    <span className="text-sm px-2 py-0.5 rounded-full text-blue-500 border border-red-200 whitespace-nowrap shrink-0">
                       {formatManagerName(p.mainManager?.username, p.mainManager?.position)}
                     </span>
                     <span className="font-medium text-base leading-tight text-foreground">
@@ -129,7 +127,7 @@ export const FindOrgModal = () => {
                           <div className="font-semibold text-foreground flex items-center gap-1">
                             {c.name}
                             {c.position && (
-                              <span className="text-[10px] text-gray-400">({c.position})</span>
+                              <span className="text-sm text-gray-400">({c.position})</span>
                             )}
                           </div>
                           <div className="mt-0.5 flex flex-wrap gap-x-2">
@@ -146,7 +144,6 @@ export const FindOrgModal = () => {
           </div>
         )}
 
-        {/* КОЛОНКА РОЗНИЦА */}
         {hasRetails && (
           <div className="flex-1 flex flex-col min-w-0 border rounded-lg bg-muted/5 overflow-hidden">
             <div className="p-3 font-semibold uppercase text-center text-xs tracking-wider text-muted-foreground shrink-0 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
@@ -159,7 +156,7 @@ export const FindOrgModal = () => {
                   key={r.id}
                 >
                   <div className="flex flex-col justify-start items-start gap-2">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 whitespace-nowrap shrink-0">
+                    <span className="text-sm px-2 py-0.5 rounded-full text-blue-500 border border-red-200 whitespace-nowrap shrink-0">
                       {formatManagerName(r.mainManager?.username, r.mainManager?.position)}
                     </span>
                     <span className="font-medium text-base leading-tight text-foreground">
@@ -191,7 +188,7 @@ export const FindOrgModal = () => {
                           <div className="font-semibold text-foreground flex items-center gap-1">
                             {c.name}
                             {c.position && (
-                              <span className="text-[10px] text-gray-400">({c.position})</span>
+                              <span className="text-sm text-gray-400">({c.position})</span>
                             )}
                           </div>
                           <div className="mt-0.5 flex flex-wrap gap-x-2">
@@ -213,92 +210,90 @@ export const FindOrgModal = () => {
 
   return (
     <>
-      <div className="space-y-4 p-4 md:p-0 select-none">
-        <div className="flex items-center gap-2">
-          <Menubar className="h-10 w-10 text-muted-foreground border-none bg-transparent">
-            <MenubarMenu>
-              <MenubarTrigger className="h-full w-full grid place-items-center cursor-pointer">
-                <EllipsisVertical className="h-5 w-5 text-muted-foreground" />
-              </MenubarTrigger>
-              <MenubarContent>
-                <MenubarGroup>
-                  <MenubarItem onClick={() => handleSearchTypeChange("inn")}>
-                    ИНН {searchType === "inn" && "✓"}
-                  </MenubarItem>
-                  <MenubarItem onClick={() => handleSearchTypeChange("orgName")}>
-                    Название {searchType === "orgName" && "✓"}
-                  </MenubarItem>
-                  <MenubarItem onClick={() => handleSearchTypeChange("phone")}>
-                    Телефон {searchType === "phone" && "✓"}
-                  </MenubarItem>
-                  <MenubarItem onClick={() => handleSearchTypeChange("email")}>
-                    Email {searchType === "email" && "✓"}
-                  </MenubarItem>
-                </MenubarGroup>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>
+      <div className="flex items-center gap-2">
+        <Menubar className="h-10 w-10 text-muted-foreground border-none bg-transparent">
+          <MenubarMenu>
+            <MenubarTrigger className="h-full w-full grid place-items-center cursor-pointer">
+              <EllipsisVertical className="h-5 w-5 text-muted-foreground" />
+            </MenubarTrigger>
+            <MenubarContent>
+              <MenubarGroup>
+                <MenubarItem onClick={() => handleSearchTypeChange("inn")}>
+                  ИНН {searchType === "inn" && "✓"}
+                </MenubarItem>
+                <MenubarItem onClick={() => handleSearchTypeChange("orgName")}>
+                  Название {searchType === "orgName" && "✓"}
+                </MenubarItem>
+                <MenubarItem onClick={() => handleSearchTypeChange("phone")}>
+                  Телефон {searchType === "phone" && "✓"}
+                </MenubarItem>
+                <MenubarItem onClick={() => handleSearchTypeChange("email")}>
+                  Email {searchType === "email" && "✓"}
+                </MenubarItem>
+              </MenubarGroup>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
 
-          <form className="flex-1" onSubmit={handleSubmit}>
-            <div className="relative">
-              <Button
-                className="absolute left-1 top-1/2 -translate-y-1/2 p-1 flex items-center justify-center text-muted-foreground border-none z-10"
-                disabled={isPending}
-                size="icon"
-                type="submit"
-                variant="ghost"
-              >
-                {isPending ? (
-                  <LoaderCircle className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Search className="h-5 w-5 text-muted-foreground" />
-                )}
-              </Button>
+        <form className="flex-1" onSubmit={handleSubmit}>
+          <div className="relative">
+            <Button
+              className="absolute left-1 top-1/2 -translate-y-1/2 p-1 flex items-center justify-center text-muted-foreground border-none z-10"
+              disabled={isPending}
+              size="icon"
+              type="submit"
+              variant="ghost"
+            >
+              {isPending ? (
+                <LoaderCircle className="h-5 w-5 animate-spin" />
+              ) : (
+                <Search className="h-5 w-5 text-muted-foreground" />
+              )}
+            </Button>
 
-              {searchType === "inn" && (
-                <Input
-                  autoComplete="off"
-                  className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
-                  inputMode="numeric"
-                  maxLength={12}
-                  onChange={(e) => setSearchQuery(e.target.value.replace(/\D/g, ""))}
-                  placeholder="ИНН(10/12 цифр)"
-                  type="text"
-                  value={searchQuery}
-                />
-              )}
-              {searchType === "orgName" && (
-                <Input
-                  autoComplete="off"
-                  className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Введите название организации"
-                  type="text"
-                  value={searchQuery}
-                />
-              )}
-              {searchType === "phone" && (
-                <PhoneInput
-                  className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
-                  onAccept={(value) => setSearchQuery(value)}
-                  placeholder="Введите телефон"
-                  value={searchQuery}
-                />
-              )}
+            {searchType === "inn" && (
+              <Input
+                autoComplete="off"
+                className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
+                inputMode="numeric"
+                maxLength={12}
+                onChange={(e) => setSearchQuery(e.target.value.replace(/\D/g, ""))}
+                placeholder="ИНН(10/12 цифр)"
+                type="text"
+                value={searchQuery}
+              />
+            )}
+            {searchType === "orgName" && (
+              <Input
+                autoComplete="off"
+                className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Организация"
+                type="text"
+                value={searchQuery}
+              />
+            )}
+            {searchType === "phone" && (
+              <PhoneInput
+                className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
+                onAccept={(value) => setSearchQuery(value)}
+                placeholder="Телефон"
+                value={searchQuery}
+              />
+            )}
 
-              {searchType === "email" && (
-                <Input
-                  autoComplete="off"
-                  className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Введите email"
-                  type="email"
-                  value={searchQuery}
-                />
-              )}
-            </div>
-          </form>
-        </div>
+            {searchType === "email" && (
+              <Input
+                autoComplete="off"
+                className="pl-11 h-11 rounded-xl text-sm focus-visible:ring-blue-600"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Email"
+                type="email"
+                value={searchQuery}
+              />
+            )}
+          </div>
+        </form>
       </div>
 
       <SerachResult isOpen={isOpen} onClose={onClose} renderContent={renderContent} />
