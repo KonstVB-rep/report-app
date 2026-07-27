@@ -193,7 +193,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Плановая дата контакта",
-      hidden: true,
+      // hidden: true,
     },
     filterFn: (row, columnId, filterValue) => {
       if (row.original.dealStatus === StatusProject.REJECT) return false

@@ -193,7 +193,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     enableHiding: true,
     meta: {
       title: "Плановая дата контакта",
-      hidden: true,
+      // hidden: true,
     },
     filterFn: (row, columnId, filterValue) => {
       if (row.original.dealStatus === StatusRetail.REJECT) return false
