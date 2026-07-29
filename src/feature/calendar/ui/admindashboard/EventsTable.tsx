@@ -23,6 +23,9 @@ const EventsTable = () => {
   const { table, filtersContextValue, setGlobalFilter } = useTableState<EventInputType>(
     events,
     columnsDataEvents,
+    {
+      storageKey: "events",
+    },
   )
 
   const { rows } = table.getRowModel()

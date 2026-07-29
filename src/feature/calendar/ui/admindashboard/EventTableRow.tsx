@@ -1,16 +1,15 @@
 import { Fragment } from "react"
-import { flexRender, type Header, type Row } from "@tanstack/react-table"
+import { flexRender, type Row } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
 import { TableRow } from "@/shared/components/ui/table"
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
 import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCompoment"
-import type { EventInputType } from "../../types"
 import { NOT_GROW_COLS } from "@/shared/lib/constants"
+import type { EventInputType } from "../../types"
 
 interface EventTableRowProps {
   row: Row<EventInputType>
   virtualRow: VirtualItem
-  headers: Header<EventInputType, unknown>[]
   openFullInfoCell: string | null
   onOpenInfo: (rowId: string) => void
   onCloseInfo: () => void
@@ -19,7 +18,6 @@ interface EventTableRowProps {
 const EventTableRow = ({
   row,
   virtualRow,
-  headers,
   openFullInfoCell,
   onOpenInfo,
   onCloseInfo,
@@ -51,7 +49,7 @@ const EventTableRow = ({
         </Fragment>
       ))}
 
-      {row.getVisibleCells().map((cell, index) => {
+      {row.getVisibleCells().map((cell) => {
         const columnId = cell.column.id
 
         const isNotGrow = NOT_GROW_COLS.includes(columnId)

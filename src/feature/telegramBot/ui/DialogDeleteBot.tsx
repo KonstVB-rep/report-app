@@ -14,8 +14,8 @@ const DialogDeleteBot = ({ bot }: DeleteBotProps) => {
       description="Вы действительно хотите удалить бот?"
       isPending={isPending}
       mutate={() => mutate(bot.id)}
-      title="Удалить"
       textButtonShow
+      title="Удалить"
     >
       <p className="text-center">Вы уверены что хотите удалить бот?</p>
       <p className="grid text-center">

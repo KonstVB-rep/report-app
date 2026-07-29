@@ -75,6 +75,7 @@ const DealsTabContent = (props: DealsTabContentProps) => {
             table={table}
           />
         )}
+        tableName={`deal-list-for-marketing-${dealType}`}
       />
     </DealTableTemplate>
   )

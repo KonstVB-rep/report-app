@@ -83,6 +83,7 @@ const SummaryDealsTable = () => {
         data={(deals as DealUnion[]) || []} // Защита от undefined
         hasEditDeleteActions={false}
         hiddenCols={HIDDEN_COLS}
+        tableName={"summary-table"}
       />
     </DealTableTemplate>
   )

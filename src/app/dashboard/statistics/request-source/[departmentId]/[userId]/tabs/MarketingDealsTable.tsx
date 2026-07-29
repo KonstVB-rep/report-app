@@ -87,7 +87,7 @@ const MarketingDealsTable = ({ userId }: MarketingDealsTableProps) => {
 
   return (
     <Tabs onValueChange={(v) => handleToggleTab(v as DealsUnionType)} value={activeTab}>
-      <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2">
+      <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2 mt-2">
         <TabsTrigger value="retails">Розница</TabsTrigger>
         <TabsTrigger value="projects">Проекты</TabsTrigger>
       </TabsList>

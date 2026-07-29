@@ -22,7 +22,7 @@ const UserTable = () => {
   const { table, filtersContextValue, setGlobalFilter } = useTableState<UserTypeTable>(
     users,
     columnsDataUsers,
-    { hiddenColumns },
+    { hiddenColumns, storageKey: "users" },
   )
 
   const { globalFilter, rowSelection } = table.getState()

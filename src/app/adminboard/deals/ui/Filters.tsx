@@ -26,6 +26,16 @@ const Filters = ({ table }: { table: Table<DealUnion> }) => {
     | undefined
   const type = columnFilters.find((f) => f.id === "type")?.value as DealType | undefined
 
+  const dealStatusP = columnFilters.find((f) => f.id === "dealStatusP")
+
+  const dealStatusR = columnFilters.find((f) => f.id === "dealStatusR")
+
+  const isShowStatusRetailsDeal =
+    type?.includes(DealType.RETAIL) || type === undefined || dealStatusR
+
+  const isShowStatusProjectsDeal =
+    type?.includes(DealType.PROJECT) || type === undefined || dealStatusP
+
   return (
     <MotionDivY className="min-h-0">
       <div className="flex flex-wrap justify-start items-center gap-2 py-2">
@@ -46,7 +56,7 @@ const Filters = ({ table }: { table: Table<DealUnion> }) => {
 
         <FilterPopover columnId="type" label={"Тип"} options={OptionDealType} />
 
-        {type === DealType.PROJECT ? null : (
+        {isShowStatusRetailsDeal && (
           <FilterPopover
             columnId="dealStatusR"
             label={"Статус розницы"}
@@ -54,7 +64,7 @@ const Filters = ({ table }: { table: Table<DealUnion> }) => {
           />
         )}
 
-        {type === DealType.RETAIL ? null : (
+        {isShowStatusProjectsDeal && (
           <FilterPopover
             columnId="dealStatusP"
             label={"Статус проекта"}

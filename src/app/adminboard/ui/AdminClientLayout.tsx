@@ -1,10 +1,14 @@
+"use client"
 import type { PropsWithChildren } from "react"
+import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import { SiteHeader } from "@/feature/Sidebar/ui/site-header"
 import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar"
 import AdminSidebar from "@/widgets/AminSidebar"
 import LinksPageBlock from "./LinksPageBlock"
 
 const AdminClientLayout = ({ children }: PropsWithChildren) => {
+  useGetDepartmentsWithUsers()
+
   return (
     <div className="min-w-64 [--header-height:calc(--spacing(14))] min-h-screen">
       <SidebarProvider className="flex flex-col">

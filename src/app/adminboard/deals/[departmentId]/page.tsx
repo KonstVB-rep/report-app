@@ -30,6 +30,7 @@ const AllDealsPage = () => {
     columnsDataDeals,
     {
       hiddenColumns: HIDDEN_COLS,
+      storageKey: "allDeals",
     },
   )
 

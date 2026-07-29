@@ -1,5 +1,8 @@
 "use client"
 
+import { useCallback, useMemo, useState } from "react"
+import type { ColumnDef } from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table"
 import type { BotWithChats } from "@/entities/tgBot/types"
 import { TableRow } from "@/shared/components/ui/table"
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
@@ -8,9 +11,6 @@ import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import { useTableState } from "@/shared/hooks/useTableState"
 import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
-import type { ColumnDef } from "@tanstack/react-table"
-import { flexRender } from "@tanstack/react-table"
-import { useCallback, useMemo, useState } from "react"
 import BotActionsMenu from "./BotActionsMenu"
 
 const columnsDataBots: ColumnDef<BotWithChats>[] = [
@@ -58,6 +58,7 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
 
   const { table } = useTableState(data, columnsDataBots, {
     defaultColumn: DEFAULT_COLUMN_OPTIONS,
+    storageKey: "bots",
   })
 
   const { rows } = table.getRowModel()
@@ -71,7 +72,7 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
     <TableTemplate className="rounded-md" table={table}>
       {rows.map((row) => (
         <TableRow key={row.id} style={ROW_STYLE}>
-          {row.getVisibleCells().map((cell, index) => {
+          {row.getVisibleCells().map((cell) => {
             const columnId = cell.column.id
 
             const isNotGrow = NOT_GROW_COLS.includes(columnId)

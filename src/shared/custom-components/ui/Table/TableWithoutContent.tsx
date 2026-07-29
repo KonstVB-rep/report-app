@@ -41,7 +41,12 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
       }}
     >
       {row.getVisibleCells().map((cell, index) => {
-        const header = headers?.[index]
+        const columnId = cell.column.id
+
+        const isNotGrow = NOT_GROW_COLS.includes(columnId)
+        const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
+
+        if (cell.column.columnDef?.meta?.hidden) return null
         return (
           <TableCellComponent<T>
             cell={cell}
@@ -49,9 +54,9 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
             key={cell.id}
             styles={{
               width: headers?.[index]?.getSize(),
-              // minWidth: headers?.[index]?.column.columnDef.minSize,
-              // maxWidth: headers?.[index]?.column.columnDef.maxSize,
-              flex: header && NOT_GROW_COLS.includes(header.id) ? "0 0 auto" : "1 0 auto",
+              minWidth: headers?.[index]?.column.columnDef.minSize,
+              maxWidth: headers?.[index]?.column.columnDef.maxSize,
+              flex: flexValue,
             }}
           />
         )

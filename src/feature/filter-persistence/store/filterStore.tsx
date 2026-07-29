@@ -1,74 +1,84 @@
-import type { $Enums } from "@prisma/client"
+import { createStore, type StoreApi } from "zustand"
 import { persist } from "zustand/middleware"
-import { create } from "@/shared/lib/helpers/сreate"
 
-export type AuthUserType = {
-  permissions: $Enums.PermissionEnum[]
-  id: string
-  phone: string
-  email: string
-  position: string
-  username: string
-  departmentId: number
-  role: $Enums.Role
-  lastlogin: Date | null
-  telegramInfo: {
-    tgUserId: string
-    tgUserName: string | null
-  }[]
+type StoreColumnFilter = { id: string; value: unknown }
+export type StoreColumnFiltersState = StoreColumnFilter[]
+export type StoreVisibilityState = Record<string, boolean>
+
+export type FilterStoreState = {
+  columnFiltersStore: StoreColumnFiltersState
+  columnVisibilityStore: StoreVisibilityState
+  globalFilterStore: string
+  selectedSearchColumnsStore: string[]
+  openFiltersStore: boolean
+
+  setColumnFiltersStore: (
+    value: StoreColumnFiltersState | ((prev: StoreColumnFiltersState) => StoreColumnFiltersState),
+  ) => void
+  setColumnVisibilityStore: (
+    value: StoreVisibilityState | ((prev: StoreVisibilityState) => StoreVisibilityState),
+  ) => void
+  setGlobalFilterStore: (value: string | ((prev: string) => string)) => void
+  setSelectedSearchColumnsStore: (value: string[] | ((prev: string[]) => string[])) => void
+  setOpenFiltersStore: (value: boolean | ((prev: boolean) => boolean)) => void
+  resetFilterStore: () => void
 }
 
-type State = {
-  authUser: AuthUserType | null | undefined
-  isAuth: boolean
-  setAuthUser: (user: AuthUserType | null) => void
-  setIsAuth: (isAuth: boolean) => void
-  resetStore: () => void
-}
-const useStoreUser = create<State>()(
-  persist(
-    (set) => ({
-      authUser: null,
-      isAuth: false,
+export type FilterStoreInstanceType = StoreApi<FilterStoreState>
 
-      setAuthUser: (user: AuthUserType | null) =>
-        set({
-          authUser: user,
-          isAuth: !!user,
-        }),
+export const createFilterStore = (storageName: string): FilterStoreInstanceType => {
+  return createStore<FilterStoreState>()(
+    persist(
+      (set) => ({
+        columnFiltersStore: [],
+        columnVisibilityStore: {},
+        globalFilterStore: "",
+        selectedSearchColumnsStore: [],
+        openFiltersStore: false,
 
-      setIsAuth: (isAuth: boolean) => {
-        if (!isAuth) {
+        setColumnFiltersStore: (value) =>
+          set((state) => ({
+            columnFiltersStore:
+              typeof value === "function" ? value(state.columnFiltersStore) : value,
+          })),
+        setColumnVisibilityStore: (value) =>
+          set((state) => ({
+            columnVisibilityStore:
+              typeof value === "function" ? value(state.columnVisibilityStore) : value,
+          })),
+        setGlobalFilterStore: (value) =>
+          set((state) => ({
+            globalFilterStore: typeof value === "function" ? value(state.globalFilterStore) : value,
+          })),
+        setSelectedSearchColumnsStore: (value) =>
+          set((state) => ({
+            selectedSearchColumnsStore:
+              typeof value === "function" ? value(state.selectedSearchColumnsStore) : value,
+          })),
+        setOpenFiltersStore: (value) =>
+          set((state) => ({
+            openFiltersStore: typeof value === "function" ? value(state.openFiltersStore) : value,
+          })),
+
+        resetFilterStore: () => {
           set({
-            isAuth: false,
-            authUser: null,
+            columnFiltersStore: [],
+            columnVisibilityStore: {},
+            globalFilterStore: "",
+            selectedSearchColumnsStore: [],
+            openFiltersStore: false,
           })
-        } else {
-          set({ isAuth })
-        }
-      },
-
-      resetStore: () => {
-        set({
-          authUser: null,
-          isAuth: false,
-        })
-      },
-    }),
-    {
-      name: "user-storage",
-      partialize: (state) => ({
-        authUser: state.authUser,
-        isAuth: state.isAuth,
+        },
       }),
-    },
-  ),
-)
-
-export default useStoreUser
-
-export const selectUserId = (state: State) => state.authUser?.id
-export const selectSetAuthUser = (state: State) => state.setAuthUser
-export const selectSetIsAuth = (state: State) => state.setIsAuth
-export const selectIsAuth = (state: State) => state.isAuth
-export const selectAuthUser = (state: State) => state.authUser
+      {
+        name: storageName,
+        partialize: (state) => ({
+          columnFiltersStore: state.columnFiltersStore,
+          columnVisibilityStore: state.columnVisibilityStore,
+          globalFilterStore: state.globalFilterStore,
+          selectedSearchColumnsStore: state.selectedSearchColumnsStore,
+        }),
+      },
+    ),
+  )
+}

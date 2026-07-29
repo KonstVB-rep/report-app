@@ -18,6 +18,7 @@ const FiltersBlock = dynamic(() => import("./Filters/FiltersBlock"), {
 interface DataTableProps<T> {
   columns: ColumnDef<T>[]
   data: T[]
+  tableName: string
   hasEditDeleteActions?: boolean
   children?: React.ReactNode
   rowData: (props: {
@@ -33,6 +34,7 @@ interface DataTableProps<T> {
 const DataTable = <T extends { id: string }>({
   columns,
   data,
+  tableName,
   hasEditDeleteActions = true,
   children,
   rowData,
@@ -46,7 +48,7 @@ const DataTable = <T extends { id: string }>({
     {
       hiddenColumns,
       paramsNotFilters,
-      storageKey: "deals",
+      storageKey: `${tableName}_${dealType}`,
     },
   )
 

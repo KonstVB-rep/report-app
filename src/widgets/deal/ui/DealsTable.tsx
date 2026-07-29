@@ -34,6 +34,7 @@ const ColorPickerDeal = dynamic(() => import("@/feature/deals/ui/Modals/ColorPic
 interface DealsTableProps<T extends DealUnion> {
   columns: ColumnDef<T, unknown>[]
   data: T[]
+  tableName: string
   hasEditDeleteActions?: boolean
   hiddenCols?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>
 }
@@ -96,6 +97,7 @@ const DealsTable = <T extends DealUnion>(props: DealsTableProps<T>) => {
             table={table}
           />
         )}
+        tableName={props.tableName}
       >
         <AddNewDeal type={dealType} />
       </DataTable>

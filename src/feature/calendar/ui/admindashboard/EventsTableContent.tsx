@@ -54,7 +54,6 @@ const EventsTableContent = ({
         <VirtualRow
           renderRow={({ row, virtualRow }) => (
             <EventTableRow
-              headers={headers}
               key={row.id}
               onCloseInfo={handleCloseInfo}
               onOpenInfo={handleOpenInfo}

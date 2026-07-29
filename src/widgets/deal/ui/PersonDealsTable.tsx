@@ -94,6 +94,7 @@ const PersonDealsTable = () => {
               columns={Columns(dealType as TableType) as ColumnDef<DealUnion>[]}
               data={data as DealUnion[]}
               hiddenCols={hiddenDefCols[dealType as TableType]}
+              tableName="person-table"
             />
           </div>
         )}

@@ -81,7 +81,9 @@ const TaskTable = <T extends TaskWithUserInfo>({ data }: TaskTableProps<T>) => {
     [],
   )
 
-  const { table, filtersContextValue } = useTableState(data, columnsDataTask as ColumnDef<T>[])
+  const { table, filtersContextValue } = useTableState(data, columnsDataTask as ColumnDef<T>[], {
+    storageKey: "tasks",
+  })
 
   const { rows } = table.getRowModel()
 

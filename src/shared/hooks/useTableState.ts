@@ -13,7 +13,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import useDataTableFilters from "@/shared/hooks/useDataTableFilters"
+import usePersistentTableFilters from "@/feature/filter-persistence/context/usePersistentTableFilters"
 
 export const getLS = <T>(key: string, fallback: T): T => {
   if (typeof window === "undefined") return fallback
@@ -72,7 +72,9 @@ export const useTableState = <T extends { id: string }>(
     selectedSearchColumns,
     setSelectedSearchColumns,
     searchableColumns,
-  } = useDataTableFilters(paramsNotFilters, searchableCols)
+    parseAndSetFilters,
+    resetFilterStore,
+  } = usePersistentTableFilters(storageKey, paramsNotFilters, searchableCols)
 
   const mergedColumnVisibility = useMemo<VisibilityState>(() => {
     const hiddenColsObj = hiddenColumns
@@ -141,6 +143,8 @@ export const useTableState = <T extends { id: string }>(
       setColumnVisibility,
       includedColumns: searchableColumns,
       columns,
+      parseAndSetFilters,
+      resetFilterStore,
     }),
     [
       selectedSearchColumns,
@@ -155,6 +159,8 @@ export const useTableState = <T extends { id: string }>(
       setColumnVisibility,
       setOpenFilters,
       setSelectedSearchColumns,
+      parseAndSetFilters,
+      resetFilterStore,
     ],
   )
 

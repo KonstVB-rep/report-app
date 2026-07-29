@@ -9,6 +9,7 @@ import { useTheme } from "next-themes"
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import LogoutDialog from "@/feature/auth/ui/logout-dialog"
+import { FindOrgModal } from "@/feature/find-organization-by-field/ui/FindOrgModal"
 import {
   Accordion,
   AccordionContent,
@@ -25,7 +26,6 @@ import {
 } from "@/shared/components/ui/dropdown-menu"
 import { cn } from "@/shared/lib/utils"
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions"
-import { FindOrgModal } from "@/feature/find-organization-by-field/ui/FindOrgModal"
 
 const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL]
 

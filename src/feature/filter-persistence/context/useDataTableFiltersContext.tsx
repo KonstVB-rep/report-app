@@ -15,6 +15,8 @@ export type DataTableFiltersContextType<TData, TValue = unknown> = {
   setColumnVisibility: Dispatch<SetStateAction<VisibilityState>>
   includedColumns: string[]
   columns: ColumnDef<TData, TValue>[]
+  parseAndSetFilters: (queryInput: URLSearchParams | string) => void
+  resetFilterStore: () => void
 }
 
 export const DataTableFiltersContext = createContext<DataTableFiltersContextType<

@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Label } from "@/shared/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard"
+import { useDataTableFiltersContext } from "../context/useDataTableFiltersContext"
 import { useDisableSavedFilters, useSelectFilter } from "../hooks/mutate"
 import { useGetUserFilters } from "../hooks/query"
 import UserFiltersChange from "./UserFiltersChange"
@@ -19,6 +20,10 @@ const SavedFiltersList = ({
 }) => {
   const router = useRouter()
   const pathname = usePathname()
+
+  // 🔥 ДОСТАЕМ НАШ ПАРСЕР ИЗ КОНТЕКСТА ТАБЛИЦЫ
+  const { parseAndSetFilters } = useDataTableFiltersContext()
+
   const { data: userFilters = [] } = useGetUserFilters()
   const { mutate: selectFilter } = useSelectFilter()
   const { mutate: disableSavedFilters } = useDisableSavedFilters()
@@ -26,7 +31,8 @@ const SavedFiltersList = ({
   const handleFilterChange = (filterName: string) => {
     if (filterName === "disableSavedFilters") {
       setSelectedFilterName("disableSavedFilters")
-      handleClearFilters()
+      handleClearFilters() // Очистит локальные стейты
+      parseAndSetFilters("") // 🔥 СБРАСЫВАЕТ ZUSTAND СТОР В ДЕФОЛТЫ
       disableSavedFilters()
       router.replace(pathname, { scroll: false })
       return
@@ -35,6 +41,11 @@ const SavedFiltersList = ({
     const filter = userFilters.find((f) => f.filterName === filterName)
 
     if (filter && filterName !== selectedFilterName) {
+      // 1. МГНОВЕННО парсим строку "deliveryType=RENT&direction=SKD..." и пишем в Zustand Store
+      // Таблица перестроится за пару миллисекунд без лагов UI!
+      parseAndSetFilters(filter.filterValue)
+
+      // 2. Спокойно обновляем роутер Next.js и бэкенд
       router.replace(`${pathname}?${filter.filterValue}`, { scroll: false })
       selectFilter(filter.id)
       setSelectedFilterName(filter.filterName)
@@ -42,7 +53,6 @@ const SavedFiltersList = ({
   }
 
   const isExistSavedFilters = userFilters.length > 0
-
   if (!isExistSavedFilters) return null
 
   return (

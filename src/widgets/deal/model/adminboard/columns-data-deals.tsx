@@ -174,6 +174,7 @@ export const columnsDataDeals: ColumnDef<DealUnion, unknown>[] = [
       const value = info.getValue() as keyof User
 
       const { deptsFormatted } = useStoreDepartment.getState()
+
       let userName = ""
       if (!deptsFormatted) return
 
