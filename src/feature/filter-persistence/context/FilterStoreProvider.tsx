@@ -23,7 +23,6 @@ export const FilterStoreProvider = ({
   )
 }
 
-// Внутренний хук для безопасного извлечения стора из контекста
 export const useFilterStoreInstance = () => {
   const context = useContext(FilterStoreContext)
   if (!context) throw new Error("useFilterStoreInstance must be used within FilterStoreProvider")

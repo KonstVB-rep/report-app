@@ -1,12 +1,7 @@
 // src/features/find-organization-by-inn/ui/FindOrgModal.tsx
 "use client"
 
-import { useState } from "react"
-import { EllipsisVertical, Search, X } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/shared/components/ui/button"
-import { Dialog, DialogContent, DialogTitle } from "@/shared/components/ui/dialog"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/shared/components/ui/drawer"
 import { Input } from "@/shared/components/ui/input"
 import {
   Menubar,
@@ -18,9 +13,19 @@ import {
 } from "@/shared/components/ui/menubar"
 import PhoneInput from "@/shared/custom-components/ui/Inputs/PhoneInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
-import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
+import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { PermissionEnum } from "@prisma/client"
+import { EllipsisVertical, Search } from "lucide-react"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import { useState } from "react"
+import { toast } from "sonner"
 import { useFindOrganization } from "../api/useFindOrganization"
 import { findOrgSchema, type SearchType } from "../model/schema"
+
+const SearchResult = dynamic(() => import("./SearchResult").then((mod) => mod.SearchResult), {
+  ssr: false,
+})
 
 export const FindOrgModal = () => {
   const [searchQuery, setSearchQuery] = useState<string>("")
@@ -33,6 +38,8 @@ export const FindOrgModal = () => {
     setSearchType(type)
     setSearchQuery("")
   }
+
+  console.log("organizations", organizations)
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -84,123 +91,183 @@ export const FindOrgModal = () => {
     return (
       <div className="flex flex-col sm:flex-row gap-4 max-h-[80vh] w-full overflow-hidden">
         {hasProjects && (
-          <div className="flex-1 flex flex-col min-w-0 border rounded-lg bg-muted/5 overflow-hidden">
+          <div className="flex-1 flex flex-col min-h-0 min-w-0 border rounded-lg bg-muted/5 overflow-hidden">
             <div className="p-3 font-semibold uppercase text-center text-xs tracking-wider text-muted-foreground shrink-0 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
               Проекты ({organizations?.projects?.length})
             </div>
-            <ul className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
-              {organizations?.projects.map((p) => (
-                <li
-                  className="grid gap-2 border p-3 bg-card rounded-md shadow-sm hover:shadow-md transition-shadow"
-                  key={p.id}
-                >
-                  <div className="flex flex-col justify-start items-start gap-2">
-                    <span className="text-sm px-2 py-0.5 rounded-full text-blue-500 border border-red-200 whitespace-nowrap shrink-0">
-                      {formatManagerName(p.mainManager?.username, p.mainManager?.position)}
-                    </span>
-                    <span className="font-medium text-base leading-tight text-foreground">
-                      {p.nameObject}
-                    </span>
-                  </div>
-                  <span className="text-sm text-muted-foreground line-clamp-1">{p.nameDeal}</span>
+            <ul className="flex-1 min-h-0 max-h-[75%] overflow-y-auto p-3 space-y-3 custom-scrollbar">
+              {organizations?.projects.map((p) => {
+                const searchQuery = p.inn || p.phone || p.email || p.nameObject || p.contact || ""
 
-                  <div className="mt-1 text-sm grid gap-1.5 pt-2 border-t border-dashed">
-                    <div className="flex justify-start gap-2 text-sm">
-                      <span className="text-muted-foreground">Контакт:</span>
-                      <span className="text-foreground font-medium">{p.contact}</span>
+                const hrefLink =
+                  searchQuery && p.userId
+                    ? `/dashboard/table/1/projects/${
+                        p.userId
+                      }?${new URLSearchParams({ search: searchQuery }).toString()}`
+                    : undefined
+                return (
+                  <li
+                    className="grid gap-2 border p-3 bg-card rounded-md shadow-sm hover:shadow-md transition-shadow relative"
+                    key={p.id}
+                  >
+                    {hrefLink && (
+                      <ProtectedByPermissions permission={PermissionEnum.VIEW_USER_REPORT}>
+                        <Link
+                          aria-label="Посмотреть подробнее"
+                          className="absolute inset-0"
+                          href={hrefLink}
+                          onClick={() => {
+                            requestAnimationFrame(() => {
+                              onClose()
+                            })
+                          }}
+                        />
+                      </ProtectedByPermissions>
+                    )}
+                    <div className="flex flex-col justify-start items-start gap-2">
+                      <span className="text-sm px-2 py-0.5 rounded-full text-blue-500 border border-red-200 whitespace-nowrap shrink-0">
+                        {formatManagerName(p.mainManager?.username, p.mainManager?.position)}
+                      </span>
+                      <span className="font-medium text-base leading-tight text-foreground">
+                        Объект: {p.nameObject}
+                      </span>
                     </div>
-                    <div className="flex justify-start gap-2 text-sm">
-                      <span className="text-muted-foreground">Тел:</span>
-                      <span className="text-foreground">{p.phone || "-"}</span>
-                    </div>
-                    <div className="flex justify-start gap-2 text-sm">
-                      <span className="text-muted-foreground">Email:</span>
-                      <span className="truncate max-w-[150px]">{p.email || "-"}</span>
-                    </div>
-                  </div>
+                    <span className="text-sm text-muted-foreground line-clamp-1">
+                      Сделка: {p.nameDeal}
+                    </span>
 
-                  {p.additionalContacts?.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-dashed text-xs text-muted-foreground space-y-2 bg-muted/30 p-2 rounded">
-                      <p className="font-medium text-blue-600">Доп. контакты:</p>
-                      {p.additionalContacts.map((c) => (
-                        <div className="pl-2 border-l-2 border-blue-200" key={c.id}>
-                          <div className="font-semibold text-foreground flex items-center gap-1">
-                            {c.name}
-                            {c.position && (
-                              <span className="text-sm text-gray-400">({c.position})</span>
-                            )}
-                          </div>
-                          <div className="mt-0.5 flex flex-wrap gap-x-2">
-                            {c.phone && <span>{c.phone}</span>}
-                            {c.email && <span className="text-blue-500">{c.email}</span>}
-                          </div>
-                        </div>
-                      ))}
+                    <div className="mt-1 text-sm grid gap-1.5 pt-2 border-t border-dashed">
+                      <div className="flex justify-start gap-2 text-sm">
+                        <span className="text-muted-foreground">Контакт:</span>
+                        <span className="text-foreground font-medium">{p.contact}</span>
+                      </div>
+                      <div className="flex justify-start gap-2 text-sm">
+                        <span className="text-muted-foreground">Тел:</span>
+                        <span className="text-foreground">{p.phone || "-"}</span>
+                      </div>
+                      <div className="flex justify-start gap-2 text-sm">
+                        <span className="text-muted-foreground">Email:</span>
+                        <span className="text-wrap">{p.email || "-"}</span>
+                      </div>
+                      <div className="flex flex-col justify-start text-sm">
+                        <span className="text-muted-foreground">Коментарий:</span>
+                        <span className="text-wrap">{p.comments || "-"}</span>
+                      </div>
                     </div>
-                  )}
-                </li>
-              ))}
+
+                    {p.additionalContacts?.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-dashed text-xs text-muted-foreground space-y-2 bg-muted/30 p-2 rounded">
+                        <p className="font-medium text-blue-600">Доп. контакты:</p>
+                        {p.additionalContacts.map((c) => (
+                          <div className="pl-2 border-l-2 border-blue-200" key={c.id}>
+                            <div className="font-semibold text-foreground flex items-center gap-1">
+                              {c.name}
+                              {c.position && (
+                                <span className="text-sm text-gray-400">({c.position})</span>
+                              )}
+                            </div>
+                            <div className="mt-0.5 flex flex-wrap gap-x-2">
+                              {c.phone && <span>{c.phone}</span>}
+                              {c.email && <span className="text-blue-500">{c.email}</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           </div>
         )}
 
         {hasRetails && (
-          <div className="flex-1 flex flex-col min-w-0 border rounded-lg bg-muted/5 overflow-hidden">
+          <div className="flex-1 flex flex-col min-w-0  min-h-0 border rounded-lg bg-muted/5 overflow-hidden">
             <div className="p-3 font-semibold uppercase text-center text-xs tracking-wider text-muted-foreground shrink-0 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
               Розница ({organizations?.retails?.length})
             </div>
-            <ul className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
-              {organizations?.retails.map((r) => (
-                <li
-                  className="grid gap-2 border p-3 bg-card rounded-md shadow-sm hover:shadow-md transition-shadow"
-                  key={r.id}
-                >
-                  <div className="flex flex-col justify-start items-start gap-2">
-                    <span className="text-sm px-2 py-0.5 rounded-full text-blue-500 border border-red-200 whitespace-nowrap shrink-0">
-                      {formatManagerName(r.mainManager?.username, r.mainManager?.position)}
-                    </span>
-                    <span className="font-medium text-base leading-tight text-foreground">
-                      {r.nameObject}
-                    </span>
-                  </div>
-                  <span className="text-sm text-muted-foreground line-clamp-1">{r.nameDeal}</span>
+            <ul className="flex-1 max-h-[75%] min-h-0 overflow-y-auto p-3 space-y-3 custom-scrollbar">
+              {organizations?.retails.map((r) => {
+                const searchQuery = r.inn || r.phone || r.email || r.nameObject || r.contact || ""
 
-                  <div className="mt-1 text-sm grid gap-1.5 pt-2 border-t border-dashed">
-                    <div className="flex justify-start gap-2 text-sm">
-                      <span className="text-muted-foreground">Контакт:</span>
-                      <span className="text-foreground font-medium">{r.contact}</span>
+                const hrefLink =
+                  searchQuery && r.userId
+                    ? `/dashboard/table/1/retails/${
+                        r.userId
+                      }?${new URLSearchParams({ search: searchQuery }).toString()}`
+                    : undefined
+                return (
+                  <li
+                    className="grid gap-2 border p-3 bg-card rounded-md shadow-sm hover:shadow-md transition-shadow relative"
+                    key={r.id}
+                  >
+                    {hrefLink && (
+                      <ProtectedByPermissions permission={PermissionEnum.VIEW_USER_REPORT}>
+                        <Link
+                          aria-label="Посмотреть подробнее"
+                          className="absolute inset-0"
+                          href={hrefLink}
+                          onClick={() => {
+                            requestAnimationFrame(() => {
+                              onClose()
+                            })
+                          }}
+                        />
+                      </ProtectedByPermissions>
+                    )}
+                    <div className="flex flex-col justify-start items-start gap-2">
+                      <span className="text-sm px-2 py-0.5 rounded-full text-blue-500 border border-red-200 whitespace-nowrap shrink-0">
+                        {formatManagerName(r.mainManager?.username, r.mainManager?.position)}
+                      </span>
+                      <span className="font-medium text-base leading-tight text-foreground">
+                        Объект: {r.nameObject}
+                      </span>
                     </div>
-                    <div className="flex justify-start gap-2 text-sm">
-                      <span className="text-muted-foreground">Тел:</span>
-                      <span className="text-foreground">{r.phone || "-"}</span>
-                    </div>
-                    <div className="flex justify-start gap-2 text-sm">
-                      <span className="text-muted-foreground">Email:</span>
-                      <span className="truncate max-w-[150px]">{r.email || "-"}</span>
-                    </div>
-                  </div>
+                    <span className="text-sm text-muted-foreground line-clamp-1">
+                      Сделка: {r.nameDeal}
+                    </span>
 
-                  {r.additionalContacts?.length > 0 && (
-                    <div className="mt-2 pt-2 border-t border-dashed text-xs text-muted-foreground space-y-2 bg-muted/30 p-2 rounded">
-                      <p className="font-medium text-blue-600">Доп. контакты:</p>
-                      {r.additionalContacts.map((c) => (
-                        <div className="pl-2 border-l-2 border-blue-200" key={c.id}>
-                          <div className="font-semibold text-foreground flex items-center gap-1">
-                            {c.name}
-                            {c.position && (
-                              <span className="text-sm text-gray-400">({c.position})</span>
-                            )}
-                          </div>
-                          <div className="mt-0.5 flex flex-wrap gap-x-2">
-                            {c.phone && <span>{c.phone}</span>}
-                            {c.email && <span className="text-blue-500">{c.email}</span>}
-                          </div>
-                        </div>
-                      ))}
+                    <div className="mt-1 text-sm grid gap-1.5 pt-2 border-t border-dashed">
+                      <div className="flex justify-start gap-2 text-sm">
+                        <span className="text-muted-foreground">Контакт:</span>
+                        <span className="text-foreground font-medium">{r.contact}</span>
+                      </div>
+                      <div className="flex justify-start gap-2 text-sm">
+                        <span className="text-muted-foreground">Тел:</span>
+                        <span className="text-foreground">{r.phone || "-"}</span>
+                      </div>
+                      <div className="flex justify-start gap-2 text-sm">
+                        <span className="text-muted-foreground">Email:</span>
+                        <span className="text-wrap">{r.email || "-"}</span>
+                      </div>
+                      <div className="flex flex-col justify-start text-sm">
+                        <span className="text-muted-foreground">Коментарий:</span>
+                        <span className="text-wrap">{r.comments || "-"}</span>
+                      </div>
                     </div>
-                  )}
-                </li>
-              ))}
+
+                    {r.additionalContacts?.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-dashed text-xs text-muted-foreground space-y-2 bg-muted/30 p-2 rounded">
+                        <p className="font-medium text-blue-600">Доп. контакты:</p>
+                        {r.additionalContacts.map((c) => (
+                          <div className="pl-2 border-l-2 border-blue-200" key={c.id}>
+                            <div className="font-semibold text-foreground flex items-center gap-1">
+                              {c.name}
+                              {c.position && (
+                                <span className="text-sm text-gray-400">({c.position})</span>
+                              )}
+                            </div>
+                            <div className="mt-0.5 flex flex-wrap gap-x-2">
+                              {c.phone && <span>{c.phone}</span>}
+                              {c.email && <span className="text-blue-500">{c.email}</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           </div>
         )}
@@ -296,54 +363,7 @@ export const FindOrgModal = () => {
         </form>
       </div>
 
-      <SerachResult isOpen={isOpen} onClose={onClose} renderContent={renderContent} />
+      <SearchResult isOpen={isOpen} onClose={onClose} renderContent={renderContent} />
     </>
-  )
-}
-
-const SerachResult = ({
-  isOpen,
-  onClose,
-  renderContent,
-}: {
-  isOpen: boolean
-  onClose: () => void
-  renderContent: () => React.ReactNode
-}) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)")
-
-  if (isDesktop) {
-    return (
-      <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
-        <DialogContent className="sm:max-w-[min(900px,95vw)] rounded-2xl p-0 border-border/60 shadow-2xl max-h-[80dvh] flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between p-5 border-b bg-background/50 backdrop-blur-sm shrink-0">
-            <DialogTitle className="text-lg font-semibold">Результаты поиска</DialogTitle>
-            <Button className="rounded-full" onClick={onClose} size="icon" variant={"ghost"}>
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Контент без общего скролла, скролл внутри колонок */}
-          <div className="p-5 flex-1 min-h-0 bg-muted/10">{renderContent()}</div>
-        </DialogContent>
-      </Dialog>
-    )
-  }
-
-  return (
-    <Drawer onOpenChange={(open) => !open && onClose()} open={isOpen}>
-      <DrawerContent className="rounded-t-2xl px-0 flex flex-col data-[vaul-drawer-direction=bottom]:max-h-[90dvh]">
-        <div className="mx-auto w-12 h-1.5 rounded-full bg-muted-foreground/20 my-3 shrink-0" />
-
-        <DrawerHeader className="text-left px-5 pt-1 pb-3 shrink-0 border-b">
-          <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            Поиск организации
-          </DrawerTitle>
-        </DrawerHeader>
-
-        {/* Контент без общего скролла, скролл внутри колонок */}
-        <div className="flex-1 p-4 min-h-0 bg-muted/10">{renderContent()}</div>
-      </DrawerContent>
-    </Drawer>
   )
 }

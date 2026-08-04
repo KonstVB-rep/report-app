@@ -101,6 +101,7 @@ export async function getOrganizationByQueryAction(
     const formattedProjects: CompanySuggestionItem[] = projects.map((p) => ({
       id: p.id,
       inn: p.inn,
+      userId: p.userId,
       nameDeal: p.nameDeal,
       nameObject: p.nameObject,
       type: "PROJECT",
@@ -114,11 +115,13 @@ export async function getOrganizationByQueryAction(
             position: p.user.position,
           }
         : null,
+      comments: p.comments,
     }))
 
     const formattedRetails: CompanySuggestionItem[] = retails.map((r) => ({
       id: r.id,
       inn: r.inn,
+      userId: r.userId,
       nameDeal: r.nameDeal,
       nameObject: r.nameObject,
       type: "RETAIL",
@@ -132,6 +135,7 @@ export async function getOrganizationByQueryAction(
             position: r.user.position,
           }
         : null,
+      comments: r.comments,
     }))
 
     return {

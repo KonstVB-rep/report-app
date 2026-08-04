@@ -335,7 +335,7 @@ export const columnsDataProject: ColumnDef<ProjectResponse, unknown>[] = [
     id: "email",
     header: "Email",
     cell: (info: CellContext<ProjectResponse, unknown>) => (
-      <span className="whitespace-nowrap">{info.getValue() as string}</span>
+      <span className="break-all">{info.getValue() as string}</span>
     ),
     meta: {
       title: "Email",

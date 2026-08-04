@@ -13,10 +13,10 @@ export type AdditionalContactItem = {
   position: string | null
 }
 
-// 2. Обновляем основной тип элемента поиска
 export type CompanySuggestionItem = {
   id: string
   inn: string | null
+  userId: string | null
   nameDeal: string
   nameObject: string
   type: "PROJECT" | "RETAIL"
@@ -24,6 +24,7 @@ export type CompanySuggestionItem = {
   email: string | null
   contact: string
   additionalContacts: AdditionalContactItem[]
+  comments: string | null
   mainManager: {
     username: string
     position: string

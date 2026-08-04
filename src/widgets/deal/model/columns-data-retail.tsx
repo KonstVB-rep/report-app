@@ -332,7 +332,7 @@ export const columnsDataRetail: ColumnDef<RetailResponse, unknown>[] = [
     accessorKey: "email",
     header: "Email",
     cell: (info: CellContext<RetailResponse, unknown>) => (
-      <span className="whitespace-nowrap">{info.getValue() as string}</span>
+      <span className="break-all">{info.getValue() as string}</span>
     ),
     enableHiding: true,
     meta: {
