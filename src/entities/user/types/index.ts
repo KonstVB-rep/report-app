@@ -4,7 +4,7 @@ import { PermissionUser } from "../model/objectTypes"
 export type User = {
   id: string
   username: string
-  phone: string
+  phone?: string | null
   user_password: string
   email: string
   position: string
@@ -32,6 +32,14 @@ export type UserWithdepartmentName = Omit<
 export type UserRequest = Omit<
   User,
   "id" | "lastlogin" | "createdAt" | "updatedAt" | "departmentId"
+> & {
+  department: DepartmentEnum
+  permissions: PermissionType[]
+}
+
+export type UserRequestReqruired = Omit<
+  User,
+  "id" | "lastlogin" | "createdAt" | "updatedAt" | "departmentId" | "phone"
 > & {
   department: DepartmentEnum
   permissions: PermissionType[]
@@ -81,6 +89,10 @@ export const OPTIONS: Option[] = [
     label: PermissionUser.EQUIPMENT_MANAGEMENT,
     value: PermissionEnum.EQUIPMENT_MANAGEMENT,
   },
+  {
+    label: PermissionUser.READ_ONLY,
+    value: PermissionEnum.READ_ONLY,
+  },
 ]
 
 export type PermissionType = keyof typeof PermissionEnum
@@ -88,7 +100,7 @@ export type PermissionType = keyof typeof PermissionEnum
 export type UserDataBase = {
   id?: string
   username: string
-  phone: string
+  phone?: string | null
   email: string
   position: string
   department: DepartmentEnum

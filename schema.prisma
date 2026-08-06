@@ -10,7 +10,7 @@ model User {
   id              String             @id @default(cuid())
   username        String
   email           String             @unique
-  phone           String             
+  phone           String?             
   user_password   String
   position        String
   departmentId    Int
@@ -422,6 +422,7 @@ enum PermissionEnum {
   DEAL_DELETE
   EQUIPMENT_DELETE
   EQUIPMENT_MANAGEMENT
+  READ_ONLY
 }
 
 enum DirectionProject {

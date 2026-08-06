@@ -4,7 +4,7 @@ import NotFound from "@/app/not-found"
 import { usePermissions } from "@/app/provider/permission-provider"
 
 const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren) => {
-  const { departmentId: departmentContext, isLoading } = usePermissions() // Добавь role в провайдер!
+  const { departmentId: departmentContext, isLoading } = usePermissions()
 
   const { departmentId } = useParams<{
     departmentId: string

@@ -41,7 +41,7 @@ const UserEditForm = ({
     formData.append("id", user?.id as string)
     state.inputs = {
       username: formData.get("username") as string,
-      phone: formData.get("phone") as string,
+      phone: (formData.get("phone") as string) || "",
       email: formData.get("email") as string,
       position: formData.get("position") as string,
       department: formData.get("department") as DepartmentEnum,
@@ -62,7 +62,7 @@ const UserEditForm = ({
       ...initialState,
       inputs: {
         username: user.username,
-        phone: user.phone,
+        phone: user.phone || "",
         email: user.email,
         position: user.position,
         department: user.departmentName,

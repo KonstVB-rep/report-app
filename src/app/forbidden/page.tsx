@@ -7,7 +7,9 @@ export default function Forbidden() {
     <div>
       <h2>Доступ запрещён</h2>
       <p>У вас нет прав для доступа к этому ресурсу.</p>
-      <Link href="/">Вернуться на главную</Link>
+      <Link href="/" onClick={() => localStorage.removeItem("lastAppPath")}>
+        Вернуться на главную
+      </Link>
     </div>
   )
 }

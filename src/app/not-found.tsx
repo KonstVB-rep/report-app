@@ -7,7 +7,9 @@ export default function NotFound() {
       <h1 className="text-xl">Страница не найдена</h1>
       <p className="text-xl">Не удалось найти запрошенный ресурс</p>
       <Button asChild>
-        <Link href="/">Вернуться на главную страницу</Link>
+        <Link href="/" onClick={() => localStorage.removeItem("lastAppPath")}>
+          Вернуться на главную страницу
+        </Link>
       </Button>
     </div>
   )

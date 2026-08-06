@@ -25,7 +25,13 @@ import { handleError } from "@/shared/api/handleError"
 import type { ActionResponse } from "@/shared/types"
 import type { UserTypeTable } from "../model/column-data-user"
 import { userFormEditSchema, userFormSchema } from "../model/schema"
-import type { UserDataBase, UserFormData, UserFormEditData, UserRequest } from "../types"
+import type {
+  UserDataBase,
+  UserFormData,
+  UserFormEditData,
+  UserRequest,
+  UserRequestReqruired,
+} from "../types"
 
 export interface ResponseDelUser<T> {
   success: boolean
@@ -36,7 +42,7 @@ export interface ResponseDelUser<T> {
 const extractFormData = (formData: FormData, permissions: string[]): UserFormData => ({
   ...(formData.get("id") && { id: formData.get("id") as string }),
   username: formData.get("username") as string,
-  phone: formData.get("phone") as string,
+  phone: (formData.get("phone") as string) || "",
   email: formData.get("email") as string,
   user_password: formData.get("user_password") as string,
   position: formData.get("position") as string,
@@ -49,7 +55,7 @@ const extractFormData = (formData: FormData, permissions: string[]): UserFormDat
 
 export const checkFormData = async (
   dataObject: UserRequest,
-  requiredFields: (keyof UserRequest)[],
+  requiredFields: (keyof UserRequestReqruired)[],
 ) => {
   for (const field of requiredFields) {
     if (
@@ -145,7 +151,7 @@ const addUserToDb = async <T extends UserDataBase>(
     return await prisma.user.create({
       data: {
         email: dataForm.email?.toLowerCase().trim(),
-        phone: dataForm.phone?.toLowerCase().trim(),
+        phone: dataForm.phone?.toLowerCase().trim() || "",
         role: dataForm.role as Role,
         departmentId: departmentId,
         username: dataForm.username?.toLowerCase().trim(),
@@ -234,53 +240,6 @@ function isUserFormData<T extends UserDataBase>(data: T | ActionResponse<T>): da
   return !("errors" in data)
 }
 
-// export const createUser = async (formData: FormData): Promise<ActionResponse<UserFormData>> => {
-//   try {
-//     const parsedData = safeParseFormData<UserFormData>(formData, userFormSchema)
-
-//     if (isUserFormData(parsedData)) {
-//       await checkUserPermissions([PermissionEnum.USER_MANAGEMENT])
-//       await checkEmailUnique(parsedData.email as string)
-//       const hashedPassword = await hashUserPassword(parsedData.user_password)
-//       const departmentTarget = await findDepartment(parsedData.department as string)
-
-//       if (parsedData.role === Role.DIRECTOR) {
-//         await handleDirectorAssignment(departmentTarget.id)
-//       }
-
-//       const newUser = await addUserToDb<UserFormData>(
-//         {
-//           ...parsedData,
-//           role: parsedData.role as Role,
-//           department: parsedData.department as DepartmentEnum,
-//         },
-//         hashedPassword,
-//         departmentTarget.id,
-//         "create",
-//       )
-//       if (!newUser) {
-//         throw new Error("Произошла ошибка при сохранении пользователя")
-//       }
-
-//       await assignPermissionsToUser(newUser.id, parsedData.permissions || [])
-//     } else {
-//       return parsedData
-//     }
-
-//     return {
-//       success: true,
-//       message: "Новый пользователь сохранен",
-//     }
-//   } catch (error) {
-//     console.log("Произошла ошибка при сохранении пользователя", error)
-//     return {
-//       success: false,
-//       message:
-//         error instanceof Error ? error.message : "Произошла ошибка при сохранении пользователя",
-//     }
-//   }
-// }
-
 export const createUser = async (formData: FormData): Promise<ActionResponse<UserFormData>> => {
   try {
     const parsedData = safeParseFormData<UserFormData>(formData, userFormSchema)
@@ -299,6 +258,7 @@ export const createUser = async (formData: FormData): Promise<ActionResponse<Use
       const newUser = await addUserToDb<UserFormData>(
         {
           ...parsedData,
+          phone: parsedData.phone?.toLowerCase().trim() || "",
           role: parsedData.role as Role,
           department: parsedData.department as DepartmentEnum,
         },
@@ -332,71 +292,11 @@ export const createUser = async (formData: FormData): Promise<ActionResponse<Use
   }
 }
 
-// export const updateUser = async (formData: FormData): Promise<ActionResponse<UserFormEditData>> => {
-//   try {
-//     const parsedData = safeParseFormData<UserFormEditData>(formData, userFormEditSchema)
-
-//     if (isUserFormData(parsedData)) {
-//       await checkUserPermissions([PermissionEnum.USER_MANAGEMENT])
-//       const currentUser = await prisma.user.findUnique({
-//         where: { id: parsedData.id },
-//         select: { email: true },
-//       })
-
-//       if (!currentUser) {
-//         throw new Error("Пользователь не найден")
-//       }
-
-//       if (currentUser.email !== parsedData.email) {
-//         await checkEmailUnique(parsedData.email)
-//       }
-
-//       let hashedPassword: string | undefined
-//       if (parsedData.user_password && parsedData.user_password.trim() !== "") {
-//         hashedPassword = await hashUserPassword(parsedData.user_password)
-//       }
-//       const departmentTarget = await findDepartment(parsedData.department as string)
-
-//       if (parsedData.role === Role.DIRECTOR) {
-//         await handleDirectorAssignment(departmentTarget.id, parsedData.id)
-//       }
-
-//       const updatedUser = await addUserToDb<UserFormEditData>(
-//         {
-//           ...parsedData,
-//           role: parsedData.role as Role,
-//           department: parsedData.department as DepartmentEnum,
-//         },
-//         hashedPassword,
-//         departmentTarget.id,
-//         "update",
-//       )
-
-//       if (!updatedUser) {
-//         throw new Error("Произошла ошибка при сохранении изменений")
-//       }
-
-//       await assignPermissionsToUser(updatedUser.id, parsedData.permissions as PermissionEnum[])
-//     } else {
-//       return parsedData
-//     }
-
-//     return {
-//       success: true,
-//       message: "Пользователь изменен",
-//     }
-//   } catch (error) {
-//     console.log("Произошла ошибка при сохранении изменений", error)
-//     return {
-//       success: false,
-//       message: error instanceof Error ? error.message : "Произошла ошибка при сохранении изменений",
-//     }
-//   }
-// }
-
 export const updateUser = async (formData: FormData): Promise<ActionResponse<UserFormEditData>> => {
   try {
     const parsedData = safeParseFormData<UserFormEditData>(formData, userFormEditSchema)
+
+    console.log(parsedData, "parsedData")
 
     if (isUserFormData(parsedData)) {
       await checkUserPermissions([PermissionEnum.USER_MANAGEMENT])
@@ -428,6 +328,7 @@ export const updateUser = async (formData: FormData): Promise<ActionResponse<Use
       const updatedUser = await addUserToDb<UserFormEditData>(
         {
           ...parsedData,
+          phone: parsedData.phone?.toLowerCase().trim() || "",
           role: parsedData.role as Role,
           department: parsedData.department as DepartmentEnum,
         },

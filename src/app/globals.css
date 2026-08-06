@@ -237,6 +237,8 @@ textarea {
   box-shadow: none;
 }
 
+.first_letter:first-letter { text-transform: capitalize; }
+
 .scrollbar-none{
   scrollbar-width: none;
 }

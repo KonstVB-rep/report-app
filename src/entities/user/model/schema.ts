@@ -17,10 +17,14 @@ export const userFormSchema = z.object({
     .min(6, { message: "Пароль должен содержать не менее 6 символов" })
     .max(30, { message: "Пароль должен содержать не более 30 символов" }),
   email: z.email("Некорректный email"),
-  phone: z
-    .string()
-    .min(18, "Минимальное количество символов 18")
-    .max(18, "Максимальное количество символов 18"),
+  phone: z.preprocess(
+    (val) => (val === "" || val === null ? undefined : val),
+    z
+      .string()
+      .min(18, "Минимальное количество символов 18")
+      .max(18, "Максимальное количество символов 18")
+      .optional(),
+  ),
   position: z
     .string()
     .min(3, { message: "Должность должна содержать не менее 3 символов" })

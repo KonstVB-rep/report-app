@@ -15,7 +15,7 @@ import { OPTIONS, type UserFormData, type UserFormEditData } from "../types"
 
 type UserFormProps<T extends UserFormData | UserFormEditData> = {
   state: ActionResponse<T>
-  onSubmit: React.FormEventHandler<HTMLFormElement>
+  onSubmit: React.SubmitEventHandler<HTMLFormElement>
   isPending: boolean
   setState: React.Dispatch<React.SetStateAction<ActionResponse<T>>>
 }
@@ -41,7 +41,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
           </Label>
           <Input
             aria-describedby="username"
-            className={getFieldError("username") ? "border-red-500" : ""}
+            className={cn("capitalize", getFieldError("username") ? "border-red-500" : "")}
             defaultValue={state.inputs?.username}
             disabled={isPending}
             id="username"
@@ -82,7 +82,7 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
           <Input
             aria-describedby="phone"
             className={getFieldError("phone") ? "border-red-500" : ""}
-            defaultValue={state.inputs?.phone}
+            defaultValue={state.inputs?.phone || ""}
             disabled={isPending}
             id="phone"
             name={"phone"}
@@ -132,7 +132,10 @@ const UserForm = <T extends UserFormData | UserFormEditData>({
           <Input
             aria-describedby="position"
             className={getFieldError("position") ? "border-red-500" : ""}
-            defaultValue={state.inputs?.position}
+            defaultValue={
+              state.inputs?.position &&
+              state.inputs?.position[0].toLocaleUpperCase() + state.inputs?.position.slice(1)
+            }
             disabled={isPending}
             id="position"
             name={"position"}

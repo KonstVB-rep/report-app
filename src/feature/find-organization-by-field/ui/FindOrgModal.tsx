@@ -1,6 +1,12 @@
 // src/features/find-organization-by-inn/ui/FindOrgModal.tsx
 "use client"
 
+import { useState } from "react"
+import { PermissionEnum } from "@prisma/client"
+import { EllipsisVertical, Search } from "lucide-react"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import { toast } from "sonner"
 import { Button } from "@/shared/components/ui/button"
 import { Input } from "@/shared/components/ui/input"
 import {
@@ -14,12 +20,6 @@ import {
 import PhoneInput from "@/shared/custom-components/ui/Inputs/PhoneInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
-import { PermissionEnum } from "@prisma/client"
-import { EllipsisVertical, Search } from "lucide-react"
-import dynamic from "next/dynamic"
-import Link from "next/link"
-import { useState } from "react"
-import { toast } from "sonner"
 import { useFindOrganization } from "../api/useFindOrganization"
 import { findOrgSchema, type SearchType } from "../model/schema"
 

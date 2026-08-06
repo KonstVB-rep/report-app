@@ -11,6 +11,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/shared/components/ui/context-menu"
+import useIsReadonly from "@/shared/hooks/useIsReadonly"
 
 const ProtectedByPermissions = dynamic(() => import("../Protect/ProtectedByPermissions"), {
   ssr: false,
@@ -38,6 +39,10 @@ const ContextRowTable = ({
   path = "",
   dealStatus = "",
 }: ContextMenuTableProps) => {
+  const isReadOnly = useIsReadonly()
+
+  if (isReadOnly) return null
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>

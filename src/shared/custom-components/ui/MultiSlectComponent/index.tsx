@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react"
+import { PermissionEnum } from "@prisma/client"
 import { Input } from "@/shared/components/ui/input"
 import {
   MultiSelect,
@@ -8,6 +9,7 @@ import {
   MultiSelectValue,
   renderMultiSelectOptions,
 } from "@/shared/components/ui/multi-select"
+import { TOAST } from "../Toast"
 
 type OptionItem = {
   value: string
@@ -76,6 +78,25 @@ export const MultiSelectNativeForm = ({
   }, [defaultValue])
 
   const handleValueChange = (values: string[]) => {
+    const isReadOnly = values.includes(PermissionEnum.READ_ONLY)
+    const isStateReadOnly = selectedValues.includes(PermissionEnum.READ_ONLY)
+
+    if (isStateReadOnly && isReadOnly) {
+      setSelectedValues([PermissionEnum.READ_ONLY])
+      TOAST.INFO("Для выбора других разрешений сначала снимите галочку «Только чтение»")
+      return
+    }
+
+    if (!isStateReadOnly && isReadOnly && values.length > 1) {
+      setSelectedValues([PermissionEnum.READ_ONLY])
+      TOAST.INFO("Разрешение «Только чтение» несовместимо с другими. Остальные права были сняты.")
+      return
+    }
+
+    if (!isStateReadOnly && isReadOnly) {
+      setSelectedValues([PermissionEnum.READ_ONLY])
+      return
+    }
     setSelectedValues(values)
     onValueChange?.(values)
 
