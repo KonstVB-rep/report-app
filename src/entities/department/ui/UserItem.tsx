@@ -73,7 +73,7 @@ const UserItem = memo(({ id, username, position, departmentId, email, phone }: U
           />
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             <div className="flex gap-2 overflow-hidden rounded-md shrink-0 w-full sm:w-auto">
-              <Contacts className="rounded-md" email={email} phone={phone} />
+              <Contacts className="rounded-md" email={email} phone={phone || ""} />
             </div>
             <TableLinks departmentId={departmentId} id={id} />
           </div>
@@ -98,7 +98,7 @@ const UserItem = memo(({ id, username, position, departmentId, email, phone }: U
             <ProfileLink departmentId={departmentId} id={id} username={usernameFormatted} />
             <div className="flex flex-wrap gap-2 w-full sm:w-auto mt-2">
               <div className="flex gap-2 overflow-hidden rounded-md shrink-0 w-full sm:w-auto">
-                <Contacts className="rounded-md" email={email} phone={phone} />
+                <Contacts className="rounded-md" email={email} phone={phone || ""} />
               </div>
               <TableLinks departmentId={departmentId} id={id} />
             </div>
@@ -119,7 +119,7 @@ const UserItem = memo(({ id, username, position, departmentId, email, phone }: U
             username={usernameFormatted}
           />
           <div className="flex gap-2 overflow-hidden rounded-md shrink-0 w-full sm:w-auto">
-            <Contacts className="rounded-md" email={email} phone={phone} />
+            <Contacts className="rounded-md" email={email} phone={phone || ""} />
           </div>
         </li>
 
@@ -141,7 +141,7 @@ const UserItem = memo(({ id, username, position, departmentId, email, phone }: U
           >
             <ProfileLink departmentId={departmentId} id={id} username={usernameFormatted} />
             <div className="flex gap-2 overflow-hidden rounded-md shrink-0 w-full sm:w-auto mt-2">
-              <Contacts className="rounded-md" email={email} phone={phone} />
+              <Contacts className="rounded-md" email={email} phone={phone || ""} />
             </div>
           </DialogComponent>
         </li>

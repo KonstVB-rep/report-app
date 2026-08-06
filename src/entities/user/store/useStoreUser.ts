@@ -5,7 +5,7 @@ import { create } from "@/shared/lib/helpers/сreate"
 export type AuthUserType = {
   permissions: $Enums.PermissionEnum[]
   id: string
-  phone: string
+  phone: string | null
   email: string
   position: string
   username: string

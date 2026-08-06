@@ -62,7 +62,7 @@ const ProfilePageMain = ({ userId }: { userId: string }) => {
             </div>
 
             <div className="flex gap-2 rounded-md w-full items-center ">
-              <Contacts className="rounded-full" email={user?.email} phone={user?.phone} />
+              <Contacts className="rounded-full" email={user?.email} phone={user?.phone || ""} />
             </div>
           </div>
         </div>
