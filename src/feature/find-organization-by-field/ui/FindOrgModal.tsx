@@ -39,8 +39,6 @@ export const FindOrgModal = () => {
     setSearchQuery("")
   }
 
-  console.log("organizations", organizations)
-
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
 

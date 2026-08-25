@@ -1,8 +1,8 @@
-import { useState } from "react"
-import type { Header, Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
 import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
+import type { Header, Row } from "@tanstack/react-table"
+import { useState } from "react"
 import TableCellComponent from "./TableCellCompoment"
 
 type Props<T extends Record<string, unknown>> = {
@@ -53,9 +53,12 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
             handleOpenInfo={handleOpenInfo}
             key={cell.id}
             styles={{
-              width: headers?.[index]?.getSize(),
-              minWidth: headers?.[index]?.column.columnDef.minSize,
-              maxWidth: headers?.[index]?.column.columnDef.maxSize,
+              // width: headers?.[index]?.getSize(),
+              // minWidth: headers?.[index]?.column.columnDef.minSize,
+              // maxWidth: headers?.[index]?.column.columnDef.maxSize,
+              // flex: flexValue,
+              width: cell.column.getSize(),
+              minWidth: cell.column.columnDef.minSize || 60,
               flex: flexValue,
             }}
           />

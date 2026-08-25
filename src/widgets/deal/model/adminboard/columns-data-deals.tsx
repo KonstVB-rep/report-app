@@ -114,6 +114,43 @@ export const columnsDataDeals: ColumnDef<DealUnion, unknown>[] = [
     accessorFn: (row: DealUnion) => row.nameObject,
   },
   {
+    id: "contact",
+    header: "Контактное лицо",
+    cell: (info: CellContext<DealUnion, unknown>) => info.getValue(),
+    enableHiding: true,
+    meta: {
+      title: "Контактное лицо",
+    },
+    accessorFn: (row: DealUnion) => row.contact,
+  },
+  {
+    id: "phone",
+    accessorKey: "phone",
+    header: "Телефон",
+    cell: (info: CellContext<DealUnion, unknown>) => {
+      return (
+        <span className="whitespace-nowrap">{info.getValue() as string}</span> //тег
+      )
+    },
+    enableHiding: true,
+    meta: {
+      title: "Телефон",
+    },
+    accessorFn: (row: DealUnion) => row.phone,
+  },
+  {
+    id: "email",
+    header: "Email",
+    cell: (info: CellContext<DealUnion, unknown>) => (
+      <span className="break-all">{info.getValue() as string}</span>
+    ),
+    meta: {
+      title: "Email",
+    },
+    enableHiding: true,
+    accessorFn: (row: DealUnion) => row.email,
+  },
+  {
     id: "comments",
     header: "Комментарии",
     cell: (info: CellContext<DealUnion, unknown>) => {

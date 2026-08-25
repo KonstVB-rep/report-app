@@ -43,7 +43,7 @@ const DealsAllTable = ({
           "rounded-lg relative h-full overflow-auto border transition-all duration-200",
           {
             "max-h-[66vh]": openFilters,
-            "max-h-[74vh]": !openFilters,
+            "max-h-[72vh]": !openFilters,
           },
         )}
         ref={tableContainerRef}

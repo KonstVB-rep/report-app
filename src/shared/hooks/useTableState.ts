@@ -43,6 +43,7 @@ export const useTableState = <T extends { id: string }>(
   options: UseTableStateOptions<T> = {},
 ) => {
   const { hiddenColumns, paramsNotFilters, searchableCols, ...tableOptions } = options
+
   const storageKey = options.storageKey ?? ""
 
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(() =>

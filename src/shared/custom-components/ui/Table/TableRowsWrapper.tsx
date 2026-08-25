@@ -38,7 +38,7 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
     <div
       className={cn("rounded-lg relative h-full overflow-auto border transition-all duration-200", {
         "max-h-[68vh]": openFilters,
-        "max-h-[75vh]": !openFilters,
+        "max-h-[74vh]": !openFilters,
       })}
       ref={tableContainerRef}
     >

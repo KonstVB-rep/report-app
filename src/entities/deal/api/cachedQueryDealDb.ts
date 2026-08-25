@@ -289,16 +289,6 @@ export const getCachedAllDealsByDepartment = async (departmentId: number) => {
       where: {
         user: { departmentId },
       },
-      select: {
-        id: true,
-        dateRequest: true,
-        nameDeal: true,
-        nameObject: true,
-        comments: true,
-        userId: true,
-        type: true,
-        dealStatus: true,
-      },
       orderBy: {
         dateRequest: "asc",
       },
