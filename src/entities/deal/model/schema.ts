@@ -85,7 +85,6 @@ export const ProjectFormSchema = z
 
     const requiredFields: { key: keyof typeof data; label: string }[] = [
       { key: "nameDeal", label: "Введите название сделки" },
-      { key: "nameObject", label: "Введите название объекта" },
       { key: "direction", label: "Выберите направление" },
       { key: "contact", label: "Укажите контактное лицо" },
       { key: "commentsLastConnection", label: "Введите комментарий" },
@@ -107,14 +106,14 @@ export const ProjectFormSchema = z
     })
 
     if (data.dealStatus !== StatusProject.REJECT) {
-      if (!data.plannedDateConnection?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Укажите планируемую дату подключения",
-          path: ["plannedDateConnection"],
-          input: data.plannedDateConnection,
-        })
-      }
+      // if (!data.plannedDateConnection?.trim()) {
+      //   ctx.addIssue({
+      //     code: "custom",
+      //     message: "Укажите планируемую дату подключения",
+      //     path: ["plannedDateConnection"],
+      //     input: data.plannedDateConnection,
+      //   })
+      // }
 
       if (!data.resource?.trim()) {
         ctx.addIssue({
@@ -147,7 +146,6 @@ export const ProjectFormSchema = z
 export const RetailFormSchema = z
   .object({
     id: z.string().optional(),
-    // Всегда обязательное поле
     dateRequest: z.preprocess(
       (val) => {
         if (val instanceof Date) return val.toISOString()
@@ -232,7 +230,6 @@ export const RetailFormSchema = z
 
     const requiredFields: { key: keyof typeof data; label: string }[] = [
       { key: "nameDeal", label: "Введите название сделки" },
-      { key: "nameObject", label: "Введите название объекта" },
       { key: "direction", label: "Выберите направление" },
       { key: "contact", label: "Укажите контактное лицо" },
       { key: "commentsLastConnection", label: "Введите комментарий" },
@@ -253,14 +250,14 @@ export const RetailFormSchema = z
     })
 
     if (data.dealStatus !== StatusProject.REJECT) {
-      if (!data.plannedDateConnection?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Укажите планируемую дату подключения",
-          path: ["plannedDateConnection"],
-          input: data.plannedDateConnection,
-        })
-      }
+      // if (!data.plannedDateConnection?.trim()) {
+      //   ctx.addIssue({
+      //     code: "custom",
+      //     message: "Укажите планируемую дату контакта",
+      //     path: ["plannedDateConnection"],
+      //     input: data.plannedDateConnection,
+      //   })
+      // }
 
       if (!data.resource?.trim()) {
         ctx.addIssue({

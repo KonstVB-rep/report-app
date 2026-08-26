@@ -215,8 +215,6 @@ const ProjectFormBody = <T extends FieldValues>({
                   label="Название объекта/Город"
                   name={"nameObject" as Path<T>}
                   placeholder="Название..."
-                  required={currentStatus !== StatusProject.REQUEST}
-                  showStarRequired={currentStatus !== StatusProject.REQUEST}
                 />
 
                 <SelectFormField
@@ -328,7 +326,6 @@ const ProjectFormBody = <T extends FieldValues>({
                     errorMessage={getError("plannedDateConnection")}
                     label="Планируемый контакт"
                     name={"plannedDateConnection" as Path<T>}
-                    required={currentStatus !== StatusProject.REQUEST}
                   />
                 )}
 

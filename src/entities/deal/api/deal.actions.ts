@@ -47,7 +47,7 @@ import {
 } from "../types"
 import type { DealHighlightdeletedType, DealHighlightType } from "./../types/index"
 
-const requiredFields = ["nameObject", "direction", "comments", "contact", "dealStatus"]
+const requiredFields = ["direction", "comments", "contact", "dealStatus"]
 
 export interface MutationResponse<U> {
   success: boolean

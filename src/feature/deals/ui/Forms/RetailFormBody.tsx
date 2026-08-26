@@ -159,8 +159,6 @@ const RetailFormBody = <T extends FieldValues>({
                 label="Название объекта/Город"
                 name={"nameObject" as Path<T>}
                 placeholder="Название..."
-                required={currentStatus !== StatusRetail.REQUEST}
-                showStarRequired={currentStatus !== StatusRetail.REQUEST}
               />
 
               <SelectFormField
