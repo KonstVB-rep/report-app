@@ -1,8 +1,8 @@
+import { useState } from "react"
+import type { Header, Row } from "@tanstack/react-table"
 import { TableRow } from "@/shared/components/ui/table"
 import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
-import type { Header, Row } from "@tanstack/react-table"
-import { useState } from "react"
 import TableCellComponent from "./TableCellCompoment"
 
 type Props<T extends Record<string, unknown>> = {
@@ -13,11 +13,7 @@ type Props<T extends Record<string, unknown>> = {
   headers?: Header<T, unknown>[]
 }
 
-const TableWithoutContent = <T extends Record<string, unknown>>({
-  row,
-  virtualRow,
-  headers,
-}: Props<T>) => {
+const TableWithoutContent = <T extends Record<string, unknown>>({ row, virtualRow }: Props<T>) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
   const handleOpenInfo = (cellId: string) => {
@@ -40,7 +36,7 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
         display: "flex",
       }}
     >
-      {row.getVisibleCells().map((cell, index) => {
+      {row.getVisibleCells().map((cell) => {
         const columnId = cell.column.id
 
         const isNotGrow = NOT_GROW_COLS.includes(columnId)
@@ -53,10 +49,6 @@ const TableWithoutContent = <T extends Record<string, unknown>>({
             handleOpenInfo={handleOpenInfo}
             key={cell.id}
             styles={{
-              // width: headers?.[index]?.getSize(),
-              // minWidth: headers?.[index]?.column.columnDef.minSize,
-              // maxWidth: headers?.[index]?.column.columnDef.maxSize,
-              // flex: flexValue,
               width: cell.column.getSize(),
               minWidth: cell.column.columnDef.minSize || 60,
               flex: flexValue,

@@ -11,8 +11,6 @@ interface UserTableContentProps {
 }
 
 const UserTableContent = ({ table, isLoading }: UserTableContentProps) => {
-  const headers = table.getHeaderGroups()[0].headers
-
   return (
     <TableTemplate className="overflow-auto" table={table}>
       {isLoading ? (
@@ -20,7 +18,7 @@ const UserTableContent = ({ table, isLoading }: UserTableContentProps) => {
       ) : (
         table.getRowModel().rows.map((row) => (
           <TableRow className="flex" key={row.id}>
-            <UserTableCellContent headers={headers} row={row} />
+            <UserTableCellContent row={row} />
           </TableRow>
         ))
       )}

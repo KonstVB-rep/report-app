@@ -66,7 +66,6 @@ const DealsTabContent = (props: DealsTabContentProps) => {
               <TableWithoutContent<DealUnion>
                 entityType={"deal"}
                 hasEditDeleteActions={hasEditDeleteActions}
-                headers={table.getHeaderGroups()[0].headers}
                 key={row.id}
                 row={row}
                 virtualRow={virtualRow}

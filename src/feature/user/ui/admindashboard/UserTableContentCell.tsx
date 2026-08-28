@@ -1,15 +1,14 @@
-import { flexRender, type Header, type Row } from "@tanstack/react-table"
+import { flexRender, type Row } from "@tanstack/react-table"
 import type { UserTypeTable } from "@/entities/user/model/column-data-user"
 import RowInfoDialog from "@/shared/custom-components/ui/Table/RowInfoDialog"
-import UserTableCell from "./UserTableCell"
 import { NOT_GROW_COLS } from "@/shared/lib/constants"
+import UserTableCell from "./UserTableCell"
 
 interface UserTableCellContentProps {
   row: Row<UserTypeTable>
-  headers: Header<UserTypeTable, unknown>[]
 }
 
-const UserTableCellContent = ({ row, headers }: UserTableCellContentProps) => {
+const UserTableCellContent = ({ row }: UserTableCellContentProps) => {
   return (
     <>
       {row.getVisibleCells().map((cell) => {
