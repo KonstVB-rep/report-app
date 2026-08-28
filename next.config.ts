@@ -2,7 +2,11 @@ import type { NextConfig } from "next"
 import withBundleAnalyzer from "@next/bundle-analyzer"
 
 const nextConfig: NextConfig = {
+  reactCompiler: true,
   cacheComponents: true,
+  typedRoutes: true,
+  output: "standalone",
+
   logging: {
     fetches: {
       fullUrl: true,
@@ -30,20 +34,20 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+
   productionBrowserSourceMaps: false,
 
   compiler: {
     reactRemoveProperties: false,
   },
 
-  experimental: {
-    staleTimes: {
-      dynamic: 1,
-      static: 30,
+  turbopack: {
+    resolveAlias: {
+      "react-devtools": "turbopack-empty-module",
     },
+  },
 
-    turbopackFileSystemCacheForDev: true,
-
+  experimental: {
     serverActions: {
       allowedOrigins: [
         process.env.NEXT_PUBLIC_API_BASE_URL
@@ -51,7 +55,6 @@ const nextConfig: NextConfig = {
           : "http://localhost:3000",
       ],
     },
-
     optimizePackageImports: [
       "@radix-ui/react-*",
       "lucide-react",
@@ -72,19 +75,12 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  turbopack: {
-    resolveAlias: {
-      "react-devtools": "turbopack-empty-module",
-    },
-  },
-
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
 }
 
-// 4. Типизируем phase
 const withBundleAnalyzerConfig = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
   openAnalyzer: true,
