@@ -23,7 +23,7 @@ export const useEquipmentStore = create<EquipmentStore>()(
       setLocalKit: (data) => set({ localKits: data }),
       updateLocalKit: (id, columnId, value) => {
         set((state) => ({
-          localKits: state.localKits.map((kit) => {
+          localKits: state.localKits.map((kit: EquipmentWithQuantity) => {
             if (kit.id === id) {
               return { ...kit, [columnId]: value }
             }

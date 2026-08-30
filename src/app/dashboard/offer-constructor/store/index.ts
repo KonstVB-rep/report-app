@@ -21,7 +21,6 @@ export type OfferTableItem = {
   delta?: string
 }
 
-// export type DataSubSection = { id: string; name: string; rows: OfferTableItem[] }
 export type DataSection = {
   id: string
   name: string
@@ -31,6 +30,7 @@ export type DataSection = {
   totalPurchase: string
   totalDelta: string
 }
+
 export type DataPart = {
   id: string
   orderNumber: string
@@ -51,18 +51,15 @@ interface OfferTableStore {
   totalPriceOffer: string
   totalPricePurchase: string
   totalDelta: string
-
   activeTarget: { partId: string; sectionId?: string } | null
 
   setData: (data: DataOffer) => void
   setVat: (value: number) => void
   setActiveTarget: (partId: string, sectionId?: string) => void
   resetActiveTarget: () => void
-
   setSelectedItemId: (id: string) => void
   updateOfferDate: (value: Date) => void
   updateOfferNumber: (value: string) => void
-
   updatePartTitle: (partId: string, value: string, orderNumber: string) => void
   updateSectionTitle: (
     partId: string,
@@ -70,16 +67,13 @@ interface OfferTableStore {
     value: string,
     orderNumber: string,
   ) => void
-
   addPart: () => void
   addSection: (partId: string) => void
   addRows: (data: SerializedEquipmentItem[]) => void
   addRow: (partId: string, sectionId: string) => void
-
   removePart: (partId: string) => void
   removeSection: (partId: string, sectionId: string) => void
   removeRow: (partId: string, sectionId: string, idrowId: string) => void
-
   updateRow: (updatedItem: OfferTableItem) => void
   clearData: () => void
   movePart: (activeId: string, overId: string) => void
@@ -123,9 +117,9 @@ const recalculateTotals = (state: OfferTableStore) => {
   let totalPurch = 0
   let totalDlt = 0
 
-  state.data.parts.forEach((part) => {
-    part.sections.forEach((sec) => {
-      sec.rows.forEach((row) => {
+  state.data.parts.forEach((part: DataPart) => {
+    part.sections.forEach((sec: DataSection) => {
+      sec.rows.forEach((row: OfferTableItem) => {
         totalOffer += Number(row.totalPrice || 0)
         totalPurch += Number(row.purchaseAmount || 0)
         totalDlt += Number(row.delta || 0)
@@ -139,9 +133,9 @@ const recalculateTotals = (state: OfferTableStore) => {
 }
 
 const recalculateLocalTotal = (section: DataSection, rows: OfferTableItem[]) => {
-  const totalPrice = rows.reduce((acc, row) => acc + Number(row.totalPrice || 0), 0)
+  const totalPrice = rows.reduce((acc, row: OfferTableItem) => acc + Number(row.totalPrice || 0), 0)
   const totalPurchase = rows.reduce(
-    (acc, row) => acc + Number(row.purchasePrice || 0) * Number(row.count),
+    (acc, row: OfferTableItem) => acc + Number(row.purchasePrice || 0) * Number(row.count || 0),
     0,
   )
   const totalDelta = totalPrice - totalPurchase
@@ -168,12 +162,15 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       movePart: (activeId: string, overId: string) =>
         set((state) => {
-          // Принудительно приводим к строке, чтобы исключить конфликты типов dnd-kit
           const targetActiveId = String(activeId)
           const targetOverId = String(overId)
 
-          const oldIndex = state.data.parts.findIndex((p) => String(p.id) === targetActiveId)
-          const newIndex = state.data.parts.findIndex((p) => String(p.id) === targetOverId)
+          const oldIndex = state.data.parts.findIndex(
+            (p: DataPart) => String(p.id) === targetActiveId,
+          )
+          const newIndex = state.data.parts.findIndex(
+            (p: DataPart) => String(p.id) === targetOverId,
+          )
 
           if (oldIndex !== -1 && newIndex !== -1) {
             state.data.parts = arrayMove(state.data.parts, oldIndex, newIndex)
@@ -187,39 +184,31 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           let overPartIdx = -1
           let overSecIdx = -1
 
-          // 1. Ищем, в каком разделе и на каком индексе лежит перетаскиваемый подраздел
-          state.data.parts.forEach((part, pIdx) => {
-            const sIdx = part.sections.findIndex((s) => s.id === activeId)
+          state.data.parts.forEach((part: DataPart, pIdx: number) => {
+            const sIdx = part.sections.findIndex((s: DataSection) => s.id === activeId)
             if (sIdx !== -1) {
               activePartIdx = pIdx
               activeSecIdx = sIdx
             }
           })
 
-          // 2. Ищем, куда его сбрасывают (над каким подразделом держим мышку)
-          state.data.parts.forEach((part, pIdx) => {
-            const sIdx = part.sections.findIndex((s) => s.id === overId)
+          state.data.parts.forEach((part: DataPart, pIdx: number) => {
+            const sIdx = part.sections.findIndex((s: DataSection) => s.id === overId)
             if (sIdx !== -1) {
               overPartIdx = pIdx
               overSecIdx = sIdx
             }
           })
 
-          // 3. Если сбросили на пустой Раздел (над его шапкой), а не над конкретным подразделом
           if (overPartIdx === -1) {
-            overPartIdx = state.data.parts.findIndex((p) => p.id === overId)
-            overSecIdx = 0 // Вставляем в самое начало этого раздела
+            overPartIdx = state.data.parts.findIndex((p: DataPart) => p.id === overId)
+            overSecIdx = 0
           }
 
-          // 4. Если оба индекса найдены — выполняем перемещение внутри Immer массивов
           if (activePartIdx !== -1 && overPartIdx !== -1) {
             const activePart = state.data.parts[activePartIdx]
             const overPart = state.data.parts[overPartIdx]
-
-            // Вырезаем подраздел из старого места
             const [movedSection] = activePart.sections.splice(activeSecIdx, 1)
-
-            // Вставляем в новое место (в тот же или уже в другой раздел)
             overPart.sections.splice(overSecIdx, 0, movedSection)
           }
         }),
@@ -229,15 +218,13 @@ export const useOfferStoreTable = create<OfferTableStore>()(
           let activePartIdx = -1
           let activeSecIdx = -1
           let activeRowIdx = -1
-
           let overPartIdx = -1
           let overSecIdx = -1
           let overRowIdx = -1
 
-          // 1. Ищем, где изначально лежит перетаскиваемая строка
-          state.data.parts.forEach((part, pIdx) => {
-            part.sections.forEach((sec, sIdx) => {
-              const rIdx = sec.rows.findIndex((r) => r.rowId === activeRowId)
+          state.data.parts.forEach((part: DataPart, pIdx: number) => {
+            part.sections.forEach((sec: DataSection, sIdx: number) => {
+              const rIdx = sec.rows.findIndex((r: OfferTableItem) => r.rowId === activeRowId)
               if (rIdx !== -1) {
                 activePartIdx = pIdx
                 activeSecIdx = sIdx
@@ -246,10 +233,9 @@ export const useOfferStoreTable = create<OfferTableStore>()(
             })
           })
 
-          // 2. Ищем, над какой строкой её сейчас удерживают
-          state.data.parts.forEach((part, pIdx) => {
-            part.sections.forEach((sec, sIdx) => {
-              const rIdx = sec.rows.findIndex((r) => r.rowId === overRowId)
+          state.data.parts.forEach((part: DataPart, pIdx: number) => {
+            part.sections.forEach((sec: DataSection, sIdx: number) => {
+              const rIdx = sec.rows.findIndex((r: OfferTableItem) => r.rowId === overRowId)
               if (rIdx !== -1) {
                 overPartIdx = pIdx
                 overSecIdx = sIdx
@@ -258,27 +244,21 @@ export const useOfferStoreTable = create<OfferTableStore>()(
             })
           })
 
-          // 3. Защита: если сбросили на пустой подраздел (над его шапкой), а не над строкой
           if (overPartIdx === -1) {
-            state.data.parts.forEach((part, pIdx) => {
-              const sIdx = part.sections.findIndex((s) => s.id === overRowId)
+            state.data.parts.forEach((part: DataPart, pIdx: number) => {
+              const sIdx = part.sections.findIndex((s: DataSection) => s.id === overRowId)
               if (sIdx !== -1) {
                 overPartIdx = pIdx
                 overSecIdx = sIdx
-                overRowIdx = 0 // Кидаем в начало этого подраздела
+                overRowIdx = 0
               }
             })
           }
 
-          // 4. Если нашли обе точки — выполняем перенос элемента в Immer-массиве
           if (activePartIdx !== -1 && overPartIdx !== -1) {
             const sourceRows = state.data.parts[activePartIdx].sections[activeSecIdx].rows
             const targetRows = state.data.parts[overPartIdx].sections[overSecIdx].rows
-
-            // Вырезаем строку из старого подраздела
             const [movedRow] = sourceRows.splice(activeRowIdx, 1)
-
-            // Вставляем строку в новый подраздел на нужную позицию
             targetRows.splice(overRowIdx, 0, movedRow)
           }
         }),
@@ -291,32 +271,30 @@ export const useOfferStoreTable = create<OfferTableStore>()(
         set((state) => {
           state.data.vat = value
         }),
+
       setActiveTarget: (partId, sectionId) =>
         set((state) => {
           const isSamePart = state.activeTarget?.partId === partId
           const isSameSection = state.activeTarget?.sectionId === sectionId
-
           if (isSamePart && isSameSection) {
             state.activeTarget = null
           } else {
             state.activeTarget = { partId, sectionId }
           }
         }),
+
       setSelectedItemId: (id) =>
         set((state) => {
           state.selectedItemId = id
         }),
-
       resetActiveTarget: () =>
         set((state) => {
           state.activeTarget = null
         }),
-
       updateOfferDate: (date) =>
         set((state) => {
           state.data.date = date
         }),
-
       updateOfferNumber: (value) =>
         set((state) => {
           state.data.number = value
@@ -324,7 +302,7 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       updatePartTitle: (partId, value, orderNumber) =>
         set((state) => {
-          const part = state.data.parts.find((p) => p.id === partId)
+          const part = state.data.parts.find((p: DataPart) => p.id === partId)
           if (part) {
             part.name = value
             part.orderNumber = orderNumber
@@ -333,8 +311,8 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       updateSectionTitle: (partId, sectionId, value, orderNumber) =>
         set((state) => {
-          const part = state.data.parts.find((p) => p.id === partId)
-          const section = part?.sections.find((s) => s.id === sectionId)
+          const part = state.data.parts.find((p: DataPart) => p.id === partId)
+          const section = part?.sections.find((s: DataSection) => s.id === sectionId)
           if (section) {
             section.name = value
             section.orderNumber = orderNumber
@@ -348,13 +326,14 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       addSection: () =>
         set((state) => {
-          const part = state.data.parts.find((p) => p.id === state.activeTarget?.partId)
+          const part = state.data.parts.find((p: DataPart) => p.id === state.activeTarget?.partId)
           if (!part) {
             toast.info("Выберите раздел куда вставить подраздел")
             return
           }
           part.sections.push(createEmptySection())
         }),
+
       addRows: (items: SerializedEquipmentItem[]) =>
         set((state) => {
           const { partId, sectionId } = state.activeTarget || {}
@@ -363,14 +342,14 @@ export const useOfferStoreTable = create<OfferTableStore>()(
             return
           }
 
-          const part = state.data.parts.find((p) => p.id === partId)
-          const section = part?.sections.find((s) => s.id === sectionId)
+          const part = state.data.parts.find((p: DataPart) => p.id === partId)
+          const section = part?.sections.find((s: DataSection) => s.id === sectionId)
           if (!section) return
 
           const newItems = flattenKit(items)
 
           newItems.forEach((newItem) => {
-            const existingRow = section.rows.find((r) => r.id === newItem.id)
+            const existingRow = section.rows.find((r: OfferTableItem) => r.id === newItem.id)
 
             if (existingRow) {
               existingRow.count = (existingRow.count || 0) + (newItem.count || 1)
@@ -392,8 +371,8 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       addRow: (partId, sectionId) =>
         set((state) => {
-          const part = state.data.parts.find((p) => p.id === partId)
-          const section = part?.sections.find((s) => s.id === sectionId)
+          const part = state.data.parts.find((p: DataPart) => p.id === partId)
+          const section = part?.sections.find((s: DataSection) => s.id === sectionId)
           if (section) {
             section.rows.push(createEmptyRow())
           }
@@ -401,26 +380,26 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       removePart: (partId) =>
         set((state) => {
-          state.data.parts = state.data.parts.filter((p) => p.id !== partId)
+          state.data.parts = state.data.parts.filter((p: DataPart) => p.id !== partId)
           recalculateTotals(state)
         }),
 
       removeSection: (partId, sectionId) =>
         set((state) => {
-          const part = state.data.parts.find((p) => p.id === partId)
+          const part = state.data.parts.find((p: DataPart) => p.id === partId)
           if (part) {
-            part.sections = part.sections.filter((s) => s.id !== sectionId)
+            part.sections = part.sections.filter((s: DataSection) => s.id !== sectionId)
             recalculateTotals(state)
           }
         }),
 
       removeRow: (partId, sectionId, rowId) =>
         set((state) => {
-          const part = state.data.parts.find((p) => p.id === partId)
-          const section = part?.sections.find((s) => s.id === sectionId)
+          const part = state.data.parts.find((p: DataPart) => p.id === partId)
+          const section = part?.sections.find((s: DataSection) => s.id === sectionId)
 
           if (section) {
-            section.rows = section.rows.filter((r) => r.rowId !== rowId)
+            section.rows = section.rows.filter((r: OfferTableItem) => r.rowId !== rowId)
             recalculateLocalTotal(section, section.rows)
             recalculateTotals(state)
           }
@@ -428,11 +407,13 @@ export const useOfferStoreTable = create<OfferTableStore>()(
 
       updateRow: (updatedItem) =>
         set((state) => {
-          state.data.parts.forEach((part) => {
-            part.sections.forEach((sec) => {
-              const rowIndex = sec.rows.findIndex((r) => r.rowId === updatedItem.rowId)
+          state.data.parts.forEach((part: DataPart) => {
+            part.sections.forEach((sec: DataSection) => {
+              const rowIndex = sec.rows.findIndex(
+                (r: OfferTableItem) => r.rowId === updatedItem.rowId,
+              )
               if (rowIndex !== -1) {
-                const total = Number(updatedItem.price) * Number(updatedItem.count || 0)
+                const total = Number(updatedItem.price || 0) * Number(updatedItem.count || 0)
                 const purchase =
                   Number(updatedItem.purchasePrice || 0) * Number(updatedItem.count || 0)
 
@@ -446,7 +427,6 @@ export const useOfferStoreTable = create<OfferTableStore>()(
               }
             })
           })
-
           recalculateTotals(state)
         }),
 
@@ -470,11 +450,11 @@ export const useOfferStoreTable = create<OfferTableStore>()(
         ...state,
         data: {
           ...state.data,
-          parts: state.data?.parts?.map((dataSection) => ({
-            ...dataSection,
-            sections: dataSection.sections?.map((dataRow) => ({
-              ...dataRow,
-              rows: dataRow.rows?.map((row) => {
+          parts: state.data.parts.map((dataPart: DataPart) => ({
+            ...dataPart,
+            sections: dataPart.sections.map((dataSection: DataSection) => ({
+              ...dataSection,
+              rows: dataSection.rows.map((row: OfferTableItem) => {
                 const { image, ...rest } = row
                 return rest
               }),
@@ -492,14 +472,12 @@ export const selectData = (s: OfferTableStore) => s.data
 export const selectParts = (s: OfferTableStore) => s.data.parts
 
 export const selectSectionsCount = (s: OfferTableStore) => {
-  const sections = s.data.parts.map((p) => p.sections)
-
+  const sections = s.data.parts.map((p: DataPart) => p.sections)
   return sections.flat().length
 }
+
 export const selectSetData = (data: DataOffer) => act().setData(data)
-
 export const selectSetVat = (value: number) => act().setVat(value)
-
 export const selectActiveTarget = (s: OfferTableStore) => s.activeTarget
 
 export const setSelectActiveTarget = (partId: string, sectionId?: string) =>
@@ -526,6 +504,6 @@ export const selectSelectedItemId = (s: OfferTableStore) => s.selectedItemId
 
 export const selectSectionById =
   (partId: string, sectionId: string) => (state: OfferTableStore) => {
-    const part = state.data.parts.find((p) => p.id === partId)
-    return part?.sections.find((s) => s.id === sectionId) || null
+    const part = state.data.parts.find((p: DataPart) => p.id === partId)
+    return part?.sections.find((s: DataSection) => s.id === sectionId) || null
   }

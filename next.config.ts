@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
     },
   },
 
+  transpilePackages: ["zustand", "immer"],
+
   images: {
     remotePatterns: [
       {
