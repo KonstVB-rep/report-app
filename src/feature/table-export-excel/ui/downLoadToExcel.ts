@@ -22,16 +22,6 @@ import type {
 
 const colsDefaultValue = ["phone", "nameDeal", "nameObject", "comments"]
 
-// type ProjectTableType = "PROJECT";
-// function isProjectType(type: string | undefined): type is ProjectTableType {
-//   return !!type && ["PROJECT"].includes(type);
-// }
-
-// type RetailTableType = "RETAIL";
-// function isRetailType(type: string | undefined): type is RetailTableType {
-//   return !!type && ["RETAIL"].includes(type);
-// }
-
 function dateToExcelSerial(date: Date): number {
   const y = date.getFullYear()
   const m = date.getMonth()
@@ -46,24 +36,20 @@ function transformExcelValue(
 ): string | number | boolean | Date | null {
   if (value == null) return ""
 
-  // 1. Специальная обработка ИНН — всегда как текст
   if (columnId === "inn") {
     return String(value).trim()
   }
 
-  // 2. Суммы — как целое число (без копеек)
   if (["amountCP", "amountWork", "amountPurchase", "delta"].includes(columnId || "")) {
     const num = parseFloat(String(value))
     return Number.isNaN(num) ? 0 : num // округляем до целого
   }
 
-  // 3. Остальные строки из списка
   if (typeof value === "string") {
     if (columnId && colsDefaultValue.includes(columnId)) {
       return value.trim()
     }
 
-    // Лейблы направлений, статусов и т.д.
     if (columnId === "direction") {
       if (tableType === "PROJECT" && DirectionProjectLabels[value as typeofDirections]) {
         return DirectionProjectLabels[value as typeofDirections]
@@ -92,7 +78,6 @@ function transformExcelValue(
     }
   }
 
-  // 4. Преобразование дат
   if (typeof value === "string") {
     const parsed = new Date(value)
     if (!Number.isNaN(parsed.getTime())) {
@@ -104,12 +89,10 @@ function transformExcelValue(
     return dateToExcelSerial(value)
   }
 
-  // 5. Числа
   if (typeof value === "number") {
     return value
   }
 
-  // 6. Остальное
   if (typeof value === "boolean") return value
   if (Array.isArray(value)) {
     return value.map((v) => transformExcelValue(v, columnId, tableType)).join(", ")
@@ -183,7 +166,6 @@ export const downloadToExcel = async <TData>(
     worksheet.addRow(rowData)
   })
 
-  // Форматирование ячеек
   worksheet.eachRow((row, rowNumber) => {
     if (rowNumber === 1) return
     row.eachCell((cell, colNumber) => {
@@ -236,7 +218,6 @@ export const downloadToExcel = async <TData>(
     return { width }
   })
 
-  // Асинхронная операция — после всех циклов
   try {
     const buffer = await workbook.xlsx.writeBuffer()
     const blob = new Blob([buffer], { type: "application/octet-stream" })

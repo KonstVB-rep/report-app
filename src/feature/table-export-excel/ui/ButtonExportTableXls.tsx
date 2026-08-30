@@ -1,9 +1,9 @@
-import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/react-table"
 import { useParams } from "next/navigation"
 import { FormatedParamsType, type FormatedParamsTypeKey } from "@/feature/deals/lib/constants"
 import { Button } from "@/shared/components/ui/button"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import ICONS_TYPE_FILE from "@/widgets/Files/libs/iconsTypeFile"
 
 const handleExport = async <TData,>(
@@ -28,7 +28,7 @@ const ButtonExportTableXls = <T = unknown>({ columns, table, isShow }: ButtonExp
     return null
   }
   return (
-    <ProtectedByPermissions permission={PermissionEnum.DOWNLOAD_REPORTS}>
+    <ProtectedByPermissions permission={PERMISSIONS.DOWNLOAD_REPORTS}>
       <Button
         className="w-fit border p-2 hover:bg-slate-700"
         onClick={() =>
