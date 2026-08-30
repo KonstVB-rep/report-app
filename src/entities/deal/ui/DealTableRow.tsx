@@ -1,10 +1,14 @@
 import { useParams } from "next/navigation"
+import type { BaseDeal } from "@/entities/deal/types"
 import BaseTableRow from "@/shared/custom-components/ui/Table/BaseTableRow"
 import { useTableContext } from "@/shared/custom-components/ui/Table/context/TableContext"
+import type { SharedTableRowProps } from "@/shared/custom-components/ui/Table/model/types"
 import { getRowClassName } from "@/shared/lib/helpers/getRowClassName"
-import type { DealTableRowProps, DealUnion } from "../types"
 
-export const DealTableRow = <T extends DealUnion>({
+export type DealTableRowProps<T extends BaseDeal> = SharedTableRowProps<T>
+
+// МЕНЯЕМ DealUnion на BaseDeal
+export const DealTableRow = <T extends BaseDeal>({
   row,
   virtualRow,
   ...rest

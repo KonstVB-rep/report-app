@@ -1,4 +1,3 @@
-import { Fragment } from "react"
 import { flexRender, type Table as ReactTable } from "@tanstack/react-table"
 import { useSidebar } from "@/shared/components/ui/sidebar"
 import {
@@ -26,8 +25,6 @@ const EventsListTable = <T extends EventInputType>({
   const { isMobile } = useSidebar()
 
   const handleClickRowEvent = (row: T) => {
-    const now = new Date()
-
     if (!row.end) {
       handleRowClick?.(row)
       return
@@ -35,16 +32,20 @@ const EventsListTable = <T extends EventInputType>({
 
     try {
       const endDate = new Date(row.end)
+      const now = new Date()
       if (endDate < now) return
       handleRowClick?.(row)
     } catch (error) {
       console.error("Неверный формат даты:", row.end)
       console.log(error, "EventsListTable")
-      return
     }
   }
 
-  if (!table?.getRowModel()?.rows) {
+  const rows = table?.getRowModel()?.rows || []
+  const hasRows = rows.length > 0
+  const allColumns = table.getAllColumns()
+
+  if (!hasRows && !table?.getRowModel()?.rows) {
     return <div className="w-full p-4 text-center">Загрузка данных...</div>
   }
 
@@ -80,10 +81,11 @@ const EventsListTable = <T extends EventInputType>({
       </TableHeader>
 
       <TableBody className="table-grid-container space-y-[2px]">
-        {table?.getRowModel()?.rows?.length > 0 ? (
-          table.getRowModel().rows.map((row) => {
-            const EventDataType = row.original
-            const isPastEvent = EventDataType.end ? new Date(EventDataType.end) < new Date() : false
+        {hasRows ? (
+          rows.map((row) => {
+            const eventData = row.original
+            const isPastEvent = eventData.end ? new Date(eventData.end) < new Date() : false
+
             return (
               <TableRow
                 className={`tr hover:bg-zinc-600 hover:text-white ${
@@ -91,12 +93,15 @@ const EventsListTable = <T extends EventInputType>({
                 }`}
                 key={row.id}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <Fragment key={cell.id}>
+                {row.getVisibleCells().map((cell) => {
+                  const isTitleColumn = cell.column.id === "title"
+
+                  return (
                     <TableCell
                       className={`td w-fit border-b border-r ${
-                        cell.column.id === "title" ? "" : "whitespace-nowrap"
+                        isTitleColumn ? "" : "whitespace-nowrap"
                       }`}
+                      key={cell.id}
                       onClick={isMobile ? () => handleClickRowEvent(cell.row.original) : undefined}
                       onDoubleClick={
                         !isMobile ? () => handleClickRowEvent(cell.row.original) : undefined
@@ -105,14 +110,14 @@ const EventsListTable = <T extends EventInputType>({
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
-                  </Fragment>
-                ))}
+                  )
+                })}
               </TableRow>
             )
           })
         ) : (
           <TableRow className="h-[50px]">
-            <TableCell className="py-4" colSpan={table.getAllColumns().length}>
+            <TableCell className="py-4" colSpan={allColumns.length}>
               <div className="text-center whitespace-nowrap font-semibold">Нет данных</div>
             </TableCell>
           </TableRow>

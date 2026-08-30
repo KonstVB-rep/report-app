@@ -38,7 +38,7 @@ type HandleSubmitProps = {
   }) => void
 }
 
-export const handleSubmit = (
+const handleSubmit = (
   values: EventCalendarSchema,
   { editingId, createEvent, updateEvent }: HandleSubmitProps,
 ) => {
@@ -62,21 +62,17 @@ export const handleSubmit = (
     }
   }
 
+  const eventData = {
+    title: eventTitle,
+    start: startDate.toISOString(),
+    end: endDate.toISOString(),
+    allDay,
+  }
+
   if (editingId) {
-    updateEvent({
-      id: editingId,
-      title: eventTitle,
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
-      allDay,
-    })
+    updateEvent({ ...eventData, id: editingId })
   } else {
-    createEvent({
-      title: eventTitle,
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
-      allDay,
-    })
+    createEvent(eventData)
   }
 }
 
@@ -87,6 +83,8 @@ const FormEvent = ({ events }: FormEventProps) => {
     control: form.control,
     name: "allDay",
   })
+
+  const gridColsClass = editingId ? "grid-cols-2" : "grid-cols-1"
 
   return (
     <Form {...form}>
@@ -160,7 +158,7 @@ const FormEvent = ({ events }: FormEventProps) => {
             name={"endTimeEvent" as Path<EventCalendarSchema>}
           />
         </div>
-        <div className={`grid ${editingId ? "grid-cols-2" : ""} gap-4`}>
+        <div className={`grid ${gridColsClass} gap-4`}>
           <ModalDelEvents events={events} />
 
           <SubmitFormButton

@@ -10,7 +10,7 @@ type CalendarFormModalProps = {
   events?: EventInputType[]
 }
 
-const CalendarFormModal = ({ events }: CalendarFormModalProps) => {
+const CalendarFormModal = ({ events = [] }: CalendarFormModalProps) => {
   const { openModal, closeModalForm } = useCalendarContext()
   const { isLoading } = useEventActionContext()
 
@@ -23,8 +23,7 @@ const CalendarFormModal = ({ events }: CalendarFormModalProps) => {
     >
       <MotionDivY className="max-h-[82vh] overflow-y-auto flex gap-1 overflow-x-hidden">
         <Overlay isPending={isLoading} />
-
-        <FormEvent events={events || []} />
+        <FormEvent events={events} />
       </MotionDivY>
     </DialogComponent>
   )

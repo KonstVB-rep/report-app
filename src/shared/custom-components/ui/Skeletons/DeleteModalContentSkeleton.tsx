@@ -1,4 +1,4 @@
-export const Skeleton = ({ className }: { className?: string }) => (
+const Skeleton = ({ className }: { className?: string }) => (
   <div
     aria-hidden="true"
     className={`animate-pulse rounded-md bg-muted ${className}`}

@@ -1,9 +1,11 @@
+"use client"
+
 import type React from "react"
 import { useCallback, useState } from "react"
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
 import { useParams } from "next/navigation"
-import type { DealUnion } from "@/entities/deal/types"
+import type { BaseDeal } from "@/entities/deal/types"
 import AdditionalContacts from "@/feature/deals/ui/AdditionalContacts"
 import AddNewDeal from "@/feature/deals/ui/Modals/AddNewDeal"
 import { EntityActionModal } from "@/shared/custom-components/ui/EntityActionModal"
@@ -12,73 +14,73 @@ import {
   TableProvider,
 } from "@/shared/custom-components/ui/Table/context/TableContext"
 import TableComponent from "@/shared/custom-components/ui/Table/TableComponent"
-import type { ModalType } from "@/shared/types"
 import DataTable from "@/widgets/DataTable/ui/DataTable"
 
-const EditDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/EditDealContextMenu"), {
+type DealModalType = "edit" | "delete" | "more" | "color" | null
+
+const modalLoadingProps = {
   ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center p-8">
+      <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+    </div>
+  ),
+} as const
+
+const EditDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/EditDealContextMenu"), {
+  ...modalLoadingProps,
 })
 
 const DelDealContextMenu = dynamic(() => import("@/feature/deals/ui/Modals/DelDealContextMenu"), {
-  ssr: false,
+  ...modalLoadingProps,
 })
 
 const ModalDealInfo = dynamic(() => import("@/feature/deals/ui/Modals/ModalDealInfo"), {
-  ssr: false,
+  ...modalLoadingProps,
 })
 
 const ColorPickerDeal = dynamic(() => import("@/feature/deals/ui/Modals/ColorPickerDeal"), {
-  ssr: false,
+  ...modalLoadingProps,
 })
 
-interface DealsTableProps<T extends DealUnion> {
+interface DealsTableProps<T extends BaseDeal> {
   columns: ColumnDef<T, unknown>[]
   data: T[]
   tableName: string
   hasEditDeleteActions?: boolean
-  hiddenCols?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>
+  hiddenCols?: Record<string, boolean>
 }
 
-const DealsTable = <T extends DealUnion>(props: DealsTableProps<T>) => {
+const DealsTable = <T extends BaseDeal>(props: DealsTableProps<T>) => {
   const { dealType } = useParams<{
     dealType: "retails" | "projects" | "contracts"
   }>()
 
-  const [openedModal, setOpenedModal] = useState<"edit" | "delete" | "more" | "color" | null>(null)
-
+  const [openedModal, setOpenedModal] = useState<DealModalType>(null)
   const [selectedDataItem, setSelectedDataItem] = useState<T | null>(null)
 
   const getContextMenuActions: TableContextType<T>["getContextMenuActions"] = useCallback(
     (row: Row<T>) => {
+      const createAction = (modal: NonNullable<DealModalType>) => ({
+        onClick: () => {
+          setSelectedDataItem(row.original)
+          setOpenedModal(modal)
+        },
+      })
+
       return {
-        edit: {
-          onClick: () => {
-            setSelectedDataItem(row.original)
-            setOpenedModal("edit")
-          },
-        },
-        delete: {
-          onClick: () => {
-            setSelectedDataItem(row.original)
-            setOpenedModal("delete")
-          },
-        },
-        more: {
-          onClick: () => {
-            setSelectedDataItem(row.original)
-            setOpenedModal("more")
-          },
-        },
-        color: {
-          onClick: () => {
-            setSelectedDataItem(row.original)
-            setOpenedModal("color")
-          },
-        },
+        edit: createAction("edit"),
+        delete: createAction("delete"),
+        more: createAction("more"),
+        color: createAction("color"),
       }
     },
     [],
   )
+
+  if (!dealType) {
+    return null
+  }
 
   return (
     <TableProvider<T>
@@ -91,7 +93,7 @@ const DealsTable = <T extends DealUnion>(props: DealsTableProps<T>) => {
         dealType={dealType}
         hiddenColumns={props.hiddenCols}
         rowData={({ table, openFilters, hasEditDeleteActions }) => (
-          <TableComponent
+          <TableComponent<T>
             hasEditDeleteActions={hasEditDeleteActions}
             openFilters={openFilters}
             table={table}
@@ -105,15 +107,12 @@ const DealsTable = <T extends DealUnion>(props: DealsTableProps<T>) => {
     </TableProvider>
   )
 }
-
-export default DealsTable
-
 const ActiveModalDeal = ({
   openedModal,
   setOpenedModal,
 }: {
-  openedModal: ModalType
-  setOpenedModal: React.Dispatch<React.SetStateAction<"edit" | "delete" | "more" | "color" | null>>
+  openedModal: DealModalType
+  setOpenedModal: React.Dispatch<React.SetStateAction<DealModalType>>
 }) => (
   <EntityActionModal
     openedModal={openedModal}
@@ -126,3 +125,5 @@ const ActiveModalDeal = ({
     setOpenedModal={setOpenedModal}
   />
 )
+
+export default DealsTable

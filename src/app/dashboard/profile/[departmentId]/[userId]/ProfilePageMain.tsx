@@ -1,12 +1,13 @@
 "use client"
 
-import { PermissionEnum } from "@prisma/client"
+import { use } from "react"
 import dynamic from "next/dynamic"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
 import { useGetUser } from "@/feature/user/hooks/query"
 import Contacts from "@/shared/custom-components/ui/Contacts"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import UserCard from "@/shared/custom-components/ui/UserCard"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import ProfileDealsData from "./ui/ProfileDealsData"
 
 const AccessDeniedMessage = dynamic(
@@ -18,7 +19,8 @@ const Loading = dynamic(() => import("./loading"), { ssr: false })
 
 const NotFoundUser = dynamic(() => import("./ui/NotFoundUser"), { ssr: false })
 
-const ProfilePageMain = ({ userId }: { userId: string }) => {
+const ProfilePageMain = ({ params }: { params: Promise<{ userId: string }> }) => {
+  const { userId } = use(params)
   const { data: user, error, isPending } = useGetUser(userId)
 
   if (isPending) return <Loading />
@@ -71,7 +73,7 @@ const ProfilePageMain = ({ userId }: { userId: string }) => {
       {userId === user.id ? (
         <ProfileDealsData position={user.position} />
       ) : (
-        <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+        <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
           <ProfileDealsData position={user.position} />
         </ProtectedByPermissions>
       )}

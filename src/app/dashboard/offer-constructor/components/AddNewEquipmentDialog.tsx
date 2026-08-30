@@ -26,7 +26,7 @@ const defaultEquipmentValues = {
   price: 0,
 }
 
-export const EquipmentFormSchema = z.object({
+const EquipmentFormSchema = z.object({
   name: z.string().min(1, "Обязательное поле"),
   image: z.string().optional().nullable(),
   isKit: z.boolean(),

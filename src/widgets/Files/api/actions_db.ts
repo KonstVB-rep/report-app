@@ -48,7 +48,7 @@ const checkingAccessRight = async (
   }
 }
 
-export const getFileExists = async (where: {
+const getFileExists = async (where: {
   name: string
   localPath: string
   dealId: string

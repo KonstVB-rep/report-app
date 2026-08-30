@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-import { DealType, PermissionEnum } from "@prisma/client"
 import { Check, Menu } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
+import { DEAL_TYPE } from "@/entities/deal/types"
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import LogoutDialog from "@/feature/auth/ui/logout-dialog"
@@ -24,10 +24,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { cn } from "@/shared/lib/utils"
 import ProtectedByPermissions from "../Protect/ProtectedByPermissions"
 
-const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL]
+const namePagesByDealType = [DEAL_TYPE.PROJECT, DEAL_TYPE.RETAIL]
 
 const ThemeValues: Record<string, string> = {
   light: "Светлая",
@@ -72,7 +73,7 @@ const MobileMenu = () => {
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="flex pl-3 pt-2 flex-col gap-1 text-balance">
-                    <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+                    <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
                       {namePagesByDealType.map((type) => (
                         <SummaryTableLink
                           className="px-3 py-2 rounded-md hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary"
@@ -101,7 +102,7 @@ const MobileMenu = () => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="p-0">
-            <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+            <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
               <Link
                 className="w-full px-3 py-2 font-semibold hover:bg-muted-foreground focus-visible:bg-muted-foreground hover:text-secondary focus-visible:text-secondary rounded-md"
                 href={`/dashboard/tasks/${authUser?.departmentId}`}

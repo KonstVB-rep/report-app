@@ -2,7 +2,6 @@
 "use client"
 
 import { useState } from "react"
-import { PermissionEnum } from "@prisma/client"
 import { EllipsisVertical, Search } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
@@ -20,6 +19,7 @@ import {
 import PhoneInput from "@/shared/custom-components/ui/Inputs/PhoneInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { useFindOrganization } from "../api/useFindOrganization"
 import { findOrgSchema, type SearchType } from "../model/schema"
 
@@ -109,7 +109,7 @@ export const FindOrgModal = () => {
                     key={p.id}
                   >
                     {hrefLink && (
-                      <ProtectedByPermissions permission={PermissionEnum.VIEW_USER_REPORT}>
+                      <ProtectedByPermissions permission={PERMISSIONS.VIEW_USER_REPORT}>
                         <Link
                           aria-label="Посмотреть подробнее"
                           className="absolute inset-0"
@@ -200,7 +200,7 @@ export const FindOrgModal = () => {
                     key={r.id}
                   >
                     {hrefLink && (
-                      <ProtectedByPermissions permission={PermissionEnum.VIEW_USER_REPORT}>
+                      <ProtectedByPermissions permission={PERMISSIONS.VIEW_USER_REPORT}>
                         <Link
                           aria-label="Посмотреть подробнее"
                           className="absolute inset-0"

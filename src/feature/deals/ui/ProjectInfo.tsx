@@ -2,7 +2,7 @@
 
 import { Building, FileDigit, Info, PhoneOutgoing } from "lucide-react"
 import dynamic from "next/dynamic"
-import type { DealUnion } from "@/entities/deal/types"
+import type { DealProject } from "@/entities/deal/types"
 import IntoDealItem from "@/entities/deal/ui/IntoDealItem"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
@@ -35,9 +35,7 @@ const ContactCardInDealInfo = dynamic(() => import("@/entities/contact/ui/Contac
   ssr: false,
 })
 
-const ProjectItemInfo = ({ data }: { data: DealUnion }) => {
-  console.log(data, "data")
-
+const ProjectItemInfo = ({ data }: { data: DealProject }) => {
   const { dataFinance, formattedDate, statusLabel, directionLabel, deliveryLabel } =
     useNormalizeProjectData(data)
 

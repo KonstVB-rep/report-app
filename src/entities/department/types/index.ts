@@ -1,11 +1,17 @@
 import type { ReactNode } from "react"
-import type { DepartmentEnum } from "@prisma/client"
 import type { UserResponse } from "@/entities/user/types"
-import type { DepartmentLabels } from "../lib/constants"
+
+export const Departments = {
+  SALES: "SALES",
+  TECHNICAL: "TECHNICAL",
+  MARKETING: "MARKETING",
+} as const
+
+export type DepartmentUnion = keyof typeof Departments // "SALES" | "TECHNICAL" | "MARKETING"
 
 export type DepartmentInfo = {
   id: number
-  name: DepartmentEnum
+  name: DepartmentUnion
   directorId: string
   description: string
   users: UserResponse[]
@@ -30,4 +36,6 @@ export type DepartmentListItemType = {
 
 export type DepartmentsUnionIds = 1 | 2 | 3
 
-export type UnionTypeDepartmentsName = keyof typeof DepartmentLabels
+export const DEPARTMENTS = ["SALES", "TECHNICAL", "MARKETING"] as const
+
+export type DepartmentValue = (typeof DEPARTMENTS)[number]

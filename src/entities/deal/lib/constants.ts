@@ -27,10 +27,3 @@ export const StatusRetail = {
 }
 
 export const STATUS_DEAL_COLOR = ["ACTUAL", "FIRST_CP_APPROVAL"]
-
-export type AllStatusKeys = keyof typeof StatusProject | keyof typeof StatusRetail
-
-export const DealTypesArray = ["project", "retail", "contract"] as const
-export const TableTypes = ["retails", "projects"] as const
-
-export const UnionDealTypeParams = ["retails", "projects", "contracts"] as const

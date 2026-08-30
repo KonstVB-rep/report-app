@@ -1,5 +1,5 @@
 import { DealType, type StatusContract } from "@prisma/client"
-import type { AllStatusKeys, StatusProject, StatusRetail } from "@/entities/deal/lib/constants"
+import type { StatusProject, StatusRetail } from "@/entities/deal/lib/constants"
 
 export enum DirectionProject {
   PARKING = "Парковка",
@@ -37,13 +37,6 @@ export enum DeliveryRetail {
   SUPPLY = "Поставка оборудования",
   EXPENDABLE_MATERIALS = "Расходные материалы",
   WORK = "Работы",
-}
-
-export enum EquipmentTypeEnum {
-  BARRIER = "Шлагбаум",
-  GUARD = "Ограждения",
-  SAFETY_ISLAND = "Островок безопасности",
-  ARROW = "Стрела шлагбаума",
 }
 
 // Labels
@@ -98,9 +91,6 @@ export const StatusProjectLabels: StatusProjectLabelsType = {
   FIRST_CP_APPROVAL: "1-е КП на согласовании",
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
   REQUEST: "Запрос",
-  // PROGRESS: "Проект в работе / Закупка / Производство",
-  // DELIVERY_WORKS: "Поставка / Выполнение работ",
-  // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
   CLOSED: "Закрыт",
 } as const
 
@@ -121,23 +111,7 @@ export const StatusRetailLabels: Record<keyof typeof StatusRetail, string> = {
   CLOSED: "Закрыт",
 } as const
 
-type ExcludedKeys = "PAID" | "CLOSED" | "REJECT"
-
-export type StatusesInWorkType = {
-  [K in Exclude<AllStatusKeys, ExcludedKeys>]?: string
-}
-export const StatusesInWork: StatusesInWorkType = {
-  INVOICE_ISSUED: "Выставлен счет",
-  ACTUAL: "Актуально",
-  APPROVAL: "Согласование договора",
-  FIRST_CP_APPROVAL: "1-е КП на согласовании",
-  CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
-  PROGRESS: "Проект в работе / Закупка / Производство",
-  // DELIVERY_WORKS: "Поставка / Выполнение работ",
-  // SIGN_ACTS_PAYMENT: "Подписание актов / Оплата",
-}
-
-export const StatusesContract = {
+const StatusesContract = {
   CONTRACT_ADVANCE_PAYMENT: "Договор / Авансирование",
   PROGRESS: "Проект в работе / Закупка / Производство",
   DELIVERY_WORKS: "Поставка / Выполнение работ",

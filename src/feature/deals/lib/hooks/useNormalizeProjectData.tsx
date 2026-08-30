@@ -1,6 +1,6 @@
 "use client"
 
-import type { DealUnion } from "@/entities/deal/types"
+import type { DealProject } from "@/entities/deal/types"
 import { formatterCurrency } from "@/shared/lib/utils"
 import {
   DealTypeLabels,
@@ -9,7 +9,7 @@ import {
   StatusProjectLabels,
 } from "../constants"
 
-const useNormalizeProjectData = (deal: DealUnion | null | undefined) => {
+const useNormalizeProjectData = (deal: DealProject | null | undefined) => {
   const statusLabel =
     StatusProjectLabels[deal?.dealStatus as keyof typeof StatusProjectLabels] || "Нет данных"
   const directionLabel =

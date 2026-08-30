@@ -3,7 +3,7 @@ import type { Contact } from "@/entities/deal/types"
 import ContactCardInForm from "./ContactCardInForm"
 
 type ContactsListProps = {
-  contacts: Contact[] | []
+  contacts: Contact[]
   handleDeleteContact: (id: string) => void
   setSelectedContacts: (contacts: Contact[]) => void
 }
@@ -18,29 +18,24 @@ const ContactsList = ({
   }
 
   const updateContacts = (data: SingleContactSchema) => {
-    const updatedContacts = contacts.map((contact) => {
-      if (contact.id === data.id) {
-        return { ...contact, ...data }
-      }
-      return contact
-    })
+    const updatedContacts = contacts.map((contact) =>
+      contact.id === data.id ? { ...contact, ...data } : contact,
+    )
 
-    setSelectedContacts([...updatedContacts])
+    setSelectedContacts(updatedContacts)
   }
 
   return (
     <div className="overflow-y-auto max-h-[82vh] pr-1">
       <div className="grid gap-2 rounded-md p-2 overflow-y-auto overflow-x-hidden">
-        {contacts.map((contact) => {
-          return (
-            <ContactCardInForm
-              contact={contact}
-              key={contact.id}
-              onDelete={handleDeleteContact}
-              updateContacts={updateContacts}
-            />
-          )
-        })}
+        {contacts.map((contact) => (
+          <ContactCardInForm
+            contact={contact}
+            key={contact.id}
+            onDelete={handleDeleteContact}
+            updateContacts={updateContacts}
+          />
+        ))}
       </div>
     </div>
   )

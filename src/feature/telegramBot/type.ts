@@ -1,5 +1,3 @@
-// export type ChatType = { chatName: string; chatId: string; isActive: boolean };
-
 export type ChatBotType = {
   chatName: string
   chatId: string

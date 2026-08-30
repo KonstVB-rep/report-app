@@ -1,11 +1,15 @@
 import type { PropsWithChildren } from "react"
-import { connection } from "next/server"
+import { TooltipProvider } from "@/shared/components/ui/tooltip"
 import AdminClientLayout from "./ui/AdminClientLayout"
 
-const AdminboardLayout = async ({ children }: PropsWithChildren) => {
-  await connection()
+export const instant = false
 
-  return <AdminClientLayout>{children}</AdminClientLayout>
+const AdminboardLayout = async ({ children }: PropsWithChildren) => {
+  return (
+    <AdminClientLayout>
+      <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
+    </AdminClientLayout>
+  )
 }
 
 export default AdminboardLayout

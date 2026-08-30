@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react"
-import { PermissionEnum } from "@prisma/client"
 import { Input } from "@/shared/components/ui/input"
 import {
   MultiSelect,
@@ -9,41 +8,13 @@ import {
   MultiSelectValue,
   renderMultiSelectOptions,
 } from "@/shared/components/ui/multi-select"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { TOAST } from "../Toast"
 
 type OptionItem = {
   value: string
   label: string
 }
-
-type MultiSelectComponentProps = {
-  defaultValue?: string[]
-  options: OptionItem[]
-  placeholder: string
-  onValueChange?: (value: string[]) => void
-} & React.ComponentProps<"select">
-
-const MultiSelectComponent = ({
-  defaultValue = [],
-  options = [],
-  placeholder,
-  onValueChange,
-  ...props
-}: MultiSelectComponentProps) => {
-  return (
-    // @ts-expect-error: TypeScript does not infer the correct type for MultiSelect props
-    <MultiSelect defaultValue={defaultValue} onValueChange={onValueChange} {...props}>
-      <MultiSelectTrigger className="h-10 border border-solid border-border text-black">
-        <MultiSelectValue maxDisplay={3} maxItemLength={10} placeholder={placeholder} />
-      </MultiSelectTrigger>
-      <MultiSelectContent>
-        <MultiSelectList>{renderMultiSelectOptions(options)}</MultiSelectList>
-      </MultiSelectContent>
-    </MultiSelect>
-  )
-}
-
-export default MultiSelectComponent
 
 type MultiSelectNativeFormProps = {
   defaultValue?: string[]
@@ -78,23 +49,23 @@ export const MultiSelectNativeForm = ({
   }, [defaultValue])
 
   const handleValueChange = (values: string[]) => {
-    const isReadOnly = values.includes(PermissionEnum.READ_ONLY)
-    const isStateReadOnly = selectedValues.includes(PermissionEnum.READ_ONLY)
+    const isReadOnly = values.includes(PERMISSIONS.READ_ONLY)
+    const isStateReadOnly = selectedValues.includes(PERMISSIONS.READ_ONLY)
 
     if (isStateReadOnly && isReadOnly) {
-      setSelectedValues([PermissionEnum.READ_ONLY])
+      setSelectedValues([PERMISSIONS.READ_ONLY])
       TOAST.INFO("Для выбора других разрешений сначала снимите галочку «Только чтение»")
       return
     }
 
     if (!isStateReadOnly && isReadOnly && values.length > 1) {
-      setSelectedValues([PermissionEnum.READ_ONLY])
+      setSelectedValues([PERMISSIONS.READ_ONLY])
       TOAST.INFO("Разрешение «Только чтение» несовместимо с другими. Остальные права были сняты.")
       return
     }
 
     if (!isStateReadOnly && isReadOnly) {
-      setSelectedValues([PermissionEnum.READ_ONLY])
+      setSelectedValues([PERMISSIONS.READ_ONLY])
       return
     }
     setSelectedValues(values)

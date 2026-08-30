@@ -24,7 +24,7 @@ import {
 } from "@/shared/components/ui/tooltip"
 import { cn } from "@/shared/lib/utils"
 
-export interface MultiSelectOptionItem {
+interface MultiSelectOptionItem {
   value: string
   label?: React.ReactNode
 }
@@ -463,17 +463,17 @@ const MultiSelectEmpty = React.forwardRef<
 
 MultiSelectEmpty.displayName = "MultiSelectEmpty"
 
-export interface MultiSelectOptionSeparator {
+interface MultiSelectOptionSeparator {
   type: "separator"
 }
 
-export interface MultiSelectOptionGroup {
+interface MultiSelectOptionGroup {
   heading?: React.ReactNode
   value?: string
   children: MultiSelectOption[]
 }
 
-export type MultiSelectOption =
+type MultiSelectOption =
   | Pick<MultiSelectItemProps, "value" | "label" | "disabled" | "onSelect" | "onDeselect">
   | MultiSelectOptionSeparator
   | MultiSelectOptionGroup
@@ -505,12 +505,12 @@ function renderMultiSelectOptions(list: MultiSelectOption[]) {
 export {
   MultiSelect,
   MultiSelectContent,
-  MultiSelectEmpty,
-  MultiSelectGroup,
-  MultiSelectItem,
+  
+  
+  
   MultiSelectList,
-  MultiSelectSearch,
-  MultiSelectSeparator,
+  
+  
   MultiSelectTrigger,
   MultiSelectValue,
   renderMultiSelectOptions,

@@ -1,7 +1,6 @@
 import { z } from "zod"
 
-// Типы поиска для привязки к Zod
-export const searchFields = ["inn", "orgName", "phone", "email"] as const
+const searchFields = ["inn", "orgName", "phone", "email"] as const
 export type SearchType = (typeof searchFields)[number]
 
 export const findOrgSchema = z.discriminatedUnion("searchType", [
@@ -27,5 +26,3 @@ export const findOrgSchema = z.discriminatedUnion("searchType", [
     value: z.string().trim().email("Некорректная электронная почта"),
   }),
 ])
-
-export type FindOrgVariables = z.infer<typeof findOrgSchema>

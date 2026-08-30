@@ -5,7 +5,7 @@ import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
 import type { DepartmentInfo } from "../types"
 
-export const getCachedDepartmentsWithUsers = async (): Promise<DepartmentInfo[]> => {
+const getCachedDepartmentsWithUsers = async (): Promise<DepartmentInfo[]> => {
   "use cache"
   cacheLife("days")
   cacheTag("departments-global-list")

@@ -15,17 +15,13 @@ const handleExport = async <TData,>(
   downloadToExcel(table, columns, { tableType })
 }
 
-type ButtonExportXlsType<T extends Record<string, unknown>> = {
+type ButtonExportXlsType<T = unknown> = {
   columns: ColumnDef<T>[]
   table: Table<T>
   isShow: boolean
 }
 
-const ButtonExportTableXls = <T extends Record<string, unknown>>({
-  columns,
-  table,
-  isShow,
-}: ButtonExportXlsType<T>) => {
+const ButtonExportTableXls = <T = unknown>({ columns, table, isShow }: ButtonExportXlsType<T>) => {
   const { dealType } = useParams()
 
   if (!isShow) {

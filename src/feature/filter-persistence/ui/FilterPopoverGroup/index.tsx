@@ -1,7 +1,7 @@
 import React from "react"
 import FilterPopover from "../FilterPopover"
 
-export type OptionGroup = {
+type OptionGroup = {
   label: string
   columnId: string
   options: Record<string, string>

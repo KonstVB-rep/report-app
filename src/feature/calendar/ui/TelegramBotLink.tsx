@@ -8,16 +8,16 @@ import { cn } from "@/shared/lib/utils"
 import useChatBot from "../../telegramBot/hooks/useChatBot"
 import TelegramIcon from "./TelegramIcon"
 
-const CalendarBotLink = ({ botName }: { botName: string }) => {
+const TelegramBotLink = ({ botName }: { botName: string }) => {
   const { isFetchingRequest, isActiveBot, handleChange } = useChatBot(botName)
 
   if (!botName || isActiveBot) return null
 
+  const tooltipText = `Уведомления в Telegram ${isActiveBot ? "включены" : "выключены"}`
+
   return (
     <MotionDivY className="flex flex-col items-center">
-      <TooltipComponent
-        content={`Уведомления в Telegram ${isActiveBot ? "включены" : "выключены"}`}
-      >
+      <TooltipComponent content={tooltipText}>
         <Toggle
           aria-label="Вкл уведомления в телеграмм"
           className={cn(
@@ -39,4 +39,4 @@ const CalendarBotLink = ({ botName }: { botName: string }) => {
   )
 }
 
-export default CalendarBotLink
+export default TelegramBotLink

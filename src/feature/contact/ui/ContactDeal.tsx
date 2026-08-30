@@ -26,6 +26,56 @@ type ContactDealProps = {
   setSelectedContacts: (contacts: Contact[]) => void
 }
 
+const ContactFieldRow = ({
+  form,
+  index,
+}: {
+  form: ReturnType<typeof useAddContactToDeal>["form"]
+  index: number
+}) => {
+  const { errors } = form.formState
+  const contactErrors = errors.contacts?.[index] as ContactFieldError | undefined
+  const commonError = contactErrors?._common?.message
+
+  return (
+    <div className="max-h-full overflow-hidden p-[2px]">
+      <InputTextForm
+        control={form.control}
+        errorMessage={errors?.contacts?.[index]?.name?.message}
+        label=""
+        name={`contacts.${index}.name`}
+        placeholder="Имя"
+      />
+
+      <InputTextForm
+        control={form.control}
+        errorMessage={errors?.contacts?.[index]?.position?.message}
+        label=""
+        name={`contacts.${index}.position`}
+        placeholder="Должность"
+      />
+
+      <InputPhoneForm
+        control={form.control}
+        errorMessage={commonError}
+        label=""
+        name={`contacts.${index}.phone`}
+        placeholder="Телефон"
+      />
+
+      <InputTextForm
+        className="w-full valid:not-placeholder-shown:border-green-500 invalid:not-placeholder-shown:border-red-500"
+        control={form.control}
+        errorMessage={commonError}
+        label=""
+        name={`contacts.${index}.email`}
+        placeholder="Email"
+        type="email"
+      />
+    </div>
+  )
+}
+
 const ContactDeal = ({
   contacts = [],
   onContactsChange,
@@ -53,47 +103,7 @@ const ContactDeal = ({
           <div className="grid gap-2 overflow-y-auto max-h-[60vh] pr-2 box-border">
             {fields.map((field, index: number) => (
               <div className="grid gap-2 rounded border p-4" key={field.id}>
-                <div className="max-h-full overflow-hidden p-[2px]">
-                  <InputTextForm
-                    control={form.control}
-                    errorMessage={form.formState.errors.contacts?.[index]?.name?.message}
-                    label=""
-                    name={`contacts.${index}.name`}
-                    placeholder="Имя"
-                  />
-
-                  <InputTextForm
-                    control={form.control}
-                    errorMessage={form.formState.errors.contacts?.[index]?.position?.message}
-                    label=""
-                    name={`contacts.${index}.position`}
-                    placeholder="Должность"
-                  />
-
-                  <InputPhoneForm
-                    control={form.control}
-                    errorMessage={
-                      (form.formState.errors.contacts?.[index] as ContactFieldError)?._common
-                        ?.message
-                    }
-                    label=""
-                    name={`contacts.${index}.phone`}
-                    placeholder="Телефон"
-                  />
-
-                  <InputTextForm
-                    className="w-full valid:not-placeholder-shown:border-green-500 invalid:not-placeholder-shown:border-red-500"
-                    control={form.control}
-                    errorMessage={
-                      (form.formState.errors.contacts?.[index] as ContactFieldError)?._common
-                        ?.message
-                    }
-                    label=""
-                    name={`contacts.${index}.email`}
-                    placeholder="Email"
-                    type="email"
-                  />
-                </div>
+                <ContactFieldRow form={form} index={index} />
 
                 {(fields.length > 1 || field.name) && (
                   <Button

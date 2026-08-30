@@ -1,12 +1,12 @@
 // shared/lib/auth/permissions.ts
 
-import type { PermissionEnum } from "@prisma/client"
 import { prisma } from "@/prisma/prisma-client"
 import type { PayloadType } from "@/shared/lib/auth/session"
+import type { PERMISSIONS_UNION } from "@/shared/lib/constants"
 
 export async function hasUserPermission(
   user: PayloadType,
-  requiredPermissions: PermissionEnum[] = [],
+  requiredPermissions: PERMISSIONS_UNION[] = [],
 ): Promise<boolean> {
   if (user.role === "ADMIN") return true
 

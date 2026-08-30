@@ -5,7 +5,7 @@ export type SaveFilterType = {
   data: SaveFilterDataType
 }
 
-export type SaveFilterDataType = Omit<UserFilter, "createdAt" | "updatedAt" | "id" | "userId">
+type SaveFilterDataType = Omit<UserFilter, "createdAt" | "updatedAt" | "id" | "userId">
 
 export type UpdateFilterDataType = Omit<UserFilter, "createdAt" | "updatedAt">
 

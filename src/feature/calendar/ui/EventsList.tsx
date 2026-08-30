@@ -53,9 +53,7 @@ const EventsList = ({ events }: EventsListProps) => {
     enableRowSelection: true,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: "includesString",
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
+    // ❌ Убраны debug флаги — не нужны в production
     state: {
       sorting,
       globalFilter,
@@ -64,12 +62,12 @@ const EventsList = ({ events }: EventsListProps) => {
   })
 
   const { form, setEditingId, setOpenModal } = useCalendarContext()
+  const authUser = useRequireAuth()
 
+  // ❌ Убран useCallback — React Compiler стабилизирует
   const onEventClick = (eventCalendar: EventInputType) => {
     handleEventClickOnEventsList(eventCalendar, form, setEditingId, setOpenModal)
   }
-
-  const authUser = useRequireAuth()
 
   return (
     <>

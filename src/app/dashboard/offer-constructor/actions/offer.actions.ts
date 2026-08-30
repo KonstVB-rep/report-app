@@ -1,10 +1,11 @@
 "use server"
 
-import { PermissionEnum, Prisma } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { requireUser } from "@/app/api/utils/requireAuth"
 import { prisma } from "@/prisma/prisma-client"
 import { handleError } from "@/shared/api/handleError"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { toDec } from "@/shared/lib/utils"
 import type { EquipmentFormValues } from "../components/AddNewEquipmentDialog"
 import type {
@@ -48,8 +49,6 @@ export const getEquipments = async (): Promise<SerializedEquipmentItem[]> => {
           (kitItem: RawKitItem): SerializedEquipmentKitItem => ({
             ...kitItem,
             price: kitItem.price ? kitItem.price.toString() : "0",
-            // Рекурсивный вызов: приводим вложенный item к типу RawEquipment
-            // так как по схеме он идентичен родителю
             item: serializeItem(kitItem.item as RawEquipment),
           }),
         ),
@@ -78,7 +77,7 @@ export const addEquipment = async (item: EquipmentFormValues): Promise<void> => 
   }
 }
 
-export const updateKitTotalPrice = async (kitId: string) => {
+const updateKitTotalPrice = async (kitId: string) => {
   const contents = await prisma.equipmentKitItem.findMany({
     where: { kitId },
   })
@@ -103,8 +102,6 @@ export const addToKit = async (
   try {
     await requireUser()
 
-    // 2. МАССОВОЕ ОБНОВЛЕНИЕ/СОЗДАНИЕ СВЯЗЕЙ (Транзакция)
-    // Используем транзакцию, чтобы если один предмет не сохранится, откатилось всё
     await prisma.$transaction(
       itemsKit.map((item) =>
         prisma.equipmentKitItem.upsert({
@@ -114,12 +111,10 @@ export const addToKit = async (
               itemId: item.id,
             },
           },
-          // Если связь есть — обновляем кол-во и цену
           update: {
             count: Number(item.count),
             price: toDec(item.price),
           },
-          // Если связи нет — создаем новую запись в составе комплекта
           create: {
             kitId: kitId,
             itemId: item.id,
@@ -131,8 +126,6 @@ export const addToKit = async (
       ),
     )
 
-    // 3. ПОЛУЧЕНИЕ АКТУАЛЬНЫХ ДАННЫХ
-    // Запрашиваем из базы комплект со всеми его вложенными элементами (contents)
     const updatedKit = await prisma.equipmentItem.findUnique({
       where: { id: kitId },
       include: {
@@ -146,8 +139,6 @@ export const addToKit = async (
 
     if (!updatedKit) throw new Error("Комплект не найден после обновления")
 
-    // 4. СЕРИАЛИЗАЦИЯ ДЛЯ КЛИЕНТА (Next.js)
-    // Prisma возвращает Decimal (объект), а клиент понимает только String.
     const serializedContents: SerializedEquipmentKitItem[] = updatedKit.contents.map((kitItem) => ({
       ...kitItem,
       price: kitItem.price.toString(),
@@ -172,9 +163,6 @@ export const deleteFromKit = async (idKit: string, idsKitItem: string[]) => {
   try {
     await requireUser()
 
-    // Удаляем записи из связующей таблицы,
-    // где kitId совпадает с нашим комплектом,
-    // а itemId входит в массив присланных ID
     const deleted = await prisma.equipmentKitItem.deleteMany({
       where: {
         kitId: idKit,
@@ -184,8 +172,6 @@ export const deleteFromKit = async (idKit: string, idsKitItem: string[]) => {
       },
     })
 
-    // После удаления состава нужно пересчитать общую цену комплекта
-    // (Если у тебя логика цены завязана на сумме вложений)
     await updateKitTotalPrice(idKit)
 
     return { success: true, count: deleted.count }
@@ -198,28 +184,20 @@ export const deleteFromKit = async (idKit: string, idsKitItem: string[]) => {
 export const deleteEquipmentList = async (ids: string[]): Promise<void> => {
   try {
     const user = await requireUser()
-    await checkUserPermissionByRole(user, [PermissionEnum.EQUIPMENT_DELETE])
+    await checkUserPermissionByRole(user, [PERMISSIONS.EQUIPMENT_DELETE])
 
-    // 1. Находим все ID комплектов, в которые входили удаляемые товары.
-    // Это нужно сделать ДО удаления, чтобы знать, чью цену пересчитывать.
     const affectedKits = await prisma.equipmentKitItem.findMany({
       where: { itemId: { in: ids } },
       select: { kitId: true },
     })
-
-    // Получаем уникальный список ID комплектов
     const uniqueKitIds = Array.from(new Set(affectedKits.map((k) => k.kitId)))
 
-    // 2. Удаляем оборудование.
-    // Благодаря onDelete: Cascade в схеме, связи в EquipmentKitItem удалятся сами.
     await prisma.equipmentItem.deleteMany({
       where: { id: { in: ids } },
     })
 
     const kitIdsToUpdate = uniqueKitIds.filter((kitId) => !ids.includes(kitId))
 
-    // 3. Пересчитываем цены для всех затронутых комплектов.
-    // Выполняем это последовательно для каждого комплекта.
     if (kitIdsToUpdate.length > 0) {
       await Promise.all(kitIdsToUpdate.map((kitId) => updateKitTotalPrice(kitId)))
     }
@@ -229,13 +207,10 @@ export const deleteEquipmentList = async (ids: string[]): Promise<void> => {
   }
 }
 
-// Предполагаем, что у тебя есть хелперы перевода цен в Decimal и пересчета сумм
-// import { toDec, updateKitTotalPrice } from "./helpers";
-
 export const updateEquipmentsList = async (items: Partial<EquipmentDb>[]) => {
   try {
     const user = await requireUser()
-    await checkUserPermissionByRole(user, [PermissionEnum.EQUIPMENT_MANAGEMENT])
+    await checkUserPermissionByRole(user, [PERMISSIONS.EQUIPMENT_MANAGEMENT])
 
     const ids = items.map((i) => String(i.id))
 

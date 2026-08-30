@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { endOfDay, startOfDay } from "date-fns"
 import type { DateRange } from "react-day-picker"
-import type { ProjectResponse } from "@/entities/deal/types"
+import type { DeliveryProject, DirectionProject, ProjectResponse } from "@/entities/deal/types"
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
@@ -13,11 +13,7 @@ import {
 import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
 import { formatterCurrency } from "@/shared/lib/utils"
 
-export type typeofDirections = keyof typeof DirectionProjectLabels
-
-export type typeofDelivery = keyof typeof DeliveryProjectLabels
-
-export type typeofStatus = keyof typeof StatusContractLabels
+type StatusContract = keyof typeof StatusContractLabels
 
 export const columnsDataContract: ColumnDef<ProjectResponse, unknown>[] = [
   {
@@ -173,7 +169,7 @@ export const columnsDataContract: ColumnDef<ProjectResponse, unknown>[] = [
     id: "direction",
     header: "Направление",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as typeofDirections
+      const value = info.getValue() as DirectionProject
       return <span>{DirectionProjectLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
@@ -195,7 +191,7 @@ export const columnsDataContract: ColumnDef<ProjectResponse, unknown>[] = [
     id: "deliveryType",
     header: "Тип поставки",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as typeofDelivery
+      const value = info.getValue() as DeliveryProject
       return <span>{DeliveryProjectLabels[value]}</span>
     },
     filterFn: (row, columnId, filterValue) => {
@@ -299,7 +295,7 @@ export const columnsDataContract: ColumnDef<ProjectResponse, unknown>[] = [
     id: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<ProjectResponse, unknown>) => {
-      const value = info.getValue() as typeofStatus
+      const value = info.getValue() as StatusContract
       return <span>{StatusContractLabels[value]}</span>
     },
     enableHiding: true,

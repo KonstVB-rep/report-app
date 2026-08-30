@@ -30,14 +30,14 @@ export const getCachedBaseUserData = async (targetUserId: string) => {
   })
 }
 
-export const getCachedUsersByDepartment = async (departmentId: number) => {
-  cacheLife("days")
-  cacheTag(tagKeysUserActions.usersByDept(departmentId))
+// export const getCachedUsersByDepartment = async (departmentId: number) => {
+//   cacheLife("days")
+//   cacheTag(tagKeysUserActions.usersByDept(departmentId))
 
-  return await prisma.user.findMany({
-    where: { departmentId },
-  })
-}
+//   return await prisma.user.findMany({
+//     where: { departmentId },
+//   })
+// }
 export const getCachedAllUsersTable = async () => {
   cacheLife("days")
   cacheTag(tagKeysUserActions.allUsersAdminTable())

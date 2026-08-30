@@ -6,7 +6,8 @@ import { cn } from "@/shared/lib/utils"
 import TableTemplate from "./TableTemplate"
 import VirtualRow from "./VirtualRow"
 
-interface TableComponentDTProps<T extends Record<string, unknown>> {
+// Убираем жесткое ограничение Record<string, unknown>, используем unknown для совместимости
+interface TableComponentDTProps<T = unknown> {
   table: Table<T>
   getRowLink?: (row: T & { id: string }, type: string) => string
   hasEditDeleteActions?: boolean
@@ -20,7 +21,7 @@ interface TableComponentDTProps<T extends Record<string, unknown>> {
   }) => React.ReactNode
 }
 
-const TableRowsWrapper = <T extends Record<string, unknown>>({
+const TableRowsWrapper = <T = unknown>({
   table,
   openFilters,
   renderVirtualRow,
@@ -29,6 +30,7 @@ const TableRowsWrapper = <T extends Record<string, unknown>>({
   const { rows } = table.getRowModel()
   const rowsCount = rows.length
 
+  // Хук тоже должен принимать T
   const { virtualItems, totalSize } = useVirtualizedRowTable<T>({
     rows,
     tableContainerRef,

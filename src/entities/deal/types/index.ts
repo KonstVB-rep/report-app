@@ -1,13 +1,23 @@
-import type {
-  DealFile,
-  DeliveryProject,
-  DeliveryRetail,
-  DirectionProject,
-  DirectionRetail,
-  StatusProject,
-  StatusRetail,
-} from "@prisma/client"
-import type { SharedTableRowProps } from "@/shared/custom-components/ui/Table/model/types"
+export type DealFile = {
+  name: string
+  id: string
+  localPath: string
+  storageType: "YANDEX_DISK"
+  userId: string | null
+  dealId: string
+  dealType: DealType
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type RetailWithoutDateCreateAndUpdate = Omit<RetailResponse, "createdAt" | "updatedAt">
+
+export interface MutationResponse<T> {
+  success: boolean
+  data?: T
+  error?: string
+  code?: number
+}
 
 export const DEAL_TYPE = {
   PROJECT: "PROJECT",
@@ -15,13 +25,84 @@ export const DEAL_TYPE = {
   ORDER: "ORDER",
 } as const
 
+export const StatusProject = {
+  INVOICE_ISSUED: "INVOICE_ISSUED",
+  ACTUAL: "ACTUAL",
+  REJECT: "REJECT",
+  PAID: "PAID",
+  APPROVAL: "APPROVAL",
+  UNDER_APPROVAL: "UNDER_APPROVAL",
+  FIRST_CP_APPROVAL: "FIRST_CP_APPROVAL",
+  CONTRACT_ADVANCE_PAYMENT: "CONTRACT_ADVANCE_PAYMENT",
+  PROGRESS: "PROGRESS",
+  DELIVERY_WORKS: "DELIVERY_WORKS",
+  SIGN_ACTS_PAYMENT: "SIGN_ACTS_PAYMENT",
+  CLOSED: "CLOSED",
+  REQUEST: "REQUEST",
+} as const
+
+export type StatusProject = keyof typeof StatusProject
+
+export const StatusRetail = {
+  FIRST_CP_APPROVAL: "FIRST_CP_APPROVAL",
+  APPROVAL: "APPROVAL",
+  ACTUAL: "ACTUAL",
+  REJECT: "REJECT",
+  INVOICE_ISSUED: "INVOICE_ISSUED",
+  PROGRESS: "PROGRESS",
+  PAID: "PAID",
+  CLOSED: "CLOSED",
+  REQUEST: "REQUEST",
+} as const
+
+export type StatusRetail = keyof typeof StatusRetail
+
+export const DeliveryProject = {
+  COMPLEX: "COMPLEX",
+  EQUIPMENT_SUPPLY: "EQUIPMENT_SUPPLY",
+  WORK_SERVICES: "WORK_SERVICES",
+  RENT: "RENT",
+  SOFTWARE_DELIVERY: "SOFTWARE_DELIVERY",
+  OTHER: "OTHER",
+}
+
+export type DeliveryProject = keyof typeof DeliveryProject
+
+export const DirectionProject = {
+  PARKING: "PARKING",
+  GLK: "GLK",
+  SKD: "SKD",
+  KATOK: "KATOK",
+  MUSEUM: "MUSEUM",
+  SPORT: "SPORT",
+  FOK_BASIN: "FOK_BASIN",
+  BPS: "BPS",
+  PPS: "PPS",
+  PARK_ATTRACTION: "PARK_ATTRACTION",
+  LOCKER: "LOCKER",
+  STADIUM_ARENA: "STADIUM_ARENA",
+} as const
+
+export type DirectionProject = (typeof DirectionProject)[keyof typeof DirectionProject]
+
+export const DeliveryRetail = {
+  EXPENDABLE_MATERIALS: "EXPENDABLE_MATERIALS",
+  SUPPLY: "SUPPLY",
+  WORK: "WORK",
+}
+
+export type DeliveryRetail = keyof typeof DeliveryRetail
+
+export const DirectionRetail = {
+  PARKING_EQUIPMENT: "PARKING_EQUIPMENT",
+  LOCKER: "LOCKER",
+  SCUD: "SCUD",
+  IDS_CONSUMABLES: "IDS_CONSUMABLES",
+  OTHER: "OTHER",
+}
+export type DirectionRetail = keyof typeof DirectionRetail
+
 export type DealType = (typeof DEAL_TYPE)[keyof typeof DEAL_TYPE]
-
-export type DirectionType = DirectionProject
-
-export type DeliveryType = DeliveryProject
-
-export type StatusType = StatusProject
 
 export type ManagerShortInfo = {
   id: string
@@ -30,7 +111,6 @@ export type ManagerShortInfo = {
 }
 
 export interface ProjectResponse {
-  [key: string]: unknown
   id: string
   userId: string | null
   nameDeal: string
@@ -59,17 +139,12 @@ export interface ProjectResponse {
   highlights?: string | null
 }
 
-export type ProjectResponseWithId = ProjectResponse & {
-  id: string
-}
-export interface ProjectResponseOmitHighlights extends Omit<ProjectResponse, "highlights"> {}
-export type ProjectResponseWithContactsAndFiles = ProjectResponse & {
+type ProjectResponseWithContactsAndFiles = ProjectResponse & {
   additionalContacts: Contact[] | []
   dealFiles: DealFile[] | []
 }
 
 export interface RetailResponse {
-  [key: string]: unknown
   id: string
   userId: string | null
   nameDeal: string
@@ -96,7 +171,57 @@ export interface RetailResponse {
   highlights?: string | null
 }
 
-export type RetailResponseWithContactsAndFiles = RetailResponse & {
+export type ProjectReq = {
+  id?: string
+  dateRequest: Date
+  nameDeal: string | null
+  nameObject: string
+  inn: string | null
+  direction: DirectionProject
+  deliveryType: DeliveryProject | null
+  contact: string
+  phone: string
+  email: string
+  amountCP: string
+  amountWork: string
+  amountPurchase: string
+  delta: string
+  dealStatus: StatusProject
+  comments: string
+  lastDateConnection: Date | null
+  commentsLastConnection: string | null
+  plannedDateConnection?: Date | null
+  resource: string | null
+  contacts: Contact[]
+  managersIds: { userId: string }[]
+  userId?: string
+}
+
+export type RetailReq = {
+  id?: string
+  dateRequest: Date
+  nameDeal: string | null
+  nameObject: string
+  inn: string | null
+  direction: DirectionRetail
+  deliveryType: DeliveryRetail | null
+  contact: string
+  phone: string
+  email: string
+  amountCP: string
+  delta: string
+  dealStatus: StatusRetail
+  comments: string
+  lastDateConnection: Date | null
+  commentsLastConnection: string | null
+  plannedDateConnection?: Date | null
+  resource: string | null
+  contacts: Contact[]
+  managersIds: { userId: string }[]
+  userId?: string
+}
+
+type RetailResponseWithContactsAndFiles = RetailResponse & {
   additionalContacts: Contact[] | []
   dealFiles: DealFile[] | []
 }
@@ -109,35 +234,12 @@ export type Contact = {
   position?: string | null
 }
 
-export type DealUnionType = "retail" | "project"
 export type DealsUnionType = "retails" | "projects"
 export type TableType = "projects" | "retails" | "contracts"
-export type UnionDealTypeParams =
-  | "projects"
-  | "retails"
-  | "contracts"
-  | "project"
-  | "retail"
-  | "contract"
 
 export type DateRange = "week" | "month" | "threeMonths" | "halfYear" | "year"
 
 export type ProjectWithoutDateCreateAndUpdate = Omit<ProjectResponse, "createdAt" | "updatedAt">
-
-export type ProjectWithManagersIds = Omit<
-  ProjectResponse,
-  "createdAt" | "updatedAt" | "managers"
-> & { managersIds: { userId: string }[] }
-
-export type RetailWithoutDateCreateAndUpdate = Omit<RetailResponse, "createdAt" | "updatedAt">
-
-export type RetailWithManagersIds = Omit<RetailResponse, "createdAt" | "updatedAt" | "managers"> & {
-  managersIds: { userId: string }[]
-}
-
-export type ProjectWithoutId = Omit<ProjectWithoutDateCreateAndUpdate, "id">
-
-export type RetailWithoutId = Omit<RetailWithoutDateCreateAndUpdate, "id">
 
 export type ContactFieldError = {
   _common?: {
@@ -156,13 +258,6 @@ export type ReAssignDeal = {
   newManagerId: string
 }
 
-export type ProjectWithManagersIdsContacts = ProjectWithManagersIds & {
-  additionalContacts: Contact[]
-}
-export type RetailWithManagersIdsContacts = RetailWithManagersIds & {
-  additionalContacts: Contact[]
-}
-
 export type DealProject = ProjectResponseWithContactsAndFiles & {
   type: typeof DEAL_TYPE.PROJECT
 }
@@ -173,7 +268,13 @@ export type DealRetail = RetailResponseWithContactsAndFiles & {
 
 export type DealUnion = DealProject | DealRetail
 
-export type DealTableRowProps<T extends DealUnion> = SharedTableRowProps<T>
+export interface BaseDeal {
+  id: string
+  type: DealType
+  nameDeal: string
+  dateRequest: Date
+  dealStatus: string
+}
 
 export type DealsListWithResource =
   | {
@@ -192,7 +293,7 @@ export type DealsList =
     }
   | { deals: []; totalDealsCount: number }
 
-export type ProjectOrRetailType = typeof DEAL_TYPE.PROJECT | typeof DEAL_TYPE.RETAIL
+type ProjectOrRetailType = typeof DEAL_TYPE.PROJECT | typeof DEAL_TYPE.RETAIL
 
 export type DealHighlightType = {
   id: string

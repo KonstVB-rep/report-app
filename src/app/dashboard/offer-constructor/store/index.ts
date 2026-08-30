@@ -490,11 +490,7 @@ const act = () => useOfferStoreTable.getState()
 
 export const selectData = (s: OfferTableStore) => s.data
 export const selectParts = (s: OfferTableStore) => s.data.parts
-export const selectTotals = (s: OfferTableStore) => ({
-  offer: s.totalPriceOffer,
-  purchase: s.totalPricePurchase,
-  delta: s.totalDelta,
-})
+
 export const selectSectionsCount = (s: OfferTableStore) => {
   const sections = s.data.parts.map((p) => p.sections)
 
@@ -508,8 +504,6 @@ export const selectActiveTarget = (s: OfferTableStore) => s.activeTarget
 
 export const setSelectActiveTarget = (partId: string, sectionId?: string) =>
   act().setActiveTarget(partId, sectionId)
-
-export const resetActiveTarget = () => act().resetActiveTarget()
 
 export const addPart = () => act().addPart()
 export const addSection = (pId: string) => act().addSection(pId)
@@ -529,27 +523,9 @@ export const removePart = (pId: string) => act().removePart(pId)
 export const removeSection = (pId: string, sId: string) => act().removeSection(pId, sId)
 
 export const selectSelectedItemId = (s: OfferTableStore) => s.selectedItemId
-export const setSelectedItemId = (id: string) => act().setSelectedItemId(id)
-export const clearData = () => act().clearData()
 
 export const selectSectionById =
   (partId: string, sectionId: string) => (state: OfferTableStore) => {
     const part = state.data.parts.find((p) => p.id === partId)
     return part?.sections.find((s) => s.id === sectionId) || null
   }
-
-export const selectOrderNumberByPartId = (partId: string) => (state: OfferTableStore) => {
-  const part = state.data.parts.find((p) => p.id === partId)
-  return part?.orderNumber || ""
-}
-
-export const selectOrderNumberBySectionId =
-  (partId: string, sectionId: string) => (state: OfferTableStore) => {
-    const part = state.data.parts.find((p) => p.id === partId)
-    const section = part?.sections.find((s) => s.id === sectionId)
-    return section?.orderNumber || null
-  }
-
-export const selectMovePart = (activeId: string, overId: string) => {
-  act().movePart(activeId, overId)
-}

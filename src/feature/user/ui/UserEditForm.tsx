@@ -2,8 +2,8 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
-import type { DepartmentEnum, PermissionEnum, Role } from "@prisma/client"
 import { toast } from "sonner"
+import { userUpdateFormSchema } from "@/entities/user/model/schema"
 import type { UserFormEditData, UserWithdepartmentName } from "@/entities/user/types"
 import UserForm from "@/entities/user/ui/UserForm"
 import Overlay from "@/shared/custom-components/ui/Overlay"
@@ -38,18 +38,49 @@ const UserEditForm = ({
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
-    formData.append("id", user?.id as string)
-    state.inputs = {
+
+    let permissions: string[] = []
+    try {
+      const rawPermissions = formData.get("permissions") as string
+      permissions = rawPermissions ? JSON.parse(rawPermissions) : []
+    } catch (_error) {
+      toast.error("Ошибка в данных прав доступа")
+      return
+    }
+
+    const rawData = {
+      id: formData.get("id") as string,
       username: formData.get("username") as string,
       phone: (formData.get("phone") as string) || "",
       email: formData.get("email") as string,
       position: formData.get("position") as string,
-      department: formData.get("department") as DepartmentEnum,
-      role: formData.get("role") as Role,
-      permissions: JSON.parse(formData.get("permissions") as string) as PermissionEnum[],
+      department: formData.get("department") as string,
+      role: formData.get("role") as string,
+      permissions,
       isBlocked: formData.get("isBlocked") === "on" || formData.get("isBlocked") === "true",
       emailNotify: formData.get("emailNotify") === "on" || formData.get("emailNotify") === "true",
     }
+
+    const validated = userUpdateFormSchema.safeParse(rawData)
+
+    if (!validated.success) {
+      const errors = validated.error.flatten().fieldErrors
+      const firstError = Object.values(errors).flat()[0]
+
+      setState({
+        ...initialState,
+        message: firstError || "Ошибка валидации формы",
+        success: false,
+      })
+      toast.error(firstError || "Ошибка валидации формы")
+      return
+    }
+
+    setState({
+      ...initialState,
+      inputs: validated.data,
+    })
+
     mutateAsync(formData)
   }
 
@@ -99,4 +130,5 @@ const UserEditForm = ({
     </>
   )
 }
+
 export default UserEditForm

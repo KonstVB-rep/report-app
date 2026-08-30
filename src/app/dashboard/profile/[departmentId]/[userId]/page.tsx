@@ -7,6 +7,5 @@ interface PageProps {
 }
 
 export default async function ProfilePage({ params }: PageProps) {
-  const { userId } = await params
-  return <ProfilePageMain userId={userId} />
+  return <ProfilePageMain params={params} />
 }

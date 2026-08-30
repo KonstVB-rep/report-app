@@ -1,7 +1,6 @@
 "use client"
 
 import { memo } from "react"
-import { PermissionEnum } from "@prisma/client"
 import { FilePenLine, FileText, Trash2 } from "lucide-react"
 import dynamic from "next/dynamic"
 import { STATUS_DEAL_COLOR } from "@/entities/deal/lib/constants"
@@ -12,6 +11,7 @@ import {
   ContextMenuTrigger,
 } from "@/shared/components/ui/context-menu"
 import useIsReadonly from "@/shared/hooks/useIsReadonly"
+import { PERMISSIONS } from "@/shared/lib/constants"
 
 const ProtectedByPermissions = dynamic(() => import("../Protect/ProtectedByPermissions"), {
   ssr: false,
@@ -66,7 +66,7 @@ const ContextRowTable = ({
               <FilePenLine size="14" /> Редактировать
             </ContextMenuItem>
 
-            <ProtectedByPermissions permission={PermissionEnum.DEAL_DELETE}>
+            <ProtectedByPermissions permission={PERMISSIONS.DEAL_DELETE}>
               <ContextMenuItem
                 className="flex cursor-pointer gap-2"
                 onClick={() => openModal?.().delete.onClick()}

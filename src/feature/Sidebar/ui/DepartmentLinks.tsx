@@ -1,13 +1,13 @@
 "use client"
 
 import { memo, useMemo } from "react"
-import { PermissionEnum } from "@prisma/client"
 import { BookText, ChartColumnBig, type LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants"
 import type { DepartmentUserItem } from "@/entities/department/types"
 import { Separator } from "@/shared/components/ui/separator"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { PERMISSIONS } from "@/shared/lib/constants"
 
 type DealsType = {
   id: string
@@ -109,7 +109,7 @@ export const DepartmentLinks = memo(
 
     const marketingExtraLink =
       departmentId === 2 ? (
-        <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+        <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
           <LinkItem
             href={`/dashboard/statistics/request-source/2/${user.id}/tabs`}
             icon={BookText}

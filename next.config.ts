@@ -1,10 +1,8 @@
 import type { NextConfig } from "next"
-import withBundleAnalyzer from "@next/bundle-analyzer"
 
 const nextConfig: NextConfig = {
-  reactCompiler: true,
   cacheComponents: true,
-  typedRoutes: true,
+  partialPrefetching: true,
   output: "standalone",
 
   logging: {
@@ -81,9 +79,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-const withBundleAnalyzerConfig = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-  openAnalyzer: true,
-})
-
-export default withBundleAnalyzerConfig(nextConfig)
+export default nextConfig

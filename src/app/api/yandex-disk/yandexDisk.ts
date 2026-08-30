@@ -2,9 +2,9 @@
 
 import type { DealType } from "@prisma/client"
 import axios, { AxiosError } from "axios"
-import { deleteFileFromDB, writeHrefDownloadFileInDB } from "@/widgets/Files/api/actions_db"
+import { writeHrefDownloadFileInDB } from "@/widgets/Files/api/actions_db"
 
-export const axiosDownLoaderFromYD = axios.create({
+const axiosDownLoaderFromYD = axios.create({
   headers: {
     "Content-Type": "application/json",
     Authorization: `OAuth ${process.env.YANDEX_OAUTH_TOKEN}`,
@@ -163,35 +163,7 @@ const createFolderOnYandexDisk = async (folderPath: string) => {
   }
 }
 
-/**
- * Удаление файла/папки с Яндекс.Диска
- */
-const deleteFileOrFolderFromYandexDiskAnDB = async (file: {
-  filePath: string
-  id: string
-  dealType: DealType
-  userId: string
-  dealId: string
-}) => {
-  try {
-    const { filePath, id, dealType, userId, dealId } = file
-
-    const response = await axiosInstanceYandexDisk.delete(`/resources?path=${filePath}`)
-
-    if (response.status !== 204 && response.status !== 200) {
-      throw new Error("Не удалось удалить файл.")
-    }
-
-    return await deleteFileFromDB({ id, dealType, userId, dealId })
-  } catch (error) {
-    console.error("Ошибка при удалении файла/папки:", error)
-    throw error
-  }
-}
-
 export {
-  createFolderOnYandexDisk,
-  deleteFileOrFolderFromYandexDiskAnDB,
   downloadFileFromYandexDisk,
   getFiles,
   getInfoDisk,

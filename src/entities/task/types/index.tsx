@@ -6,21 +6,23 @@ type UserInTask = {
   email: string
 }
 
-export type TaskWithUserInfo = {
+export type Task = {
   id: string
   title: string
   description: string
+  departmentId: number
   taskStatus: TaskStatus
   taskPriority: TaskPriority
   assignerId: string | null
   executorId: string | null
   orderTask: number
-  departmentId: number
   dueDate: Date
   startDate: Date
   createdAt: Date
   updatedAt: Date
+}
 
+export type TaskWithUserInfo = Task & {
   assigner: UserInTask | null
   executor: UserInTask | null
 }

@@ -2,7 +2,6 @@
 
 import type { Table } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
-import type { DealUnion } from "@/entities/deal/types"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 
 const Filters = dynamic(() => import("./Filters"), {
@@ -10,17 +9,22 @@ const Filters = dynamic(() => import("./Filters"), {
   loading: () => <LoaderCircle />,
 })
 
-const DealsFilters = ({ table, open }: { table: Table<DealUnion>; open: boolean }) => {
+interface DealsFiltersProps<T = unknown> {
+  table: Table<T>
+  open: boolean
+}
+
+const DealsFilters = <T = unknown>({ table, open }: DealsFiltersProps<T>) => {
   return (
-    <>
-      {open && (
-        <div
-          className={`grid overflow-hidden transition-all duration-200 ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-        >
-          <Filters table={table} />
-        </div>
-      )}
-    </>
+    <div
+      className={`grid overflow-hidden transition-all duration-200 ${
+        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+      }`}
+    >
+      <div className="min-h-0 overflow-hidden">
+        <Filters table={table as Table<unknown>} />
+      </div>
+    </div>
   )
 }
 

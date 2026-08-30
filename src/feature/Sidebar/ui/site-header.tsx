@@ -1,10 +1,10 @@
 "use client"
 
-import { DealType, PermissionEnum } from "@prisma/client"
 import { CalendarClock, SidebarIcon } from "lucide-react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { DEAL_TYPE } from "@/entities/deal/types/index"
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { FindOrgModal } from "@/feature/find-organization-by-field/ui/FindOrgModal"
@@ -15,13 +15,14 @@ import { useSidebar } from "@/shared/components/ui/sidebar"
 import HoverCardComponent from "@/shared/custom-components/ui/HoverCard"
 import Logo from "@/shared/custom-components/ui/Logo"
 import MobileMenu from "@/shared/custom-components/ui/MobileMenu"
+import { PERMISSIONS } from "@/shared/lib/constants"
 
 const ProtectedByPermissions = dynamic(
   () => import("@/shared/custom-components/ui/Protect/ProtectedByPermissions"),
   { ssr: false },
 )
 
-const namePagesByDealType = [DealType.PROJECT, DealType.RETAIL]
+const namePagesByDealType = [DEAL_TYPE.PROJECT, DEAL_TYPE.RETAIL]
 
 export function SiteHeader({ isHasSitebar = true }: { isHasSitebar?: boolean }) {
   const { authUser } = useStoreUser()
@@ -66,7 +67,7 @@ export function SiteHeader({ isHasSitebar = true }: { isHasSitebar?: boolean }) 
           )}
 
           {departmentId && (
-            <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+            <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
               <Link
                 className="btn_hover text-sm font-medium"
                 href={`/dashboard/tasks/${departmentId}`}
@@ -78,7 +79,7 @@ export function SiteHeader({ isHasSitebar = true }: { isHasSitebar?: boolean }) 
           )}
 
           {!pathName?.includes("summary-table") && (
-            <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+            <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
               <HoverCardComponent title="Сводные таблицы">
                 {namePagesByDealType.map((type) => (
                   <div className="relative overflow-hidden rounded" key={type}>

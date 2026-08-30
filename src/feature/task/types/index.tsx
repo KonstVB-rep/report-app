@@ -1,6 +1,21 @@
-import type { DepartmentEnum, Task, TaskPriority, TaskStatus } from "@prisma/client"
-import type { UserResponse } from "@/entities/user/types"
 import type { viewType } from "../model/constants"
+
+const TaskStatus = {
+  OPEN: "OPEN",
+  IN_PROGRESS: "IN_PROGRESS",
+  DONE: "DONE",
+  CANCELED: "CANCELED",
+}
+const TaskPriority = {
+  LOW: "LOW",
+  MEDIUM: "MEDIUM",
+  HIGH: "HIGH",
+  CRITICAL: "CRITICAL",
+}
+
+type TaskStatus = keyof typeof TaskStatus
+
+type TaskPriority = keyof typeof TaskPriority
 
 export type TaskFormType = {
   title: string
@@ -27,20 +42,6 @@ export type TaskFormTypeWithId = {
   orderTask: number
 }
 
-export type UserShort = Pick<UserResponse, "id" | "departmentId" | "position" | "username">
-
-export type UserShortWithTasks = UserShort & { tasksExecuted: Task[] }
-
-export type DepartmentWithUsersAndTasks = {
-  id: number
-  name: DepartmentEnum
-  directorId: string
-  description: string
-  users: UserShortWithTasks[]
-}
-
 export type ViewType = (typeof viewType)[number]["id"]
-
-export type CreateTaskReturn = { error: boolean; message: string; data: null }
 
 export type DeleteTaskData = { taskId: string; idTaskOwner: string | null }

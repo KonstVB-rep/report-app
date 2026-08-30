@@ -11,6 +11,8 @@ import { Button } from "@/shared/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
 
 const BotActionsMenu = memo(({ bot }: { bot: BotWithChats }) => {
+  const hasChats = bot.chats.length > 0
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -20,11 +22,11 @@ const BotActionsMenu = memo(({ bot }: { bot: BotWithChats }) => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-fit p-2">
+      <PopoverContent align="end" className="w-fit p-2" side="bottom">
         <div className="grid gap-2">
           <DialogEditBot bot={bot} />
           <DialogDeleteBot bot={bot} />
-          {bot.chats.length > 0 ? <DialogChatsBot bot={bot} /> : <DialogCreateChatForm bot={bot} />}
+          {hasChats ? <DialogChatsBot bot={bot} /> : <DialogCreateChatForm bot={bot} />}
         </div>
       </PopoverContent>
     </Popover>

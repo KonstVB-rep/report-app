@@ -79,31 +79,6 @@ export const getUserTasks = async (userId: string): Promise<TaskWithUserInfo[] |
   }
 }
 
-export const getTask = async (taskId: string) => {
-  try {
-    await requireUser()
-
-    const select = { id: true, username: true, email: true, position: true }
-
-    return await prisma.task.findUnique({
-      where: {
-        id: taskId,
-      },
-      include: {
-        assigner: {
-          select,
-        },
-        executor: {
-          select,
-        },
-      },
-    })
-  } catch (error) {
-    console.error(error)
-    return handleError((error as Error).message)
-  }
-}
-
 export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
   try {
     const user = await requireUser()

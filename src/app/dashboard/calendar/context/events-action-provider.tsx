@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, type ReactNode, useContext, useMemo } from "react"
+import { createContext, type ReactNode, useContext } from "react"
 import {
   useCreateEventCalendar,
   useDeleteEventCalendar,
@@ -35,28 +35,23 @@ export const EventsActionProvider = ({ children }: { children: ReactNode }) => {
 
   const { data: events, isPending: isPendingLoad } = useGetEventsCalendarUser()
   const { mutate: createEvent, isPending } = useCreateEventCalendar(handleResetAndClose)
-
   const { mutate: updateEvent, isPending: isPendingUpdate } =
     useUpdateEventCalendar(handleResetAndClose)
-
   const { mutate: deleteEvent, isPending: isPendingDelete } = useDeleteEventCalendar(
     handleCloseModalAfterDeleteEvent,
   )
 
   const isLoading = isPendingUpdate || isPending || isPendingDelete
 
-  const value = useMemo(
-    () => ({
-      isLoading,
-      events,
-      createEvent,
-      updateEvent,
-      deleteEvent,
-      isPendingLoad,
-      isPendingDelete,
-    }),
-    [isLoading, events, createEvent, updateEvent, deleteEvent, isPendingLoad, isPendingDelete],
-  )
+  const value = {
+    isLoading,
+    events,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    isPendingLoad,
+    isPendingDelete,
+  }
 
   return <EventActionContext.Provider value={value}>{children}</EventActionContext.Provider>
 }

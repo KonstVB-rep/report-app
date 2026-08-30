@@ -3,11 +3,13 @@
 import { createContext, useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 
+const LAST_PATH_KEY = "lastAppPath"
+
 interface LastPathContextProps {
   lastPath: string | null
 }
 
-export const LastPathContext = createContext<LastPathContextProps>({
+const LastPathContext = createContext<LastPathContextProps>({
   lastPath: null,
 })
 
@@ -28,20 +30,18 @@ const safeLocalStorageSet = (key: string, value: string): void => {
   }
 }
 
-export const LastPathProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LastPathProvider = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
-  const [lastPath, setLastPath] = useState<string | null>(null)
 
-  useEffect(() => {
-    const storedPath = safeLocalStorageGet("lastAppPath")
-    if (storedPath) {
-      setLastPath(storedPath)
-    }
-  }, [])
+  const [lastPath, setLastPath] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null
+    return safeLocalStorageGet(LAST_PATH_KEY)
+  })
 
   useEffect(() => {
     if (pathname && pathname !== "/" && pathname !== "/login") {
-      safeLocalStorageSet("lastAppPath", pathname)
+      safeLocalStorageSet(LAST_PATH_KEY, pathname)
+      setLastPath(pathname)
     }
   }, [pathname])
 

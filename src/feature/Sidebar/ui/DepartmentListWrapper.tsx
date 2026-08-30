@@ -1,25 +1,29 @@
 "use client"
 
 import { useEffect, useMemo } from "react"
-import { DepartmentEnum } from "@prisma/client"
 import { BadgeRussianRuble, ChartNoAxesCombined, Wrench } from "lucide-react"
 import { useGetDepartmentsWithUsers } from "@/entities/department/hooks"
 import useStoreDepartment from "@/entities/department/store/useStoreDepartment"
-import type { DepartmentInfo, DepartmentListItemType } from "@/entities/department/types"
+import {
+  type DepartmentInfo,
+  type DepartmentListItemType,
+  Departments,
+  type DepartmentUnion,
+} from "@/entities/department/types"
 import type { UserResponse } from "@/entities/user/types"
 import { Skeleton } from "@/shared/components/ui/skeleton"
 import DepartmentPersonsList from "./DepartmentPersonsList"
 
-const icons: Record<DepartmentEnum, React.ReactNode> = {
-  [DepartmentEnum.SALES]: <BadgeRussianRuble />,
-  [DepartmentEnum.TECHNICAL]: <Wrench />,
-  [DepartmentEnum.MARKETING]: <ChartNoAxesCombined />,
+const icons: Record<DepartmentUnion, React.ReactNode> = {
+  [Departments.SALES]: <BadgeRussianRuble />,
+  [Departments.TECHNICAL]: <Wrench />,
+  [Departments.MARKETING]: <ChartNoAxesCombined />,
 }
 
-const getUrlPath = (depsId: number): Record<DepartmentEnum, string> => ({
-  [DepartmentEnum.SALES]: `/dashboard/table/${depsId}`,
-  [DepartmentEnum.TECHNICAL]: "",
-  [DepartmentEnum.MARKETING]: `/dashboard/statistics/request-source`,
+const getUrlPath = (depsId: number): Record<DepartmentUnion, string> => ({
+  [Departments.SALES]: `/dashboard/table/${depsId}`,
+  [Departments.TECHNICAL]: "",
+  [Departments.MARKETING]: `/dashboard/statistics/request-source`,
 })
 
 const DepartmentListWrapper = () => {

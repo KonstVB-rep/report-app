@@ -1,8 +1,8 @@
 import type React from "react"
-import { PermissionEnum } from "@prisma/client"
 import { useParams } from "next/navigation"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useGetUser } from "@/feature/user/hooks/query"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import ErrorMessageTable from "./ErrorMessageTable"
 import DealsSkeleton from "./Skeletons/DealsSkeleton"
 
@@ -16,11 +16,7 @@ const DealTableTemplate = ({ children }: DealTableTemplateProps) => {
 
   const currentUserId = userId ?? authUser?.id
 
-  const {
-    data: user,
-    error,
-    isPending,
-  } = useGetUser(currentUserId, [PermissionEnum.VIEW_USER_REPORT])
+  const { data: user, error, isPending } = useGetUser(currentUserId, [PERMISSIONS.VIEW_USER_REPORT])
 
   if (isPending) return <DealsSkeleton />
 

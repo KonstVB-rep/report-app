@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body className={`${notoSans.className} antialiased`}>
+      <body className={`${notoSans.className} antialiased`} suppressHydrationWarning>
         <AppProvider>
           <div className="overflow-hidden h-screen">{children}</div>
         </AppProvider>

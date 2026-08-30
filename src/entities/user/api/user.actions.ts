@@ -14,10 +14,10 @@ import z from "zod"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { findUserByEmail } from "@/app/api/utils/findUserByEmail"
 import { requireUser } from "@/app/api/utils/requireAuth"
+import type { DepartmentUnion } from "@/entities/department/types"
 import {
   getCachedAllUsersTable,
   getCachedBaseUserData,
-  getCachedUsersByDepartment,
   tagKeysUserActions,
 } from "@/entities/user/api/cachedQueryDealUser"
 import { prisma } from "@/prisma/prisma-client"
@@ -25,13 +25,7 @@ import { handleError } from "@/shared/api/handleError"
 import type { ActionResponse } from "@/shared/types"
 import type { UserTypeTable } from "../model/column-data-user"
 import { userFormEditSchema, userFormSchema } from "../model/schema"
-import type {
-  UserDataBase,
-  UserFormData,
-  UserFormEditData,
-  UserRequest,
-  UserRequestReqruired,
-} from "../types"
+import type { UserDataBase, UserFormData, UserFormEditData } from "../types"
 
 export interface ResponseDelUser<T> {
   success: boolean
@@ -52,23 +46,6 @@ const extractFormData = (formData: FormData, permissions: string[]): UserFormDat
   isBlocked: formData.get("isBlocked") === "on" || formData.get("isBlocked") === "true",
   emailNotify: formData.get("emailNotify") === "on" || formData.get("emailNotify") === "true",
 })
-
-export const checkFormData = async (
-  dataObject: UserRequest,
-  requiredFields: (keyof UserRequestReqruired)[],
-) => {
-  for (const field of requiredFields) {
-    if (
-      !(field in dataObject) ||
-      dataObject[`${field}`] === null ||
-      dataObject[`${field}`] === "" ||
-      dataObject === undefined
-    ) {
-      throw new Error(`Отсутствует или пустое поле: ${field}`)
-    }
-  }
-  return dataObject
-}
 
 const safeParseFormData = <T extends UserDataBase>(
   formData: FormData,
@@ -226,7 +203,7 @@ const hashUserPassword = async (password: string): Promise<string> => {
 
 const findDepartment = async (departmentName: string): Promise<Department> => {
   const department = await prisma.department.findUnique({
-    where: { name: departmentName as DepartmentEnum },
+    where: { name: departmentName as DepartmentUnion },
   })
 
   if (!department) {
@@ -409,38 +386,6 @@ export const getUser = cache(
   },
 )
 
-// export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser<null>> => {
-//   try {
-//     const user = await requireUser()
-
-//     if (user) {
-//       await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT])
-//     }
-
-//     const person = await prisma.user.findUnique({
-//       where: { id: deletedUserId },
-//     })
-
-//     if (!person) {
-//       return { error: true, message: "Пользователь не найден", data: null }
-//     }
-
-//     await prisma.user.delete({ where: { id: deletedUserId } })
-
-//     return {
-//       error: false,
-//       message: "Пользователь успешно удален",
-//       data: null,
-//     }
-//   } catch (error) {
-//     console.error(error)
-//     return {
-//       error: true,
-//       message: "Ошибка при удалении пользователя",
-//       data: null,
-//     }
-//   }
-// }
 export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser<null>> => {
   try {
     const user = await requireUser()
@@ -478,55 +423,6 @@ export const deleteUser = async (deletedUserId: string): Promise<ResponseDelUser
     }
   }
 }
-
-// export const deleteUsersList = async (deletedUserIds: string[]): Promise<ResponseDelUser<null>> => {
-//   try {
-//     const user = await requireUser()
-
-//     if (user) await checkUserPermissionByRole(user, [PermissionEnum.USER_MANAGEMENT])
-
-//     const existingUsers = await prisma.user.findMany({
-//       where: {
-//         id: {
-//           in: deletedUserIds,
-//         },
-//       },
-//       select: { id: true },
-//     })
-
-//     const existingUserIds = existingUsers.map((user) => user.id)
-//     const nonExistingUserIds = deletedUserIds.filter((id) => !existingUserIds.includes(id))
-
-//     if (nonExistingUserIds.length > 0) {
-//       return {
-//         error: true,
-//         message: `Пользователи с ID: ${nonExistingUserIds.join(", ")} не найдены`,
-//         data: null,
-//       }
-//     }
-
-//     await prisma.user.deleteMany({
-//       where: {
-//         id: {
-//           in: deletedUserIds,
-//         },
-//       },
-//     })
-
-//     return {
-//       error: false,
-//       message: `Успешно удалено пользователей: ${deletedUserIds.length}`,
-//       data: null,
-//     }
-//   } catch (error) {
-//     console.error(error)
-//     return {
-//       error: true,
-//       message: "Ошибка при удалении пользователей",
-//       data: null,
-//     }
-//   }
-// }
 
 export const deleteUsersList = async (deletedUserIds: string[]): Promise<ResponseDelUser<null>> => {
   try {
@@ -585,22 +481,22 @@ export const deleteUsersList = async (deletedUserIds: string[]): Promise<Respons
   }
 }
 
-export const getAllUsersByDepartment = async (id: number): Promise<User[] | null> => {
-  try {
-    await requireUser()
+// export const getAllUsersByDepartment = async (id: number): Promise<User[] | null> => {
+//   try {
+//     await requireUser()
 
-    return await getCachedUsersByDepartment(Number(id))
-  } catch (error) {
-    console.error(error)
-    return handleError((error as Error).message)
-  }
-}
+//     return await getCachedUsersByDepartment(Number(id))
+//   } catch (error) {
+//     console.error(error)
+//     return handleError((error as Error).message)
+//   }
+// }
 
 export const getAllUsers = async (): Promise<UserTypeTable[] | null> => {
   try {
     const user = await requireUser()
 
-    if (user.role !== "ADMIN") {
+    if (user.role !== Role.ADMIN) {
       return handleError("Не достаточно прав для совершения действия")
     }
 

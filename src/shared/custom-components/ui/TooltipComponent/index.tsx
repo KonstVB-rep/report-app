@@ -1,10 +1,8 @@
+"use client"
+
 import type React from "react"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip"
+import { useEffect, useState } from "react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 
 type TooltipComponent = {
   children: React.ReactNode
@@ -12,16 +10,24 @@ type TooltipComponent = {
 }
 
 const TooltipComponent = ({ children, content }: TooltipComponent) => {
-  return (
-    <TooltipProvider delayDuration={150}>
-      <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
+  const [isMounted, setIsMounted] = useState(false)
 
-        <TooltipContent>
-          <p>{content}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return <>{children}</>
+  }
+
+  // На клиенте добавляем tooltip после монтирования
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent align="center" side="bottom">
+        <p>{content}</p>
+      </TooltipContent>
+    </Tooltip>
   )
 }
 

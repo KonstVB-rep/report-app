@@ -162,7 +162,7 @@ const TableFooterOffer = ({
   )
 }
 
-export const CellOfferTable = memo(({ cell }: { cell: Cell<OfferTableItem, unknown> }) => {
+const CellOfferTable = memo(({ cell }: { cell: Cell<OfferTableItem, unknown> }) => {
   const initialValue = (cell.getValue() as string) ?? ""
   const [value, setValue] = useState<string>(initialValue)
   const [isEditing, setIsEditing] = useState(false) // Состояние для переключения режима

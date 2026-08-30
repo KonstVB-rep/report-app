@@ -1,16 +1,17 @@
-import type { $Enums } from "@prisma/client"
+import type { Role } from "@prisma/client"
 import { persist } from "zustand/middleware"
+import type { PERMISSIONS_UNION } from "@/shared/lib/constants"
 import { create } from "@/shared/lib/helpers/сreate"
 
 export type AuthUserType = {
-  permissions: $Enums.PermissionEnum[]
+  permissions: PERMISSIONS_UNION[]
   id: string
   phone: string | null
   email: string
   position: string
   username: string
   departmentId: number
-  role: $Enums.Role
+  role: Role
   lastlogin: Date | null
   telegramInfo: {
     tgUserId: string
@@ -68,7 +69,5 @@ const useStoreUser = create<State>()(
 export default useStoreUser
 
 export const selectUserId = (state: State) => state.authUser?.id
-export const selectSetAuthUser = (state: State) => state.setAuthUser
-export const selectSetIsAuth = (state: State) => state.setIsAuth
 export const selectIsAuth = (state: State) => state.isAuth
 export const selectAuthUser = (state: State) => state.authUser

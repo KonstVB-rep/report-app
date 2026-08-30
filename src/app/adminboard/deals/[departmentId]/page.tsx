@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useParams } from "next/navigation"
 import ErrorMessageTable from "@/entities/deal/ui/ErrorMessageTable"
 import { useGetAllDealsDepartment } from "@/feature/deals/api/hooks/query"
@@ -15,7 +15,7 @@ import DealsFilters from "../ui/DealsFilters"
 import DealsToolbar from "../ui/DealsToolbar"
 import Loading from "./loading"
 
-const HIDDEN_COLS = { id: false, user: false }
+const HIDDEN_COLS = { id: false, user: false } as const
 
 const AllDealsPage = () => {
   const { departmentId } = useParams<{ departmentId: string }>()
@@ -23,10 +23,16 @@ const AllDealsPage = () => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
   const departmentIdNumber = Number(departmentId)
+  const isValidDepartment = !Number.isNaN(departmentIdNumber)
 
-  const { data, error, isError, isPending } = useGetAllDealsDepartment(departmentIdNumber)
+  const { data, error, isError, isPending } = useGetAllDealsDepartment(
+    isValidDepartment ? departmentIdNumber : 0,
+  )
+
+  const deals = useMemo(() => data?.deals || [], [data?.deals])
+
   const { table, filtersContextValue, openFilters, setGlobalFilter } = useTableState(
-    data?.deals || [],
+    deals,
     columnsDataDeals,
     {
       hiddenColumns: HIDDEN_COLS,
@@ -41,6 +47,14 @@ const AllDealsPage = () => {
     tableContainerRef,
   })
 
+  if (!isValidDepartment) {
+    return (
+      <section className="px-4 py-2 grid gap-2 content-start relative flex-1">
+        <ErrorMessageTable message="Некорректный идентификатор отдела" />
+      </section>
+    )
+  }
+
   if (isPending) return <Loading />
 
   return (
@@ -50,7 +64,7 @@ const AllDealsPage = () => {
 
         <TitlePageBlock
           infoText="Здесь вы можете удалять или переназначать клиентов между менеджерами."
-          subTitle={`Количество сделок: ${data?.totalDealsCount}`}
+          subTitle={`Количество сделок: ${data?.totalDealsCount ?? 0}`}
           title="Список всех заявок"
         />
 

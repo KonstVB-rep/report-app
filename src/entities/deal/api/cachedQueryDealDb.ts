@@ -1,3 +1,4 @@
+// /entities/del/api
 "use cache"
 
 import { StatusContract } from "@prisma/client"

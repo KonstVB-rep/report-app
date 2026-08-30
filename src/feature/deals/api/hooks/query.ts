@@ -1,4 +1,3 @@
-import type { DealType } from "@prisma/client"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import {
   getAdditionalContacts,
@@ -15,10 +14,9 @@ import {
 import {
   type DateRange,
   DEAL_TYPE,
-  type DealProject,
-  type DealRetail,
   type DealsList,
   type DealsUnionType,
+  type DealType,
   type DealUnion,
   type TableType,
 } from "@/entities/deal/types"
@@ -40,59 +38,6 @@ export const queryKeys = {
   additionalContacts: (dealId: string) => ["additionalContacts", dealId] as const,
   allDealsDepartment: (departmentId: number) => ["all-deals-department", departmentId] as const,
   colorsHiLightList: (userId: string) => ["hilightlist", userId] as const,
-}
-
-export const useGetProjectById = <T extends DealProject>(
-  dealId: string,
-  useCache: boolean = true,
-) => {
-  const { queryClient, authUser } = useFormSubmission()
-
-  const cachedDeals = authUser?.id
-    ? queryClient.getQueryData<DealProject[]>(["projects", authUser?.id])
-    : undefined
-  const cachedDeal = cachedDeals?.find((p) => p.id === dealId) as T | undefined
-
-  const isEnabled = !!dealId && !!authUser?.id && (!useCache || !cachedDeal)
-
-  return useQuery<T, Error>({
-    queryKey: queryKeys.projectById(dealId),
-    queryFn: async () => ((await getProjectById(dealId)) as T) ?? null,
-    enabled: isEnabled,
-    initialData: () => cachedDeal,
-    staleTime: useCache ? 60 * 1000 : 0,
-    placeholderData: keepPreviousData,
-    retry: 2,
-    meta: {
-      errorMessage: ERROR_TEXT,
-    },
-  })
-}
-
-export const useGetRetailById = <T extends DealRetail>(
-  dealId: string,
-  useCache: boolean = true,
-) => {
-  const { queryClient, authUser } = useFormSubmission()
-
-  const cachedDeals = authUser?.id
-    ? queryClient.getQueryData<DealRetail[]>(["retails", authUser.id])
-    : undefined
-  const cachedDeal = cachedDeals?.find((p) => p.id === dealId) as T | undefined
-
-  const isEnabled = !!authUser?.id && (!useCache || !cachedDeal)
-
-  return useQuery<T, Error>({
-    queryKey: queryKeys.retailById(dealId),
-    queryFn: async () => ((await getRetailById(dealId)) as T) ?? null,
-    enabled: isEnabled,
-    placeholderData: keepPreviousData,
-    staleTime: useCache ? 60 * 1000 : 0,
-    retry: 2,
-    meta: {
-      errorMessage: ERROR_TEXT,
-    },
-  })
 }
 
 type FetchFunctionMap = {

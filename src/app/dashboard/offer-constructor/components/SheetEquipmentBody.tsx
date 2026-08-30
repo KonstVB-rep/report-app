@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { PermissionEnum } from "@prisma/client"
 import { rankItem } from "@tanstack/match-sorter-utils"
 import {
   type ColumnFiltersState,
@@ -15,6 +14,7 @@ import { SheetFooter } from "@/shared/components/ui/sheet"
 import DebouncedInput from "@/shared/custom-components/ui/DebouncedInput"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { useDeleteEquipments, useUpdateEquipments } from "../hooks/mutate"
 import { useGetEquipments } from "../hooks/query"
 import SkeletonSheetEquipment from "../lib/SkeletonSheetEquipment"
@@ -152,7 +152,7 @@ const SheetEquipmentFooter = ({
 
   return (
     <SheetFooter className="p-1 z-50 flex gap-2">
-      <ProtectedByPermissions permission={PermissionEnum.EQUIPMENT_DELETE}>
+      <ProtectedByPermissions permission={PERMISSIONS.EQUIPMENT_DELETE}>
         {rowSelection.length > 0 && (
           <Button
             disabled={!ids.length}
@@ -181,7 +181,7 @@ const SheetEquipmentFooter = ({
       >
         Добавить в таблицу
       </Button>
-      <ProtectedByPermissions permission={PermissionEnum.EQUIPMENT_MANAGEMENT}>
+      <ProtectedByPermissions permission={PERMISSIONS.EQUIPMENT_MANAGEMENT}>
         <Button
           disabled={!Object.keys(localItems).length || isPendingUpdate}
           onClick={() => {

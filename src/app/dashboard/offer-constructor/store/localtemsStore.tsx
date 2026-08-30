@@ -59,10 +59,6 @@ export const selectSetSelectedKitId = (id: string | null) => {
   return useEquipmentStore.getState().setSelectedKitId(id)
 }
 
-export const selectLocalItem = (id: string) => {
-  return useEquipmentStore.getState().localItems[id]
-}
-
 export const selectLocalItems = (s: EquipmentStore) => s.localItems
 
 export const selectedKits = (s: EquipmentStore) => s.localKits

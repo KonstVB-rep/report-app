@@ -1,16 +1,17 @@
 "use server"
 
-import type { PermissionEnum, Role } from "@prisma/client"
 import { errors, jwtVerify, SignJWT } from "jose"
 import { cookies } from "next/headers"
+import type { RoleValue } from "@/entities/user/model/objectTypes"
+import type { PERMISSIONS_UNION } from "@/shared/lib/constants"
 
 export type PayloadType = {
   userId: string
   departmentId: number
-  role: Role
+  role: RoleValue
   username: string
   position: string
-  permissions: PermissionEnum[]
+  permissions: PERMISSIONS_UNION[]
   isBlocked: boolean
 }
 
@@ -78,21 +79,4 @@ export const verifyToken = async (
     )
     return null
   }
-}
-export const performRefresh = async (token: string): Promise<PayloadType | null> => {
-  try {
-    const { payload } = await jwtVerify(token, REFRESH_SECRET)
-    const userData = payload as unknown as PayloadType
-    await generateTokensAndSetCookies(userData)
-    return userData
-  } catch {
-    return null
-  }
-}
-
-export const clearAuthCookies = async () => {
-  const cookieStore = await cookies()
-  const options = { path: "/", maxAge: 0 }
-  cookieStore.set("accessToken", "", options)
-  cookieStore.set("refreshToken", "", options)
 }

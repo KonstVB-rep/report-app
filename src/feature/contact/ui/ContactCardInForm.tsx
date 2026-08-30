@@ -1,4 +1,4 @@
-import React from "react"
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Pen, Trash } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -13,15 +13,15 @@ interface ContactCardProps {
   updateContacts: (data: SingleContactSchema) => void
 }
 
-const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, updateContacts }) => {
-  const fieldsList: { label: string; value?: string | null }[] = [
-    { label: "Имя", value: contact.name },
-    { label: "Должность", value: contact.position },
-    { label: "Телефон", value: contact.phone },
-    { label: "Email", value: contact.email },
-  ]
+const FIELDS_CONFIG = [
+  { key: "name", label: "Имя" },
+  { key: "position", label: "Должность" },
+  { key: "phone", label: "Телефон" },
+  { key: "email", label: "Email" },
+] as const
 
-  const [editContact, setEditContact] = React.useState(false)
+const ContactCardInForm = ({ contact, onDelete, updateContacts }: ContactCardProps) => {
+  const [editContact, setEditContact] = useState(false)
 
   const form = useForm<SingleContactSchema>({
     resolver: zodResolver(SingleContactFormSchema),
@@ -34,13 +34,12 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
     },
   })
 
-  const handleEdit = () => {
-    setEditContact((prev) => !prev)
-  }
+  const handleEdit = () => setEditContact((prev) => !prev)
+  const handleCancel = () => setEditContact(false)
 
   const onSubmit = (data: SingleContactSchema) => {
     updateContacts(data)
-    handleEdit()
+    handleCancel()
   }
 
   return (
@@ -55,9 +54,10 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
             <div className="flex justify-end gap-2">
               <Button
                 className="active:scale-95 transition-transform duration-150"
-                onClick={() => handleEdit()}
-                size={"icon"}
+                onClick={handleCancel}
+                size="icon"
                 title="Отменить редактирование"
+                type="button"
                 variant="default"
               >
                 <Pen />
@@ -69,25 +69,29 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
             </div>
           </form>
         ) : (
-          fieldsList
-            .filter(({ value }) => value)
-            .map(({ label, value }) => (
+          FIELDS_CONFIG.map(({ key, label }) => {
+            const value = contact[key]
+            if (!value) return null
+
+            return (
               <p
                 className="flex items-center gap-1 rounded bg-black/20 p-2 dark:bg-black/50"
-                key={label}
+                key={key}
               >
                 <span className="font-bold">{label}:</span>
                 <span className="capitalize">{value}</span>
               </p>
-            ))
+            )
+          })
         )}
+
         <div className="flex items-center justify-end gap-2">
           {!editContact && (
             <>
               <Button
                 className="active:scale-95 transition-transform duration-150 text-white"
                 onClick={() => onDelete(contact.id)}
-                size={"icon"}
+                size="icon"
                 title="Удалить контакт"
                 variant="destructive"
               >
@@ -96,8 +100,8 @@ const ContactCardInForm: React.FC<ContactCardProps> = ({ contact, onDelete, upda
 
               <Button
                 className="active:scale-95 transition-transform duration-150"
-                onClick={() => handleEdit()}
-                size={"icon"}
+                onClick={handleEdit}
+                size="icon"
                 title="Редактировать контакт"
                 variant="outline"
               >

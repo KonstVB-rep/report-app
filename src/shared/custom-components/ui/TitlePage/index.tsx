@@ -3,7 +3,7 @@ import { Button } from "@/shared/components/ui/button"
 import SubTitlePage from "../SubTitlePage"
 import TooltipComponent from "../TooltipComponent"
 
-export const TitlePage = ({ title }: { title: string }) => {
+const TitlePage = ({ title }: { title: string }) => {
   return <h1 className="text-lg font-bold text-center uppercase">{title}</h1>
 }
 
@@ -21,7 +21,12 @@ export const TitlePageBlock = ({
       <TitlePage title={title} />
       {subTitle && <SubTitlePage text={subTitle} />}
       <TooltipComponent content={infoText}>
-        <Button className="absolute rounded-md top-0 left-0" size="icon" variant="ghost">
+        <Button
+          className="absolute rounded-md top-0 left-0"
+          size="icon"
+          type="button"
+          variant="ghost"
+        >
           <Info size="20" />
         </Button>
       </TooltipComponent>

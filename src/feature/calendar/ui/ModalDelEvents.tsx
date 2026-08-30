@@ -23,6 +23,7 @@ const ModalDelEvents = ({ events }: ModalDelEventsProps) => {
   }
 
   if (!editingId) return null
+
   return (
     <DialogComponent
       classNameContent="sm:max-w-[400px] z-51"

@@ -19,7 +19,7 @@ type Props = {
 
 const WrapperBotForm = ({ title, description, state, isPending, actionSubmit }: Props) => {
   return (
-    <Card className="w-fit max-w-sm m-auto border-none p-0!">
+    <Card className="w-full m-auto border-none p-0!">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

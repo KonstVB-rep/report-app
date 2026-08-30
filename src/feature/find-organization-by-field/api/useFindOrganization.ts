@@ -5,7 +5,7 @@ import handleErrorSession from "@/shared/auth/handleErrorSession"
 import { getOrganizationByQueryAction } from "../actions/getOrganizationByQueryAction"
 import type { SearchType } from "../model/schema"
 
-export type AdditionalContactItem = {
+type AdditionalContactItem = {
   id: string
   name: string
   phone: string | null

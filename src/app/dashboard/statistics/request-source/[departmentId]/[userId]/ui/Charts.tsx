@@ -197,8 +197,6 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
           )}
         </div>
       )}
-
-      {/* <CustomizedLabelLineChart data={data} /> */}
     </div>
   )
 }

@@ -1,9 +1,12 @@
+import { Suspense } from "react"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { notFound } from "next/navigation"
 import { getQueryClient } from "@/app/provider/query-provider"
 import { getContractsUser, getProjectsUser, getRetailsUser } from "@/entities/deal/api/deal.actions"
-import type { ProjectResponse, RetailResponse } from "@/entities/deal/types" // Импортируем типы
+import type { ProjectResponse, RetailResponse } from "@/entities/deal/types"
 import PersonDealsTable from "@/widgets/deal/ui/PersonDealsTable"
+
+export const instant = false
 
 type DealResponse = ProjectResponse[] | RetailResponse[] | null
 
@@ -56,9 +59,20 @@ export default async function PersonTablePage({ params }: PageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <main className="h-full w-full p-4">
-        <PersonDealsTable />
-      </main>
+      <Suspense
+        fallback={
+          <main className="h-full w-full p-4">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-muted rounded w-1/3" />
+              <div className="h-64 bg-muted rounded" />
+            </div>
+          </main>
+        }
+      >
+        <main className="h-full w-full p-4">
+          <PersonDealsTable />
+        </main>
+      </Suspense>
     </HydrationBoundary>
   )
 }

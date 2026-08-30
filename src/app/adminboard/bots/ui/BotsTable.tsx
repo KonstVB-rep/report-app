@@ -13,6 +13,8 @@ import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
 import BotActionsMenu from "./BotActionsMenu"
 
+const ACTIONS_COLUMN_ID = "actions"
+
 const columnsDataBots: ColumnDef<BotWithChats>[] = [
   { ...RowNumber<BotWithChats>() },
   {
@@ -28,7 +30,7 @@ const columnsDataBots: ColumnDef<BotWithChats>[] = [
     ),
   },
   {
-    id: "actions",
+    id: ACTIONS_COLUMN_ID,
     header: "",
     cell: ({ row }) => <BotActionsMenu bot={row.original} />,
     size: 50,
@@ -40,7 +42,6 @@ const columnsDataBots: ColumnDef<BotWithChats>[] = [
     enableHiding: false,
   },
 ]
-
 const ROW_STYLE = {
   width: "100%",
   display: "flex",
@@ -51,22 +52,24 @@ const DEFAULT_COLUMN_OPTIONS = {
   minSize: 100,
 }
 
-const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
+const BotsTable = ({ bots = [] }: { bots: BotWithChats[] }) => {
   const [openFullInfoCell, setOpenFullInfoCell] = useState<string | null>(null)
 
-  const data = useMemo(() => bots || [], [bots])
-
-  const { table } = useTableState(data, columnsDataBots, {
+  const { table } = useTableState(bots, columnsDataBots, {
     defaultColumn: DEFAULT_COLUMN_OPTIONS,
     storageKey: "bots",
   })
 
   const { rows } = table.getRowModel()
 
+  const notGrowSet = useMemo(() => new Set(NOT_GROW_COLS), [])
+
   const handleOpenInfo = useCallback(
     (id: string) => setOpenFullInfoCell((prev) => (prev === id ? null : id)),
     [],
   )
+
+  const handleCloseInfo = useCallback(() => setOpenFullInfoCell(null), [])
 
   return (
     <TableTemplate className="rounded-md" table={table}>
@@ -75,10 +78,10 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
           {row.getVisibleCells().map((cell) => {
             const columnId = cell.column.id
 
-            const isNotGrow = NOT_GROW_COLS.includes(columnId)
-            const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
-
             if (cell.column.columnDef?.meta?.hidden) return null
+
+            const isNotGrow = notGrowSet.has(columnId)
+            const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
 
             return (
               <TableCellComponent<BotWithChats>
@@ -94,9 +97,9 @@ const BotsTable = ({ bots }: { bots: BotWithChats[] }) => {
                   boxSizing: "border-box",
                 }}
               >
-                {openFullInfoCell === cell.id && cell.column.id !== "actions" ? (
+                {openFullInfoCell === cell.id && columnId !== ACTIONS_COLUMN_ID ? (
                   <RowInfoDialog
-                    closeFn={() => setOpenFullInfoCell(null)}
+                    closeFn={handleCloseInfo}
                     isActive
                     isTargetCell={true}
                     text={flexRender(cell.column.columnDef.cell, cell.getContext())}

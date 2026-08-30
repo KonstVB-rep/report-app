@@ -1,7 +1,6 @@
 "use client"
 
 import { Suspense } from "react"
-import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
@@ -16,6 +15,7 @@ import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDiv
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import useViewType from "@/shared/hooks/useViewType"
+import { PERMISSIONS } from "@/shared/lib/constants"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
@@ -30,7 +30,7 @@ const TasksPageMain = (params: { departmentId: string }) => {
 
   const authUser = useRequireAuth()
 
-  const hasAccess = hasAccessToDataSummary(authUser?.id as string, PermissionEnum.TASK_MANAGEMENT)
+  const hasAccess = hasAccessToDataSummary(authUser?.id as string, PERMISSIONS.TASK_MANAGEMENT)
 
   const { data, isPending } = useGetTasksDepartment()
 

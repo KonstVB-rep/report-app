@@ -36,48 +36,92 @@ import {
   type DealsListWithResource,
   type ManagerShortInfo,
   type ProjectResponse,
-  type ProjectWithManagersIds,
   type ProjectWithoutDateCreateAndUpdate,
-  type ProjectWithoutId,
   type ReAssignDeal,
   type RetailResponse,
-  type RetailWithManagersIds,
   type RetailWithoutDateCreateAndUpdate,
-  type RetailWithoutId,
 } from "../types"
-import type { DealHighlightdeletedType, DealHighlightType } from "./../types/index"
+import type {
+  DealHighlightdeletedType,
+  DealHighlightType,
+  MutationResponse,
+  ProjectReq,
+  RetailReq,
+} from "./../types/index"
 
-const requiredFields = ["direction", "comments", "contact", "dealStatus"]
+const requiredFields = ["direction", "comments", "contact", "dealStatus"] as const
 
-export interface MutationResponse<U> {
-  success: boolean
-  data?: U
-  error?: string
-  code?: number
+// ==========================================
+// ОБЩИЕ ТИПЫ
+// ==========================================
+
+type PrismaManagerWithUser = {
+  user: { id: string; username: string; position: string }
 }
 
-const checkAuthAndDataFill = async (projectData: ProjectWithoutId) => {
+// ==========================================
+// ОБЩИЕ ФУНКЦИИ
+// ==========================================
+
+const checkAuthAndDataFill = async (projectData: ProjectReq | RetailReq) => {
   const data = await requireUser()
-
   validateRequiredFields(projectData, requiredFields)
-
   return data
 }
+
+const getTargetDepartmentId = async (
+  userDepartmentId: number,
+  dealUserId: string | null,
+): Promise<number> => {
+  if (!dealUserId) return userDepartmentId
+
+  const dealOwnerData = await prisma.user.findUnique({
+    where: { id: dealUserId },
+    select: { departmentId: true },
+  })
+
+  return dealOwnerData?.departmentId ?? userDepartmentId
+}
+
+const toDecimalString = (value: Prisma.Decimal | null | undefined): string =>
+  value?.toString() ?? ""
+
+const formatManagers = (managers: PrismaManagerWithUser[]): ManagerShortInfo[] =>
+  managers.map((pm) => ({
+    id: pm.user.id,
+    username: pm.user.username,
+    position: pm.user.position,
+  }))
+
+const updateManagerTags = (managers: { userId: string }[], type: "project" | "retail") => {
+  const tagFn =
+    type === "project" ? tagKeysDealActions.projectsUser : tagKeysDealActions.retailsUser
+
+  for (const manager of managers) {
+    updateTag(tagFn(manager.userId))
+  }
+}
+
+const updateDepartmentTags = (departmentId: number, type: "project" | "retail" | "all") => {
+  if (type === "project" || type === "all") {
+    updateTag(tagKeysDealActions.allProjectsDep(departmentId))
+  }
+  if (type === "retail" || type === "all") {
+    updateTag(tagKeysDealActions.allRetailsDep(departmentId))
+  }
+  updateTag(tagKeysDealActions.allDealsDep(departmentId))
+}
+
 /********************************************** Получить ****************************************************************/
 export const getProjectById = async (
   dealId: string,
 ): Promise<(DealProject & { managers: ManagerShortInfo[] }) | null> => {
   try {
     const user = await requireUser()
-
     const { userId } = user
 
-    if (!user) {
-      return handleError("Пользователь не найден или у вас нет прав на операцию")
-    }
-
     if (!dealId) {
-      handleError("Недостаточно данных")
+      return handleError("Недостаточно данных")
     }
 
     const deal = await prisma.project.findUnique({
@@ -95,15 +139,9 @@ export const getProjectById = async (
     }
 
     const { projectManagers, ...rest } = deal
-
-    const managers = projectManagers.map((pm) => ({
-      id: pm.user.id,
-      username: pm.user.username,
-      position: pm.user.position,
-    }))
+    const managers = formatManagers(projectManagers)
 
     const isExistUserInManagersList = managers.some((man) => man.id === userId)
-
     const isOwner = userId === deal.userId
 
     if (!isOwner && !isExistUserInManagersList) {
@@ -111,16 +149,16 @@ export const getProjectById = async (
     }
 
     const dealFiles = await prisma.dealFile.findMany({
-      where: { dealId: dealId }, // Фильтруем по dealId
+      where: { dealId: dealId },
     })
 
     const formattedProject = {
       ...rest,
       type: DEAL_TYPE.PROJECT,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "", // Преобразуем Decimal в строку
-      amountWork: deal.amountWork ? deal.amountWork.toString() : "",
-      amountPurchase: deal.amountPurchase ? deal.amountPurchase.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "",
+      amountCP: toDecimalString(deal.amountCP),
+      amountWork: toDecimalString(deal.amountWork),
+      amountPurchase: toDecimalString(deal.amountPurchase),
+      delta: toDecimalString(deal.delta),
       dealFiles,
       managers,
     }
@@ -157,34 +195,24 @@ export const getRetailById = async (
     }
 
     const { retailManagers, ...rest } = deal
-
-    const managers = retailManagers.map((rm) => ({
-      id: rm.user.id,
-      username: rm.user.username,
-      position: rm.user.position,
-    }))
+    const managers = formatManagers(retailManagers)
 
     const isExistUserInManagersList = managers.some((man) => man.id === user.userId)
-
     const isOwner = user.userId === deal.userId
-
-    if (!user) {
-      return handleError("Пользователь не найден или у вас нет прав на операцию")
-    }
 
     if (!isOwner && !isExistUserInManagersList) {
       await checkUserPermissionByRole(user, [PermissionEnum.VIEW_USER_REPORT])
     }
 
     const dealFiles = await prisma.dealFile.findMany({
-      where: { dealId: dealId }, // Фильтруем по dealId
+      where: { dealId: dealId },
     })
 
     const formattedRetail = {
       ...rest,
       type: DEAL_TYPE.RETAIL,
-      amountCP: deal.amountCP ? deal.amountCP.toString() : "",
-      delta: deal.delta ? deal.delta.toString() : "",
+      amountCP: toDecimalString(deal.amountCP),
+      delta: toDecimalString(deal.delta),
       dealFiles,
       managers,
     }
@@ -352,6 +380,34 @@ export const getAllDealsByDepartment = async (departmentId: number): Promise<Dea
   }
 }
 
+const dateRangeCalculators: Record<DateRange, (now: Date) => Date> = {
+  week: (now) => {
+    const date = new Date(now)
+    date.setDate(date.getDate() - 7)
+    return date
+  },
+  month: (now) => {
+    const date = new Date(now)
+    date.setMonth(date.getMonth() - 1)
+    return date
+  },
+  threeMonths: (now) => {
+    const date = new Date(now)
+    date.setMonth(date.getMonth() - 3)
+    return date
+  },
+  halfYear: (now) => {
+    const date = new Date(now)
+    date.setMonth(date.getMonth() - 6)
+    return date
+  },
+  year: (now) => {
+    const date = new Date(now)
+    date.setFullYear(date.getFullYear() - 1)
+    return date
+  },
+}
+
 export const getDealsByDateRange = async (
   idDealOwner: string,
   range: DateRange,
@@ -360,7 +416,7 @@ export const getDealsByDateRange = async (
   const user = await requireUser()
 
   if (!idDealOwner) {
-    handleError("Недостаточно данных")
+    return handleError("Недостаточно данных")
   }
 
   const isOwner = user.userId === idDealOwner
@@ -372,38 +428,7 @@ export const getDealsByDateRange = async (
   const now = new Date()
   now.setHours(23, 59, 59, 999)
 
-  let startDate: Date
-
-  switch (range) {
-    case "week":
-      startDate = new Date()
-      startDate.setDate(now.getDate() - 7)
-      break
-
-    case "month":
-      startDate = new Date()
-      startDate.setMonth(now.getMonth() - 1)
-      break
-
-    case "threeMonths":
-      startDate = new Date()
-      startDate.setMonth(now.getMonth() - 3)
-      break
-
-    case "halfYear":
-      startDate = new Date()
-      startDate.setMonth(now.getMonth() - 6)
-      break
-
-    case "year":
-      startDate = new Date()
-      startDate.setFullYear(now.getFullYear() - 1)
-      break
-
-    default:
-      throw new Error("Некорректный диапазон дат")
-  }
-
+  const startDate = dateRangeCalculators[range](now)
   startDate.setHours(0, 0, 0, 0)
 
   const [dealsP, dealsR] = await Promise.all([
@@ -433,58 +458,42 @@ export const getDealsByDateRange = async (
     }),
   ])
 
-  const paidDealsP = dealsP.filter((item) => item.dealStatus === "PAID")
-  const closedDealsP = dealsP.filter((item) => item.dealStatus === "CLOSED")
-  const rejectDealsP = dealsP.filter((item) => item.dealStatus === "REJECT")
-  const paidDealsR = dealsR.filter((item) => item.dealStatus === "PAID")
-  const closedDealsR = dealsR.filter((item) => item.dealStatus === "CLOSED")
-  const rejectDealsR = dealsR.filter((item) => item.dealStatus === "REJECT")
-  const dealPwithMoney = dealsP.filter(
-    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID",
-  )
-  const dealRwithMoney = dealsR.filter(
-    (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID",
-  )
+  const calculateStats = (deals: typeof dealsP | typeof dealsR) => {
+    const paid = deals.filter((item) => item.dealStatus === "PAID")
+    const closed = deals.filter((item) => item.dealStatus === "CLOSED")
+    const reject = deals.filter((item) => item.dealStatus === "REJECT")
+    const withMoney = deals.filter(
+      (item) => item.dealStatus === "CLOSED" || item.dealStatus === "PAID",
+    )
 
-  const commercialOfferAmountsP = dealPwithMoney.reduce(
-    (acc, item) => {
-      acc.sumCp += Number(item.amountCP)
-      acc.sumDelta += Number(item.delta)
-      return acc
-    },
-    { sumCp: 0, sumDelta: 0 },
-  )
-  const commercialOfferAmountsR = dealRwithMoney.reduce(
-    (acc, item) => {
-      acc.sumCp += Number(item.amountCP)
-      acc.sumDelta += Number(item.delta)
-      return acc
-    },
-    { sumCp: 0, sumDelta: 0 },
-  )
+    const money = withMoney.reduce(
+      (acc, item) => {
+        acc.sumCp += Number(item.amountCP)
+        acc.sumDelta += Number(item.delta)
+        return acc
+      },
+      { sumCp: 0, sumDelta: 0 },
+    )
+
+    return {
+      length: deals.length,
+      reject: reject.length,
+      paid: paid.length,
+      closed: closed.length,
+      money,
+    }
+  }
 
   return {
-    projects: {
-      length: dealsP.length,
-      reject: rejectDealsP.length,
-      paid: paidDealsP.length,
-      closed: closedDealsP.length,
-      money: commercialOfferAmountsP,
-    },
-    retails: {
-      length: dealsR.length,
-      reject: rejectDealsR.length,
-      paid: paidDealsR.length,
-      closed: closedDealsR.length,
-      money: commercialOfferAmountsR,
-    },
+    projects: calculateStats(dealsP),
+    retails: calculateStats(dealsR),
   }
 }
 
 /******************************************Создать *********************************************************/
 
 export const createProject = async (
-  data: ProjectWithoutId & { managersIds: { userId: string }[] },
+  data: ProjectReq & { managersIds: { userId: string }[] },
 ): Promise<ProjectResponse> => {
   try {
     if (!data) return handleError("Ошибка: данные не переданы")
@@ -494,16 +503,7 @@ export const createProject = async (
 
     const user = await requireUser()
 
-    const {
-      amountCP,
-      amountPurchase,
-      amountWork,
-      delta,
-      contacts,
-      managersIds,
-      highlights,
-      ...dealData
-    } = data
+    const { amountCP, amountPurchase, amountWork, delta, contacts, managersIds, ...dealData } = data
 
     const idDeal = (dealData.id as string) || cuid()
     const safeAmountCP = new Prisma.Decimal(amountCP as string)
@@ -513,61 +513,62 @@ export const createProject = async (
 
     const newDeal = await prisma.project.create({
       data: {
-        ...(dealData as ProjectResponse),
         id: idDeal,
+        direction: dealData.direction,
+        deliveryType: dealData.deliveryType,
+        dealStatus: dealData.dealStatus,
+        dateRequest: dealData.dateRequest,
+        nameDeal: data.nameDeal ?? "",
+        nameObject: data.nameObject ?? "",
+        inn: data.inn ?? "",
+        contact: data?.contact ?? "",
+        comments: data.comments ?? "",
+        commentsLastConnection: data.commentsLastConnection ?? "",
+        resource: data.resource ?? "",
+
         userId: data.userId as string,
+
         amountCP: safeAmountCP,
         delta: safeDelta,
         amountWork: safeAmountWork,
         amountPurchase: safeAmountPurchase,
+
         highlights: undefined,
+
         additionalContacts: {
-          create: (contacts as Contact[]).map((contact) => ({
-            name: contact.name ?? "",
-            phone: contact.phone ?? null,
-            email: contact.email ?? null,
-            position: contact.position ?? null,
+          create: (Array.isArray(contacts) ? contacts : []).map((c) => ({
+            name: c.name ?? "",
+            phone: c.phone ?? null,
+            email: c.email ?? null,
+            position: c.position ?? null,
           })),
         },
+
         projectManagers: {
-          create: managersIds.map((manager) => ({
-            user: { connect: { id: manager.userId } },
+          create: managersIds.map((m) => ({
+            user: { connect: { id: m.userId } },
           })),
         },
       },
     })
 
-    managersIds.forEach((manager) => {
-      updateTag(tagKeysDealActions.projectsUser(manager.userId))
-    })
+    updateManagerTags(managersIds, "project")
 
     if (data.userId) {
       updateTag(tagKeysDealActions.projectsUser(data.userId as string))
     }
 
-    let targetDepartmentId = user.departmentId
+    const targetDepartmentId = await getTargetDepartmentId(user.departmentId, data.userId || null)
 
-    if (data.userId) {
-      const dealOwnerData = await prisma.user.findUnique({
-        where: { id: data.userId as string },
-        select: { departmentId: true },
-      })
-      if (dealOwnerData) {
-        targetDepartmentId = dealOwnerData.departmentId // Переключаем на отдел владельца
-      }
-    }
-
-    updateTag(tagKeysDealActions.allProjectsDep(targetDepartmentId))
-    updateTag(tagKeysDealActions.allDealsDep(targetDepartmentId))
-
+    updateDepartmentTags(targetDepartmentId, "all")
     updateTag(tagKeysDealActions.additionalContacts(idDeal))
 
     return {
       ...newDeal,
-      amountCP: newDeal.amountCP?.toString() ?? "0",
-      amountWork: newDeal.amountWork?.toString() ?? "0",
-      amountPurchase: newDeal.amountPurchase?.toString() ?? "0",
-      delta: newDeal.delta?.toString() ?? "0",
+      amountCP: toDecimalString(newDeal.amountCP) || "0",
+      amountWork: toDecimalString(newDeal.amountWork) || "0",
+      amountPurchase: toDecimalString(newDeal.amountPurchase) || "0",
+      delta: toDecimalString(newDeal.delta) || "0",
     } as unknown as ProjectResponse
   } catch (error) {
     console.error(error)
@@ -575,9 +576,7 @@ export const createProject = async (
   }
 }
 
-export const createRetail = async (
-  data: RetailWithoutId & { managersIds: { userId: string }[] },
-) => {
+export const createRetail = async (data: RetailReq & { managersIds: { userId: string }[] }) => {
   try {
     if (!data) return handleError("Ошибка: данные не переданы")
 
@@ -586,15 +585,26 @@ export const createRetail = async (
     }
     const user = await requireUser()
 
-    const { amountCP, delta, contacts, managersIds, highlight, ...dealData } = data
+    const { amountCP, delta, contacts, managersIds, ...dealData } = data
 
-    const idDeal = (dealData.id as string) || cuid()
+    const idDeal = (dealData?.id as string) || cuid()
 
     const newDeal = await prisma.retail.create({
       data: {
-        ...(dealData as RetailResponse),
+        ...dealData,
         id: idDeal,
         userId: data.userId as string,
+        direction: dealData.direction,
+        deliveryType: dealData.deliveryType,
+        dealStatus: dealData.dealStatus,
+        dateRequest: dealData.dateRequest,
+        nameDeal: data.nameDeal ?? "",
+        nameObject: data.nameObject ?? "",
+        inn: data.inn ?? "",
+        contact: data?.contact ?? "",
+        comments: data.comments ?? "",
+        commentsLastConnection: data.commentsLastConnection ?? "",
+        resource: data.resource ?? "",
         amountCP: new Prisma.Decimal((amountCP as string) || "0"),
         delta: new Prisma.Decimal((delta as string) || "0"),
         highlights: undefined,
@@ -614,35 +624,21 @@ export const createRetail = async (
       },
     })
 
-    managersIds.forEach((manager) => {
-      updateTag(tagKeysDealActions.retailsUser(manager.userId))
-    })
+    updateManagerTags(managersIds, "retail")
 
     if (data.userId) {
       updateTag(tagKeysDealActions.retailsUser(data.userId as string))
     }
 
-    let targetDepartmentId = user.departmentId
+    const targetDepartmentId = await getTargetDepartmentId(user.departmentId, data.userId || null)
 
-    if (data.userId) {
-      const dealOwnerData = await prisma.user.findUnique({
-        where: { id: data.userId as string },
-        select: { departmentId: true },
-      })
-      if (dealOwnerData) {
-        targetDepartmentId = dealOwnerData.departmentId // Переключаем на отдел владельца
-      }
-    }
-
-    updateTag(tagKeysDealActions.allRetailsDep(targetDepartmentId))
-    updateTag(tagKeysDealActions.allDealsDep(targetDepartmentId))
-
+    updateDepartmentTags(targetDepartmentId, "all")
     updateTag(tagKeysDealActions.additionalContacts(idDeal))
 
     return {
       ...newDeal,
-      amountCP: newDeal.amountCP?.toString() ?? "0",
-      delta: newDeal.delta?.toString() ?? "0",
+      amountCP: toDecimalString(newDeal.amountCP) || "0",
+      delta: toDecimalString(newDeal.delta) || "0",
     } as unknown as RetailResponse
   } catch (error) {
     console.error(error)
@@ -653,7 +649,7 @@ export const createRetail = async (
 /********************************************************* Обновить проект ********************************************/
 
 export const updateProject = async (
-  data: ProjectWithManagersIds,
+  data: ProjectReq,
 ): Promise<MutationResponse<ProjectWithoutDateCreateAndUpdate | null>> => {
   try {
     const user = await requireUser()
@@ -698,6 +694,7 @@ export const updateProject = async (
         where: { id },
         data: {
           ...dealData,
+          nameDeal: data.nameDeal ?? "",
           amountCP: toDec(amountCP),
           amountPurchase: toDec(amountPurchase),
           amountWork: toDec(amountWork),
@@ -729,23 +726,13 @@ export const updateProject = async (
       new Set([user.userId, ...oldManagersIds, ...newManagersIds]),
     )
 
-    let targetDepartmentId = user.departmentId
-    if (deal.userId) {
-      const dealOwnerData = await prisma.user.findUnique({
-        where: { id: deal.userId },
-        select: { departmentId: true },
-      })
-      if (dealOwnerData) {
-        targetDepartmentId = dealOwnerData.departmentId
-      }
-    }
+    const targetDepartmentId = await getTargetDepartmentId(user.departmentId, deal.userId)
 
     for (const userIdOfManager of allAffectedUsers) {
       updateTag(tagKeysDealActions.projectsUser(userIdOfManager))
     }
     updateTag(tagKeysDealActions.allProjectsDep(targetDepartmentId))
     updateTag(tagKeysDealActions.allDealsDep(targetDepartmentId))
-
     updateTag(tagKeysDealActions.additionalContacts(id))
 
     if (
@@ -761,14 +748,13 @@ export const updateProject = async (
       success: true,
       data: {
         ...rest,
-        amountCP: finalDeal.amountCP?.toString() ?? "0",
-        amountWork: finalDeal.amountWork?.toString() ?? "0",
-        amountPurchase: finalDeal.amountPurchase?.toString() ?? "0",
-        delta: finalDeal.delta?.toString() ?? "0",
-        managers: projectManagers.map((pm) => ({
-          id: pm.user.id,
-          managerName: pm.user.username,
-          position: pm.user.position,
+        amountCP: toDecimalString(finalDeal.amountCP) || "0",
+        amountWork: toDecimalString(finalDeal.amountWork) || "0",
+        amountPurchase: toDecimalString(finalDeal.amountPurchase) || "0",
+        delta: toDecimalString(finalDeal.delta) || "0",
+        managers: formatManagers(projectManagers).map((m) => ({
+          ...m,
+          managerName: m.username,
         })),
       } as unknown as ProjectWithoutDateCreateAndUpdate,
     }
@@ -780,7 +766,7 @@ export const updateProject = async (
 }
 
 export const updateRetail = async (
-  data: RetailWithManagersIds,
+  data: RetailReq,
 ): Promise<MutationResponse<RetailWithoutDateCreateAndUpdate | null>> => {
   try {
     const user = await requireUser()
@@ -826,6 +812,7 @@ export const updateRetail = async (
         where: { id: retailId },
         data: {
           ...dealData,
+          nameDeal: dealData.nameDeal || "",
           amountCP: toDec(amountCP),
           delta: toDec(delta),
           additionalContacts: {
@@ -857,16 +844,7 @@ export const updateRetail = async (
       new Set([user.userId, ...oldManagersIds, ...newManagersIds]),
     )
 
-    let targetDepartmentId = user.departmentId
-    if (deal.userId) {
-      const dealOwnerData = await prisma.user.findUnique({
-        where: { id: deal.userId },
-        select: { departmentId: true },
-      })
-      if (dealOwnerData) {
-        targetDepartmentId = dealOwnerData.departmentId
-      }
-    }
+    const targetDepartmentId = await getTargetDepartmentId(user.departmentId, deal.userId)
 
     for (const userIdOfManager of allAffectedUsers) {
       updateTag(tagKeysDealActions.retailsUser(userIdOfManager))
@@ -874,13 +852,11 @@ export const updateRetail = async (
 
     updateTag(tagKeysDealActions.allRetailsDep(targetDepartmentId))
     updateTag(tagKeysDealActions.allDealsDep(targetDepartmentId))
-
     updateTag(tagKeysDealActions.additionalContacts(retailId))
 
-    const managers = finalDeal.retailManagers.map((rm) => ({
-      id: rm.user.id,
-      managerName: rm.user.username,
-      position: rm.user.position,
+    const managers = formatManagers(finalDeal.retailManagers).map((m) => ({
+      ...m,
+      managerName: m.username,
     }))
 
     const { createdAt, updatedAt, retailManagers, ...rest } = finalDeal
@@ -889,8 +865,8 @@ export const updateRetail = async (
       success: true,
       data: {
         ...rest,
-        amountCP: finalDeal.amountCP?.toString() ?? "0",
-        delta: finalDeal.delta?.toString() ?? "0",
+        amountCP: toDecimalString(finalDeal.amountCP) || "0",
+        delta: toDecimalString(finalDeal.delta) || "0",
         managers,
       } as unknown as RetailWithoutDateCreateAndUpdate,
     }
@@ -956,35 +932,13 @@ export const deleteDeal = async (dealId: string, type: DealType) => {
       }
     })
 
-    let targetDepartmentId = user.departmentId
-    if (deal.userId) {
-      const dealOwnerData = await prisma.user.findUnique({
-        where: { id: deal.userId },
-        select: { departmentId: true },
-      })
-      if (dealOwnerData) {
-        targetDepartmentId = dealOwnerData.departmentId
-      }
-    }
+    const targetDepartmentId = await getTargetDepartmentId(user.departmentId, deal.userId)
 
-    if (isProject) {
-      managers.forEach((m) => {
-        updateTag(tagKeysDealActions.projectsUser(m.userId))
-      })
+    updateManagerTags(managers, isProject ? "project" : "retail")
+    updateDepartmentTags(targetDepartmentId, "all")
 
-      updateTag(tagKeysDealActions.allProjectsDep(targetDepartmentId))
-      updateTag(tagKeysDealActions.allDealsDep(targetDepartmentId))
-
-      if ((deal.dealStatus === "PAID" || deal.dealStatus === "CLOSED") && deal.userId) {
-        updateTag(tagKeysDealActions.constractUser(deal.userId))
-      }
-    } else {
-      managers.forEach((m) => {
-        updateTag(tagKeysDealActions.retailsUser(m.userId))
-      })
-
-      updateTag(tagKeysDealActions.allRetailsDep(targetDepartmentId))
-      updateTag(tagKeysDealActions.allDealsDep(targetDepartmentId))
+    if ((deal.dealStatus === "PAID" || deal.dealStatus === "CLOSED") && deal.userId) {
+      updateTag(tagKeysDealActions.constractUser(deal.userId))
     }
 
     updateTag(tagKeysDealActions.additionalContacts(dealId))
@@ -1045,7 +999,7 @@ export const deleteMultipleDeals = async (
         projectsIds.length
           ? prisma.projectManager.findMany({
               where: { dealId: { in: projectsIds } },
-              select: { userId: true }, // Тянем только ID юзеров
+              select: { userId: true },
             })
           : [],
         retailsIds.length
@@ -1103,10 +1057,7 @@ export const deleteMultipleDeals = async (
       }
     }
 
-    // Сносим кэш строго целевого филиала!
-    updateTag(tagKeysDealActions.allProjectsDep(departmentId))
-    updateTag(tagKeysDealActions.allRetailsDep(departmentId))
-    updateTag(tagKeysDealActions.allDealsDep(departmentId))
+    updateDepartmentTags(departmentId, "all")
 
     if (projectsIds.length > 0) {
       const closedOrPaidProjectUserIds = [
@@ -1268,85 +1219,6 @@ export const reassignDealsToManager = async (
     return { success: false, message: msg, error: true }
   }
 }
-
-// export async function setHighlight(higlightData: DealHighlightType) {
-//   try {
-//     const user = await requireUser()
-//     const { id, type, color, userId: ownerDealId } = higlightData
-//     const userId = user.userId
-
-//     if (!color) return
-
-//     const selector =
-//       type === DEAL_TYPE.PROJECT
-//         ? { userId_projectId: { userId, projectId: id } }
-//         : { userId_retailId: { userId, retailId: id } }
-
-//     const data =
-//       type === DEAL_TYPE.PROJECT
-//         ? { userId, projectId: id, color }
-//         : { userId, retailId: id, color }
-
-//     await prisma.userHighlight.upsert({
-//       where: selector,
-//       update: { color },
-//       create: data,
-//     })
-
-//     return { type, userId: ownerDealId }
-//   } catch (error) {
-//     console.error("[setHighlight Error]:", error)
-//   }
-// }
-
-// export const getHilightList = async () => {
-//   try {
-//     const { userId } = await requireUser()
-
-//     const colors = await prisma.userHighlight.findMany({
-//       where: { userId },
-//     })
-
-//     return colors
-//   } catch (error) {
-//     handleError((error as Error).message)
-//     return []
-//   }
-// }
-
-// export const deleteHighlight = async (higlightData: DealHighlightdeletedType) => {
-//   try {
-//     const user = await requireUser()
-//     const { type, color, userId: ownerDealId, all } = higlightData
-//     const userId = user.userId
-
-//     const typeDeal = type === DEAL_TYPE.PROJECT ? "projectId" : "retailId"
-
-//     if (all) {
-//       await prisma.userHighlight.deleteMany({
-//         where: {
-//           userId,
-//           [typeDeal]: { not: null },
-//         },
-//       })
-//       return { type, userId: ownerDealId }
-//     }
-
-//     if (color) {
-//       await prisma.userHighlight.deleteMany({
-//         where: {
-//           userId,
-//           color,
-//           [typeDeal]: { not: null },
-//         },
-//       })
-//       return { type, userId: ownerDealId }
-//     }
-//   } catch (error) {
-//     console.error("[deleteHighlight Error]:", error)
-//     handleError((error as Error).message)
-//   }
-// }
 
 export async function setHighlight(higlightData: DealHighlightType) {
   try {

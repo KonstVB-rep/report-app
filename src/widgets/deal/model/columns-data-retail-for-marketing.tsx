@@ -3,7 +3,12 @@
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { endOfDay, startOfDay } from "date-fns"
 import type { DateRange } from "react-day-picker"
-import type { RetailResponse } from "@/entities/deal/types"
+import type {
+  DeliveryRetail,
+  DirectionRetail,
+  RetailResponse,
+  StatusRetail,
+} from "@/entities/deal/types"
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
@@ -11,12 +16,6 @@ import {
 } from "@/feature/deals/lib/constants"
 import RowNumber from "@/shared/lib/tanstack-table/columnsDataColsTemplate/RowNumber"
 import { formatterCurrency } from "@/shared/lib/utils"
-
-export type typeofDirections = keyof typeof DirectionRetailLabels
-
-export type typeofDelivery = keyof typeof DeliveryRetailLabels
-
-export type typeofStatus = keyof typeof StatusRetailLabels
 
 export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[] = [
   {
@@ -109,14 +108,14 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
     accessorKey: "direction",
     header: "Направление",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofDirections
+      const value = info.getValue() as DirectionRetail
       return <span>{DirectionRetailLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
       const rowValue = row.getValue(columnId)
       if (!rowValue) return false
       if (Array.isArray(value)) {
-        return value.some((direction) => (rowValue as typeofDirections).includes(direction))
+        return value.some((direction) => (rowValue as DirectionRetail).includes(direction))
       }
       return rowValue === value
     },
@@ -132,7 +131,7 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
     accessorKey: "deliveryType",
     header: "Тип поставки",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofDelivery
+      const value = info.getValue() as DeliveryRetail
       return <span>{DeliveryRetailLabels[value]}</span>
     },
     filterFn: (row, columnId, value) => {
@@ -168,7 +167,7 @@ export const columnsDataRetailForMarketing: ColumnDef<RetailResponse, unknown>[]
     accessorKey: "dealStatus",
     header: "Статус",
     cell: (info: CellContext<RetailResponse, unknown>) => {
-      const value = info.getValue() as typeofStatus
+      const value = info.getValue() as StatusRetail
       return <span className="whitespace-nowrap">{StatusRetailLabels[value]}</span>
     },
     enableHiding: true,

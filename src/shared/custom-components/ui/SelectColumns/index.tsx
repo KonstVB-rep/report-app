@@ -5,21 +5,17 @@ import { Button } from "@/shared/components/ui/button"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover"
 
-interface SelectColumnsProps<TData extends Record<string, unknown>> {
-  data: Table<TData>
+interface SelectColumnsProps<T = unknown> {
+  data: Table<T>
   colsListNotHidden?: string[]
 }
-
-const SelectColumns = <TData extends Record<string, unknown>>({
-  data,
-  colsListNotHidden = [],
-}: SelectColumnsProps<TData>) => {
+const SelectColumns = <T = unknown>({ data, colsListNotHidden }: SelectColumnsProps<T>) => {
   const [open, setOpen] = useState(false)
 
   const columns = data.getAllColumns()
   const hiddenColumns = Object.entries(data.getState().columnVisibility)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .filter(([_id, isVisible]) => !isVisible && !colsListNotHidden.includes(_id))
+    .filter(([_id, isVisible]) => !isVisible && !colsListNotHidden?.includes(_id))
     .map(([col]) => col)
 
   const handleResetVisibility = () => {
@@ -59,7 +55,7 @@ const SelectColumns = <TData extends Record<string, unknown>>({
                 return (
                   col.getCanHide() &&
                   !(col.columnDef.meta as { hidden: boolean | string })?.hidden &&
-                  !colsListNotHidden.includes(col.id)
+                  !colsListNotHidden?.includes(col.id)
                 )
               })
               .map((col) => (

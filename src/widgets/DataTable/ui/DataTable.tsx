@@ -1,5 +1,7 @@
 "use client"
+
 import type { ReactNode } from "react"
+import { useMemo } from "react"
 import type { ColumnDef, Table } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
 import type { TableType } from "@/entities/deal/types"
@@ -27,7 +29,7 @@ interface DataTableProps<T> {
     hasEditDeleteActions: boolean
   }) => ReactNode
   dealType: TableType
-  hiddenColumns?: Partial<Record<Extract<NonNullable<ColumnDef<T>["id"]>, string>, boolean>>
+  hiddenColumns?: Record<string, boolean>
   paramsNotFilters?: string[]
 }
 
@@ -52,14 +54,21 @@ const DataTable = <T extends { id: string }>({
     },
   )
 
-  const currentData = table.getRowModel().rows.map((row) => row.original)
-  const originalData = table.getCoreRowModel().rows.map((row) => row.original)
+  const currentData = useMemo(() => table.getRowModel().rows.map((row) => row.original), [table])
+
+  const originalData = useMemo(
+    () => table.getCoreRowModel().rows.map((row) => row.original),
+    [table],
+  )
+
+  const hasFilteredData = currentData.length > 0
+  const hasOriginalData = originalData.length > 0
 
   return (
     <DataTableFiltersProvider value={filtersContextValue}>
       <div className="relative grid w-full overflow-auto rounded-lg border bg-background pt-2 px-2 auto-rows-max pb-2">
         <div className="flex items-center justify-between gap-2 pb-2">
-          <ButtonExportTableXls columns={columns} isShow={currentData.length > 0} table={table} />
+          <ButtonExportTableXls columns={columns} isShow={hasFilteredData} table={table} />
 
           <div>
             <DebouncedInput
@@ -70,20 +79,24 @@ const DataTable = <T extends { id: string }>({
             />
           </div>
 
-          <FiltersManagement isShow={originalData.length > 0} openFilters={openFilters} />
+          <FiltersManagement isShow={hasOriginalData} openFilters={openFilters} />
 
           {children}
         </div>
 
         <div
-          className={`grid overflow-hidden transition-all duration-200 ${openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"}`}
+          className={`grid overflow-hidden transition-all duration-200 ${
+            openFilters ? "grid-rows-[1fr] pb-2" : "grid-rows-[0fr]"
+          }`}
         >
-          {openFilters && (
-            <FiltersBlock dealType={dealType} table={table as Table<Record<string, unknown>>} />
-          )}
+          <div className="min-h-0 overflow-hidden">
+            {openFilters && (
+              <FiltersBlock dealType={dealType} table={table as Table<Record<string, unknown>>} />
+            )}
+          </div>
         </div>
 
-        {data.length > 0 ? (
+        {hasFilteredData ? (
           rowData({ table, openFilters, hasEditDeleteActions })
         ) : (
           <h1 className="my-2 rounded-md bg-muted px-4 py-2 text-center text-xl">Нет данных</h1>

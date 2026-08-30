@@ -39,7 +39,7 @@ const serializeValue = (value: unknown): string => {
   return String(value ?? "")
 }
 
-export const usePersistentTableFilters = (
+const usePersistentTableFilters = (
   storageKey: string,
   paramsNotFilters?: string[],
   searchableCols?: string[],

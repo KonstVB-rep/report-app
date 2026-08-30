@@ -35,7 +35,6 @@ const CalendarContent = () => {
           label="Список событий"
           pathName={`${pathName}/events-list`}
         />
-        {/* <CalendarBotLink botName="ertel_report_app_bot" /> */}
       </header>
 
       <main className="flex-1">

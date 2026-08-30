@@ -1,7 +1,6 @@
 import { DealType } from "@prisma/client"
 import type { Table } from "@tanstack/react-table"
 import type { DateRange } from "react-day-picker"
-import type { DealUnion } from "@/entities/deal/types"
 import { getUsers } from "@/entities/department/lib/utils"
 import { DealTypeLabels, LABELS } from "@/feature/deals/lib/constants"
 import { useDataTableFiltersContext } from "@/feature/filter-persistence/context/useDataTableFiltersContext"
@@ -16,7 +15,11 @@ const OptionDealType = Object.entries(DealTypeLabels).map(([key, label]) => ({
   label,
 }))
 
-const Filters = ({ table }: { table: Table<DealUnion> }) => {
+interface FiltersProps<T = unknown> {
+  table: Table<T>
+}
+
+const Filters = <T = unknown>({ table }: FiltersProps<T>) => {
   const { handleDateChange, handleClearDateFilter } = useDataTableFiltersContext()
 
   const { columnFilters } = table.getState()
@@ -52,7 +55,7 @@ const Filters = ({ table }: { table: Table<DealUnion> }) => {
           value={dateRequestValue}
         />
 
-        <SelectColumns data={table as Table<DealUnion>} />
+        <SelectColumns data={table} />
 
         <FilterPopover columnId="type" label={"Тип"} options={OptionDealType} />
 

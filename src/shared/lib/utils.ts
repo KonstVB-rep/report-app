@@ -1,7 +1,8 @@
+//src\shared\lib\utils.ts
+
 import { Prisma } from "@prisma/client"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import type { DealsUnionType, TableType } from "@/entities/deal/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -51,16 +52,7 @@ export const formatPhoneNumber = (value: string): string => {
   return formatted
 }
 
-export const normalizePhone = (phone: string): string => {
-  if (!phone) {
-    return ""
-  } else {
-    const normalized = phone.replace(/\D/g, "") // убираем всё, кроме цифр
-    return `+${normalized}`
-  }
-}
-
-export function capitalizeFirstLetter(str: string): string {
+function capitalizeFirstLetter(str: string): string {
   if (!str) return ""
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
@@ -74,39 +66,7 @@ export function capitalizeFullName(fullName: string): string {
     .join(" ")
 }
 
-export function toMoscowISOString(date: Date): string {
-  const moscowTime = new Date(date.toLocaleString("en-US", { timeZone: "Europe/Moscow" }))
-
-  return moscowTime.toISOString()
-}
-
-export async function subscribeUser() {
-  if (!("serviceWorker" in navigator)) return null
-
-  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-  if (!vapidKey) {
-    throw new Error("VAPID public key is not defined")
-  }
-
-  const reg = await navigator.serviceWorker.ready
-
-  return await reg.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: vapidKey,
-  })
-}
-
-export const TAB_TO_DEAL_TYPE: Record<TableType, DealsUnionType> = {
-  projects: "projects",
-  retails: "retails",
-  contracts: "projects",
-}
-
-// export const mapTabToDealType = (tab: TableType): DealsUnionType => {
-//   return TAB_TO_DEAL_TYPE[tab]
-// }
-
-export function validateRequiredFields<T>(data: T, requiredFields: (keyof T)[]): void {
+export function validateRequiredFields<T>(data: T, requiredFields: ReadonlyArray<keyof T>): void {
   for (const field of requiredFields) {
     if (!data[field]) {
       throw new Error(`Отсутствует обязательное поле: ${String(field)}`)

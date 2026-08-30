@@ -18,3 +18,7 @@ export const PermissionUser = {
   EQUIPMENT_MANAGEMENT: "Редактирование оборудования",
   READ_ONLY: "Только чтение",
 } as const
+
+export const ROLES = ["DIRECTOR", "EMPLOYEE", "ADMIN", "SUPER_ADMIN"] as const
+
+export type RoleValue = (typeof ROLES)[number]

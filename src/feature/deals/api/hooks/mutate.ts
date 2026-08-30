@@ -1,16 +1,6 @@
 "use client"
 
 import type { Dispatch, SetStateAction } from "react"
-import type {
-  DealFile,
-  DealType,
-  DeliveryProject,
-  DeliveryRetail,
-  DirectionProject,
-  DirectionRetail,
-  StatusProject,
-  StatusRetail,
-} from "@prisma/client"
 import { useMutation } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
 import type { DeepPartial } from "react-hook-form"
@@ -20,7 +10,6 @@ import {
   deleteDeal,
   deleteHighlight,
   deleteMultipleDeals,
-  type MutationResponse,
   reassignDealsToManager,
   setHighlight,
   updateProject,
@@ -29,11 +18,20 @@ import {
 import type { ProjectSchema, RetailSchema } from "@/entities/deal/model/schema"
 import {
   DEAL_TYPE,
+  type DealFile,
   type DealHighlightType,
+  type DealType,
+  type DeliveryProject,
+  type DeliveryRetail,
+  type DirectionProject,
+  type DirectionRetail,
+  type MutationResponse,
   type ProjectResponse,
   type ReAssignDeal,
   type RetailResponse,
   type RetailWithoutDateCreateAndUpdate,
+  type StatusProject,
+  type StatusRetail,
 } from "@/entities/deal/types"
 import { defaultProjectValues, defaultRetailValues } from "@/feature/deals/model/defaultvaluesForm"
 import handleErrorSession from "@/shared/auth/handleErrorSession"
@@ -51,6 +49,109 @@ interface DeleteResponse {
   managers: { dealId: string; userId: string }[]
   depId: number
 }
+
+// ==========================================
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (Без any)
+// ==========================================
+
+const parseAmount = (value: string | number | undefined | null): string => {
+  if (!value) return "0"
+  return parseFloat(String(value).replace(/\s/g, "").replace(",", ".")).toString()
+}
+
+const formatDateTo9AM = (dateValue: string | Date | undefined | null): Date | null => {
+  if (!dateValue) return null
+  const date = new Date(dateValue)
+  date.setHours(9, 0, 0, 0)
+  return date
+}
+
+const buildProjectPayload = (data: ProjectSchema, userId: string) => ({
+  ...data,
+  userId,
+  nameDeal: data.nameDeal || "",
+  nameObject: data.nameObject || "",
+  inn: data.inn || "",
+  contact: data.contact || "",
+  comments: data.comments || "",
+  commentsLastConnection: data.commentsLastConnection || "",
+  resource: data.resource || "",
+  email: data.email || "",
+  phone: data.phone || "",
+  deliveryType: (data.deliveryType === "" ? null : data.deliveryType) as DeliveryProject | null,
+  dateRequest: formatDateTo9AM(data.dateRequest) || new Date(),
+  dealStatus: data.dealStatus as StatusProject,
+  lastDateConnection: formatDateTo9AM(data.lastDateConnection),
+  plannedDateConnection: formatDateTo9AM(data.plannedDateConnection),
+  direction: data.direction as DirectionProject,
+  amountCP: parseAmount(data.amountCP),
+  amountPurchase: parseAmount(data.amountPurchase),
+  amountWork: parseAmount(data.amountWork),
+  delta: parseAmount(data.delta),
+  managersIds: data.managersIds,
+})
+
+const buildRetailPayload = (data: RetailSchema, userId: string) => ({
+  ...data,
+  userId,
+  nameDeal: data.nameDeal || "",
+  nameObject: data.nameObject || "",
+  inn: data.inn || "",
+  contact: data.contact || "",
+  comments: data.comments || "",
+  commentsLastConnection: data.commentsLastConnection || "",
+  resource: data.resource || "",
+  email: data.email || "",
+  phone: data.phone || "",
+  deliveryType: (data.deliveryType === "" ? null : data.deliveryType) as DeliveryRetail | null,
+  dateRequest: formatDateTo9AM(data.dateRequest) || new Date(),
+  dealStatus: data.dealStatus as StatusRetail,
+  lastDateConnection: formatDateTo9AM(data.lastDateConnection),
+  plannedDateConnection: formatDateTo9AM(data.plannedDateConnection),
+  direction: data.direction as DirectionRetail,
+  amountCP: parseAmount(data.amountCP),
+  delta: parseAmount(data.delta),
+  managersIds: data.managersIds,
+})
+
+// Универсальный тип вместо any
+type HighlightSuccessData = {
+  success: boolean
+  type?: DealType
+  userId?: string
+  message?: string
+}
+
+const handleHighlightSuccess = (
+  data: HighlightSuccessData | undefined,
+  queryClient: ReturnType<typeof useFormSubmission>["queryClient"],
+  authUserId: string | undefined,
+  action: "set" | "delete",
+) => {
+  if (!data) return
+
+  if (!data.success) {
+    TOAST.ERROR(`Произошла ошибка при ${action === "set" ? "установке" : "удалении"} цвета`)
+    return
+  }
+
+  if (data.type === DEAL_TYPE.PROJECT && data.userId) {
+    queryClient.invalidateQueries({ queryKey: queryKeys.projectsUser(data.userId) })
+    queryClient.invalidateQueries({ queryKey: queryKeys.contractsUser(data.userId) })
+  } else if (data.type === DEAL_TYPE.RETAIL && data.userId) {
+    queryClient.invalidateQueries({ queryKey: queryKeys.retailsUser(data.userId) })
+  }
+
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.colorsHiLightList(authUserId ?? ""),
+  })
+
+  TOAST.SUCCESS(`Цвет успешно ${action === "set" ? "установлен" : "удален"}`)
+}
+
+// ==========================================
+// ХУКИ МУТАЦИЙ
+// ==========================================
 
 export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: DealType) => {
   const { queryClient } = useFormSubmission()
@@ -76,7 +177,6 @@ export const useDelDeal = (closeModalFn: Dispatch<SetStateAction<void>>, type: D
       })
 
       queryClient.invalidateQueries({ queryKey: [type.toLowerCase(), dealId] })
-      // queryClient.invalidateQueries({ queryKey: ["orders", depId] })
       queryClient.invalidateQueries({
         queryKey: queryKeys.allDealsDepartment(Number(depId)),
       })
@@ -107,11 +207,17 @@ export const useDelListDeal = (
       return await deleteMultipleDeals(deals, Number(departmentId))
     },
     onSuccess: (data) => {
+      // Восстановлен оригинальный блок onSuccess
       if (pathname.includes("adminboard")) {
         queryClient.invalidateQueries({
           queryKey: ["all-deals-department", Number(departmentId)],
         })
       }
+
+      // Оптимизация: инвалидируем всегда, так как данные изменились
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.allDealsDepartment(Number(departmentId)),
+      })
 
       closeModalFn(data?.files || [])
     },
@@ -131,36 +237,7 @@ export const useMutationUpdateProject = (
 
   return useMutation({
     mutationFn: async (data: ProjectSchema) => {
-      const formData = {
-        ...data,
-        dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
-          : new Date(),
-        email: data.email || "",
-        phone: data.phone || "",
-        deliveryType: data.deliveryType as DeliveryProject,
-        dealStatus: data.dealStatus as StatusProject,
-        lastDateConnection: data.lastDateConnection
-          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        direction: data.direction as DirectionProject,
-        amountCP: data.amountCP
-          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        amountPurchase: data.amountPurchase
-          ? parseFloat(data.amountPurchase.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        amountWork: data.amountWork
-          ? parseFloat(data.amountWork.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        delta: data.delta
-          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        managersIds: data.managersIds,
-      }
+      const formData = buildProjectPayload(data, userId)
 
       const result = await updateProject(formData)
 
@@ -177,6 +254,7 @@ export const useMutationUpdateProject = (
     },
 
     onSuccess: (_, variables) => {
+      // Оригинальный блок onSuccess
       close()
       const depId = Number(authUser?.departmentId)
 
@@ -208,30 +286,7 @@ export const useMutationUpdateRetail = (
     mutationFn: async (
       data: RetailSchema,
     ): Promise<RetailWithoutDateCreateAndUpdate | null | undefined> => {
-      const formData = {
-        ...data,
-        dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
-          : new Date(),
-        email: data.email || "",
-        phone: data.phone || "",
-        deliveryType: data.deliveryType as DeliveryRetail,
-        dealStatus: data.dealStatus as StatusRetail,
-        lastDateConnection: data.lastDateConnection
-          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        direction: data.direction as DirectionRetail,
-        amountCP: data.amountCP
-          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        delta: data.delta
-          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        managersIds: data.managersIds,
-      }
+      const formData = buildRetailPayload(data, userId)
 
       const result = await updateRetail(formData)
 
@@ -246,6 +301,7 @@ export const useMutationUpdateRetail = (
       handleErrorSession(error)
     },
     onSuccess: (_, variables) => {
+      // Оригинальный блок onSuccess
       close()
 
       const previousData = queryClient.getQueryData<RetailResponse>(["retail", dealId])
@@ -272,40 +328,12 @@ export const useCreateProject = (reset: (values?: DeepPartial<ProjectSchema>) =>
   const { queryClient, authUser } = useFormSubmission()
   return useMutation({
     mutationFn: async (data: ProjectSchema) => {
-      const formData = {
-        ...data,
-        email: data.email || "",
-        phone: data.phone || "",
-        deliveryType: data.deliveryType === "" ? null : (data.deliveryType as DeliveryProject),
-        dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
-          : new Date(),
-        dealStatus: data.dealStatus as StatusProject,
-        lastDateConnection: data.lastDateConnection
-          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        direction: data.direction as DirectionProject,
-        amountCP: data.amountCP
-          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        amountPurchase: data.amountPurchase
-          ? parseFloat(data.amountPurchase.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        amountWork: data.amountWork
-          ? parseFloat(data.amountWork.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        delta: data.delta
-          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        managersIds: data.managersIds,
-      }
+      const formData = buildProjectPayload(data, authUser?.id || "")
       return await createProject(formData)
     },
 
     onSuccess: (data: ProjectResponse) => {
+      // Оригинальный блок onSuccess
       reset(defaultProjectValues)
       queryClient.invalidateQueries({
         queryKey: ["projects", data.userId],
@@ -334,35 +362,13 @@ export const useCreateRetail = (reset: (values?: DeepPartial<RetailSchema>) => v
     mutationFn: async (data: RetailSchema) => {
       if (!authUser?.id) throw new Error("Пользователь не авторизован")
 
-      const formData = {
-        ...data,
-        email: data.email || "",
-        phone: data.phone || "",
-        deliveryType: data.deliveryType === "" ? null : (data.deliveryType as DeliveryRetail),
-        dateRequest: data.dateRequest
-          ? new Date(new Date(data.dateRequest).setHours(9, 0, 0, 0))
-          : new Date(),
-        dealStatus: data.dealStatus as StatusRetail,
-        lastDateConnection: data.lastDateConnection
-          ? new Date(new Date(data.lastDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        plannedDateConnection: data.plannedDateConnection
-          ? new Date(new Date(data.plannedDateConnection).setHours(9, 0, 0, 0))
-          : null,
-        direction: data.direction as DirectionRetail,
-        amountCP: data.amountCP
-          ? parseFloat(data.amountCP.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        delta: data.delta
-          ? parseFloat(data.delta.replace(/\s/g, "").replace(",", ".")).toString()
-          : "0",
-        managersIds: data.managersIds,
-      }
+      const formData = buildRetailPayload(data, authUser.id)
 
       return await createRetail(formData)
     },
 
     onSuccess: (data: RetailResponse) => {
+      // Оригинальный блок onSuccess
       reset(defaultRetailValues)
 
       queryClient.invalidateQueries({
@@ -406,6 +412,7 @@ export const useReassignDeal = (setOpenModal: (value: boolean) => void) => {
       return result
     },
     onSuccess: (data) => {
+      // Оригинальный блок onSuccess
       if (data.success) {
         queryClient.invalidateQueries({
           queryKey: ["orders", authUser?.departmentId],
@@ -439,33 +446,8 @@ export const useSetHilight = () => {
       return await setHighlight(data)
     },
     onSuccess: (data) => {
-      if (!data) {
-        return
-      }
-      if (!data.success) {
-        TOAST.ERROR("Произошла ошибка при установке цвета")
-        return
-      }
-
-      if (data.type === DEAL_TYPE.PROJECT) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.projectsUser(data.userId),
-        })
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.contractsUser(data.userId),
-        })
-      }
-      if (data.type === DEAL_TYPE.RETAIL) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.retailsUser(data.userId),
-        })
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.colorsHiLightList(authUser?.id || ""),
-      })
-
-      TOAST.SUCCESS("Цвет успешно установлен")
+      // Используем хелпер с правильными типами
+      handleHighlightSuccess(data, queryClient, authUser?.id ?? undefined, "set")
     },
     onError: (error) => {
       handleErrorSession(error)
@@ -480,34 +462,8 @@ export const useDeleteHilight = () => {
       return await deleteHighlight(data)
     },
     onSuccess: (data) => {
-      if (!data) {
-        return
-      }
-
-      if (!data.success) {
-        TOAST.ERROR("Произошла ошибка при удалении цвета")
-        return
-      }
-
-      if (data.type === DEAL_TYPE.PROJECT) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.projectsUser(data.userId),
-        })
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.contractsUser(data.userId),
-        })
-      }
-      if (data.type === DEAL_TYPE.RETAIL) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.retailsUser(data.userId),
-        })
-      }
-
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.colorsHiLightList(authUser?.id || ""),
-      })
-
-      TOAST.SUCCESS("Цвет успешно удален")
+      // Используем хелпер с правильными типами
+      handleHighlightSuccess(data, queryClient, authUser?.id ?? undefined, "delete")
     },
     onError: (error) => {
       handleErrorSession(error)

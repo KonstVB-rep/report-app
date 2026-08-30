@@ -1,17 +1,18 @@
-import type { PermissionEnum, User } from "@prisma/client"
 import type { CheckedState } from "@radix-ui/react-checkbox"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { endOfDay, startOfDay } from "date-fns"
 import { UserCheck } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 import { DepartmentLabelsById } from "@/entities/department/lib/constants"
+import type { User } from "@/entities/user/types"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Label } from "@/shared/components/ui/label"
+import type { PERMISSIONS_UNION } from "@/shared/lib/constants"
 import { cn } from "@/shared/lib/utils"
 import { PermissionUser, RolesUser } from "./objectTypes"
 
 export type UserTypeTable = User & {
-  permissions: PermissionEnum[]
+  permissions: PERMISSIONS_UNION[]
   telegramInfo: string
   tgUserId: string
   lastlogin: Date
@@ -174,7 +175,7 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
       if (Array.isArray(value))
         return (
           <span className="block text-left" style={{ whiteSpace: "break-spaces" }}>
-            {value.map((item) => PermissionUser[item as PermissionEnum]).join(",\n")}
+            {value.map((item) => PermissionUser[item as PERMISSIONS_UNION]).join(",\n")}
           </span>
         )
       return value

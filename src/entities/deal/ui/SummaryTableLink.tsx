@@ -1,20 +1,16 @@
 "use client"
 
-import { DealType, PermissionEnum } from "@prisma/client"
 import Link from "next/link"
+import { DEAL_TYPE, type DealType } from "@/entities/deal/types"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
+import { PERMISSIONS } from "@/shared/lib/constants"
 
 type Props = {
   type: DealType
   className?: string
   departmentId?: string
   protect?: boolean
-}
-
-const DEAL_TYPE = {
-  [DealType.PROJECT]: "Проекты",
-  [DealType.RETAIL]: "Розничные сделки",
 }
 
 const SummaryTableLink = ({ type, className = "", departmentId, protect = true }: Props) => {
@@ -37,7 +33,7 @@ const SummaryTableLink = ({ type, className = "", departmentId, protect = true }
   )
 
   return protect ? (
-    <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+    <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
       <LinkComponent />
     </ProtectedByPermissions>
   ) : (

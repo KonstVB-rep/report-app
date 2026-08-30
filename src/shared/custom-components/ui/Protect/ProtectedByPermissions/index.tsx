@@ -2,12 +2,12 @@
 
 import type React from "react"
 import { memo } from "react"
-import { PermissionEnum } from "@prisma/client"
 import { usePermissions } from "@/app/provider/permission-provider"
+import { PERMISSIONS, type PERMISSIONS_UNION } from "@/shared/lib/constants"
 import { LoaderCircle } from "../../Loaders"
 
 type ProtectedProps = {
-  permission: PermissionEnum
+  permission: PERMISSIONS_UNION
   children: React.ReactNode
   defaultNode?: React.ReactNode
   loadingNode?: React.ReactNode
@@ -30,7 +30,7 @@ const ProtectedByPermissions = memo(
       )
     }
 
-    if (permissions?.includes(PermissionEnum.READ_ONLY)) return null
+    if (permissions?.includes(PERMISSIONS.READ_ONLY)) return null
 
     const hasAdminAccess = allowAdmin && role === "ADMIN"
     const hasPermission = permissions?.includes(permission)

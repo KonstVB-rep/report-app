@@ -1,5 +1,4 @@
 import { type Dispatch, type SetStateAction, useState } from "react"
-import { PermissionEnum } from "@prisma/client"
 import {
   type Cell,
   flexRender,
@@ -8,6 +7,7 @@ import {
   type Table,
 } from "@tanstack/react-table"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { cn } from "@/shared/lib/utils"
 import type { Equipment, SerializedEquipmentItem } from "../lib/types"
 import { selectedKitId, useEquipmentStore } from "../store/localtemsStore"
@@ -32,7 +32,7 @@ const EquipmentTable = ({
                   header.id === "actions" ? (
                     <ProtectedByPermissions
                       key={header.id}
-                      permission={PermissionEnum.EQUIPMENT_MANAGEMENT}
+                      permission={PERMISSIONS.EQUIPMENT_MANAGEMENT}
                     >
                       <HeaderEquipment
                         header={header}
@@ -132,7 +132,7 @@ const RowSheetEquipment = ({
     >
       {row.getVisibleCells().map((cell) => {
         return cell.column.id === "actions" ? (
-          <ProtectedByPermissions key={cell.id} permission={PermissionEnum.EQUIPMENT_MANAGEMENT}>
+          <ProtectedByPermissions key={cell.id} permission={PERMISSIONS.EQUIPMENT_MANAGEMENT}>
             <CellEquipment
               cell={cell}
               isEdit={isEdit}

@@ -2,11 +2,11 @@
 
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
-import type { PermissionEnum } from "@prisma/client"
 import { getUserPermissions } from "@/shared/api/getUserPermissions"
+import type { PERMISSIONS_UNION } from "@/shared/lib/constants"
 
 type PermissionContextType = {
-  permissions: PermissionEnum[] | null
+  permissions: PERMISSIONS_UNION[] | null
   role: string | null
   isLoading: boolean
   departmentId: number | null
@@ -20,7 +20,7 @@ const PermissionContext = createContext<PermissionContextType>({
 })
 
 export const PermissionProvider = ({ children }: { children: React.ReactNode }) => {
-  const [permissions, setPermissions] = useState<PermissionEnum[] | null>(null)
+  const [permissions, setPermissions] = useState<PERMISSIONS_UNION[] | null>(null)
   const [role, setRole] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [departmentId, setDepartmentId] = useState<number | null>(null)

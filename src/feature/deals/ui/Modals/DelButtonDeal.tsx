@@ -1,9 +1,10 @@
 import React from "react"
-import { type DealType, PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
+import type { DealType } from "@/entities/deal/types"
 import DelDealSkeleton from "@/entities/deal/ui/Skeletons/DelDealSkeleton"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import WrapperFormDeleteDialog from "@/shared/custom-components/ui/WrapperFormDeleteDialog"
+import { PERMISSIONS } from "@/shared/lib/constants"
 
 const DelDealForm = dynamic(() => import("../Forms/DelDealForm"), {
   ssr: false,
@@ -26,7 +27,7 @@ const DelButtonDeal = ({
   return (
     <>
       {withCheckPermissions ? (
-        <ProtectedByPermissions permission={PermissionEnum.DEAL_DELETE}>
+        <ProtectedByPermissions permission={PERMISSIONS.DEAL_DELETE}>
           <DelButton clearData={clearData} id={id} isTextButton={isTextButton} type={type} />
         </ProtectedByPermissions>
       ) : (

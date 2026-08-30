@@ -4,12 +4,12 @@ import {
   type DataTableFiltersContextType,
 } from "./useDataTableFiltersContext"
 
-export const DataTableFiltersProvider = <TData extends Record<string, unknown>>({
+export const DataTableFiltersProvider = <T = unknown>({
   children,
   value,
 }: {
   children: ReactNode
-  value: DataTableFiltersContextType<TData>
+  value: DataTableFiltersContextType<T>
 }) => {
   return (
     <DataTableFiltersContext.Provider

@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "@/entities/deal/types"

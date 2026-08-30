@@ -8,7 +8,7 @@ type Props = {
   user: User
 }
 
-export function ProfileSettings({ user }: Props) {
+function ProfileSettings({ user }: Props) {
   return (
     <Link
       aria-label={`Перейти в профиль пользователя ${user.username}`}

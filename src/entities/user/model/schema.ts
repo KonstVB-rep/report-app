@@ -1,7 +1,9 @@
-import { type DepartmentEnum, PermissionEnum, type Role } from "@prisma/client"
 import { z } from "zod"
 import { DepartmentLabels } from "@/entities/department/lib/constants"
-import { RolesUser } from "./objectTypes"
+import { DEPARTMENTS, type DepartmentUnion } from "@/entities/department/types"
+import type { RoleUnion } from "@/entities/user/types"
+import { PERMISSIONS, type PERMISSIONS_UNION, PERMISSIONS_VALUES } from "@/shared/lib/constants"
+import { ROLES, RolesUser } from "./objectTypes"
 
 export const userFormSchema = z.object({
   username: z
@@ -30,20 +32,20 @@ export const userFormSchema = z.object({
     .min(3, { message: "Должность должна содержать не менее 3 символов" })
     .max(60, { message: "Должность должна содержать не более 60 символов" }),
   department: z.enum(
-    Object.keys(DepartmentLabels).filter(Boolean) as [DepartmentEnum, ...DepartmentEnum[]],
+    Object.keys(DepartmentLabels).filter(Boolean) as [DepartmentUnion, ...DepartmentUnion[]],
     {
       error: "Выберите отдел из списка",
     },
   ),
 
-  role: z.enum(Object.keys(RolesUser).filter(Boolean) as unknown as [Role, ...Role[]], {
+  role: z.enum(Object.keys(RolesUser).filter(Boolean) as unknown as [RoleUnion, ...RoleUnion[]], {
     message: "Пожалуйста, выберите роль из списка",
   }),
   permissions: z
     .array(z.string())
     .transform((arr) =>
-      arr.filter((permission): permission is PermissionEnum =>
-        Object.values(PermissionEnum).includes(permission as PermissionEnum),
+      arr.filter((permission): permission is PERMISSIONS_UNION =>
+        Object.values(PERMISSIONS).includes(permission as PERMISSIONS_UNION),
       ),
     )
     .optional(),
@@ -75,5 +77,15 @@ export const userFormEditSchema = userFormSchema.extend({
     .optional(),
 })
 
-export type UserEditSchema = z.infer<typeof userFormEditSchema>
-export type UserSchema = z.infer<typeof userFormSchema>
+export const userUpdateFormSchema = z.object({
+  id: z.string().min(1, "ID обязателен"),
+  username: z.string().min(2, "Имя должно содержать минимум 2 символа"),
+  phone: z.string().optional().default(""),
+  email: z.string().email("Некорректный email"),
+  position: z.string().min(1, "Должность обязательна"),
+  department: z.enum(DEPARTMENTS, { message: "Выберите отдел" }),
+  role: z.enum(ROLES, { message: "Выберите роль" }),
+  permissions: z.array(z.enum(PERMISSIONS_VALUES)),
+  isBlocked: z.boolean().default(false),
+  emailNotify: z.boolean().default(false),
+})

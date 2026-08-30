@@ -5,14 +5,15 @@ import { TableBody, TableHead, TableHeader, TableRow } from "@/shared/components
 import { HEIGHT_ROW, NOT_GROW_COLS } from "@/shared/lib/constants"
 import { cn } from "@/shared/lib/utils"
 
-type TableTemplateProps<T extends Record<string, unknown>> = {
+// Заменили Record<string, unknown> на unknown
+type TableTemplateProps<T = unknown> = {
   table: ReturnType<typeof useReactTable<T>>
   className?: string
   totalSize?: number
   children: React.ReactNode
 }
 
-const TableTemplate = <T extends Record<string, unknown>>({
+const TableTemplate = <T = unknown>({
   table,
   className,
   totalSize,

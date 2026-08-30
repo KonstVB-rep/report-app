@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { type DealType, PermissionEnum } from "@prisma/client"
 import { Redo2 } from "lucide-react"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
@@ -9,7 +8,8 @@ import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
 import Overlay from "@/shared/custom-components/ui/Overlay"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
-import type { DealsUnionType } from "../types"
+import { PERMISSIONS } from "@/shared/lib/constants"
+import type { DealsUnionType, DealType } from "../types"
 
 const linksPersonTable = (deptId: string | number) => ({
   retails: {
@@ -75,7 +75,7 @@ const LinkToUserTable = () => {
       )}
 
       {hasSummaryTable && (
-        <ProtectedByPermissions permission={PermissionEnum.VIEW_UNION_REPORT}>
+        <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
           <Link
             className="btn_hover max-w-max border-muted px-4 text-sm"
             href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}

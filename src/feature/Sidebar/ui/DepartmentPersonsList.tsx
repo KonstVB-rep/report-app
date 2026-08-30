@@ -1,7 +1,6 @@
 "use client"
 
 import { memo, type PropsWithChildren, useCallback, useMemo, useState } from "react"
-import { PermissionEnum } from "@prisma/client"
 import clsx from "clsx"
 import { ChevronRight } from "lucide-react"
 import { useParams, usePathname, useRouter } from "next/navigation"
@@ -26,6 +25,7 @@ import {
 } from "@/shared/components/ui/sidebar"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { DepartmentLinks } from "./DepartmentLinks"
 import LinkProfile from "./LinkProfile"
 
@@ -84,7 +84,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
           />
         ) : null
       }
-      permission={PermissionEnum.VIEW_USER_REPORT}
+      permission={PERMISSIONS.VIEW_USER_REPORT}
     >
       <DepartmentLayout
         handleDepartmentClick={handleDepartmentClick}

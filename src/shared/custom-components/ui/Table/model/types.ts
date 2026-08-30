@@ -1,38 +1,4 @@
-import type { ColumnDef, ColumnFiltersState, Header, Row } from "@tanstack/react-table"
-import type { VirtualItem, Virtualizer } from "@tanstack/react-virtual"
-
-export type DataTableType<TData, TValue> = {
-  data: TData[]
-  columns: ColumnDef<TData, TValue>[]
-}
-
-export type FilterPopoverProps = {
-  columnFilters: ColumnFiltersState
-  setColumnFilters: (callback: (prev: ColumnFiltersState) => ColumnFiltersState) => void
-}
-
-export type TableBodyRowProps<T> = {
-  row: Row<T>
-  virtualRow: VirtualItem
-  rowVirtualizer: Virtualizer<HTMLDivElement, Element>
-}
-
-// type CommonProperties<Types extends unknown[]> = {
-//   [Key in keyof Types[0]]:  // Берем ключи из первого типа
-//     Types extends [infer First, ...infer Rest]
-//       ? First[Key] & (Rest extends unknown[] ? CommonProperties<Rest>[Key] : unknown)
-//       : never
-// } extends infer Result
-//   ? { [K in keyof Result as Result[K] extends never ? never : K]: Result[K] }
-//   : never;
-
-//  export type AllCommonKeys = CommonProperties<[ProjectResponse, RetailResponse, ProjectResponse]>;
-
-// export type TypeBaseDT = {
-//   id: string
-//   dealStatus?: string
-//   type?: string
-// }
+import type { Header, Row } from "@tanstack/react-table"
 
 export type SharedTableRowProps<T> = {
   row: Row<T>

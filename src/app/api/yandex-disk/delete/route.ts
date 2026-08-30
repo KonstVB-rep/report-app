@@ -1,41 +1,8 @@
 import axios from "axios"
 import { type NextRequest, NextResponse } from "next/server"
 import { deleteFileFromDB } from "@/widgets/Files/api/actions_db"
-import {
-  axiosInstanceYandexDisk,
-  // deleteFileOrFolderFromYandexDiskAnDB,
-} from "../yandexDisk"
+import { axiosInstanceYandexDisk } from "../yandexDisk"
 import { getErrorMessageDeleteByCode } from "./getErrorMessageDeleteByCode"
-
-// export async function DELETE(request: NextRequest) {
-//   try {
-//     const body = await request.json()
-//     const { filePath } = body
-
-//     if (!filePath || typeof filePath !== "string") {
-//       return NextResponse.json({ error: "Неверный путь к файлу." }, { status: 400 })
-//     }
-
-//     const deletedFile = await deleteFileOrFolderFromYandexDiskAnDB(body)
-
-//     return NextResponse.json({ data: deletedFile, success: true })
-//   } catch (error) {
-//     console.error("Ошибка при удалении файла:", error)
-
-//     if (axios.isAxiosError(error)) {
-//       const statusCode = error.response?.status ?? 500
-//       return NextResponse.json(
-//         { error: getErrorMessageDeleteByCode(statusCode) },
-//         { status: statusCode },
-//       )
-//     }
-
-//     return NextResponse.json(
-//       { success: false, error: "Ошибка при удалении файла." },
-//       { status: 500 },
-//     )
-//   }
-// }
 
 // @/app/api/yandex-disk/delete/route.ts
 

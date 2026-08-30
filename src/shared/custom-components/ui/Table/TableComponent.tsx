@@ -1,17 +1,17 @@
 import { useCallback } from "react"
 import type { Row, Table } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-import type { DealUnion } from "@/entities/deal/types"
+import type { BaseDeal } from "@/entities/deal/types"
 import { DealTableRow } from "@/entities/deal/ui/DealTableRow"
 import TableRowsWrapper from "./TableRowsWrapper"
 
-interface TableComponentProps<T extends DealUnion> {
+interface TableComponentProps<T extends BaseDeal> {
   table: Table<T>
   hasEditDeleteActions?: boolean
   openFilters: boolean
 }
 
-const TableComponent = <T extends DealUnion>({
+const TableComponent = <T extends BaseDeal>({
   table,
   hasEditDeleteActions = true,
   openFilters,
@@ -29,7 +29,11 @@ const TableComponent = <T extends DealUnion>({
   )
 
   return (
-    <TableRowsWrapper openFilters={openFilters} renderVirtualRow={renderVirtualRow} table={table} />
+    <TableRowsWrapper<T>
+      openFilters={openFilters}
+      renderVirtualRow={renderVirtualRow}
+      table={table}
+    />
   )
 }
 

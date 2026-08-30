@@ -2,8 +2,8 @@ import { createStore, type StoreApi } from "zustand"
 import { persist } from "zustand/middleware"
 
 type StoreColumnFilter = { id: string; value: unknown }
-export type StoreColumnFiltersState = StoreColumnFilter[]
-export type StoreVisibilityState = Record<string, boolean>
+type StoreColumnFiltersState = StoreColumnFilter[]
+type StoreVisibilityState = Record<string, boolean>
 
 export type FilterStoreState = {
   columnFiltersStore: StoreColumnFiltersState

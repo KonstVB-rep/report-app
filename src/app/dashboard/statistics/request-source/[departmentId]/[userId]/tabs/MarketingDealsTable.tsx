@@ -1,8 +1,6 @@
 "use client"
 
 import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
-import { PermissionEnum } from "@prisma/client"
-import type { ColumnDef } from "@tanstack/react-table"
 import dynamic from "next/dynamic"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
@@ -10,16 +8,13 @@ import type { DealsUnionType } from "@/entities/deal/types"
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs" // TabsContent НЕ импортируем
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { columnsDataProjectForMarketing } from "@/widgets/deal/model/columns-data-project-for-marketing"
 import { columnsDataRetailForMarketing } from "@/widgets/deal/model/columns-data-retail-for-marketing"
 
 const DealsTabContent = dynamic(() => import("../ui/DealsTabContent"), {
   ssr: false,
 })
-
-export interface SummaryTableProps<T extends { id: string }> {
-  columns: ColumnDef<T, unknown>[]
-}
 
 const hiddenColsProject = {
   id: false,
@@ -53,7 +48,7 @@ const MarketingDealsTable = ({ userId }: MarketingDealsTableProps) => {
   const [activeTab, setActiveTab] = useState<DealsUnionType>(queryTab || "retails")
 
   const hasAccess = useMemo(
-    () => hasAccessToDataSummary(userId, PermissionEnum.VIEW_UNION_REPORT),
+    () => hasAccessToDataSummary(userId, PERMISSIONS.VIEW_UNION_REPORT),
     [userId],
   )
 

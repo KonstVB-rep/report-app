@@ -2,7 +2,7 @@
 
 import { Building, FileDigit, Info } from "lucide-react"
 import dynamic from "next/dynamic"
-import type { DealUnion } from "@/entities/deal/types"
+import type { DealRetail } from "@/entities/deal/types"
 import ManagersListByDeal from "@/entities/deal/ui/ManagersListByDeal"
 import RowInfoDealProp from "@/entities/deal/ui/RowInfoDealProp"
 import { LoaderCircle } from "@/shared/custom-components/ui/Loaders"
@@ -35,7 +35,7 @@ const IntoDealItem = dynamic(() => import("@/entities/deal/ui/IntoDealItem"), {
   ssr: false,
 })
 
-const RetailItemInfo = ({ data }: { data: DealUnion }) => {
+const RetailItemInfo = ({ data }: { data: DealRetail }) => {
   const { dealInfo, dataFinance } = useNormalizeRetailData(data)
 
   if (!data) return <NotFoundDeal />

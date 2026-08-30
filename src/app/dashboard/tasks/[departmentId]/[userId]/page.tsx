@@ -1,7 +1,6 @@
 "use client"
 
 import { Activity, Suspense, useEffect } from "react"
-import { PermissionEnum } from "@prisma/client"
 import dynamic from "next/dynamic"
 import { useParams, useRouter } from "next/navigation"
 import { hasAccessToDataPage } from "@/entities/deal/lib/hasAccessToData"
@@ -15,6 +14,7 @@ import { Separator } from "@/shared/components/ui/separator"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import useViewType from "@/shared/hooks/useViewType"
+import { PERMISSIONS } from "@/shared/lib/constants"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
@@ -39,7 +39,7 @@ const UserTasksPage = () => {
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
   const hasAccess = authUser
-    ? hasAccessToDataPage(authUser, userId, PermissionEnum.TASK_MANAGEMENT)
+    ? hasAccessToDataPage(authUser, userId, PERMISSIONS.TASK_MANAGEMENT)
     : false
 
   useEffect(() => {
@@ -54,7 +54,6 @@ const UserTasksPage = () => {
     <section className="p-5">
       <div className="flex items-center justify-between py-2">
         <h1 className="text-xl py-2 uppercase">Мои задачи</h1>
-        {/* <CalendarBotLink botName="ertel_report_app_task_bot" /> */}
       </div>
 
       <Separator />

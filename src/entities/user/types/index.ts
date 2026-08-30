@@ -1,5 +1,15 @@
-import { type DepartmentEnum, PermissionEnum, type Role } from "@prisma/client"
-import { PermissionUser } from "../model/objectTypes"
+import type { DepartmentValue } from "@/entities/department/types"
+import { PERMISSIONS, type PERMISSIONS_UNION } from "@/shared/lib/constants"
+import { PermissionUser, type RoleValue } from "../model/objectTypes"
+
+const Roles = {
+  DIRECTOR: "DIRECTOR",
+  EMPLOYEE: "EMPLOYEE",
+  ADMIN: "ADMIN",
+  SUPER_ADMIN: "SUPER_ADMIN",
+}
+
+export type RoleUnion = keyof typeof Roles
 
 export type User = {
   id: string
@@ -9,11 +19,11 @@ export type User = {
   email: string
   position: string
   departmentId: number
-  role: Role
+  role: RoleUnion
   lastlogin?: Date | null
   createdAt: Date
   updatedAt: Date
-  permissions?: PermissionEnum[]
+  permissions?: PERMISSIONS_UNION[]
   tgUserId?: string
   tgUserName?: string
   isBlocked: boolean
@@ -26,76 +36,61 @@ export type UserWithdepartmentName = Omit<
   User,
   "user_password" | "lastlogin" | "createdAt" | "updatedAt"
 > & {
-  departmentName: DepartmentEnum
+  departmentName: DepartmentValue
 }
 
-export type UserRequest = Omit<
-  User,
-  "id" | "lastlogin" | "createdAt" | "updatedAt" | "departmentId"
-> & {
-  department: DepartmentEnum
-  permissions: PermissionType[]
-}
-
-export type UserRequestReqruired = Omit<
-  User,
-  "id" | "lastlogin" | "createdAt" | "updatedAt" | "departmentId" | "phone"
-> & {
-  department: DepartmentEnum
-  permissions: PermissionType[]
-}
 export type UserResponse = Omit<User, "lastlogin" | "createdAt" | "updatedAt" | "user_password">
 
 export type Option = {
   label: string
-  value: PermissionEnum
+  value: PERMISSIONS_UNION
   disable?: boolean
 }
 
 export const OPTIONS: Option[] = [
   {
     label: PermissionUser.VIEW_USER_REPORT,
-    value: PermissionEnum.VIEW_USER_REPORT,
+    value: PERMISSIONS.VIEW_USER_REPORT,
   },
   {
     label: PermissionUser.VIEW_UNION_REPORT,
-    value: PermissionEnum.VIEW_UNION_REPORT,
+    value: PERMISSIONS.VIEW_UNION_REPORT,
   },
   {
     label: PermissionUser.DOWNLOAD_REPORTS,
-    value: PermissionEnum.DOWNLOAD_REPORTS,
+    value: PERMISSIONS.DOWNLOAD_REPORTS,
   },
   {
     label: PermissionUser.USER_MANAGEMENT,
-    value: PermissionEnum.USER_MANAGEMENT,
+    value: PERMISSIONS.USER_MANAGEMENT,
   },
   {
     label: PermissionUser.DEAL_MANAGEMENT,
-    value: PermissionEnum.DEAL_MANAGEMENT,
+    value: PERMISSIONS.DEAL_MANAGEMENT,
   },
   {
     label: PermissionUser.TASK_MANAGEMENT,
-    value: PermissionEnum.TASK_MANAGEMENT,
+    value: PERMISSIONS.TASK_MANAGEMENT,
   },
   {
     label: PermissionUser.DEAL_DELETE,
-    value: PermissionEnum.DEAL_DELETE,
+    value: PERMISSIONS.DEAL_DELETE,
   },
   {
     label: PermissionUser.EQUIPMENT_DELETE,
-    value: PermissionEnum.EQUIPMENT_DELETE,
+    value: PERMISSIONS.EQUIPMENT_DELETE,
   },
   {
     label: PermissionUser.EQUIPMENT_MANAGEMENT,
-    value: PermissionEnum.EQUIPMENT_MANAGEMENT,
+    value: PERMISSIONS.EQUIPMENT_MANAGEMENT,
   },
   {
     label: PermissionUser.READ_ONLY,
-    value: PermissionEnum.READ_ONLY,
+    value: PERMISSIONS.READ_ONLY,
   },
 ]
 
-export type PermissionType = keyof typeof PermissionEnum
+export type PermissionType = keyof typeof PERMISSIONS
 
 export type UserDataBase = {
   id?: string
@@ -103,9 +98,9 @@ export type UserDataBase = {
   phone?: string | null
   email: string
   position: string
-  department: DepartmentEnum
-  role: Role
-  permissions?: PermissionEnum[]
+  department: DepartmentValue
+  role: RoleValue
+  permissions?: PERMISSIONS_UNION[]
   isBlocked: boolean
   emailNotify: boolean
 }

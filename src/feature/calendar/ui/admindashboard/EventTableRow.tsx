@@ -7,6 +7,8 @@ import TableCellComponent from "@/shared/custom-components/ui/Table/TableCellCom
 import { NOT_GROW_COLS } from "@/shared/lib/constants"
 import type { EventInputType } from "../../types"
 
+const NOT_GROW_SET = new Set(NOT_GROW_COLS)
+
 interface EventTableRowProps {
   row: Row<EventInputType>
   virtualRow: VirtualItem
@@ -52,7 +54,7 @@ const EventTableRow = ({
       {row.getVisibleCells().map((cell) => {
         const columnId = cell.column.id
 
-        const isNotGrow = NOT_GROW_COLS.includes(columnId)
+        const isNotGrow = NOT_GROW_SET.has(columnId)
         const flexValue = isNotGrow ? "0 0 auto" : "1 0 auto"
 
         if (cell.column.columnDef?.meta?.hidden) return null

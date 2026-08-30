@@ -14,7 +14,7 @@ type DatePickerFormFieldProps<T extends FieldValues> = {
   defaultValue?: string
 }
 
-export const DatePickerFormField = <T extends FieldValues>({
+const DatePickerFormField = <T extends FieldValues>({
   name,
   label,
   control,

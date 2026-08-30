@@ -1,15 +1,7 @@
 "use client"
 
 import type React from "react"
-import {
-  createContext,
-  type ReactNode,
-  type SetStateAction,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react"
+import { createContext, type ReactNode, useContext, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type Resolver, type UseFormReturn, useForm } from "react-hook-form"
 import { EventCalendarFormSchema, type EventCalendarSchema } from "@/feature/calendar/model/schema"
@@ -27,9 +19,9 @@ interface CalendareContextType {
   openModal: boolean
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
   confirmDelModal: boolean
-  setConfirmDelModal: React.Dispatch<SetStateAction<boolean>>
-  editingId: string | null
-  setEditingId: (id: string) => void
+  setConfirmDelModal: React.Dispatch<React.SetStateAction<boolean>>
+  editingId: string
+  setEditingId: React.Dispatch<React.SetStateAction<string>>
   form: UseFormReturn<EventCalendarSchema>
   handleResetAndClose: () => void
   handleCloseModalAfterDeleteEvent: () => void
@@ -50,7 +42,7 @@ export const useCalendarContext = (): CalendareContextType => {
 export const CalendarProvider = ({ children }: { children: ReactNode }) => {
   const [openModal, setOpenModal] = useState(false)
   const [confirmDelModal, setConfirmDelModal] = useState(false)
-  const [editingId, setEditingId] = useState<string>("")
+  const [editingId, setEditingId] = useState("")
 
   const form = useForm<EventCalendarSchema>({
     resolver: zodResolver(EventCalendarFormSchema) as Resolver<EventCalendarSchema>,
@@ -59,49 +51,37 @@ export const CalendarProvider = ({ children }: { children: ReactNode }) => {
 
   const { reset } = form
 
-  const handleResetAndClose = useCallback(() => {
+  const handleResetAndClose = () => {
     setOpenModal(false)
     setEditingId("")
     reset()
-  }, [reset])
+  }
 
-  const handleCloseModalAfterDeleteEvent = useCallback(() => {
+  const handleCloseModalAfterDeleteEvent = () => {
     setConfirmDelModal(false)
-
     handleResetAndClose()
-  }, [handleResetAndClose])
+  }
 
-  const closeModalForm = useCallback(() => {
+  const closeModalForm = () => {
     if (openModal) {
       handleResetAndClose()
     } else {
       setOpenModal(true)
     }
-  }, [handleResetAndClose, openModal])
+  }
 
-  const value = useMemo(
-    () => ({
-      handleResetAndClose,
-      handleCloseModalAfterDeleteEvent,
-      openModal,
-      setOpenModal,
-      confirmDelModal,
-      setConfirmDelModal,
-      editingId,
-      setEditingId,
-      form,
-      closeModalForm,
-    }),
-    [
-      handleResetAndClose,
-      handleCloseModalAfterDeleteEvent,
-      openModal,
-      confirmDelModal,
-      editingId,
-      form,
-      closeModalForm,
-    ],
-  )
+  const value = {
+    openModal,
+    setOpenModal,
+    confirmDelModal,
+    setConfirmDelModal,
+    editingId,
+    setEditingId,
+    form,
+    handleResetAndClose,
+    handleCloseModalAfterDeleteEvent,
+    closeModalForm,
+  }
 
   return <CalendarContext.Provider value={value}>{children}</CalendarContext.Provider>
 }

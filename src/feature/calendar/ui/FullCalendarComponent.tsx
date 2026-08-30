@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useState } from "react"
 import type { DateSelectArg, DatesSetArg, EventClickArg, FormatterInput } from "@fullcalendar/core"
 import ruLocale from "@fullcalendar/core/locales/ru"
 import dayGridPlugin from "@fullcalendar/daygrid"
@@ -14,15 +14,15 @@ import { useEventActionContext } from "@/app/dashboard/calendar/context/events-a
 import { handleDateSelect, handleEventClick } from "@/feature/calendar/utils/eventHandlers"
 
 const DEFAULT_VIEW = "dayGridMonth"
-
 const PLUGINS = [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]
+const LOCALES = [ruLocale]
 
 const HEADER_TOOLBAR = {
   left: "prev,next",
   center: "title",
   right: "dayGridMonth,timeGridWeek,timeGridDay",
-}
-const LOCALES = [ruLocale]
+} as const
+
 const TIME_FORMAT: FormatterInput | FormatterInput[] | undefined = {
   hour: "2-digit",
   minute: "2-digit",
@@ -35,6 +35,12 @@ const TITLE_TIME_FORMAT: FormatterInput | undefined = {
   year: "numeric",
 }
 
+const getTodayStart = () => {
+  const d = new Date()
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
 const FullCalendarComponent = () => {
   const router = useRouter()
   const pathname = usePathname()
@@ -45,59 +51,40 @@ const FullCalendarComponent = () => {
 
   const [currentView, setCurrentView] = useState(searchParams.get("view") || DEFAULT_VIEW)
 
-  const todayStart = useMemo(() => {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d
-  }, [])
+  const todayStart = getTodayStart()
 
-  const handleDatesSet = useCallback(
-    (arg: DatesSetArg) => {
-      const newView = arg.view.type
+  const handleDatesSet = (arg: DatesSetArg) => {
+    const newView = arg.view.type
 
-      if (newView !== currentView) {
-        setCurrentView(newView)
-      }
+    if (newView !== currentView) {
+      setCurrentView(newView)
+    }
 
-      const currentParams = new URLSearchParams(searchParams.toString())
-      if (currentParams.get("view") !== newView) {
-        currentParams.set("view", newView)
-        router.replace(`${pathname}?${currentParams.toString()}`, {
-          scroll: false,
-        })
-      }
-    },
-    [currentView, pathname, router, searchParams],
-  )
+    const currentParams = new URLSearchParams(searchParams.toString())
+    if (currentParams.get("view") !== newView) {
+      currentParams.set("view", newView)
+      router.replace(`${pathname}?${currentParams.toString()}`, {
+        scroll: false,
+      })
+    }
+  }
 
-  const handleEventClickFn = useCallback(
-    (clickInfo: EventClickArg) => {
-      handleEventClick(clickInfo, form, setEditingId, setOpenModal)
-    },
-    [form, setEditingId, setOpenModal],
-  )
+  const handleEventClickFn = (clickInfo: EventClickArg) => {
+    handleEventClick(clickInfo, form, setEditingId, setOpenModal)
+  }
 
-  const handleDateSelectFn = useCallback(
-    (event: DateSelectArg) => {
-      setEditingId("")
-      handleDateSelect(event, form, setOpenModal)
-    },
-    [form, setEditingId, setOpenModal],
-  )
+  const handleDateSelectFn = (event: DateSelectArg) => {
+    setEditingId("")
+    handleDateSelect(event, form, setOpenModal)
+  }
 
-  const dayCellClassNames = useCallback(
-    (arg: { date: Date }) => {
-      return arg.date < todayStart ? ["fc-day-disabled"] : []
-    },
-    [todayStart],
-  )
+  const dayCellClassNames = (arg: { date: Date }) => {
+    return arg.date < todayStart ? ["fc-day-disabled"] : []
+  }
 
-  const selectAllow = useCallback(
-    (selectInfo: { start: Date }) => {
-      return selectInfo.start >= todayStart
-    },
-    [todayStart],
-  )
+  const selectAllow = (selectInfo: { start: Date }) => {
+    return selectInfo.start >= todayStart
+  }
 
   return (
     <div className="full-calendar">

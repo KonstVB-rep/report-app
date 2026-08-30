@@ -43,7 +43,7 @@ import Part from "./Part"
 import SelectOfferTemplate from "./SelectOfferTemplate"
 import SelectVat from "./SelectVat"
 
-export const formatter = new Intl.DateTimeFormat("ru", {
+const formatter = new Intl.DateTimeFormat("ru", {
   year: "numeric",
   month: "long",
   day: "numeric",

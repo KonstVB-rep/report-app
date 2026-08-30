@@ -1,6 +1,5 @@
 "use client"
 
-import { PermissionEnum } from "@prisma/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import { useParams } from "next/navigation"
 import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
@@ -11,12 +10,13 @@ import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton"
 import { useDealsUser } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition"
+import { PERMISSIONS } from "@/shared/lib/constants"
 import { columnsDataContract } from "../model/columns-data-contracts"
 import { columnsDataProject } from "../model/columns-data-project"
 import { columnsDataRetail } from "../model/columns-data-retail"
 import DealsTable from "./DealsTable"
 
-export const DealTypeLabels: Record<string, string> = {
+const DealTypeLabels: Record<string, string> = {
   projects: "Проекты",
   retails: "Розничные сделки",
   contracts: "Договора",
@@ -64,7 +64,7 @@ const PersonDealsTable = () => {
     userId: string
   }>()
 
-  const hasAccess = hasAccessToData(userId as string, PermissionEnum.VIEW_USER_REPORT)
+  const hasAccess = hasAccessToData(userId as string, PERMISSIONS.VIEW_USER_REPORT)
 
   const {
     data = [],
