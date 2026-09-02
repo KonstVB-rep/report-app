@@ -136,10 +136,16 @@ const handleHighlightSuccess = (
   }
 
   if (data.type === DEAL_TYPE.PROJECT && data.userId) {
-    queryClient.invalidateQueries({ queryKey: queryKeys.projectsUser(data.userId) })
-    queryClient.invalidateQueries({ queryKey: queryKeys.contractsUser(data.userId) })
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.projectsUser(data.userId),
+    })
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.contractsUser(data.userId),
+    })
   } else if (data.type === DEAL_TYPE.RETAIL && data.userId) {
-    queryClient.invalidateQueries({ queryKey: queryKeys.retailsUser(data.userId) })
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.retailsUser(data.userId),
+    })
   }
 
   queryClient.invalidateQueries({

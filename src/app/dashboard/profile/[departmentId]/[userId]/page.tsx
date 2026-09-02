@@ -6,6 +6,8 @@ interface PageProps {
   }>
 }
 
+export const instant = false
+
 export default async function ProfilePage({ params }: PageProps) {
   return <ProfilePageMain params={params} />
 }

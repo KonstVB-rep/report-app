@@ -15,7 +15,7 @@ export type EventDataType = {
 }
 
 export type EventResponse = {
-  userId: string | null
+  userId: string
   title: string
   start: Date
   end: Date
@@ -24,6 +24,15 @@ export type EventResponse = {
   createdAt: Date
   updatedAt: Date
   notified: boolean
+}
+
+export type EventResponseShort = {
+  userId: string
+  title: string
+  start: Date
+  end: Date
+  allDay: boolean
+  id: string
 }
 
 export type Chat = {

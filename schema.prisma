@@ -258,7 +258,7 @@ model EventCalendar {
   title     String
   start     DateTime
   end       DateTime
-  userId    String?
+  userId    String
   allDay    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

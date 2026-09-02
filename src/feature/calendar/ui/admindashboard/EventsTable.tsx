@@ -9,7 +9,7 @@ import { useTableState } from "@/shared/hooks/useTableState"
 import useVirtualizedRowTable from "@/shared/hooks/useVirtualizedRowTable"
 import { useDeleteEventsCalendar } from "../../hooks/mutate"
 import { useGetAllEvents } from "../../hooks/query"
-import type { EventInputType } from "../../types"
+import type { EventResponseShort } from "../../types"
 import EventsTableContent from "./EventsTableContent"
 import { columnsDataEvents } from "./model/column-data-events"
 
@@ -20,7 +20,7 @@ const EventsTable = () => {
 
   const { mutate, isPending } = useDeleteEventsCalendar()
 
-  const { table, filtersContextValue, setGlobalFilter } = useTableState<EventInputType>(
+  const { table, filtersContextValue, setGlobalFilter } = useTableState<EventResponseShort>(
     events,
     columnsDataEvents,
     {
@@ -30,7 +30,7 @@ const EventsTable = () => {
 
   const { rows } = table.getRowModel()
 
-  const { virtualItems, totalSize } = useVirtualizedRowTable<EventInputType>({
+  const { virtualItems, totalSize } = useVirtualizedRowTable<EventResponseShort>({
     rows,
     tableContainerRef,
   })
@@ -38,6 +38,11 @@ const EventsTable = () => {
   const { globalFilter } = table.getState()
 
   const selectedIds = table.getSelectedRowModel().rows.map((row) => row.original.id)
+
+  const selectedUserIds = table
+    .getSelectedRowModel()
+    .rows.map((row) => row.original.userId)
+    .filter((id): id is string => id !== null)
 
   const selectedTitles = table.getSelectedRowModel().rows.map((row) => row.original)
 
@@ -63,7 +68,7 @@ const EventsTable = () => {
                 <DeleteDialog
                   description="Вы действительно хотите удалить события?"
                   isPending={isPending}
-                  mutate={() => mutate(selectedIds as string[])}
+                  mutate={() => mutate({ selectedIds, selectedUserIds })}
                   title="Удалить события"
                 >
                   <div className="text-center">Вы уверены что хотите удалить события?</div>

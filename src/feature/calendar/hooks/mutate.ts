@@ -93,7 +93,8 @@ export const useDeleteEventsCalendar = (closeModal?: () => void) => {
   const { queryClient, authUser } = useFormSubmission()
 
   return useMutation({
-    mutationFn: async (ids: string[]) => await deleteArrayEventsCalendar({ ids }),
+    mutationFn: async (eventData: { selectedIds: string[]; selectedUserIds: string[] }) =>
+      await deleteArrayEventsCalendar(eventData),
     onSuccess: () => {
       closeModal?.()
       invalidateCalendarQueries(queryClient, authUser?.id)

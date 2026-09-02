@@ -1,23 +1,20 @@
 import { useCallback, useMemo, useState } from "react"
 import type { Row, Table } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
-// import { getUsers } from "@/entities/department/lib/utils"
 import { TableCell } from "@/shared/components/ui/table"
 import { SkeletonTable } from "@/shared/custom-components/ui/Skeletons/SkeletonTable"
 import TableTemplate from "@/shared/custom-components/ui/Table/TableTemplate"
 import VirtualRow from "@/shared/custom-components/ui/Table/VirtualRow"
-import type { EventInputType } from "../../types"
+import type { EventResponseShort } from "../../types"
 import EventTableRow from "./EventTableRow"
 
 interface EventsTableTemplateProps {
-  table: Table<EventInputType>
-  rows: Row<EventInputType>[]
+  table: Table<EventResponseShort>
+  rows: Row<EventResponseShort>[]
   virtualItems: VirtualItem[]
   isLoading: boolean
   totalSize: number
 }
-
-// const users = getUsers({ onlyManagers: false })
 
 const EventsTableContent = ({
   table,

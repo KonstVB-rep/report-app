@@ -5,7 +5,7 @@ import { requireUser } from "@/app/api/utils/requireAuth"
 import { prisma } from "@/prisma/prisma-client"
 import { getTelegramChatBotInDb } from "@/shared/api/getTelegramChatBotInDb"
 import { handleError } from "@/shared/api/handleError"
-import type { EventDataType, EventInputType, EventResponse } from "../types"
+import type { EventDataType, EventInputType, EventResponse, EventResponseShort } from "../types"
 
 export const createEventCalendar = async (eventData: Omit<EventDataType, "id">) => {
   try {
@@ -65,7 +65,20 @@ export const updateEventCalendar = async (eventData: EventDataType): Promise<Eve
 }
 export const deleteEventCalendar = async (eventData: { id: string }) => {
   try {
-    const { userId } = await requireUser()
+    const { userId, role } = await requireUser()
+
+    const event = await prisma.eventCalendar.findUnique({
+      where: {
+        id: eventData.id,
+      },
+    })
+
+    const isOwer = event?.userId === userId
+
+    const isAdmin = role === Role.ADMIN
+    if (!isOwer && !isAdmin) {
+      throw new Error("Недостаточно прав")
+    }
 
     await prisma.eventCalendar.delete({
       where: {
@@ -85,19 +98,26 @@ export const deleteEventCalendar = async (eventData: { id: string }) => {
   }
 }
 
-export const deleteArrayEventsCalendar = async (eventData: { ids: string[] }) => {
+export const deleteArrayEventsCalendar = async (eventData: {
+  selectedIds: string[]
+  selectedUserIds: string[]
+}) => {
   try {
-    const { userId } = await requireUser()
-    const { ids } = eventData
+    const user = await requireUser()
+    const { selectedIds, selectedUserIds } = eventData
+
+    if (user.role !== Role.ADMIN) {
+      throw new Error("Недостаточно прав")
+    }
 
     const result = await prisma.eventCalendar.deleteMany({
       where: {
-        id: { in: ids },
-        userId: userId,
+        id: { in: selectedIds },
+        userId: { in: selectedUserIds },
       },
     })
 
-    if (result.count !== ids.length) {
+    if (result.count !== selectedIds.length) {
       throw new Error("Некоторые события не найдены или нет прав на удаление")
     }
 
@@ -146,7 +166,7 @@ export const getEventsCalendarUserRange = async (
 }
 
 // 3. Получить ВСЕ (Админ)
-export const getAllEventsCalendar = async (): Promise<EventInputType[]> => {
+export const getAllEventsCalendar = async (): Promise<EventResponseShort[]> => {
   try {
     const user = await requireUser()
 
@@ -170,8 +190,9 @@ export const getChatBotInfoAction = async (botName: string) => {
   return await getTelegramChatBotInDb(botName, userId)
 }
 
-const mapEventDates = (event: EventResponse): EventInputType => ({
+const mapEventDates = (event: EventResponse): EventResponseShort => ({
   id: event.id,
+  userId: event.userId || "",
   title: event.title,
   start: new Date(event.start),
   end: new Date(event.end),

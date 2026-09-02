@@ -1,12 +1,12 @@
 import type { CheckedState } from "@radix-ui/react-checkbox"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ListCheck } from "lucide-react"
-import type { EventInputType } from "@/feature/calendar/types"
+import type { EventResponseShort } from "@/feature/calendar/types"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Label } from "@/shared/components/ui/label"
 import { cn } from "@/shared/lib/utils"
 
-export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
+export const columnsDataEvents: ColumnDef<EventResponseShort, unknown>[] = [
   {
     id: "rowNumber",
     header: "№",
@@ -16,6 +16,16 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
     accessorFn: () => "",
     minSize: 80,
     maxSize: 80,
+  },
+  {
+    id: "userId",
+    header: "Пользователь",
+    enableHiding: false,
+    enableSorting: false,
+    meta: {
+      hidden: true,
+    },
+    accessorFn: (row: EventResponseShort) => row.userId,
   },
   {
     id: "select",
@@ -59,7 +69,7 @@ export const columnsDataEvents: ColumnDef<EventInputType, unknown>[] = [
   //   meta: {
   //     hidden: true,
   //   },
-  //   accessorFn: (row: EventInputType) => row.id,
+  //   accessorFn: (row: EventResponseShort) => row.id,
   // },
   {
     id: "start",
