@@ -1,21 +1,16 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import dynamicImport from "next/dynamic"
-import { connection } from "next/server"
 import { getAllDealsRequestSourceByDepartment } from "@/entities/deal/api/deal.actions"
 import Loading from "./loading"
-
-const Charts = dynamicImport(() => import("./ui/Charts"), {
-  loading: () => <Loading />,
-})
+import Charts from "./ui/Charts"
 
 export const metadata: Metadata = {
   title: "Источники заявок",
 }
 
-async function ChartsDataLoader({ depId }: { depId: number }) {
-  await connection()
+export const instant = false
 
+async function ChartsDataLoader({ depId }: { depId: number }) {
   const data = await getAllDealsRequestSourceByDepartment(depId)
 
   if (!data?.deals.length) return <p>Нет данных</p>

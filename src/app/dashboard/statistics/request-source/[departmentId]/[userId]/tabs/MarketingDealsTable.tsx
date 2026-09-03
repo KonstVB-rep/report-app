@@ -1,11 +1,19 @@
 "use client"
 
-import { Activity, Suspense, useEffect, useMemo, useState } from "react" // 1. Импортируем Activity и Suspense
+import {
+  Activity,
+  Suspense,
+  startTransition,
+  useEffect,
+  useMemo,
+  useState,
+  ViewTransition,
+} from "react" // 1. Импортируем Activity и Suspense
 import dynamic from "next/dynamic"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import type { DealsUnionType } from "@/entities/deal/types"
-import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs" // TabsContent НЕ импортируем
+import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import { PERMISSIONS } from "@/shared/lib/constants"
@@ -67,7 +75,9 @@ const MarketingDealsTable = ({ userId }: MarketingDealsTableProps) => {
   }, [pathname, queryTab, router.replace, searchParams.toString])
 
   const handleToggleTab = (value: DealsUnionType) => {
-    setActiveTab(value)
+    startTransition(() => {
+      setActiveTab(value)
+    })
 
     const params = new URLSearchParams()
 
@@ -87,33 +97,35 @@ const MarketingDealsTable = ({ userId }: MarketingDealsTableProps) => {
         <TabsTrigger value="projects">Проекты</TabsTrigger>
       </TabsList>
 
-      <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-        <Activity mode={activeTab === "retails" ? "visible" : "hidden"}>
-          <Suspense fallback={<LoaderCircleInWater />}>
-            <DealsTabContent
-              columns={columnsDataRetailForMarketing}
-              dealType="retails"
-              departmentId={1}
-              hasAccess={hasAccess}
-              hiddenColumns={hiddenColsRetail}
-              userId={userId}
-            />
-          </Suspense>
-        </Activity>
+      <ViewTransition>
+        <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+          <Activity mode={activeTab === "retails" ? "visible" : "hidden"}>
+            <Suspense fallback={<LoaderCircleInWater />}>
+              <DealsTabContent
+                columns={columnsDataRetailForMarketing}
+                dealType="retails"
+                departmentId={1}
+                hasAccess={hasAccess}
+                hiddenColumns={hiddenColsRetail}
+                userId={userId}
+              />
+            </Suspense>
+          </Activity>
 
-        <Activity mode={activeTab === "projects" ? "visible" : "hidden"}>
-          <Suspense fallback={<LoaderCircleInWater />}>
-            <DealsTabContent
-              columns={columnsDataProjectForMarketing}
-              dealType="projects"
-              departmentId={1}
-              hasAccess={hasAccess}
-              hiddenColumns={hiddenColsProject}
-              userId={userId}
-            />
-          </Suspense>
-        </Activity>
-      </div>
+          <Activity mode={activeTab === "projects" ? "visible" : "hidden"}>
+            <Suspense fallback={<LoaderCircleInWater />}>
+              <DealsTabContent
+                columns={columnsDataProjectForMarketing}
+                dealType="projects"
+                departmentId={1}
+                hasAccess={hasAccess}
+                hiddenColumns={hiddenColsProject}
+                userId={userId}
+              />
+            </Suspense>
+          </Activity>
+        </div>
+      </ViewTransition>
     </Tabs>
   )
 }

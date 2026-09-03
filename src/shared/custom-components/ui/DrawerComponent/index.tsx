@@ -11,7 +11,7 @@ const DrawerComponent = ({
   return (
     <div
       className={cn(
-        "bg-stone-800/20 backdrop-blur-sm flex items-center justify-center left-1/2 -translate-x-2/4 gap-2 border absolute h-20 rounded-xl w-max p-4",
+        "bg-stone-800/20 backdrop-blur-sm flex items-center justify-center left-1/2 -translate-x-2/4 absolute h-auto rounded-xl",
         `${positionSide}`,
       )}
     >

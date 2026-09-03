@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import type { DateRange } from "react-day-picker"
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
-import { v4 as uuid } from "uuid"
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import { TitlePageBlock } from "@/shared/custom-components/ui/TitlePage"
 import useAnimateOnDataChange from "@/shared/hooks/useAnimateOnDataChange"
@@ -64,7 +63,8 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
       countsStatuses[key] = (countsStatuses[key] || 0) + 1
     })
 
-    const data = Object.entries(countsStatuses).map(([name, statusCounts]) => ({
+    const data = Object.entries(countsStatuses).map(([name, statusCounts], index) => ({
+      id: index + 1,
       name,
       value: statusCounts,
       dateRequets: dateRequests[name],
@@ -102,6 +102,11 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
     router.replace(`?${params.toString()}`)
   }
 
+  const coloredData = data.map((item, index) => ({
+    ...item,
+    fill: COLORS[index % COLORS.length], // Добавляем цвет прямо в объект данных
+  }))
+
   if (deals.length === 0) return <EmptyData />
 
   return (
@@ -125,15 +130,13 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
         <div>
           {data.length > 0 ? (
             <MotionDivY
-              className="grid-charts grid gap-2 sm:gap-4 items-start pt-20"
+              className="grid-charts grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 items-start pt-5 w-full"
               keyValue={`chart-${JSON.stringify(selectedDate)}`}
             >
               {isCircleGraph && (
                 <ResponsiveContainer
-                  className="hidden md:block justify-self-center"
-                  height="100%"
-                  minHeight={"30vw"}
-                  minWidth={"30vw"}
+                  aspect={1}
+                  className="hidden md:block self-baseline"
                   width="100%"
                 >
                   <PieChart>
@@ -142,7 +145,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                       animationDuration={500}
                       className="circle-graph pie-no-outline"
                       cornerRadius="5%"
-                      data={data}
+                      data={coloredData}
                       dataKey="value"
                       fill="#8884d8"
                       innerRadius="20%"
@@ -154,11 +157,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
                       nameKey="name"
                       outerRadius="80%"
                       paddingAngle={4}
-                    >
-                      {data.map((_, index) => (
-                        <Cell fill={COLORS[index % COLORS.length]} key={`cell-${uuid()}`} />
-                      ))}
-                    </Pie>
+                    />
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
@@ -181,7 +180,7 @@ const Charts = ({ data: { deals, totalDealsCount } }: Props) => {
 
                 <ul className="hidden sm:grid gap-2 shrink-0">
                   {data.map((item) => (
-                    <li className="shrink-0" key={uuid()}>
+                    <li className="shrink-0" key={item.id}>
                       <span className="py-1 px-2 bg-muted border border-solid rounded-md border-primary dark:border-muted flex items-center justify-center shrink-0">
                         {item.value}
                       </span>

@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation"
-import ClientProvidersWrapper from "@/shared/custom-components/ui/ClientProvidersWrapper"
 import { getUserFromCookie } from "@/shared/lib/auth/getUserFromCookie"
 
 const TemplateDashboard = async ({ children }: { children: React.ReactNode }) => {
@@ -12,7 +11,7 @@ const TemplateDashboard = async ({ children }: { children: React.ReactNode }) =>
       redirect("/forbidden")
     }
 
-    return <ClientProvidersWrapper>{children}</ClientProvidersWrapper>
+    return <>{children}</>
   } catch (_error) {
     redirect("/login")
   }

@@ -6,7 +6,6 @@ import { hasAccessToData } from "@/entities/deal/lib/hasAccessToData"
 import type { DealUnion, ProjectResponse, RetailResponse, TableType } from "@/entities/deal/types"
 import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
-import TableRowsSkeleton from "@/entities/deal/ui/Skeletons/TableRowsSkeleton"
 import { useDealsUser } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition"
@@ -46,8 +45,6 @@ type HiddenColumns = Record<string, boolean>
 const hiddenDefCols: Record<TableType, HiddenColumns> = {
   projects: {
     resource: false,
-    // deliveryType: false,
-    // direction: false,
     id: false,
   },
   retails: {
@@ -66,11 +63,7 @@ const PersonDealsTable = () => {
 
   const hasAccess = hasAccessToData(userId as string, PERMISSIONS.VIEW_USER_REPORT)
 
-  const {
-    data = [],
-    isLoading,
-    isPlaceholderData,
-  } = useDealsUser(dealType as TableType, userId as string)
+  const { data = [], isPlaceholderData } = useDealsUser(dealType as TableType, userId as string)
 
   if (!hasAccess)
     return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
@@ -86,18 +79,14 @@ const PersonDealsTable = () => {
         </div>
 
         <ButtonsGroupTable />
-        {isLoading ? (
-          <TableRowsSkeleton />
-        ) : (
-          <div className={isPlaceholderData ? "opacity-50 transition-opacity" : "opacity-100"}>
-            <DealsTable
-              columns={Columns(dealType as TableType) as ColumnDef<DealUnion>[]}
-              data={data as DealUnion[]}
-              hiddenCols={hiddenDefCols[dealType as TableType]}
-              tableName="person-table"
-            />
-          </div>
-        )}
+        <div className={isPlaceholderData ? "opacity-50 transition-opacity" : "opacity-100"}>
+          <DealsTable
+            columns={Columns(dealType as TableType) as ColumnDef<DealUnion>[]}
+            data={data as DealUnion[]}
+            hiddenCols={hiddenDefCols[dealType as TableType]}
+            tableName="person-table"
+          />
+        </div>
       </DealTableTemplate>
     </NotFoundByPosition>
   )

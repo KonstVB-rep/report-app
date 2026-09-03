@@ -30,7 +30,6 @@ const TableRowsWrapper = <T = unknown>({
   const { rows } = table.getRowModel()
   const rowsCount = rows.length
 
-  // Хук тоже должен принимать T
   const { virtualItems, totalSize } = useVirtualizedRowTable<T>({
     rows,
     tableContainerRef,
@@ -40,7 +39,7 @@ const TableRowsWrapper = <T = unknown>({
     <div
       className={cn("rounded-lg relative h-full overflow-auto border transition-all duration-200", {
         "max-h-[68vh]": openFilters,
-        "max-h-[74vh]": !openFilters,
+        "max-h-[75vh]": !openFilters,
       })}
       ref={tableContainerRef}
     >
