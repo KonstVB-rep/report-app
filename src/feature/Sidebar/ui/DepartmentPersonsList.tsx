@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, type PropsWithChildren, useCallback, useMemo, useState } from "react"
+import { type PropsWithChildren, useCallback, useMemo, useState } from "react"
 import clsx from "clsx"
 import { ChevronRight } from "lucide-react"
 import { useParams, usePathname, useRouter } from "next/navigation"
@@ -97,7 +97,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
   )
 }
 
-export default memo(DepartmentPersonsList)
+export default DepartmentPersonsList
 
 const DepartmentLayout = ({
   item,

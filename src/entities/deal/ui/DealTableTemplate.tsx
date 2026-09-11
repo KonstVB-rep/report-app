@@ -4,7 +4,6 @@ import useStoreUser from "@/entities/user/store/useStoreUser"
 import { useGetUser } from "@/feature/user/hooks/query"
 import { PERMISSIONS } from "@/shared/lib/constants"
 import ErrorMessageTable from "./ErrorMessageTable"
-import DealsSkeleton from "./Skeletons/DealsSkeleton"
 
 type DealTableTemplateProps = {
   children: React.ReactNode
@@ -18,9 +17,7 @@ const DealTableTemplate = ({ children }: DealTableTemplateProps) => {
 
   const { data: user, error, isPending } = useGetUser(currentUserId, [PERMISSIONS.VIEW_USER_REPORT])
 
-  if (isPending) return <DealsSkeleton />
-
-  if (!user) {
+  if (!user && !isPending) {
     return <ErrorMessageTable message={error?.message || "Пользователь не найден"} />
   }
 

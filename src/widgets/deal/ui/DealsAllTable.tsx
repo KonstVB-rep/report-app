@@ -19,6 +19,7 @@ type Props = {
   setOpenFullInfoCell: (id: string | null) => void
   tableContainerRef: RefObject<HTMLDivElement | null>
   openFilters: boolean
+  canSelectRows?: boolean
 }
 
 const DealsAllTable = ({
@@ -30,12 +31,13 @@ const DealsAllTable = ({
   setOpenFullInfoCell,
   tableContainerRef,
   openFilters,
+  canSelectRows = true,
 }: Props) => {
   return (
     <>
-      {table.getRowModel().rows.length > 0 && (
+      {canSelectRows && table.getSelectedRowModel().rows.length > 0 && (
         <p className="border rounded-md p-2 m-1 w-fit bg-[#3071fc] text-white dark:bg-black">
-          Количество выбранных заявок: {table.getRowModel().rows.length}
+          Количество выбранных заявок: {table.getSelectedRowModel().rows.length}
         </p>
       )}
       <div

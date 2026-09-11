@@ -11,12 +11,16 @@ interface UserTableContentProps {
 }
 
 const UserTableContent = ({ table, isLoading }: UserTableContentProps) => {
+  const rows = table.getRowModel().rows
   return (
     <TableTemplate className="overflow-auto" table={table}>
+      {!isLoading && rows.length === 0 && (
+        <TableRow className="flex items-center h-full justify-center">Нет данных</TableRow>
+      )}
       {isLoading ? (
         <SkeletonTable className="p-1" />
       ) : (
-        table.getRowModel().rows.map((row) => (
+        rows.map((row) => (
           <TableRow className="flex" key={row.id}>
             <UserTableCellContent row={row} />
           </TableRow>

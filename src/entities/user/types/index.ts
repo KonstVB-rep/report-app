@@ -2,7 +2,7 @@ import type { DepartmentValue } from "@/entities/department/types"
 import { PERMISSIONS, type PERMISSIONS_UNION } from "@/shared/lib/constants"
 import { PermissionUser, type RoleValue } from "../model/objectTypes"
 
-const Roles = {
+export const Roles = {
   DIRECTOR: "DIRECTOR",
   EMPLOYEE: "EMPLOYEE",
   ADMIN: "ADMIN",

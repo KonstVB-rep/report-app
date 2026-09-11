@@ -20,16 +20,18 @@ export const TitlePageBlock = ({
     <div className="py-1 dark:bg-black/50 bg-black/10 rounded-md relative min-h-9 border border-gray-600">
       <TitlePage title={title} />
       {subTitle && <SubTitlePage text={subTitle} />}
-      <TooltipComponent content={infoText}>
-        <Button
-          className="absolute rounded-md top-0 left-0"
-          size="icon"
-          type="button"
-          variant="ghost"
-        >
-          <Info size="20" />
-        </Button>
-      </TooltipComponent>
+      {infoText && (
+        <TooltipComponent content={infoText}>
+          <Button
+            className="absolute rounded-md top-0 left-0"
+            size="icon"
+            type="button"
+            variant="ghost"
+          >
+            <Info size="20" />
+          </Button>
+        </TooltipComponent>
+      )}
     </div>
   )
 }

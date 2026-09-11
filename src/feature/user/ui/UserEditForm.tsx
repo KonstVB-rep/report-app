@@ -3,6 +3,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import z from "zod"
 import { userUpdateFormSchema } from "@/entities/user/model/schema"
 import type { UserFormEditData, UserWithdepartmentName } from "@/entities/user/types"
 import UserForm from "@/entities/user/ui/UserForm"
@@ -38,6 +39,7 @@ const UserEditForm = ({
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
+    formData.append("id", user?.id as string)
 
     let permissions: string[] = []
     try {
@@ -64,15 +66,36 @@ const UserEditForm = ({
     const validated = userUpdateFormSchema.safeParse(rawData)
 
     if (!validated.success) {
-      const errors = validated.error.flatten().fieldErrors
-      const firstError = Object.values(errors).flat()[0]
+      const errorTree = z.treeifyError(validated.error)
+
+      const getFirstErrorMessage = (node: unknown): string | null => {
+        if (typeof node === "string") return node
+        if (Array.isArray(node)) {
+          for (const item of node) {
+            const msg = getFirstErrorMessage(item)
+            if (msg) return msg
+          }
+          return null
+        }
+        if (node && typeof node === "object") {
+          for (const value of Object.values(node)) {
+            const msg = getFirstErrorMessage(value)
+            if (msg) return msg
+          }
+        }
+        return null
+      }
+
+      const firstError = getFirstErrorMessage(errorTree)
 
       setState({
         ...initialState,
-        message: firstError || "Ошибка валидации формы",
+        message: firstError || "Произошла ошибка",
         success: false,
       })
-      toast.error(firstError || "Ошибка валидации формы")
+
+      console.error(validated.error)
+      toast.error(firstError)
       return
     }
 

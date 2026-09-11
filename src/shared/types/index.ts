@@ -1,3 +1,5 @@
+import type { Departments } from "@/entities/department/types"
+
 export type ActionResponse<T> = {
   success: boolean
   message: string
@@ -26,3 +28,9 @@ export const REFETCH_INTERVAL = 1000 * 60 * 5
 export const REFETCH_INTERVAL_SUMMARY_TABLE = 1000 * 60
 
 export const ERROR_TEXT = "Не удалось получить список объектов"
+
+export const DepartmentEnum: Record<keyof typeof Departments, string> = {
+  SALES: "1",
+  MARKETING: "2",
+  TECHNICAL: "3",
+} as const

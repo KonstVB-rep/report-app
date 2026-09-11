@@ -8,7 +8,7 @@ import type { FileResourceYndx } from "../types"
 
 interface Props {
   data: {
-    userId: string | null // Разрешаем null
+    userId: string | null
     dealId: string
     dealType: DealType
   }

@@ -1,11 +1,10 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { Redo2 } from "lucide-react"
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
 import type { DepartmentLabelsById } from "@/entities/department/lib/constants"
-import Overlay from "@/shared/custom-components/ui/Overlay"
 import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
 import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import { PERMISSIONS } from "@/shared/lib/constants"
@@ -42,9 +41,6 @@ const LinkToUserTable = () => {
 
   const authUser = useRequireAuth()
   const pathname = usePathname()
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleClick = () => setIsLoading(true)
 
   const hasTable = useMemo(() => {
     if (!dealType || !userId || !departmentId) return null
@@ -61,12 +57,10 @@ const LinkToUserTable = () => {
 
   return (
     <>
-      <Overlay className="animate animate-pulse" isPending={isLoading} />
       {hasTable && (
         <Link
           className="btn_hover max-w-max border-muted px-4 text-sm"
           href={`/dashboard/${hasTable.url}/${userId}`}
-          onClick={handleClick}
           prefetch={false}
           title={`Перейти на страницу - ${hasTable.title}`}
         >
@@ -79,7 +73,6 @@ const LinkToUserTable = () => {
           <Link
             className="btn_hover max-w-max border-muted px-4 text-sm"
             href={`/dashboard/${hasSummaryTable.url}/${authUser.id}`}
-            onClick={handleClick}
             prefetch={false}
             title={`Перейти на страницу - ${hasSummaryTable.title}`}
           >

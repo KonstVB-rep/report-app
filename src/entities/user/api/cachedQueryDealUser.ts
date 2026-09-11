@@ -30,14 +30,6 @@ export const getCachedBaseUserData = async (targetUserId: string) => {
   })
 }
 
-// export const getCachedUsersByDepartment = async (departmentId: number) => {
-//   cacheLife("days")
-//   cacheTag(tagKeysUserActions.usersByDept(departmentId))
-
-//   return await prisma.user.findMany({
-//     where: { departmentId },
-//   })
-// }
 export const getCachedAllUsersTable = async () => {
   cacheLife("days")
   cacheTag(tagKeysUserActions.allUsersAdminTable())
@@ -62,9 +54,10 @@ export const getCachedAllUsersTable = async () => {
     }),
   ])
 
+  const loginIndex = Object.fromEntries(lastLogins.map((ll) => [ll.userId, ll._max.loginAt]))
+
   return users.map((user) => {
-    const lastLoginRecord = lastLogins.find((ll) => ll.userId === user.id)
-    const lastLoginDate = lastLoginRecord?._max.loginAt || new Date(0)
+    const lastLoginDate = loginIndex[user.id] || new Date(0)
 
     return {
       ...user,

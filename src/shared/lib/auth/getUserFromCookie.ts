@@ -3,12 +3,50 @@
 import { cache } from "react"
 import { jwtVerify } from "jose"
 import { cookies } from "next/headers"
+import type { RoleValue } from "@/entities/user/model/objectTypes"
 import { prisma } from "@/prisma/prisma-client"
+import type { PERMISSIONS_UNION } from "../constants"
 import { type PayloadType, verifyToken } from "./session"
 
 const ACCESS_SECRET = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
 
-export const getUserFromCookie = cache(async (): Promise<PayloadType | null> => {
+export const getCachedUser = cache(async (userId: string): Promise<PayloadType | null> => {
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      departmentId: true,
+      role: true,
+      username: true,
+      position: true,
+      isBlocked: true,
+      permissions: {
+        select: {
+          permission: {
+            select: { name: true },
+          },
+        },
+      },
+    },
+  })
+
+  if (!dbUser || dbUser.isBlocked) {
+    console.log(`[AUTH] Доступ для пользователя ${userId} заблокирован СУБД.`)
+    return null
+  }
+
+  return {
+    userId: dbUser.id,
+    departmentId: dbUser.departmentId,
+    role: dbUser.role as RoleValue,
+    username: dbUser.username,
+    position: dbUser.position,
+    isBlocked: dbUser.isBlocked,
+    permissions: dbUser.permissions.map((up) => up.permission.name as PERMISSIONS_UNION),
+  }
+})
+
+export const getUserFromCookie = async (): Promise<PayloadType | null> => {
   const cookieStore = await cookies()
   const accessToken = cookieStore.get("accessToken")?.value
   const refreshToken = cookieStore.get("refreshToken")?.value
@@ -28,19 +66,10 @@ export const getUserFromCookie = cache(async (): Promise<PayloadType | null> => 
       if (userData) payload = userData
     } catch (_e) {}
   }
+
   if (payload?.userId) {
-    const dbUser = await prisma.user.findUnique({
-      where: { id: payload.userId },
-      select: { isBlocked: true },
-    })
-
-    if (!dbUser || dbUser.isBlocked) {
-      console.log(`[AUTH] Доступ для пользователя ${payload.userId} заблокирован СУБД.`)
-      return null
-    }
-
-    return payload
+    return getCachedUser(payload.userId)
   }
 
-  return null
-})
+  return payload
+}

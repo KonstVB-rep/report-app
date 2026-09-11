@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { notFound } from "next/navigation"
 import { getQueryClient } from "@/app/provider/query-provider"
@@ -54,16 +53,7 @@ const SummaryTablePage = async ({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense
-        fallback={
-          <div className="animate-pulse space-y-4 p-4">
-            <div className="h-8 bg-muted rounded w-1/3" />
-            <div className="h-64 bg-muted rounded" />
-          </div>
-        }
-      >
-        <SummaryDealsTable />
-      </Suspense>
+      <SummaryDealsTable />
     </HydrationBoundary>
   )
 }

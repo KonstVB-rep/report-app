@@ -6,8 +6,6 @@ import Link from "next/link"
 import { NOT_MANAGERS_POSITIONS } from "@/entities/department/lib/constants"
 import type { DepartmentUserItem } from "@/entities/department/types"
 import { Separator } from "@/shared/components/ui/separator"
-import ProtectedByPermissions from "@/shared/custom-components/ui/Protect/ProtectedByPermissions"
-import { PERMISSIONS } from "@/shared/lib/constants"
 
 type DealsType = {
   id: string
@@ -30,7 +28,7 @@ const dealsSalesDepartment: DealsType[] = [
 ]
 
 const pagesMarkretingDepartment: DealsType[] = [
-  { id: "statistics/request-source", title: "Источники сделок" },
+  { id: "statistics/request-source", title: "Заявки" },
 ]
 
 const LinkItem = memo(
@@ -71,7 +69,7 @@ const LinkItem = memo(
 LinkItem.displayName = "LinkItem"
 
 export const DepartmentLinks = memo(
-  ({ departmentId, user, userId, dealType, pathName }: DepartmentLinksProps) => {
+  ({ departmentId, user, userId, dealType }: DepartmentLinksProps) => {
     const linksList = useMemo(() => {
       switch (departmentId) {
         case 1:
@@ -107,25 +105,7 @@ export const DepartmentLinks = memo(
       )
     })
 
-    const marketingExtraLink =
-      departmentId === 2 ? (
-        <ProtectedByPermissions permission={PERMISSIONS.VIEW_UNION_REPORT}>
-          <LinkItem
-            href={`/dashboard/statistics/request-source/2/${user.id}/tabs`}
-            icon={BookText}
-            isActive={pathName?.includes("tabs") ?? false}
-            onClick={(e) => e.stopPropagation()}
-            title={"Заявки"}
-          />
-        </ProtectedByPermissions>
-      ) : null
-
-    return (
-      <>
-        {renderLinks}
-        {marketingExtraLink}
-      </>
-    )
+    return <>{renderLinks}</>
   },
 )
 

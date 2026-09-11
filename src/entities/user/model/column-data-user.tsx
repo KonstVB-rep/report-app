@@ -4,7 +4,7 @@ import { endOfDay, startOfDay } from "date-fns"
 import { UserCheck } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 import { DepartmentLabelsById } from "@/entities/department/lib/constants"
-import type { User } from "@/entities/user/types"
+import { Roles, type User } from "@/entities/user/types"
 import { Checkbox } from "@/shared/components/ui/checkbox"
 import { Label } from "@/shared/components/ui/label"
 import type { PERMISSIONS_UNION } from "@/shared/lib/constants"
@@ -26,8 +26,8 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
     enableHiding: false,
     enableSorting: false,
     accessorFn: () => "",
-    minSize: 80,
-    maxSize: 80,
+    minSize: 60,
+    maxSize: 60,
   },
   {
     id: "id",
@@ -123,32 +123,32 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
     header: "Должность",
     cell: (info: CellContext<UserTypeTable, unknown>) => {
       const value = info.getValue() as string
-      return value.split(" ")[0].charAt(0).toUpperCase() + value.split(" ")[0].slice(1)
+      return value.split(" ")[0].charAt(0).toUpperCase() + value.slice(1)
     },
     accessorFn: (row: UserTypeTable) => row.position,
   },
-  {
-    id: "telegramInfo",
-    header: "телеграм данные",
-    cell: (info: CellContext<UserTypeTable, unknown>) => {
-      const value = info.getValue() as string
-      return value
-    },
-    accessorFn: (row: UserTypeTable) => row.telegramInfo,
-  },
-  {
-    id: "tgUserId",
-    header: "ID чата",
-    cell: (info: CellContext<UserTypeTable, unknown>) => {
-      return info.getValue() ?? ""
-    },
-    enableHiding: true,
-    meta: {
-      title: "ID чата",
-      hidden: true,
-    },
-    accessorFn: (row: UserTypeTable) => row.tgUserId,
-  },
+  // {
+  //   id: "telegramInfo",
+  //   header: "телеграм данные",
+  //   cell: (info: CellContext<UserTypeTable, unknown>) => {
+  //     const value = info.getValue() as string
+  //     return value
+  //   },
+  //   accessorFn: (row: UserTypeTable) => row.telegramInfo,
+  // },
+  // {
+  //   id: "tgUserId",
+  //   header: "ID чата",
+  //   cell: (info: CellContext<UserTypeTable, unknown>) => {
+  //     return info.getValue() ?? ""
+  //   },
+  //   enableHiding: true,
+  //   meta: {
+  //     title: "ID чата",
+  //     hidden: true,
+  //   },
+  //   accessorFn: (row: UserTypeTable) => row.tgUserId,
+  // },
   {
     id: "departmentId",
     header: "Отдел",
@@ -171,11 +171,15 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
     id: "permissions",
     header: "Разрешения",
     cell: (info: CellContext<UserTypeTable, unknown>) => {
+      const isAdmin = info.row.original.role === Roles.ADMIN
       const value = info.getValue() as string[]
       if (Array.isArray(value))
         return (
           <span className="block text-left" style={{ whiteSpace: "break-spaces" }}>
-            {value.map((item) => PermissionUser[item as PERMISSIONS_UNION]).join(",\n")}
+            {isAdmin
+              ? "Все права"
+              : value.map((item) => PermissionUser[item as PERMISSIONS_UNION]).join(",\n") ||
+                "Нет прав"}
           </span>
         )
       return value
@@ -221,83 +225,83 @@ export const columnsDataUsers: ColumnDef<UserTypeTable, unknown>[] = [
     minSize: 120,
     maxSize: 120,
   },
-  {
-    id: "createdAt",
-    header: "Дата регистрации",
-    cell: (info: CellContext<UserTypeTable, unknown>) => {
-      const date = info.getValue() as Date
-      return date.toLocaleDateString("ru-RU")
-    },
-    enableHiding: true,
-    meta: {
-      isDateFilter: true,
-    },
-    enableResizing: false,
-    filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date
-      const dateAtStartOfDay = startOfDay(date)
+  // {
+  //   id: "createdAt",
+  //   header: "Дата регистрации",
+  //   cell: (info: CellContext<UserTypeTable, unknown>) => {
+  //     const date = info.getValue() as Date
+  //     return date.toLocaleDateString("ru-RU")
+  //   },
+  //   enableHiding: true,
+  //   meta: {
+  //     isDateFilter: true,
+  //   },
+  //   enableResizing: false,
+  //   filterFn: (row, columnId, filterValue) => {
+  //     const date = row.getValue(columnId) as Date
+  //     const dateAtStartOfDay = startOfDay(date)
 
-      if (filterValue) {
-        const { from, to } = filterValue as DateRange
+  //     if (filterValue) {
+  //       const { from, to } = filterValue as DateRange
 
-        if (from && to) {
-          const toAtEndOfDay = endOfDay(to)
-          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
-        }
+  //       if (from && to) {
+  //         const toAtEndOfDay = endOfDay(to)
+  //         return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
+  //       }
 
-        if (from) {
-          return dateAtStartOfDay >= startOfDay(from)
-        }
-        if (to) {
-          return dateAtStartOfDay <= endOfDay(to)
-        }
-        return false
-      }
+  //       if (from) {
+  //         return dateAtStartOfDay >= startOfDay(from)
+  //       }
+  //       if (to) {
+  //         return dateAtStartOfDay <= endOfDay(to)
+  //       }
+  //       return false
+  //     }
 
-      return true
-    },
-    accessorFn: (row: UserTypeTable) => row.createdAt,
-    minSize: 120,
-    maxSize: 120,
-  },
-  {
-    id: "updatedAt",
-    header: "Дата обновления",
-    cell: (info: CellContext<UserTypeTable, unknown>) => {
-      const date = info.getValue() as Date
-      return date.toLocaleDateString("ru-RU")
-    },
-    enableHiding: true,
-    meta: {
-      isDateFilter: true,
-    },
-    // size: 100, // Фиксированная ширина
-    enableResizing: false,
-    filterFn: (row, columnId, filterValue) => {
-      const date = row.getValue(columnId) as Date
-      const dateAtStartOfDay = startOfDay(date)
+  //     return true
+  //   },
+  //   accessorFn: (row: UserTypeTable) => row.createdAt,
+  //   minSize: 120,
+  //   maxSize: 120,
+  // },
+  // {
+  //   id: "updatedAt",
+  //   header: "Дата обновления",
+  //   cell: (info: CellContext<UserTypeTable, unknown>) => {
+  //     const date = info.getValue() as Date
+  //     return date.toLocaleDateString("ru-RU")
+  //   },
+  //   enableHiding: true,
+  //   meta: {
+  //     isDateFilter: true,
+  //   },
+  //   // size: 100, // Фиксированная ширина
+  //   enableResizing: false,
+  //   filterFn: (row, columnId, filterValue) => {
+  //     const date = row.getValue(columnId) as Date
+  //     const dateAtStartOfDay = startOfDay(date)
 
-      if (filterValue) {
-        const { from, to } = filterValue as DateRange
+  //     if (filterValue) {
+  //       const { from, to } = filterValue as DateRange
 
-        if (from && to) {
-          const toAtEndOfDay = endOfDay(to)
-          return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
-        }
+  //       if (from && to) {
+  //         const toAtEndOfDay = endOfDay(to)
+  //         return dateAtStartOfDay >= startOfDay(from) && dateAtStartOfDay <= toAtEndOfDay
+  //       }
 
-        if (from) {
-          return dateAtStartOfDay >= startOfDay(from)
-        }
-        if (to) {
-          return dateAtStartOfDay <= endOfDay(to)
-        }
-        return false
-      }
+  //       if (from) {
+  //         return dateAtStartOfDay >= startOfDay(from)
+  //       }
+  //       if (to) {
+  //         return dateAtStartOfDay <= endOfDay(to)
+  //       }
+  //       return false
+  //     }
 
-      return true
-    },
-    accessorFn: (row: UserTypeTable) => row.updatedAt,
-    minSize: 120,
-    maxSize: 120,
-  },
+  //     return true
+  //   },
+  //   accessorFn: (row: UserTypeTable) => row.updatedAt,
+  //   minSize: 120,
+  //   maxSize: 120,
+  // },
 ]

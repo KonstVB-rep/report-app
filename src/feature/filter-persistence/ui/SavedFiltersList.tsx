@@ -41,11 +41,8 @@ const SavedFiltersList = ({
     const filter = userFilters.find((f) => f.filterName === filterName)
 
     if (filter && filterName !== selectedFilterName) {
-      // 1. МГНОВЕННО парсим строку "deliveryType=RENT&direction=SKD..." и пишем в Zustand Store
-      // Таблица перестроится за пару миллисекунд без лагов UI!
       parseAndSetFilters(filter.filterValue)
 
-      // 2. Спокойно обновляем роутер Next.js и бэкенд
       router.replace(`${pathname}?${filter.filterValue}`, { scroll: false })
       selectFilter(filter.id)
       setSelectedFilterName(filter.filterName)

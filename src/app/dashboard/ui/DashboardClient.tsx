@@ -61,7 +61,8 @@ const DashboardClient = () => {
       />
       <div className="grid gap-5 relative z-10">
         <h1 className="text-2xl text-center">
-          Добро пожаловать{userFirstName && `, ${userFirstName}`}!
+          Добро пожаловать
+          {userFirstName && `, ${userFirstName[0].toUpperCase() + userFirstName.slice(1)}`}!
         </h1>
         <p className="text-lg text-center">Вы можете начать свою работу с боковой панели.</p>
       </div>
