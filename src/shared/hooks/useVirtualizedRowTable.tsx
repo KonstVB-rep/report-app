@@ -9,7 +9,7 @@ interface UseVirtualizedRowTableProps<T> {
   tableContainerRef: RefObject<HTMLDivElement | null>
 }
 
-const useVirtualizedRowTable = <T,>({
+export const useVirtualizedRowTable = <T,>({
   rows,
   tableContainerRef,
 }: UseVirtualizedRowTableProps<T>) => {
