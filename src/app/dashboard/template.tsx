@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
-import ClientProvidersWrapper from "@/shared/custom-components/ui/ClientProvidersWrapper"
 import { getUserFromCookie } from "@/shared/lib/auth/getUserFromCookie"
 
 const TemplateDashboard = async ({ children }: { children: ReactNode }) => {
@@ -12,7 +11,7 @@ const TemplateDashboard = async ({ children }: { children: ReactNode }) => {
     redirect("/login")
   }
 
-  return <ClientProvidersWrapper>{children}</ClientProvidersWrapper>
+  return <>{children}</>
 }
 
 export default TemplateDashboard

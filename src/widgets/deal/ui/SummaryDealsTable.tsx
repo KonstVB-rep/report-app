@@ -11,6 +11,8 @@ import LinkToUserTable from "@/entities/deal/ui/LinkToUserTable"
 import DealsSkeleton from "@/entities/deal/ui/Skeletons/DealsSkeleton"
 import { useGetAllDealsByType } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
+import ButtonRefresh from "@/shared/custom-components/ui/Buttons/ButtonRefresh"
+import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
 import { PERMISSIONS } from "@/shared/lib/constants"
 import DealsTable from "@/widgets/deal/ui/DealsTable"
 import { columnsDataProjectSummary } from "../model/summary-columns-data-project"
@@ -34,6 +36,7 @@ const getColumns = (type: DealsUnionType | undefined): SummaryColumns => {
 const HIDDEN_COLS = { id: false, resource: false, rowNumber: false } as const
 
 const SummaryDealsTable = () => {
+  const authUser = useRequireAuth()
   const params = useParams<{
     departmentId: string
     userId: string
@@ -44,10 +47,7 @@ const SummaryDealsTable = () => {
 
   const departmentId = Number(depNum)
 
-  const hasAccess = useMemo(
-    () => (userId ? hasAccessToDataSummary(userId, PERMISSIONS.VIEW_UNION_REPORT) : false),
-    [userId],
-  )
+  const hasAccess = userId ? hasAccessToDataSummary(authUser, PERMISSIONS.VIEW_UNION_REPORT) : false
 
   const columns = useMemo(() => getColumns(dealType), [dealType])
 
@@ -56,6 +56,7 @@ const SummaryDealsTable = () => {
     error,
     isError,
     isLoading,
+    refetch,
   } = useGetAllDealsByType(dealType, hasAccess ? userId : null, departmentId)
 
   if (Number.isNaN(departmentId)) {
@@ -78,9 +79,10 @@ const SummaryDealsTable = () => {
     <DealTableTemplate>
       {isError && <ErrorMessageTable message={error?.message} />}
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap items-center">
+        <ButtonRefresh refetch={refetch} />
         <LinkToUserTable />
-        <p className="border rounded-md p-2">Количество заявок: {dealsCount}</p>
+        <p className="border rounded-md p-2"> {dealsCount}</p>
       </div>
 
       <DealsTable<PageDealType>

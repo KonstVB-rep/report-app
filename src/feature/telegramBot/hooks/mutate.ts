@@ -114,10 +114,6 @@ export const useUpdateChatBot = (onSetState: (data: ActionResponse<UserTelegramC
       }
       onSetState(data)
       TOAST.SUCCESS(data.message)
-
-      //   queryClient.invalidateQueries({
-      //     queryKey: ["chatInfoChecked", authUser?.id, data.result.chatName],
-      //   });
     },
     onError: (error) => {
       const err = error as Error & { status?: number }

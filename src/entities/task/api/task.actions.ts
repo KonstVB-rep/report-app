@@ -2,6 +2,7 @@
 
 import { PermissionEnum, type Task } from "@prisma/client"
 import { AxiosError } from "axios"
+import { cacheTag, revalidateTag } from "next/cache"
 import { checkUserPermissionByRole } from "@/app/api/utils/checkUserPermissionByRole"
 import { requireUser } from "@/app/api/utils/requireAuth"
 import type { DeleteTaskData, TaskFormType, TaskFormTypeWithId } from "@/feature/task/types"
@@ -147,10 +148,13 @@ export const createTask = async (task: Omit<TaskFormType, "orderTask">) => {
       }
     }
 
+    revalidateTag(`task-count-${newTask.assignerId}`, "max")
+    revalidateTag(`task-count-${newTask.executorId}`, "max")
+
     return {
       error: false,
       message: "Задача успешно создана",
-      data: null,
+      data: newTask,
       telegramError,
     }
   } catch (error) {
@@ -191,6 +195,26 @@ export const updateTask = async (taskTarget: TaskFormTypeWithId): Promise<Task> 
   }
 }
 
+const getTaskCountCache = async (userId: string): Promise<number> => {
+  "use cache"
+  cacheTag(`task-count-${userId}`)
+
+  return await prisma.task.count({
+    where: {
+      OR: [{ assignerId: userId }, { executorId: userId }],
+    },
+  })
+}
+
+export const getTaskCount = async (userId: string): Promise<number> => {
+  try {
+    return getTaskCountCache(userId)
+  } catch (error) {
+    console.error(error)
+    return handleError((error as Error).message)
+  }
+}
+
 export const deleteTask = async (taskData: DeleteTaskData): Promise<Task> => {
   try {
     const user = await requireUser()
@@ -203,9 +227,13 @@ export const deleteTask = async (taskData: DeleteTaskData): Promise<Task> => {
       await checkUserPermissionByRole(user, [PermissionEnum.TASK_MANAGEMENT])
     }
 
-    return await prisma.task.delete({
+    const task = await prisma.task.delete({
       where: { id: taskId },
     })
+    revalidateTag(`task-count-${task.assignerId}`, "max")
+    revalidateTag(`task-count-${task.executorId}`, "max")
+
+    return task
   } catch (error) {
     console.log(error, "deleteTask")
     return handleError("Ошибка при удалении: задача не найдена")

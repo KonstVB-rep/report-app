@@ -45,7 +45,7 @@ const SummaryTablePage = async ({
   const strategy = DEAL_RESOLVER[currentType]
   const queryClient = getQueryClient()
 
-  await queryClient.prefetchQuery<DealResponse>({
+  await queryClient.query<DealResponse>({
     queryKey: [strategy.key, depNumId],
     queryFn: () => strategy.fetcher(depNumId) as Promise<DealResponse>,
     staleTime: 1000 * 60 * 5,

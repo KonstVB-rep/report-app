@@ -123,7 +123,10 @@ export const columnsDataDealsMarketing: ColumnDef<DealUnion, unknown>[] = [
   {
     id: "resource",
     header: "Ресурс",
-    cell: (info) => info.getValue(),
+    cell: (info) => {
+      const value = info.getValue() as ReactNode
+      return value
+    },
     enableHiding: true,
     meta: {
       title: "Ресурс",

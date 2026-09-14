@@ -33,11 +33,9 @@ export const ProjectFormSchema = z
         .nullable()
         .optional(),
     ),
-    direction: z
-      .enum(Object.values(DirectionProject).filter(Boolean) as [string, ...string[]], {
-        error: "Выберите направление",
-      })
-      .optional(),
+    direction: z.enum(Object.values(DirectionProject).filter(Boolean) as [string, ...string[]], {
+      error: "Выберите направление",
+    }),
     deliveryType: z
       .enum(Object.values(DeliveryProject) as [string, ...string[]])
       .optional()
@@ -86,11 +84,8 @@ export const ProjectFormSchema = z
     const requiredFields: { key: keyof typeof data; label: string }[] = [
       { key: "nameDeal", label: "Введите название сделки" },
       { key: "direction", label: "Выберите направление" },
-      { key: "contact", label: "Укажите контактное лицо" },
       { key: "commentsLastConnection", label: "Введите комментарий" },
       { key: "dealStatus", label: "Выберите статус проекта" },
-      { key: "contacts", label: "Добавьте хотя бы одного контакта" },
-      { key: "deliveryType", label: "Выберите тип доставки" },
     ]
 
     requiredFields.forEach(({ key, label }) => {
@@ -168,7 +163,6 @@ export const RetailFormSchema = z
         .optional(),
     ),
 
-    // Используем preprocess, чтобы пустая строка "" не вызывала ошибку Enum
     direction: z.preprocess(
       (val) => (val === "" ? undefined : val),
       z.enum(Object.values(DirectionRetail).filter(Boolean) as [string, ...string[]]).optional(),
@@ -230,11 +224,8 @@ export const RetailFormSchema = z
 
     const requiredFields: { key: keyof typeof data; label: string }[] = [
       { key: "nameDeal", label: "Введите название сделки" },
-      { key: "direction", label: "Выберите направление" },
       { key: "contact", label: "Укажите контактное лицо" },
       { key: "commentsLastConnection", label: "Введите комментарий" },
-      { key: "deliveryType", label: "Выберите тип доставки" },
-      { key: "contacts", label: "Добавьте хотя бы одного контакта" },
     ]
 
     requiredFields.forEach(({ key, label }) => {

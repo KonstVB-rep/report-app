@@ -1,0 +1,4 @@
+{
+  "ignore": ["src/shared/components/ui/**", "node_modules/**"],
+  "ignoreDependencies": ["@radix-ui/*"]
+}

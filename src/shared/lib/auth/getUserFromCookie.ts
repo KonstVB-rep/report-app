@@ -10,7 +10,7 @@ import { type PayloadType, verifyToken } from "./session"
 
 const ACCESS_SECRET = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
 
-export const getCachedUser = cache(async (userId: string): Promise<PayloadType | null> => {
+const getCachedUser = cache(async (userId: string): Promise<PayloadType | null> => {
   const dbUser = await prisma.user.findUnique({
     where: { id: userId },
     select: {

@@ -16,13 +16,24 @@ export const useCreateTask = () => {
 
   return useMutation({
     mutationFn: async (task: Omit<TaskFormType, "orderTask">) => await createTask(task),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ["tasks", authUser?.id, authUser?.departmentId],
       })
       queryClient.invalidateQueries({
         queryKey: ["userTasks", authUser?.id],
       })
+      if (data.data?.assignerId) {
+        queryClient.invalidateQueries({
+          queryKey: ["taskCount", data.data.assignerId],
+        })
+      }
+
+      if (data.data?.executorId) {
+        queryClient.invalidateQueries({
+          queryKey: ["taskCount", data.data.executorId],
+        })
+      }
     },
     onError: (error) => {
       handleErrorSession(error)
@@ -74,6 +85,18 @@ export const useDeleteTask = (close: () => void) => {
       queryClient.invalidateQueries({
         queryKey: ["userTasks", authUser?.id],
       })
+
+      if (data?.assignerId) {
+        queryClient.invalidateQueries({
+          queryKey: ["taskCount", data.assignerId],
+        })
+      }
+
+      if (data?.executorId) {
+        queryClient.invalidateQueries({
+          queryKey: ["taskCount", data.executorId],
+        })
+      }
 
       close()
       TOAST.SUCCESS("Задача удалена")

@@ -1,6 +1,5 @@
 "use client"
-import { useParams } from "next/navigation"
-import NotFound from "@/app/not-found"
+import { notFound, useParams } from "next/navigation"
 import { usePermissions } from "@/app/provider/permission-provider"
 
 const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren) => {
@@ -15,7 +14,7 @@ const ProtectedByDepartmentAffiliation = ({ children }: React.PropsWithChildren)
   const hasAccessToDepartment = departmentContext === departmentIdNumber
   if (isLoading) return <div className="w-auto h-auot animate-pulse rounded-md bg-muted" />
 
-  return hasAccessToDepartment ? children : <NotFound />
+  return hasAccessToDepartment ? children : notFound()
 }
 
 export default ProtectedByDepartmentAffiliation

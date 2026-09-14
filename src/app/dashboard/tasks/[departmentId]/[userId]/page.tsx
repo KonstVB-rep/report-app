@@ -1,87 +1,17 @@
-"use client"
+export const instant = false
 
-import { Activity, Suspense, useEffect } from "react"
-import dynamic from "next/dynamic"
-import { useParams, useRouter } from "next/navigation"
-import { hasAccessToDataPage } from "@/entities/deal/lib/hasAccessToData"
-import LoadingView from "@/entities/task/ui/LoadingView"
-import { useGetUserTasks } from "@/feature/task/hooks/query"
-import { viewType } from "@/feature/task/model/constants"
-import type { ViewType } from "@/feature/task/types"
-import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
-import { Button } from "@/shared/components/ui/button"
-import { Separator } from "@/shared/components/ui/separator"
-import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
-import { useRequireAuth } from "@/shared/hooks/useRequireAuth"
-import useViewType from "@/shared/hooks/useViewType"
-import { PERMISSIONS } from "@/shared/lib/constants"
+import UserTasksPage from "./UserTasksPage"
 
-const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
-  ssr: false,
-  loading: () => <LoadingView />,
-})
-
-const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
-  ssr: false,
-  loading: () => <LoadingView />,
-})
-
-const UserTasksPage = () => {
-  const authUser = useRequireAuth()
-  const router = useRouter()
-
-  const { userId } = useParams<{
-    userId: string
+interface PageProps {
+  params: Promise<{
     departmentId: string
-  }>()
-
-  const { data } = useGetUserTasks({ userId })
-
-  const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
-  const hasAccess = authUser
-    ? hasAccessToDataPage(authUser, userId, PERMISSIONS.TASK_MANAGEMENT)
-    : false
-
-  useEffect(() => {
-    if (authUser && !hasAccess) {
-      router.replace(`/dashboard/tasks/${authUser.departmentId}/${authUser.id}`)
-    }
-  }, [authUser, hasAccess, router])
-
-  if (!authUser || !hasAccess) return <LoadingView />
-
-  return (
-    <section className="p-5">
-      <div className="flex items-center justify-between py-2">
-        <h1 className="text-xl py-2 uppercase">Мои задачи</h1>
-      </div>
-
-      <Separator />
-
-      <div className="p-2 flex flex-wrap-reverse justify-between gap-2">
-        <div className="flex gap-2">
-          {viewType.map((item) => {
-            return (
-              <Button key={item.id} onClick={() => handleViewChange(item.id)} variant="outline">
-                {item.value}
-              </Button>
-            )
-          })}
-        </div>
-
-        <СreateTaskDialog />
-      </div>
-
-      <MotionDivY className="flex-1">
-        <Activity mode={currentView === "table" ? "visible" : "hidden"}>
-          <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
-        </Activity>
-        <Activity mode={currentView === "kanban" ? "visible" : "hidden"}>
-          <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
-        </Activity>
-      </MotionDivY>
-    </section>
-  )
+    userId: string
+  }>
 }
 
-export default UserTasksPage
+const Page = async ({ params }: PageProps) => {
+  const { departmentId, userId } = await params
+  return <UserTasksPage departmentId={departmentId} userId={userId} />
+}
+
+export default Page

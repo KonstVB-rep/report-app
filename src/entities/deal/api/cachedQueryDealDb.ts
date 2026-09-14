@@ -244,44 +244,6 @@ export const getCachedAllRetailsByDepartment = async (departmentIdValue: number)
   })
 }
 
-export const getCachedAllDealsRequestSourceByDepartment = async (departmentId: number) => {
-  cacheLife("minutes")
-
-  cacheTag(tagKeysDealActions.sourceDealsDep(departmentId))
-  const [retailsRequestResorce, projectsRequestResource] = await Promise.all([
-    prisma.retail.findMany({
-      where: {
-        user: {
-          departmentId,
-        },
-      },
-      select: {
-        dateRequest: true,
-        resource: true,
-      },
-      orderBy: {
-        dateRequest: "asc",
-      },
-    }),
-    prisma.project.findMany({
-      where: {
-        user: {
-          departmentId,
-        },
-      },
-      select: {
-        dateRequest: true,
-        resource: true,
-      },
-      orderBy: {
-        dateRequest: "asc",
-      },
-    }),
-  ])
-
-  return [...retailsRequestResorce, ...projectsRequestResource]
-}
-
 export const getCachedAllDealsByDepartment = async (departmentId: number) => {
   cacheLife("minutes")
   cacheTag(tagKeysDealActions.allDealsDep(departmentId))
@@ -289,6 +251,17 @@ export const getCachedAllDealsByDepartment = async (departmentId: number) => {
     prisma.retail.findMany({
       where: {
         user: { departmentId },
+      },
+      select: {
+        id: true,
+        dateRequest: true,
+        nameDeal: true,
+        nameObject: true,
+        comments: true,
+        userId: true,
+        type: true,
+        dealStatus: true,
+        resource: true,
       },
       orderBy: {
         dateRequest: "asc",
@@ -307,6 +280,7 @@ export const getCachedAllDealsByDepartment = async (departmentId: number) => {
         userId: true,
         type: true,
         dealStatus: true,
+        resource: true,
       },
       orderBy: {
         dateRequest: "asc",

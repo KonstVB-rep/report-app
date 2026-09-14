@@ -29,6 +29,7 @@ import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryRetailLabels,
   DirectionRetailLabels,
+  RESOURCE_OPTIONS,
   StatusRetailLabels,
 } from "../../lib/constants"
 import Comments from "../Comments"
@@ -264,16 +265,15 @@ const RetailFormBody = <T extends FieldValues>({
                 name={"lastDateConnection" as Path<T>}
               />
 
-              <InputTextForm
-                className="mb-2"
+              <SelectFormField
                 control={form.control}
                 disabled={isPending}
                 errorMessage={getError("resource")}
                 label="Источник"
                 name={"resource" as Path<T>}
+                options={RESOURCE_OPTIONS}
                 placeholder="Откуда пришёл клиент"
-                required={currentStatus !== StatusRetail.REQUEST}
-                showStarRequired={currentStatus !== StatusRetail.REQUEST}
+                required
               />
             </div>
           </div>

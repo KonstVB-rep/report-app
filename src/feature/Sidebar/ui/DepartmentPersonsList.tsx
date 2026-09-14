@@ -4,7 +4,7 @@ import { type PropsWithChildren, useCallback, useMemo, useState } from "react"
 import clsx from "clsx"
 import { ChevronRight } from "lucide-react"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import { DepartmentLabels } from "@/entities/department/lib/constants"
+import { DepartmentLabels, HIDDEN_POSITIONS } from "@/entities/department/lib/constants"
 import type { DepartmentListItemType, DepartmentUserItem } from "@/entities/department/types"
 import {
   Accordion,
@@ -69,7 +69,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
     return item.items.find((user) => user.id === authUser?.id) || null
   }, [item.id, item.items, authUser?.id, authUser?.departmentId])
 
-  const itemыCurrDep = item.items.filter((item) => item.id === authUser?.id)
+  const itemsCurrDep = item.items.filter((item) => item.id === authUser?.id)
 
   return (
     <ProtectedByPermissions
@@ -78,7 +78,7 @@ const DepartmentPersonsList = ({ item }: { item: DepartmentListItemType }) => {
           <DepartmentLayout
             handleDepartmentClick={handleDepartmentClick}
             isActiveDepartment={isActiveDepartment}
-            item={{ ...item, items: itemыCurrDep }}
+            item={{ ...item, items: itemsCurrDep }}
             open={open}
             setOpen={setOpen}
           />
@@ -144,6 +144,9 @@ const SideBarMenuItemWrapper = ({ user }: { user: DepartmentUserItem }) => {
   const pathname = usePathname()
 
   const isActiveUser = user.id === userId
+
+  if (HIDDEN_POSITIONS.includes(user.position.toLowerCase())) return null
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton

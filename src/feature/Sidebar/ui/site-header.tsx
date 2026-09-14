@@ -6,6 +6,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { DEAL_TYPE } from "@/entities/deal/types/index"
 import SummaryTableLink from "@/entities/deal/ui/SummaryTableLink"
+import { TasksLink } from "@/entities/task/ui/TasksLink"
 import useStoreUser from "@/entities/user/store/useStoreUser"
 import { FindOrgModal } from "@/feature/find-organization-by-field/ui/FindOrgModal"
 import { Button } from "@/shared/components/ui/button"
@@ -24,7 +25,7 @@ const ProtectedByPermissions = dynamic(
 
 const namePagesByDealType = [DEAL_TYPE.PROJECT, DEAL_TYPE.RETAIL]
 
-export function SiteHeader({ isHasSitebar = true }: { isHasSitebar?: boolean }) {
+export const SiteHeader = ({ isHasSitebar = true }: { isHasSitebar?: boolean }) => {
   const { authUser } = useStoreUser()
   const { toggleSidebar } = useSidebar()
   const pathName = usePathname()
@@ -57,13 +58,7 @@ export function SiteHeader({ isHasSitebar = true }: { isHasSitebar?: boolean }) 
         <div className="hidden items-center gap-2 md:flex">
           <FindOrgModal />
           {departmentId && userId && (
-            <Link
-              className="btn_hover text-sm font-medium"
-              href={`/dashboard/tasks/${departmentId}/${userId}`}
-              prefetch={false}
-            >
-              Мои задачи
-            </Link>
+            <TasksLink departmentId={String(departmentId)} userId={userId} />
           )}
 
           {departmentId && (

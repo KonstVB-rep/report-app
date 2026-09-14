@@ -275,17 +275,6 @@ export interface BaseDeal {
   dateRequest: Date
   dealStatus: string
 }
-
-export type DealsListWithResource =
-  | {
-      deals: {
-        dateRequest: Date
-        resource: string
-      }[]
-      totalDealsCount: number
-    }
-  | { deals: []; totalDealsCount: number }
-
 export type DealsList =
   | {
       deals: DealUnion[]

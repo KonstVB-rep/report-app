@@ -8,6 +8,7 @@ import ButtonsGroupTable from "@/entities/deal/ui/ButtonsGroupTable"
 import DealTableTemplate from "@/entities/deal/ui/DealTableTemplate"
 import { useDealsUser } from "@/feature/deals/api/hooks/query"
 import AccessDeniedMessage from "@/shared/custom-components/ui/AccessDeniedMessage"
+import ButtonRefresh from "@/shared/custom-components/ui/Buttons/ButtonRefresh"
 import NotFoundByPosition from "@/shared/custom-components/ui/Redirect/NotFoundByPosition"
 import { PERMISSIONS } from "@/shared/lib/constants"
 import { columnsDataContract } from "../model/columns-data-contracts"
@@ -63,7 +64,11 @@ const PersonDealsTable = () => {
 
   const hasAccess = hasAccessToData(userId as string, PERMISSIONS.VIEW_USER_REPORT)
 
-  const { data = [], isPlaceholderData } = useDealsUser(dealType as TableType, userId as string)
+  const {
+    data = [],
+    isPlaceholderData,
+    refetch,
+  } = useDealsUser(dealType as TableType, userId as string)
 
   if (!hasAccess)
     return <AccessDeniedMessage error={{ message: "у вас нет доступа к этому разделу" }} />
@@ -71,11 +76,12 @@ const PersonDealsTable = () => {
   return (
     <NotFoundByPosition>
       <DealTableTemplate>
-        <div className="flex flex-wrap justify-between gap-3 w-full">
+        <div className="flex flex-wrap items-center justify-between gap-3 w-full">
           <h1 className="text-lg uppercase flex-1 p-2 bg-muted rounded-md font-semibold">
             {DealTypeLabels[dealType as string]}
           </h1>
-          <p className="border rounded-md p-2">Количество заявок: {data?.length}</p>
+          <ButtonRefresh refetch={refetch} />
+          <p className="border rounded-md p-2"> {data?.length}</p>
         </div>
 
         <ButtonsGroupTable />

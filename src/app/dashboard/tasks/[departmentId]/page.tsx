@@ -1,3 +1,5 @@
+export const instant = false
+
 import TasksPageMain from "./TasksPageMain"
 
 interface PageProps {

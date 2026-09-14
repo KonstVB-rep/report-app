@@ -1,6 +1,5 @@
 "use client"
 
-import { Suspense } from "react"
 import dynamic from "next/dynamic"
 import { hasAccessToDataSummary } from "@/entities/deal/lib/hasAccessToData"
 import LoadingView from "@/entities/task/ui/LoadingView"
@@ -10,6 +9,7 @@ import type { ViewType } from "@/feature/task/types"
 import СreateTaskDialog from "@/feature/task/ui/Modals/СreateTaskDialog"
 import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
+import ButtonRefresh from "@/shared/custom-components/ui/Buttons/ButtonRefresh"
 import { LoaderCircleInWater } from "@/shared/custom-components/ui/Loaders"
 import MotionDivY from "@/shared/custom-components/ui/MotionComponents/MotionDivY"
 import RedirectToPath from "@/shared/custom-components/ui/Redirect/RedirectToPath"
@@ -19,10 +19,12 @@ import { PERMISSIONS } from "@/shared/lib/constants"
 
 const Kanban = dynamic(() => import("@/widgets/task/ui/Kanban"), {
   ssr: false,
+  loading: () => <LoadingView />,
 })
 
 const TaskTable = dynamic(() => import("@/widgets/task/ui/TaskTable"), {
   ssr: false,
+  loading: () => <LoadingView />,
 })
 
 const TasksPageMain = (params: { departmentId: string }) => {
@@ -30,9 +32,9 @@ const TasksPageMain = (params: { departmentId: string }) => {
 
   const authUser = useRequireAuth()
 
-  const hasAccess = hasAccessToDataSummary(authUser?.id as string, PERMISSIONS.TASK_MANAGEMENT)
+  const hasAccess = hasAccessToDataSummary(authUser, PERMISSIONS.TASK_MANAGEMENT)
 
-  const { data, isPending } = useGetTasksDepartment()
+  const { data, isPending, refetch } = useGetTasksDepartment()
 
   const { handleViewChange, currentView } = useViewType<ViewType>("table", ["table", "kanban"])
 
@@ -46,7 +48,10 @@ const TasksPageMain = (params: { departmentId: string }) => {
 
   return (
     <section className="p-5">
-      <h1 className="text-xl py-2">Все задачи</h1>
+      <div className="flex items-center justify-between py-2">
+        <h1 className="text-xl py-2">Все задачи</h1>
+        <ButtonRefresh refetch={refetch} />
+      </div>
 
       <Separator />
 
@@ -65,23 +70,10 @@ const TasksPageMain = (params: { departmentId: string }) => {
       </div>
 
       <MotionDivY className="flex-1">
-        {currentView === "table" && (
-          <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
-        )}
+        {currentView === "table" && data && <TaskTable data={data} key="table" />}
 
-        {currentView === "kanban" && (
-          <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
-        )}
+        {currentView === "kanban" && data && <Kanban data={data} key="kanban" />}
       </MotionDivY>
-
-      {/* <MotionDivY className="flex-1">
-        <Activity mode={currentView === "table" ? "visible" : "hidden"}>
-          <Suspense fallback={<LoadingView />}>{data && <TaskTable data={data} />}</Suspense>
-        </Activity>
-        <Activity mode={currentView === "kanban" ? "visible" : "hidden"}>
-          <Suspense fallback={<LoadingView />}>{data && <Kanban data={data} />}</Suspense>
-        </Activity>
-      </MotionDivY> */}
     </section>
   )
 }

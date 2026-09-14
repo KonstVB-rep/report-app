@@ -37,6 +37,7 @@ import useSendDealInfo from "../../api/hooks/useSendDealInfo"
 import {
   DeliveryProjectLabels,
   DirectionProjectLabels,
+  RESOURCE_OPTIONS,
   StatusContractLabels,
   StatusProjectLabels,
 } from "../../lib/constants"
@@ -225,7 +226,7 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"direction" as Path<T>}
                   options={directionOptions}
                   placeholder="Выберите направление"
-                  required={currentStatus !== StatusProject.REQUEST}
+                  required
                 />
 
                 <SelectFormField
@@ -339,16 +340,15 @@ const ProjectFormBody = <T extends FieldValues>({
                   name={"lastDateConnection" as Path<T>}
                 />
 
-                <InputTextForm
-                  className="mb-2"
+                <SelectFormField
                   control={form.control}
                   disabled={isPending}
                   errorMessage={getError("resource")}
                   label="Источник"
                   name={"resource" as Path<T>}
+                  options={RESOURCE_OPTIONS}
                   placeholder="Откуда пришёл клиент"
-                  required={currentStatus !== StatusProject.REQUEST}
-                  showStarRequired={currentStatus !== StatusProject.REQUEST}
+                  required
                 />
               </div>
 

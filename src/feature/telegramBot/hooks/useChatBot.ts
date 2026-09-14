@@ -31,7 +31,6 @@ const useChatBot = (botName: string) => {
     try {
       setIsFetch(true)
 
-      // Если чата нет — открываем ссылку на Telegram
       if (!bot.chatId) {
         openTelegramLink(bot.botName, authUser.id)
         return

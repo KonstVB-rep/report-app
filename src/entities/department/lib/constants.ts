@@ -6,6 +6,8 @@ export const NOT_MANAGERS_POSITIONS = {
   MARKETING_SPECIALIST: "маркетолог",
 }
 
+export const HIDDEN_POSITIONS = ["главный бухгалтер"]
+
 export const NOT_MANAGERS_POSITIONS_VALUES = Object.values(NOT_MANAGERS_POSITIONS)
 
 export const DepartmentLabels: Record<keyof typeof DepartmentEnum, string> = {

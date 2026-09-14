@@ -38,11 +38,10 @@ export const hasAccessToDataPage = (
   return false
 }
 
-export const hasAccessToDataSummary = (userId: string, permission: PermissionType): boolean => {
-  if (!userId) return false
-
-  const { authUser } = useStoreUser.getState()
-
+export const hasAccessToDataSummary = (
+  authUser: AuthUserType | null,
+  permission: PermissionType,
+): boolean => {
   if (!authUser) return false
 
   if (hasDefaultRole(authUser.role)) return true

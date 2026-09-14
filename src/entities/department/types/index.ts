@@ -34,8 +34,6 @@ export type DepartmentListItemType = {
   items: DepartmentUserItem[]
 }
 
-export type DepartmentsUnionIds = 1 | 2 | 3
-
 export const DEPARTMENTS = ["SALES", "TECHNICAL", "MARKETING"] as const
 
 export type DepartmentValue = (typeof DEPARTMENTS)[number]

@@ -15,7 +15,6 @@ import { requireUser } from "@/app/api/utils/requireAuth"
 import {
   getCachedAdditionalContacts,
   getCachedAllDealsByDepartment,
-  getCachedAllDealsRequestSourceByDepartment,
   getCachedAllProjectsByDepartment,
   getCachedAllRetailsByDepartment,
   getCachedContractsUser,
@@ -33,9 +32,6 @@ import {
   type DealProject,
   type DealRetail,
   type DealsList,
-  type DealsListWithResource,
-  type ManagerShortInfo,
-  type ProjectResponse,
   type ProjectWithoutDateCreateAndUpdate,
   type ReAssignDeal,
   type RetailResponse,
@@ -44,8 +40,10 @@ import {
 import type {
   DealHighlightdeletedType,
   DealHighlightType,
+  ManagerShortInfo,
   MutationResponse,
   ProjectReq,
+  ProjectResponse,
   RetailReq,
 } from "./../types/index"
 
@@ -344,22 +342,6 @@ export const getAllRetailsByDepartment = async (
     const departmentIdValue = departmentId !== undefined ? departmentId : user.departmentId
 
     return await getCachedAllRetailsByDepartment(departmentIdValue)
-  } catch (error) {
-    console.error(error)
-    return handleError((error as Error).message)
-  }
-}
-
-export const getAllDealsRequestSourceByDepartment = async (
-  departmentId: number,
-): Promise<DealsListWithResource> => {
-  try {
-    await requireUser()
-    const allDeals = await getCachedAllDealsRequestSourceByDepartment(departmentId)
-
-    const totalDealsCount = allDeals.length || 0
-
-    return { deals: allDeals, totalDealsCount } as DealsListWithResource
   } catch (error) {
     console.error(error)
     return handleError((error as Error).message)

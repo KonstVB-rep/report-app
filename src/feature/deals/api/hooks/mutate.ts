@@ -307,7 +307,6 @@ export const useMutationUpdateRetail = (
       handleErrorSession(error)
     },
     onSuccess: (_, variables) => {
-      // Оригинальный блок onSuccess
       close()
 
       const previousData = queryClient.getQueryData<RetailResponse>(["retail", dealId])

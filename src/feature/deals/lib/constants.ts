@@ -155,3 +155,24 @@ export const FormatedParamsType = {
 } as const
 
 export type FormatedParamsTypeKey = keyof typeof FormatedParamsType
+
+export type SelectOption = [value: string, label: string]
+
+export const RESOURCE_OPTIONS: SelectOption[] = [
+  ["Почта", "Почта"],
+  ["Партнер", "Партнер"],
+  ["Постоянный клиент", "Постоянный клиент"],
+  ["Выставка", "Выставка"],
+  ["Рекомендация", "Рекомендация"],
+  ["Не известно", "Не известно"],
+  ["https://ertel.ru/", "https://ertel.ru/"],
+  ["https://www.mail.ru/", "https://www.mail.ru/"],
+  ["https://ertel-shop.ru/", "https://ertel-shop.ru/"],
+  ["https://park-style.ru/", "https://park-style.ru/"],
+  ["https://erticket.ru/", "https://erticket.ru/"],
+  ["https://gotschlichrus.ru/", "https://gotschlichrus.ru/"],
+  ["https://lockersoft.ru/", "https://lockersoft.ru/"],
+  ["https://ros-parking.ru/", "https://ros-parking.ru/"],
+  ["https://skisoft.ru/", "https://skisoft.ru/"],
+  ["https://карта-доступа.рф/", "https://карта-доступа.рф/"],
+]

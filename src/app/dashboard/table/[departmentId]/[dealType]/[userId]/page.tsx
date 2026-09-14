@@ -50,7 +50,7 @@ export default async function PersonTablePage({ params }: PageProps) {
   const queryClient = getQueryClient()
   const targetId = strategy.getId(resolvedParams)
 
-  await queryClient.prefetchQuery<DealResponse>({
+  await queryClient.query<DealResponse>({
     queryKey: [currentType, targetId],
     queryFn: () => strategy.fetcher(targetId) as Promise<DealResponse>,
     staleTime: 1000 * 60 * 5,
